@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "energia": {
+    "name": "Energia CC3200 core at c5507401fe46454d38c3ce3af0a140df8fc088a3",
+    "commit": "c5507401fe46454d38c3ce3af0a140df8fc088a3",
+    "reference_platform_version": "1.0.3",
+    "url": "https://codeload.github.com/energia/cc3200-core/tar.gz/c5507401fe46454d38c3ce3af0a140df8fc088a3",
+    "archive_filename": "energia-cc3200-c5507401.tar.gz",
+    "archive_root": "cc3200-core-c5507401fe46454d38c3ce3af0a140df8fc088a3",
+    "directory": "energia",
+    "bytes": 2217338,
+    "sha256": "1172b29afc4d761d501d7afecc73342df9fcf67e0d5be0506fa0bd1be3fd5caa",
+    "patches": [
+      {
+        "file": "cores/cc3200/itoa.h",
+        "before": "utoa( unsigned long value",
+        "after": "utoa( unsigned int value",
+        "original_sha256": "cf87d323e4005320a517da09ac9fb42818bddb76ab5ee3b141bbb7ab1ebfb6ed",
+        "patched_sha256": "ce6499330eb0b9feedcf82935b0f47dfd444593efa491d1070c727f4fa350c28"
+      },
+      {
+        "file": "cores/cc3200/itoa.c",
+        "before": "utoa( unsigned long value",
+        "after": "utoa( unsigned int value",
+        "original_sha256": "4e70ea46d5631b943ee5017baa72ff4ef5570b5adb5c5071ee7301fb31c729fb",
+        "patched_sha256": "c40290cc1365ab31701bdb28f52326b8b051c13872815fe9229db9fdd2ecb38b"
+      },
+      {
+        "file": "cores/cc3200/WMath.cpp",
+        "before": "srandom(unsigned long __seed)",
+        "after": "srandom(unsigned int __seed)",
+        "original_sha256": "676603bcb9e68aa16509b9160dedd1b99f51f51fb1ad58cde517486942ee9df1",
+        "patched_sha256": "337918e19815ab3b2ed5fd5158c8a8d86fa00b144671416c2e8aa274e28600ae"
+      },
+      {
+        "file": "cores/cc3200/random.c",
+        "before": "srandom(unsigned long seed)",
+        "after": "srandom(unsigned int seed)",
+        "original_sha256": "fcaa4b691df9861a0e388b83836a7d9c948c580538207e221c8a8fd6c5d926bd",
+        "patched_sha256": "230c393881d9d73a72563cd874e1718e26707ffe89c3b5a29a2a4dabc09ab46b"
+      }
+    ],
+    "patch_reason": "Match utoa/srandom declarations to selected newlib headers; unsigned int and unsigned long are both 32-bit in the ARM target ABI. No algorithm bodies changed."
+  },
+  "toolchain": {
+    "name": "GNU Arm Embedded Toolchain 10.3-2021.10",
+    "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2",
+    "archive_filename": "gcc-arm-none-eabi-10.3-2021.10-x86_64-linux.tar.bz2",
+    "archive_root": "gcc-arm-none-eabi-10.3-2021.10",
+    "directory": "toolchain",
+    "bytes": 157089706,
+    "sha256": "97dbb4f019ad1650b732faffcc881689cedc14e2b7ee863d390e0a41ef16c9a3",
+    "host": "Linux x86-64",
+    "target": "arm-none-eabi",
+    "cpu_flags": [
+      "-mcpu=cortex-m4",
+      "-mthumb",
+      "-mfloat-abi=soft",
+      "-mabi=aapcs"
+    ],
+    "multilib": "thumb/v7e-m/nofp",
+    "compatibility_note": "Selected rebuild compiler, not proven original Pico compiler. The pinned Energia platform references 4.8.4-20140725. During this recovery its Energia package URL returned HTTP 403; the downloaded official GNU 4.8 archive uses 32-bit x86 host executables that could not run in this environment.",
+    "c_runtime": "Compiler-provided newlib-nano stdio (--specs=nano.specs), native full-newlib allocation family from the same pinned compiler libc.a, bounded SDK _sbrk adapter, and native strtod/libm/libgcc. Integer/text printf; no float printf requested. SDK Print handles serial float diagnostics."
+  },
+  "board_reference": {
+    "variant": "CC3200-LAUNCHXL",
+    "compatible_alias": "launchpad",
+    "frequency_hz": 80000000,
+    "evidence": "Full pin-number, port-index, bit-mask and port-base tables match original image bytes. PWM/timer table was not found, so no whole-board equivalence claim.",
+    "firmware_sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
+  },
+  "scope": "Pinned build dependencies. Individual matches and successful SDK compile/link do not establish equivalence of every library routine to Pico firmware."
+}
