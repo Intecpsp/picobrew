@@ -1,4 +1,5 @@
 #include "picobrew/energia_network.h"
+#include "picobrew/config.h"
 #include <WiFi.h>
 #include <SLFS.h>
 #include <string.h>
@@ -8,19 +9,23 @@ extern "C" {
 #include <inc/hw_memmap.h>
 }
 
+#if !PICO_STANDALONE
 static PicoHttpClient &client(void *context)
 {
     return *static_cast<PicoEnergiaNetwork *>(context)->client;
 }
+#endif
 static PicoIpv4 unpack(IPAddress address)
 {
     PicoIpv4 result = {{address[0], address[1], address[2], address[3]}};
     return result;
 }
+#if !PICO_STANDALONE
 static IPAddress pack(PicoIpv4 address)
 {
     return IPAddress(address.octet);
 }
+#endif
 static uint32_t clock_ms(void *)
 {
     return millis();
@@ -88,6 +93,18 @@ static PicoIpv4 local_ip(void *)
 {
     return unpack(WiFi.localIP());
 }
+#if PICO_STANDALONE
+/* Outbound cloud requests do not exist in the local profile. Keep typed
+ * failure callbacks because recovered cleanup/status paths still call them.
+ * No PicoHttpClient object is constructed or accessed in this profile. */
+static int resolve(void *, const char *, PicoIpv4 *result)
+{
+    if (result)
+        memset(result, 0, sizeof(*result));
+    return 0;
+}
+static void dns(void *, PicoIpv4) {}
+#else
 static int resolve(void *, const char *hostname, PicoIpv4 *result)
 {
     IPAddress address;
@@ -99,6 +116,7 @@ static void dns(void *, PicoIpv4 address)
 {
     WiFi.setDNS(pack(address));
 }
+#endif
 static int scan(void *)
 {
     return WiFi.scanNetworks();
@@ -150,6 +168,15 @@ static bool md5(void *, const uint8_t *data, size_t length, uint8_t digest[16], 
     SHAMD5IntDisable(SHAMD5_BASE, 0xf);
     return success;
 }
+#if PICO_STANDALONE
+static int connect(void *, PicoIpv4, uint16_t, bool) { return 0; }
+static int connected(void *) { return 0; }
+static int available(void *) { return 0; }
+static int read(void *) { return -1; }
+static size_t write(void *, const uint8_t *, size_t) { return 0; }
+static void flush(void *) {}
+static void stop(void *) {}
+#else
 static int connect(void *context, PicoIpv4 address, uint16_t port, bool background)
 {
     return client(context).connectPico(pack(address), port, background);
@@ -178,6 +205,7 @@ static void stop(void *context)
 {
     client(context).stop();
 }
+#endif
 static void file_begin(void *)
 {
     SerFlash.begin();

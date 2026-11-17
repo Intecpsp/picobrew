@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
 void pico_menu_populate_from_menu(const PicoMenu *menu, uint32_t language, uint32_t status_selector)
 {
@@ -84,6 +85,8 @@ uint32_t pico_ui_scan_and_connect_wifi(void)
         pico_display_clear();
         pico_ui_draw_choose_network();
         uint32_t selected = pico_menu_choose(3, (unsigned)count & 255, 0);
+        if (pico_local_cancelled() || selected >= (uint32_t)count)
+            return 0;
         if (selected == (uint32_t)count - 1) {
             pico_display_clear();
             continue;
@@ -92,6 +95,8 @@ uint32_t pico_ui_scan_and_connect_wifi(void)
             pico_ui_enter_manual_network();
         else
             pico_ui_select_scanned_network(selected);
+        if (pico_local_cancelled())
+            return 0;
         pico_display_clear();
         bool connected = pico_network_connect_with_screen(n);
         if (connected && !pico_network_resolve_server(n)) {
@@ -171,7 +176,11 @@ int pico_ui_adjust_recipe(PicoRecipe *recipe)
     for (;;) {
         pico_display_clear();
         bool adjustable =
+#if PICO_STANDALONE
+            false; /* Local recipe steps are edited explicitly through the API. */
+#else
             recipe->abv_adjustment_reference != -1 || recipe->ibu_adjustment_reference != -1;
+#endif
         uint32_t count =
             pico_ui_draw_recipe_choices(pico_ui_active->app->screen.recipe_name, adjustable);
         pico_display_clear();
@@ -234,11 +243,17 @@ uint32_t pico_ui_select_recipe(PicoRecipe *recipe)
         pico_display_clear();
         pico_ui_draw_picopak_selection();
         selected = pico_menu_choose(3, (unsigned)menu_count & 255, 0);
+        if (pico_local_cancelled() || selected >= (unsigned)menu_count)
+            return 0;
         if (selected == (unsigned)menu_count - 1) {
+#if PICO_STANDALONE
+            return 0;
+#else
             if (!catalog)
                 return 0;
             catalog = false;
             continue;
+#endif
         }
         if (!last_page && selected == (unsigned)menu_count - 2) {
             list.page_offset += (int)selected;
@@ -248,6 +263,11 @@ uint32_t pico_ui_select_recipe(PicoRecipe *recipe)
     }
     pico_display_clear();
     pico_screen_loading_picopak();
+#if PICO_STANDALONE
+    if (selected >= (unsigned)list.loaded_items)
+        goto failed;
+    ui_copy(recipe->identifier, sizeof recipe->identifier, list.identifiers[selected]);
+#else
     if (catalog) {
         if (!pico_api_create_picopak(pico_ui_active->network, atoi(list.identifiers[selected])))
             goto failed;
@@ -276,6 +296,7 @@ uint32_t pico_ui_select_recipe(PicoRecipe *recipe)
         ui_copy(recipe->identifier, sizeof recipe->identifier,
                 pico_ui_active->menu_labels[selected]);
     }
+#endif
     if (!pico_ui_active->services->fetch_default_recipe_failed(pico_ui_active->service_context,
                                                                recipe->identifier)) {
         pico_display_stop_progress_indicator(&pico_ui_active->app->control_signals);

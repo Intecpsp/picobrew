@@ -1,6 +1,10 @@
 #include "picobrew/application.h"
 #include <stdio.h>
 #include <string.h>
+#include "picobrew/config.h"
+#if PICO_STANDALONE
+#include "picobrew/local_control.h"
+#endif
 
 static PicoApplication *app(void *context)
 {
@@ -8,11 +12,25 @@ static PicoApplication *app(void *context)
 }
 static uint32_t clock_ms(void *c)
 {
+#if PICO_STANDALONE
+    pico_local_service();
+#endif
     return app(c)->hardware->millis(app(c)->hardware_context);
 }
 static void delay_ms(void *c, uint32_t ms)
 {
+#if PICO_STANDALONE
+    /* Slice foreground waits so the LAN API remains responsive to Stop and
+     * remote front-panel input. The service hook rejects ISR/IRQ-masked calls. */
+    while (ms) {
+        uint32_t slice = ms > 10 ? 10 : ms;
+        app(c)->hardware->delay_ms(app(c)->hardware_context, slice);
+        ms -= slice;
+        pico_local_service();
+    }
+#else
     app(c)->hardware->delay_ms(app(c)->hardware_context, ms);
+#endif
 }
 static void pin_mode(void *c, uint8_t pin, uint8_t mode)
 {
@@ -24,6 +42,13 @@ static int digital_read(void *c, uint8_t pin)
 }
 static void digital_write(void *c, uint8_t pin, uint8_t value)
 {
+#if PICO_STANDALONE
+    if (value && pico_local_control_stopped() &&
+        (pin == PICO_PIN_HEATER || pin == PICO_PIN_DRAIN_PUMP ||
+         pin == PICO_PIN_SHUTTLE_PUMP || pin == PICO_PIN_STEAM_PUMP))
+        return;
+    pico_local_control_bus_select(pin, value == 0);
+#endif
     app(c)->hardware->digital_write(app(c)->hardware_context, pin, value);
 }
 static void spi_begin(void *c)
@@ -235,7 +260,12 @@ static void descale(void *c)
 }
 static void still_program(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+    log_message(c, "W", "LOCAL", "PicoStill is unavailable in the standalone profile");
+#else
     pico_recipe_still_program(&app(c)->recipe);
+#endif
 }
 static void drain_reservoir(void *c)
 {
@@ -351,16 +381,24 @@ static void recipe_screen(void *c, PicoRecipeScreen screen, uint32_t argument, c
         pico_ui_draw_stop_confirmation();
         break;
     case PICO_RECIPE_STILL_COMMUNICATION_FAILURE:
+#if !PICO_STANDALONE
         pico_ui_show_still_communication_failure();
+#endif
         break;
     case PICO_RECIPE_STILL_TEMPERATURE_WARNING:
+#if !PICO_STANDALONE
         pico_ui_show_still_temperature_warning();
+#endif
         break;
     case PICO_RECIPE_STILL_COMPLETION:
+#if !PICO_STANDALONE
         pico_ui_show_still_completion();
+#endif
         break;
     case PICO_RECIPE_STILL_FAN_MENU:
+#if !PICO_STANDALONE
         pico_ui_still_fan_menu();
+#endif
         break;
     case PICO_RECIPE_REQUIRE_FIRST_RINSE:
         pico_ui_require_first_rinse();
@@ -420,7 +458,9 @@ static void recipe_screen(void *c, PicoRecipeScreen screen, uint32_t argument, c
         pico_ui_start_descale();
         break;
     case PICO_RECIPE_CONFIRM_STILL_CLEANED:
+#if !PICO_STANDALONE
         pico_ui_confirm_still_cleaned();
+#endif
         break;
     case PICO_RECIPE_WAIT_FILTER_INSERTION:
         pico_ui_wait_for_filter_insertion();
@@ -429,6 +469,10 @@ static void recipe_screen(void *c, PicoRecipeScreen screen, uint32_t argument, c
 }
 static int recipe_prompt(void *c, PicoRecipePrompt prompt, uint32_t argument, const char *text)
 {
+#if PICO_STANDALONE
+    if (pico_local_control_stopped())
+        return 0;
+#endif
     switch (prompt) {
     case PICO_RECIPE_CONFIRM_AT_ROW:
         return pico_ui_confirm_at_row(argument);
@@ -447,9 +491,17 @@ static int recipe_prompt(void *c, PicoRecipePrompt prompt, uint32_t argument, co
     case PICO_RECIPE_DESCALE_STEP:
         return pico_ui_descale_step(argument);
     case PICO_RECIPE_CHOOSE_STILL_PROGRAM:
+#if PICO_STANDALONE
+        return -1;
+#else
         return (int)pico_ui_choose_program();
+#endif
     case PICO_RECIPE_WALK_STILL_STEPS:
+#if PICO_STANDALONE
+        return -1;
+#else
         return (int)pico_ui_walk_program_steps((int)argument);
+#endif
     case PICO_RECIPE_WAIT_CONTINUE:
         return (int)pico_ui_wait_for_continue();
     }
@@ -535,19 +587,33 @@ static int required_actions(void *c, uint32_t *actions, uint32_t capacity)
 }
 static bool still_status(void *c, PicoStillTelemetry *telemetry)
 {
+#if PICO_STANDALONE
+    (void)c; (void)telemetry;
+    return false;
+#else
     bool result = pico_still_read_status(&app(c)->network);
     if (telemetry != &app(c)->state.controller.still)
         *telemetry = app(c)->state.controller.still;
     return result;
+#endif
 }
 static bool still_pressure(void *c, PicoStillTelemetry *telemetry)
 {
+#if PICO_STANDALONE
+    (void)c; (void)telemetry;
+    return false;
+#else
     (void)c;
     return pico_still_pressure_ok(telemetry);
+#endif
 }
 static void still_stop(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+#else
     pico_still_stop(&app(c)->network);
+#endif
 }
 static uint32_t drain_instructions(void *c, uint32_t instruction_id)
 {
@@ -609,31 +675,65 @@ static uint32_t select_action(void *c, uint32_t row, int32_t initial)
 }
 static void still_initialize(void *c)
 {
+#if PICO_STANDALONE
+    memset(&app(c)->network.still, 0, sizeof app(c)->network.still);
+#else
     pico_still_connection_initialize(&app(c)->network.still);
+#endif
 }
 static bool still_home(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+    return false;
+#else
     return !pico_network_ipv4_is_zero(app(c)->network.still.home_ip);
+#endif
 }
 static bool still_choose_ap(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+    return false;
+#else
     return pico_still_choose_access_point(&app(c)->network);
+#endif
 }
 static bool still_permission(void *c, const char *method)
 {
+#if PICO_STANDALONE
+    (void)c; (void)method;
+    return false;
+#else
     return pico_api_still_permission(&app(c)->network, method, app(c)->network.still.identifier);
+#endif
 }
 static bool still_configure(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+    return false;
+#else
     return pico_still_configure(&app(c)->network);
+#endif
 }
 static bool still_wifi(void *c, bool home)
 {
+#if PICO_STANDALONE
+    (void)c; (void)home;
+    return false;
+#else
     return pico_still_connect_wifi(&app(c)->network, home);
+#endif
 }
 static bool still_start_once(void *c)
 {
+#if PICO_STANDALONE
+    (void)c;
+    return false;
+#else
     return pico_still_start_once(&app(c)->network);
+#endif
 }
 static bool choose_wifi(void *c)
 {
@@ -662,7 +762,14 @@ static void wait_continue(void *c)
 }
 static bool decode_recipe(void *c, const char *text, size_t length)
 {
+#if PICO_STANDALONE
+    /* Local recipes use the validated binary store. Keep this legacy callback
+     * as an explicit failure without retaining the unused cloud text parser. */
+    (void)c; (void)text; (void)length;
+    return false;
+#else
     return pico_recipe_parse_response(&app(c)->recipe, text, (int32_t)length);
+#endif
 }
 static void network_event(void *c, PicoNetworkUiEvent event, const char *text)
 {
@@ -678,7 +785,12 @@ static void recipe_image_ready(void *c, unsigned index, const uint8_t image[1024
 }
 static int choose_still(void *c, const char identifiers[][22], size_t count)
 {
+#if PICO_STANDALONE
+    (void)c; (void)identifiers; (void)count;
+    return -1;
+#else
     return pico_ui_choose_still(&app(c)->ui, identifiers, count);
+#endif
 }
 
 static const PicoUiHardware ui_hardware = {
@@ -797,12 +909,21 @@ static const PicoProgramAssets program_assets = {&pico_ui_asset_program_primary,
 static const PicoRecipePages recipe_pages = {
     .normal = {pico_screen_brew_name_page, pico_screen_current_step_page,
                pico_screen_step_progress_page, pico_screen_temperature_page,
+#if PICO_STANDALONE
+               /* Local step recipes have no server-calculated ABV/IBU data. */
+               pico_screen_program_status_page},
+#else
                pico_screen_recipe_metrics_page},
+#endif
     .cooking = {pico_screen_basic_brew_status, pico_screen_detailed_brew_status},
     .manual = {pico_screen_manual_overview_page, pico_screen_current_target_page,
                pico_screen_program_status_page},
     .holding = pico_ui_draw_hold_status,
+#if PICO_STANDALONE
+    .still = NULL};
+#else
     .still = pico_screen_still_readings};
+#endif
 const PicoPageCallback *pico_application_default_pages(void)
 {
     return recipe_pages.normal;
@@ -857,10 +978,14 @@ void pico_application_setup(PicoApplication *a)
     serial_text(a, "***************************************************************", true);
     serial_text(a, "                        Pico PRO", true);
     serial_text(a, "***************************************************************", true);
+#if PICO_STANDALONE
+    log_message(a, "I", "MAIN", "PROFILE = standalone; local recipes and LAN control");
+#else
     log_message(a, "I", "MAIN", "DATE_TIME = Dec 16 2019 12:59:40");
     log_message(a, "I", "MAIN", "VERSION_STR = 0.1.34");
     log_message(a, "I", "MAIN", "GIT_HASH = d0da766714f2012e98f8e43ecd6519895caf565e");
     log_message(a, "I", "MAIN", "GIT_BRANCH = dev");
+#endif
     log_message(a, "I", "MAIN", "SSD_TYPE = SSD1325");
     pico_display_initialize();
     pico_screen_splash();
@@ -884,6 +1009,13 @@ void pico_application_setup(PicoApplication *a)
         pico_screen_splash();
         a->network.platform->reset_mcu(a->network.platform_context);
     }
+#if PICO_STANDALONE
+    /* LAN connectivity is optional; production registration and cloud
+     * availability never gate startup. Local API adapters also work offline. */
+    pico_network_ensure_connection(&a->network);
+    a->settings.offline_mode = 0;
+    pico_local_control_ready(true);
+#else
     if (!a->settings.offline_mode) {
         pico_network_ensure_connection(&a->network);
         if (a->network.platform->wifi_status(a->network.platform_context) == 3) {
@@ -892,6 +1024,7 @@ void pico_application_setup(PicoApplication *a)
         } else
             pico_report_error(8, 1, 0);
     }
+#endif
     pico_api_report_state(&a->network);
     pico_device_detect_stepper(&a->device);
     pico_rfid_application_initialize(&a->rfid);
@@ -908,8 +1041,13 @@ void pico_application_setup(PicoApplication *a)
     }
     pico_storage_delete_restart(&a->network);
 final_startup:
+#if !PICO_STANDALONE
     pico_update_run(&a->network);
     pico_recipe_run_required_maintenance(&a->recipe);
+#else
+    /* Firmware updates are an explicit physical deployment operation. */
+    (void)a;
+#endif
 }
 
 /* Original main menu0x20012e10 and loop tail entry0x20012e9c. */
@@ -919,7 +1057,28 @@ void pico_application_loop(PicoApplication *a)
     pico_display_clear();
     pico_display_logo();
     pico_menu_populate_action_labels(actions, 6, a->settings.language, a->settings.detailed_status);
-    switch (pico_menu_select_action(4, 0)) {
+#if PICO_STANDALONE
+    if (pico_local_control_stopped()) {
+        pico_control_stop(a->control);
+        pico_actuators_all_off(a->actuators);
+        a->state.controller.phase = PICO_BREW_PHASE_IDLE;
+        a->state.controller.status = 0;
+        a->state.device_state = 2;
+        pico_storage_delete_restart(&a->network);
+    }
+    pico_local_control_enter_menu();
+#endif
+    uint32_t selection = pico_menu_select_action(4, 0);
+#if PICO_STANDALONE
+    if (pico_local_control_has_pending()) {
+        pico_local_control_run_pending();
+        return;
+    }
+    if (pico_local_control_stopped())
+        return;
+    pico_local_control_leave_menu();
+#endif
+    switch (selection) {
     case 12:
         pico_recipe_run_brew_program(&a->recipe, &a->state.recipe);
         break;

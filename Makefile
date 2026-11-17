@@ -1,8 +1,26 @@
 PYTHON ?= python3
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean
+.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-verify web-test
 .NOTPARALLEL: verify
-all: firmware
+all: standalone
+
+standalone:
+	$(PYTHON) tools/build_firmware.py --standalone
+
+standalone-test:
+	$(PYTHON) tools/embed_web.py --check
+	$(PYTHON) tests/test_http_server.py
+	$(PYTHON) tests/test_energia_http_server.py
+	$(PYTHON) tests/test_local_api.py
+	$(PYTHON) tests/test_standalone_control.py
+
+standalone-arm-test:
+	$(PYTHON) tests/test_standalone_control_arm.py
+
+standalone-verify: standalone standalone-test standalone-arm-test
+
+web-test:
+	$(PYTHON) tests/test_web.py
 
 bootstrap:
 	$(PYTHON) tools/bootstrap_dependencies.py

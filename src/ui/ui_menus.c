@@ -1,6 +1,9 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
+#if !PICO_STANDALONE
 static const uint32_t ui_utilities_actions[10] = {40, 41, 42, 43, 44, 45, 46, 48, 47, 39};
+#endif
 
 void pico_ui_draw_menu_items(uint32_t item_count, int selected_row, int first_row,
                              uint32_t first_visible_item)
@@ -43,7 +46,9 @@ uint32_t pico_menu_choose_with_timeout(uint32_t first_menu_row, uint32_t choice_
                                        uint32_t initial_index, int use_timeout,
                                        uint8_t default_index, uint8_t redraw, int timeout_seconds)
 {
+#if !PICO_STANDALONE
     bool still_fault;
+#endif
     uint32_t selection_started_ms;
     int input_result;
     uint32_t now_ms;
@@ -52,7 +57,9 @@ uint32_t pico_menu_choose_with_timeout(uint32_t first_menu_row, uint32_t choice_
     uint32_t selected_row;
     uint32_t first_row;
     uint32_t first_visible_item;
+#if !PICO_STANDALONE
     uint32_t last_still_poll_ms;
+#endif
     uint32_t visible_item_end;
 
     ui_assert((uint32_t)(choice_count != 0), "numOpts > 0");
@@ -73,9 +80,17 @@ uint32_t pico_menu_choose_with_timeout(uint32_t first_menu_row, uint32_t choice_
     selected_row = (input_result + 1U) & 0xff;
     pico_encoder_clear_click((PicoEncoder *)&pico_ui_active->encoder);
     first_visible_item = 0;
+#if !PICO_STANDALONE
     last_still_poll_ms = selection_started_ms;
+#endif
     while (true) {
         ui_millis();
+#if PICO_STANDALONE
+        if (pico_local_control_has_pending())
+            return UINT32_MAX;
+        if (pico_local_control_stopped() && pico_local_control_busy())
+            return UINT32_MAX;
+#endif
         if (((pico_ui_active->app->controller.phase != '\x04') &&
              (input_result = pico_filter_is_inserted(pico_ui_active->actuators),
               input_result == 0)) &&
@@ -83,6 +98,7 @@ uint32_t pico_menu_choose_with_timeout(uint32_t first_menu_row, uint32_t choice_
             pico_ui_active->services->pause_until_resume(pico_ui_active->service_context);
             return (uint32_t)default_index;
         }
+#if !PICO_STANDALONE
         if ((uint32_t)(pico_ui_active->app->controller.status - 9) < 2) {
             now_ms = ui_millis();
             if (2000 < now_ms - last_still_poll_ms) {
@@ -93,6 +109,7 @@ uint32_t pico_menu_choose_with_timeout(uint32_t first_menu_row, uint32_t choice_
                 last_still_poll_ms = now_ms;
             }
         }
+#endif
         encoder_position = pico_encoder_get_position((PicoEncoder *)&pico_ui_active->encoder);
         encoder_position = encoder_position & 0xff;
         if ((use_timeout != 0) && (now_ms = ui_millis(), (uint32_t)(timeout_seconds * 1000) <
@@ -198,6 +215,12 @@ uint32_t pico_menu_select_action(uint32_t first_menu_row, int initial_index)
     }
     menu_choose_result = pico_menu_choose(first_menu_row, pico_ui_active->app->menu.count & 0xff,
                                           initial_index & ~(initial_index >> 0x1f) & 0xff);
+    if (pico_local_cancelled())
+        return UINT32_MAX;
+#if PICO_STANDALONE
+    if (menu_choose_result >= pico_ui_active->app->menu.count)
+        return UINT32_MAX;
+#endif
     menu_choose_result =
         pico_menu_action_at((PicoMenu *)&pico_ui_active->app->menu, menu_choose_result);
     return menu_choose_result;
@@ -210,7 +233,7 @@ bool pico_ui_choose_binary_option(const char *title)
     screen_fill_reservoir_and_start_result = pico_screen_fill_reservoir_and_start(title);
     screen_fill_reservoir_and_start_result =
         pico_menu_choose(7, screen_fill_reservoir_and_start_result, 0);
-    return screen_fill_reservoir_and_start_result != 1;
+    return !pico_local_cancelled() && screen_fill_reservoir_and_start_result != 1;
 }
 
 bool pico_ui_confirm_at_row(uint32_t menu_row)
@@ -293,10 +316,17 @@ void pico_utilities_menu(void)
     do {
         pico_display_clear();
         pico_ui_draw_utilities_heading();
+#if PICO_STANDALONE
+        static const uint32_t local_actions[] = {40, 41, 42, 43, 44, 45, 46, 48, 39};
+        pico_menu_populate_action_labels(local_actions, 9,
+            pico_ui_active->network->settings->language,
+            pico_ui_active->network->settings->detailed_status);
+#else
         pico_menu_populate_action_labels(
             (uint32_t *)&ui_utilities_actions, 10,
             (uint32_t)pico_ui_active->network->settings->language,
             (uint32_t)pico_ui_active->network->settings->detailed_status);
+#endif
         menu_select_action_result = pico_menu_select_action(3, 0);
         switch (menu_select_action_result) {
         case 0x27:
@@ -323,7 +353,9 @@ void pico_utilities_menu(void)
             pico_ui_active->services->run_descale(pico_ui_active->service_context);
             break;
         case 0x2f:
+#if !PICO_STANDALONE
             pico_ui_active->services->run_still(pico_ui_active->service_context);
+#endif
             break;
         case 0x30:
             pico_ui_active->services->run_circulation(pico_ui_active->service_context);

@@ -40,7 +40,17 @@
         "patched_sha256": "230c393881d9d73a72563cd874e1718e26707ffe89c3b5a29a2a4dabc09ab46b"
       }
     ],
-    "patch_reason": "Match utoa/srandom declarations to selected newlib headers; unsigned int and unsigned long are both 32-bit in the ARM target ABI. No algorithm bodies changed."
+    "patch_reason": "Match utoa/srandom declarations to selected newlib headers; unsigned int and unsigned long are both 32-bit in the ARM target ABI. No algorithm bodies changed.",
+    "standalone_patches": [
+      {
+        "file": "libraries/WiFi/WiFi.cpp",
+        "before": "WiFiClient WiFiClass::clients[MAX_SOCK_NUM];",
+        "after": "/* Standalone uses raw SimpleLink sockets; no WiFiClient registry is instantiated. */",
+        "original_sha256": "977afe3a5d4d0f0ce70df3589edca4fec7c641f77fd15c3379d94c3f50e969ca",
+        "patched_sha256": "5aee58bed6fb37a830541bf08e0dd391daf97872b946c2044c0e8f63d3885242"
+      }
+    ],
+    "standalone_patch_reason": "The standalone listener uses raw SimpleLink sockets and never uses WiFiClient/WiFiServer. Omit their unused global eight-client registry and its constructors from the private standalone SDK copy. Wi-Fi and SLFS behavior are unchanged; the legacy SDK keeps the registry."
   },
   "toolchain": {
     "name": "GNU Arm Embedded Toolchain 10.3-2021.10",

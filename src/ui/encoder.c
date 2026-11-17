@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
 void pico_encoder_set_step(PicoEncoder *encoder, int step)
 {
@@ -42,6 +43,7 @@ int pico_encoder_get_position(PicoEncoder *encoder)
 
 int pico_encoder_take_click(PicoEncoder *encoder)
 {
+    pico_local_poll();
     if (encoder->click_latch == 0) {
         encoder->click_latch = 1;
         return 255;
@@ -110,6 +112,8 @@ void pico_display_wait_for_click(void)
     pico_encoder_clear_click((PicoEncoder *)&pico_ui_active->encoder);
     while (clicked = pico_encoder_take_click((PicoEncoder *)&pico_ui_active->encoder),
            clicked == 0) {
+        if (pico_local_cancelled())
+            break;
         ui_millis();
     }
     return;

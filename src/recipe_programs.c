@@ -1,4 +1,5 @@
 #include "picobrew/recipe.h"
+#include "picobrew/local_control.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -27,6 +28,8 @@ uint32_t pico_recipe_location_value(PicoRecipeRuntime *r, uint32_t location)
 /* Original 0x20006128. */
 uint32_t pico_recipe_instruction(PicoRecipeRuntime *r, uint32_t instruction, int option)
 {
+    if (pico_local_cancelled())
+        return 34;
     return r->ops->instruction_screen(r->context, instruction, option, r->state->session.program_id,
                                       r->state->session.title, true);
 }
@@ -34,6 +37,8 @@ uint32_t pico_recipe_instruction(PicoRecipeRuntime *r, uint32_t instruction, int
 /* Original 0x20012020. */
 void pico_recipe_manual_program(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     static const uint32_t setup_screens[] = {16, 13, 7, 1};
     static const uint32_t cleanup_screens[] = {2, 3, 1};
     static const uint32_t actions[] = {19, 21, 27, 35};
@@ -62,6 +67,9 @@ void pico_recipe_manual_program(PicoRecipeRuntime *r)
     r->state->carousel.page_count = 3;
     int32_t selected = 0, index = 0;
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         r->ops->log_step(r->context, "Waiting Instructions");
         show(r, PICO_RECIPE_CLEAR, 0, NULL);
         for (unsigned i = 0; i != 4; ++i)
@@ -126,6 +134,8 @@ void pico_recipe_manual_program(PicoRecipeRuntime *r)
  * the six-compartment heated cleaning program, not the circulation utility. */
 void pico_recipe_circulation_program(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     pico_recipe_initialize_cleaning(r, &r->state->recipe, 135);
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_DEEP_CLEAN_SETUP, 0, NULL);
@@ -139,6 +149,8 @@ void pico_recipe_circulation_program(PicoRecipeRuntime *r)
  * the original; location 8 dispatches instructions without using those fields. */
 void pico_recipe_run_cooking_program(PicoRecipeRuntime *r, uint32_t program)
 {
+    if (pico_local_cancelled())
+        return;
     static const uint32_t sousvide_instructions[] = {0, 8};
     static const uint32_t coffee_instructions[] = {5, 1, 13};
     PicoProgramContext *p = &r->state->session;
@@ -162,6 +174,9 @@ void pico_recipe_run_cooking_program(PicoRecipeRuntime *r, uint32_t program)
     pico_recipe_prompt_parameters(r);
     unsigned index = 0;
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         uint32_t action = pico_recipe_instruction(r, instructions[index], 0);
         if (action == 23) {
             if (++index == count) {
@@ -215,6 +230,12 @@ void pico_recipe_run_cooking_program(PicoRecipeRuntime *r, uint32_t program)
  * network decisions are real fallible services; this owns the recipe/mode flow. */
 uint32_t pico_recipe_still_program(PicoRecipeRuntime *r)
 {
+#if PICO_STANDALONE
+    log_message(r, "W", "PicoStill is unavailable in the standalone profile");
+    return 34;
+#else
+    if (pico_local_cancelled())
+        return 34;
     r->ops->still_initialize(r->context);
     assert_condition(r, !r->ops->still_has_home_ip(r->context), "!still.hasHomeIP()");
     uint32_t choice =
@@ -310,4 +331,5 @@ uint32_t pico_recipe_still_program(PicoRecipeRuntime *r)
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     r->ops->center_text(r->context, 1, failure);
     return (uint32_t)r->ops->prompt(r->context, PICO_RECIPE_WAIT_CONTINUE, 0, NULL);
+#endif
 }

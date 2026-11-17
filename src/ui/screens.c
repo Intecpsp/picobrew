@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/config.h"
 
 void pico_screen_error_heading(void)
 {
@@ -263,7 +264,11 @@ void pico_screen_help_address(void)
     pico_display_center_text(3, text);
     url_row = 4;
 draw_help_url:
+#if PICO_STANDALONE
+    pico_display_center_text(url_row, "Open Pico's local IP");
+#else
     pico_display_center_text(url_row, "picobrew.com/help");
+#endif
     pico_display_flush();
     return;
 }

@@ -1,6 +1,7 @@
 #include "picobrew/control.h"
 #include "picobrew/pid.h"
 #include <limits.h>
+#include "picobrew/local_control.h"
 
 enum {
     PICO_TEMPERATURE_TIMER_BASE = 0x40030000u,
@@ -56,6 +57,8 @@ void pico_control_record_temperature_sample(PicoControl *control)
 
 void pico_control_start(PicoControl *control)
 {
+    if (pico_local_cancelled())
+        return;
     PicoBrewController *state = control->controller;
     if (state->status != 0)
         return;

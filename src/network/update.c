@@ -1,4 +1,5 @@
 #include "network_internal.h"
+#include "picobrew/config.h"
 
 int pico_boot_read(PicoNetwork *n)
 {
@@ -166,6 +167,10 @@ failed:
 
 bool pico_update_available(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    (void)n;
+    return false;
+#else
     char request[501];
     net_line(n, "wifi_checkFirmware");
     snprintf(request, sizeof(request), "/API/pico/checkFirmware?uid=%s&version=0.1.34",
@@ -194,20 +199,29 @@ finished:
     net_serial(n, "IsUpdatedRequired = ");
     net_line(n, available ? "1" : "0");
     return available;
+#endif
 }
 
 bool pico_update_download(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    (void)n;
+    return false;
+#else
     if (!*n->app->device_uid && !pico_storage_load_uid(n))
         return false;
     char request[501];
     net_prefix(n, request, sizeof(request), "getFirmware");
     net_ui(n, PICO_NET_UI_CLEAR, NULL);
     return pico_network_call(n, request, true, false) && pico_update_receive(n, false);
+#endif
 }
 
 void pico_update_run(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    (void)n;
+#else
     if (!pico_update_available(n))
         return;
     net_ui(n, PICO_NET_UI_CLEAR, NULL);
@@ -226,4 +240,5 @@ void pico_update_run(PicoNetwork *n)
     net_ui(n, PICO_NET_UI_FLUSH, NULL);
     pico_api_error(n, 23);
     n->ui->wait_for_continue(n->ui_context);
+#endif
 }

@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
 void pico_report_error(int error_code, int allow_continue, int report_to_server)
 {
@@ -300,6 +301,11 @@ void pico_diagnostics_menu(void)
 }
 void pico_diagnostic_wifi(void)
 {
+#if PICO_STANDALONE
+    /* This profile has no internet dependency to diagnose. Show the actual
+     * local address and connection status without pinging an external host. */
+    pico_ui_show_network_addresses();
+#else
     PicoNetwork *n = pico_ui_active->network;
     pico_display_clear();
     if (n->platform->wifi_status(n->platform_context) != 3)
@@ -342,6 +348,7 @@ void pico_diagnostic_wifi(void)
     }
     pico_ui_wait_for_stop();
     pico_display_clear();
+#endif
 }
 void pico_ui_show_network_addresses(void)
 {
@@ -380,7 +387,7 @@ void pico_alarm_until_press_or_timeout(uint32_t language, uint32_t status_select
     uint32_t next_toggle = 0;
     for (;;) {
         uint32_t now = ui_millis();
-        if (pico_encoder_take_click(&ui->encoder) || deadline < now)
+        if (pico_local_cancelled() || pico_encoder_take_click(&ui->encoder) || deadline < now)
             break;
         ui_millis();
         now = ui_millis();

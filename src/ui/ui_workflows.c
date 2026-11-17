@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
 void pico_ui_wait_for_resume(void)
 {
@@ -8,10 +9,12 @@ void pico_ui_wait_for_resume(void)
         while (encoder_take_click_result =
                    pico_encoder_take_click((PicoEncoder *)&pico_ui_active->encoder),
                encoder_take_click_result == 0) {
+            if (pico_local_cancelled())
+                return;
             pico_ui_draw_paused();
         }
         encoder_take_click_result = pico_filter_is_inserted(pico_ui_active->actuators);
-    } while (encoder_take_click_result == 0);
+    } while (!pico_local_cancelled() && encoder_take_click_result == 0);
     return;
 }
 
@@ -25,7 +28,7 @@ void pico_ui_wait_for_footer_press(const char *text)
     do {
         encoder_take_click_result =
             pico_encoder_take_click((PicoEncoder *)&pico_ui_active->encoder);
-    } while (encoder_take_click_result == 0);
+    } while (!pico_local_cancelled() && encoder_take_click_result == 0);
     return;
 }
 
@@ -113,6 +116,8 @@ uint32_t pico_ui_choose_units(void)
     pico_display_clear();
     ui_draw_units_menu_result = pico_ui_draw_units_menu();
     ui_draw_units_menu_result = pico_menu_choose(3, ui_draw_units_menu_result, 0);
+    if (pico_local_cancelled())
+        return pico_ui_active->network->settings->temperature_unit_celsius;
     pico_ui_active->network->settings->temperature_unit_celsius = ui_draw_units_menu_result != 0;
     return (uint32_t)(ui_draw_units_menu_result != 0);
 }
@@ -261,6 +266,8 @@ uint32_t pico_run_drain_instructions(uint32_t second_screen_id)
             pico_actuator_drain_on(pico_ui_active->actuators);
         }
         while (true) {
+            if (pico_local_cancelled())
+                return 34;
             drain_running = pico_actuator_drain_is_on(pico_ui_active->actuators);
             if (drain_running) {
                 drain_menu_id = 0x11;
@@ -276,7 +283,14 @@ uint32_t pico_run_drain_instructions(uint32_t second_screen_id)
             if (1 < drain_running) {
                 selected_action = 0;
             }
+#if PICO_STANDALONE
+            if (selected_action)
+                pico_actuator_drain_on(pico_ui_active->actuators);
+            else
+                pico_actuator_drain_off(pico_ui_active->actuators);
+#else
             ui_write(8, selected_action);
+#endif
         }
         pico_actuator_drain_off(pico_ui_active->actuators);
         result_action = 0x17;
@@ -336,6 +350,14 @@ void pico_ui_manual_network_step(int stage)
 
 void pico_ui_prompt_picopak_association(void)
 {
+#if PICO_STANDALONE
+    pico_display_clear();
+    pico_display_center_text(0, "LOCAL RECIPES");
+    pico_display_center_text(2, "No recipes available");
+    pico_display_center_text(4, "Add a recipe using");
+    pico_display_center_text(5, "the local web app");
+    pico_ui_wait_for_continue();
+#else
     char *text;
 
     pico_display_clear();
@@ -365,6 +387,7 @@ void pico_ui_prompt_picopak_association(void)
     pico_ui_draw_separator(2, 1, 1);
     pico_ui_wait_for_continue();
     return;
+#endif
 }
 
 void pico_ui_show_rinse_finished(void)
@@ -870,6 +893,8 @@ void pico_ui_start_descale(void)
 uint32_t pico_ui_run_instruction_screen(uint32_t screen_id, int sound_alarm, int program_id,
                                         const char *title, uint8_t use_context_title)
 {
+    if (pico_local_cancelled())
+        return 34;
     uint32_t menu_select_action_result;
     PicoMenu instruction_menu;
 
@@ -980,6 +1005,8 @@ uint32_t pico_get_temperature_input(uint32_t action_id, const char *program_titl
     pico_encoder_set_range((PicoEncoder *)&pico_ui_active->encoder, 0x3c, 0xcb, fahrenheit);
     while (button_pressed = pico_encoder_take_click((PicoEncoder *)&pico_ui_active->encoder),
            button_pressed == 0) {
+        if (pico_local_cancelled())
+            break;
         fahrenheit = pico_encoder_get_position((PicoEncoder *)&pico_ui_active->encoder);
         pico_display_clear_thunk();
         pico_display_center_bitmap(0xb, &pico_ui_asset_temperature_header);
@@ -1016,6 +1043,8 @@ int pico_get_time_input(uint32_t action_id, const char *program_title, int minut
     pico_encoder_set_range((PicoEncoder *)&pico_ui_active->encoder, 0, 0x253, minutes);
     while (button_or_increment = pico_encoder_take_click((PicoEncoder *)&pico_ui_active->encoder),
            button_or_increment == 0) {
+        if (pico_local_cancelled())
+            break;
         minutes = pico_encoder_get_position((PicoEncoder *)&pico_ui_active->encoder);
         if (minutes < 0x3c) {
             button_or_increment = 1;

@@ -1,5 +1,6 @@
 #include "picobrew/device.h"
 #include <stdio.h>
+#include "picobrew/local_control.h"
 
 /* The auxiliary controller uses the shared SPI bus in mode 1. These logical
  * Energia pin identifiers are verified against the firmware's board tables. */
@@ -75,6 +76,8 @@ bool pico_device_stepper_ready(PicoDevice *d)
 bool pico_device_wait_stepper(PicoDevice *d)
 {
     for (unsigned remaining = 151; remaining != 0; --remaining) {
+        if (pico_local_cancelled())
+            return false;
         if (pico_device_stepper_ready(d))
             return true;
         if (remaining != 1)
@@ -153,6 +156,8 @@ bool pico_device_set_torque(PicoDevice *d, uint32_t mode)
 /* Original 0x2000cd4c. The full command/echo/dwell handshake is retained. */
 bool pico_device_move_compartment(PicoDevice *d, uint32_t compartment)
 {
+    if (pico_local_cancelled())
+        return false;
     char message[64];
     snprintf(message, sizeof message, "moveStepperToCompartment %d", (int)compartment);
     d->ops->log(d->context, "I", "STEP", message);
@@ -196,7 +201,7 @@ bool pico_device_temperature_inputs_initialize(PicoDevice *d)
 
 void pico_device_wait_for_filter(PicoDevice *d)
 {
-    while (!pico_filter_is_inserted(d->actuators))
+    while (!pico_local_cancelled() && !pico_filter_is_inserted(d->actuators))
         now(d);
 }
 
@@ -222,7 +227,7 @@ void pico_device_alarm_while_filter_missing(PicoDevice *d)
     pico_device_buzzer(d, false);
     bool on = false;
     uint32_t next = 0;
-    while (!pico_filter_is_inserted(d->actuators)) {
+    while (!pico_local_cancelled() && !pico_filter_is_inserted(d->actuators)) {
         now(d);
         uint32_t current = now(d);
         if (next < current) {
@@ -244,7 +249,7 @@ void pico_device_alarm_until_encoder_press(PicoDevice *d)
     d->ops->display_flush(d->context);
     pico_device_buzzer(d, true);
     bool on = true;
-    while (!d->ops->encoder_take_click(d->context)) {
+    while (!pico_local_cancelled() && !d->ops->encoder_take_click(d->context)) {
         if ((uint32_t)(now(d) - started) > 1000u) {
             pico_device_buzzer(d, !on);
             started = now(d);
@@ -257,10 +262,14 @@ void pico_device_alarm_until_encoder_press(PicoDevice *d)
 
 bool pico_device_check_thermoblock_heating(PicoDevice *d, PicoControl *control)
 {
+    if (pico_local_cancelled())
+        return false;
     if (control->controller->thermoblock_fahrenheit < 230.0) {
         pico_actuator_heater_on(d->actuators);
         uint32_t started = now(d);
         while (control->controller->thermoblock_fahrenheit < 230.0) {
+            if (pico_local_cancelled())
+                return false;
             if ((uint32_t)(now(d) - started) > 15000u &&
                 control->controller->thermoblock_fahrenheit < 90.0) {
                 pico_control_stop(control);

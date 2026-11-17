@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/config.h"
 
 void pico_ui_draw_footer_option(const char *text, int has_more_options)
 {
@@ -115,11 +116,18 @@ void pico_ui_draw_descale_preparation(void)
 void pico_ui_draw_descale_rinse_preparation(void)
 {
     pico_ui_draw_header_at_row("DESCALE", 0);
+#if PICO_STANDALONE
+    pico_display_center_text(2, "Use distilled water");
+    pico_display_center_text(3, "in the reservoir.");
+    pico_display_center_text(5, "Run Descale when");
+    pico_display_center_text(6, "maintenance is due.");
+#else
     pico_display_center_text(2, "If you ONLY use");
     pico_display_center_text(3, "distilled water in");
     pico_display_center_text(4, "reservoir please ");
     pico_display_center_text(5, "update setting on");
     pico_display_center_text(6, "picobrew.com");
+#endif
     return;
 }
 
@@ -135,8 +143,13 @@ void pico_ui_draw_heater_malfunction(void)
     pico_display_center_text(3, "ERROR CODE 24");
     pico_display_center_text(4, "UNPLUG PICO");
     pico_display_center_text(5, "IMMEDIATELY AND");
+#if PICO_STANDALONE
+    pico_display_center_text(6, "CHECK HEATER");
+    pico_display_center_text(7, "BEFORE RESTART");
+#else
     pico_display_center_text(6, "EMAIL SUPPORT");
     pico_display_center_text(7, "info@picobrew.com");
+#endif
     pico_display_flush();
     return;
 }
@@ -572,7 +585,11 @@ void pico_ui_draw_error(int error_code)
     ui_itoa(error_code, number, 10);
     pico_display_center_text(4, number);
     pico_graphics_text_scale(&pico_ui_active->display, 1);
+#if PICO_STANDALONE
+    pico_display_center_text(6, "Record error code");
+#else
     pico_display_center_text(6, "at picobrew.com/err");
+#endif
     pico_ui_draw_separator(3, *second ? 2 : 1, 2);
 }
 
@@ -708,6 +725,14 @@ void pico_ui_draw_picopak_selection(void)
 
 void pico_ui_draw_registration_code(const char *registration_code)
 {
+#if PICO_STANDALONE
+    (void)registration_code;
+    pico_display_clear();
+    pico_display_center_text(1, "LOCAL CONTROL");
+    pico_display_center_text(3, "Connect to WiFi");
+    pico_display_center_text(5, "Open Pico's local IP");
+    pico_display_center_text(7, "in your browser");
+#else
     char *text;
 
     pico_display_clear();
@@ -727,6 +752,7 @@ void pico_ui_draw_registration_code(const char *registration_code)
     pico_graphics_text_scale(&pico_ui_active->display, '\x02');
     pico_display_center_text(4, registration_code);
     pico_graphics_text_scale(&pico_ui_active->display, '\x01');
+#endif
     return;
 }
 
@@ -754,6 +780,11 @@ void pico_ui_show_wifi_test_result(uint32_t diagnostic_stage)
         }
         break;
     case 1:
+#if PICO_STANDALONE
+        pico_display_center_text(3, "CHECK LOCAL NETWORK");
+        text_row = 5;
+        message = "No cloud required";
+#else
         if (pico_ui_active->network->settings->language == '\x01') {
             pico_display_center_text(3, "NO SE PUEDE ");
             pico_display_center_text(4, "RESOLVER DNS");
@@ -769,6 +800,7 @@ void pico_ui_show_wifi_test_result(uint32_t diagnostic_stage)
             text_row = 4;
             message = "of picobrew.com";
         }
+#endif
         goto draw_result_and_wait;
     case 2:
         if (pico_ui_active->network->settings->language == '\x01') {

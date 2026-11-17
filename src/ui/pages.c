@@ -208,6 +208,7 @@ void pico_screen_still_readings(void)
     pico_display_center_text(7, line);
     pico_display_draw_titled_frame(pico_ui_active->app->screen.recipe_name);
 }
+#if !PICO_STANDALONE
 static void recipe_logo_page(void)
 {
     pico_graphics_bitmap(&pico_ui_active->display, 0, 0, pico_ui_active->network->recipe_logo, 128,
@@ -237,6 +238,21 @@ void pico_ui_recipe_image_ready(void *context, unsigned index, const uint8_t ima
     if (ui->app->carousel.page_count < PICO_CAROUSEL_CAPACITY)
         ui->app->carousel.pages[ui->app->carousel.page_count] = recipe_image_page;
 }
+#else
+/* Local recipes use the built-in status pages. They have no downloaded art,
+ * so the standalone profile does not reserve 5 KiB for cloud image buffers. */
+void pico_ui_recipe_logo_ready(void *context, const uint8_t image[1024])
+{
+    (void)context;
+    (void)image;
+}
+void pico_ui_recipe_image_ready(void *context, unsigned index, const uint8_t image[1024])
+{
+    (void)context;
+    (void)index;
+    (void)image;
+}
+#endif
 
 void pico_screen_manual_overview_page(void)
 {

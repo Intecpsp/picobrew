@@ -100,6 +100,8 @@ def main():
     parser.add_argument('--linker', type=Path)
     parser.add_argument('--appliance-image', action='store_true',
                         help='Use the complete recovered entry and Pico linker (called by build_firmware.py)')
+    parser.add_argument('--standalone', action='store_true',
+                        help='Local API profile; retain reachable production code, not every legacy export')
     parser.add_argument('--jobs', type=int, default=min(8, os.cpu_count() or 1))
     args = parser.parse_args()
     if args.appliance_image and (args.entry.resolve() != project / 'platform/firmware_main.cpp' or
@@ -130,7 +132,10 @@ def main():
             parser.error('Build input missing: ' + str(path))
     out.mkdir(parents=True, exist_ok=True)
     sdk_input = sdk
-    sdk = prepare_sdk(sdk, out / 'sdk-compatible', lock['energia']['patches'])
+    patches = list(lock['energia']['patches'])
+    if args.standalone:
+        patches += lock['energia']['standalone_patches']
+    sdk = prepare_sdk(sdk, out / 'sdk-compatible', patches)
     core = sdk / 'cores/cc3200'
     variant = sdk / 'variants/CC3200-LAUNCHXL'
     libraries = [sdk / 'libraries/WiFi', sdk / 'libraries/SPI']
@@ -147,6 +152,8 @@ def main():
               '-fno-fast-math', '-ffp-contract=off', '-Wall', '-DF_CPU=80000000L',
               '-DARDUINO=10810', '-DENERGIA=10810', '-DENERGIA_CC3200_LAUNCHXL',
               '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf']
+    if args.standalone:
+        common.append('-DPICO_STANDALONE=1')
     include_dirs = [core, sdk / 'system', sdk / 'system/inc', sdk / 'system/driverlib', variant,
                     *libraries, sdk / 'libraries/WiFi/utility',
                     sdk / 'libraries/WiFi/utility/middleware/driver',
@@ -169,6 +176,8 @@ def main():
         obj.parent.mkdir(parents=True, exist_ok=True)
         cpp = source.suffix == '.cpp'
         command = [str(cxx if cpp else cc), *common, *includes,
+                   *(['-flto'] if args.standalone and source != args.runtime_compat.resolve()
+                     and source.name != 'startup_gcc.c' else []),
                    *(['-std=gnu++11', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics']
                      if cpp else ['-std=gnu11']), '-c', str(source), '-o', str(obj)]
         result = subprocess.run(command, capture_output=True, text=True)
@@ -187,20 +196,29 @@ def main():
         return 1
     archive = out / 'energia_cc3200.a'
     archive.unlink(missing_ok=True)
-    subprocess.run([prefix + 'ar', 'rcs', str(archive),
+    subprocess.run([prefix + ('gcc-ar' if args.standalone else 'ar'), 'rcs', str(archive),
                     *[x['object'] for x in compiled[:len(upstream)]]], check=True)
     # --whole-archive alone still allows --gc-sections to discard unreferenced
     # functions. Root every public definition from the supplied application
     # archives, so linking really checks every exposed module's dependencies.
     exported_symbols = set()
     for selected in selected_archives:
-        symbols = subprocess.check_output([prefix + 'nm', '--extern-only',
+        symbols = subprocess.check_output([prefix + ('gcc-nm' if args.standalone else 'nm'), '--extern-only',
                     '--defined-only', '--format=posix', str(selected)], text=True)
         for line in symbols.splitlines():
             fields = line.split()
             if len(fields) >= 2 and fields[1] in 'TDBRSCVW':
                 exported_symbols.add(fields[0])
-    retained = ['-Wl,--undefined=' + name for name in sorted(exported_symbols)]
+    # Application/adapter LTO removes unused callback bodies and data without
+    # reducing the native stack or heap. Preserve the inspected public appliance
+    # entry boundaries. SDK startup and the bounded allocator adapter remain
+    # non-LTO so their linker-provider checks retain the explicit contract.
+    appliance_roots = ('setup', 'loop', 'pico_application_setup', 'pico_application_loop',
+                       'pico_application_initialize', 'pico_application_bind_services',
+                       'pico_recipe_run_step', 'pico_temperature_control_timer_isr',
+                       'pico_heater_pump_timer_isr')
+    retained = (['-Wl,--undefined=' + name for name in appliance_roots] if args.standalone else
+                ['-Wl,--undefined=' + name for name in sorted(exported_symbols)])
     archive_args = (['-Wl,--whole-archive', *map(str, selected_archives),
                      '-Wl,--no-whole-archive'] if selected_archives else [])
     elf = out / 'sdk_validation.elf'
@@ -208,6 +226,7 @@ def main():
     map_path = out / 'sdk_validation.map'
     linker = (args.linker or core / 'cc3200.ld').resolve()
     link = [str(cxx), '-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs',
+            *(['-flto', '-ffunction-sections', '-fdata-sections'] if args.standalone else []),
             '-nostartfiles', '-nostdlib', '--specs=nano.specs', '-Os', '-Wl,--gc-sections', '-T', str(linker),
             '-Wl,-Map,' + str(map_path), '-Wl,--check-sections', '-Wl,--cref',
             '-Wl,--entry=ResetISR', '-Wl,--unresolved-symbols=report-all', '-Wl,--warn-common',
@@ -237,7 +256,8 @@ def main():
     linked_definitions = {line.split()[0] for line in
                           capture('nm', '--defined-only', '--format=posix', str(elf)).splitlines()
                           if line.split()}
-    missing_application_symbols = sorted(exported_symbols - linked_definitions)
+    discarded_application_symbols = sorted(exported_symbols - linked_definitions)
+    missing_application_symbols = [] if args.standalone else discarded_application_symbols
     # In GNU ld's cross-reference table the definition is listed first for a
     # resolved symbol. Check the selected definition, not merely its presence.
     cross_references = map_path.read_text().partition('Cross Reference Table')[2]
@@ -302,7 +322,9 @@ def main():
               'dependency_lock_sha256': hashlib.sha256(args.lock.read_bytes()).hexdigest(),
               'selected_archives': [{'path': str(p), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
                                     for p in selected_archives],
-              'retained_application_symbols': sorted(exported_symbols),
+              'profile': 'standalone' if args.standalone else 'legacy',
+              'retained_application_symbols': sorted(exported_symbols & linked_definitions),
+              'discarded_application_symbols': discarded_application_symbols,
               'missing_application_symbols': missing_application_symbols,
               'runtime_boundary': runtime_boundary,
               'linker': str(linker), 'board_variant': 'CC3200-LAUNCHXL',

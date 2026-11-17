@@ -1,4 +1,5 @@
 #include "picobrew/recipe.h"
+#include "picobrew/local_control.h"
 #include "picobrew/text.h"
 #include <limits.h>
 #include <math.h>
@@ -9,11 +10,17 @@
 
 static uint32_t clock_ms(PicoRecipeRuntime *r)
 {
+    pico_local_poll();
     return r->phase->control->ops->millis(r->phase->control->context);
 }
 static void delay_ms(PicoRecipeRuntime *r, uint32_t ms)
 {
+#if PICO_STANDALONE
+    (void)r;
+    pico_local_control_delay(ms);
+#else
     r->phase->actuators->ops->delay_milliseconds(r->phase->actuators->context, ms);
+#endif
 }
 static void show(PicoRecipeRuntime *r, PicoRecipeScreen screen, uint32_t value, const char *text)
 {
@@ -308,6 +315,8 @@ void pico_recipe_initialize_cleaning(PicoRecipeRuntime *r, PicoRecipe *recipe, i
 
 void pico_recipe_prepare_temperature(PicoRecipeRuntime *r, int32_t target, const char *title)
 {
+    if (pico_local_cancelled())
+        return;
     PicoBrewController *s = &r->state->controller;
     PicoActuators *a = r->phase->actuators;
     clock_ms(r);
@@ -336,8 +345,14 @@ void pico_recipe_prepare_temperature(PicoRecipeRuntime *r, int32_t target, const
         show(r, PICO_RECIPE_FLUSH, 0, NULL);
         s->active_shuttle_scale = 0.1;
         for (;;) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             pico_control_start(r->phase->control);
             for (;;) {
+                pico_local_poll();
+                if (pico_local_cancelled())
+                    return;
                 if (!(s->thermoblock_fahrenheit < 210.0) || !(s->wort_fahrenheit <= target_double))
                     goto select_phase;
                 if (clock_ms(r) - started > 15000u && s->thermoblock_fahrenheit < 90.0) {
@@ -366,8 +381,14 @@ void pico_recipe_prepare_temperature(PicoRecipeRuntime *r, int32_t target, const
         }
     }
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         started = clock_ms(r);
         for (;;) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             if (clock_ms(r) - started > 4999u)
                 goto select_phase;
             if (!pico_filter_is_inserted(a))
@@ -398,6 +419,8 @@ select_phase:
  * temperature/control progress while the foreground workflow is waiting. */
 int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
 {
+    if (pico_local_cancelled())
+        return 0;
     PicoBrewController *s = &r->state->controller;
     PicoActuators *a = r->phase->actuators;
     uint32_t target = request->target_fahrenheit;
@@ -439,6 +462,9 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
     started = clock_ms(r);
     int32_t total = signed_bits(active + drain);
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return 0;
         advance(r);
         now = clock_ms(r);
         if (now - last_log > 25000u) {
@@ -684,6 +710,12 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
             r->ops->serial(r->context, "Encoder Press in Brew\n", false);
             selected = r->ops->populate_brew_menu(r->context);
             selected = r->ops->choose_menu(r->context, 7, selected, 0, 1, 0, 1, 60);
+#if PICO_STANDALONE
+            /* A remote stop cancels the blocking menu with UINT32_MAX. Do
+             * not reinterpret that sentinel as a negative action index. */
+            if (pico_local_cancelled() || selected >= r->state->session.action_count)
+                return 0;
+#endif
             const uint32_t *actions = r->state->session.actions;
             int32_t count = (int32_t)r->state->session.action_count;
             r->ops->assertion(r->context, actions != NULL, "actions != NULL");
@@ -780,6 +812,8 @@ cancelled:
 
 bool pico_recipe_run(PicoRecipeRuntime *r, PicoRecipe *recipe, bool logging)
 {
+    if (pico_local_cancelled())
+        return false;
     if (!pico_recipe_setup(r, logging, r->state->screen.recipe_name))
         return false;
     bool cancelled = false;
@@ -850,12 +884,17 @@ bool pico_recipe_run(PicoRecipeRuntime *r, PicoRecipe *recipe, bool logging)
 void pico_recipe_end_outputs(PicoRecipeRuntime *r, uint32_t duration, const char *title, bool drain,
                              bool shuttle)
 {
+    if (pico_local_cancelled())
+        return;
     char message[128];
     snprintf(message, sizeof message, "endBrew_runFor %d drain = %s shuttle = %s", (int)duration,
              drain ? " ON" : "OFF", shuttle ? " ON" : "OFF");
     log_message(r, "I", "RCTL", message);
     uint32_t deadline = clock_ms(r) + duration;
     while (clock_ms(r) < deadline) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         if (pico_actuators_pause_for_missing_filter(r->phase->actuators, false, drain, shuttle))
             show(r, PICO_RECIPE_ENDING_PROGRAM, 0, title);
     }
@@ -865,6 +904,8 @@ void pico_recipe_session_end(PicoRecipeRuntime *r, bool logging)
 {
     PicoBrewController *s = &r->state->controller;
     PicoActuators *a = r->phase->actuators;
+    if (pico_local_cancelled())
+        goto stopped;
     log_message(r, "I", "RCTL", "endBrewSession() BEGIN");
     pico_actuator_heater_off(a);
     pico_actuator_shuttle_off(a);
@@ -880,6 +921,8 @@ void pico_recipe_session_end(PicoRecipeRuntime *r, bool logging)
     if (s->thermoblock_fahrenheit < 250.0) {
         pico_actuator_heater_on(a);
         while (s->thermoblock_fahrenheit < 250.0 && clock_ms(r) < start + 45000u) {
+            if (pico_local_cancelled())
+                goto stopped;
         }
         pico_actuator_heater_off(a);
     }
@@ -891,6 +934,8 @@ void pico_recipe_session_end(PicoRecipeRuntime *r, bool logging)
     for (;;) {
         if (clock_ms(r) >= start + 45000u)
             break;
+        if (pico_local_cancelled())
+            goto stopped;
         move_to(r, compartment);
         pico_actuator_shuttle_on(a);
         compartment = (compartment + 1u) & 255u;
@@ -923,10 +968,20 @@ void pico_recipe_session_end(PicoRecipeRuntime *r, bool logging)
         r->ops->report_state(r->context);
     r->ops->move_home(r->context);
     log_message(r, "I", "RCTL", "endBrewSession() END");
+    return;
+stopped:
+    pico_control_stop(r->phase->control);
+    pico_actuators_all_off(a);
+    r->ops->delete_recovery(r->context);
+    s->phase = PICO_BREW_PHASE_IDLE;
+    s->status = 0;
+    r->state->device_state = 2;
 }
 
 bool pico_recipe_session_start(PicoRecipeRuntime *r, bool server_session)
 {
+    if (pico_local_cancelled())
+        return false;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_LOADING, 0, NULL);
     bool succeeded =
@@ -937,6 +992,8 @@ bool pico_recipe_session_start(PicoRecipeRuntime *r, bool server_session)
 
 bool pico_recipe_setup(PicoRecipeRuntime *r, bool logging, const char *title)
 {
+    if (pico_local_cancelled())
+        return false;
     if (*r->offline != 0) {
         r->ops->serial(r->context, "setupInstructions without logging (g_offlineMode)", true);
         logging = false;
@@ -970,6 +1027,8 @@ void pico_recipe_prompt_parameters(PicoRecipeRuntime *r)
 
 bool pico_recipe_pause_instructions(PicoRecipeRuntime *r, uint32_t program)
 {
+    if (pico_local_cancelled())
+        return false;
     PicoProgramContext *p = &r->state->session;
     char message[132];
     r->ops->assertion(
@@ -1055,13 +1114,20 @@ bool pico_recipe_session_restore(PicoRecipeRuntime *r, PicoRecipe *recipe)
     if (atoi(field) != 0)
         r->state->controller.shuttle_calibration_complete = 1;
     pico_recipe_program_initialize(r, recipe->program, type == 0 ? 1 : 2, *r->language);
+#if PICO_STANDALONE
+    if (!pico_recipe_session_start(r, true))
+        return false;
+#else
     pico_text_copy(recipe->program->identifier, sizeof recipe->program->identifier,
                    recipe->identifier, r->ops->log, r->context);
+#endif
     return true;
 }
 
 void pico_recipe_post_session(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     log_message(r, "I", "RCTL", "runPostSessionInstructions() BEGIN");
     PicoProgramContext *p = &r->state->session;
     if (p->session_type == 2 || p->session_type == 4) {
@@ -1092,6 +1158,8 @@ void pico_recipe_post_session(PicoRecipeRuntime *r)
 
 bool pico_recipe_run_control_program(PicoRecipeRuntime *r, uint32_t device_state)
 {
+    if (pico_local_cancelled())
+        return false;
     log_message(r, "I", "RCTL", "runProgram()");
     if (!pico_recipe_session_start(r, true))
         return false;
@@ -1120,6 +1188,8 @@ bool pico_recipe_run_control_program(PicoRecipeRuntime *r, uint32_t device_state
 
 void pico_recipe_run_deep_clean(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     if (!r->ops->prompt(r->context, PICO_RECIPE_CONFIRM_CLEANING, 0, NULL))
         return;
     pico_recipe_initialize_cleaning(r, &r->state->recipe, 135);
@@ -1132,6 +1202,8 @@ void pico_recipe_run_deep_clean(PicoRecipeRuntime *r)
 }
 void pico_recipe_run_required_maintenance(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     uint32_t actions[11];
     int count = r->ops->required_actions(r->context, actions, 10);
     for (int i = 0; i < count; ++i) {
@@ -1144,20 +1216,32 @@ void pico_recipe_run_required_maintenance(PicoRecipeRuntime *r)
 
 void pico_recipe_run_brew_program(PicoRecipeRuntime *r, PicoRecipe *recipe)
 {
+    if (pico_local_cancelled())
+        return;
     recipe->current_step = 0;
     pico_recipe_program_initialize(r, recipe->program, 1, *r->language);
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_LOGO, 0, NULL);
     normal_pages(r);
     recipe->abv_adjustment = recipe->ibu_adjustment = -1;
+#if PICO_STANDALONE
+    /* Local recipes have explicit IDs; no cloud PicoPak ownership lookup. */
+    bool read = false;
+#else
     bool read = r->ops->read_picopak(r->context, recipe->identifier, 21);
+#endif
     if (!read || r->ops->fetch_default_recipe_failed(r->context, recipe->identifier)) {
         show(r, PICO_RECIPE_CLEAR, 0, NULL);
         if (!r->ops->prompt(r->context, PICO_RECIPE_SELECT_RECIPE, 0, NULL))
             return;
     }
+#if PICO_STANDALONE
+    if (!pico_recipe_session_start(r, true))
+        return;
+#else
     pico_text_copy(recipe->program->identifier, sizeof recipe->program->identifier,
                    recipe->identifier, r->ops->log, r->context);
+#endif
     if (!r->ops->prompt(r->context, PICO_RECIPE_ADJUST_RECIPE, 0, NULL))
         return;
     r->state->device_state = 3;

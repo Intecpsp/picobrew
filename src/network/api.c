@@ -1,5 +1,92 @@
 #include "network_internal.h"
 #include "picobrew/text.h"
+#include "picobrew/config.h"
+
+#if PICO_STANDALONE
+#include "picobrew/local_store.h"
+
+/* The appliance owns recipes and session identity in the standalone build.
+ * These adapters intentionally contain no HTTP/DNS fallback. */
+bool pico_api_register(PicoNetwork *n)
+{
+    return pico_storage_load_uid(n);
+}
+
+bool pico_api_get_session(PicoNetwork *n, char *identifier, size_t capacity)
+{
+    return pico_local_session_new(n, identifier, capacity);
+}
+
+bool pico_api_create_picopak(PicoNetwork *n, int recipe_id)
+{
+    (void)n; (void)recipe_id;
+    /* Local catalog selection uses the stored recipe ID directly. */
+    return false;
+}
+
+int pico_api_required_actions(PicoNetwork *n, uint32_t *actions, size_t capacity)
+{
+    (void)n; (void)actions; (void)capacity;
+    return 0; /* Maintenance is selected locally, never mandated by a server. */
+}
+
+int pico_api_fetch_recipe(PicoNetwork *n, const char *identifier, int ibu, int abv)
+{
+    (void)ibu; (void)abv;
+    n->app->recipe.program = &n->app->session;
+    return pico_local_recipe_load(n, identifier, &n->app->recipe,
+                                  n->app->screen.recipe_name) ? 0 : 14;
+}
+
+void pico_api_report_state(PicoNetwork *n)
+{
+    char detail[16];
+    snprintf(detail, sizeof detail, "%u", n->app->device_state);
+    pico_local_event(n, "state", detail);
+}
+
+bool pico_api_error(PicoNetwork *n, int code)
+{
+    char detail[16];
+    snprintf(detail, sizeof detail, "%d", code);
+    pico_local_event(n, "error", detail);
+    return true;
+}
+
+bool pico_api_log_event(PicoNetwork *n, const char *step, const char *event)
+{
+    if (!step || !*step)
+        return false;
+    char detail[96];
+    snprintf(detail, sizeof detail, "%s%s%s", step, event ? ": " : "", event ? event : "");
+    pico_local_event(n, event ? "step" : "progress", detail);
+    return true;
+}
+
+bool pico_api_log_step(PicoNetwork *n, const char *step)
+{
+    return pico_api_log_event(n, step, step);
+}
+
+bool pico_api_log_progress(PicoNetwork *n, const char *step)
+{
+    return pico_api_log_event(n, step, NULL);
+}
+
+bool pico_api_recipe_list(PicoNetwork *n, PicoRecipeListing *list, bool associated)
+{
+    (void)associated;
+    return pico_local_recipe_list(n, list);
+}
+
+bool pico_api_still_permission(PicoNetwork *n, const char *method, const char *identifier)
+{
+    (void)n; (void)method; (void)identifier;
+    /* PicoStill commissioning/cleaning authorization has not been ported.
+     * Fail closed without attempting to reach the discontinued service. */
+    return false;
+}
+#else
 
 static void text_warning(void *context, const char *level, const char *component,
                          const char *message)
@@ -276,3 +363,4 @@ bool pico_api_still_permission(PicoNetwork *n, const char *method, const char *i
     }
     return text[0] == 'T';
 }
+#endif

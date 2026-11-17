@@ -1,4 +1,8 @@
 #include "network_internal.h"
+#include "picobrew/config.h"
+#if PICO_STANDALONE
+#include "picobrew/local_store.h"
+#endif
 
 uint32_t pico_storage_create_mode(uint32_t capacity, uint32_t flags)
 {
@@ -111,10 +115,14 @@ void pico_storage_delete_user_files(PicoNetwork *n)
 
 bool pico_storage_save_display(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    return pico_local_settings_save(n);
+#else
     char text[6];
     snprintf(text, sizeof(text), "%c%u", '0' + n->settings->temperature_unit_celsius,
              n->settings->language);
     return pico_storage_write_text(n, "userPref.txt", text, 5);
+#endif
 }
 
 bool pico_storage_load_shuttle_scale(PicoNetwork *n)
@@ -171,15 +179,26 @@ void pico_storage_load_preferences(PicoNetwork *n)
 {
     char text[6] = {0};
     n->platform->file_begin(n->platform_context);
+#if PICO_STANDALONE
+    if (pico_local_settings_load(n))
+        goto settings_loaded;
+#endif
     if (!pico_storage_read_text(n, "userPref.txt", text, sizeof(text))) {
+#if !PICO_STANDALONE
         n->ui->choose_language(n->ui_context);
         n->ui->choose_units(n->ui_context);
         pico_storage_save_display(n);
         net_ui(n, PICO_NET_UI_CLEAR, NULL);
+#endif
     } else {
         n->settings->language = (uint8_t)atoi(text + 1);
         n->settings->temperature_unit_celsius = text[0] != '0';
     }
+#if PICO_STANDALONE
+    /* Existing userPref.txt is a migration source, not a second live store. */
+    pico_local_settings_save(n);
+settings_loaded:
+#endif
     if (!pico_storage_load_shuttle_scale(n))
         pico_storage_save_shuttle_scale(n);
     pico_storage_load_uid(n);

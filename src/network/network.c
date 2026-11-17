@@ -1,5 +1,7 @@
 #include "network_internal.h"
 #include <math.h>
+#include "picobrew/config.h"
+#include "picobrew/local_control.h"
 
 void pico_network_initialize(PicoNetwork *n, PicoAppState *app, PicoSettings *settings,
                              const PicoNetworkPlatform *platform, void *platform_context,
@@ -12,7 +14,11 @@ void pico_network_initialize(PicoNetwork *n, PicoAppState *app, PicoSettings *se
     n->platform_context = platform_context;
     n->ui = ui;
     n->ui_context = ui_context;
+#if PICO_STANDALONE
+    n->server_host = "";
+#else
     n->server_host = "picobrew.com";
+#endif
     n->server_port = 80;
 }
 
@@ -127,7 +133,9 @@ int pico_network_connect_access_point(PicoNetwork *n)
     PicoSettings *s = n->settings;
     if (s->wifi_security == 5) {
         pico_network_log(n, "I", "WIFI", s->wifi_ssid);
+#if !PICO_STANDALONE
         pico_network_log(n, "I", "WIFI", s->wifi_password);
+#endif
         int status = n->platform->wifi_begin(n->platform_context, s->wifi_ssid,
                                              (const uint8_t *)s->wifi_password, 5, false);
         if (status != 3) {
@@ -153,6 +161,29 @@ int pico_network_connect_access_point(PicoNetwork *n)
 
 bool pico_network_connect_stored(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    /* Bound connection attempts even if the SDK never leaves CONNECTING. */
+    for (unsigned attempt = 0; attempt < 2; ++attempt) {
+        if (pico_local_cancelled())
+            return false;
+        if (pico_network_connect_access_point(n) == 3)
+            return true;
+        uint32_t started = net_now(n);
+        while (n->platform->wifi_connecting(n->platform_context) &&
+               (uint32_t)(net_now(n) - started) < 10000u) {
+            if (n->platform->wifi_status(n->platform_context) == 3)
+                return true;
+            net_delay(n, 100);
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return false;
+        }
+        if (n->platform->wifi_status(n->platform_context) == 3)
+            return true;
+        n->platform->wifi_disconnect(n->platform_context);
+    }
+    return false;
+#else
     pico_network_log(n, "I", "WIFI", "connectToStoredWiFi");
     int status = pico_network_connect_access_point(n);
     if (status != 3) {
@@ -180,6 +211,7 @@ bool pico_network_connect_stored(PicoNetwork *n)
         return true;
     n->platform->wifi_disconnect(n->platform_context);
     return false;
+#endif
 }
 
 bool pico_network_reconnect(PicoNetwork *n)
@@ -193,6 +225,10 @@ bool pico_network_reconnect(PicoNetwork *n)
 
 bool pico_network_resolve_address(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    (void)n;
+    return false; /* No cloud endpoint exists in this profile. */
+#else
     if (!n->platform->wifi_initialized(n->platform_context) ||
         n->platform->wifi_status(n->platform_context) != 3)
         return false;
@@ -206,14 +242,19 @@ bool pico_network_resolve_address(PicoNetwork *n)
         net_delay(n, 500);
     }
     return (uint32_t)(net_now(n) - start) < 30000u && !pico_network_ipv4_is_zero(n->server_ip);
+#endif
 }
 
 bool pico_network_wait_local_ip(PicoNetwork *n, uint32_t timeout, bool show_error)
 {
     uint32_t start = net_now(n);
     while (pico_network_ipv4_is_zero(n->platform->local_ip(n->platform_context)) &&
-           (uint32_t)(net_now(n) - start) < timeout)
+           (uint32_t)(net_now(n) - start) < timeout) {
         net_delay(n, 300);
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return false;
+    }
     if (pico_network_ipv4_is_zero(n->platform->local_ip(n->platform_context)) && show_error) {
         net_error(n, 11, true, false);
         return false;
@@ -224,16 +265,23 @@ bool pico_network_wait_local_ip(PicoNetwork *n, uint32_t timeout, bool show_erro
 
 bool pico_network_resolve_server(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    return pico_network_wait_local_ip(n, 45000, true);
+#else
     pico_network_wait_local_ip(n, 45000, true);
     if (pico_network_resolve_address(n))
         return true;
     PicoIpv4 dns = {{8, 8, 8, 8}};
     n->platform->set_dns(n->platform_context, dns);
     return pico_network_resolve_address(n);
+#endif
 }
 
 int pico_network_check_status(PicoNetwork *n, bool background, bool resolve)
 {
+#if PICO_STANDALONE
+    (void)resolve;
+#endif
     bool resolved = false;
     if (!n->platform->wifi_initialized(n->platform_context) &&
         !n->platform->wifi_initialize(n->platform_context))
@@ -246,11 +294,13 @@ int pico_network_check_status(PicoNetwork *n, bool background, bool resolve)
     }
     if (pico_network_ipv4_is_zero(n->platform->local_ip(n->platform_context)))
         return 11;
+#if !PICO_STANDALONE
     if (resolve && pico_network_ipv4_is_zero(n->server_ip)) {
         if (!pico_network_resolve_address(n))
             return 3;
         resolved = true;
     }
+#endif
     if (n->platform->client_connected(n->platform_context)) {
         net_line(n, "WARNING: wClient disconnected!");
         n->platform->client_stop(n->platform_context);
@@ -272,6 +322,15 @@ bool pico_network_connect_with_screen(PicoNetwork *n)
 
 bool pico_network_ensure_connection(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    /* A failed access point must never prevent local brewing or force an
+     * endless WiFi setup loop. New credentials remain available in Settings. */
+    if (!pico_storage_load_wifi(n))
+        return false;
+    bool connected = pico_network_connect_with_screen(n);
+    net_ui(n, PICO_NET_UI_STOP_PROGRESS, NULL);
+    return connected;
+#else
     net_ui(n, PICO_NET_UI_CLEAR, NULL);
     net_ui(n, PICO_NET_UI_DEVICE, NULL);
     net_ui(n, PICO_NET_UI_FLUSH, NULL);
@@ -303,6 +362,7 @@ bool pico_network_ensure_connection(PicoNetwork *n)
     }
     pico_storage_save_wifi(n);
     return true;
+#endif
 }
 
 void pico_network_close(PicoNetwork *n)
@@ -313,6 +373,7 @@ void pico_network_close(PicoNetwork *n)
     }
 }
 
+#if !PICO_STANDALONE
 static bool rejected_status(int status)
 {
     return status == 3 || status == 9 || status == 10 || status == 11;
@@ -337,9 +398,14 @@ static bool write_request(PicoNetwork *n, const char *request)
     net_delay(n, 5);
     return true;
 }
+#endif
 
 bool pico_network_open_request(PicoNetwork *n, const char *request, bool keep_open, bool background)
 {
+#if PICO_STANDALONE
+    (void)n; (void)request; (void)keep_open; (void)background;
+    return false;
+#else
     net_line(n, "in connectToApi");
     int status = pico_network_check_status(n, background, true);
     if (!background && rejected_status(status)) {
@@ -362,10 +428,15 @@ bool pico_network_open_request(PicoNetwork *n, const char *request, bool keep_op
     if (!keep_open)
         pico_network_close(n);
     return true;
+#endif
 }
 
 bool pico_network_call(PicoNetwork *n, const char *request, bool wait, bool background)
 {
+#if PICO_STANDALONE
+    (void)n; (void)request; (void)wait; (void)background;
+    return false;
+#else
     int status = pico_network_check_status(n, background, true);
     if ((background && status != 1) || (!background && rejected_status(status))) {
         char message[128];
@@ -386,6 +457,7 @@ bool pico_network_call(PicoNetwork *n, const char *request, bool wait, bool back
         return pico_network_wait_hash(n);
     pico_network_close(n);
     return true;
+#endif
 }
 
 bool pico_network_wait_hash(PicoNetwork *n)

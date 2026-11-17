@@ -1,14 +1,81 @@
-# PicoBrew Pico Pro source recovery
+# PicoBrew Pico S/Pro local control firmware
 
-This is an editable C/C++ reconstruction of the Pico Pro 0.1.34 application,
+The `feature/standalone-rest-api` branch adds a **standalone firmware profile**
+with an on-device REST API, browser console, recipe collection, settings and
+local session identifiers. It boots without a PicoBrew account, cloud recipe
+server, registration request or firmware-update service. The browser assets
+are embedded in the application; no companion server or CDN is required.
+
+**This is an experimental firmware candidate. It has not run on a physical
+Pico Pro or Pico S.** Build, host simulation and ARM instruction tests do not
+establish electrical I/O, radio/flash timing, installation/recovery, or a
+successful brew on an appliance.
+
+Start with the [standalone guide](docs/standalone-api.md), the
+[OpenAPI contract](docs/openapi.json), and the separate
+[device-key provisioning procedure](docs/standalone-provisioning.md).
+`make` now selects the standalone build on this branch. The preserved legacy
+profile remains available through `make firmware` and `make verify`.
+
+## Standalone features
+
+| Capability | Implementation |
+| --- | --- |
+| Local operation | Cloud registration, recipe/session requests, reporting and updates replaced or disabled at compile time |
+| REST API | Versioned `/api/v1` resources for status, recipes, settings, recent events and commands |
+| Remote front panel | Live 128 × 64 OLED image plus encoder turn/click controls for existing prompts and menus |
+| Programs | Local recipes, manual brewing, sous vide, cold brew, rinse, descale, circulation, draining and racking |
+| Stop | Latched output inhibition, cooperative cancellation and idle-only clear; filter removal during interrupt-side pumping also latches a stop |
+| Recipes | 16 on-device recipes, up to 15 steps each, with validated input and CRC-protected alternating records |
+| Browser console | Same-origin HTML/CSS/JavaScript, recipe editing/import/export, telemetry, controls and display preferences |
+| Authentication | Per-device bearer key in `/local/api.key`; no shared/default credential or embedded secret |
+
+PicoStill, dedicated pause/resume REST commands, remote firmware updates and
+durable brew-history storage are not implemented in this profile. Pause/resume
+uses the existing front-panel workflow. The activity feed contains the latest
+eight events from the current boot. Fatal firmware halts can still require a
+physical reset. See the guide for the exact operating and validation limits.
+
+### Build and test standalone
+
+```sh
+python3 -m venv .venv
+. .venv/bin/activate
+python -m pip install -r requirements-test.txt
+make bootstrap
+make standalone-verify
+```
+
+The native image and its report are written under `build/standalone/firmware/`:
+`pico-s-pro-standalone.bin`, matching ELF/map, and `firmware-report.json`.
+The build checks vectors, the complete link, the physical RAM budget, absence
+of the discontinued cloud protocol strings, and separation from test fixtures.
+It keeps the original 32 KiB stack and 32 KiB heap reservations. Application and
+SDK link-time optimization removes unused code; the legacy profile retains its
+original compilation and exhaustive symbol checks.
+The pinned standalone SDK patch omits Energia's unused eight-client TCP wrapper
+registry; the native API listener uses SimpleLink sockets directly. Wi-Fi
+connection management and the legacy profile retain their normal behavior.
+
+The optional browser suite exercises the actual portable C API/store behind a
+local HTTP harness, with hardware boundaries simulated:
+
+```sh
+python -m pip install -r requirements-web-test.txt
+python -m playwright install chromium
+make web-test
+```
+
+`.github/workflows/standalone.yml` runs portable tests, browser workflows and
+the ARM firmware build on the feature branch. A CI workflow's presence is not
+a claim that its run passed; inspect the run for the specific commit.
+
+## Source recovery background
+
+The base is an editable C/C++ reconstruction of the Pico Pro 0.1.34 application,
 with native Energia/TI dependencies and a complete firmware build. It includes
 startup and the main menu, brewing and maintenance programs, the display and
-encoder, stepper/RFID protocols, networking, storage, and firmware updates.
-
-**The software reconstruction builds and passes the packaged offline checks.
-The resulting firmware is an experimental candidate: it has not run on a
-physical Pico Pro.** Electrical I/O, radio and flash behavior, interrupt races,
-installation/recovery, and a complete brew still need device validation.
+encoder, stepper/RFID protocols, networking, storage, and legacy firmware updates.
 
 Names, types and module organization were reconstructed from binary behavior;
 this is not the lost original source tree. The generated firmware is not
@@ -38,6 +105,9 @@ the preserved export retains its own `legacy/SHA256SUMS.txt`.
 | `src/device.c`, `src/rfid.c` | Shared SPI, auxiliary controller/stepper/buzzer and Pico's MFRC522 variant |
 | `src/ui/` | OLED/graphics/font, screens, menus, input editing, diagnostics and translations |
 | `src/network/` | WiFi, HTTP/API, files/preferences/recovery, Still protocol, update/boot info and string helpers |
+| `src/local_api.c`, `src/local_store.c`, `src/local_control.c` | Standalone REST resources, persistent records, command queue and stop latch |
+| `src/http_server.c`, `platform/energia_http_server.cpp` | Bounded authenticated HTTP transport and native SimpleLink listener |
+| `web/`, `tools/embed_web.py` | Browser source and reproducible embedded gzip assets |
 | `platform/` | Actual SDK bindings, appliance entry, custom TCP client and Pico memory layout |
 | `include/picobrew/` | Typed application interfaces and configuration |
 | `tests/`, `analysis/` | Reproducible checks, original-entry maps, limits and measured results |
@@ -47,7 +117,7 @@ The original application's 462 indexed entry points are accounted for in
 library routines are also listed. An entry map establishes scope; it does not
 mean every possible input or physical operating condition has been tested.
 
-## Build
+## Legacy build
 
 The verified build uses GNU Arm Embedded 10.3-2021.10, Cortex-M4 Thumb, AAPCS and
 software floating point. The pinned Energia commit and downloaded archives
@@ -106,13 +176,15 @@ supply math and soft-float operations. No decompiled libc, math library or
 guessed SDK object storage is used. See `docs/sdk-build.md` for the exact
 boundary, allocation-failure evidence and remaining limits.
 
-## Pointing the application at a community server
+## Pointing the legacy application at a community server
 
 Edit `include/picobrew/config.h` before rebuilding. `PICO_SERVER_HOST` defaults
 to the original `picobrew.com`; `PICO_SERVER_PORT` defaults to 80. This preserves
 the original protocol configuration and does not establish that the original
 service is operating. A compatible replacement must implement the API requests
 and response formats documented in `docs/network-recovery.md`.
+These settings apply to the legacy build. The standalone build ignores them
+and has no cloud-server fallback.
 
 The update text is a response body, not a raw flash image or an HTTP response
 with headers. It uses Pico's original length/checksum/hex encoding. The
@@ -121,7 +193,7 @@ package test sends the complete generated body through the rebuilt ARM
 receiver and checks that its file model receives the exact compiled binary.
 It does not activate a boot slot or write a physical machine.
 
-## Verification and evidence
+## Legacy verification and evidence
 
 The original firmware and reconstructed application execute in separate ARM
 emulators. Test boundaries provide explicit clocks, user input and peripheral
@@ -129,7 +201,7 @@ responses. The source image cannot call the reference firmware. Full native
 TCP/filesystem/hash bridge tests use the actual production ELF; the other
 suites use a separately named test ELF.
 
-The current packaged revision passes **29,145 behavioral and integration
+The recovered legacy profile passes **29,145 behavioral and integration
 scenarios**, plus **20 edit/rebuild checks** and **52 immutable asset checks**.
 These counts combine exact original/rebuilt comparisons with separately
 identified tests of repaired malformed-input/failure behavior. They are not a

@@ -67,34 +67,50 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('--arm-prefix',default=os.environ.get('PICOBREW_ARM_PREFIX'))
     p.add_argument('--sdk-root',type=Path,default=Path(os.environ.get('PICOBREW_SDK',str(ROOT/'.deps/energia'))))
-    p.add_argument('--output-dir',type=Path,default=ROOT/'build/firmware')
+    p.add_argument('--output-dir',type=Path)
+    p.add_argument('--standalone',action='store_true',help='Build the cloud-independent local API image')
     p.add_argument('--skip-archive-build',action='store_true')
-    a=p.parse_args();out=a.output_dir.resolve();out.mkdir(parents=True,exist_ok=True)
+    a=p.parse_args()
+    out=(a.output_dir or ROOT/('build/standalone/firmware' if a.standalone else 'build/firmware')).resolve()
+    out.mkdir(parents=True,exist_ok=True)
+    core=out.parent/'core' if a.standalone else ROOT/'build'
+    name='pico-s-pro-standalone' if a.standalone else 'pico-pro-recovered'
     common=['--sdk-root',str(a.sdk_root.resolve())]
     if a.arm_prefix:common+=['--arm-prefix',a.arm_prefix]
+    if a.standalone:
+        common+=['--standalone']
+        subprocess.run([sys.executable,str(ROOT/'tools/embed_web.py')],check=True)
     if not a.skip_archive_build:
-        subprocess.run([sys.executable,str(ROOT/'tools/build.py'),*common,'--archive-only'],check=True)
+        subprocess.run([sys.executable,str(ROOT/'tools/build.py'),*common,
+                        '--output-dir',str(core),'--archive-only'],check=True)
     log=out/'build.log'
     command=[sys.executable,str(ROOT/'tools/build_sdk_validation.py'),*common,
         '--entry',str(ROOT/'platform/firmware_main.cpp'),
         '--linker',str(ROOT/'platform/pico_cc3200.ld'),'--appliance-image','--output-dir',str(out/'native'),
-        '--application-lib',str(ROOT/'build/libpicobrew.a'),
-        '--adapter-lib',str(ROOT/'build/libpicobrew_energia.a')]
+        '--application-lib',str(core/'libpicobrew.a'),
+        '--adapter-lib',str(core/'libpicobrew_energia.a')]
     result=subprocess.run(command,capture_output=True,text=True)
     log.write_text(result.stdout+result.stderr)
     if result.returncode:
         print(result.stdout+result.stderr);return result.returncode
     for suffix in ('.elf','.bin','.map'):
-        shutil.copy2(out/'native'/('sdk_validation'+suffix),out/('pico-pro-recovered'+suffix))
-    elf,raw=out/'pico-pro-recovered.elf',out/'pico-pro-recovered.bin'
+        shutil.copy2(out/'native'/('sdk_validation'+suffix),out/(name+suffix))
+    elf,raw=out/(name+'.elf'),out/(name+'.bin')
     layout=inspect_image(elf,raw)
-    update=out/'pico-pro-recovered.update.txt'
+    if a.standalone:
+        image=raw.read_bytes()
+        forbidden=[b'picobrew.com',b'/API/pico/checkFirmware',b'/API/pico/getFirmware',b'/API/pico/register']
+        found=[s.decode('ascii') for s in forbidden if s in image]
+        if found:raise ValueError('Cloud protocol remains in standalone image: '+repr(found))
+    update=out/(name+'.update.txt')
     body=encode_update(raw.read_bytes())
     if decode_update(body)!=raw.read_bytes():raise ValueError('Update envelope round trip failed')
     update.write_bytes(body)
     native=json.loads((out/'native/validation.json').read_text())
     compiled=json.loads((out/'native/compile_report.json').read_text())
-    report={'artifact':'Complete recovered Pico Pro application with native Energia/TI startup and runtime',
+    report={'artifact':('Pico S/Pro standalone local API firmware' if a.standalone else
+                        'Complete recovered Pico Pro application with native Energia/TI startup and runtime'),
+        'profile':'standalone' if a.standalone else 'legacy',
         'reference_version':'0.1.34','source_reconstruction':True,'hardware_executed':False,
         'production_entry':'platform/firmware_main.cpp','application_composition':'src/application.c',
         'image_layout':layout,'elf_sha256':digest(elf),'binary_sha256':digest(raw),
@@ -105,7 +121,12 @@ def main():
         'compiled_sources':[{'source':c['source'],'sha256':c['source_sha256']} for c in compiled],
         'runtime_boundary':native['runtime_boundary'],
         'validation_scope':'Static image, native ABI and complete link checks. Functional ARM comparisons are reported separately. Physical timing, peripheral operation and recovery/installation are not exercised.',
-        'files':{'elf':elf.name,'binary':raw.name,'map':'pico-pro-recovered.map','update_body':update.name}}
+        'files':{'elf':elf.name,'binary':raw.name,'map':name+'.map','update_body':update.name}}
+    if a.standalone:
+        report['cloud_protocol_strings_absent']=True
+        report['api_key_embedded']=False
+        report['web_sources_sha256']={str(f.relative_to(ROOT)):digest(f)
+                                     for f in sorted((ROOT/'web').glob('*')) if f.is_file()}
     (out/'firmware-report.json').write_text(json.dumps(report,indent=2)+'\n')
     print(json.dumps({'image':str(raw),'binary_bytes':layout['binary_bytes'],
                      'unallocated_ram_bytes':layout['unallocated_ram_bytes'],

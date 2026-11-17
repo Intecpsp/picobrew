@@ -22,7 +22,9 @@ def main():
     parser.add_argument('--arm-prefix', default=os.environ.get('PICOBREW_ARM_PREFIX'))
     parser.add_argument('--sdk-root', type=Path,
                         default=Path(os.environ.get('PICOBREW_SDK', str(ROOT / '.deps/energia'))))
-    parser.add_argument('--output-dir', type=Path, default=ROOT / 'build')
+    parser.add_argument('--output-dir', type=Path)
+    parser.add_argument('--standalone', action='store_true',
+                        help='Build the local API profile without cloud services')
     parser.add_argument('--archive-only', action='store_true')
     parser.add_argument('--core-only', action='store_true',
                         help='Build portable application core without the Energia adapter')
@@ -35,14 +37,21 @@ def main():
             parser.error('ARM compiler missing. Run the dependency bootstrap or set PICOBREW_ARM_PREFIX to the arm-none-eabi- tool prefix.')
         prefix = compiler[:-3]
     gcc, ar, nm, readelf = (prefix + suffix for suffix in ['gcc', 'ar', 'nm', 'readelf'])
+    if options.standalone:
+        ar, nm = prefix + 'gcc-ar', prefix + 'gcc-nm'
     version = subprocess.check_output([gcc, '--version'], text=True).splitlines()[0]
-    output = options.output_dir.resolve()
+    output = (options.output_dir or (ROOT / 'build/standalone/core' if options.standalone
+                                    else ROOT / 'build')).resolve()
     output.mkdir(parents=True, exist_ok=True)
     flags = ['-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs',
              '--specs=nano.specs', '-std=gnu11', '-Os', '-g', '-ffunction-sections', '-fdata-sections',
              '-fno-fast-math', '-ffp-contract=off', '-fexcess-precision=standard',
              '-Wall', '-Wextra', '-Werror', '-I' + str(ROOT / 'include')]
+    if options.standalone:
+        flags += ['-DPICO_STANDALONE=1', '-flto']
     sources = sorted((ROOT / 'src').rglob('*.c'))
+    if not options.standalone:
+        sources = [p for p in sources if not (p.name.startswith('local_') or p.name == 'http_server.c')]
     objects = []
     source_hashes = {}
     for source in sources:
@@ -56,10 +65,12 @@ def main():
     archive.unlink(missing_ok=True)
     subprocess.run([ar, 'rcs', str(archive), *(str(p) for p in objects)], check=True)
     report = {'application_archive': archive.name, 'source_files': len(sources),
-              'compiler': version, 'flags': flags[:-1] + ['-Iinclude'],
+              'compiler': version,
+              'flags': ['-Iinclude' if flag == '-I' + str(ROOT / 'include') else flag for flag in flags],
               'source_sha256': source_hashes,
               'archive_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
-              'full_firmware': False, 'validation_elf': None}
+              'full_firmware': False, 'validation_elf': None,
+              'profile': 'standalone' if options.standalone else 'legacy'}
     report['header_sha256'] = {
         str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sorted((ROOT / 'include').rglob('*.h'))}
@@ -73,12 +84,18 @@ def main():
                      '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
                      '-Wall', '-Wextra', '-Werror', '-DENERGIA', '-D__CC3200R1M1RGC__',
                      '-I' + str(ROOT / 'include')]
+        if options.standalone:
+            cpp_flags += ['-DPICO_STANDALONE=1', '-flto']
         for directory in ['cores/cc3200', 'variants/CC3200-LAUNCHXL', 'system',
-                          'libraries/WiFi', 'libraries/SPI']:
+                          'libraries/WiFi', 'libraries/SPI', 'libraries/WiFi/utility',
+                          'libraries/WiFi/utility/middleware/driver',
+                          'libraries/WiFi/utility/middleware/driver/hal']:
             cpp_flags += ['-isystem', str(sdk / directory)]
         adapter_source = ROOT / 'platform/energia_cc3200.cpp'
         adapter_sources = sorted(p for p in (ROOT / 'platform').glob('*.cpp')
                                  if p.name != 'firmware_main.cpp')
+        if not options.standalone:
+            adapter_sources = [p for p in adapter_sources if p.name != 'energia_http_server.cpp']
         adapter_objects = []
         for source in adapter_sources:
             adapter_object = output / ('platform_' + source.stem + '.o')
@@ -95,7 +112,9 @@ def main():
                        'sdk_interface_check': 'Real pinned Energia/TI headers; C++11 Cortex-M4 soft-float compilation with warnings as errors'})
     if not options.archive_only:
         fixture_objects = []
-        fixtures = [ROOT / 'tests/validation_entry.c', *sorted((ROOT / 'tests').glob('*_fixture.c'))]
+        fixtures = [ROOT / 'tests/validation_entry.c', *sorted(
+            p for p in (ROOT / 'tests').glob('*_fixture.c')
+            if not p.name.startswith(('http_', 'local_', 'energia_http')))]
         for source in fixtures:
             object_path = output / ('test_' + source.stem + '.o')
             subprocess.run([gcc, *flags, '-c', str(source), '-o', str(object_path)], check=True)

@@ -1,14 +1,21 @@
 #include "picobrew/recipe.h"
+#include "picobrew/local_control.h"
 #include <limits.h>
 #include <stdio.h>
 
 static uint32_t clock_ms(PicoRecipeRuntime *r)
 {
+    pico_local_poll();
     return r->phase->control->ops->millis(r->phase->control->context);
 }
 static void delay_ms(PicoRecipeRuntime *r, uint32_t milliseconds)
 {
+#if PICO_STANDALONE
+    (void)r;
+    pico_local_control_delay(milliseconds);
+#else
     r->phase->actuators->ops->delay_milliseconds(r->phase->actuators->context, milliseconds);
+#endif
 }
 static void show(PicoRecipeRuntime *r, PicoRecipeScreen screen, uint32_t argument, const char *text)
 {
@@ -50,6 +57,8 @@ static int32_t trunc_i32(double value)
  * filter-removal pause; callers retain that behavior rather than inferring it. */
 bool pico_recipe_handle_filter_removal(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return false;
     if (!pico_filter_is_inserted(r->phase->actuators)) {
         pico_control_stop(r->phase->control);
         pico_actuators_steam_and_drain_off(r->phase->actuators);
@@ -62,6 +71,8 @@ bool pico_recipe_handle_filter_removal(PicoRecipeRuntime *r)
 /* Original 0x2000d380. */
 bool pico_recipe_prime_steam(PicoRecipeRuntime *r, const char *title)
 {
+    if (pico_local_cancelled())
+        return false;
     PicoActuators *a = r->phase->actuators;
     if (!pico_filter_is_inserted(a)) {
         show(r, PICO_RECIPE_CLEAR, 0, NULL);
@@ -94,6 +105,8 @@ bool pico_recipe_prime_steam(PicoRecipeRuntime *r, const char *title)
 uint32_t pico_recipe_reprime_steam(PicoRecipeRuntime *r, const char *title, const char *step,
                                    bool logging, bool restart_circulation)
 {
+    if (pico_local_cancelled())
+        return 0;
     PicoActuators *a = r->phase->actuators;
     PicoBrewController *c = &r->state->controller;
     if (!pico_filter_is_inserted(a)) {
@@ -114,6 +127,9 @@ uint32_t pico_recipe_reprime_steam(PicoRecipeRuntime *r, const char *title, cons
     pico_actuator_shuttle_on(a);
     unsigned intervals = 16;
     while (c->thermoblock_fahrenheit > 230.0) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return 0;
         if (logging && clock_ms(r) - last_log >= 25001u) {
             r->ops->log_progress(r->context, step);
             last_log = clock_ms(r);
@@ -137,6 +153,8 @@ uint32_t pico_recipe_reprime_steam(PicoRecipeRuntime *r, const char *title, cons
 /* Original 0x2000d418. */
 void pico_recipe_restore_idle(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     show(r, PICO_RECIPE_ENDING_PROCESS, 0, NULL);
     r->ops->move_home(r->context);
 }
@@ -144,6 +162,8 @@ void pico_recipe_restore_idle(PicoRecipeRuntime *r)
 /* Original 0x2000d484. Its first machine-register argument was unused. */
 void pico_recipe_vacuum(PicoRecipeRuntime *r, uint32_t compartment, uint32_t first)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     pico_actuators_all_off(a);
     if (prompt(r, PICO_RECIPE_VACUUM, 0)) {
@@ -153,6 +173,9 @@ void pico_recipe_vacuum(PicoRecipeRuntime *r, uint32_t compartment, uint32_t fir
         clock_ms(r);
         uint32_t dwell = 3000;
         while (!r->ops->take_click(r->context)) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             uint32_t now = clock_ms(r);
             if (pico_actuators_pause_for_missing_filter(a, true, false, true)) {
                 prompt(r, PICO_RECIPE_VACUUM, 1);
@@ -180,12 +203,17 @@ void pico_recipe_vacuum(PicoRecipeRuntime *r, uint32_t compartment, uint32_t fir
 /* Original 0x2000d524. */
 void pico_recipe_circulate(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     show(r, PICO_RECIPE_PROGRAM_NOTICE, 0, NULL);
     move_to(r, 2);
     pico_actuators_start_drain_and_steam(a);
     uint32_t next_update = 0, elapsed = 0;
     while (!r->ops->take_click(r->context)) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         if (!pico_filter_is_inserted(a)) {
             pico_actuators_steam_and_drain_off(a);
             r->phase->actuators->ops->prompt_insert_filter(r->phase->actuators->context);
@@ -205,6 +233,8 @@ void pico_recipe_circulate(PicoRecipeRuntime *r)
 /* Original 0x2000d580. */
 void pico_recipe_drain_reservoir(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     clock_ms(r);
@@ -215,9 +245,15 @@ void pico_recipe_drain_reservoir(PicoRecipeRuntime *r)
     delay_ms(r, 500);
     pico_actuator_steam_on(a);
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         show(r, PICO_RECIPE_STOP_FOOTER, 0, NULL);
         show(r, PICO_RECIPE_FLUSH, 0, NULL);
         for (;;) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             if (r->ops->take_click(r->context)) {
                 pico_actuator_shuttle_off(a);
                 delay_ms(r, 500);
@@ -242,6 +278,8 @@ void pico_recipe_drain_reservoir(PicoRecipeRuntime *r)
 /* Original 0x2000d738. completed_cycles deliberately retains byte wraparound. */
 void pico_recipe_flush_compartments(PicoRecipeRuntime *r, uint32_t minimum_cycles, bool automatic)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     clock_ms(r);
@@ -251,6 +289,9 @@ void pico_recipe_flush_compartments(PicoRecipeRuntime *r, uint32_t minimum_cycle
     move_to(r, 0);
     uint8_t completed = 0;
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         if (minimum_cycles <= completed) {
             if (automatic)
                 break;
@@ -265,6 +306,9 @@ void pico_recipe_flush_compartments(PicoRecipeRuntime *r, uint32_t minimum_cycle
             show(r, PICO_RECIPE_FLUSH, 0, NULL);
             pico_actuator_steam_on(a);
             while (clock_ms(r) - started < 3000) {
+                pico_local_poll();
+                if (pico_local_cancelled())
+                    return;
                 if (r->ops->take_click(r->context) && minimum_cycles <= completed)
                     goto finished;
             }
@@ -283,12 +327,16 @@ finished:
 /* Original 0x2000d7ec. */
 void pico_recipe_flush_until_press(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     pico_recipe_flush_compartments(r, 0, false);
 }
 
 /* Original 0x2000da08. r1 was padding before the AAPCS double in r2/r3. */
 void pico_recipe_heat_flush_compartments(PicoRecipeRuntime *r, bool steam, double target)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     PicoBrewController *c = &r->state->controller;
     pico_actuator_drain_on(a);
@@ -310,6 +358,9 @@ void pico_recipe_heat_flush_compartments(PicoRecipeRuntime *r, bool steam, doubl
         if (c->thermoblock_fahrenheit < preheat) {
             pico_actuator_heater_on(a);
             while (c->thermoblock_fahrenheit < preheat) {
+                pico_local_poll();
+                if (pico_local_cancelled())
+                    return;
                 if (clock_ms(r) - started > 15000 && c->thermoblock_fahrenheit < 90.0) {
                     pico_actuators_off_except_drain(a);
                     r->ops->error(r->context, 19, false, false);
@@ -325,6 +376,9 @@ void pico_recipe_heat_flush_compartments(PicoRecipeRuntime *r, bool steam, doubl
         center(r, 4, label);
         started = clock_ms(r);
         while (c->thermoblock_fahrenheit < target && clock_ms(r) - started < 5000) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             temperature_columns(r);
             show(r, PICO_RECIPE_FLUSH, 0, NULL);
         }
@@ -338,6 +392,9 @@ void pico_recipe_heat_flush_compartments(PicoRecipeRuntime *r, bool steam, doubl
         for (unsigned stage = 0; stage != 4; ++stage) {
             clock_ms(r);
             while (c->thermoblock_fahrenheit > threshold) {
+                pico_local_poll();
+                if (pico_local_cancelled())
+                    return;
                 temperature_columns(r);
                 show(r, PICO_RECIPE_FLUSH, 0, NULL);
             }
@@ -355,6 +412,8 @@ void pico_recipe_heat_flush_compartments(PicoRecipeRuntime *r, bool steam, doubl
 /* Original 0x2000deec. */
 void pico_recipe_rinse(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     static const uint32_t instructions[] = {21, 22};
     PicoActuators *a = r->phase->actuators;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
@@ -373,6 +432,9 @@ void pico_recipe_rinse(PicoRecipeRuntime *r)
     pico_actuator_drain_on(a);
     move_to(r, first);
     while (clock_ms(r) - started < 60000) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         uint32_t now = clock_ms(r);
         if (pico_actuators_pause_for_missing_filter(a, false, true, false)) {
             show(r, PICO_RECIPE_INSTRUCTION_HEADER, 23, title);
@@ -392,6 +454,8 @@ void pico_recipe_rinse(PicoRecipeRuntime *r)
  * next-compartment counter; the first three original register values are unused. */
 bool pico_recipe_first_rinse_cool(PicoRecipeRuntime *r, int32_t *next_compartment)
 {
+    if (pico_local_cancelled())
+        return false;
     PicoActuators *a = r->phase->actuators;
     double initial = r->state->controller.thermoblock_fahrenheit;
     show(r, PICO_RECIPE_FIRST_RINSE_STEP, 5, NULL);
@@ -400,6 +464,9 @@ bool pico_recipe_first_rinse_cool(PicoRecipeRuntime *r, int32_t *next_compartmen
     pico_actuator_drain_on(a);
     uint32_t started = clock_ms(r), last_move = started;
     while (clock_ms(r) - started < 120000) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return false;
         uint32_t now = clock_ms(r);
         if (pico_actuators_pause_for_missing_filter(a, false, true, true)) {
             show(r, PICO_RECIPE_FIRST_RINSE_STEP, 5, NULL);
@@ -421,6 +488,8 @@ bool pico_recipe_first_rinse_cool(PicoRecipeRuntime *r, int32_t *next_compartmen
 /* Original 0x2000ee78. */
 bool pico_recipe_first_rinse_heat(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return false;
     PicoActuators *a = r->phase->actuators;
     PicoBrewController *c = &r->state->controller;
     clock_ms(r);
@@ -429,6 +498,9 @@ bool pico_recipe_first_rinse_heat(PicoRecipeRuntime *r)
     uint32_t started = clock_ms(r);
     bool success;
     for (;;) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return false;
         if (!(c->thermoblock_fahrenheit < 230.0)) {
             success = true;
             break;
@@ -442,7 +514,7 @@ bool pico_recipe_first_rinse_heat(PicoRecipeRuntime *r)
     pico_actuator_heater_off(a);
     started = clock_ms(r);
     show(r, PICO_RECIPE_FIRST_RINSE_STEP, 3, NULL);
-    while (clock_ms(r) - started < 30000)
+    while (!pico_local_cancelled() && clock_ms(r) - started < 30000)
         timer(r, 6, started, 30);
     return success;
 }
@@ -450,6 +522,8 @@ bool pico_recipe_first_rinse_heat(PicoRecipeRuntime *r)
 /* Original 0x2000ef2c. */
 void pico_recipe_drain_filter(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_DRAIN_FILTER, 0, NULL);
     pico_actuator_drain_on(r->phase->actuators);
@@ -460,6 +534,8 @@ void pico_recipe_drain_filter(PicoRecipeRuntime *r)
 /* Original 0x2000ef48. */
 void pico_recipe_first_rinse(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     PicoBrewController *c = &r->state->controller;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
@@ -481,6 +557,9 @@ void pico_recipe_first_rinse(PicoRecipeRuntime *r)
     show(r, PICO_RECIPE_FLUSH, 0, NULL);
     uint32_t started = clock_ms(r), last_move = started;
     while (clock_ms(r) - started < 130000) {
+        pico_local_poll();
+        if (pico_local_cancelled())
+            return;
         uint32_t now = clock_ms(r);
         if (pico_actuators_pause_for_missing_filter(a, true, false, true)) {
             show(r, PICO_RECIPE_FIRST_RINSE_STEP, 4, NULL);
@@ -544,6 +623,8 @@ void pico_recipe_first_rinse(PicoRecipeRuntime *r)
 /* Original 0x2000f800. */
 void pico_recipe_rack_beer(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_RACK_BEER_STEP, 0, NULL);
@@ -564,12 +645,14 @@ void pico_recipe_rack_beer(PicoRecipeRuntime *r)
 /* Original 0x20011420. */
 void pico_recipe_descale(PicoRecipeRuntime *r)
 {
+    if (pico_local_cancelled())
+        return;
     PicoActuators *a = r->phase->actuators;
     PicoBrewController *c = &r->state->controller;
     prompt(r, PICO_RECIPE_DESCALE_STEP, 0);
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     show(r, PICO_RECIPE_DESCALE_HEADING, 0, NULL);
-    while (!pico_filter_is_inserted(a))
+    while (!pico_local_cancelled() && !pico_filter_is_inserted(a))
         prompt(r, PICO_RECIPE_DESCALE_STEP, 1);
     prompt(r, PICO_RECIPE_DESCALE_STEP, 6);
     move_to(r, 1);
@@ -580,12 +663,15 @@ void pico_recipe_descale(PicoRecipeRuntime *r)
         clock_ms(r);
         prompt(r, PICO_RECIPE_DESCALE_STEP, 3);
         for (;;) {
+            pico_local_poll();
+            if (pico_local_cancelled())
+                return;
             pico_actuator_shuttle_on(a);
             if (!pico_filter_is_inserted(a)) {
                 clock_ms(r);
                 pico_actuator_shuttle_off(a);
                 pico_actuator_heater_off(a);
-                while (!pico_filter_is_inserted(a))
+                while (!pico_local_cancelled() && !pico_filter_is_inserted(a))
                     prompt(r, PICO_RECIPE_DESCALE_STEP, 1);
                 prompt(r, PICO_RECIPE_DESCALE_STEP, 3);
                 clock_ms(r);

@@ -1,6 +1,7 @@
 #ifndef PICOBREW_NETWORK_H
 #define PICOBREW_NETWORK_H
 
+#include "picobrew/config.h"
 #include "picobrew/state.h"
 #include <stdbool.h>
 #include <stddef.h>
@@ -133,7 +134,7 @@ typedef struct PicoNetwork {
     void *platform_context;
     const PicoNetworkUi *ui;
     void *ui_context;
-    const char *server_host; /* Defaults to original "picobrew.com". */
+    const char *server_host; /* NULL in standalone; original host in legacy. */
     uint16_t server_port;
     PicoIpv4 server_ip;
     PicoStillConnection still;
@@ -141,8 +142,10 @@ typedef struct PicoNetwork {
     uint32_t assertion_count;
     uint32_t log_consecutive_failures;
     uint8_t boot_info[8];
+#if !PICO_STANDALONE
     uint8_t recipe_logo[1024];
     uint8_t recipe_images[4][1024];
+#endif
 } PicoNetwork;
 
 void pico_network_initialize(PicoNetwork *network, PicoAppState *app, PicoSettings *settings,

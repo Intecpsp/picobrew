@@ -1,4 +1,5 @@
 #include "picobrew/energia_cc3200.h"
+#include "picobrew/config.h"
 #include "picobrew/sensors.h"
 
 #include <new>
@@ -206,16 +207,30 @@ static void construct_zero_address(void *, void *storage)
 }
 static void construct_http(void *, void *storage)
 {
+#if PICO_STANDALONE
+    /* The initializer retains its recovered callback shape, but the local
+     * profile has no outbound client. Its reserved storage is never accessed.
+     * Avoid retaining WiFiClient's entire virtual method table in SRAM. */
+    (void)storage;
+#else
     ::new (storage) PicoHttpClient();
+#endif
 }
+#if !PICO_STANDALONE
 static void destroy_http(void *object)
 {
     static_cast<PicoHttpClient *>(object)->~PicoHttpClient();
 }
+#endif
 static void register_http_destructor(void *context, void *client)
 {
     PicoEnergiaInitialization *binding = static_cast<PicoEnergiaInitialization *>(context);
+#if PICO_STANDALONE
+    (void)client;
+    binding->destructor_registration_result = 0;
+#else
     binding->destructor_registration_result = __aeabi_atexit(client, destroy_http, &__dso_handle);
+#endif
 }
 static void construct_rfid(void *context, void *reader, uint8_t select_pin,
                            uint8_t shared_select_pin, uint8_t reset_pin)

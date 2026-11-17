@@ -1,0 +1,450 @@
+# Pico S/Pro standalone firmware and local API
+
+The standalone profile moves recipe selection, session identity, preferences,
+and control into the appliance. It serves a browser interface and a versioned
+REST API on the local network, without a PicoBrew account or a replacement
+PicoBrew server. The existing controller, display, encoder, and program
+workflows remain the execution path.
+
+**This is experimental reconstructed firmware. It has not been run on a
+physical Pico Pro or Pico S.** Software tests establish specific behavior of
+the rebuilt code and simulated boundaries; they do not establish installation,
+peripheral timing, interlock behavior, or a successful heating cycle. The
+[hardware acceptance record](hardware-validation.md) identifies the physical
+work still required.
+
+The complete machine-readable contract is [openapi.json](openapi.json).
+Authentication setup is in the [key provisioning guide](standalone-provisioning.md).
+
+## Build and software checks
+
+Use a Linux build environment with Python 3.12 or a release providing
+`tarfile.data_filter`, a host C/C++ compiler, and Make. From the repository root:
+
+```sh
+python3 -m pip install -r requirements-test.txt
+python3 tools/bootstrap_dependencies.py
+make standalone
+make standalone-test
+```
+
+The bootstrap installs the pinned Energia CC3200 SDK and ARM compiler locally.
+See [SDK build documentation](sdk-build.md) and
+[dependencies/lock.json](../dependencies/lock.json) for provenance, hashes, and
+alternate SDK/compiler paths.
+
+| Target | Purpose |
+| --- | --- |
+| `make` or `make all` | Build the standalone firmware; `all` now defaults to `standalone` |
+| `make standalone` | Embed browser assets and build/link the native standalone image |
+| `make standalone-test` | Check embedded assets and run portable HTTP, native network-adapter, API/store, and control tests |
+| `make standalone-verify` | Build standalone firmware and run its host tests |
+| `make web-test` | Run the browser workflow suite against the real portable C API with simulated appliance I/O |
+| `make firmware` | Build/check the retained legacy recovered firmware profile |
+| `make verify` | Run the retained legacy recovery verification targets |
+
+The standalone application and eligible SDK sources use link-time optimization
+(LTO) and removal of unused sections to fit the CC3200 memory budget. Native
+startup and runtime compatibility/allocator providers retain their intended
+non-LTO boundaries. The legacy profile keeps its separate build and validation
+path.
+
+Standalone outputs are under `build/standalone/firmware/`:
+
+| File | Purpose |
+| --- | --- |
+| `pico-s-pro-standalone.bin` | Raw native firmware candidate |
+| `pico-s-pro-standalone.elf` | Executable with symbols/debug information |
+| `pico-s-pro-standalone.map` | Link map for memory and provider inspection |
+| `firmware-report.json` | Source/artifact hashes, image-layout checks, RAM allocations, and validation scope |
+| `native/compile_report.json` | Actual compile commands, hashes, and diagnostics |
+| `pico-s-pro-standalone.update.txt` | Recovered-format packaging artifact; the standalone firmware does not provide an OTA update route |
+
+Use the report from a successful current build for binary size, BSS, reserved
+stack/heap, and remaining RAM. These measurements must not be inferred from a
+previous legacy image. Link/layout success does not measure live stack usage
+or prove timing on the appliance.
+
+For browser tests:
+
+```sh
+python3 -m pip install -r requirements-web-test.txt
+python3 -m playwright install chromium
+make web-test
+```
+
+An existing Chromium executable can be selected with `PICOBREW_CHROMIUM`.
+The browser suite is written, but local Chromium execution was blocked in the
+development environment and CI results are pending. Do not describe the
+browser workflow suite as passed until it actually completes.
+
+The API/store host evidence is in
+[analysis/standalone-api-tests.json](../analysis/standalone-api-tests.json).
+Its scope includes shared request/response buffers, malformed JSON, reboot
+simulation, storage failures, and partial writes. Physical flash behavior and
+controller execution are outside that suite.
+
+## Bring up a device
+
+1. Identify the exact board and preserve a verified production-firmware and
+   serial-flash backup, including a proven recovery path. A successful build
+   is not an installation test; the repository does not supply a validated
+   Pico-specific firmware-flashing procedure.
+2. Build the standalone candidate and inspect its current report. Use the
+   verified device programming connection and recovery procedure for any
+   experimental installation. Follow the staged
+   [hardware acceptance work](hardware-validation.md) before powered brewing.
+3. Generate a different private key for each appliance:
+
+   ```sh
+   python3 tools/provision_api_key.py --output private/api.key
+   ```
+
+4. Provision that file as `/local/api.key` using the
+   [separate user-file programming procedure](standalone-provisioning.md),
+   then reboot. The Python tool creates a host file only. There is no runtime
+   UART console command that installs the key, and typing it into a serial
+   terminal does not provision it.
+5. Use the existing front-panel Wi-Fi workflow to join the local network.
+   Find the appliance's LAN address, for example in the router's client list.
+   Open `http://<pico-lan-ip>/` and enter the 64-character device key.
+
+The root page and `GET /api/v1/health` are public. All other API routes require
+`Authorization: Bearer <device-key>`. There is no default key. With no valid
+provisioned key, protected API routes return `503 api_key_not_provisioned`;
+an incorrect bearer key returns `401 unauthorized`.
+
+This implementation serves HTTP on port 80 by default. HTTP does not encrypt
+the key or traffic; operate on a trusted LAN, or provide a TLS tunnel outside
+the appliance. No CORS access, cloud relay, remote account system, or Internet
+exposure is configured.
+
+The browser uses same-origin requests, no CDN, and the API's discovered
+capabilities. It displays live controller values and the appliance's OLED,
+offers encoder rotation/click, edits/imports/exports recipes, launches supported
+programs, changes display preferences, and exports the recent event ring.
+The key is retained in the tab's `sessionStorage`; Disconnect removes it.
+Disconnecting the browser does not stop a program already running on the Pico.
+
+Local operation does not require successful cloud registration or an Internet
+connection. LAN connectivity is required to use the browser/API. Wi-Fi setup,
+board calibration, and hardware maintenance still use their existing appliance
+workflows.
+
+## API basics and examples
+
+The examples below assume Bash, curl, a running appliance, and the matching
+private key file. Replace the example LAN address:
+
+```bash
+PICO_URL='http://192.168.1.100'
+PICO_API_KEY="$(tr -d '\r\n' < private/api.key)"
+
+pico_api() {
+    curl --silent --show-error \
+        --header "Authorization: Bearer ${PICO_API_KEY}" "$@"
+}
+
+curl --silent --show-error "${PICO_URL}/api/v1/health"
+pico_api "${PICO_URL}/api/v1"
+pico_api "${PICO_URL}/api/v1/status"
+```
+
+The key is read locally; it is not printed or included in a firmware image.
+Do not copy a real Authorization header into a public issue or build log.
+
+Requests use HTTP/1.1 and JSON. POST, PUT, and PATCH require
+`Content-Type: application/json` and `Content-Length`; curl supplies the latter
+for the bodies shown here. The body limit is 4095 bytes. The server handles one
+connection at a time, so clients should serialize requests. Chunked transfer,
+pipelining, arbitrary query parameters, and cross-origin browser calls are
+unsupported.
+
+| Route | Behavior |
+| --- | --- |
+| `GET /api/v1` | API version, capacities, command names, and implemented capabilities |
+| `GET /api/v1/health` | Public readiness, key provisioning status, and uptime |
+| `GET /api/v1/status` | Controller/workflow state, temperatures, timing, session, filter, and encoder |
+| `GET /api/v1/display` | Current 128 × 64 monochrome framebuffer |
+| `GET /api/v1/recipes` | IDs, names, step counts, and capacity |
+| `GET /api/v1/recipes/{id}` | Complete stored recipe |
+| `PUT /api/v1/recipes/{id}` | Create or replace a recipe while idle |
+| `DELETE /api/v1/recipes/{id}` | Remove a recipe while idle; no request body |
+| `POST /api/v1/commands` | Queue a supported operation or operate the virtual encoder |
+| `GET /api/v1/settings` | Read supported nonsecret preferences |
+| `PATCH /api/v1/settings` | Persist a partial preference update while idle |
+| `GET /api/v1/events` | Read up to eight recent RAM events |
+
+Successful recipe creation returns 201, replacement/read returns 200, deletion
+returns 204 with an empty body, and an accepted command returns 202.
+Applications must not parse JSON from a 204 response.
+
+Dispatcher errors contain `error` and `message`; transport errors may contain
+only `error`. Common statuses are 400 for invalid input, 401 for authentication,
+404 for an absent resource, 405 for an unsupported method, 409 for an operation
+that cannot run in the current state, 413 for an oversized body, 503 for
+unavailable initialization/storage/authentication, and 507 for exhausted recipe
+capacity. The OpenAPI document describes the route-specific contracts.
+
+## Recipes: sixteen records, fifteen steps each
+
+Create a local recipe:
+
+```bash
+pico_api --request PUT \
+    --header 'Content-Type: application/json' \
+    --data-binary '{
+      "name":"House ale",
+      "steps":[
+        {"name":"Mash","location":1,"target_f":152,"minutes":60,"drain_minutes":2}
+      ]
+    }' \
+    "${PICO_URL}/api/v1/recipes/house-ale"
+
+pico_api "${PICO_URL}/api/v1/recipes/house-ale"
+pico_api "${PICO_URL}/api/v1/recipes"
+```
+
+This example illustrates the schema, not a validated brewing program or
+physical compartment assignment. Review a recipe against the actual appliance
+before running it.
+
+| Field | Bounds/meaning |
+| --- | --- |
+| URL `id` | Stable, case-sensitive, client-selected ID: 1–20 ASCII letters, digits, `_`, or `-` |
+| `id` in PUT body | Optional; must exactly match the URL if supplied |
+| Recipe `name` | 1–31 printable ASCII characters |
+| `steps` | 1–15 ordered steps |
+| Step `name` | 1–21 printable ASCII characters |
+| `location` | Integer 1–6 using the existing firmware's compartment numbering |
+| `target_f` | Integer 0 for unheated, or 60–212 °F |
+| `minutes` | Integer 1–599 active minutes |
+| `drain_minutes` | Optional integer 0–120; defaults to 0 |
+
+Location numbers retain the recovered firmware semantics. This API does not
+assign invented physical names to locations 1–6; confirm routing against the
+actual machine. Targets and recipe fields remain Fahrenheit even when the
+display preference is Celsius.
+
+Unknown fields, duplicate JSON keys, fractional numbers in integer fields,
+invalid IDs, control characters, and non-ASCII labels are rejected. The local
+font and stored labels use printable ASCII. A PUT replaces the entire recipe;
+a recipe GET result can be edited and sent back as a PUT.
+
+Recipes are selected by their stored IDs through both REST and the existing
+front-panel catalog. No cloud PicoPak creation is needed. The store begins
+empty on a device with no local catalog; it does not import a cloud account,
+vendor recipe database, or legacy RFID recipe service automatically.
+
+After you have finished using a recipe, delete it with:
+
+```bash
+pico_api --request DELETE "${PICO_URL}/api/v1/recipes/house-ale"
+```
+
+Recipe mutations and preference writes are allowed only at the idle main-menu
+boundary. A queued command, active workflow, submenu, or initialization makes
+the control layer busy and these requests return 409.
+
+### Persistence and uncertain writes
+
+The local store uses fixed SLFS filenames for catalog/data banks. Client IDs
+never become flash paths. Records have a version, generation, explicit byte
+layout, and CRC. A recipe update writes and reads back the inactive recipe bank
+before committing the alternate catalog bank. Settings and the session counter
+have their own bank pairs.
+
+A successful write requires the expected byte count, close result, exact file
+length, and readback. Missing files are distinguished from I/O failures;
+malformed records are preserved for recovery rather than silently reset.
+
+**A 503 during a write does not prove the old value is still selected.** The
+write or commit may have succeeded before verification failed. A short overwrite
+can also produce a valid complete new record when the existing tail already
+matches. After an error or lost response, GET the resource and compare it with
+the intended state before deciding whether to retry. The same caution applies
+to settings. DELETE may already have committed, in which case a subsequent GET
+returns 404.
+
+Host tests cover old-or-valid-new behavior across partial-write boundaries.
+They do not constitute a physical power-loss test. A first-ever torn catalog
+creation with no valid bank fails closed and requires recovery; there is no
+automatic format or destructive reset endpoint.
+
+## Commands and the remote front panel
+
+Start a saved recipe:
+
+```bash
+pico_api --request POST \
+    --header 'Content-Type: application/json' \
+    --data-binary '{"command":"brew","recipe_id":"house-ale"}' \
+    "${PICO_URL}/api/v1/commands"
+```
+
+A 202 response acknowledges queuing. It does not mean the program completed,
+the heater started, or every on-screen prompt was answered. Follow status and
+the display; start commands execute through the existing workflows at the
+main-menu boundary.
+
+| Command | Behavior |
+| --- | --- |
+| `brew` | Run a local recipe; requires a valid existing `recipe_id` |
+| `sous-vide`, `cold-brew`, `manual` | Open the existing cooking/brewing program flow |
+| `rinse`, `first-rinse`, `descale`, `circulate` | Run the corresponding existing maintenance flow |
+| `drain-reservoir`, `drain-filter`, `rack-beer` | Run the corresponding existing utility flow |
+| `utilities`, `settings` | Open the existing front-panel menu |
+| `encoder` | Rotate and/or click the existing UI encoder |
+| `stop` | Latch output inhibition and cancel/unwind the current local workflow |
+| `clear-stop` | Clear the latch only when the workflow has returned to the idle main menu |
+
+Program commands other than `brew` take only `command`. There are no arbitrary
+program parameters, raw actuator controls, or automatic acceptance of the
+appliance's preparation prompts.
+
+Operate the virtual knob:
+
+```bash
+pico_api --request POST --header 'Content-Type: application/json' \
+    --data-binary '{"command":"encoder","delta":-1}' \
+    "${PICO_URL}/api/v1/commands"
+
+pico_api --request POST --header 'Content-Type: application/json' \
+    --data-binary '{"command":"encoder","click":true}' \
+    "${PICO_URL}/api/v1/commands"
+```
+
+`delta` is an integer from -100 to 100 and `click` is a boolean. At least one
+actual movement or click is required. Movement is clamped by the current
+screen's encoder limits. Remaining program setup, prompts, and the existing
+user pause/resume menu can be operated this way. Dedicated `pause` and
+`resume` commands are not implemented.
+
+### Stop and filter removal
+
+Send `{"command":"stop"}` to request a latched stop. Subsequent heater/pump
+output attempts are inhibited while the foreground workflow unwinds. Status
+reports `stopped:true` and a `stop_reason`:
+
+| Reason | Meaning |
+| --- | --- |
+| `none` | No latched stop |
+| `requested` | A stop command latched inhibition |
+| `filter-removed` | The output/control path detected filter removal and latched inhibition |
+
+The filter-removal path sets an interrupt-safe latch; it does not run blocking
+UI or network work inside the interrupt. Reinsert/inspect the filter, allow the
+workflow to return to the main menu, and then explicitly send
+`{"command":"clear-stop"}`. Clear-stop returns 409 while the workflow remains
+busy or the controller is not idle. Clearing the latch does not resume an
+interrupted recipe.
+
+The remote stop path depends on the network and foreground polling. It is not
+a substitute for a physical cutoff and has no hardware-validated latency
+guarantee. Thermal and peripheral fault behavior still requires bench
+verification.
+
+## Status, display, settings, and reporting
+
+Status reports `ready`, `busy`, `stopped`, `stop_reason`, current control
+context, recovered numeric device/controller/phase codes, current compartment,
+wort/thermoblock/target temperatures, the step counter, recipe and step names,
+session ID, filter state, and encoder position/bounds.
+
+Temperature values are Fahrenheit rounded to one decimal. They are null before
+readiness or for invalid/out-of-range values. `uptime_ms` is a wrapping 32-bit
+millisecond counter; no RTC or wall-clock timestamp is assumed.
+`step_seconds` is the existing controller's step counter.
+
+The display response contains 1024 framebuffer bytes encoded as 2048 hex
+characters. Its format is `page-lsb-hex`: pixel `(x,y)` is bit `y & 7` in
+byte `x + floor(y / 8) * 128`. Read the display to understand a prompt before
+sending encoder actions.
+
+Update display preferences:
+
+```bash
+pico_api --request PATCH --header 'Content-Type: application/json' \
+    --data-binary '{"temperature_unit":"C","language":"en","detailed_status":true}' \
+    "${PICO_URL}/api/v1/settings"
+```
+
+Supported fields are `temperature_unit` (`F` or `C`), `language` (`en`,
+`es`, or `fr`), and `detailed_status` (boolean). PATCH accepts a nonempty
+subset. This route does not return or modify Wi-Fi passwords, API keys, board
+calibration, or direct outputs.
+
+`GET /api/v1/events` returns at most eight recent events in sequence order.
+The oldest is overwritten when the ring fills; all events disappear on reboot.
+Each entry has `sequence`, `uptime_ms`, `kind`, and `detail`; text is bounded.
+The response explicitly reports `volatile:true`. Browser event export saves
+only the events currently present in that ring.
+
+A separate flash-backed counter allocates local session identifiers before a
+session begins. Identifiers include a device-UID prefix and sequence. Persisted
+identity does not imply persisted session records: completed-session history,
+temperature logs, and historical queries are not implemented.
+
+## How cloud behavior is replaced
+
+The standalone profile is selected by `PICO_STANDALONE=1`. The legacy
+recovered profile remains available for comparison. The standalone native
+entry binds these local components:
+
+| Component | Responsibility |
+| --- | --- |
+| `platform/energia_http_server.cpp` | SimpleLink listener, bounded nonblocking socket I/O, key loading, and block file reads/stat |
+| `src/http_server.c` | HTTP framing, limits, bearer authentication, static assets, and request dispatch |
+| `src/local_api.c` | Versioned JSON routes, schema validation, status snapshots, and recent events |
+| `src/local_control.c` | Foreground service callback, command queue, virtual encoder, output-stop latch, and safe workflow boundaries |
+| `src/local_store.c` | Local recipes, catalog commits, preferences, and session sequence |
+| `src/network/api.c` standalone adapters | Redirect the recovered recipe/session/reporting callbacks to the local services |
+
+The service callback is polled from existing foreground waits and UI/program
+loops. Polling is guarded against recursion, masked interrupts, interrupt
+context, and selected shared SPI devices. The network handler queues start
+commands; it does not execute a long brewing workflow inside a socket handler.
+Status copies the small volatile controller snapshot under an interrupt mask,
+then formats and sends it with interrupts enabled.
+
+| Former cloud responsibility | Standalone behavior |
+| --- | --- |
+| Registration/identity | Load the local device identity; no account registration request |
+| Recipe catalog/fetch | Read the local recipe catalog and selected record |
+| PicoPak creation | Select stored local recipe IDs directly |
+| Session creation | Commit a local monotonically increasing sequence and allocate an ID |
+| State, step, progress, error reports | Add bounded RAM events and expose current status |
+| Server-required maintenance actions | No cloud mandate; user chooses local maintenance flows |
+| Telemetry upload | No cloud upload; status/recent events are available locally |
+| Firmware discovery/download | Disabled in this profile |
+| PicoStill cloud authorization/control | Unsupported; fails closed |
+
+The firmware build checks that the former domain and selected cloud-update/
+registration route strings are absent from the standalone binary. That static
+check complements the source-level adapters; it is not a captured network trace.
+
+## Remaining scope
+
+The native SDK copy for standalone omits Energia's unused global eight-client
+`WiFiClient` registry. This hash-verified patch is recorded separately in
+`dependencies/lock.json`; the listener owns raw SimpleLink sockets. The legacy
+SDK keeps its registry. LTO also removes unused code without reducing the
+original 32 KiB stack or 32 KiB heap reservations.
+
+Automatic background Wi-Fi reconnection is not implemented. Wi-Fi can be
+configured or reconnected through the appliance's existing Settings screens.
+Inherited fatal hardware-error halts that mask interrupts still require a
+physical reset; HTTP intentionally does not run in those halted contexts.
+
+This branch does not implement PicoStill support, an OTA installation endpoint,
+a durable session/telemetry database, dedicated pause/resume routes, automatic
+cloud-account recipe migration, or remote credential/calibration management.
+Some capabilities remain reachable through existing front-panel screens via
+the encoder rather than having a dedicated JSON resource.
+
+The OpenAPI contract is the starting point for another client, including
+Flutter. It does not promise support for routes that are absent from capability
+discovery. Physical hardware acceptance, real-network/flash timing, browser
+execution in an available Chromium environment, and CI completion remain
+separate validation work.
+

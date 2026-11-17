@@ -4,6 +4,12 @@
 #include "picobrew/config.h"
 #include "picobrew/energia_cc3200.h"
 #include "picobrew/energia_network.h"
+#if PICO_STANDALONE
+#include "picobrew/energia_http_server.h"
+#include "picobrew/local_api.h"
+#include "picobrew/local_control.h"
+#include "picobrew/web_assets.h"
+#endif
 #include <SPI.h>
 extern "C" {
 #include <driverlib/interrupt.h>
@@ -14,6 +20,14 @@ static PicoEnergiaControl control_runtime;
 static PicoEnergiaObjects native_objects;
 static PicoEnergiaInitialization initialization;
 static PicoEnergiaNetwork network_runtime;
+#if PICO_STANDALONE
+static PicoLocalApi local_api;
+static PicoEnergiaHttpServer local_http;
+static void service_local_http(void *context)
+{
+    pico_energia_http_poll(static_cast<PicoEnergiaHttpServer *>(context));
+}
+#endif
 
 static uint32_t clock_ms(void *)
 {
@@ -118,18 +132,33 @@ struct PicoFirmwareConstruction {
         PicoPlatformObjects objects = pico_energia_platform_objects(&initialization);
         pico_application_initialize(&application.state, &objects, pico_energia_initialization_ops(),
                                     &initialization, pico_application_default_pages());
+#if !PICO_STANDALONE
         network_runtime.client = &native_objects.http_client.object();
+#endif
         pico_application_bind_services(&application, &control_runtime.control,
                                        &control_runtime.actuators, &hardware, NULL,
                                        pico_energia_network_platform(), &network_runtime);
+#if PICO_STANDALONE
+        application.network.server_host = NULL;
+        application.network.server_port = 0;
+#else
         application.network.server_host = PICO_SERVER_HOST;
         application.network.server_port = PICO_SERVER_PORT;
+#endif
     }
 };
 static PicoFirmwareConstruction construction;
 
 void setup()
 {
+#if PICO_STANDALONE
+    pico_local_api_initialize(&local_api, &application);
+    pico_local_store_bind(&application.network, pico_energia_local_file_stat, NULL);
+    pico_local_store_set_reader(pico_energia_local_file_read);
+    pico_energia_http_initialize(&local_http, pico_local_api_http_handler, &local_api,
+                                 pico_web_assets, pico_web_assets_count, PICO_LOCAL_API_PORT);
+    pico_local_control_bind(&application, service_local_http, &local_http);
+#endif
     pico_application_setup(&application);
 }
 void loop()

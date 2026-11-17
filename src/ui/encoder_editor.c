@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/local_control.h"
 
 void pico_encoder_rotation_isr(void)
 {
@@ -68,6 +69,10 @@ void pico_encoder_edit_text(char *text, int capacity)
     pico_display_clear_rows(3, 7);
     unsigned length = 0;
     for (;;) {
+        if (pico_local_cancelled()) {
+            encoder->wrap_enabled = 0;
+            return;
+        }
         while (pico_encoder_take_click(encoder)) {
             int selected = pico_encoder_get_position(encoder);
             if (selected == 3) {
@@ -117,6 +122,8 @@ uint32_t pico_encoder_select_adjustment_level(uint32_t baseline, int32_t *stored
     pico_encoder_clear_click(encoder);
     int displayed = initial;
     while (!pico_encoder_take_click(encoder)) {
+        if (pico_local_cancelled())
+            break;
         int position = pico_encoder_get_position(encoder);
         if (position != displayed) {
             displayed += position < displayed ? -1 : 1;

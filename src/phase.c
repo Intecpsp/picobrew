@@ -1,15 +1,22 @@
 #include "picobrew/phase.h"
 #include <stdio.h>
 #include <string.h>
+#include "picobrew/local_control.h"
 
 static uint32_t now(PicoPhaseControl *phase)
 {
+    pico_local_poll();
     return phase->control->ops->millis(phase->control->context);
 }
 
 static void delay_ms(PicoPhaseControl *phase, uint32_t milliseconds)
 {
+#if PICO_STANDALONE
+    (void)phase;
+    pico_local_control_delay(milliseconds);
+#else
     phase->actuators->ops->delay_milliseconds(phase->actuators->context, milliseconds);
+#endif
 }
 
 static void copy_phase_label(PicoPhaseControl *phase, unsigned label)
@@ -79,6 +86,8 @@ uint8_t pico_phase_update_shuttle_calibration(PicoPhaseControl *phase)
 
 void pico_phase_start_circulation(PicoPhaseControl *phase)
 {
+    if (pico_local_cancelled())
+        return;
     if (phase->session->session_type - 3u < 3u) {
         pico_actuator_drain_off(phase->actuators);
         pico_actuator_steam_on(phase->actuators);
@@ -89,6 +98,8 @@ void pico_phase_start_circulation(PicoPhaseControl *phase)
 
 void pico_phase_set(PicoPhaseControl *phase, int32_t brew_phase)
 {
+    if (pico_local_cancelled())
+        return;
     PicoBrewController *state = phase->control->controller;
     char message[132];
     snprintf(message, 128, "%s %d", "setBrewState", (int)brew_phase);
@@ -174,6 +185,8 @@ void pico_phase_pause_until_resume(PicoPhaseControl *phase)
     pico_control_stop(phase->control);
     pico_actuators_steam_and_drain_off(phase->actuators);
     phase->ops->wait_for_resume(phase->context);
+    if (pico_local_cancelled())
+        return;
     pico_phase_set(phase, state->phase);
     if (state->phase == PICO_BREW_PHASE_HEATING || state->phase == PICO_BREW_PHASE_COOLING) {
         phase->ops->refresh_current_page(phase->context);
@@ -186,6 +199,11 @@ void pico_phase_finish_step(PicoPhaseControl *phase, const char *program_title)
     PicoBrewController *state = phase->control->controller;
     now(phase);
     pico_control_stop(phase->control);
+    if (pico_local_cancelled()) {
+        pico_actuators_all_off(phase->actuators);
+        state->phase = PICO_BREW_PHASE_IDLE;
+        return;
+    }
     phase->ops->show_ending_step(phase->context, program_title);
     phase->ops->display_flush(phase->context);
     pico_actuator_steam_off(phase->actuators);
