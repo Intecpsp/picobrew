@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-verify web-test
+.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test
 .NOTPARALLEL: verify
 all: standalone
 
@@ -17,7 +17,10 @@ standalone-test:
 standalone-arm-test:
 	$(PYTHON) tests/test_standalone_control_arm.py
 
-standalone-verify: standalone standalone-test standalone-arm-test
+standalone-storage-test: standalone
+	$(PYTHON) tests/test_native_storage.py --elf build/standalone/firmware/pico-s-pro-standalone.elf
+
+standalone-verify: standalone standalone-test standalone-arm-test standalone-storage-test
 
 web-test:
 	$(PYTHON) tests/test_web.py

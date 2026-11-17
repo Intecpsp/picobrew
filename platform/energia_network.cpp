@@ -212,7 +212,15 @@ static void file_begin(void *)
 }
 static bool file_open(void *, const char *name, uint32_t mode)
 {
-    return SerFlash.open(name, static_cast<int32_t>(mode)) == SL_FS_OK;
+    int32_t result = SerFlash.open(name, static_cast<int32_t>(mode));
+    if (result == SL_FS_OK)
+        return true;
+    /* SLFS retains a negative SimpleLink handle after an unsuccessful open.
+     * Clear it so a later request can retry. A rejected second open instead
+     * belongs to the existing caller and must leave that file untouched. */
+    if (result != SLFS_LIB_ERR_FILE_ALREADY_OPEN)
+        SerFlash.close();
+    return false;
 }
 static int file_read(void *)
 {

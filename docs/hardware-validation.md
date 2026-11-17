@@ -6,6 +6,12 @@ result below is therefore **not run**, rather than inferred from the software
 results. A successful link or emulator comparison cannot verify electrical
 wiring, peripheral firmware, flash contents, timing races or a heating cycle.
 
+A third-party Pico filesystem screenshot was reviewed on 2026-11-17. The
+[flash-layout analysis](flash-layout.md) records its allocations, the local
+storage budget and the four firmware/boot files needed for comparison. Its
+Pro/C identity is unknown; the listing does not complete any acceptance check
+on the owner's Pro.
+
 ## Device acceptance record
 
 | Check | Evidence to record | Current result |

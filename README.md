@@ -14,6 +14,8 @@ successful brew on an appliance.
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
 [device-key provisioning procedure](docs/standalone-provisioning.md).
+The [observed flash-layout analysis](docs/flash-layout.md) records the
+third-party directory listing, storage budget and device-identification limits.
 `make` now selects the standalone build on this branch. The preserved legacy
 profile remains available through `make firmware` and `make verify`.
 
@@ -89,8 +91,10 @@ preserves the complete earlier decompiler-export snapshot from commit
 checksums. It is separate from the current build. The original `mcuimg2.bin`
 and license notices remain available at the root; the comparison tests use
 the same original image under `reference/original-0.1.34.bin`.
-`CONTENTS.sha256` covers the current reconstruction and its packaged artifacts;
-the preserved export retains its own `legacy/SHA256SUMS.txt`.
+`CONTENTS.sha256` records the packaged recovery snapshot, not subsequent
+standalone branch edits. Use a fresh build report and the CI run for the
+specific commit to validate a standalone candidate. The preserved export
+retains its own `legacy/SHA256SUMS.txt`.
 
 ## Source map
 
