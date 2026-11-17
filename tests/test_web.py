@@ -203,6 +203,22 @@ class BrowserWorkflow(unittest.TestCase):
         self.assertFalse(self.page.evaluate("document.documentElement.scrollWidth > innerWidth"))
         self.page.screenshot(path=str(self.output / "recipes-mobile.png"), full_page=True)
 
+        # Legal labels need not contain spaces: neither a maximum-length name
+        # nor its ID should force the two-column mobile recipe list wider.
+        long_name, long_id = "W" * 31, "w" * 20
+        document = dict(id=long_id, **backend.recipe(long_name))
+        self.page.locator("#importFile").set_input_files({"name": "long-recipe.json", "mimeType": "application/json",
+                                                        "buffer": json.dumps(document).encode()})
+        expect(self.page.locator("#recipeName")).to_have_value(long_name)
+        self.page.locator("#saveRecipe").click()
+        expect(self.page.locator("#notice")).to_have_text("Recipe saved on the Pico.")
+        item = self.page.locator(".recipe-item").filter(has_text=long_name)
+        expect(item.locator("strong")).to_have_text(long_name)
+        expect(item.locator("small")).to_contain_text(long_id)
+        self.assertTrue(item.evaluate("el => el.scrollWidth <= el.clientWidth"))
+        self.assertFalse(self.page.evaluate("document.documentElement.scrollWidth > innerWidth"))
+        self.page.screenshot(path=str(self.output / "recipes-mobile-long-label.png"), full_page=True)
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
