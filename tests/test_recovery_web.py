@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 """Recovery browser workflows against the real C HTTP/core/readback/SHA code.
 
-Playwright intercepts one HTTP origin and dispatches requests into the portable
-fixture. No socket server, USB device, radio, physical flash or reset is used.
-The separate HTTP/native suites cover transport authorization and device I/O.
+A loopback HTTP server delivers real gzip responses and dispatches JSON into
+the portable fixture. No USB device, radio, physical flash or reset is used.
+The separate HTTP/native suites cover production framing and device I/O.
 """
 import copy
 import gzip
 import hashlib
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
 from pathlib import Path
@@ -21,9 +22,68 @@ from playwright.sync_api import expect, sync_playwright
 import test_recovery_http as backend
 
 ROOT = Path(__file__).resolve().parents[1]
-ORIGIN = "http://pico.test"
 TEST_KEY = "a" * 64  # Public test-only value; never included in firmware.
 LOCK = threading.Lock()
+
+
+class Handler(BaseHTTPRequestHandler):
+    def log_message(self, *_):
+        pass
+
+    def handle_request(self):
+        raw = self.rfile.read(int(self.headers.get("Content-Length", "0")))
+        path = urlsplit(self.path).path
+        body = json.loads(raw) if raw else None
+        recorded = {"method": self.command, "path": path, "url": self.server.origin + self.path,
+                    "headers": {name.lower(): value for name, value in self.headers.items()}, "body": body}
+        encoding = None
+        if path.startswith("/api/"):
+            with LOCK:
+                self.server.requests.append(recorded)
+                code = self.server.c.recovery_http_call(
+                    ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"].index(self.command),
+                    path.encode(), raw, len(raw), self.headers.get("Authorization") == "Bearer " + TEST_KEY, True)
+                payload = bytes(self.server.c.recovery_http_response())
+            if code <= 0:
+                self.server.errors.append("C fixture did not handle " + self.command + " " + path)
+                code, payload = 500, b'{"error":"fixture_unhandled"}'
+            mime = "application/json"
+        else:
+            with LOCK:
+                self.server.requests.append(recorded)
+            assets = {"/": ("index.html", "text/html"), "/recovery.js": ("recovery.js", "text/javascript"),
+                      "/style.css": ("style.css", "text/css")}
+            if path not in assets:
+                code, payload, mime = 404, b"", "text/plain"
+            else:
+                name, mime = assets[path]
+                payload = gzip.compress((ROOT / "recovery/web" / name).read_bytes(), mtime=0)
+                encoding, code = "gzip", 200
+        self.send_response(code)
+        self.send_header("Content-Type", mime)
+        self.send_header("Content-Length", str(len(payload)))
+        self.send_header("Connection", "close")
+        self.send_header("Cache-Control", "no-store")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("Content-Security-Policy", "default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'")
+        if encoding:
+            self.send_header("Content-Encoding", encoding)
+        self.end_headers()
+        self.wfile.write(payload)
+
+    do_GET = do_POST = do_PUT = do_PATCH = do_DELETE = handle_request
+
+
+def check_document(page, response, errors):
+    """Fail once at startup, with useful evidence, instead of locator timeouts."""
+    if (response is None or response.status != 200 or
+            response.headers.get("content-encoding") != "gzip" or
+            "text/html" not in response.headers.get("content-type", "") or
+            page.locator("#connectForm #key").count() != 1 or errors):
+        raise AssertionError("Recovery page did not load: " + json.dumps({
+            "url": page.url, "status": response.status if response else None,
+            "headers": response.headers if response else {}, "page_errors": errors,
+            "dom_excerpt": page.content()[:900]}, ensure_ascii=True))
 
 
 def package(web=True):
@@ -52,33 +112,60 @@ class RecoveryBrowser(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         backend.RecoveryHttp.setUpClass.__func__(cls)
-        cls.playwright = sync_playwright().start()
+        cls.server = cls.thread = cls.playwright = cls.browser = None
         try:
+            cls.server = ThreadingHTTPServer(("127.0.0.1", 0), Handler)
+            cls.server.c = cls.c
+            cls.origin = cls.server.origin = "http://127.0.0.1:" + str(cls.server.server_port)
+            cls.server.requests, cls.server.errors = [], []
+            cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
+            cls.thread.start()
+            cls.playwright = sync_playwright().start()
             executable = os.environ.get("PICOBREW_CHROMIUM") or shutil.which("chromium")
             cls.browser = cls.playwright.chromium.launch(executable_path=executable, headless=True,
                                                          args=["--no-sandbox"])
+            # Exercise Content-Encoding on the real HTTP wire, avoiding
+            # precompressed synthetic Playwright route.fulfill responses.
+            context = cls.browser.new_context()
+            try:
+                page = context.new_page()
+                page.on("pageerror", lambda error: cls.server.errors.append(str(error)))
+                response = page.goto(cls.origin, timeout=10000)
+                check_document(page, response, cls.server.errors)
+            finally:
+                context.close()
         except Exception:
-            cls.playwright.stop()
-            cls.temp.cleanup()
+            cls.tearDownClass()
             raise
         cls.output = ROOT / "build/recovery-preview"
         cls.output.mkdir(parents=True, exist_ok=True)
 
     @classmethod
     def tearDownClass(cls):
-        cls.browser.close()
-        cls.playwright.stop()
+        if cls.browser:
+            cls.browser.close()
+        if cls.playwright:
+            cls.playwright.stop()
+        if cls.server:
+            if cls.thread:
+                cls.server.shutdown()
+                cls.thread.join()
+            cls.server.server_close()
         cls.temp.cleanup()
 
     def setUp(self):
         with LOCK:
             self.c.recovery_http_reset()
         self.requests, self.errors = [], []
+        self.server.requests, self.server.errors = self.requests, self.errors
         self.context = self.browser.new_context(viewport={"width": 1280, "height": 1000})
+        self.addCleanup(self.context.close)
         self.page = self.context.new_page()
+        self.page.set_default_timeout(8000)
         self.page.on("pageerror", lambda error: self.errors.append(str(error)))
-        self.page.route("**/*", self.route)
-        self.page.goto(ORIGIN)
+        self.page.on("request", self.check_origin)
+        response = self.page.goto(self.origin)
+        check_document(self.page, response, self.errors)
 
     def tearDown(self):
         self.context.close()
@@ -92,33 +179,15 @@ class RecoveryBrowser(unittest.TestCase):
             result = json.loads(self.c.recovery_http_response())
         return code, result
 
-    def route(self, route):
-        request, url = route.request, urlsplit(route.request.url)
-        self.assertEqual(url.scheme + "://" + url.netloc, ORIGIN, "Unexpected external request")
-        body = request.post_data_json if request.method == "POST" else None
-        self.requests.append({"method": request.method, "path": url.path, "url": request.url,
-                              "headers": request.headers, "body": body})
-        headers = {"Cache-Control": "no-store", "X-Content-Type-Options": "nosniff",
-                   "Content-Security-Policy": "default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'"}
-        if url.path.startswith("/api/"):
-            code, result = self.call(url.path, body, request.method,
-                                     request.headers.get("authorization") == "Bearer " + TEST_KEY)
-            self.assertGreater(code, 0)
-            route.fulfill(status=code, json=result, headers=headers)
-            return
-        assets = {"/": ("index.html", "text/html"), "/recovery.js": ("recovery.js", "text/javascript"),
-                  "/style.css": ("style.css", "text/css")}
-        if url.path not in assets:
-            route.fulfill(status=404, body="", headers=headers)
-            return
-        name, mime = assets[url.path]
-        # Use the same deterministic compression format as the embedded assets.
-        route.fulfill(body=gzip.compress((ROOT / "recovery/web" / name).read_bytes(), mtime=0),
-                      content_type=mime, headers={**headers, "Content-Encoding": "gzip"})
+    def check_origin(self, request):
+        url = urlsplit(request.url)
+        if url.scheme + "://" + url.netloc != self.origin:
+            self.errors.append("Unexpected external request: " + request.url)
 
     def posts(self, operation=None):
-        return [request for request in self.requests if request["method"] == "POST" and
-                (operation is None or request["path"] == "/api/v1/recovery/" + operation)]
+        with LOCK:
+            return [request for request in self.requests if request["method"] == "POST" and
+                    (operation is None or request["path"] == "/api/v1/recovery/" + operation)]
 
     def connect(self):
         self.page.locator("#key").fill(TEST_KEY)
@@ -206,7 +275,8 @@ class RecoveryBrowser(unittest.TestCase):
         self.assertTrue(self.posts("select")[0]["body"]["trial"])
         self.assertEqual(bytes(self.c.recovery_http_boot()[:8]), bytes.fromhex("00 3d 00 20 65 87 78 56"))
         # No inventory request is sent after select: the real device restarts.
-        self.assertEqual(self.requests[-1]["path"], "/api/v1/recovery/select")
+        self.assertEqual([entry for entry in self.requests if entry["path"].startswith("/api/")][-1]["path"],
+                         "/api/v1/recovery/select")
 
     def test_new_plan_can_verify_installed_files_without_rewrite_and_select_default(self):
         self.connect()
