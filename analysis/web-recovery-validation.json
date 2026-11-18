@@ -44,7 +44,12 @@
     "command": "make recovery-web-test",
     "workflow": ".github/workflows/recovery.yml",
     "test_count": 7,
-    "result_source": "Use CI for the exact published commit; local Chromium is unavailable in this environment."
+    "result_source": "Use CI for the exact published commit; local Chromium is unavailable in this environment.",
+    "validated_commit": "350418bacf1d163bef8eb11388b24788c68c886a",
+    "result": "passed",
+    "workflow_run": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/actions/runs/44273364532",
+    "fixture": "Real loopback HTTP and gzip responses, backed by the portable C API/core and simulated files",
+    "visual_review": "Desktop and 390-pixel mobile CI screenshots inspected; no page overflow"
   },
   "safety_boundaries": [
     "No physical writes performed",

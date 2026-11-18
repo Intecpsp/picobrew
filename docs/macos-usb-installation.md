@@ -236,11 +236,13 @@ connected until the command has completed.
 
 ## First standalone startup
 
-The owner reported successful startup on 2026-11-18 and supplied an
-HTTP 200 health response with standalone mode, readiness and valid key
-configuration. The [runtime evidence](../analysis/device-runtime-20261118.json)
-records that result. The exact reset/cable sequence used for startup was
-not identified in the report; the recommended procedure follows.
+The owner reported successful startup of the earlier 161,720-byte standalone
+candidate on 2026-11-18 and supplied an HTTP 200 health response with standalone
+mode, readiness and valid key configuration. The
+[runtime evidence](../analysis/device-runtime-20261118.json) records that result.
+The new [1.0.0 candidate](release-1.0.0.md) has not yet been installed or
+physically exercised. The exact reset/cable sequence used for the earlier
+startup was not identified in the report; the recommended procedure follows.
 
 After `SUCCESS: standalone firmware and API key verified` and return to
 the shell, the RAM helper is still the last program the installer started.
@@ -262,10 +264,10 @@ startup, network access and physical output behavior remain separate
 checks in [hardware validation](hardware-validation.md).
 
 The expected code path shows the Pico splash, attempts the saved Wi-Fi
-connection, and reaches the regular menu. The inherited splash label is
-still `v0.1.34`; it does not distinguish this standalone build from stock.
-If an old-session resume prompt appears, choose Abort for this initial
-observation.
+connection, and reaches the regular menu. Standalone 1.0.0 shows `v1.0.0`,
+using the shared version in `include/picobrew/version.h`. The earlier
+standalone candidate retained the stock `v0.1.34` label. If an old-session
+resume prompt appears, choose Abort for this initial observation.
 
 On the front panel, open **Settings > Network > Status** and read the IP
 address. If a Wi-Fi connection is needed, use **Settings > Network >
@@ -276,41 +278,49 @@ fallback access point. From a browser on the same network, open:
 http://<pico-ip>/api/v1/health
 ```
 
-After initialization, this read-only public endpoint should include
-`"mode":"standalone"`, `"ready":true`, and `"auth_configured":true`.
-The response's `uptime_ms` varies. This is the running-firmware identity
-check; it requires no API key. The browser console is at
-`http://<pico-ip>/`. Record the actual response before starting a program.
+After initialization, the 1.0.0 read-only public endpoint should include
+`"firmware_version":"1.0.0"`, `"api_version":1`, `"mode":"standalone"`,
+`"ready":true`, and `"auth_configured":true`. The response's `uptime_ms`
+varies. This is the running-firmware identity check; it requires no API key.
+The browser console is at `http://<pico-ip>/`. Record the actual response
+before starting a program.
 
-### Network changes may need a reboot in this candidate
+### Network changes in 1.0.0
 
-The owner changed the saved SSID after startup and observed the new SSID
-label with an address outside the expected subnet. A reboot resolved the
-address mismatch, followed by the successful health request. The trace
-does not establish the exact internal state that caused the mismatch.
+With the earlier candidate, the owner changed the saved SSID and observed
+the new SSID label with an address outside the expected subnet. A reboot
+resolved the address mismatch, followed by the successful health request.
+That report does not establish the exact internal state that caused the
+mismatch.
 
-Two source findings explain why the screen alone is insufficient evidence
-of a successful network change. `platform/energia_network.cpp:begin()`
-returns the current status without issuing `sl_WlanConnect()` while the
-SDK's `_connecting` flag is set. In addition,
-`src/ui/diagnostics.c:pico_ui_show_network_addresses()` displays the saved
-SSID, not the associated SSID, and reads addressing even after a failed
-connection attempt. These findings are consistent with the observation;
-this candidate has not been patched for them. Rebooting after a changed
-network worked for the owner. Router/client information and an actual
-health response are stronger evidence of reachability than the displayed
-SSID alone.
+Standalone 1.0.0 includes the reconnect fix in
+`platform/energia_network.cpp`: it disconnects the old association, clears
+the cached connection and address state, enables DHCP explicitly, and
+requests the selected network. Connection success requires a fresh IPv4
+DHCP event, and old-network HTTP sockets are closed before reconnecting.
+The intended behavior is to obtain the new network's address without a
+manual reboot. The native Wi-Fi tests cover this flow; its behavior on the
+owner's Pico still needs physical verification with 1.0.0.
+
+After changing networks, wait for the connection attempt to complete,
+check **Settings > Network > Status**, and request `/api/v1/health` at the
+new address. Confirm `"firmware_version":"1.0.0"` and compare the address
+with the router's client information. The displayed saved SSID alone does
+not establish that the Pico joined that network or acquired a valid lease.
 
 ## Browser authentication and observation
 
-The owner's health response returned:
+For reference, the owner's earlier 161,720-byte candidate returned this
+health response before firmware-version reporting was added:
 
 ```json
 {"api_version":1,"mode":"standalone","ready":true,"auth_configured":true,"uptime_ms":132543}
 ```
 
-The public health endpoint does not verify a bearer-authenticated request.
-To test that next, open `http://<pico-ip>/` in a browser. The initial
+The public health endpoint alone does not verify a bearer-authenticated
+request. The owner's later connected-browser screenshot showed protected
+status and OLED readings on that earlier candidate. Repeat the browser
+check after installing 1.0.0: open `http://<pico-ip>/` in a browser. The initial
 **Connect to your brewer.** dialog has a **Device API key** field and
 **Connect** button. On the owner's Mac, copy the existing key directly
 to the clipboard without printing it:
@@ -327,9 +337,12 @@ readings before starting a program. The initial login and polling use
 GET requests; they do not start a brew or maintenance cycle. The key is
 stored in that browser tab's session; Disconnect removes it from the tab.
 
-Authenticated browser access, actual sensor readings and output behavior
-remain pending in the physical acceptance record. A returned temperature
-alone will not establish its calibration.
+Authenticated browser access and displayed sensor/OLED readings were
+observed on the earlier candidate; those observations do not validate the
+new 1.0.0 build. Its browser, network-change and physical output acceptance
+checks remain pending. Sensor calibration, interlocks and controlled thermal
+operation also remain unverified; a returned temperature alone does not
+establish its calibration.
 
 ## Restore the original application
 
