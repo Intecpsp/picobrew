@@ -21,8 +21,9 @@ device node.
 - No flash write or erase was performed. The standard `rbtl3100s.dll` loader
   was uploaded to SRAM only, with its exact contents checked before upload.
 
-This establishes a working read path and a verified device backup. It does
-not establish a working firmware installation or restoration procedure.
+This establishes a working read path and a verified device backup. The
+owner subsequently completed [standalone installation and readback](../analysis/device-install-20261118.json)
+on 2026-11-18. Physical stock restoration and standalone boot remain untested.
 
 ## What the connection investigation established
 
@@ -53,6 +54,11 @@ the initial `00 cc` ACK while BREAK is held, releases it, and immediately
 sends GET_VERSION (`00 03 2f 2f`). Two owner runs received the command ACK
 and a complete, checksum-valid version response identifying `0.4.1.2`.
 Manual blue RESET-button attempts were not part of the successful method.
+TI also documents resetting a running target while BREAK is held; the
+[installation guide](macos-usb-installation.md#enter-a-fresh-programming-session)
+describes that alternative when mains cannot be disconnected. The later
+successful installation transcript does not identify which entry action
+the owner used.
 
 The existing six-pin attachment remained in place. With USB unplugged the
 owner reported normal appliance operation; a blank display with USB
@@ -181,8 +187,9 @@ validation.
 
 The separate [guarded installation workflow](macos-usb-installation.md)
 starts with API-key provisioning and readback, which the owner completed
-successfully on 2026-11-17. Application installation is the next physical
-step. The probe, backup and
+successfully on 2026-11-17. Application installation and complete readback
+passed on 2026-11-18; first standalone startup is the next physical step.
+The probe, backup and
 preflight scripts remain read-only; they do not acquire file-write support
 when the writer is installed beside them.
 

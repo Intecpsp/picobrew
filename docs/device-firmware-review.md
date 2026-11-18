@@ -16,10 +16,11 @@ The complete backup is 1,048,576 bytes with SHA-256:
 The owner's two complete reads matched byte-for-byte. Only the selected
 firmware and boot metadata were uploaded for review; the full flash and
 saved network credentials remain private. The owner subsequently verified
-API-key creation and existing-file rewrite on the appliance; application
-installation and restoration have not yet been demonstrated.
+API-key creation and existing-file rewrite on the appliance, followed by
+standalone application installation and full readback on 2026-11-18.
+Standalone execution and stock restoration have not yet been demonstrated.
 
-## Firmware identity
+## Firmware identity in the original backup
 
 | Logical filename | Content bytes | Finding |
 | --- | ---: | --- |
@@ -195,8 +196,9 @@ states that opening an existing file for write erases its contents.
 It is therefore not an atomic update. The separate guarded writer includes
 an existing-file restore command using the exact stock application from
 the verified backup. Normal file creation and existing-file rewrite have
-now been verified on the small API-key file. Application writing and
-restoration have not yet been demonstrated. If an interrupted file cannot
+now been verified on the API-key file, and the pinned application was
+written and read back successfully on 2026-11-18. Stock restoration and
+interrupted-write recovery remain untested. If an interrupted file cannot
 be reopened, the tool stops;
 it does not delete or recreate the application based on an ambiguous
 file-info result. See [the guarded USB workflow](macos-usb-installation.md).
@@ -218,12 +220,15 @@ marker also requires complete original-application readback and unchanged
 protected files. The [sanitized result](../analysis/device-key-provisioning-20261117.json)
 records the terminal evidence without any key contents or digest.
 
-The next step is the guarded `install` command in
-[Stage 2 of the macOS guide](macos-usb-installation.md#stage-2-install-the-pinned-standalone-candidate).
-It rechecks live state and the matching key before writing the pinned
-161,720-byte candidate into the existing image 2 allocation. The current
-boot record remains selected and unchanged. The tool verifies complete
-readback and stops in the programming session; first standalone startup
-is a separate physical validation step. Successful key writing does not
-establish application installation, interrupted-write restoration or
-standalone boot.
+The owner subsequently completed the guarded `install` command on
+2026-11-18 at 00:14:02 (owner terminal timestamp). The existing image 2
+allocation was rewritten with the pinned 161,720-byte candidate. The
+success marker requires complete application readback and key verification;
+the printed final protected hashes match the originals. The
+[sanitized installation result](../analysis/device-install-20261118.json)
+records the evidence. The boot record remains selected and unchanged.
+
+The next step is [first standalone startup](macos-usb-installation.md#first-standalone-startup).
+The installer left the application unstarted. Installation and readback
+do not establish a working standalone boot, hardware outputs or
+interrupted-write restoration.

@@ -7,12 +7,13 @@ The live boot record is `01 3d 00 20 ba dc cd ab`, selecting
 the firmware identities and allocation constraints.
 
 `tools/pico_flash_install.py` provides three separate operations. **Stage 1
-passed on the owner's Pico on 2026-11-17: API-key creation, readback,
-existing-file rewrite and verification all succeeded. The next hardware
-step is Stage 2.** Application installation, stock restoration and
-standalone boot remain physically untested. The successful key write
-exercises the normal file-write protocol; it does not demonstrate recovery
-from a power interruption during an application write.
+passed on 2026-11-17, and Stage 2 passed on 2026-11-18: the standalone
+image and matching API key were verified on the owner's Pico. The next
+hardware step is first standalone startup.** Stock restoration and
+standalone boot remain physically untested. Successful installation does
+not demonstrate recovery from a power interruption during an application
+write. The [sanitized installation result](../analysis/device-install-20261118.json)
+records the terminal evidence and the verified tool's success conditions.
 
 | Command | Files it may write | Purpose |
 | --- | --- | --- |
@@ -61,6 +62,33 @@ offline-inspection modules. Run it from the checkout; copying only the
 writer into Downloads is insufficient. The proven transport modules are
 unchanged.
 
+## Enter a fresh programming session
+
+The tool holds BREAK while waiting for the CC3200 to restart. It neither
+resets the board automatically nor resumes the RAM helper left by a
+previous command. TI's [SWRU577, section 5.3.1](https://www.ti.com/lit/ug/swru577/swru577.pdf)
+explicitly permits powering on the device **or resetting it if already
+running**, after BREAK is asserted.
+
+Two entry procedures are available:
+
+- **Power-on procedure:** with the Pico's mains disconnected and USB
+  connected, start the command. On the initial `BREAK asserted` message,
+  reconnect mains and turn the Pico on. This procedure produced the
+  verified backup, preflight and key-provisioning results.
+- **Reset-button alternative:** leave mains and USB connected, start the
+  command, and press and release the board's blue RESET button once when
+  the initial `BREAK asserted` message appears. This follows TI's reset
+  sequence; the successful installation transcript does not explicitly
+  identify the owner's reset action, so it is not recorded as separate
+  physical confirmation of this entry method.
+
+The current tool prints `Do not press Return or RESET` for the earlier
+power-on procedure. When using the reset-button alternative, press RESET
+once at the **initial** BREAK prompt and still do not press Return. Once
+the handshake begins, do not reset again or disconnect power/USB until
+the command exits. The later `APPS HANDSHAKE` is handled by the tool.
+
 ## Stage 1: provision and verify the API key
 
 The owner completed this stage in the run beginning at 23:49:30 on
@@ -90,8 +118,7 @@ file and never prints its contents, hash or file-access token. An existing
 matching device key is reused and verified; a different key causes an
 abort. Do not generate a new key to work around a mismatch.
 
-Turn the Pico off and disconnect its mains power, leaving USB connected.
-Run:
+Choose either entry procedure above and run:
 
 ```sh
 PICO_ROOT="$HOME/Code/pico-pro-source"
@@ -105,9 +132,8 @@ sudo "$PICO_ROOT/.venv/bin/python" \
     --output "$PICO_REPORT"
 ```
 
-On **`BREAK asserted`**, reconnect the Pico's mains and turn it on. Do not
-press the blue RESET button or wait for a Return prompt. This is the same
-sequence that succeeded for the backup and preflight.
+On the initial **`BREAK asserted`**, perform the chosen power-on or
+reset-button action. Do not wait for a Return prompt.
 
 The tool checks the live protected images, original application, boot
 record, flash geometry and allocation metadata. If the key is absent,
@@ -124,11 +150,15 @@ SUCCESS: API key provisioning and existing-file write verification completed
 ```
 
 Return this run's terminal output for review before proceeding to Stage 2.
-The original application remains selected throughout Stage 1. After the
-tool exits, power off and disconnect mains before disconnecting USB; normal
-power-on with USB disconnected should still run the original application.
+The original application remains selected throughout Stage 1. Each subsequent
+command needs a fresh programming session using the procedure above.
 
 ## Stage 2: install the pinned standalone candidate
+
+The owner completed this stage in the run beginning at 00:14:02 on
+2026-11-18. The application was written and read back successfully, and
+the tool returned to the shell without starting it. The procedure below
+is retained for reference; the immediate next step is first startup.
 
 Proceed after Stage 1 has physically passed. The candidate in
 `firmware/standalone/pico-s-pro-standalone.bin` is exactly **161,720 bytes**,
@@ -144,7 +174,7 @@ the current image 2. Unknown or partial image contents require the restore
 path; they are not overwritten by a normal install. A different build,
 even from this branch, needs a reviewed tool/profile update.
 
-With the same power sequence:
+With either programming-entry procedure above:
 
 ```sh
 PICO_ROOT="$HOME/Code/pico-pro-source"
@@ -181,6 +211,48 @@ Keep USB connected and review the installation result before attempting
 that first startup. During the application write, keep mains and USB
 connected until the command has completed.
 
+## First standalone startup
+
+After `SUCCESS: standalone firmware and API key verified` and return to
+the shell, the RAM helper is still the last program the installer started.
+USB cleanup releases BREAK and returns the adapter to the macOS driver;
+it does not start the installed application or verify the header's boot
+signals. A normal boot with USB still attached has not been established
+for this six-pin arrangement.
+
+For the first startup, leave the Pico's mains connected, disconnect only
+the USB-C cable from the SparkFun adapter, leave the six-pin header in
+place, and press and release the board's blue RESET button once. This
+uses the owner's earlier observation that normal operation returned with
+USB disconnected. It is the next validation step, not a recorded
+successful standalone boot.
+
+Observe the display before attempting any brewing or maintenance program.
+Record a blank screen, reset loop or error exactly as shown. Firmware
+startup, network access and physical output behavior remain separate
+checks in [hardware validation](hardware-validation.md).
+
+The expected code path shows the Pico splash, attempts the saved Wi-Fi
+connection, and reaches the regular menu. The inherited splash label is
+still `v0.1.34`; it does not distinguish this standalone build from stock.
+If an old-session resume prompt appears, choose Abort for this initial
+observation.
+
+On the front panel, open **Settings > Network > Status** and read the IP
+address. If a Wi-Fi connection is needed, use **Settings > Network >
+Connect to WiFi**. The firmware does not automatically configure a new
+fallback access point. From a browser on the same network, open:
+
+```text
+http://<pico-ip>/api/v1/health
+```
+
+After initialization, this read-only public endpoint should include
+`"mode":"standalone"`, `"ready":true`, and `"auth_configured":true`.
+The response's `uptime_ms` varies. This is the running-firmware identity
+check; it requires no API key. The browser console is at
+`http://<pico-ip>/`. Record the actual response before starting a program.
+
 ## Restore the original application
 
 The stock restore source is the verified full backup, not a freshly
@@ -188,7 +260,7 @@ downloaded image or the cloud-dependent recovery application. The writer
 extracts exactly 162,792 original bytes with SHA-256
 `e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702`.
 
-Start a new programming session with the same power sequence:
+Start a fresh programming session with either entry procedure above:
 
 ```sh
 PICO_ROOT="$HOME/Code/pico-pro-source"

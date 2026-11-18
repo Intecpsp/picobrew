@@ -3,10 +3,12 @@
 The source, test executables and complete firmware image have been built and
 checked offline. The owner completed a read-only serial-flash backup on the
 actual Pico Pro on 2026-11-17: two complete 1 MiB reads matched byte-for-byte.
-The [macOS backup record](macos-usb-backup.md) documents that result. No
-standalone firmware has been installed or booted on the appliance. A successful
-link, emulator comparison or flash read cannot verify peripheral behavior,
-application timing, firmware installation/recovery or a heating cycle.
+The [macOS backup record](macos-usb-backup.md) documents that result. The owner
+installed the pinned standalone image and verified its complete readback on
+2026-11-18. The tool left the application unstarted; first boot remains the
+next physical step. A successful link, emulator comparison or file readback
+cannot verify peripheral behavior, application timing, recovery or a heating
+cycle.
 
 The owner's extracted firmware and boot records were also reviewed. The
 main application exactly matches the original v0.1.34 reference. The
@@ -16,8 +18,10 @@ constraints. The owner also completed live logical-file preflight on
 2026-11-17: all three firmware hashes match, image 3 is absent, and
 `01 3d 00 20 ba dc cd ab` confirms normal selector 1 for image 2.
 API-key creation, readback, existing-file rewrite and final verification
-also passed on that date. Application installation/restoration and
-standalone boot remain outstanding. The earlier
+also passed on that date. The [installation result](../analysis/device-install-20261118.json)
+records the later 161,720-byte application rewrite, full readback, matching
+key and unchanged protected files. Stock restoration, interrupted-write
+recovery and standalone boot remain outstanding. The earlier
 [third-party screenshot](flash-layout.md) has a different layout and unknown
 Pro/C identity.
 
@@ -27,7 +31,8 @@ Pro/C identity.
 | --- | --- | --- |
 | Identify device | Main MCU/board revision, auxiliary-controller version, current firmware and serial log | Saved main application is an exact v0.1.34 reference match; remaining hardware identification not run |
 | Preserve recovery | Verified existing application/recovery image and boot-file backup; proven way to restore the device | Full 1 MiB backup and live logical-file preflight verified on 2026-11-17; guarded stock restore implemented but not physically validated |
-| Validate file writes | API key create, readback, existing-file rewrite and second readback, followed by protected-image checks | Passed on 2026-11-17; original application and protected-file postchecks passed; application-write and interrupted-write behavior remain untested |
+| Validate file writes | API key create, readback, existing-file rewrite and second readback, followed by protected-image checks | Passed on 2026-11-17; original application and protected-file postchecks passed |
+| Install standalone image | Rewrite the existing image 2 allocation, compare every application byte, verify the key and recheck protected files | Passed on 2026-11-18; pinned 161,720-byte candidate verified; application not started; interrupted-write recovery remains untested |
 | First boot with outputs isolated | Reset reaches setup/main menu; no unexpected pump/heater activation; reset and service-mode behavior | Not run |
 | Display/encoder | Native font, rotation, navigation, click debounce and all three language selections | Not run |
 | Sensors | Raw ADC counts and independently measured wort/thermoblock temperature at several known points | Not run |

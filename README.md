@@ -7,9 +7,10 @@ server, registration request or firmware-update service. The browser assets
 are embedded in the application; no companion server or CDN is required.
 
 **This is an experimental firmware candidate. It has not run on a physical
-Pico Pro or Pico S.** Build, host simulation and ARM instruction tests do not
-establish electrical I/O, radio/flash timing, installation/recovery, or a
-successful brew on an appliance.
+Pico Pro or Pico S.** Installation and complete readback passed on the owner's
+Pico Pro on 2026-11-18; first boot is the next physical step. Build, host
+simulation and ARM instruction tests do not establish electrical I/O,
+radio/flash timing, recovery, or a successful brew on an appliance.
 
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
@@ -46,7 +47,7 @@ helper, with regression coverage for standalone and legacy behavior.
 | `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
 | `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
 | `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Qualified on the owner's Mac/Pico; selector 1 confirmed |
-| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite verified; application installation and restoration pending |
+| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite and standalone installation/readback verified; stock restoration pending |
 
 The probe, backup and preflight tools enforce read-only flash access. The
 separate [guarded writer](docs/macos-usb-installation.md) uses the same pinned
@@ -54,12 +55,15 @@ temporary SRAM helper and requires the verified original backup. The owner
 completed `/local/api.key` creation, readback, existing-file rewrite and
 second readback on 2026-11-17; final application and protected-file checks
 passed. The [physical key result](analysis/device-key-provisioning-20261117.json)
-records that evidence. Application installation and stock restoration are
-explicit, separate commands and remain physically untested, as does
-standalone boot. The [macOS backup
-guide](docs/macos-usb-backup.md) includes the pinned dependencies and exact
-power-on sequence. Keep full backups under ignored `firmware/backups/` or
-`private/`.
+records that evidence. On 2026-11-18, the owner installed the pinned
+161,720-byte standalone image into the existing image 2 allocation. Complete
+application readback, key verification and protected-file postchecks passed;
+the tool did not start the application. The [physical installation
+result](analysis/device-install-20261118.json) records this separate milestone.
+First standalone boot, stock restoration and interrupted-write recovery remain
+physically untested. The [macOS backup guide](docs/macos-usb-backup.md) includes
+the pinned dependencies and the successful backup procedure. Keep full backups
+under ignored `firmware/backups/` or `private/`.
 
 ## Standalone features
 

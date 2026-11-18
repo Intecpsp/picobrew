@@ -12,8 +12,10 @@ the existing-file write mode. The owner completed this operation on
 2026-11-17 at 23:49:30; creation, both readbacks, the existing-file rewrite,
 and final original-application/protected-file checks passed. The
 [sanitized physical result](../analysis/device-key-provisioning-20261117.json)
-records that evidence. This operation did not install an application;
-standalone installation, startup and stock restoration remain untested.
+records that evidence. A separate `install` run on 2026-11-18 subsequently
+wrote and verified the standalone image and matching key; see the
+[installation result](../analysis/device-install-20261118.json).
+Standalone startup and stock restoration remain untested.
 
 This document also provides a TI-documented UniFlash user-file workflow,
 which has **not been exercised on a physical Pico Pro or Pico S**. It assumes that the
@@ -45,8 +47,9 @@ keep it outside tracked repository files.
 ### Guarded direct USB on the owner's Mac
 
 Follow the [macOS installation guide](macos-usb-installation.md#stage-1-provision-and-verify-the-api-key).
-It uses the repository's pinned environment and the same power-on sequence
-as the successful backup and preflight. A different existing device key is
+It uses the repository's pinned environment and the documented
+[bootloader-entry sequence](macos-usb-installation.md#enter-a-fresh-programming-session).
+A different existing device key is
 never silently replaced; reuse the original matching host key when retrying.
 The script accepts exactly the generator's 65-byte lowercase-hex-plus-LF
 format and refuses a group/world-readable key file.
