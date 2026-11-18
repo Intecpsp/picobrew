@@ -226,6 +226,35 @@ The original backup, probe and preflight remain usable independently.
 those tests include immediate erase on existing-write open and failures
 after a command may already have taken effect.
 
+### APPS handshake diagnostics
+
+The owner's first `provision-key` attempt on 2026-11-17 at 23:33:53
+verified the local backup and initial ROM version, then stopped at the
+second `APPS INITIAL ACK` handshake. It did not reach helper upload or
+any filesystem operation. The [sanitized attempt record](../analysis/device-key-attempt-20261117.json)
+preserves that distinction. Key provisioning is still physically unverified.
+
+Revision 1 replaced the underlying error with `ProbeError: operation
+failed; device payload omitted`, which concealed whether the device was
+silent, returned NACK, or reached the unexpected-byte limit. That output
+does not establish a baud, wiring or timing cause.
+
+Revision 2 keeps the same inherited BREAK sequence and adds safe failure
+diagnostics. A timeout with no bytes, for example, is reported as:
+
+```text
+STOPPED during RAM loader setup: APPS INITIAL ACK: timed out; received 0 bytes; wait limit 5s; elapsed ...s
+No Pico flash or file write was attempted
+```
+
+This is an example of the new reporting, not a recovered explanation of
+the earlier failure. The report's `error.handshake` field distinguishes
+timeout, NACK and the 1,024-byte bound without storing received payload.
+It also records `helper_uploaded_bytes`, `helper_executed` and
+`persistent_write_attempted`. No automatic retry or connection-setting
+change was added. Use a new report path and the same host key for a fresh
+attempt; the prior report and journal remain evidence.
+
 ## Protocol references
 
 The wire framing and helper come from the pinned

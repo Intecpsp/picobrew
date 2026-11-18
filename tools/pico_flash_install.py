@@ -40,9 +40,10 @@ from types import MappingProxyType
 import pico_flash_backup_v2 as backup
 import pico_flash_preflight as preflight
 import pico_inspect_backup as inspection
+import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 1
+INSTALL_REVISION = 2
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
@@ -75,6 +76,73 @@ class InstallError(backup.BackupError):
     """Messages must never include key contents, tokens, or raw receive bytes."""
 
 
+class HandshakeError(InstallError):
+    """An actionable ACK failure containing only fixed labels and numbers."""
+
+    def __init__(self, diagnostic):
+        self.diagnostic = dict(diagnostic)
+        reason = {"timeout": "timed out", "nack": "NACK received",
+                  "byte_limit": "receive limit reached without ACK"}[diagnostic["reason"]]
+        message = (f"{diagnostic['stage']}: {reason}; "
+                   f"received {diagnostic['received_bytes']} bytes")
+        if "timeout_seconds" in diagnostic:
+            message += f"; wait limit {diagnostic['timeout_seconds']:g}s"
+        if "elapsed_seconds" in diagnostic:
+            message += f"; elapsed {diagnostic['elapsed_seconds']:.3f}s"
+        super().__init__(message)
+
+
+def _handshake_diagnostic(exc):
+    """Decode only the pinned probe's ACK-error templates, never echo RX.
+
+    Keeping this conversion outside the probe preserves the connection code
+    that succeeded on the owner's hardware. Unrecognized exceptions remain
+    redacted. Hex tokens are counted, not retained in reports or messages.
+    """
+    original = exc
+    for _ in range(3):
+        if isinstance(original, probe.ProbeError):
+            break
+        original = original.__cause__
+        if original is None:
+            return None
+    if not isinstance(original, probe.ProbeError):
+        return None
+    message = str(original)
+    stage_pattern = r"(?P<stage>INITIAL ACK|COMMAND ACK|APPS INITIAL ACK)"
+    tokens = r"(?:NO BYTES|[0-9a-f]{2}(?: [0-9a-f]{2}){0,1023})"
+    match = re.fullmatch(stage_pattern + r": timeout after "
+                         r"(?P<seconds>[0-9]+(?:\.[0-9]+)?(?:e[+-]?[0-9]+)?)s\. RX: "
+                         + r"(?P<rx>" + tokens + r")", message)
+    if match:
+        received = 0 if match["rx"] == "NO BYTES" else (len(match["rx"]) + 1) // 3
+        seconds = float(match["seconds"])
+        if not 0 < seconds <= 300:
+            return None
+        return {"stage": match["stage"], "reason": "timeout",
+                "received_bytes": received, "timeout_seconds": seconds}
+    match = re.fullmatch(stage_pattern + r": NACK received\. RX: (?P<rx>" + tokens + r")", message)
+    if match and match["rx"].endswith("00 33"):
+        return {"stage": match["stage"], "reason": "nack",
+                "received_bytes": (len(match["rx"]) + 1) // 3}
+    match = re.fullmatch(stage_pattern + r": received 1024 bytes without an ACK\. "
+                         r"First 64: [0-9a-f]{2}(?: [0-9a-f]{2}){63}", message)
+    if match:
+        return {"stage": match["stage"], "reason": "byte_limit", "received_bytes": 1024}
+    return None
+
+
+def _safe_exception(exc, elapsed_seconds=None):
+    if isinstance(exc, InstallError):
+        return exc
+    diagnostic = _handshake_diagnostic(exc)
+    if diagnostic is not None:
+        if elapsed_seconds is not None:
+            diagnostic["elapsed_seconds"] = round(max(0.0, elapsed_seconds), 3)
+        return HandshakeError(diagnostic)
+    return InstallError(_safe_error(exc))
+
+
 def report(message):
     print(message, flush=True)
 
@@ -84,6 +152,9 @@ def _safe_error(exc):
         return str(exc)
     if isinstance(exc, KeyboardInterrupt):
         return "Interrupted"
+    diagnostic = _handshake_diagnostic(exc)
+    if diagnostic is not None:
+        return str(HandshakeError(diagnostic))
     return f"{type(exc).__name__}: operation failed; device payload omitted"
 
 
@@ -243,6 +314,18 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                 # Match the proven scanner's ACK/NACK/deadline behavior, but
                 # retain only the previous byte, never a diagnostic RX buffer.
                 raise InstallError(_safe_error(exc)) from None
+
+        def _try_breaking(self, tries=5, timeout=1):
+            # Delegate the entire BREAK/ACK/release sequence to the physically
+            # proven backup implementation. Only failure reporting changes.
+            started = time.monotonic()
+            try:
+                return super()._try_breaking(tries, timeout)
+            except BaseException as exc:
+                self.failed = True
+                if isinstance(exc, KeyboardInterrupt):
+                    raise
+                raise _safe_exception(exc, time.monotonic() - started) from None
 
         def _live_state_ok(self):
             if self.flash_size != BACKUP_SIZE or not self.layout:
@@ -819,7 +902,10 @@ def main(argv=None):
     phase = "local validation"
     details = {"install_revision": INSTALL_REVISION, "mode": args.mode,
                "started_utc": datetime.now(timezone.utc).isoformat(),
-               "success": False, "operation_verified": False, "warnings": []}
+               "success": False, "operation_verified": False, "warnings": [],
+               "mutation_attempts": [], "application_write_attempted": False,
+               "application_readback_verified": False, "persistent_write_attempted": False,
+               "helper_uploaded_bytes": 0, "helper_executed": False}
     try:
         owner = backup.sudo_owner()
         original, details["backup"] = verify_backup(args.backup)
@@ -883,7 +969,7 @@ def main(argv=None):
                                 raise
                             # USBSession records the escaping exception. Only
                             # sanitized messages may reach that error buffer.
-                            raise InstallError(_safe_error(exc)) from None
+                            raise _safe_exception(exc) from None
                 except probe_module.CH340USBError:
                     if not details["operation_verified"] or not transport.details.get("cleanup_errors"):
                         raise
@@ -896,6 +982,8 @@ def main(argv=None):
                 result = 130
             except Exception as exc:
                 details["error"] = {"phase": phase, "type": type(exc).__name__, "message": _safe_error(exc)}
+                if isinstance(exc, HandshakeError):
+                    details["error"]["handshake"] = dict(exc.diagnostic)
                 result = 1
             finally:
                 if "error" in details:
@@ -904,6 +992,9 @@ def main(argv=None):
                     details["mutation_attempts"] = connection.mutation_attempts
                     details["application_write_attempted"] = connection.application_write_attempted
                     details["application_readback_verified"] = connection.application_verified
+                    details["persistent_write_attempted"] = bool(connection.mutation_attempts)
+                    details["helper_uploaded_bytes"] = connection.helper_sent
+                    details["helper_executed"] = connection.helper_executed
                 if transport is not None:
                     details["usb"] = _usb_summary(transport.details)
                 details["completed_utc"] = datetime.now(timezone.utc).isoformat()
@@ -912,7 +1003,10 @@ def main(argv=None):
             report(SUCCESS_MARKERS[args.mode])
         else:
             error = details.get("error", {})
-            report("STOPPED: " + error.get("message", "The operation did not verify"))
+            report("STOPPED during " + error.get("phase", phase) + ": "
+                   + error.get("message", "The operation did not verify"))
+            if not details["persistent_write_attempted"]:
+                report("No Pico flash or file write was attempted")
             if details.get("application_write_attempted") and not details.get("application_readback_verified"):
                 report("APPLICATION: image2 may be incomplete; use a fresh restore session with the original backup")
             report("No retries or automatic recovery writes were attempted")

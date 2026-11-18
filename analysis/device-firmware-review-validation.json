@@ -6,6 +6,7 @@
   "bootloader_instruction_emulation_cases": 19,
   "physical_logical_boot_record_read_pending": false,
   "physical_preflight_record": "analysis/device-preflight-20261117.json",
+  "physical_key_attempt_record": "analysis/device-key-attempt-20261117.json",
   "physical_preflight_qualified": true,
   "logical_boot_record_hex": "01 3d 00 20 ba dc cd ab",
   "selected_application": "/sys/mcuimg2.bin",
@@ -56,24 +57,25 @@
     {
       "command": "make usb-test (with requirements-usb.txt installed)",
       "passed": true,
-      "tests": 96,
+      "tests": 99,
       "scope": "Synthetic wire, native-queue and offline-inspection tests; no physical hardware"
     },
     {
       "command": "python tests/test_pico_flash_install.py (with requirements-usb.txt installed)",
       "passed": true,
-      "tests": 28,
-      "parameterized_subcases": 66,
-      "scope": "Synthetic destructive file-write model, protocol guards, restore, private journals and credential redaction; rerun after final ACK-buffer hardening"
+      "tests": 31,
+      "parameterized_subcases": 80,
+      "scope": "Synthetic destructive file-write model, protocol guards, restore, private journals, credential redaction and classified initial/APPS handshake failures"
     }
   ],
   "preflight_script_sha256": "ff260976fcf17ae298bb8f6ead68340204a6cec39b123e757eb5c5b1202633f2",
   "browser_sources_changed": false,
   "live_file_write_or_restore_validated": false,
   "guarded_writer_tool": "tools/pico_flash_install.py",
-  "guarded_writer_sha256": "2b9f2c956fd681646256383027294f5cdb1d211d702f233a45527f3b823c0d55",
+  "guarded_writer_sha256": "e8f5c6ebe91711b097b63b042356832ca2338c51194dc6cfb332a46ace5fd94e",
   "next_physical_step": "provision-key only; application installation and physical restore remain pending",
   "bootloader_audit_tool": "tools/audit_device_bootloader.py",
   "bootloader_audit_results": "analysis/device-bootloader-emulation-results.json",
-  "flash_allocation_record": "analysis/device-flash-layout.json"
+  "flash_allocation_record": "analysis/device-flash-layout.json",
+  "guarded_writer_revision": 2
 }

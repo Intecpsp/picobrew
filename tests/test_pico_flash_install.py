@@ -792,6 +792,141 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(fake.mutations, [])
         self.assert_secrets_absent(logs.getvalue())
 
+    def test_bootstrap_handshake_failures_are_classified_without_persistent_writes(self):
+        # Keep the actual pinned ACK parser and inherited BREAK sequence. A
+        # virtual parser clock avoids waiting60/5 wall-clock seconds for silence.
+        class ParserClock:
+            def __init__(self):
+                self.value = 0.0
+            def __call__(self):
+                self.value += 0.001
+                return self.value
+
+        class FaultAtBreak(FakeInstallUSB):
+            def __init__(self, files, break_number, reply):
+                super().__init__(files)
+                self.failure_break = break_number
+                self.failure_reply = reply
+            @property
+            def break_condition(self):
+                return self._break
+            @break_condition.setter
+            def break_condition(self, value):
+                self._break = bool(value)
+                if value:
+                    self.break_count += 1
+                    self.rx.extend(self.failure_reply if self.break_count == self.failure_break else ACK)
+
+        cases = (
+            ("INITIAL ACK", 1, b"", "timeout", 0, 60),
+            ("INITIAL ACK", 1, b"\x00\x33", "nack", 2, None),
+            ("APPS INITIAL ACK", 2, b"", "timeout", 0, 5),
+            ("APPS INITIAL ACK", 2, b"\x00\x33", "nack", 2, None),
+            ("APPS INITIAL ACK", 2, KEY, "timeout", len(KEY), 5),
+            ("APPS INITIAL ACK", 2, (KEY * 16)[:1024], "byte_limit", 1024, None),
+        )
+        real_receive_ack = probe.receive_ack
+        real_guarded_connection = backup.guarded_connection
+        for stage, break_number, reply, reason, received, timeout in cases:
+            with self.subTest(stage=stage, reason=reason, received=received):
+                fake = FaultAtBreak(self.files, break_number, reply)
+                inherited_calls = []
+                receive_calls = []
+                def tracked_guarded_connection(*args, **kwargs):
+                    guarded = real_guarded_connection(*args, **kwargs)
+                    base = type(guarded)
+                    inherited_try_breaking = base._try_breaking
+                    def tracked_inherited(instance, tries=5, timeout=1):
+                        inherited_calls.append((tries, timeout))
+                        return inherited_try_breaking(instance, tries, timeout)
+                    base._try_breaking = tracked_inherited
+                    return guarded
+                def tracked_receive_ack(port, current_stage, seconds, *clock_args, **clock_kwargs):
+                    receive_calls.append((current_stage, seconds, port.break_condition))
+                    if current_stage == stage:
+                        return real_receive_ack(port, current_stage, seconds, clock=ParserClock())
+                    return real_receive_ack(port, current_stage, seconds, *clock_args, **clock_kwargs)
+                with mock.patch.object(backup, "guarded_connection", side_effect=tracked_guarded_connection), \
+                     mock.patch.object(probe, "receive_ack", side_effect=tracked_receive_ack):
+                    result, report, transcript, _ = self.run_main(fake)
+                self.assertEqual(result, 1, transcript)
+                self.assertFalse(report["success"])
+                self.assertFalse(report["operation_verified"])
+                diagnostic = report["error"]["handshake"]
+                self.assertEqual(diagnostic["stage"], stage)
+                self.assertEqual(diagnostic["reason"], reason)
+                self.assertEqual(diagnostic["received_bytes"], received)
+                if timeout is not None:
+                    self.assertEqual(diagnostic["timeout_seconds"], timeout)
+                if break_number == 2:
+                    self.assertGreaterEqual(diagnostic["elapsed_seconds"], 0)
+                    self.assertEqual(inherited_calls, [(5, 1)])
+                else:
+                    self.assertEqual(inherited_calls, [])
+                self.assertIn((stage, timeout or (60 if break_number == 1 else 5), True), receive_calls)
+                self.assertEqual(report["mutation_attempts"], [])
+                self.assertFalse(report["persistent_write_attempted"])
+                self.assertFalse(report["application_write_attempted"])
+                self.assertEqual(report["helper_uploaded_bytes"], 0)
+                self.assertFalse(report["helper_executed"])
+                self.assertEqual(fake.uploaded, b"")
+                self.assertEqual(fake.mutations, [])
+                self.assertEqual(fake.files, fake.original_files)
+                self.assertFalse(any(command[0] in (0x21, 0x22, 0x23, 0x24, 0x2a, 0x2b, 0x2d, 0x32)
+                                     for command in fake.trace))
+                self.assertFalse(fake.break_condition)
+                self.assertTrue(fake.closed)
+                self.assertIn(stage, transcript)
+                self.assertIn(f"received {received} bytes", transcript)
+                self.assertIn("No Pico flash or file write was attempted", transcript)
+                self.assert_secrets_absent(json.dumps(report) + transcript)
+
+    def test_initial_version_command_nack_has_actionable_safe_diagnostics(self):
+        fake = FakeInstallUSB(self.files)
+        fake.fault = "nack"  # Independent ROM model rejects the first GET_VERSION.
+        result, report, transcript, _ = self.run_main(fake)
+        self.assertEqual(result, 1, transcript)
+        self.assertEqual(report["error"]["handshake"], {
+            "stage": "COMMAND ACK", "reason": "nack", "received_bytes": 2,
+        })
+        self.assertEqual(report["mutation_attempts"], [])
+        self.assertFalse(report["persistent_write_attempted"])
+        self.assertEqual(report["helper_uploaded_bytes"], 0)
+        self.assertFalse(report["helper_executed"])
+        self.assertEqual(fake.mutations, [])
+        self.assertEqual(fake.uploaded, b"")
+        self.assertIn("COMMAND ACK: NACK received", transcript)
+        self.assertIn("No Pico flash or file write was attempted", transcript)
+
+    def test_handshake_classification_accepts_only_pinned_safe_templates(self):
+        timed_out = probe.ProbeError("APPS INITIAL ACK: timeout after 5s. RX: " + KEY.hex(" "))
+        diagnostic = installer._handshake_diagnostic(timed_out)
+        self.assertEqual(diagnostic, {"stage": "APPS INITIAL ACK", "reason": "timeout",
+                                      "received_bytes": len(KEY), "timeout_seconds": 5.0})
+        wrapped = cc.CC3200Error("Wrapper message must not be exposed")
+        wrapped.__cause__ = timed_out
+        safe = installer._safe_exception(wrapped, elapsed_seconds=5.1274)
+        self.assertIsInstance(safe, installer.HandshakeError)
+        self.assertEqual(safe.diagnostic["elapsed_seconds"], 5.127)
+        self.assert_secrets_absent(str(safe) + json.dumps(safe.diagnostic))
+        unknown = (
+            probe.ProbeError("APPS INITIAL ACK: timeout after 5s. RX: " + KEY.decode()),
+            probe.ProbeError("OTHER: timeout after 5s. RX: NO BYTES"),
+            probe.ProbeError("INITIAL ACK: timeout after 0s. RX: NO BYTES"),
+            probe.ProbeError("INITIAL ACK: timeout after 1e999s. RX: NO BYTES"),
+            probe.ProbeError("INITIAL ACK: timeout after 5s. RX: " + " ".join(["aa"] * 1025)),
+            probe.ProbeError("INITIAL ACK: NACK received. RX: 00 cc"),
+            probe.ProbeError("INITIAL ACK: received 1024 bytes without an ACK. First 64: 00"),
+            RuntimeError("APPS INITIAL ACK: timeout after 5s. RX: " + KEY.hex(" ")),
+        )
+        for error in unknown:
+            with self.subTest(error_type=type(error).__name__):
+                self.assertIsNone(installer._handshake_diagnostic(error))
+                redacted = installer._safe_exception(error)
+                self.assertNotIsInstance(redacted, installer.HandshakeError)
+                self.assertIn("device payload omitted", str(redacted))
+                self.assert_secrets_absent(str(redacted))
+
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)
