@@ -46,14 +46,17 @@ helper, with regression coverage for standalone and legacy behavior.
 | `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
 | `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
 | `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Qualified on the owner's Mac/Pico; selector 1 confirmed |
-| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | Physical writes and restoration pending |
+| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite verified; application installation and restoration pending |
 
 The probe, backup and preflight tools enforce read-only flash access. The
 separate [guarded writer](docs/macos-usb-installation.md) uses the same pinned
-temporary SRAM helper and requires the verified original backup. Its first
-hardware step provisions and verifies only `/local/api.key`; application
-installation and stock restoration are explicit, separate commands. Physical
-writes, restoration and standalone boot remain untested. The [macOS backup
+temporary SRAM helper and requires the verified original backup. The owner
+completed `/local/api.key` creation, readback, existing-file rewrite and
+second readback on 2026-11-17; final application and protected-file checks
+passed. The [physical key result](analysis/device-key-provisioning-20261117.json)
+records that evidence. Application installation and stock restoration are
+explicit, separate commands and remain physically untested, as does
+standalone boot. The [macOS backup
 guide](docs/macos-usb-backup.md) includes the pinned dependencies and exact
 power-on sequence. Keep full backups under ignored `firmware/backups/` or
 `private/`.

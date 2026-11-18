@@ -5,12 +5,15 @@ flash file **`/local/api.key`**. The key is separate from the firmware binary.
 There is no shared password and no unauthenticated API for installing one.
 
 For the owner's verified Pico Pro, the [guarded macOS USB workflow](macos-usb-installation.md)
-provides the next key-provisioning step using the existing SparkFun CH340C.
+provides key provisioning using the existing SparkFun CH340C.
 Its `provision-key` command verifies the original backup and live firmware,
 creates and verifies the key, then rewrites and verifies the same key using
-the existing-file write mode. It does not install an application. Physical
-file writes have **not yet been validated**; the full backup and logical-file
-preflight have passed on the owner's device.
+the existing-file write mode. The owner completed this operation on
+2026-11-17 at 23:49:30; creation, both readbacks, the existing-file rewrite,
+and final original-application/protected-file checks passed. The
+[sanitized physical result](../analysis/device-key-provisioning-20261117.json)
+records that evidence. This operation did not install an application;
+standalone installation, startup and stock restoration remain untested.
 
 This document also provides a TI-documented UniFlash user-file workflow,
 which has **not been exercised on a physical Pico Pro or Pico S**. It assumes that the

@@ -180,7 +180,9 @@ preflight does not install firmware or establish physical write/restore
 validation.
 
 The separate [guarded installation workflow](macos-usb-installation.md)
-starts with API-key provisioning and readback. The probe, backup and
+starts with API-key provisioning and readback, which the owner completed
+successfully on 2026-11-17. Application installation is the next physical
+step. The probe, backup and
 preflight scripts remain read-only; they do not acquire file-write support
 when the writer is installed beside them.
 

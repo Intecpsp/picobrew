@@ -15,8 +15,9 @@ The complete backup is 1,048,576 bytes with SHA-256:
 
 The owner's two complete reads matched byte-for-byte. Only the selected
 firmware and boot metadata were uploaded for review; the full flash and
-saved network credentials remain private. This review has not written to
-the appliance or demonstrated firmware installation/restoration.
+saved network credentials remain private. The owner subsequently verified
+API-key creation and existing-file rewrite on the appliance; application
+installation and restoration have not yet been demonstrated.
 
 ## Firmware identity
 
@@ -193,8 +194,10 @@ candidate. TI's
 states that opening an existing file for write erases its contents.
 It is therefore not an atomic update. The separate guarded writer includes
 an existing-file restore command using the exact stock application from
-the verified backup. Physical writing and restoration have not yet been
-demonstrated. If an interrupted file cannot be reopened, the tool stops;
+the verified backup. Normal file creation and existing-file rewrite have
+now been verified on the small API-key file. Application writing and
+restoration have not yet been demonstrated. If an interrupted file cannot
+be reopened, the tool stops;
 it does not delete or recreate the application based on an ambiguous
 file-info result. See [the guarded USB workflow](macos-usb-installation.md).
 
@@ -208,15 +211,19 @@ apply only to the earlier third-party screenshot.
 
 ## Immediate next step
 
-The read-only preflight has passed. Next, run the guarded writer's
-`provision-key` command as described in the [macOS installation guide](macos-usb-installation.md).
-It checks the original backup and live protected state, creates the API key
-only when its absence is established, verifies it, then rewrites the same
-key through the existing-file write mode and verifies it again. This is a
-small, necessary user-file write that exercises the write primitive before
-the application is touched.
+Both read-only preflight and key provisioning have passed. The owner's
+2026-11-17 23:49:30 run created `/local/api.key`, verified it, rewrote the
+same key through existing-file mode, and verified it again. The success
+marker also requires complete original-application readback and unchanged
+protected files. The [sanitized result](../analysis/device-key-provisioning-20261117.json)
+records the terminal evidence without any key contents or digest.
 
-Application installation is a separate command. The writer rechecks live
-state in every session; a saved preflight report is evidence, not permission
-to bypass those checks. Neither successful preflight nor simulated writer
-tests establish physical installation, restoration or standalone boot.
+The next step is the guarded `install` command in
+[Stage 2 of the macOS guide](macos-usb-installation.md#stage-2-install-the-pinned-standalone-candidate).
+It rechecks live state and the matching key before writing the pinned
+161,720-byte candidate into the existing image 2 allocation. The current
+boot record remains selected and unchanged. The tool verifies complete
+readback and stops in the programming session; first standalone startup
+is a separate physical validation step. Successful key writing does not
+establish application installation, interrupted-write restoration or
+standalone boot.

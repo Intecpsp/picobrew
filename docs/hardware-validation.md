@@ -15,8 +15,9 @@ selection behavior, the cloud-dependent recovery image, and the flash-space
 constraints. The owner also completed live logical-file preflight on
 2026-11-17: all three firmware hashes match, image 3 is absent, and
 `01 3d 00 20 ba dc cd ab` confirms normal selector 1 for image 2.
-Physical file-write validation, installation/restoration and standalone
-boot remain outstanding. The earlier
+API-key creation, readback, existing-file rewrite and final verification
+also passed on that date. Application installation/restoration and
+standalone boot remain outstanding. The earlier
 [third-party screenshot](flash-layout.md) has a different layout and unknown
 Pro/C identity.
 
@@ -26,7 +27,7 @@ Pro/C identity.
 | --- | --- | --- |
 | Identify device | Main MCU/board revision, auxiliary-controller version, current firmware and serial log | Saved main application is an exact v0.1.34 reference match; remaining hardware identification not run |
 | Preserve recovery | Verified existing application/recovery image and boot-file backup; proven way to restore the device | Full 1 MiB backup and live logical-file preflight verified on 2026-11-17; guarded stock restore implemented but not physically validated |
-| Validate file writes | API key create, readback, existing-file rewrite and second readback, followed by protected-image checks | Guarded `provision-key` command prepared; physical run pending |
+| Validate file writes | API key create, readback, existing-file rewrite and second readback, followed by protected-image checks | Passed on 2026-11-17; original application and protected-file postchecks passed; application-write and interrupted-write behavior remain untested |
 | First boot with outputs isolated | Reset reaches setup/main menu; no unexpected pump/heater activation; reset and service-mode behavior | Not run |
 | Display/encoder | Native font, rotation, navigation, click debounce and all three language selections | Not run |
 | Sensors | Raw ADC counts and independently measured wort/thermoblock temperature at several known points | Not run |

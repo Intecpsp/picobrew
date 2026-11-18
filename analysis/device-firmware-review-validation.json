@@ -1,5 +1,5 @@
 {
-  "scope": "Offline firmware analysis and host/protocol simulation, plus owner-reported physical backup and logical-file preflight; no physical writes or standalone boot",
+  "scope": "Offline firmware analysis and host/protocol simulation, plus owner-reported physical backup, logical-file preflight and API-key create/rewrite/readback; no standalone application installation or boot",
   "reference_backup_sha256": "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f",
   "original_main_exact_reference_match": true,
   "original_main_sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
@@ -70,12 +70,16 @@
   ],
   "preflight_script_sha256": "ff260976fcf17ae298bb8f6ead68340204a6cec39b123e757eb5c5b1202633f2",
   "browser_sources_changed": false,
-  "live_file_write_or_restore_validated": false,
   "guarded_writer_tool": "tools/pico_flash_install.py",
   "guarded_writer_sha256": "e8f5c6ebe91711b097b63b042356832ca2338c51194dc6cfb332a46ace5fd94e",
-  "next_physical_step": "provision-key only; application installation and physical restore remain pending",
+  "next_physical_step": "Install the pinned standalone candidate and verify full readback; application startup remains a separate step",
   "bootloader_audit_tool": "tools/audit_device_bootloader.py",
   "bootloader_audit_results": "analysis/device-bootloader-emulation-results.json",
   "flash_allocation_record": "analysis/device-flash-layout.json",
-  "guarded_writer_revision": 2
+  "guarded_writer_revision": 2,
+  "physical_key_provisioning_record": "analysis/device-key-provisioning-20261117.json",
+  "live_file_write_validated": true,
+  "live_file_write_validation_scope": "/local/api.key creation, readback and existing-file rewrite; final stock/protected-state verification",
+  "live_application_installation_validated": false,
+  "live_application_restore_validated": false
 }

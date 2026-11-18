@@ -6,11 +6,13 @@ The live boot record is `01 3d 00 20 ba dc cd ab`, selecting
 `/sys/mcuimg2.bin`. The [device review](device-firmware-review.md) records
 the firmware identities and allocation constraints.
 
-`tools/pico_flash_install.py` provides three separate operations. **Physical
-file writes, stock restoration and standalone boot have not yet been
-validated. The next hardware step is Stage 1 only.** A successful key
-write exercises the normal file-write protocol; it does not demonstrate
-recovery from a power interruption during an application write.
+`tools/pico_flash_install.py` provides three separate operations. **Stage 1
+passed on the owner's Pico on 2026-11-17: API-key creation, readback,
+existing-file rewrite and verification all succeeded. The next hardware
+step is Stage 2.** Application installation, stock restoration and
+standalone boot remain physically untested. The successful key write
+exercises the normal file-write protocol; it does not demonstrate recovery
+from a power interruption during an application write.
 
 | Command | Files it may write | Purpose |
 | --- | --- | --- |
@@ -60,6 +62,12 @@ writer into Downloads is insufficient. The proven transport modules are
 unchanged.
 
 ## Stage 1: provision and verify the API key
+
+The owner completed this stage in the run beginning at 23:49:30 on
+2026-11-17. The [sanitized physical result](../analysis/device-key-provisioning-20261117.json)
+records the success marker and protected hashes. Keep the matching host
+key; proceed to Stage 2 using the same environment and tested writer.
+The procedure remains below for reference.
 
 Update the existing feature-branch checkout and create the local key only
 if it does not already exist:
@@ -169,6 +177,9 @@ SUCCESS: standalone firmware and API key verified
 The tool leaves the Pico in the programming session. First standalone
 startup, display/controls, network access and output behavior are separate
 physical validation steps described in [hardware validation](hardware-validation.md).
+Keep USB connected and review the installation result before attempting
+that first startup. During the application write, keep mains and USB
+connected until the command has completed.
 
 ## Restore the original application
 
@@ -232,7 +243,9 @@ The owner's first `provision-key` attempt on 2026-11-17 at 23:33:53
 verified the local backup and initial ROM version, then stopped at the
 second `APPS INITIAL ACK` handshake. It did not reach helper upload or
 any filesystem operation. The [sanitized attempt record](../analysis/device-key-attempt-20261117.json)
-preserves that distinction. Key provisioning is still physically unverified.
+preserves that distinction. A subsequent run at 23:49:30 passed both
+handshakes, key provisioning and all final checks. That success does not
+establish the earlier handshake failure's physical cause.
 
 Revision 1 replaced the underlying error with `ProbeError: operation
 failed; device payload omitted`, which concealed whether the device was
