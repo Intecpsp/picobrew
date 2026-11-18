@@ -145,9 +145,16 @@ this is a narrow evidence bundle, not a redacted replacement for the backup.
 ## Read the logical boot record before installation
 
 The [owner's extracted firmware review](device-firmware-review.md) found
-different selectors in the two raw physical boot-record copies. The next
+different selectors in the two raw physical boot-record copies. This
 read-only check asks the live filesystem for the logical file and verifies
 the three firmware hashes against this specific backup.
+
+The owner completed this check on 2026-11-17. The live logical record was
+`01 3d 00 20 ba dc cd ab`: normal magic and selector 1, which selects
+`/sys/mcuimg2.bin`. All three firmware hashes matched, image 3 was absent,
+and the tool reported `QUALIFIED`. The [sanitized result](../analysis/device-preflight-20261117.json)
+records the supplied terminal output. The command below remains useful for
+repeating the read-only check before any installation.
 
 Keep `pico_flash_preflight.py`, `pico_flash_backup_v2.py`, and
 `pico_uart_probe.py` together. Use the same existing environment and power-on
@@ -172,11 +179,16 @@ returns 1. Both save an unqualified report when possible. A successful
 preflight does not install firmware or establish physical write/restore
 validation.
 
-The 68 USB-tool regression tests cover backup guards and publication,
+The separate [guarded installation workflow](macos-usb-installation.md)
+starts with API-key provisioning and readback. The probe, backup and
+preflight scripts remain read-only; they do not acquire file-write support
+when the writer is installed beside them.
+
+The USB-tool regression tests cover backup guards and publication,
 receive-queue ordering/cancellation, complete simulated transfers, logical
-preflight and offline-inspector privacy/bounds. They use the real pinned
-`cc3200tool` package and synthetic USB/flash fixtures, without opening
-physical USB:
+preflight, guarded file writes and offline-inspector privacy/bounds. They
+use the real pinned `cc3200tool` package and synthetic USB/flash fixtures,
+without opening physical USB:
 
 ```sh
 make usb-test PYTHON=.venv/bin/python

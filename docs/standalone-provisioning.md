@@ -4,8 +4,16 @@ The standalone firmware reads its per-device bearer key from the CC3200 serial
 flash file **`/local/api.key`**. The key is separate from the firmware binary.
 There is no shared password and no unauthenticated API for installing one.
 
-This document provides a TI-supported user-file programming workflow. It has
-**not been exercised on a physical Pico Pro or Pico S**. It assumes that the
+For the owner's verified Pico Pro, the [guarded macOS USB workflow](macos-usb-installation.md)
+provides the next key-provisioning step using the existing SparkFun CH340C.
+Its `provision-key` command verifies the original backup and live firmware,
+creates and verifies the key, then rewrites and verifies the same key using
+the existing-file write mode. It does not install an application. Physical
+file writes have **not yet been validated**; the full backup and logical-file
+preflight have passed on the owner's device.
+
+This document also provides a TI-documented UniFlash user-file workflow,
+which has **not been exercised on a physical Pico Pro or Pico S**. It assumes that the
 appliance's production firmware and serial flash have already been backed up,
 and that its UART connection, bootloader entry, and normal boot restoration are
 verified. It does not identify Pico connector pins or claim a validated firmware
@@ -30,6 +38,17 @@ issue, screenshot, or public build log. If choosing another output directory,
 keep it outside tracked repository files.
 
 ## 2. Transfer exactly one user file
+
+### Guarded direct USB on the owner's Mac
+
+Follow the [macOS installation guide](macos-usb-installation.md#stage-1-provision-and-verify-the-api-key).
+It uses the repository's pinned environment and the same power-on sequence
+as the successful backup and preflight. A different existing device key is
+never silently replaced; reuse the original matching host key when retrying.
+The script accepts exactly the generator's 65-byte lowercase-hex-plus-LF
+format and refuses a group/world-readable key file.
+
+### TI UniFlash alternative
 
 TI directs CC3100/CC3200 users to **UniFlash v3.4.1**. Download it through TI's
 [UniFlash release page](https://software-dl.ti.com/ccs/esd/uniflash/docs/v3_4/uniflash-v3.4.1_release_notes.html),
@@ -63,12 +82,11 @@ must not be placed under `www/`. Its non-secured file mode is required because
 this firmware opens it without a SimpleLink secure-file token; the bearer key
 itself is the file's content, not a UniFlash file-access token.
 
-The repository's [macOS UART-over-USB tools](macos-usb-backup.md) currently
-provide a read-only probe, full backup and logical-file preflight. They block
-flash writes and cannot provision the key or install firmware. There is no
-runtime serial-console command for setting the key. `provision_api_key.py`
-only creates the host file; copying or typing its content into a serial
-terminal does not provision the appliance.
+The repository's [probe, backup and preflight tools](macos-usb-backup.md)
+remain read-only. The separate guarded writer is the tool that transfers
+the key. There is no runtime serial-console command for setting it.
+`provision_api_key.py` only creates the host file; copying or typing its
+content into a serial terminal does not provision the appliance.
 
 ## 3. Verify the running appliance
 
@@ -100,6 +118,11 @@ file**; reconnecting Wi-Fi alone does not reload it. A wrong bearer key when a
 valid device key exists returns HTTP 401 instead.
 
 ## Rotation and recovery
+
+The guarded macOS writer intentionally refuses to replace a different
+existing key. Its current scope is initial provisioning and verification
+of the matching key. The UniFlash rotation procedure below is a separate,
+physically unvalidated alternative.
 
 Create a replacement without overwriting the old host file:
 

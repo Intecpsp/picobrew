@@ -32,8 +32,10 @@ attempts and the earlier synchronous reader failed. The extracted main image
 is an exact byte-for-byte match to the original **0.1.34** reference.
 
 The actual secondary bootloader maps selector 1 to `mcuimg2.bin` and selector
-2 to `mcuimg3.bin`. Its two saved boot-record copies differ, so a read-only
-logical-file preflight is the next hardware step. Recovery v0.0.3 downloads
+2 to `mcuimg3.bin`. The owner completed the live logical-file preflight on
+2026-11-17: all three firmware hashes match, image 3 is absent, and the
+logical boot record is `01 3d 00 20 ba dc cd ab` (selector 1, normal magic).
+This confirms that the existing image 2 slot is selected. Recovery v0.0.3 downloads
 from `picobrew.com`; it is not an offline restore image. The standalone
 Factory Reset action is therefore disabled in the menu, dispatch and deletion
 helper, with regression coverage for standalone and legacy behavior.
@@ -43,13 +45,18 @@ helper, with regression coverage for standalone and legacy behavior.
 | `tools/pico_uart_probe.py --transport usb` | Direct-USB handshake and complete version response | Succeeded on the owner's Mac/Pico |
 | `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
 | `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
-| `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Protocol simulations pass; physical run pending |
+| `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Qualified on the owner's Mac/Pico; selector 1 confirmed |
+| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | Physical writes and restoration pending |
 
-The USB tools enforce read-only flash access. They upload only the pinned
-temporary helper to SRAM. Firmware installation, restoration and standalone
-boot remain untested. The [macOS guide](docs/macos-usb-backup.md) includes the
-pinned dependencies, exact power-on sequence, backup destination and next
-command. Keep full backups under ignored `firmware/backups/` or `private/`.
+The probe, backup and preflight tools enforce read-only flash access. The
+separate [guarded writer](docs/macos-usb-installation.md) uses the same pinned
+temporary SRAM helper and requires the verified original backup. Its first
+hardware step provisions and verifies only `/local/api.key`; application
+installation and stock restoration are explicit, separate commands. Physical
+writes, restoration and standalone boot remain untested. The [macOS backup
+guide](docs/macos-usb-backup.md) includes the pinned dependencies and exact
+power-on sequence. Keep full backups under ignored `firmware/backups/` or
+`private/`.
 
 ## Standalone features
 

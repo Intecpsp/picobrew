@@ -25,8 +25,8 @@ the appliance or demonstrated firmware installation/restoration.
 | `/sys/mcuimg.bin` | 14,956 | Secondary bootloader, disassembled and exercised in an instruction emulator |
 | `/sys/mcuimg1.bin` | 50,504 | Recovery/setup application v0.0.3; downloads replacement firmware from `picobrew.com` |
 | `/sys/mcuimg2.bin` | 162,792 | Exact byte-for-byte match to this project's original Pico application v0.1.34 |
-| `/sys/mcuimg3.bin` | — | Absent from the supplied filesystem listing |
-| `/sys/mcubootinfo.bin` | 8 per copy | Two valid physical copies with different selectors; live logical read still required |
+| `/sys/mcuimg3.bin` | — | Absent from both the supplied filesystem listing and live preflight |
+| `/sys/mcubootinfo.bin` | 8 per copy | Live logical read confirms `01 3d 00 20 ba dc cd ab`, selector 1 and normal magic |
 
 SHA-256 of the three images:
 
@@ -111,12 +111,26 @@ The raw backup contains:
 | First allocation, block 79 | `08 00 00 20 05 00 4c 53` | `00 3d 00 20 ba dc cd ab` |
 | Mirror, block 80 | `08 00 00 20 06 00 4c 53` | `01 3d 00 20 ba dc cd ab` |
 
-The second header's counter is higher. That supports it being the newer
-copy but is not a substitute for observing which copy the network
+The second header's counter is higher. That supported it being the newer
+copy but was not a substitute for observing which copy the network
 processor actually serves. A raw extractor that always returns the first
 allocation would report factory selection even though the mirror contains
-the main-application selection. The next tool therefore opens
-`/sys/mcubootinfo.bin` for **read access** through the live filesystem API.
+the main-application selection.
+
+The owner ran `tools/pico_flash_preflight.py` on the physical Pico on
+2026-11-17 at 23:04:38 (owner terminal timestamp). The live filesystem served
+`01 3d 00 20 ba dc cd ab`, SHA-256
+`59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e9435`.
+All three image lengths and hashes matched the reviewed backup, image 3
+was absent, and storage geometry was 256 blocks of 4,096 bytes. The tool
+reported both `TRANSPORT READS: complete` and `QUALIFIED`.
+
+This resolves the ambiguity: **normal selector 1 selects image 2**, and an
+installation into that existing slot requires no boot-record change. The
+[sanitized physical preflight record](../analysis/device-preflight-20261117.json)
+is transcribed from the owner's output; it is not an independently captured
+USB trace or a replacement for the private full report. No flash or file
+write was performed by that preflight.
 
 ## Recovery image limitations and the standalone reset fix
 
@@ -170,12 +184,19 @@ after allocation rounding and metadata. The largest current hole is
 Total free space must not be used to promise alternate-slot installation.
 
 The existing image 2 allocation is 48 blocks (196,608 bytes). Rewriting
-that existing file can retain the allocation, subject to checking its
-live maximum content size. TI's
+that existing file can retain the allocation. The pinned UART helper does
+not expose the full filesystem maximum-size/attribute record; the guarded
+installer instead pins the original backup, verifies its allocation and
+live application content, and accepts only the smaller 161,720-byte
+candidate. TI's
 [SWRU368C, chapter 13](https://www.ti.com/lit/ug/swru368c/swru368c.pdf)
 states that opening an existing file for write erases its contents.
-It is therefore not an atomic update; the USB restore operation must be
-prepared before that step. The present tools only read flash.
+It is therefore not an atomic update. The separate guarded writer includes
+an existing-file restore command using the exact stock application from
+the verified backup. Physical writing and restoration have not yet been
+demonstrated. If an interrupted file cannot be reopened, the tool stops;
+it does not delete or recreate the application based on an ambiguous
+file-info result. See [the guarded USB workflow](macos-usb-installation.md).
 
 Keeping the existing allocations leaves room for the standalone local
 store's full 39-block budget, including the API key: 44 blocks remain,
@@ -187,12 +208,15 @@ apply only to the earlier third-party screenshot.
 
 ## Immediate next step
 
-Run `tools/pico_flash_preflight.py` with the proven direct-USB connection.
-It reads the logical boot record and hashes the three existing images,
-verifies geometry and checks for image 3. Its command guard permits only
-the pinned SRAM helper upload, read operations, and read-handle closure;
-flash writes, deletion, formatting, and write/create opens are blocked.
+The read-only preflight has passed. Next, run the guarded writer's
+`provision-key` command as described in the [macOS installation guide](macos-usb-installation.md).
+It checks the original backup and live protected state, creates the API key
+only when its absence is established, verifies it, then rewrites the same
+key through the existing-file write mode and verifies it again. This is a
+small, necessary user-file write that exercises the write primitive before
+the application is touched.
 
-The report separates successful communication from a matching device
-state. An unexpected record, length, hash, or extra application produces
-a failed qualification and must be resolved before an installer proceeds.
+Application installation is a separate command. The writer rechecks live
+state in every session; a saved preflight report is evidence, not permission
+to bypass those checks. Neither successful preflight nor simulated writer
+tests establish physical installation, restoration or standalone boot.
