@@ -85,7 +85,7 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.0.0')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.0.1')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)
         for width in (1440, 1100):
             self.page.set_viewport_size({'width': width, 'height': 1000})
@@ -120,6 +120,11 @@ class WebFeatures(unittest.TestCase):
         expect(self.page.locator('#telemetryEnabled')).not_to_be_checked()
         expect(self.page.locator('#telemetryStatus')).to_contain_text('Forwarding is off.')
         self.assertTrue(all(method == 'GET' for method, _ in requests))
+        for name, width, height in [('desktop', 1440, 1000), ('wide', 1920, 1080),
+                                    ('mobile', 390, 844)]:
+            self.page.set_viewport_size({'width': width, 'height': height})
+            self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
+            self.page.screenshot(path=str(self.output / ('settings-' + name + '.png')), full_page=True)
         self.page.locator('#telemetryEnabled').check()
         self.page.locator('#telemetryHost').fill('brewbox.local')
         self.page.locator('#telemetryPort').fill('8123')

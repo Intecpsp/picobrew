@@ -10,12 +10,18 @@ the firmware identities and allocation constraints.
 passed on 2026-11-17, and Stage 2 passed on 2026-11-18: the standalone
 image and matching API key were verified on the owner's Pico. Standalone
 boot, an HTTP 200 health response and the connected browser console also passed
-on 2026-11-18 for the previous candidate. The new 1.0.0 candidate and browser
-bundle still need installation and physical checks.**
+on 2026-11-18 for the previous candidate. The 1.0.0 application and all five
+browser files subsequently passed installation/readback verification on that
+date, and the owner subsequently reported it running 1.0.0. Versioned Overview
+and Settings screenshots show an upright OLED preview (confirmed fixed by the
+owner), arrows and Brew history/API navigation. A new health response and
+functional feature checks remain pending.**
 Stock restoration remains physically untested. Successful installation does
 not demonstrate recovery from a power interruption during an application
 write. The [sanitized installation result](../analysis/device-install-20261118.json)
-records the terminal evidence and the verified tool's success conditions.
+records the earlier candidate's terminal evidence. The separate
+[1.0.0 upgrade result](../analysis/device-upgrade-1.0.0-20261118.json) records
+the application/browser upgrade and the verified tool's success conditions.
 
 | Command | Files it may write | Purpose |
 | --- | --- | --- |
@@ -159,8 +165,13 @@ command needs a fresh programming session using the procedure above.
 
 The previous candidate was written and read back in the run beginning at
 00:14:02 on 2026-11-18. Its first boot, health API and connected browser were
-subsequently observed. This section now describes upgrading that installation
-to the **1.0.0** candidate and matching browser files.
+subsequently observed. The owner then completed this **1.0.0** upgrade in the
+run beginning at 09:36:07 on the same date (console timestamp as reported).
+The [upgrade record](../analysis/device-upgrade-1.0.0-20261118.json) records
+application/browser readback, key verification and protected-file postchecks.
+The installer did not start the application; the owner subsequently reported
+running 1.0.0. The commands below now install the **1.0.1 Settings layout patch**;
+the installed 1.0.0 image is an approved upgrade source.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after
 installing standalone firmware; that separate stage intentionally requires the
@@ -214,7 +225,7 @@ The existing application reserves 48 nonmirrored 4 KiB blocks. The writer
 additionally caps application payloads at 188,416 bytes, conservatively below
 the capacity derived from that allocation and the SDK's size-rounding rules.
 This is a derived guard, not a measured `AllocatedLen` value. The 164,600-byte
-1.0.0 image passes it; no application-file recreation or relocation is used.
+1.0.1 image passes it; no application-file recreation or relocation is used.
 Every write requires an acknowledged command and successful loader status;
 the tool does not retry an ambiguous write chunk.
 
@@ -224,7 +235,7 @@ candidate was already installed, it skips the application rewrite while
 still verifying the key and final state. Expected marker:
 
 ```text
-SUCCESS: standalone firmware and API key verified
+SUCCESS: standalone firmware, browser files and API key verified
 ```
 
 The tool leaves the Pico in the programming session. First standalone
@@ -240,11 +251,14 @@ The owner reported successful startup of the earlier 161,720-byte standalone
 candidate on 2026-11-18 and supplied an HTTP 200 health response with standalone
 mode, readiness and valid key configuration. The
 [runtime evidence](../analysis/device-runtime-20261118.json) records that result.
-The new [1.0.0 candidate](release-1.0.0.md) has not yet been installed or
-physically exercised. The exact reset/cable sequence used for the earlier
-startup was not identified in the report; the recommended procedure follows.
+The [1.0.0 candidate](release-1.0.0.md) subsequently passed installation and
+readback verification, and the owner reported it running 1.0.0. Overview and
+Settings screenshots now show that version, an upright OLED preview and visible
+arrows/navigation. Its health response and functional feature checks remain pending.
+The exact reset/cable sequence used for the earlier startup was not identified
+in the report; the recommended procedure follows.
 
-After `SUCCESS: standalone firmware and API key verified` and return to
+After `SUCCESS: standalone firmware, browser files and API key verified` and return to
 the shell, the RAM helper is still the last program the installer started.
 USB cleanup releases BREAK and returns the adapter to the macOS driver;
 it does not start the installed application or verify the header's boot
@@ -264,7 +278,7 @@ startup, network access and physical output behavior remain separate
 checks in [hardware validation](hardware-validation.md).
 
 The expected code path shows the Pico splash, attempts the saved Wi-Fi
-connection, and reaches the regular menu. Standalone 1.0.0 shows `v1.0.0`,
+connection, and reaches the regular menu. Standalone 1.0.1 shows `v1.0.1`,
 using the shared version in `include/picobrew/version.h`. The earlier
 standalone candidate retained the stock `v0.1.34` label. If an old-session
 resume prompt appears, choose Abort for this initial observation.
@@ -278,14 +292,14 @@ fallback access point. From a browser on the same network, open:
 http://<pico-ip>/api/v1/health
 ```
 
-After initialization, the 1.0.0 read-only public endpoint should include
-`"firmware_version":"1.0.0"`, `"api_version":1`, `"mode":"standalone"`,
+After initialization, the 1.0.1 read-only public endpoint should include
+`"firmware_version":"1.0.1"`, `"api_version":1`, `"mode":"standalone"`,
 `"ready":true`, and `"auth_configured":true`. The response's `uptime_ms`
 varies. This is the running-firmware identity check; it requires no API key.
 The browser console is at `http://<pico-ip>/`. Record the actual response
 before starting a program.
 
-### Network changes in 1.0.0
+### Network changes since 1.0.0
 
 With the earlier candidate, the owner changed the saved SSID and observed
 the new SSID label with an address outside the expected subnet. A reboot
@@ -304,7 +318,7 @@ owner's Pico still needs physical verification with 1.0.0.
 
 After changing networks, wait for the connection attempt to complete,
 check **Settings > Network > Status**, and request `/api/v1/health` at the
-new address. Confirm `"firmware_version":"1.0.0"` and compare the address
+new address. Confirm `"firmware_version":"1.0.1"` after this upgrade and compare the address
 with the router's client information. The displayed saved SSID alone does
 not establish that the Pico joined that network or acquired a valid lease.
 
@@ -318,9 +332,12 @@ health response before firmware-version reporting was added:
 ```
 
 The public health endpoint alone does not verify a bearer-authenticated
-request. The owner's later connected-browser screenshot showed protected
-status and OLED readings on that earlier candidate. Repeat the browser
-check after installing 1.0.0: open `http://<pico-ip>/` in a browser. The initial
+request. The owner's earlier connected-browser screenshot showed protected
+status and OLED readings on the unversioned candidate. The subsequent 1.0.0
+Overview and Settings screenshots show the new version, sensor readouts, upright
+OLED and visible arrow/navigation controls. The owner confirmed the OLED fix;
+control and feature operation remain untested. To repeat the browser check,
+open `http://<pico-ip>/` in a browser. The initial
 **Connect to your brewer.** dialog has a **Device API key** field and
 **Connect** button. On the owner's Mac, copy the existing key directly
 to the clipboard without printing it:
@@ -337,12 +354,13 @@ readings before starting a program. The initial login and polling use
 GET requests; they do not start a brew or maintenance cycle. The key is
 stored in that browser tab's session; Disconnect removes it from the tab.
 
-Authenticated browser access and displayed sensor/OLED readings were
-observed on the earlier candidate; those observations do not validate the
-new 1.0.0 build. Its browser, network-change and physical output acceptance
-checks remain pending. Sensor calibration, interlocks and controlled thermal
-operation also remain unverified; a returned temperature alone does not
-establish its calibration.
+The earlier candidate's authenticated reporting and the 1.0.0 browser
+screenshots are separate observations. The latter verify displayed version,
+readouts and the owner's confirmed OLED orientation fix; they do not establish
+arrow-button operation, history/API requests, forwarding, network changes or
+physical output acceptance. Sensor calibration, interlocks and controlled
+thermal operation also remain unverified; a returned temperature alone does
+not establish its calibration.
 
 ## Restore the original application
 

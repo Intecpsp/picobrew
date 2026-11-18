@@ -3,17 +3,26 @@
 The `feature/standalone-rest-api` branch adds a **standalone firmware profile**
 with an on-device REST API, browser console, recipe collection, settings,
 local session identifiers, retained brew histories, and optional telemetry
-forwarding. Firmware **1.0.0** keeps the REST contract at `/api/v1`.
+forwarding. Firmware **1.0.1** keeps the REST contract at `/api/v1`.
 It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
 are compressed files on the Pico's serial flash; no companion server or CDN is required.
 
 **The previous 161,720-byte standalone candidate has booted on the owner's
 Pico Pro and served the health API and authenticated browser console.**
-The new **1.0.0** candidate adds the changes in the [release notes](docs/release-1.0.0.md);
-it has not yet been installed or exercised on the machine. Physical output
-behavior, interlocks, recovery and a complete brew remain unverified. Build,
-host simulation and ARM instruction tests do not establish those results.
+The **1.0.0** application and matching browser files were subsequently
+[installed and readback-verified](analysis/device-upgrade-1.0.0-20261118.json)
+on 2026-11-18. The installer did not start the application; the owner
+subsequently reported that the Pico was running 1.0.0 and supplied Overview
+and Settings screenshots showing that version. The owner confirmed the OLED
+preview is fixed; arrow controls and Brew history/API navigation are visible.
+A new health response and functional feature checks remain pending.
+The current [1.0.1 patch](docs/release-1.0.1.md) replaces the Settings card grid
+with a continuous page and compact rows. It has not yet been installed on the Pico.
+The [release notes](docs/release-1.0.0.md)
+describe its changes. Physical output behavior, interlocks, recovery and a
+complete brew remain unverified. Build, host simulation and ARM instruction
+tests do not establish those results.
 
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
@@ -52,7 +61,7 @@ helper, with regression coverage for standalone and legacy behavior.
 | `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
 | `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
 | `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Qualified on the owner's Mac/Pico; selector 1 confirmed |
-| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite and standalone installation/readback verified; stock restoration pending |
+| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite, earlier standalone installation, and 1.0.0 application/browser installation/readback verified; stock restoration pending |
 
 The probe, backup and preflight tools enforce read-only flash access. The
 separate [guarded writer](docs/macos-usb-installation.md) uses the same pinned
@@ -74,8 +83,17 @@ shows the connected console, sensor readings, and OLED contents. It revealed
 an upside-down browser OLED preview and an overflowing device identifier.
 Changing Wi-Fi SSIDs initially retained a stale address until reboot. Version
 1.0.0 corrects the browser rendering/layout and requires a fresh DHCP acquisition
-after changing networks; physical confirmation of those fixes is pending. Stock
+after changing networks. The owner confirmed the upright OLED preview in the
+1.0.0 browser; network-change verification remains pending. Stock
 restoration and interrupted-write recovery remain physically untested.
+The later [1.0.0 upgrade result](analysis/device-upgrade-1.0.0-20261118.json)
+records creation and verification of all five browser files, replacement and
+complete readback of image 2, matching-key verification, and unchanged
+bootloader, recovery and boot-record hashes. The application was not started
+by that run; the owner subsequently confirmed it was running 1.0.0 and supplied
+Overview and Settings screenshots. These show the versioned browser, upright
+OLED, visible arrow controls and Brew history/API navigation. No new health
+response or tests of those controls and features have yet been supplied.
 The [macOS backup guide](docs/macos-usb-backup.md) includes
 the pinned dependencies and the successful backup procedure. Keep full backups
 under ignored `firmware/backups/` or `private/`.
@@ -117,7 +135,7 @@ The native image and its report are written under `build/standalone/firmware/`:
 `pico-s-pro-standalone.bin`, matching ELF/map, and `firmware-report.json`.
 The build checks vectors, the complete link, the physical RAM budget, absence
 of the discontinued cloud protocol strings, and separation from test fixtures.
-The current 1.0.0 image is **164,600 bytes**, with **952 bytes** of unallocated
+The current 1.0.1 image is **164,600 bytes**, with **952 bytes** of unallocated
 RAM beyond the original **32 KiB stack and 32 KiB heap** reservations. The history
 tail and optional upload frame use up to **4,704 bytes plus allocator overhead**
 through lazy allocation from that reserved heap. Browser assets total
@@ -341,16 +359,18 @@ free/reuse and preservation of the old allocation when reallocation fails.
 
 ## What still needs the machine
 
-The new 1.0.0 candidate builds and links, but has not been installed on the
-owner's Pico Pro. Installation, first boot, the public health endpoint and the
-connected browser console passed for the earlier unversioned 161,720-byte
-candidate. Remaining physical acceptance for 1.0.0 includes recovery, the actual
-board/peripheral versions, sensor readings,
+The 1.0.0 application and matching browser bundle have passed installation and
+readback verification on the owner's Pico Pro, and the owner subsequently
+reported it running 1.0.0. Browser screenshots show its versioned Overview and
+Settings pages, upright OLED and visible arrows/navigation. The captured public
+health response remains from the earlier unversioned 161,720-byte candidate.
+Remaining physical acceptance for 1.0.0 includes a health/version response,
+control and feature operation, recovery, the actual board/peripheral versions, sensor calibration,
 outputs and interlocks, rotary valve/RFID operation, networking/filesystem
 behavior, and controlled thermal operation. `docs/hardware-validation.md`
 records that work explicitly rather than marking unperformed tests as passed.
 
-The earlier key provisioning and application installation passed for the owner's
+Key provisioning and both application installations passed for the owner's
 pinned device profile; stock restoration remains untested and no successful brew is claimed.
 The reference image and experimental replacement are kept separate.
 

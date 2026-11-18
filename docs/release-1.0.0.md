@@ -1,5 +1,9 @@
 # Standalone firmware 1.0.0
 
+This page records the 1.0.0 release and its hardware observations. The original
+package is preserved in [commit 0a7d499](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/tree/0a7d4991bcdb29871534e08fd73a784637bae79b/firmware).
+The current Settings layout patch is described in [1.0.1](release-1.0.1.md).
+
 This is the first major standalone release after the recovered stock 0.1.34
 firmware and the initial unversioned standalone candidate. REST stays at
 `/api/v1`; `api_version` remains 1. The firmware version is defined in
@@ -8,7 +12,15 @@ health/discovery responses, and build report.
 
 The previous 161,720-byte candidate was installed and booted on the owner's
 Pico Pro. Its connected browser and sensor/display readings were observed.
-**The 1.0.0 candidate has not yet been installed or physically exercised.**
+**The 1.0.0 application and its five browser files passed installation and
+readback verification on the owner's Pico on 2026-11-18.** The
+[sanitized upgrade result](../analysis/device-upgrade-1.0.0-20261118.json)
+records the verified key and unchanged protected files. The installer did not
+start the application; the owner subsequently reported running 1.0.0 and
+supplied Overview and Settings screenshots showing that version. The owner
+confirmed the corrected upright OLED preview; arrows and Brew history/API
+navigation are visible. A new health response and functional feature checks
+remain pending.
 Software tests cover the specific contracts described below; a complete brew,
 physical interlocks, RF timing, and interrupted application restoration remain
 hardware work.

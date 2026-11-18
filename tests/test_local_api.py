@@ -50,7 +50,7 @@ class LocalApi(unittest.TestCase):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
         self.assertEqual(data["api_version"], 1)
-        self.assertEqual(data["firmware_version"], "1.0.0")
+        self.assertEqual(data["firmware_version"], "1.0.1")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]

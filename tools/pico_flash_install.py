@@ -45,19 +45,21 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 4
+INSTALL_REVISION = 5
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
 CANDIDATE_SIZE = 164600
-CANDIDATE_SHA256 = "652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558"
-# The previously installed and booted candidate is an approved upgrade source,
-# never an alternate payload accepted by --firmware. Keep this identity fixed
+CANDIDATE_SHA256 = '7f1ce21158b6f0f0297087e37c71cda23926e1a5c4902d938f4f0162929d36ce'
+# Previously installed standalone versions are approved upgrade sources,
+# never alternate payloads accepted by --firmware. Keep these identities fixed
 # when the target CANDIDATE_* values change.
 PREVIOUS_CANDIDATE_SIZE = 161720
 PREVIOUS_CANDIDATE_SHA256 = "a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904"
+RELEASED_1_0_0_SIZE = 164600
+RELEASED_1_0_0_SHA256 = "652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558"
 BOOT_INFO = bytes.fromhex("01 3d 00 20 ba dc cd ab")
 BOOT_INFO_SHA256 = "59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e9435"
 APP_NAME = "/sys/mcuimg2.bin"
@@ -75,7 +77,7 @@ KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
 # Updated together with the final firmware candidate, after asset generation.
 # A placeholder deliberately prevents installation of an unreviewed bundle.
-WEB_MANIFEST_SHA256 = "c14d40b8b91cfc9c0591690dae681d3587da83d8d2afb7427563a59493c4656f"
+WEB_MANIFEST_SHA256 = 'a65d853c56f7a9751364523234c7c3aa41d04ff126c263dd9bdb69cb2a33eb0f'
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
              ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
@@ -310,6 +312,7 @@ def _approved_current_applications(mode):
     identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
     if mode == "install":
         identities.extend(((PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
+                           (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
                            (CANDIDATE_SIZE, CANDIDATE_SHA256)))
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 

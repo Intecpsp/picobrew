@@ -1,7 +1,7 @@
 {
   "artifact": "Pico S/Pro standalone local API firmware",
   "profile": "standalone",
-  "firmware_version": "1.0.0",
+  "firmware_version": "1.0.1",
   "reference_version": "0.1.34",
   "source_reconstruction": true,
   "hardware_executed": false,
@@ -47,9 +47,9 @@
       "_ebss": "0x20037c48"
     }
   },
-  "elf_sha256": "051cb0df3c3e95e1b583c55fb328bf73a425a137c061218ebcaf474a1234ebab",
-  "binary_sha256": "652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558",
-  "update_body_sha256": "81a21276441d9ed31464c0424463a6ea4a149557bf788c0353e7eecf8922c48b",
+  "elf_sha256": "3e78a7ea2ee1c616c0fcc6c99c38f9ff797505fc77b587ee9226af11360b10f8",
+  "binary_sha256": "7f1ce21158b6f0f0297087e37c71cda23926e1a5c4902d938f4f0162929d36ce",
+  "update_body_sha256": "a62034dff2e8ffeb8b35bca0d669db8e1e866573a14f8bab4dc8ad5dc6d11510",
   "update_body_bytes": 329242,
   "sdk_link_passed": true,
   "sdk_source_files": 53,
@@ -64,7 +64,7 @@
     "src/local_history.c": "d7b952a39461e154efdfd81111d3eab203f65181d43e541acd99748f0a75ceb7",
     "src/local_store.c": "8b6ef355b78f1e0354fb0b9183280c76941bf0bd15ed6d01aafaeae0878f616d",
     "src/local_telemetry.c": "be339dc0bd12d19518de22eebe3f2aa554401dfc5deed9e23326e9069016d21b",
-    "src/local_web_assets.c": "414765a7b808d52e53eed58d94035417ca8fb570450e9dc150d3b742ef021815",
+    "src/local_web_assets.c": "eba48ccc8782c8ac853ec1018346bf4b531e493f182ebe219ed4bb56b96e942f",
     "src/network/api.c": "a982d84fc498d5527bb3ffba63ed7abbf2bb6419437a40df529ed677d6a03c8c",
     "src/network/network.c": "e02e3a3ea8580fa7323985e2760ae26ad0eaa4dd9fb8303ee34c42549d32c42d",
     "src/network/network_internal.h": "437e7ec3d9ac98a3e5853900726077a95e06d64ccb1243c0ce2d09562fbd568f",
@@ -130,7 +130,7 @@
     "include/picobrew/state.h": "0b2735efe0603782caf628c07566aee6fa92629b0d28d3c4f6c5120203b98fd7",
     "include/picobrew/text.h": "0521837aae25b90de024edbc20d5029d92a2be40c2928810ac0f52d65cc15626",
     "include/picobrew/ui.h": "589c6468957f1fb4151022ac763a112db3f737c9bd4ef9c8be5407904a7e09ab",
-    "include/picobrew/version.h": "9fecf9baa824ed3e0d398016a7f1dd31b2a8467cf3badb95389a2c565041b02f",
+    "include/picobrew/version.h": "9f4dd34a18a8f660b7bb5aec2ff5b32a53f6a6d98ada4aedf12809564be07ee3",
     "include/picobrew/web_assets.h": "daaeab47d46d46803e89a9e7069981a4cfb9486fd99b0fcc669cb1dce75c938b",
     "platform/energia_cc3200.cpp": "b15be4d644c8157bc635c985a8fced7db40f83a7d6ddb0aea85cb587a98a6410",
     "platform/energia_history.cpp": "2df266c0d60321b6075d91894c79c3238eadba03fc9857c51f24ced8de7ec952",
@@ -532,7 +532,7 @@
     },
     "scope": "Lazy buffers reused within the retained 32768-byte native heap; allocator overhead and other runtime allocations are additional. Allocation failure is reported without changing brewing controls."
   },
-  "browser_manifest_sha256": "c14d40b8b91cfc9c0591690dae681d3587da83d8d2afb7427563a59493c4656f",
+  "browser_manifest_sha256": "a65d853c56f7a9751364523234c7c3aa41d04ff126c263dd9bdb69cb2a33eb0f",
   "browser_storage": {
     "schema_version": 1,
     "block_size": 4096,
@@ -545,12 +545,12 @@
         "payload": "index.html.gz",
         "content_type": "text/html; charset=utf-8",
         "content_encoding": "gzip",
-        "length": 4208,
+        "length": 4123,
         "max_size": 7680,
         "allocation_blocks": 2,
-        "sha256": "323c0b25cce4ad9d0f48f1676a189435fc47391691ffde5557c6cd2b008f80b7",
-        "source_length": 13610,
-        "source_sha256": "39fe2282b53cc5cdd756ff73f4a478fb482be27dd5e063106e71d4e0b7d59e19"
+        "sha256": "7859d85111539de7eed042ceaf88ff96048acc59639ee70abb2ca0c3264fc35c",
+        "source_length": 13949,
+        "source_sha256": "caf4b84b5c85514afc9c08b9cb62d93b76880b4b9297ded3e89e592bb8f33391"
       },
       {
         "source": "app.js",
@@ -597,12 +597,12 @@
         "payload": "style.css.gz",
         "content_type": "text/css; charset=utf-8",
         "content_encoding": "gzip",
-        "length": 3327,
+        "length": 3558,
         "max_size": 3584,
         "allocation_blocks": 1,
-        "sha256": "d48895ac03502aa0aa713c54ef7632ade26c330520ae619aacb77719fb0791ad",
-        "source_length": 11804,
-        "source_sha256": "bf03b5ef3b88f50d72e9f7e9b00b98facf62c20f7be43ae85c06d570b9b4aa29"
+        "sha256": "bbf40ddc7967962123e660458c3109e219ab9d047fac72c22f14bf8a874899fa",
+        "source_length": 12983,
+        "source_sha256": "30e16035763fa283a654775eeb02eedf4345ba7bf802cf9f3e84f0119dfb3d6e"
       }
     ]
   },
@@ -610,7 +610,7 @@
     "web/api-explorer.js": "c2db8b2c1be4eceb288f153d2607a5a5dcfc16d80137ee0b0a0c1f0afe8827cc",
     "web/app.js": "0bdd323fb66619f51baffd1e5a8cc836c84cfaa56cd5f717041944a7f4a37b82",
     "web/history.js": "50663f987f4c9e90707e537b602ca4fa88b688017d86587892609a7073db5b85",
-    "web/index.html": "39fe2282b53cc5cdd756ff73f4a478fb482be27dd5e063106e71d4e0b7d59e19",
-    "web/style.css": "bf03b5ef3b88f50d72e9f7e9b00b98facf62c20f7be43ae85c06d570b9b4aa29"
+    "web/index.html": "caf4b84b5c85514afc9c08b9cb62d93b76880b4b9297ded3e89e592bb8f33391",
+    "web/style.css": "30e16035763fa283a654775eeb02eedf4345ba7bf802cf9f3e84f0119dfb3d6e"
   }
 }

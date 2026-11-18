@@ -319,6 +319,8 @@ class InstallWireTests(unittest.TestCase):
         self.candidate = candidate_image(installer.CANDIDATE_SIZE)
         previous = candidate_image(installer.PREVIOUS_CANDIDATE_SIZE)
         self.previous_candidate = previous[:-1] + bytes([previous[-1] ^ 0x80])
+        released = candidate_image(installer.RELEASED_1_0_0_SIZE)
+        self.released_1_0_0 = released[:-1] + bytes([released[-1] ^ 0x40])
         self.raw_backup = backup_fixture(self.files)
         self.profile = {
             name: {"size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
@@ -344,6 +346,8 @@ class InstallWireTests(unittest.TestCase):
         mock.patch.object(installer, "CANDIDATE_SHA256", hashlib.sha256(self.candidate).hexdigest()).start()
         mock.patch.object(installer, "PREVIOUS_CANDIDATE_SHA256",
                           hashlib.sha256(self.previous_candidate).hexdigest()).start()
+        mock.patch.object(installer, "RELEASED_1_0_0_SHA256",
+                          hashlib.sha256(self.released_1_0_0).hexdigest()).start()
         mock.patch.object(installer, "WEB_MANIFEST_SHA256", hashlib.sha256(self.web_manifest).hexdigest()).start()
         mock.patch.object(installer, "WEB_DIRECTORY", self.web_path).start()
         mock.patch.object(cc.log, "disabled", True).start()
@@ -796,7 +800,8 @@ class InstallWireTests(unittest.TestCase):
     def test_install_rejects_unexpected_live_application_before_any_write(self):
         for content in (b"", self.original[:1024], self.original[:-1] + bytes([self.original[-1] ^ 1]),
                         self.previous_candidate[:-1],
-                        self.previous_candidate[:-1] + bytes([self.previous_candidate[-1] ^ 1])):
+                        self.previous_candidate[:-1] + bytes([self.previous_candidate[-1] ^ 1]),
+                        self.released_1_0_0[:-1]):
             with self.subTest(length=len(content)):
                 fake = FakeInstallUSB({**self.files, APP_NAME: content, KEY_NAME: KEY})
                 result, _, transcript, _ = self.run_main(fake, "install")
@@ -838,9 +843,88 @@ class InstallWireTests(unittest.TestCase):
         factory.assert_not_called()
         self.assertEqual(fake.mutations, [])
 
+    def test_install_upgrades_released_1_0_0_after_key_and_browser_verification(self):
+        self.assertNotEqual(self.released_1_0_0, self.candidate)
+        # Changing gzip MTIME preserves a valid stream and its allocation while
+        # making this synthetic installed bundle distinct from the new target.
+        old_web = {name: data[:4] + b"\x01" + data[5:]
+                   for name, data in self.web_payloads.items()}
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.released_1_0_0,
+                               KEY_NAME: KEY, **old_web})
+        output = self.output_path()
+        def before_mutation(event):
+            if event["kind"] != "open" or event["name"] != APP_NAME:
+                return
+            records = [json.loads(line) for line in
+                       Path(str(output) + ".journal.jsonl").read_text().splitlines()]
+            self.assertEqual(records[-1]["event"], "before-write-open")
+            self.assertEqual(records[-1]["target"], APP_NAME)
+            for required in ("key-existing-write-readback-verified", "web-bundle-verified"):
+                self.assertTrue(any(record["event"] == required for record in records))
+            for name, data in self.web_payloads.items():
+                self.assertEqual(fake.files[name], data)
+                self.assertIn(name, fake.read_completions)
+        fake.before_mutation = before_mutation
+        result, report, transcript, _ = self.run_main(fake, "install", output)
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual(fake.files[APP_NAME], self.candidate)
+        self.assertEqual(fake.files[KEY_NAME], KEY)
+        self.assertFalse(report["application_already_installed"])
+        self.assertTrue(report["application_write_attempted"])
+        self.assertTrue(report["application_readback_verified"])
+        self.assertEqual(report["live_preflight"]["application"], {
+            "size_bytes": len(self.released_1_0_0),
+            "sha256": hashlib.sha256(self.released_1_0_0).hexdigest(),
+        })
+        self.assertEqual(report["postcheck"]["application"], {
+            "size_bytes": len(self.candidate), "sha256": hashlib.sha256(self.candidate).hexdigest(),
+        })
+        self.assertTrue(report["web_bundle"]["verified"])
+        self.assertEqual(report["web_bundle"]["new_allocation_blocks"], 0)
+        opens = [(event["name"], event["flags"]) for event in fake.mutations if event["kind"] == "open"]
+        self.assertEqual(opens, [(KEY_NAME, 0x1000),
+                                *((name, 0x1000) for _, name in WEB_FILES),
+                                (APP_NAME, 0x1000)])
+        self.assert_protected_verified_before_mutations(fake)
+        self.assertEqual(b"".join(payload for name, _, payload in fake.write_chunks if name == APP_NAME),
+                         self.candidate)
+
+    def test_released_1_0_0_same_size_wrong_hash_is_rejected_before_any_write(self):
+        corrupted = self.released_1_0_0[:-1] + bytes([self.released_1_0_0[-1] ^ 1])
+        self.assertEqual(len(corrupted), installer.RELEASED_1_0_0_SIZE)
+        fake = FakeInstallUSB({**self.files, APP_NAME: corrupted, KEY_NAME: KEY, **self.web_payloads})
+        result, _, transcript, _ = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual(fake.mutations, [])
+        self.assertEqual(fake.files[APP_NAME], corrupted)
+
+    def test_released_1_0_0_is_an_upgrade_source_not_a_provisioning_or_payload_exception(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.released_1_0_0, KEY_NAME: KEY})
+        result, _, transcript, _ = self.run_main(fake, "provision-key")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual(fake.mutations, [])
+        self.candidate_path.write_bytes(self.released_1_0_0)
+        result, _, transcript, factory = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        factory.assert_not_called()
+        self.assertEqual(fake.mutations, [])
+
+    def test_released_1_0_0_upgrade_still_requires_the_exact_original_backup(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.released_1_0_0,
+                               KEY_NAME: KEY, **self.web_payloads})
+        damaged = bytearray(self.raw_backup)
+        damaged[0x8000] ^= 1
+        self.backup_path.write_bytes(damaged)
+        result, _, transcript, factory = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        factory.assert_not_called()
+        self.assertEqual(fake.mutations, [])
+        self.assertEqual(fake.files[APP_NAME], self.released_1_0_0)
+
     def test_install_failure_leaves_journal_and_can_restore_original(self):
         cases = ((source, content, fault)
-                 for source, content in (("stock", self.original), ("previous", self.previous_candidate))
+                 for source, content in (("stock", self.original), ("previous", self.previous_candidate),
+                                         ("released-1.0.0", self.released_1_0_0))
                  for fault in ("write-open:lost-ack", "chunk:lost-ack", "chunk:bad-status", "readback:mismatch"))
         for source, content, fault in cases:
             with self.subTest(source=source, fault=fault):
@@ -978,6 +1062,7 @@ class InstallWireTests(unittest.TestCase):
             connection.payloads = {APP_NAME: b"replacement registry"}
         for mode, values in (("install", {KEY_NAME: KEY, APP_NAME: self.original}),
                              ("install", {KEY_NAME: KEY, APP_NAME: self.previous_candidate}),
+                             ("install", {KEY_NAME: KEY, APP_NAME: self.released_1_0_0}),
                              ("provision-key", {KEY_NAME: KEY, APP_NAME: self.candidate}),
                              ("restore", {APP_NAME: self.candidate}),
                              ("provision-key", {KEY_NAME: bytearray(KEY)})):

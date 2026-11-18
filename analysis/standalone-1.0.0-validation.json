@@ -1,6 +1,6 @@
 {
   "firmware_version": "1.0.0",
-  "hardware_executed": false,
+  "hardware_executed": true,
   "prior_physical_candidate": "analysis/device-browser-20261118.json",
   "binary": {
     "path": "firmware/standalone/pico-s-pro-standalone.bin",
@@ -72,11 +72,16 @@
     "Recovery-image deletion"
   ],
   "physical_checks_remaining": [
-    "Install 1.0.0 and its browser bundle",
+    "Capture versioned health response and exercise browser controls/features",
     "Network switch without reboot",
     "Real brew history/restart/export",
     "Optional receiver failure during a brew",
     "Physical interlocks and complete thermal program",
     "Stock restoration and interrupted application rewrite"
-  ]
+  ],
+  "hardware_execution_evidence": "Owner reported running 1.0.0, provided Overview and Settings screenshots with the 1.0.0 footer, and confirmed the OLED preview is upright.",
+  "physical_installation_verified": true,
+  "physical_installation_and_boot_record": "analysis/device-upgrade-1.0.0-20261118.json",
+  "source_commit": "0a7d4991bcdb29871534e08fd73a784637bae79b",
+  "physical_browser_observation": "Overview and Settings rendered, upright OLED confirmed; arrows and History/API navigation visible. Control/feature operation remains unverified."
 }

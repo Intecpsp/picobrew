@@ -77,23 +77,29 @@
         <article class="card history-phases"><h2>Phases &amp; steps</h2><div class="table-scroll"><table class="history-table"><thead><tr><th>Elapsed time</th><th>Phase</th><th>Step</th></tr></thead><tbody id="historyPhases"></tbody></table></div></article>
       </section>
       <section id="settings" class="tab-panel" hidden>
-        <div class="page-heading"><div><p class="eyebrow">MAKE IT YOURS</p><h1>Brewer settings.</h1><p class="muted">Preferences and optional forwarding are saved on your Pico.</p></div></div>
-        <div class="settings-grid">
-          <article class="card"><h2>Display preferences</h2><form id="settingsForm">
-            <label for="temperatureUnit">Temperature unit</label><select id="temperatureUnit"><option value="F">Fahrenheit (°F)</option><option value="C">Celsius (°C)</option></select>
-            <label for="language">Front-panel language</label><select id="language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option></select>
-            <label class="checkbox"><input type="checkbox" id="detailedStatus"> Show detailed status on the brewer</label><button id="saveSettings" class="button primary" disabled>Save preferences</button>
-          </form></article>
-          <article class="card"><p class="eyebrow">OPTIONAL FORWARDING</p><h2>Send live readings</h2><p class="muted">Send a snapshot every 15 seconds to an HTTP receiver on your network. Brew history continues to be recorded on your Pico.</p>
+        <div class="page-heading"><div><p class="eyebrow">MAKE IT YOURS</p><h1>Brewer settings.</h1><p class="muted">Preferences and forwarding are saved on your Pico.</p></div></div>
+        <div class="settings-page">
+          <section class="settings-section" aria-labelledby="preferencesHeading">
+            <div class="settings-section-heading"><h2 id="preferencesHeading">Display preferences</h2></div>
+            <form id="settingsForm">
+              <div class="settings-row"><label for="temperatureUnit">Temperature unit</label><select id="temperatureUnit"><option value="F">Fahrenheit (°F)</option><option value="C">Celsius (°C)</option></select></div>
+              <div class="settings-row"><label for="language">Front-panel language</label><select id="language"><option value="en">English</option><option value="es">Español</option><option value="fr">Français</option></select></div>
+              <div class="settings-row"><label class="checkbox"><input type="checkbox" id="detailedStatus"> Show detailed status on the brewer</label></div>
+              <div class="settings-actions"><button id="saveSettings" class="button primary" disabled>Save preferences</button></div>
+            </form>
+          </section>
+          <section class="settings-section" aria-labelledby="forwardingHeading">
+            <div class="settings-section-heading"><h2 id="forwardingHeading">Optional forwarding</h2><p class="muted">Send live readings every 15 seconds to a receiver on your network. Brew history stays on the Pico.</p></div>
             <form id="telemetryForm">
-              <label class="checkbox"><input type="checkbox" id="telemetryEnabled" disabled> Send readings to a receiver</label>
-              <label for="telemetryHost">Receiver host name or IPv4 address</label><input id="telemetryHost" maxlength="127" placeholder="brewbox.local" autocomplete="off" spellcheck="false" disabled>
-              <label for="telemetryPort">Port</label><input id="telemetryPort" type="number" min="1" max="65535" step="1" value="8080" required disabled>
-              <p class="hint">Enter the host without http:// or a path. The receiver accepts HTTP POST at /api/v1/telemetry. Forwarding sends live readings; use Brew history to export saved brews.</p>
-              <button id="saveTelemetry" class="button primary" type="submit" disabled>Save forwarding</button>
-            </form><p id="telemetryStatus" class="hint" role="status" aria-live="polite">Connect to load forwarding settings.</p>
-          </article>
-          <article class="card"><p class="eyebrow">ACCESS</p><h2>One device. One key.</h2><p class="muted">Your key is kept in this browser tab’s session. Disconnect to remove it from the tab.</p><button id="disconnectButton" class="button">Disconnect</button><div class="divider"></div><h3>Local connection</h3><p class="hint">This console talks directly to the Pico’s REST API on your network. Use the same API for another client or a future mobile app.</p><code>/api/v1</code></article>
+              <div class="settings-row"><label class="checkbox"><input type="checkbox" id="telemetryEnabled" disabled> Send readings to a receiver</label></div>
+              <div class="settings-row"><label for="telemetryHost">Receiver</label><div>
+                <div class="settings-receiver"><input id="telemetryHost" maxlength="127" placeholder="brewbox.local" autocomplete="off" spellcheck="false" aria-describedby="telemetryHostHint" disabled><div class="settings-port"><label for="telemetryPort">Port</label><input id="telemetryPort" type="number" min="1" max="65535" step="1" value="8080" required disabled></div></div>
+                <p id="telemetryHostHint" class="hint">Host name or IPv4 address, without http:// or a path.</p>
+              </div></div>
+              <div class="settings-actions"><button id="saveTelemetry" class="button primary" type="submit" disabled>Save forwarding</button><p id="telemetryStatus" class="hint" role="status" aria-live="polite">Connect to load forwarding settings.</p></div>
+            </form>
+          </section>
+          <section class="settings-section settings-access" aria-labelledby="accessHeading"><div class="settings-section-heading"><h2 id="accessHeading">Browser access</h2><p class="muted">Your key is kept in this browser tab’s session. Disconnect to remove it.</p></div><button id="disconnectButton" class="button">Disconnect</button></section>
         </div>
       </section>
       <section id="api" class="tab-panel" hidden>
