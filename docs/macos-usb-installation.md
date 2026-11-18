@@ -8,9 +8,10 @@ the firmware identities and allocation constraints.
 
 `tools/pico_flash_install.py` provides three separate operations. **Stage 1
 passed on 2026-11-17, and Stage 2 passed on 2026-11-18: the standalone
-image and matching API key were verified on the owner's Pico. The next
-hardware step is first standalone startup.** Stock restoration and
-standalone boot remain physically untested. Successful installation does
+image and matching API key were verified on the owner's Pico. Standalone
+boot and an HTTP 200 health response also passed on 2026-11-18. The next
+step is authenticated browser access and status/display observation.**
+Stock restoration remains physically untested. Successful installation does
 not demonstrate recovery from a power interruption during an application
 write. The [sanitized installation result](../analysis/device-install-20261118.json)
 records the terminal evidence and the verified tool's success conditions.
@@ -158,7 +159,8 @@ command needs a fresh programming session using the procedure above.
 The owner completed this stage in the run beginning at 00:14:02 on
 2026-11-18. The application was written and read back successfully, and
 the tool returned to the shell without starting it. The procedure below
-is retained for reference; the immediate next step is first startup.
+is retained for reference. First startup and the public health request
+subsequently passed; browser authentication is the next check.
 
 Proceed after Stage 1 has physically passed. The candidate in
 `firmware/standalone/pico-s-pro-standalone.bin` is exactly **161,720 bytes**,
@@ -213,6 +215,12 @@ connected until the command has completed.
 
 ## First standalone startup
 
+The owner reported successful startup on 2026-11-18 and supplied an
+HTTP 200 health response with standalone mode, readiness and valid key
+configuration. The [runtime evidence](../analysis/device-runtime-20261118.json)
+records that result. The exact reset/cable sequence used for startup was
+not identified in the report; the recommended procedure follows.
+
 After `SUCCESS: standalone firmware and API key verified` and return to
 the shell, the RAM helper is still the last program the installer started.
 USB cleanup releases BREAK and returns the adapter to the macOS driver;
@@ -224,8 +232,8 @@ For the first startup, leave the Pico's mains connected, disconnect only
 the USB-C cable from the SparkFun adapter, leave the six-pin header in
 place, and press and release the board's blue RESET button once. This
 uses the owner's earlier observation that normal operation returned with
-USB disconnected. It is the next validation step, not a recorded
-successful standalone boot.
+USB disconnected. Do not infer that the later successful boot validated
+every possible attached-adapter or reset configuration.
 
 Observe the display before attempting any brewing or maintenance program.
 Record a blank screen, reset loop or error exactly as shown. Firmware
@@ -252,6 +260,55 @@ After initialization, this read-only public endpoint should include
 The response's `uptime_ms` varies. This is the running-firmware identity
 check; it requires no API key. The browser console is at
 `http://<pico-ip>/`. Record the actual response before starting a program.
+
+### Network changes may need a reboot in this candidate
+
+The owner changed the saved SSID after startup and observed the new SSID
+label with an address outside the expected subnet. A reboot resolved the
+address mismatch, followed by the successful health request. The trace
+does not establish the exact internal state that caused the mismatch.
+
+Two source findings explain why the screen alone is insufficient evidence
+of a successful network change. `platform/energia_network.cpp:begin()`
+returns the current status without issuing `sl_WlanConnect()` while the
+SDK's `_connecting` flag is set. In addition,
+`src/ui/diagnostics.c:pico_ui_show_network_addresses()` displays the saved
+SSID, not the associated SSID, and reads addressing even after a failed
+connection attempt. These findings are consistent with the observation;
+this candidate has not been patched for them. Rebooting after a changed
+network worked for the owner. Router/client information and an actual
+health response are stronger evidence of reachability than the displayed
+SSID alone.
+
+## Browser authentication and observation
+
+The owner's health response returned:
+
+```json
+{"api_version":1,"mode":"standalone","ready":true,"auth_configured":true,"uptime_ms":132543}
+```
+
+The public health endpoint does not verify a bearer-authenticated request.
+To test that next, open `http://<pico-ip>/` in a browser. The initial
+**Connect to your brewer.** dialog has a **Device API key** field and
+**Connect** button. On the owner's Mac, copy the existing key directly
+to the clipboard without printing it:
+
+```sh
+tr -d '\r\n' < "$HOME/Code/pico-pro-source/private/api.key" | pbcopy
+```
+
+Paste into **Device API key** and click **Connect**. Successful protected
+reads should change the indicator to **Connected** and populate Overview
+with temperatures, target, step time, filter state and the live OLED.
+Compare the OLED image with the physical screen and record the actual
+readings before starting a program. The initial login and polling use
+GET requests; they do not start a brew or maintenance cycle. The key is
+stored in that browser tab's session; Disconnect removes it from the tab.
+
+Authenticated browser access, actual sensor readings and output behavior
+remain pending in the physical acceptance record. A returned temperature
+alone will not establish its calibration.
 
 ## Restore the original application
 

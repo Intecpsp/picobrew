@@ -18,7 +18,8 @@ firmware and boot metadata were uploaded for review; the full flash and
 saved network credentials remain private. The owner subsequently verified
 API-key creation and existing-file rewrite on the appliance, followed by
 standalone application installation and full readback on 2026-11-18.
-Standalone execution and stock restoration have not yet been demonstrated.
+Standalone boot and an HTTP 200 health response were subsequently reported
+on 2026-11-18. Stock restoration remains physically untested.
 
 ## Firmware identity in the original backup
 
@@ -161,7 +162,10 @@ original 32 KiB stack and 32 KiB heap reservations intact. Its SHA-256 is
 `a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904`.
 The firmware build, standalone host/API tests, native ARM storage tests,
 and ARM interrupt/control checks pass. The browser sources did not change
-in this fix. Physical standalone boot remains untested.
+in this fix. The owner subsequently booted this candidate and obtained
+an HTTP 200 health response identifying standalone mode with readiness
+and key configuration both true; see the [runtime evidence](../analysis/device-runtime-20261118.json).
+This does not establish physical actuator behavior or a successful brew.
 
 ## Space available on this appliance
 
@@ -228,7 +232,13 @@ the printed final protected hashes match the originals. The
 [sanitized installation result](../analysis/device-install-20261118.json)
 records the evidence. The boot record remains selected and unchanged.
 
-The next step is [first standalone startup](macos-usb-installation.md#first-standalone-startup).
-The installer left the application unstarted. Installation and readback
-do not establish a working standalone boot, hardware outputs or
-interrupted-write restoration.
+The owner then booted the application, used the network menu, and obtained
+an HTTP 200 response from `/api/v1/health`. Its response identified
+`"mode":"standalone"`, `"ready":true`, and `"auth_configured":true`.
+The [runtime record](../analysis/device-runtime-20261118.json) separates
+these observations from the remaining checks.
+
+The next step is [browser authentication and observation](macos-usb-installation.md#browser-authentication-and-observation).
+The public health response establishes an accessible running application
+and a configured key; it does not verify a bearer-authenticated request,
+sensor accuracy, actuator behavior or interrupted-write restoration.

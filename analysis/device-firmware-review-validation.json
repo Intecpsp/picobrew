@@ -1,5 +1,5 @@
 {
-  "scope": "Offline firmware analysis and host/protocol simulation, plus owner-reported physical backup, logical-file preflight, API-key create/rewrite/readback and standalone application installation with complete readback; no standalone application boot",
+  "scope": "Offline firmware analysis and host/protocol simulation, plus owner-reported physical backup, logical-file preflight, API-key create/rewrite/readback, standalone installation with complete readback, application boot and public health HTTP response; authenticated requests and physical output behavior remain unverified",
   "reference_backup_sha256": "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f",
   "original_main_exact_reference_match": true,
   "original_main_sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
@@ -19,7 +19,7 @@
     "sha256": "a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904",
     "heap_bytes": 32768,
     "stack_bytes": 32768,
-    "hardware_executed": false,
+    "hardware_executed": true,
     "hardware_installed_and_readback_verified": true
   },
   "checks": [
@@ -73,7 +73,7 @@
   "browser_sources_changed": false,
   "guarded_writer_tool": "tools/pico_flash_install.py",
   "guarded_writer_sha256": "e8f5c6ebe91711b097b63b042356832ca2338c51194dc6cfb332a46ace5fd94e",
-  "next_physical_step": "First standalone boot and observation of display, controls, network access and output behavior; stock restoration remains physically untested",
+  "next_physical_step": "Authenticate in the browser console and inspect read-only status/display data; physical outputs, thermal operation and stock restoration remain untested",
   "bootloader_audit_tool": "tools/audit_device_bootloader.py",
   "bootloader_audit_results": "analysis/device-bootloader-emulation-results.json",
   "flash_allocation_record": "analysis/device-flash-layout.json",
@@ -84,5 +84,12 @@
   "live_application_installation_validated": true,
   "live_application_restore_validated": false,
   "physical_application_installation_record": "analysis/device-install-20261118.json",
-  "live_interrupted_write_recovery_validated": false
+  "live_interrupted_write_recovery_validated": false,
+  "physical_runtime_record": "analysis/device-runtime-20261118.json",
+  "live_application_boot_validated": true,
+  "live_public_health_api_validated": true,
+  "live_authenticated_api_validated": false,
+  "live_browser_console_validated": false,
+  "wifi_ssid_change_requires_reboot_reported": true,
+  "wifi_ssid_change_issue_open": true
 }

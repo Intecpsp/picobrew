@@ -5,10 +5,12 @@ checked offline. The owner completed a read-only serial-flash backup on the
 actual Pico Pro on 2026-11-17: two complete 1 MiB reads matched byte-for-byte.
 The [macOS backup record](macos-usb-backup.md) documents that result. The owner
 installed the pinned standalone image and verified its complete readback on
-2026-11-18. The tool left the application unstarted; first boot remains the
-next physical step. A successful link, emulator comparison or file readback
-cannot verify peripheral behavior, application timing, recovery or a heating
-cycle.
+2026-11-18. The tool left the application unstarted, and the owner subsequently
+booted it and received HTTP 200 from the public health endpoint. The
+[runtime record](../analysis/device-runtime-20261118.json) preserves the exact
+response and its limits. Authenticated requests and the browser console are
+the next checks. A successful link, file readback or health response cannot
+verify physical outputs, recovery or a heating cycle.
 
 The owner's extracted firmware and boot records were also reviewed. The
 main application exactly matches the original v0.1.34 reference. The
@@ -20,8 +22,9 @@ constraints. The owner also completed live logical-file preflight on
 API-key creation, readback, existing-file rewrite and final verification
 also passed on that date. The [installation result](../analysis/device-install-20261118.json)
 records the later 161,720-byte application rewrite, full readback, matching
-key and unchanged protected files. Stock restoration, interrupted-write
-recovery and standalone boot remain outstanding. The earlier
+key and unchanged protected files. Standalone boot and public HTTP health
+access have now passed; stock restoration and interrupted-write recovery
+remain outstanding. The earlier
 [third-party screenshot](flash-layout.md) has a different layout and unknown
 Pro/C identity.
 
@@ -32,15 +35,16 @@ Pro/C identity.
 | Identify device | Main MCU/board revision, auxiliary-controller version, current firmware and serial log | Saved main application is an exact v0.1.34 reference match; remaining hardware identification not run |
 | Preserve recovery | Verified existing application/recovery image and boot-file backup; proven way to restore the device | Full 1 MiB backup and live logical-file preflight verified on 2026-11-17; guarded stock restore implemented but not physically validated |
 | Validate file writes | API key create, readback, existing-file rewrite and second readback, followed by protected-image checks | Passed on 2026-11-17; original application and protected-file postchecks passed |
-| Install standalone image | Rewrite the existing image 2 allocation, compare every application byte, verify the key and recheck protected files | Passed on 2026-11-18; pinned 161,720-byte candidate verified; application not started; interrupted-write recovery remains untested |
-| First boot with outputs isolated | Reset reaches setup/main menu; no unexpected pump/heater activation; reset and service-mode behavior | Not run |
-| Display/encoder | Native font, rotation, navigation, click debounce and all three language selections | Not run |
+| Install standalone image | Rewrite the existing image 2 allocation, compare every application byte, verify the key and recheck protected files | Passed on 2026-11-18; pinned 161,720-byte candidate verified; installer did not start it; interrupted-write recovery remains untested |
+| Standalone boot and readiness | Application starts, front-panel menu is available, public health reports standalone mode and readiness | Passed on 2026-11-18; owner used the network menu and supplied HTTP 200 with `ready: true` |
+| Initial output and reset behavior | Outputs isolated for bench observation; no unexpected pump/heater activation; reset and service-mode behavior | Not verified; successful boot does not establish these checks |
+| Display/encoder | Native font, rotation, navigation, click debounce and all three language selections | Network-menu use reported; complete display/encoder acceptance not run |
 | Sensors | Raw ADC counts and independently measured wort/thermoblock temperature at several known points | Not run |
 | Outputs | Actual logical pins 5/8/24/27 correspond to heater/drain/shuttle/steam outputs and default off states | Not run |
 | Filter interlock | Pin 11 active-low presence; pump pause/resume; missing-filter prompts and alarms | Not run |
 | Rotary valve/stepper | Capability query, ready/error replies, every compartment, legacy mapping, torque and home position | Not run |
 | RFID/shared SPI | Known 4/7/10-byte cards, card removal/cancel, shared chip selects and simultaneous display activity | Not run |
-| WiFi/API | Compatible local server, loss/reconnection, exact requests and UI failure handling | Not run |
+| WiFi/API | Compatible local server, loss/reconnection, exact requests and UI failure handling | Public `GET /api/v1/health` passed on 2026-11-18; new-SSID addressing required a reboot; authenticated API, browser UI and failure handling remain unverified |
 | Persistent files | Credentials/preferences/UID, shuttle scaling, restart serialization and failed/short I/O | Not run |
 | Update/recovery | Inactive-image write, full binary integrity, boot-file transition, reset and restore after interrupted update | Not run |
 | Timers/concurrency | ISR frequency, actual clock rate, SPI/display/network interaction and nonreturning fatal path | Not run |
@@ -52,6 +56,24 @@ firmware contains the recovered filter and thermal interlocks, but their
 physical execution has not been demonstrated by this project. Do not treat a
 software assertion or an emulator's simulated sensor value as a physical
 safety test.
+
+## First runtime result and open Wi-Fi issue
+
+The owner supplied an HTTP 200 response from `GET /api/v1/health` on
+2026-11-18. It reported API version 1, standalone mode, `ready: true`,
+`auth_configured: true` and uptime 132,543 ms. This proves the application
+served that public request and reported a configured key; it does not
+prove a bearer-authenticated request, browser rendering or physical sensor
+and output behavior.
+
+Before that response, changing the selected SSID showed the new network
+name alongside an address outside the expected subnet. The owner reported
+that a reboot corrected DHCP. Source inspection found that the status
+screen displays the configured SSID, and that the connection adapter can
+return early while the SDK's connecting flag remains set. These findings
+are consistent with the observation, but the exact runtime cause was not
+captured. The issue remains open; no firmware change is included in this
+evidence update.
 
 ## What the offline image checks establish
 

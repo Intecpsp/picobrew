@@ -6,11 +6,11 @@ local session identifiers. It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
 are embedded in the application; no companion server or CDN is required.
 
-**This is an experimental firmware candidate. It has not run on a physical
-Pico Pro or Pico S.** Installation and complete readback passed on the owner's
-Pico Pro on 2026-11-18; first boot is the next physical step. Build, host
-simulation and ARM instruction tests do not establish electrical I/O,
-radio/flash timing, recovery, or a successful brew on an appliance.
+**This is experimental firmware. It has booted on the owner's Pico Pro and
+served the public health API.** Installation, complete readback and the first
+runtime check passed on 2026-11-18. Authenticated requests, the browser console,
+physical output behavior, recovery and brewing remain unverified on hardware.
+Build, host simulation and ARM instruction tests do not establish those results.
 
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
@@ -60,8 +60,16 @@ records that evidence. On 2026-11-18, the owner installed the pinned
 application readback, key verification and protected-file postchecks passed;
 the tool did not start the application. The [physical installation
 result](analysis/device-install-20261118.json) records this separate milestone.
-First standalone boot, stock restoration and interrupted-write recovery remain
-physically untested. The [macOS backup guide](docs/macos-usb-backup.md) includes
+The owner then booted the application and received HTTP 200 from
+`GET /api/v1/health`, with `mode: "standalone"`, `ready: true`,
+`auth_configured: true` and `uptime_ms: 132543`. The
+[first runtime result](analysis/device-runtime-20261118.json) records this
+observation. The key is reported as configured; a successful authenticated
+request and browser-console check are the next steps. Switching Wi-Fi SSIDs
+initially showed an address outside the expected subnet; the owner reported that
+a reboot corrected it. That connection-state issue remains open. Stock
+restoration and interrupted-write recovery remain physically untested.
+The [macOS backup guide](docs/macos-usb-backup.md) includes
 the pinned dependencies and the successful backup procedure. Keep full backups
 under ignored `firmware/backups/` or `private/`.
 
@@ -314,14 +322,16 @@ free/reuse and preservation of the old allocation when reallocation fails.
 ## What still needs the machine
 
 Software compilation, source reconstruction, image packaging and offline
-validation are complete for this revision. Physical acceptance remains open:
-first boot and recovery, the actual board/peripheral versions, sensor readings,
+validation are complete for this revision. Installation, first boot and the
+public health endpoint have passed on the owner's Pico Pro. Remaining physical
+acceptance includes recovery, the actual board/peripheral versions, sensor readings,
 outputs and interlocks, rotary valve/RFID operation, networking/filesystem
 behavior, and controlled thermal operation. `docs/hardware-validation.md`
 records that work explicitly rather than marking unperformed tests as passed.
 
-This project does not bundle a tested flashing procedure or claim a successful
-brew. The reference image and experimental replacement are kept separate.
+The guarded installation procedure has passed for the owner's pinned device
+profile; stock restoration remains untested and no successful brew is claimed.
+The reference image and experimental replacement are kept separate.
 
 ## Further reading
 

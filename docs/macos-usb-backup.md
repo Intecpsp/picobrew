@@ -23,7 +23,8 @@ device node.
 
 This establishes a working read path and a verified device backup. The
 owner subsequently completed [standalone installation and readback](../analysis/device-install-20261118.json)
-on 2026-11-18. Physical stock restoration and standalone boot remain untested.
+on 2026-11-18, followed by [standalone boot and a successful health request](../analysis/device-runtime-20261118.json).
+Physical stock restoration remains untested.
 
 ## What the connection investigation established
 
@@ -188,7 +189,9 @@ validation.
 The separate [guarded installation workflow](macos-usb-installation.md)
 starts with API-key provisioning and readback, which the owner completed
 successfully on 2026-11-17. Application installation and complete readback
-passed on 2026-11-18; first standalone startup is the next physical step.
+passed on 2026-11-18, followed by standalone boot and public health access.
+Authenticated browser access and status/display observation are the next
+physical steps.
 The probe, backup and
 preflight scripts remain read-only; they do not acquire file-write support
 when the writer is installed beside them.

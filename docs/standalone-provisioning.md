@@ -15,7 +15,11 @@ and final original-application/protected-file checks passed. The
 records that evidence. A separate `install` run on 2026-11-18 subsequently
 wrote and verified the standalone image and matching key; see the
 [installation result](../analysis/device-install-20261118.json).
-Standalone startup and stock restoration remain untested.
+The owner then booted the application and obtained an HTTP 200 health
+response with `"mode":"standalone"`, `"ready":true`, and
+`"auth_configured":true`. The [runtime result](../analysis/device-runtime-20261118.json)
+confirms key loading; an authenticated request and stock restoration
+remain unverified on the physical appliance.
 
 This document also provides a TI-documented UniFlash user-file workflow,
 which has **not been exercised on a physical Pico Pro or Pico S**. It assumes that the
