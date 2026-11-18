@@ -1,0 +1,60 @@
+name: Web recovery candidate
+
+on:
+  push:
+    branches: [feature/web-recovery]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies and browser
+        run: |
+          python -m pip install -r requirements-test.txt -r requirements-web-test.txt
+          python -m playwright install --with-deps chromium
+      - name: Bootstrap the pinned compiler and SDK
+        run: make bootstrap PYTHON=python
+      - name: Build and verify the recovery candidate
+        run: make recovery-verify PYTHON=python
+      - name: Verify the committed recovery image matches the build
+        run: cmp build/recovery/pico-web-recovery.bin firmware/recovery/pico-web-recovery.bin
+      - name: Browser against the real recovery core and HTTP handler
+        run: make recovery-web-test PYTHON=python
+      - name: Preserve recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-candidate-and-previews
+          path: |
+            build/recovery/pico-web-recovery.bin
+            build/recovery/pico-web-recovery.elf
+            build/recovery/pico-web-recovery.map
+            build/recovery/recovery-report.json
+            build/recovery-preview/*.png
+          if-no-files-found: ignore
+
+  standalone-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install native test dependencies
+        run: python -m pip install -r requirements-test.txt
+      - name: Bootstrap the pinned compiler and SDK
+        run: make bootstrap PYTHON=python
+      - name: Verify unchanged standalone behavior and package
+        run: |
+          make standalone-storage-test standalone-arm-test PYTHON=python
+          cmp build/standalone/firmware/pico-s-pro-standalone.bin firmware/standalone/pico-s-pro-standalone.bin

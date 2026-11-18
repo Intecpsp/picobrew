@@ -2,7 +2,24 @@ PYTHON ?= python3
 
 .PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test
 .NOTPARALLEL: verify
+.PHONY: recovery recovery-test recovery-web-test recovery-verify
 all: standalone
+
+recovery:
+	$(PYTHON) tools/embed_recovery_web.py
+	$(PYTHON) tools/build_recovery.py
+
+recovery-test:
+	$(PYTHON) tools/embed_recovery_web.py --check
+	$(PYTHON) tests/test_recovery_core.py
+	$(PYTHON) tests/test_recovery_http.py
+	$(PYTHON) tests/test_recovery_native.py
+	$(PYTHON) tests/test_http_server.py
+
+recovery-web-test:
+	$(PYTHON) tests/test_recovery_web.py
+
+recovery-verify: recovery recovery-test
 
 standalone:
 	$(PYTHON) tools/build_firmware.py --standalone

@@ -1,5 +1,11 @@
 # PicoBrew Pico S/Pro local control firmware
 
+> **Web recovery development branch:** this branch adds the separate
+> [local web recovery candidate](docs/web-recovery.md). It has its own build,
+> tests and embedded UI; it is not installed on the owner's Pico, and the
+> guarded standalone installer does not write it. The completed standalone
+> **1.0.0** release remains on `feature/standalone-rest-api`.
+
 The `feature/standalone-rest-api` branch adds a **standalone firmware profile**
 with an on-device REST API, browser console, recipe collection, settings,
 local session identifiers, retained brew histories, and optional telemetry
