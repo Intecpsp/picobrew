@@ -6,6 +6,8 @@
 #include "picobrew/energia_network.h"
 #if PICO_STANDALONE
 #include "picobrew/energia_http_server.h"
+#include "picobrew/energia_history.h"
+#include "picobrew/energia_telemetry.h"
 #include "picobrew/local_api.h"
 #include "picobrew/local_control.h"
 #include "picobrew/web_assets.h"
@@ -26,6 +28,11 @@ static PicoEnergiaHttpServer local_http;
 static void service_local_http(void *context)
 {
     pico_energia_http_poll(static_cast<PicoEnergiaHttpServer *>(context));
+}
+static bool telemetry_snapshot(void *context, char *output, size_t capacity, size_t *length)
+{
+    return pico_local_api_handle(static_cast<PicoLocalApi *>(context), "GET", "/api/v1/status",
+                                 NULL, 0, output, capacity, length) == 200;
 }
 #endif
 
@@ -158,6 +165,10 @@ void setup()
     pico_energia_http_initialize(&local_http, pico_local_api_http_handler, &local_api,
                                  pico_web_assets, pico_web_assets_count, PICO_LOCAL_API_PORT);
     pico_local_control_bind(&application, service_local_http, &local_http);
+    pico_history_bind(&application, pico_energia_history_storage(), NULL);
+    pico_telemetry_bind(&application, pico_energia_telemetry_storage(),
+                        pico_energia_telemetry_transport(), NULL);
+    pico_telemetry_set_snapshot(telemetry_snapshot, &local_api);
 #endif
     pico_application_setup(&application);
 }

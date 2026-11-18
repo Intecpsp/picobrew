@@ -1,5 +1,9 @@
 #include "picobrew/energia_network.h"
 #include "picobrew/config.h"
+#include "picobrew/local_control.h"
+#if PICO_STANDALONE
+#include "picobrew/local_telemetry.h"
+#endif
 #include <WiFi.h>
 #include <SLFS.h>
 #include <string.h>
@@ -50,16 +54,102 @@ static bool initialize(void *)
 {
     return WiFiClass::init();
 }
+#if PICO_STANDALONE
+static bool connection_failed;
+static bool restore_connection_policy;
+#endif
 static bool connecting(void *)
 {
+#if PICO_STANDALONE
+    return !connection_failed && WiFiClass::_connecting;
+#else
     return WiFiClass::_connecting;
+#endif
 }
+#if PICO_STANDALONE
+static void clear_station_state()
+{
+    WiFiClass::_connecting = false;
+    WiFiClass::local_IP = 0;
+    WiFiClass::WiFi_status = WL_DISCONNECTED;
+    memset(WiFiClass::connected_ssid, 0, sizeof WiFiClass::connected_ssid);
+    memset(WiFiClass::connected_bssid, 0, sizeof WiFiClass::connected_bssid);
+    restore_connection_policy = false;
+}
+
+static bool disconnect_station()
+{
+    /* Drop pending uploads and the old network's DNS cache before changing
+     * association, while any existing socket still belongs to this NWP. */
+    pico_telemetry_network_changed();
+    if (!WiFiClass::_initialized) {
+        clear_station_state();
+        return true;
+    }
+    /* Stop saved/fast reconnection before changing APs. Process old events
+     * before waiting for the disconnect associated with this request. */
+    WiFi.status();
+    if (sl_WlanPolicySet(SL_POLICY_CONNECTION, SL_CONNECTION_POLICY(0, 0, 0, 0, 0),
+                         NULL, 0) < 0)
+        return false;
+    WiFiClass::WiFi_status = WL_IDLE_STATUS;
+    int result = sl_WlanDisconnect();
+    if (result == 0) {
+        uint32_t started = millis();
+        while (WiFi.status() != WL_DISCONNECTED) {
+            if (static_cast<uint32_t>(millis() - started) >= 3000u)
+                return false;
+            delay(10);
+            pico_local_poll();
+        }
+    } else if (result != SL_ERROR_WIFI_ALREADY_DISCONNECTED &&
+               result != SL_ERROR_WIFI_NOT_CONNECTED) {
+        return false;
+    }
+    clear_station_state();
+    /* Give the HTTP adapter an offline poll before new DHCP/association.
+     * The foreground service has a 5 ms throttle. Even an immediate driver
+     * disconnect must allow that interval before the offline observation. */
+    delay(5);
+    pico_local_poll();
+    return true;
+}
+#endif
 static int status(void *)
 {
+#if PICO_STANDALONE
+    int result = WiFi.status();
+    if (connection_failed)
+        return WL_CONNECT_FAILED;
+    if (result == WL_CONNECTED && WiFiClass::local_IP && restore_connection_policy) {
+        /* Only the newly selected profile remains. Restore automatic
+         * reconnection after its first lease, without the old fast cache. */
+        if (sl_WlanPolicySet(SL_POLICY_CONNECTION, SL_CONNECTION_POLICY(1, 0, 0, 0, 0),
+                             NULL, 0) < 0) {
+            connection_failed = true;
+            return WL_CONNECT_FAILED;
+        }
+        restore_connection_policy = false;
+    }
+    return result;
+#else
     return WiFi.status();
+#endif
 }
 static int begin(void *, const char *ssid, const uint8_t *password, uint8_t security, bool)
 {
+#if PICO_STANDALONE
+    connection_failed = true;
+    if (!WiFiClass::init() || !disconnect_station())
+        return WL_CONNECT_FAILED;
+    if (sl_WlanProfileDel(0xff) < 0)
+        return WL_CONNECT_FAILED;
+    /* A prior DHCP lease must not be mistaken for a static configuration.
+     * Configure DHCP explicitly and require a new IP-acquired event. */
+    unsigned char dhcp = 1;
+    if (sl_NetCfgSet(SL_IPV4_STA_P2P_CL_DHCP_ENABLE, 1, 1, &dhcp) < 0)
+        return WL_CONNECT_FAILED;
+#else
     if (WiFiClass::_connecting) {
         delay(500);
         return WiFi.status();
@@ -70,6 +160,7 @@ static int begin(void *, const char *ssid, const uint8_t *password, uint8_t secu
     WiFi.setIpDefaults();
     /* Original fast reconnect policy is 2; upstream begin() enables 3. */
     sl_WlanPolicySet(SL_POLICY_CONNECTION, SL_CONNECTION_POLICY(0, 1, 0, 0, 0), NULL, 0);
+#endif
     SlSecParams_t parameters = {};
     if (security < 7) {
         parameters.Type = security == 5 ? SL_SEC_TYPE_WEP : SL_SEC_TYPE_WPA;
@@ -77,21 +168,53 @@ static int begin(void *, const char *ssid, const uint8_t *password, uint8_t secu
         parameters.KeyLen = strlen(reinterpret_cast<const char *>(password));
     }
     int16_t length = strlen(ssid);
+#if PICO_STANDALONE
+    /* Set before calling the SDK: the association callback may run while
+     * its synchronous command response is being serviced. */
+    WiFiClass::_connecting = true;
+#endif
     if (sl_WlanConnect(reinterpret_cast<const signed char *>(ssid), length, NULL, &parameters,
-                       NULL) != 0)
+                       NULL) != 0) {
+#if PICO_STANDALONE
+        WiFiClass::_connecting = false;
+#endif
         return WL_CONNECT_FAILED;
+    }
+#if PICO_STANDALONE
+    if (sl_WlanProfileAdd(reinterpret_cast<const signed char *>(ssid), length, NULL,
+                          &parameters, NULL, 6, 0) < 0) {
+        disconnect_station();
+        return WL_CONNECT_FAILED;
+    }
+    connection_failed = false;
+    restore_connection_policy = true;
+    return status(NULL);
+#else
     sl_WlanProfileAdd(reinterpret_cast<const signed char *>(ssid), length, NULL, &parameters, NULL,
                       6, 0);
     WiFiClass::_connecting = true;
     return WiFi.status();
+#endif
 }
 static void disconnect(void *)
 {
+#if PICO_STANDALONE
+    connection_failed = !disconnect_station();
+#else
     WiFi.disconnect();
+#endif
 }
 static PicoIpv4 local_ip(void *)
 {
+#if PICO_STANDALONE
+    /* WiFi.localIP() reads NWP configuration, which may still describe the
+     * previous lease. The callback cache is cleared on every disconnect. */
+    if (status(NULL) != WL_CONNECTED || !WiFiClass::local_IP)
+        return PicoIpv4{};
+    return unpack(IPAddress(sl_Htonl(WiFiClass::local_IP)));
+#else
     return unpack(WiFi.localIP());
+#endif
 }
 #if PICO_STANDALONE
 /* Outbound cloud requests do not exist in the local profile. Keep typed
@@ -282,11 +405,24 @@ static uint8_t ping(void *)
 static void ip_configuration(void *, PicoIpv4 *local, PicoIpv4 *dns, PicoIpv4 *gateway,
                              PicoIpv4 *mask)
 {
+#if PICO_STANDALONE
+    *local = *dns = *gateway = *mask = PicoIpv4{};
+    if (!WiFiClass::_initialized || status(NULL) != WL_CONNECTED || !WiFiClass::local_IP)
+        return;
+#else
     if (!WiFiClass::_initialized)
         WiFiClass::init();
+#endif
     SlNetCfgIpV4Args_t config = {};
     _u8 length = sizeof(config);
+#if PICO_STANDALONE
+    if (sl_NetCfgGet(SL_IPV4_STA_P2P_CL_GET_INFO, NULL, &length,
+                     reinterpret_cast<_u8 *>(&config)) < 0 || length != sizeof(config) ||
+        !config.ipV4 || config.ipV4 != WiFiClass::local_IP)
+        return;
+#else
     sl_NetCfgGet(SL_IPV4_STA_P2P_CL_GET_INFO, NULL, &length, reinterpret_cast<_u8 *>(&config));
+#endif
     *local = unpack(IPAddress(sl_Htonl(config.ipV4)));
     *dns = unpack(IPAddress(sl_Htonl(config.ipV4DnsServer)));
     *gateway = unpack(IPAddress(sl_Htonl(config.ipV4Gateway)));

@@ -60,7 +60,22 @@ typedef struct PicoHttpAsset {
     const char *content_encoding;
     const uint8_t *data;
     size_t length;
+    /* A non-NULL path streams an installed file instead of data. The expected
+     * length belongs to this firmware build, not to the untrusted request. */
+    const char *file_path;
 } PicoHttpAsset;
+
+/* File callbacks use their own handle, independent of the recovered SerFlash
+ * stream. open verifies the expected length and returns a handle >=0 or ERROR.
+ * It may perform at most two native operations (stat and open). read performs
+ * one bounded read and must return exactly length; short/zero/error aborts the
+ * response. close is called once for every successful open, including HEAD,
+ * errors, deadlines and shutdown. File callbacks run only in foreground poll. */
+typedef struct PicoHttpAssetIo {
+    int (*open)(void *context, const char *path, size_t expected_length);
+    int (*read)(void *context, int handle, size_t offset, uint8_t *data, size_t length);
+    void (*close)(void *context, int handle);
+} PicoHttpAssetIo;
 
 /* All callbacks must be nonblocking. accept returns a descriptor >=0 or AGAIN.
  * receive/send return a positive count, AGAIN, or ERROR; receive=0 is EOF.
@@ -79,6 +94,9 @@ typedef struct PicoHttpServer {
     void *handler_context;
     const PicoHttpAsset *assets;
     size_t asset_count;
+    const PicoHttpAssetIo *asset_io;
+    void *asset_context;
+    const PicoHttpAsset *pending_asset;
     PicoHttpRequest request;
     PicoHttpResponse response;
     char arena[PICO_HTTP_ARENA_CAPACITY];
@@ -91,8 +109,11 @@ typedef struct PicoHttpServer {
     size_t header_length;
     size_t header_sent;
     size_t body_sent;
+    size_t asset_chunk_length;
+    size_t asset_chunk_sent;
     uint32_t started_ms;
     int client;
+    int asset_handle;
     uint8_t stage;
     bool in_poll;
     bool saw_cr;
@@ -108,6 +129,9 @@ typedef struct PicoHttpServer {
 void pico_http_server_initialize(PicoHttpServer *server, const PicoHttpIo *io, void *io_context,
                                   PicoHttpHandler handler, void *handler_context,
                                   const PicoHttpAsset *assets, size_t asset_count);
+/* Configure immediately after initialize, before polling/accepting clients. */
+void pico_http_server_set_asset_io(PicoHttpServer *server, const PicoHttpAssetIo *io,
+                                    void *context);
 /* Accept exactly 64 lowercase hex characters, optionally followed by LF/CRLF.
  * Invalid input clears the key, leaving protected endpoints unavailable. */
 bool pico_http_server_set_key(PicoHttpServer *server, const char *key, size_t length);

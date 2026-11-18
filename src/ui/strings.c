@@ -1,8 +1,13 @@
 #include "ui_internal.h"
+#include "picobrew/config.h"
 
 void pico_copy_firmware_version(char *destination)
 {
-    strcpy(destination, "v0.1.34");
+#if PICO_STANDALONE
+    strcpy(destination, "v" PICO_STANDALONE_VERSION);
+#else
+    strcpy(destination, "v" PICO_LEGACY_VERSION);
+#endif
     return;
 }
 

@@ -1,5 +1,8 @@
 #include "picobrew/recipe.h"
 #include "picobrew/local_control.h"
+#if PICO_STANDALONE
+#include "picobrew/local_history.h"
+#endif
 #include "picobrew/text.h"
 #include <limits.h>
 #include <math.h>
@@ -421,6 +424,11 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
 {
     if (pico_local_cancelled())
         return 0;
+#if PICO_STANDALONE
+    /* Manual brewing carries its index in the request rather than the saved
+     * recipe loop. Keep status/history aligned with the step actually run. */
+    r->state->recipe.current_step = request->step_index;
+#endif
     PicoBrewController *s = &r->state->controller;
     PicoActuators *a = r->phase->actuators;
     uint32_t target = request->target_fahrenheit;
@@ -812,10 +820,18 @@ cancelled:
 
 bool pico_recipe_run(PicoRecipeRuntime *r, PicoRecipe *recipe, bool logging)
 {
-    if (pico_local_cancelled())
+    if (pico_local_cancelled()) {
+#if PICO_STANDALONE
+        pico_history_finish(true);
+#endif
         return false;
-    if (!pico_recipe_setup(r, logging, r->state->screen.recipe_name))
+    }
+    if (!pico_recipe_setup(r, logging, r->state->screen.recipe_name)) {
+#if PICO_STANDALONE
+        pico_history_finish(true);
+#endif
         return false;
+    }
     bool cancelled = false;
     for (int32_t index = recipe->current_step; index < recipe->step_count; ++index) {
         recipe->current_step = index;
@@ -826,8 +842,12 @@ bool pico_recipe_run(PicoRecipeRuntime *r, PicoRecipe *recipe, bool logging)
         if (step->location == 8) {
             pico_actuators_all_off(r->phase->actuators);
             /* Original early return bypasses the common finalizer. */
-            if (!pico_recipe_pause_instructions(r, recipe->program->program_id))
+            if (!pico_recipe_pause_instructions(r, recipe->program->program_id)) {
+#if PICO_STANDALONE
+                pico_history_finish(true);
+#endif
                 return false;
+            }
             continue;
         }
         step->name[21] = '\0';
@@ -878,6 +898,9 @@ bool pico_recipe_run(PicoRecipeRuntime *r, PicoRecipe *recipe, bool logging)
         r->ops->log_step(r->context, cancelled ? "Brew Canceled" : "Brew Complete");
     recipe->current_step = 0;
     pico_recipe_session_end(r, logging);
+#if PICO_STANDALONE
+    pico_history_finish(cancelled || pico_local_cancelled());
+#endif
     return !cancelled;
 }
 
@@ -987,6 +1010,14 @@ bool pico_recipe_session_start(PicoRecipeRuntime *r, bool server_session)
     bool succeeded =
         !server_session || r->ops->get_session_id(r->context, r->state->session.identifier, 32);
     show(r, PICO_RECIPE_STOP_PROGRESS, 0, NULL);
+#if PICO_STANDALONE
+    /* Both physical and REST starts pass this boundary. Maintenance/cooking
+     * sessions do not consume the retained brew-history budget. A storage
+     * failure is reported by history without changing appliance control. */
+    if (succeeded && (r->state->session.session_type == 0 ||
+                      r->state->session.session_type == 5))
+        (void)pico_history_start(r->state->session.session_type == 5 ? "manual" : "brew");
+#endif
     return succeeded;
 }
 
@@ -1242,8 +1273,12 @@ void pico_recipe_run_brew_program(PicoRecipeRuntime *r, PicoRecipe *recipe)
     pico_text_copy(recipe->program->identifier, sizeof recipe->program->identifier,
                    recipe->identifier, r->ops->log, r->context);
 #endif
-    if (!r->ops->prompt(r->context, PICO_RECIPE_ADJUST_RECIPE, 0, NULL))
+    if (!r->ops->prompt(r->context, PICO_RECIPE_ADJUST_RECIPE, 0, NULL)) {
+#if PICO_STANDALONE
+        pico_history_finish(true);
+#endif
         return;
+    }
     r->state->device_state = 3;
     if (!pico_recipe_run(r, recipe, true))
         show(r, PICO_RECIPE_REQUIRE_FIRST_RINSE, 0, NULL);

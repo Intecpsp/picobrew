@@ -71,7 +71,7 @@ static void close_client(void *context, int client)
 }
 static const PicoHttpIo io = {accept_client, receive_client, send_client, close_client};
 static const uint8_t asset[] = "browser-asset";
-static const PicoHttpAsset assets[] = {{"/", "text/html; charset=utf-8", "gzip", asset, sizeof(asset)-1}};
+static const PicoHttpAsset assets[] = {{"/", "text/html; charset=utf-8", "gzip", asset, sizeof(asset)-1, NULL}};
 
 static bool handler(const PicoHttpRequest *request, PicoHttpResponse *response,
                      char *arena, size_t capacity, void *context)

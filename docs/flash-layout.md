@@ -1,5 +1,9 @@
 # Observed Pico serial-flash layout
 
+The standalone budget below describes the earlier embedded-UI design. The
+current 1.0.0 budget uses the owner's actual backup and includes separate web
+files, retained history and optional forwarding; see [release 1.0.0](release-1.0.0.md#storage-budget).
+
 ## Evidence and limits
 
 The owner's actual verified backup has since been reviewed. See

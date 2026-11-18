@@ -1,5 +1,8 @@
 #include "picobrew/local_api.h"
 #include "picobrew/local_control.h"
+#include "picobrew/local_history.h"
+#include "picobrew/local_telemetry.h"
+#include "picobrew/version.h"
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -174,18 +177,23 @@ void pico_local_event(PicoNetwork *n, const char *kind, const char *detail)
 static int health(PicoLocalApi *api, Writer *w)
 {
     PicoNetwork *n = &api->application->network;
-    format(w, "{\"api_version\":1,\"mode\":\"standalone\",\"ready\":%s,\"auth_configured\":%s,\"uptime_ms\":%lu}",
+    format(w, "{\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
+              "\",\"mode\":\"standalone\",\"ready\":%s,\"auth_configured\":%s,\"uptime_ms\":%lu}",
            pico_local_control_is_ready() ? "true" : "false", api->auth_configured ? "true" : "false",
            (unsigned long)n->platform->millis(n->platform_context));
     return 200;
 }
 static int discovery(Writer *w)
 {
-    text(w, "{\"api_version\":1,\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
+    text(w, "{\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
+            "\",\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
             "\"descale\",\"circulate\",\"drain-reservoir\",\"drain-filter\",\"rack-beer\",\"utilities\","
             "\"settings\",\"stop\",\"clear-stop\",\"encoder\"],\"dedicated_pause_resume\":false,"
-            "\"front_panel\":true,\"events_persistent\":false,\"recipe_labels\":\"printable ASCII\"}");
+            "\"front_panel\":true,\"events_persistent\":false,\"history_persistent\":true,"
+            "\"history_capacity_records\":4224,\"history_capacity_sessions\":8,"
+            "\"telemetry_forwarding\":true,"
+            "\"recipe_labels\":\"printable ASCII\"}");
     return 200;
 }
 static int status(PicoLocalApi *api, Writer *w)
@@ -451,6 +459,148 @@ static int events(PicoLocalApi *api, Writer *w)
     format(w, "],\"next_sequence\":%lu,\"capacity\":8,\"volatile\":true}", (unsigned long)api->next_sequence);
     return 200;
 }
+static void history_metadata_fields(Writer *w, const PicoHistoryMetadata *m)
+{
+    const char *state = m->state == PICO_HISTORY_RECORDING ? "recording" :
+                        m->state == PICO_HISTORY_COMPLETED ? "completed" :
+                        m->state == PICO_HISTORY_INTERRUPTED ? "interrupted" : "empty";
+    format(w, "\"available\":%s,\"id\":%lu,\"command\":", m->available ? "true" : "false",
+           (unsigned long)m->id);
+    quote(w, m->command); text(w, ",\"recipe_name\":"); quote(w, m->recipe_name);
+    text(w, ",\"state\":"); quote(w, state);
+    format(w, ",\"duration_ms\":%lu,\"record_count\":%lu,\"persisted_record_count\":%lu,"
+              "\"first_elapsed_ms\":%lu,\"gap_count\":%lu,\"truncated\":%s,\"storage_error\":%s,"
+              "\"recovered_after_restart\":%s",
+           (unsigned long)m->duration_ms, (unsigned long)m->record_count,
+           (unsigned long)m->persisted_record_count, (unsigned long)m->first_elapsed_ms,
+           (unsigned long)m->gap_count, m->truncated ? "true" : "false",
+           m->storage_error ? "true" : "false", m->recovered_after_restart ? "true" : "false");
+}
+static int history(Writer *w)
+{
+    PicoHistoryMetadata metadata;
+    pico_history_metadata(&metadata);
+    text(w, "{"); history_metadata_fields(w, &metadata);
+    format(w, ",\"sample_interval_ms\":%u,\"checkpoint_interval_ms\":%u,"
+              "\"capacity_records\":%u,\"capacity_sessions\":8,\"page_records\":%u,"
+              "\"fields\":[\"elapsed_ms\",\"wort_f\",\"thermoblock_f\",\"target_f\","
+              "\"step_seconds\",\"phase\",\"controller_status\",\"compartment\","
+              "\"current_step\",\"flags\",\"device_state\"],\"sessions\":[",
+           PICO_HISTORY_SAMPLE_MS, PICO_HISTORY_CHECKPOINT_MS,
+           PICO_HISTORY_RECORD_CAPACITY, PICO_HISTORY_PAGE_RECORDS);
+    size_t count = pico_history_count();
+    for (size_t i = 0; i < count; ++i) {
+        if (!pico_history_at(i, &metadata))
+            return error(w, 503, "history_storage", "Recorded history could not be read");
+        if (i) text(w, ",");
+        text(w, "{"); history_metadata_fields(w, &metadata); text(w, "}");
+    }
+    text(w, "]}");
+    return 200;
+}
+static bool decimal_path(const char **cursor, uint32_t *value)
+{
+    const char *p = *cursor;
+    if (*p < '0' || *p > '9' || (*p == '0' && p[1] >= '0' && p[1] <= '9')) return false;
+    uint32_t number = 0;
+    do {
+        unsigned digit = (unsigned)(*p++ - '0');
+        if (number > (UINT32_MAX - digit) / 10u) return false;
+        number = number * 10u + digit;
+    } while (*p >= '0' && *p <= '9');
+    *cursor = p; *value = number; return true;
+}
+static void history_temperature(Writer *w, int16_t value)
+{
+    if (value == INT16_MIN) { text(w, "null"); return; }
+    int magnitude = value < 0 ? -value : value;
+    format(w, "%s%d.%d", value < 0 ? "-" : "", magnitude / 10, magnitude % 10);
+}
+static int history_samples(Writer *w, const char *path)
+{
+    uint32_t offset, id;
+    if (!decimal_path(&path, &offset) || strncmp(path, "?id=", 4))
+        return error(w, 400, "invalid_history_page", "Use a numeric offset and the retained brew id");
+    path += 4;
+    if (!decimal_path(&path, &id) || !id || *path)
+        return error(w, 400, "invalid_history_page", "Use one positive numeric id query parameter");
+    PicoHistoryMetadata metadata;
+    if (!pico_history_find(id, &metadata))
+        return error(w, 409, "history_changed", "This brew is no longer retained; refresh the history list");
+    PicoHistorySample samples[PICO_HISTORY_PAGE_RECORDS];
+    size_t count = 0;
+    int result = pico_history_read(id, offset, samples, PICO_HISTORY_PAGE_RECORDS, &count);
+    if (result == 1)
+        return error(w, 409, "history_changed", "This brew is no longer retained; refresh the history list");
+    if (result == 2)
+        return error(w, 400, "invalid_history_offset", "Offset exceeds this brew's recorded samples");
+    if (result != 0)
+        return error(w, 503, "history_storage", "Recorded samples could not be read or verified");
+    format(w, "{\"id\":%lu,\"offset\":%lu,\"samples\":[", (unsigned long)id, (unsigned long)offset);
+    for (size_t i = 0; i < count; ++i) {
+        const PicoHistorySample *sample = &samples[i];
+        if (i) text(w, ",");
+        format(w, "[%lu,", (unsigned long)sample->elapsed_ms);
+        history_temperature(w, sample->wort_tenths_f); text(w, ",");
+        history_temperature(w, sample->thermoblock_tenths_f); text(w, ",");
+        history_temperature(w, sample->target_tenths_f);
+        format(w, ",%ld,%u,%u,%u,%u,%u,%u]", (long)sample->step_seconds,
+               sample->phase, sample->controller_status, sample->compartment,
+               sample->current_step, sample->flags, sample->device_state);
+    }
+    text(w, "],\"next_offset\":");
+    if (offset + count < metadata.record_count)
+        format(w, "%lu", (unsigned long)(offset + count));
+    else text(w, "null");
+    text(w, "}"); return 200;
+}
+static int telemetry(Writer *w, const char *method, const char *body, size_t length)
+{
+    if (strcmp(method, "GET") && strcmp(method, "PUT"))
+        return error(w, 405, "method_not_allowed", "Use GET or PUT for telemetry settings");
+    PicoTelemetryConfig config;
+    if (!strcmp(method, "PUT")) {
+        memset(&config, 0, sizeof config);
+        Json j = {body, body + length, true}; unsigned seen = 0;
+        if (!token(&j, '{') || peek(&j, '}')) goto bad;
+        do {
+            char field[32]; unsigned bit; int32_t port;
+            if (!key(&j, field)) goto bad;
+            if (!strcmp(field, "enabled")) {
+                bit = 1; if (!boolean(&j, &config.enabled)) goto bad;
+            } else if (!strcmp(field, "host")) {
+                bit = 2; if (!string(&j, config.host, sizeof config.host)) goto bad;
+            } else if (!strcmp(field, "port")) {
+                bit = 4; if (!integer(&j, 1, 65535, &port)) goto bad; config.port = (uint16_t)port;
+            } else goto bad;
+            if (seen & bit) goto bad;
+            seen |= bit;
+        } while (comma_or_end(&j, '}'));
+        if (!token(&j, '}') || !done(&j) || seen != 7) goto bad;
+        PicoTelemetryConfigureResult result = pico_telemetry_configure(&config);
+        if (result == PICO_TELEMETRY_CONFIG_INVALID) goto bad;
+        if (result == PICO_TELEMETRY_CONFIG_BUSY)
+            return error(w, 409, "busy", "Edit the telemetry destination while the brewer is idle");
+        if (result != PICO_TELEMETRY_CONFIG_OK)
+            return error(w, 503, "storage_io", "Could not verify saved telemetry settings");
+    }
+    pico_telemetry_get_config(&config);
+    PicoTelemetryStatus status; pico_telemetry_get_status(&status);
+    format(w, "{\"enabled\":%s,\"host\":", config.enabled ? "true" : "false");
+    quote(w, config.host);
+    format(w, ",\"port\":%u,\"interval_ms\":%u,\"path\":\"/api/v1/telemetry\",\"status\":{\"state\":",
+           config.port, PICO_TELEMETRY_INTERVAL_MS);
+    quote(w, pico_telemetry_state_name(status.state));
+    format(w, ",\"resolved\":%s,\"sent\":%lu,\"failed\":%lu,\"dropped\":%lu,\"last_success_ms\":%lu,"
+              "\"last_http_status\":%u,\"storage_error\":%s,\"last_error\":",
+           status.resolved ? "true" : "false", (unsigned long)status.sent,
+           (unsigned long)status.failed, (unsigned long)status.dropped,
+           (unsigned long)status.last_success_ms, status.last_http_status,
+           status.storage_error ? "true" : "false");
+    quote(w, pico_telemetry_error_name(status.last_error)); text(w, "}}"); return 200;
+bad:
+    return error(w, 400, "invalid_telemetry", "Use enabled, an IPv4 address or hostname, and port 1-65535");
+}
 int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *path,
                           const char *body, size_t length, char *response, size_t capacity,
                           size_t *response_length)
@@ -477,6 +627,11 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
         error(&w, 405, "method_not_allowed", "Use GET for display");
     else if (!strcmp(path, "/api/v1/events")) result = get ? events(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for events");
+    else if (!strcmp(path, "/api/v1/telemetry")) result = telemetry(&w, method, body, length);
+    else if (!strcmp(path, "/api/v1/history")) result = get ? history(&w) :
+        error(&w, 405, "method_not_allowed", "Use GET for brew history");
+    else if (!strncmp(path, "/api/v1/history/samples/", 24)) result = get ? history_samples(&w, path + 24) :
+        error(&w, 405, "method_not_allowed", "Use GET for recorded samples");
     else if (!strcmp(path, "/api/v1/recipes")) result = recipes(api, &w, method, NULL, body, length);
     else if (!strncmp(path, "/api/v1/recipes/", 16)) result = recipes(api, &w, method, path + 16, body, length);
     else if (!strcmp(path, "/api/v1/commands"))

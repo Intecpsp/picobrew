@@ -95,7 +95,7 @@ def main():
         adapter_sources = sorted(p for p in (ROOT / 'platform').glob('*.cpp')
                                  if p.name != 'firmware_main.cpp')
         if not options.standalone:
-            adapter_sources = [p for p in adapter_sources if p.name != 'energia_http_server.cpp']
+            adapter_sources = [p for p in adapter_sources if p.name not in ('energia_http_server.cpp', 'energia_history.cpp', 'energia_telemetry.cpp')]
         adapter_objects = []
         for source in adapter_sources:
             adapter_object = output / ('platform_' + source.stem + '.o')

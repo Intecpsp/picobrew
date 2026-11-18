@@ -61,6 +61,20 @@ jobs:
         run: make bootstrap PYTHON=python
       - name: Link appliance image and verify native flash recovery
         run: make standalone-storage-test PYTHON=python
+      - name: Verify the committed installation package matches the build
+        run: |
+          cmp build/standalone/firmware/pico-s-pro-standalone.bin firmware/standalone/pico-s-pro-standalone.bin
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          built = json.loads(Path('build/standalone/firmware/firmware-report.json').read_text())
+          packaged = json.loads(Path('firmware/standalone/firmware-report.json').read_text())
+          manifest = hashlib.sha256(Path('firmware/web/manifest.json').read_bytes()).hexdigest()
+          assert packaged['binary_sha256'] == built['binary_sha256']
+          assert packaged['app_sources_sha256'] == built['app_sources_sha256']
+          assert packaged['browser_manifest_sha256'] == built['browser_manifest_sha256'] == manifest
+          print('Packaged firmware, source identities and browser bundle match the clean build.')
+          PY
       - name: Verify ARM interrupt and filter-trip guards
         run: make standalone-arm-test PYTHON=python
       - name: Preserve firmware candidate and image evidence
@@ -72,3 +86,4 @@ jobs:
             build/standalone/firmware/pico-s-pro-standalone.elf
             build/standalone/firmware/pico-s-pro-standalone.map
             build/standalone/firmware/firmware-report.json
+            firmware/web/

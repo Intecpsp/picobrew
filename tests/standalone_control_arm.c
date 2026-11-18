@@ -5,6 +5,11 @@ static PicoApplication app;
 static PicoControl control;
 static PicoActuators actuators;
 volatile uint32_t arm_poll_count, arm_pause_count, arm_high_writes, arm_outputs;
+volatile uint32_t arm_history_polls;
+volatile uint32_t arm_telemetry_polls;
+void pico_history_poll(void) { ++arm_history_polls; }
+void pico_telemetry_poll(void) { ++arm_telemetry_polls; }
+void pico_history_finish(bool interrupted) { (void)interrupted; }
 static uint32_t tick;
 static bool missing;
 static uint32_t millis(void *c) { (void)c; tick+=10; return tick; }
@@ -25,6 +30,7 @@ static const PicoApplicationHardware hardware={.millis=millis};
 void arm_prepare(void)
 {
     memset(&app,0,sizeof app); arm_poll_count=arm_pause_count=arm_high_writes=arm_outputs=0;
+    arm_history_polls=arm_telemetry_polls=0;
     tick=0; missing=false;
     control.signals=&app.state.control_signals; control.controller=&app.state.controller;
     actuators.ops=&actuator_ops;

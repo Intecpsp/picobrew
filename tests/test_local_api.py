@@ -15,7 +15,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 TEMP = tempfile.TemporaryDirectory(prefix="picobrew-local-api-")
 LIBRARY = Path(TEMP.name) / "api.so"
-SOURCES = [ROOT / "tests/standalone/local_api_host.c", ROOT / "src/local_api.c", ROOT / "src/local_store.c"]
+SOURCES = [ROOT / "tests/standalone/local_api_host.c", ROOT / "src/local_api.c", ROOT / "src/local_store.c", ROOT / "src/local_history.c", ROOT / "src/local_telemetry.c"]
 subprocess.run(["gcc", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fPIC", "-shared", "-O1", "-g",
                 "-I" + str(ROOT / "include"), *map(str, SOURCES), "-o", str(LIBRARY)], check=True)
 LIB = ctypes.CDLL(str(LIBRARY))
@@ -25,6 +25,8 @@ LIB.test_session.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
 LIB.test_corrupt.argtypes = [ctypes.c_char_p, ctypes.c_uint]
 LIB.test_load_recipe.argtypes = [ctypes.c_char_p]
 LIB.test_event.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+LIB.test_history_start.argtypes = [ctypes.c_char_p]
+LIB.test_history_advance.argtypes = [ctypes.c_uint, ctypes.c_uint]
 
 
 def request(method, path, body=None, raw=None):
@@ -47,9 +49,14 @@ class LocalApi(unittest.TestCase):
     def test_discovery_health_status_and_screen(self):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
+        self.assertEqual(data["api_version"], 1)
+        self.assertEqual(data["firmware_version"], "1.0.0")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
-        self.assertEqual(request("GET", "/api/v1/health")[1]["uptime_ms"], 123456)
+        health = request("GET", "/api/v1/health")[1]
+        self.assertEqual(health["api_version"], 1)
+        self.assertEqual(health["firmware_version"], data["firmware_version"])
+        self.assertEqual(health["uptime_ms"], 123456)
         status = request("GET", "/api/v1/status")[1]
         self.assertEqual(status["wort_f"], 72.4)
         self.assertTrue(status["filter_inserted"])
@@ -211,6 +218,74 @@ class LocalApi(unittest.TestCase):
         self.assertEqual(data["next_sequence"], 21)
         LIB.test_reset(0)
         self.assertEqual(request("GET", "/api/v1/events")[1]["events"], [])
+
+    def test_history_paging_persistence_and_session_identity(self):
+        empty = request("GET", "/api/v1/history")[1]
+        self.assertFalse(empty["available"])
+        self.assertEqual(empty["sessions"], [])
+        self.assertEqual((empty["capacity_records"], empty["capacity_sessions"]), (4224, 8))
+        self.assertEqual(LIB.test_history_start(b'First "brew"'), 1)
+        for i in range(40): LIB.test_history_advance(15000, i // 20)
+        LIB.test_history_finish(0)
+        meta = request("GET", "/api/v1/history")[1]
+        self.assertEqual(meta["state"], "completed")
+        self.assertEqual(meta["recipe_name"], 'First "brew"')
+        first = meta["id"]
+        collected, offset = [], 0
+        while offset is not None:
+            code, page = request("GET", f"/api/v1/history/samples/{offset}?id={first}")
+            self.assertEqual(code, 200)
+            self.assertEqual(page["id"], first)
+            self.assertEqual(page["offset"], offset)
+            self.assertLessEqual(len(page["samples"]), 32)
+            collected.extend(page["samples"])
+            offset = page["next_offset"]
+        self.assertEqual(len(collected), meta["record_count"])
+        self.assertEqual(collected[0][meta["fields"].index("wort_f")], 72.4)
+        self.assertEqual(LIB.test_history_start(b"Second brew"), 1)
+        LIB.test_history_advance(15000, 3); LIB.test_history_finish(0)
+        LIB.test_reset(0)
+        restored = request("GET", "/api/v1/history")[1]
+        self.assertEqual([x["recipe_name"] for x in restored["sessions"]], ["Second brew", 'First "brew"'])
+        self.assertEqual(request("GET", f"/api/v1/history/samples/0?id={first}")[1]["samples"], collected[:32])
+        self.assertEqual(request("GET", "/api/v1/history/samples/0?id=4294967295")[0], 409)
+        self.assertEqual(request("GET", f"/api/v1/history/samples/4224?id={first}")[0], 400)
+        for bad in ["-1?id=1", "0", "0?id=0", "0?id=01", "00?id=1", "0?id=1&id=2",
+                    "0?id=4294967296", "4294967296?id=1", "0?id=1&token=secret"]:
+            self.assertEqual(request("GET", "/api/v1/history/samples/" + bad)[0], 400, bad)
+        self.assertEqual(request("POST", "/api/v1/history", {})[0], 405)
+        self.assertEqual(request("DELETE", f"/api/v1/history/samples/0?id={first}")[0], 405)
+
+    def test_full_history_inventory_fits_shared_http_arena(self):
+        for i in range(8):
+            self.assertEqual(LIB.test_history_start(('"' * 30 + str(i)).encode()), 1)
+            LIB.test_history_advance(15000, 1); LIB.test_history_finish(i % 2)
+        code, result = request("GET", "/api/v1/history")
+        self.assertEqual(code, 200)
+        self.assertEqual(len(result["sessions"]), 8)
+        self.assertEqual(result["sessions"][0]["id"], result["id"])
+        self.assertLess(len(json.dumps(result, separators=(",", ":")).encode()), 4096)
+
+    def test_telemetry_is_opt_in_validated_and_persistent(self):
+        code, result = request("GET", "/api/v1/telemetry")
+        self.assertEqual(code, 200)
+        self.assertEqual((result["enabled"], result["host"], result["port"]), (False, "", 8080))
+        self.assertEqual(result["status"]["sent"], 0)
+        configured = {"enabled": True, "host": "brews.example.net", "port": 8080}
+        self.assertEqual(request("PUT", "/api/v1/telemetry", configured)[0], 200)
+        LIB.test_reset(0)
+        restored = request("GET", "/api/v1/telemetry")[1]
+        for field, value in configured.items(): self.assertEqual(restored[field], value)
+        for host in ["https://brews.example.net", "evil/route", "evil\\r\\nX: y", "x" * 128,
+                     "256.0.0.1", "-bad.example", "bad..example", ""]:
+            self.assertEqual(request("PUT", "/api/v1/telemetry", dict(configured, host=host))[0], 400)
+        self.assertEqual(request("PUT", "/api/v1/telemetry", {"enabled": True})[0], 400)
+        self.assertEqual(request("PUT", "/api/v1/telemetry", dict(configured, token="secret"))[0], 400)
+        LIB.test_busy(1)
+        self.assertEqual(request("PUT", "/api/v1/telemetry", dict(configured, enabled=False))[0], 409)
+        LIB.test_busy(0)
+        self.assertEqual(request("PUT", "/api/v1/telemetry", dict(configured, enabled=False))[0], 200)
+        self.assertEqual(request("POST", "/api/v1/telemetry", configured)[0], 405)
 
 
 if __name__ == "__main__":

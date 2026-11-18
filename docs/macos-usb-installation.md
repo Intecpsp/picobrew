@@ -9,8 +9,9 @@ the firmware identities and allocation constraints.
 `tools/pico_flash_install.py` provides three separate operations. **Stage 1
 passed on 2026-11-17, and Stage 2 passed on 2026-11-18: the standalone
 image and matching API key were verified on the owner's Pico. Standalone
-boot and an HTTP 200 health response also passed on 2026-11-18. The next
-step is authenticated browser access and status/display observation.**
+boot, an HTTP 200 health response and the connected browser console also passed
+on 2026-11-18 for the previous candidate. The new 1.0.0 candidate and browser
+bundle still need installation and physical checks.**
 Stock restoration remains physically untested. Successful installation does
 not demonstrate recovery from a power interruption during an application
 write. The [sanitized installation result](../analysis/device-install-20261118.json)
@@ -19,7 +20,7 @@ records the terminal evidence and the verified tool's success conditions.
 | Command | Files it may write | Purpose |
 | --- | --- | --- |
 | `provision-key` | `/local/api.key` | Create/read back the required key, then rewrite/read back the same key using existing-file mode |
-| `install` | `/local/api.key`, `/sys/mcuimg2.bin` | Verify the matching key through existing-file mode, then install and read back the pinned candidate |
+| `install` | `/local/api.key`, the five `/local/web/*.gz` files, `/sys/mcuimg2.bin` | Verify the key, install/read back the pinned browser bundle, then install/read back the pinned application |
 | `restore` | `/sys/mcuimg2.bin` | Restore and read back the exact stock application extracted from the verified original backup |
 
 The writer never writes the secondary bootloader, recovery image, boot
@@ -60,8 +61,8 @@ mkdir -p "$PICO_ROOT/firmware/backups"
 
 The writer imports the repository's probe, queued-backup, preflight and
 offline-inspection modules. Run it from the checkout; copying only the
-writer into Downloads is insufficient. The proven transport modules are
-unchanged.
+writer into Downloads is insufficient. The proven transport sequence is retained; the initial prompt now describes
+both power-on and reset-button entry.
 
 ## Enter a fresh programming session
 
@@ -84,11 +85,11 @@ Two entry procedures are available:
   identify the owner's reset action, so it is not recorded as separate
   physical confirmation of this entry method.
 
-The current tool prints `Do not press Return or RESET` for the earlier
-power-on procedure. When using the reset-button alternative, press RESET
-once at the **initial** BREAK prompt and still do not press Return. Once
-the handshake begins, do not reset again or disconnect power/USB until
-the command exits. The later `APPS HANDSHAKE` is handled by the tool.
+At the **initial** `BREAK asserted` prompt, either power on the Pico or press
+and release its blue RESET button once. Pressing the reset button does not
+require unplugging mains. Do not press Return. Once the handshake begins,
+do not reset again or disconnect power/USB until the command exits. The later
+`APPS HANDSHAKE` is handled by the tool.
 
 ## Stage 1: provision and verify the API key
 
@@ -156,25 +157,38 @@ command needs a fresh programming session using the procedure above.
 
 ## Stage 2: install the pinned standalone candidate
 
-The owner completed this stage in the run beginning at 00:14:02 on
-2026-11-18. The application was written and read back successfully, and
-the tool returned to the shell without starting it. The procedure below
-is retained for reference. First startup and the public health request
-subsequently passed; browser authentication is the next check.
+The previous candidate was written and read back in the run beginning at
+00:14:02 on 2026-11-18. Its first boot, health API and connected browser were
+subsequently observed. This section now describes upgrading that installation
+to the **1.0.0** candidate and matching browser files.
 
-Proceed after Stage 1 has physically passed. The candidate in
-`firmware/standalone/pico-s-pro-standalone.bin` is exactly **161,720 bytes**,
-SHA-256:
+Proceed with the existing provisioned key. Do not rerun key provisioning after
+installing standalone firmware; that separate stage intentionally requires the
+original application. The exact new image size/hash and matching web manifest
+are recorded in `firmware/standalone/firmware-report.json` and pinned in the
+installer. The previously installed image's identity remains separately
+allowlisted as an upgrade source.
 
-```text
-a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904
+The checked-out `firmware/web/manifest.json` and all five gzip payloads are
+required alongside the application. They are validated before USB is opened.
+The default bundle path is resolved from the repository, so the install command
+below does not need an extra browser-files argument. The installer verifies
+live FAT/free-hole constraints, key identity, all browser file readbacks, then
+the application and protected-file postchecks. It leaves local recipes,
+histories, preferences and forwarding configuration in place.
+
+Unknown or partial application content requires the explicit restore path;
+normal installation does not overwrite an unknown image. A different build,
+even from this branch, requires a reviewed tool/profile update.
+
+Update this branch first:
+
+```sh
+PICO_ROOT="$HOME/Code/pico-pro-source"
+cd "$PICO_ROOT"
+git pull --ff-only origin feature/standalone-rest-api
+"$PICO_ROOT/.venv/bin/python" -m pip install -r requirements-usb.txt
 ```
-
-The tool pins that content, the original backup and the current device
-profile. It accepts the original application or this exact candidate as
-the current image 2. Unknown or partial image contents require the restore
-path; they are not overwritten by a normal install. A different build,
-even from this branch, needs a reviewed tool/profile update.
 
 With either programming-entry procedure above:
 
@@ -191,9 +205,16 @@ sudo "$PICO_ROOT/.venv/bin/python" \
 ```
 
 The writer first proves existing-file writing on the matching key in this
-session. It then opens the existing image 2 with mode `0x1000`, retaining
-its allocation and attributes, and writes sequentially. Opening for write
+session, then installs and verifies every browser file. Only then does it open
+the existing image 2 with mode `0x1000`, retaining its allocation and attributes,
+and write sequentially. Opening for write
 **erases the file's contents immediately**. It is not an atomic update.
+
+The existing application reserves 48 nonmirrored 4 KiB blocks. The writer
+additionally caps application payloads at 188,416 bytes, conservatively below
+the capacity derived from that allocation and the SDK's size-rounding rules.
+This is a derived guard, not a measured `AllocatedLen` value. The 164,600-byte
+1.0.0 image passes it; no application-file recreation or relocation is used.
 Every write requires an acknowledged command and successful loader status;
 the tool does not retry an ambiguous write chunk.
 

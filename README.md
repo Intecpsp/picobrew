@@ -1,20 +1,25 @@
 # PicoBrew Pico S/Pro local control firmware
 
 The `feature/standalone-rest-api` branch adds a **standalone firmware profile**
-with an on-device REST API, browser console, recipe collection, settings and
-local session identifiers. It boots without a PicoBrew account, cloud recipe
+with an on-device REST API, browser console, recipe collection, settings,
+local session identifiers, retained brew histories, and optional telemetry
+forwarding. Firmware **1.0.0** keeps the REST contract at `/api/v1`.
+It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
-are embedded in the application; no companion server or CDN is required.
+are compressed files on the Pico's serial flash; no companion server or CDN is required.
 
-**This is experimental firmware. It has booted on the owner's Pico Pro and
-served the public health API.** Installation, complete readback and the first
-runtime check passed on 2026-11-18. Authenticated requests, the browser console,
-physical output behavior, recovery and brewing remain unverified on hardware.
-Build, host simulation and ARM instruction tests do not establish those results.
+**The previous 161,720-byte standalone candidate has booted on the owner's
+Pico Pro and served the health API and authenticated browser console.**
+The new **1.0.0** candidate adds the changes in the [release notes](docs/release-1.0.0.md);
+it has not yet been installed or exercised on the machine. Physical output
+behavior, interlocks, recovery and a complete brew remain unverified. Build,
+host simulation and ARM instruction tests do not establish those results.
 
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
 [device-key provisioning procedure](docs/standalone-provisioning.md).
+The [optional forwarding guide](docs/telemetry.md) includes a standard-library
+HTTP receiver that archives live readings in SQLite on a Mac or Linux computer.
 The [macOS USB guide](docs/macos-usb-backup.md) documents the owner's verified
 backup using a SparkFun CH340C. The [actual device review](docs/device-firmware-review.md)
 records the matching original firmware, bootloader and recovery behavior,
@@ -64,10 +69,12 @@ The owner then booted the application and received HTTP 200 from
 `GET /api/v1/health`, with `mode: "standalone"`, `ready: true`,
 `auth_configured: true` and `uptime_ms: 132543`. The
 [first runtime result](analysis/device-runtime-20261118.json) records this
-observation. The key is reported as configured; a successful authenticated
-request and browser-console check are the next steps. Switching Wi-Fi SSIDs
-initially showed an address outside the expected subnet; the owner reported that
-a reboot corrected it. That connection-state issue remains open. Stock
+observation. A subsequent [owner screenshot](analysis/device-browser-20261118.json)
+shows the connected console, sensor readings, and OLED contents. It revealed
+an upside-down browser OLED preview and an overflowing device identifier.
+Changing Wi-Fi SSIDs initially retained a stale address until reboot. Version
+1.0.0 corrects the browser rendering/layout and requires a fresh DHCP acquisition
+after changing networks; physical confirmation of those fixes is pending. Stock
 restoration and interrupted-write recovery remain physically untested.
 The [macOS backup guide](docs/macos-usb-backup.md) includes
 the pinned dependencies and the successful backup procedure. Keep full backups
@@ -78,19 +85,23 @@ under ignored `firmware/backups/` or `private/`.
 | Capability | Implementation |
 | --- | --- |
 | Local operation | Cloud registration, recipe/session requests, reporting and updates replaced or disabled at compile time |
-| REST API | Versioned `/api/v1` resources for status, recipes, settings, recent events and commands |
+| REST API | Versioned `/api/v1` resources for status, recipes, settings, events, retained history, forwarding and commands; embedded interactive API explorer |
 | Remote front panel | Live 128 × 64 OLED image plus encoder turn/click controls for existing prompts and menus |
 | Programs | Local recipes, manual brewing, sous vide, cold brew, rinse, descale, circulation, draining and racking |
 | Stop | Latched output inhibition, cooperative cancellation and idle-only clear; filter removal during interrupt-side pumping also latches a stop |
 | Recipes | 16 on-device recipes, up to 15 steps each, with validated input and CRC-protected alternating records |
-| Browser console | Same-origin HTML/CSS/JavaScript, recipe editing/import/export, telemetry, controls and display preferences |
+| Browser console | Same-origin HTML/CSS/JavaScript, recipe editing/import/export, live readings, upright OLED preview, up/down controls, history graphs and display preferences |
+| Brew history | Up to eight recent entries sharing 4,224 compact samples; retention depends on brew length and state changes; persistent checkpoints, JSON/CSV export, and eviction of the oldest completed/interrupted brews |
+| Optional forwarding | Off by default; send live status snapshots every 15 seconds to a chosen HTTP host/port; configure through Settings or `GET`/`PUT /api/v1/telemetry` |
+| Wi-Fi changes | Clear old addresses and reconnect through a fresh IPv4 DHCP event before reporting success |
 | Authentication | Per-device bearer key in `/local/api.key`; no shared/default credential or embedded secret |
 
-PicoStill, dedicated pause/resume REST commands, remote firmware updates and
-durable brew-history storage are not implemented in this profile. Pause/resume
-uses the existing front-panel workflow. The activity feed contains the latest
-eight events from the current boot. Fatal firmware halts can still require a
-physical reset. See the guide for the exact operating and validation limits.
+PicoStill, dedicated pause/resume REST commands and remote firmware updates
+are not implemented in this profile. Pause/resume
+uses the existing front-panel workflow. The Activity screen has been removed;
+`GET /api/v1/events` retains the latest eight events from the current boot and
+remains available through the API explorer. Fatal firmware halts can still
+require a physical reset. See the guide for the exact operating and validation limits.
 
 ### Build and test standalone
 
@@ -106,12 +117,18 @@ The native image and its report are written under `build/standalone/firmware/`:
 `pico-s-pro-standalone.bin`, matching ELF/map, and `firmware-report.json`.
 The build checks vectors, the complete link, the physical RAM budget, absence
 of the discontinued cloud protocol strings, and separation from test fixtures.
-It keeps the original 32 KiB stack and 32 KiB heap reservations. Application and
-SDK link-time optimization removes unused code; the legacy profile retains its
+The current 1.0.0 image is **164,600 bytes**, with **952 bytes** of unallocated
+RAM beyond the original **32 KiB stack and 32 KiB heap** reservations. The history
+tail and optional upload frame use up to **4,704 bytes plus allocator overhead**
+through lazy allocation from that reserved heap. Browser assets total
+**21,618 compressed bytes** in **eight serial-flash blocks**. Use the report for
+the exact build; layout measurements do not establish live stack or heap usage.
+Application and SDK link-time optimization removes unused code; the legacy profile retains its
 original compilation and exhaustive symbol checks.
 The pinned standalone SDK patch omits Energia's unused eight-client TCP wrapper
 registry; the native API listener uses SimpleLink sockets directly. Wi-Fi
-connection management and the legacy profile retain their normal behavior.
+reconnection uses a separate standalone-only SDK patch to require a fresh
+IPv4 lease; the legacy profile retains its recovered behavior.
 
 The optional browser suite exercises the actual portable C API/store behind a
 local HTTP harness, with hardware boundaries simulated:
@@ -172,8 +189,11 @@ retains its own `legacy/SHA256SUMS.txt`.
 | `src/ui/` | OLED/graphics/font, screens, menus, input editing, diagnostics and translations |
 | `src/network/` | WiFi, HTTP/API, files/preferences/recovery, Still protocol, update/boot info and string helpers |
 | `src/local_api.c`, `src/local_store.c`, `src/local_control.c` | Standalone REST resources, persistent records, command queue and stop latch |
+| `src/local_history.c`, `platform/energia_history.cpp` | On-device brew recording, checkpoints, retention and paged reads |
+| `src/local_telemetry.c`, `platform/energia_telemetry.cpp` | Optional HTTP forwarding, saved destinations and bounded socket progress |
 | `src/http_server.c`, `platform/energia_http_server.cpp` | Bounded authenticated HTTP transport and native SimpleLink listener |
-| `web/`, `tools/embed_web.py` | Browser source and reproducible embedded gzip assets |
+| `web/`, `tools/embed_web.py` | Browser source and reproducible gzip assets stored on serial flash |
+| `tools/pico_telemetry_receiver.py` | Optional standard-library HTTP receiver and SQLite archive |
 | `platform/` | Actual SDK bindings, appliance entry, custom TCP client and Pico memory layout |
 | `include/picobrew/` | Typed application interfaces and configuration |
 | `tests/`, `analysis/` | Reproducible checks, original-entry maps, limits and measured results |
@@ -321,20 +341,22 @@ free/reuse and preservation of the old allocation when reallocation fails.
 
 ## What still needs the machine
 
-Software compilation, source reconstruction, image packaging and offline
-validation are complete for this revision. Installation, first boot and the
-public health endpoint have passed on the owner's Pico Pro. Remaining physical
-acceptance includes recovery, the actual board/peripheral versions, sensor readings,
+The new 1.0.0 candidate builds and links, but has not been installed on the
+owner's Pico Pro. Installation, first boot, the public health endpoint and the
+connected browser console passed for the earlier unversioned 161,720-byte
+candidate. Remaining physical acceptance for 1.0.0 includes recovery, the actual
+board/peripheral versions, sensor readings,
 outputs and interlocks, rotary valve/RFID operation, networking/filesystem
 behavior, and controlled thermal operation. `docs/hardware-validation.md`
 records that work explicitly rather than marking unperformed tests as passed.
 
-The guarded installation procedure has passed for the owner's pinned device
-profile; stock restoration remains untested and no successful brew is claimed.
+The earlier key provisioning and application installation passed for the owner's
+pinned device profile; stock restoration remains untested and no successful brew is claimed.
 The reference image and experimental replacement are kept separate.
 
 ## Further reading
 
+- [Optional telemetry forwarding](docs/telemetry.md): destination settings, receiver setup, payloads and SQLite export.
 - `docs/recipe-recovery.md`: recipe/session/program semantics, branch coverage and parser repairs.
 - `docs/ui-recovery.md`: graphics/assets, menus/input, workflows and UI test limits.
 - `docs/network-recovery.md`: server/API, files, Still, update and failure behavior.

@@ -8,10 +8,15 @@ standalone:
 	$(PYTHON) tools/build_firmware.py --standalone
 
 standalone-test:
+	$(PYTHON) tools/generate_api_explorer.py --check
 	$(PYTHON) tools/embed_web.py --check
 	$(PYTHON) tests/test_http_server.py
 	$(PYTHON) tests/test_energia_http_server.py
+	$(PYTHON) tests/test_energia_wifi.py
 	$(PYTHON) tests/test_local_api.py
+	$(PYTHON) tests/test_local_history.py
+	$(PYTHON) tests/test_local_telemetry.py
+	$(PYTHON) tests/test_telemetry_receiver.py
 	$(PYTHON) tests/test_standalone_control.py
 
 standalone-arm-test:
@@ -24,6 +29,7 @@ standalone-verify: standalone standalone-test standalone-arm-test standalone-sto
 
 web-test:
 	$(PYTHON) tests/test_web.py
+	$(PYTHON) tests/test_web_features.py
 
 usb-test:
 	$(PYTHON) -m unittest discover -s tests -p 'test_pico_*.py'

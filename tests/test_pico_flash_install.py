@@ -8,6 +8,7 @@ matching the destructive behavior that the installer must journal and guard.
 """
 import contextlib
 import hashlib
+import gzip
 import io
 import json
 import logging
@@ -39,7 +40,11 @@ KEY = b"c94e17f826b305da" * 4 + b"\n"
 OTHER_KEY = b"7a28c15ef0396db4" * 4 + b"\n"
 CLOSE_PACKET = b"\x22" + b"\x00" * 63 + b"\x46" * 256 + b"\x00"
 PROTECTED = ("/sys/mcuimg.bin", "/sys/mcuimg1.bin", "/sys/mcubootinfo.bin")
-ALLOWED_NAMES = frozenset((*PROTECTED, APP_NAME, "/sys/mcuimg3.bin", KEY_NAME))
+WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
+             ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
+             ("style.css", "/local/web/s.gz"))
+WEB_NAMES = frozenset(path for _, path in WEB_FILES)
+ALLOWED_NAMES = frozenset((*PROTECTED, APP_NAME, "/sys/mcuimg3.bin", KEY_NAME, *WEB_NAMES))
 
 
 def candidate_image(length):
@@ -48,7 +53,28 @@ def candidate_image(length):
     )
 
 
-def backup_fixture(files):
+def web_fixture():
+    manifest = {"schema_version": 1, "block_size": 4096, "metadata_per_file": 512,
+                "fail_safe": False, "assets": []}
+    payloads = {}
+    seed = 0x247AC521
+    for (source, destination), length in zip(WEB_FILES, (3000, 6000, 2000, 4200, 2200)):
+        raw = bytearray()
+        for _ in range(length):
+            seed = (1664525 * seed + 1013904223) & 0xFFFFFFFF
+            raw.append(seed >> 24)
+        data = gzip.compress(raw, mtime=0)
+        payloads[destination] = data
+        blocks = (len(data) + 512 + 4095) // 4096
+        manifest["assets"].append({"source": source, "file_path": destination,
+            "payload": source + ".gz", "content_type": "text/plain", "content_encoding": "gzip",
+            "length": len(data), "max_size": blocks * 4096 - 512, "allocation_blocks": blocks,
+            "sha256": hashlib.sha256(data).hexdigest(), "source_length": len(raw),
+            "source_sha256": hashlib.sha256(raw).hexdigest()})
+    return (json.dumps(manifest, indent=2) + "\n").encode(), payloads
+
+
+def backup_fixture(files, web_allocations=None):
     """Construct the observed allocation locations, using only synthetic bytes."""
     image = bytearray(b"\xff" * (1024 * 1024))
     entries = [
@@ -61,6 +87,23 @@ def backup_fixture(files):
         entries.append((20, KEY_NAME, 81, 1, False))
     if "/sys/mcuimg3.bin" in files:
         entries.append((21, "/sys/mcuimg3.bin", 82, 1, False))
+    block = 83
+    for index, (_, name) in enumerate(WEB_FILES, 22):
+        if name in files:
+            blocks = (web_allocations or {}).get(name, (len(files[name]) + 512 + 4095) // 4096)
+            entries.append((index, name, block, blocks, False))
+            block += blocks
+    known = {name for _, name, _, _, _ in entries}
+    occupied = set(range(5))
+    for _, _, start, blocks, mirrored in entries:
+        occupied.update(range(start, start + blocks * (2 if mirrored else 1)))
+    for index, (name, data) in enumerate(sorted((name, data) for name, data in files.items()
+                                               if name not in known), 30):
+        blocks = (len(data) + 512 + 4095) // 4096
+        start = next(start for start in range(5, 256 - blocks)
+                     if not occupied.intersection(range(start, start + blocks)))
+        entries.append((index, name, start, blocks, False))
+        occupied.update(range(start, start + blocks))
     add_fat(image, 1, 225, entries)
     for _, name, block, _, _ in entries:
         data = files[name]
@@ -88,6 +131,8 @@ class FakeInstallUSB(FakePicoUSB):
         self.original_files = dict(self.files)
         self.logical_missing = set(logical_missing)
         physical = dict(fixture_images(), **self.files)
+        self.web_allocations = {name: (len(data) + 512 + 4095) // 4096
+                                for name, data in physical.items() if name in WEB_NAMES}
         self.flash = backup_fixture(physical)
         if flash_size != len(self.flash):
             self.flash = self.flash[:flash_size]
@@ -111,6 +156,9 @@ class FakeInstallUSB(FakePicoUSB):
         self.before_mutation = None
         self.mutated_names = set()
         self.key_contents_seen_by_host = []
+
+    def refresh_layout(self):
+        self.flash = backup_fixture(dict(fixture_images(), **self.files), self.web_allocations)
 
     def hit_fault(self, label):
         if (self.fs_fault == label and not self.fault_used
@@ -154,20 +202,26 @@ class FakeInstallUSB(FakePicoUSB):
             self.operation_file = name
             assert name in ALLOWED_NAMES
             assert self.active_file is None
-            assert flags in (0, 0x1000, 0x3001), "Unapproved access/create flags reached device"
+            allowed_create = (flags & ~0xFF) == 0x3000 and 1 <= (flags & 0xFF) <= 254
+            assert flags in (0, 0x1000, 0x3001) or (name in WEB_NAMES and allowed_create), \
+                "Unapproved access/create flags reached device"
             if flags == 0:
                 assert name in self.files
             else:
-                assert name in (APP_NAME, KEY_NAME), "Protected file write reached device"
+                assert name in (APP_NAME, KEY_NAME, *WEB_NAMES), "Protected file write reached device"
                 if flags == 0x1000:
                     assert name in self.allocated_names, "Existing-write attempted without an allocation"
                 else:
-                    assert name == KEY_NAME and name not in self.files, "Create was not a new key"
+                    assert name in (KEY_NAME, *WEB_NAMES) and name not in self.allocated_names, \
+                        "Create was not a confirmed new key/browser file"
+                    if name in WEB_NAMES:
+                        self.web_allocations[name] = ((flags & 0xFF) * 256 + 512 + 4095) // 4096
                 self.persistent_event({"kind": "open", "name": name, "flags": flags})
                 self.files[name] = b""  # Destructive immediately, even if token/status is lost.
                 self.logical_missing.discard(name)
                 self.allocated_names.add(name)
                 self.mutated_names.add(name)
+                self.refresh_layout()
             self.active_file, self.active_mode, self.active_offset = name, flags, 0
             self.file_opens.append((name, flags))
             self.status_context = "write-open" if flags else "read-open"
@@ -198,8 +252,8 @@ class FakeInstallUSB(FakePicoUSB):
             self.rx.extend(ACK)
             self._reply(response, fault=fault)
         elif opcode == 0x24:
-            assert len(command) >= 6 and self.active_file in (APP_NAME, KEY_NAME)
-            assert self.active_mode in (0x1000, 0x3001)
+            assert len(command) >= 6 and self.active_file in (APP_NAME, KEY_NAME, *WEB_NAMES)
+            assert self.active_mode == 0x1000 or (self.active_mode & ~0xFF) == 0x3000
             offset = struct.unpack(">I", command[1:5])[0]
             payload = command[5:]
             assert offset == self.active_offset and 1 <= len(payload) <= 4096
@@ -225,6 +279,7 @@ class FakeInstallUSB(FakePicoUSB):
                 if self.hit_fault("write-close:corrupt-content"):
                     content = self.files[self.active_file]
                     self.files[self.active_file] = content[:-1] + bytes([content[-1] ^ 1])
+                self.refresh_layout()
             self.active_file = None
             self.active_mode = None
             if self.status_context == "write-close" and self.hit_fault("write-close:lost-ack"):
@@ -262,6 +317,8 @@ class InstallWireTests(unittest.TestCase):
         self.files = fixture_images()
         self.original = self.files[APP_NAME]
         self.candidate = candidate_image(installer.CANDIDATE_SIZE)
+        previous = candidate_image(installer.PREVIOUS_CANDIDATE_SIZE)
+        self.previous_candidate = previous[:-1] + bytes([previous[-1] ^ 0x80])
         self.raw_backup = backup_fixture(self.files)
         self.profile = {
             name: {"size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
@@ -270,6 +327,12 @@ class InstallWireTests(unittest.TestCase):
         self.backup_path = self.folder / "verified-backup.bin"
         self.key_path = self.folder / "api.key"
         self.candidate_path = self.folder / "standalone.bin"
+        self.web_path = self.folder / "web"
+        self.web_path.mkdir()
+        self.web_manifest, self.web_payloads = web_fixture()
+        (self.web_path / "manifest.json").write_bytes(self.web_manifest)
+        for source, destination in WEB_FILES:
+            (self.web_path / (source + ".gz")).write_bytes(self.web_payloads[destination])
         for path, data in ((self.backup_path, self.raw_backup), (self.key_path, KEY),
                            (self.candidate_path, self.candidate)):
             path.write_bytes(data)
@@ -279,6 +342,10 @@ class InstallWireTests(unittest.TestCase):
         mock.patch.object(installer, "BACKUP_SHA256", hashlib.sha256(self.raw_backup).hexdigest()).start()
         mock.patch.object(installer, "ORIGINAL_SHA256", hashlib.sha256(self.original).hexdigest()).start()
         mock.patch.object(installer, "CANDIDATE_SHA256", hashlib.sha256(self.candidate).hexdigest()).start()
+        mock.patch.object(installer, "PREVIOUS_CANDIDATE_SHA256",
+                          hashlib.sha256(self.previous_candidate).hexdigest()).start()
+        mock.patch.object(installer, "WEB_MANIFEST_SHA256", hashlib.sha256(self.web_manifest).hexdigest()).start()
+        mock.patch.object(installer, "WEB_DIRECTORY", self.web_path).start()
         mock.patch.object(cc.log, "disabled", True).start()
         mock.patch.object(cc.time, "sleep").start()
         mock.patch.object(cc.CC3200Connection, "TIMEOUT", 0.02).start()
@@ -334,7 +401,7 @@ class InstallWireTests(unittest.TestCase):
                 flags, token = struct.unpack(">II", command[1:9])
                 self.assertEqual(token, 0)
                 if flags != 0:
-                    self.assertIn(command[9:-2].decode(), (KEY_NAME, APP_NAME))
+                    self.assertIn(command[9:-2].decode(), (KEY_NAME, APP_NAME, *WEB_NAMES))
 
     def assert_protected_verified_before_mutations(self, fake, include_main=True):
         required = set(PROTECTED)
@@ -366,6 +433,234 @@ class InstallWireTests(unittest.TestCase):
                 self.assertNotEqual(result, 0, transcript)
                 factory.assert_not_called()
                 self.assertEqual(fake.mutations, [])
+
+    def test_capacity_limit_accepts_larger_than_stock_only_in_existing_allocation(self):
+        self.assertEqual(installer.APPLICATION_PAYLOAD_LIMIT, 188416)
+        self.assertEqual(installer.APPLICATION_ALLOCATION_BLOCKS, 48)
+        candidate = candidate_image(installer.APPLICATION_PAYLOAD_LIMIT)
+        self.assertGreater(len(candidate), len(self.original))
+        self.candidate_path.write_bytes(candidate)
+        with mock.patch.object(installer, "CANDIDATE_SIZE", len(candidate)), \
+             mock.patch.object(installer, "CANDIDATE_SHA256", hashlib.sha256(candidate).hexdigest()):
+            fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+            result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual(fake.files[APP_NAME], candidate)
+        self.assertTrue(report["application_readback_verified"])
+        self.assertEqual(report["live_preflight"]["layout"]["application_payload_limit_bytes"], 188416)
+        application_opens = [(event["name"], event["flags"]) for event in fake.mutations
+                             if event["kind"] == "open" and event["name"] == APP_NAME]
+        self.assertEqual(application_opens, [(APP_NAME, installer.OPEN_EXISTING_WRITE)])
+        self.assert_protected_verified_before_mutations(fake)
+
+    def test_capacity_limit_rejects_even_a_pinned_oversized_candidate_before_usb(self):
+        candidate = candidate_image(installer.APPLICATION_PAYLOAD_LIMIT + 1)
+        self.candidate_path.write_bytes(candidate)
+        with mock.patch.object(installer, "CANDIDATE_SIZE", len(candidate)), \
+             mock.patch.object(installer, "CANDIDATE_SHA256", hashlib.sha256(candidate).hexdigest()):
+            fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+            result, _, transcript, factory = self.run_main(fake, "install")
+            self.assertNotEqual(result, 0, transcript)
+            factory.assert_not_called()
+            self.assertEqual(fake.trace, [])
+            self.assertEqual(fake.mutations, [])
+            # Registration is independently guarded if a caller bypasses the
+            # CLI/local-file loader, even with matching candidate hash pins.
+            with self.assertRaisesRegex(installer.InstallError, "capacity limit"):
+                installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER,
+                    "install", {KEY_NAME: KEY, APP_NAME: candidate, **self.web_payloads},
+                    MemoryJournal(), web_manifest=self.web_manifest)
+            self.assertEqual(fake.trace, [])
+
+    def test_missing_tampered_or_linked_browser_inputs_stop_before_usb(self):
+        for fault in ("manifest", "payload", "missing", "symlink"):
+            with self.subTest(fault=fault):
+                manifest_path = self.web_path / "manifest.json"
+                payload_path = self.web_path / "app.js.gz"
+                manifest_path.write_bytes(self.web_manifest)
+                if payload_path.is_symlink(): payload_path.unlink()
+                payload_path.write_bytes(self.web_payloads["/local/web/a.gz"])
+                if fault == "manifest": manifest_path.write_bytes(self.web_manifest + b" ")
+                if fault == "payload": payload_path.write_bytes(b"unreviewed compressed bytes")
+                if fault == "missing": payload_path.unlink()
+                if fault == "symlink":
+                    payload_path.unlink()
+                    payload_path.symlink_to(self.web_path / "index.html.gz")
+                fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+                result, _, transcript, factory = self.run_main(fake, "install")
+                self.assertNotEqual(result, 0, transcript)
+                factory.assert_not_called()
+                self.assertEqual(fake.trace, [])
+                self.assertEqual(fake.mutations, [])
+
+    def test_pinned_manifest_still_rejects_paths_flags_sizes_and_bad_gzip(self):
+        original = json.loads(self.web_manifest)
+        for fault in ("path", "extra-file", "fail-safe", "max-size", "payload-path", "gzip-crc"):
+            with self.subTest(fault=fault):
+                manifest = json.loads(self.web_manifest)
+                payload_path = self.web_path / "index.html.gz"
+                payload_path.write_bytes(self.web_payloads["/local/web/i.gz"])
+                entry = manifest["assets"][0]
+                if fault == "path": entry["file_path"] = APP_NAME
+                if fault == "extra-file": manifest["assets"].append(dict(entry))
+                if fault == "fail-safe": manifest["fail_safe"] = True
+                if fault == "max-size": entry["max_size"] += 256
+                if fault == "payload-path": entry["payload"] = "../api.key"
+                if fault == "gzip-crc":
+                    bad = bytearray(payload_path.read_bytes()); bad[-8] ^= 1
+                    payload_path.write_bytes(bad)
+                    entry["sha256"] = hashlib.sha256(bad).hexdigest()
+                raw = (json.dumps(manifest) + "\n").encode()
+                (self.web_path / "manifest.json").write_bytes(raw)
+                with mock.patch.object(installer, "WEB_MANIFEST_SHA256", hashlib.sha256(raw).hexdigest()):
+                    with self.assertRaises(installer.InstallError): installer.load_web_bundle(self.web_path)
+        self.assertEqual(len(original["assets"]), 5)
+
+    def test_all_assets_are_verified_and_journaled_before_application_open(self):
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+        output = self.output_path()
+        opened = []
+        def before_mutation(event):
+            if event["kind"] != "open": return
+            records = [json.loads(line) for line in Path(str(output) + ".journal.jsonl").read_text().splitlines()]
+            self.assertEqual(records[-1]["event"], "before-write-open")
+            self.assertEqual(records[-1]["target"], event["name"])
+            if event["name"] == APP_NAME:
+                self.assertTrue(WEB_NAMES.issubset(fake.read_completions))
+                self.assertTrue(any(record["event"] == "web-bundle-verified" for record in records))
+            opened.append(event["name"])
+        fake.before_mutation = before_mutation
+        result, report, transcript, _ = self.run_main(fake, "install", output)
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual(opened, [KEY_NAME, *(name for _, name in WEB_FILES), APP_NAME])
+        for name, expected in self.web_payloads.items():
+            self.assertEqual(fake.files[name], expected)
+        self.assertTrue(report["web_bundle"]["verified"])
+        self.assertEqual(report["web_bundle"]["new_allocation_blocks"], 7)
+        layout = report["postcheck"]["layout"]["fat_views"][0]
+        self.assertEqual(layout["allocated_blocks"] + layout["free_blocks"], 256)
+        self.assertEqual(sum(item["blocks"] for item in layout["free_extents"]), layout["free_blocks"])
+        self.assertTrue(WEB_NAMES.issubset(item["file_path"] for item in layout["known_local_allocations"]))
+
+    def test_existing_matching_assets_are_read_without_rewrite_and_local_data_survives(self):
+        recipes = {f"/local/recipe{i:02d}.{bank}": b"saved-recipe" * 40 for i in range(16) for bank in "ab"}
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY, **self.web_payloads, **recipes})
+        result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual({event["name"] for event in fake.mutations}, {KEY_NAME, APP_NAME})
+        self.assertTrue(WEB_NAMES.issubset(fake.read_completions))
+        self.assertEqual(report["web_bundle"]["new_allocation_blocks"], 0)
+        for name, content in recipes.items(): self.assertEqual(fake.files[name], content)
+        known = report["postcheck"]["layout"]["fat_views"][0]["known_local_allocations"]
+        self.assertTrue(set(recipes).issubset(item["file_path"] for item in known))
+
+    def test_existing_different_assets_rewrite_only_existing_allocations(self):
+        old = {name: data[:-1] + bytes([data[-1] ^ 1]) for name, data in self.web_payloads.items()}
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY, **old})
+        result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertEqual(result, 0, transcript)
+        web_opens = [(event["name"], event["flags"]) for event in fake.mutations
+                     if event["kind"] == "open" and event["name"] in WEB_NAMES]
+        self.assertEqual(web_opens, [(name, 0x1000) for _, name in WEB_FILES])
+        self.assertEqual(report["web_bundle"]["new_allocation_blocks"], 0)
+
+    def test_allocated_but_unreadable_or_too_small_asset_stops_before_any_mutation(self):
+        name = "/local/web/a.gz"
+        for fault in ("unreadable", "small", "mirror"):
+            with self.subTest(fault=fault):
+                fake = FakeInstallUSB({**self.files, KEY_NAME: KEY, **self.web_payloads},
+                                      logical_missing=(name,) if fault == "unreadable" else ())
+                if fault != "unreadable":
+                    raw = bytearray(fake.flash)
+                    record = 4096 + (23 + 1) * 4
+                    if fault == "small": raw[record + 1] = 1
+                    else: raw[record + 3] = 0x80
+                    fake.flash = bytes(raw)
+                result, _, transcript, _ = self.run_main(fake, "install")
+                self.assertNotEqual(result, 0, transcript)
+                self.assertEqual(fake.mutations, [])
+                self.assertEqual(fake.files[APP_NAME], self.original)
+
+    def test_creation_requires_absence_in_every_valid_fat_view(self):
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+        raw = bytearray(fake.flash)
+        add_fat(raw, 0, 224, [(0, "/sys/mcuimg.bin", 71, 4, True),
+            (9, "/sys/mcubootinfo.bin", 79, 1, True),
+            (10, "/sys/mcuimg1.bin", 214, 16, False), (18, APP_NAME, 130, 48, False),
+            (20, KEY_NAME, 81, 1, False), (22, "/local/web/i.gz", 83, 1, False)])
+        fake.flash = bytes(raw)
+        result, _, transcript, _ = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual(fake.mutations, [])
+
+    def test_fragmented_flash_is_rejected_before_key_or_asset_write(self):
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+        entries = [(0, "/sys/mcuimg.bin", 71, 4, True),
+            (9, "/sys/mcubootinfo.bin", 79, 1, True),
+            (10, "/sys/mcuimg1.bin", 214, 16, False), (18, APP_NAME, 130, 48, False),
+            (20, KEY_NAME, 81, 1, False)]
+        occupied = set(range(5))
+        for _, _, start, blocks, mirror in entries:
+            occupied.update(range(start, start + blocks * (2 if mirror else 1)))
+        holes = {6, 8, 10, 12, 14, 16, 18, 20}  # Eight free blocks, but all isolated.
+        start = None
+        for block in range(257):
+            if block < 256 and block not in occupied and block not in holes:
+                if start is None: start = block
+            elif start is not None:
+                index = 30 + len(entries)
+                entries.append((index, f"/padding{index}", start, block - start, False))
+                start = None
+        raw = bytearray(fake.flash)
+        add_fat(raw, 1, 225, entries)
+        fake.flash = bytes(raw)
+        result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertIn("fragmented", transcript)
+        self.assertEqual(fake.mutations, [])
+        self.assertEqual(report["live_preflight"]["layout"]["free_blocks_min"], 8)
+
+    def test_asset_failures_never_write_application_or_retry_ambiguous_chunks(self):
+        faults = ("write-open:lost-ack", "write-open:short-token", "write-open:bad-status",
+                  "chunk:lost-ack", "chunk:bad-status", "chunk:short-status", "chunk:checksum-status",
+                  "write-close:lost-ack", "write-close:bad-status", "readback:checksum", "readback:short",
+                  "readback:mismatch", "write-close:corrupt-content")
+        for fault in faults:
+            with self.subTest(fault=fault):
+                target = "/local/web/h.gz"
+                fake = FakeInstallUSB({**self.files, APP_NAME: self.previous_candidate, KEY_NAME: KEY},
+                                      fault=fault, fault_target=target)
+                result, report, transcript, _ = self.run_main(fake, "install")
+                self.assertNotEqual(result, 0, transcript)
+                self.assertTrue(fake.fault_used)
+                self.assertEqual(fake.files[APP_NAME], self.previous_candidate)
+                self.assertFalse(report["application_write_attempted"])
+                self.assertFalse(report["web_bundle"]["verified"])
+                self.assertFalse(any(event["name"] == APP_NAME for event in fake.mutations))
+                offsets = [offset for name, offset, _ in fake.write_chunks if name == target]
+                self.assertEqual(len(offsets), len(set(offsets)))
+
+    def test_asset_create_journal_failure_prevents_asset_and_application_mutation(self):
+        original_record = installer.InstallFiles.record
+        def fail_before_asset(files, event, **fields):
+            if event == "before-write-open" and fields.get("target") in WEB_NAMES:
+                raise OSError("Synthetic fsync failure")
+            original_record(files, event, **fields)
+        fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
+        with mock.patch.object(installer.InstallFiles, "record", fail_before_asset):
+            result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual({event["name"] for event in fake.mutations}, {KEY_NAME})
+        self.assertFalse(report["application_write_attempted"])
+        self.assertEqual(fake.files[APP_NAME], self.original)
+
+    def test_restore_does_not_require_or_modify_the_browser_bundle(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.previous_candidate, **self.web_payloads})
+        (self.web_path / "manifest.json").unlink()
+        result, _, transcript, _ = self.run_main(fake, "restore")
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual({event["name"] for event in fake.mutations}, {APP_NAME})
+        for name, content in self.web_payloads.items(): self.assertEqual(fake.files[name], content)
 
     def test_invalid_key_format_and_permissions_prevent_usb_access(self):
         for value, permissions in ((KEY[:-1], 0o600), (KEY.upper(), 0o600),
@@ -499,7 +794,9 @@ class InstallWireTests(unittest.TestCase):
         self.assertIsNotNone(report)
 
     def test_install_rejects_unexpected_live_application_before_any_write(self):
-        for content in (b"", self.original[:1024], self.original[:-1] + bytes([self.original[-1] ^ 1])):
+        for content in (b"", self.original[:1024], self.original[:-1] + bytes([self.original[-1] ^ 1]),
+                        self.previous_candidate[:-1],
+                        self.previous_candidate[:-1] + bytes([self.previous_candidate[-1] ^ 1])):
             with self.subTest(length=len(content)):
                 fake = FakeInstallUSB({**self.files, APP_NAME: content, KEY_NAME: KEY})
                 result, _, transcript, _ = self.run_main(fake, "install")
@@ -507,10 +804,48 @@ class InstallWireTests(unittest.TestCase):
                 self.assertEqual(fake.mutations, [])
                 self.assertEqual(fake.files[APP_NAME], content)
 
+    def test_install_upgrades_exact_previous_candidate_with_full_readback(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.previous_candidate, KEY_NAME: KEY})
+        result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual(fake.files[APP_NAME], self.candidate)
+        self.assertEqual(fake.files[KEY_NAME], KEY)
+        self.assertFalse(report["application_already_installed"])
+        self.assertEqual(report["live_preflight"]["application"], {
+            "size_bytes": len(self.previous_candidate),
+            "sha256": hashlib.sha256(self.previous_candidate).hexdigest(),
+        })
+        self.assertEqual(report["postcheck"]["application"], {
+            "size_bytes": len(self.candidate), "sha256": hashlib.sha256(self.candidate).hexdigest(),
+        })
+        self.assertTrue(report["application_readback_verified"])
+        opens = [(event["name"], event["flags"]) for event in fake.mutations if event["kind"] == "open"]
+        web_modes = [(entry["file_path"], 0x3000 | (entry["max_size"] // 256))
+                     for entry in json.loads(self.web_manifest)["assets"]]
+        self.assertEqual(opens, [(KEY_NAME, 0x1000), *web_modes, (APP_NAME, 0x1000)])
+        self.assert_protected_verified_before_mutations(fake)
+        self.assertEqual(b"".join(payload for name, _, payload in fake.write_chunks if name == APP_NAME),
+                         self.candidate)
+
+    def test_previous_candidate_does_not_authorize_key_provisioning_or_downgrade_payload(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.previous_candidate, KEY_NAME: KEY})
+        result, _, transcript, _ = self.run_main(fake, "provision-key")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual(fake.mutations, [])
+        self.candidate_path.write_bytes(self.previous_candidate)
+        result, _, transcript, factory = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        factory.assert_not_called()
+        self.assertEqual(fake.mutations, [])
+
     def test_install_failure_leaves_journal_and_can_restore_original(self):
-        for fault in ("write-open:lost-ack", "chunk:lost-ack", "chunk:bad-status", "readback:mismatch"):
-            with self.subTest(fault=fault):
-                fake = FakeInstallUSB({**self.files, KEY_NAME: KEY}, fault=fault, fault_target=APP_NAME)
+        cases = ((source, content, fault)
+                 for source, content in (("stock", self.original), ("previous", self.previous_candidate))
+                 for fault in ("write-open:lost-ack", "chunk:lost-ack", "chunk:bad-status", "readback:mismatch"))
+        for source, content, fault in cases:
+            with self.subTest(source=source, fault=fault):
+                fake = FakeInstallUSB({**self.files, APP_NAME: content, KEY_NAME: KEY},
+                                      fault=fault, fault_target=APP_NAME)
                 result, report, transcript, _ = self.run_main(fake, "install")
                 self.assertNotEqual(result, 0, transcript)
                 self.assertTrue(fake.fault_used)
@@ -590,13 +925,15 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(fake.mutations, [])
 
     def test_already_installed_exact_candidate_is_verified_without_application_rewrite(self):
-        fake = FakeInstallUSB({**self.files, APP_NAME: self.candidate, KEY_NAME: KEY})
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.candidate, KEY_NAME: KEY, **self.web_payloads})
         result, report, transcript, _ = self.run_main(fake, "install")
         self.assertEqual(result, 0, transcript)
         self.assertEqual(fake.files[APP_NAME], self.candidate)
         self.assertEqual({event["name"] for event in fake.mutations}, {KEY_NAME})
         self.assertGreaterEqual(fake.read_completions.count(APP_NAME), 2)
         self.assertIsNotNone(report)
+        self.assertTrue(report["application_already_installed"])
+        self.assertFalse(report["application_write_attempted"])
 
     def ready_connection(self, mode="provision-key", files=None, journal=None):
         fake = FakeInstallUSB(files or {**self.files, KEY_NAME: KEY})
@@ -606,7 +943,9 @@ class InstallWireTests(unittest.TestCase):
         payloads = {APP_NAME: self.original} if mode == "restore" else {KEY_NAME: KEY}
         if mode == "install":
             payloads[APP_NAME] = self.candidate
-        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, payloads, journal)
+            payloads.update(self.web_payloads)
+        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, payloads, journal,
+                                               web_manifest=self.web_manifest if mode == "install" else None)
         connection.helper_sent = len(HELPER)
         connection.helper_executed = True
         connection.flash_size = 1048576
@@ -638,6 +977,7 @@ class InstallWireTests(unittest.TestCase):
         with self.assertRaises(AttributeError):
             connection.payloads = {APP_NAME: b"replacement registry"}
         for mode, values in (("install", {KEY_NAME: KEY, APP_NAME: self.original}),
+                             ("install", {KEY_NAME: KEY, APP_NAME: self.previous_candidate}),
                              ("provision-key", {KEY_NAME: KEY, APP_NAME: self.candidate}),
                              ("restore", {APP_NAME: self.candidate}),
                              ("provision-key", {KEY_NAME: bytearray(KEY)})):
@@ -645,6 +985,29 @@ class InstallWireTests(unittest.TestCase):
                 with self.assertRaises(installer.InstallError):
                     installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, values, MemoryJournal())
         self.assertEqual(fake.trace, [])
+
+    def test_browser_registration_and_application_sequence_are_guarded(self):
+        connection, fake, _, payloads = self.ready_connection("install")
+        name = "/local/web/a.gz"
+        approved = payloads[name]
+        payloads[name] = b"caller replaced its source mapping"
+        self.assertEqual(connection.payloads[name], approved)
+        with self.assertRaises(TypeError): connection.web_assets[name]["create_mode"] = 0x1000
+        with self.assertRaises(AttributeError): connection.web_assets = {}
+        self.seed_proven_state(connection, fake)
+        connection.key_existing_write_verified = True
+        with self.assertRaises(installer.InstallError): connection.arm_write(APP_NAME, 0x1000)
+        self.assertEqual(fake.trace, [])
+        good_payloads = {KEY_NAME: KEY, APP_NAME: self.candidate, **self.web_payloads}
+        for fault in ("missing", "changed", "mutable", "extra"):
+            invalid = dict(good_payloads)
+            if fault == "missing": del invalid[name]
+            if fault == "changed": invalid[name] = approved[:-1] + bytes([approved[-1] ^ 1])
+            if fault == "mutable": invalid[name] = bytearray(approved)
+            if fault == "extra": invalid["/local/web/unapproved.gz"] = approved
+            with self.subTest(fault=fault), self.assertRaises(installer.InstallError):
+                installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER,
+                    "install", invalid, MemoryJournal(), web_manifest=self.web_manifest)
 
     def test_write_opens_require_completed_live_proofs_and_explicit_arming(self):
         for mode, target, flags in (("provision-key", KEY_NAME, 0x1000),

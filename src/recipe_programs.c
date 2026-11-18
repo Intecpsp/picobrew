@@ -1,5 +1,8 @@
 #include "picobrew/recipe.h"
 #include "picobrew/local_control.h"
+#if PICO_STANDALONE
+#include "picobrew/local_history.h"
+#endif
 #include <stdio.h>
 #include <string.h>
 
@@ -47,6 +50,9 @@ void pico_recipe_manual_program(PicoRecipeRuntime *r)
     pico_recipe_program_initialize(r, p, 6, *r->language);
     assert_condition(r, p->session_type == 5, "session.type == SessionTypes::ManualBrew");
     p->location = 1;
+#if PICO_STANDALONE
+    r->state->recipe.current_step = 0;
+#endif
     r->ops->set_recipe_name(r->context, p->title);
     const char *title = p->title;
     if (r->ops->instruction_sequence(r->context, setup_screens, 4, 0, p->program_id, p->title,
@@ -60,16 +66,26 @@ void pico_recipe_manual_program(PicoRecipeRuntime *r)
     }
     if (!pico_recipe_setup(r, true, title)) {
         log_message(r, "W", "setupInstructions() failed");
+#if PICO_STANDALONE
+        pico_history_finish(true);
+#endif
         return;
     }
     for (unsigned i = 0; i != 3; ++i)
         r->state->carousel.pages[i] = r->pages->manual[i];
     r->state->carousel.page_count = 3;
     int32_t selected = 0, index = 0;
+#if PICO_STANDALONE
+    bool manual_interrupted = false;
+#endif
     for (;;) {
         pico_local_poll();
-        if (pico_local_cancelled())
+        if (pico_local_cancelled()) {
+#if PICO_STANDALONE
+            pico_history_finish(true);
+#endif
             return;
+        }
         r->ops->log_step(r->context, "Waiting Instructions");
         show(r, PICO_RECIPE_CLEAR, 0, NULL);
         for (unsigned i = 0; i != 4; ++i)
@@ -113,11 +129,18 @@ void pico_recipe_manual_program(PicoRecipeRuntime *r)
             break;
         else {
             log_message(r, "W", "Unexpected action in manualBrewProgram");
-            if (action == 34)
+            if (action == 34) {
+#if PICO_STANDALONE
+                manual_interrupted = true;
+#endif
                 break;
+            }
         }
     }
     pico_recipe_session_end(r, true);
+#if PICO_STANDALONE
+    pico_history_finish(manual_interrupted || pico_local_cancelled());
+#endif
     if (r->ops->run_drain_instructions(r->context, 12) != 23) {
         log_message(r, "W", "User aborted drain");
         return;

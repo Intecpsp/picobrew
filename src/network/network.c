@@ -162,24 +162,36 @@ int pico_network_connect_access_point(PicoNetwork *n)
 bool pico_network_connect_stored(PicoNetwork *n)
 {
 #if PICO_STANDALONE
-    /* Bound connection attempts even if the SDK never leaves CONNECTING. */
+    /* Association and DHCP are separate events. Neither a prior address
+     * nor association without a fresh lease establishes a connection. */
     for (unsigned attempt = 0; attempt < 2; ++attempt) {
         if (pico_local_cancelled())
             return false;
-        if (pico_network_connect_access_point(n) == 3)
-            return true;
+        pico_network_connect_access_point(n);
         uint32_t started = net_now(n);
-        while (n->platform->wifi_connecting(n->platform_context) &&
-               (uint32_t)(net_now(n) - started) < 10000u) {
-            if (n->platform->wifi_status(n->platform_context) == 3)
-                return true;
+        bool associated = false;
+        for (;;) {
+            int status = n->platform->wifi_status(n->platform_context);
+            if (status == 3) {
+                if (!pico_network_ipv4_is_zero(n->platform->local_ip(n->platform_context)))
+                    return true;
+                if (!associated) {
+                    associated = true;
+                    started = net_now(n);
+                }
+                if ((uint32_t)(net_now(n) - started) >= 45000u)
+                    break;
+            } else if (associated || !n->platform->wifi_connecting(n->platform_context) ||
+                       (uint32_t)(net_now(n) - started) >= 10000u) {
+                break;
+            }
             net_delay(n, 100);
             pico_local_poll();
-            if (pico_local_cancelled())
+            if (pico_local_cancelled()) {
+                n->platform->wifi_disconnect(n->platform_context);
                 return false;
+            }
         }
-        if (n->platform->wifi_status(n->platform_context) == 3)
-            return true;
         n->platform->wifi_disconnect(n->platform_context);
     }
     return false;

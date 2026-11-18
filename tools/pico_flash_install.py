@@ -8,8 +8,9 @@ The backup is verified locally before USB is opened. The original application
 is extracted in memory; raw flash and credentials are never copied to reports.
 
 provision-key writes only /local/api.key, then proves an existing-file rewrite
-of that same key. install repeats that proof before updating the existing
-/sys/mcuimg2.bin allocation. restore rewrites only that existing allocation
+of that same key. install repeats that proof, installs and reads back the exact
+pinned browser bundle, then updates the existing /sys/mcuimg2.bin allocation.
+restore rewrites only that existing application allocation
 with the exact original image. None changes boot information, erases/deletes
 files, formats flash, relocates allocations, or starts the application.
 
@@ -26,6 +27,7 @@ import argparse
 from contextlib import contextmanager
 from datetime import datetime, timezone
 import hashlib
+import gzip
 import hmac
 import json
 import os
@@ -43,20 +45,43 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 2
+INSTALL_REVISION = 4
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 161720
-CANDIDATE_SHA256 = "a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904"
+CANDIDATE_SIZE = 164600
+CANDIDATE_SHA256 = "652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558"
+# The previously installed and booted candidate is an approved upgrade source,
+# never an alternate payload accepted by --firmware. Keep this identity fixed
+# when the target CANDIDATE_* values change.
+PREVIOUS_CANDIDATE_SIZE = 161720
+PREVIOUS_CANDIDATE_SHA256 = "a8fc16afce43c4b91b82374a339b86631daefe1a40f08df5f8bdd7a0d0a8d904"
 BOOT_INFO = bytes.fromhex("01 3d 00 20 ba dc cd ab")
 BOOT_INFO_SHA256 = "59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e9435"
 APP_NAME = "/sys/mcuimg2.bin"
+# The pinned nonmirrored allocation is 48 x 4096 bytes. The CC3200 SDK's
+# _sl_GetCreateFsMode rounds this size range to 1024-byte pages, then TI's
+# filesystem adds metadata and rounds to 4096-byte blocks (SWRA657 section 4;
+# SWRU368C conservatively budgets 512 metadata bytes). A 48-block allocation
+# requires a rounded creation maximum of at least 47 blocks. Reserve another
+# complete block below that boundary, also covering up to 4096-byte creation
+# granularity. This 184 KiB limit is derived conservatively, not a live
+# AllocatedLen measurement: the pinned UART helper exposes only FileLen.
+APPLICATION_ALLOCATION_BLOCKS = 48
+APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-READ_NAMES = frozenset((*preflight.ALLOWED_FILES, KEY_NAME))
+# Updated together with the final firmware candidate, after asset generation.
+# A placeholder deliberately prevents installation of an unreviewed bundle.
+WEB_MANIFEST_SHA256 = "c14d40b8b91cfc9c0591690dae681d3587da83d8d2afb7427563a59493c4656f"
+WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
+WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
+             ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
+             ("style.css", "/local/web/s.gz"))
+WEB_NAMES = frozenset(path for _, path in WEB_FILES)
+READ_NAMES = frozenset((*preflight.ALLOWED_FILES, KEY_NAME, *WEB_NAMES))
 PROTECTED_NAMES = ("/sys/mcuimg.bin", "/sys/mcuimg1.bin", preflight.BOOT_INFO_NAME)
 READ_CHUNK_SIZE = 256
 WRITE_CHUNK_SIZE = 4096
@@ -67,7 +92,7 @@ OPEN_KEY_CREATE = 0x3001
 FILE_CLOSE_COMMAND = preflight.FILE_CLOSE_COMMAND
 SUCCESS_MARKERS = {
     "provision-key": "SUCCESS: API key provisioning and existing-file write verification completed",
-    "install": "SUCCESS: standalone firmware and API key verified",
+    "install": "SUCCESS: standalone firmware, browser files and API key verified",
     "restore": "SUCCESS: original firmware restored and read back exactly",
 }
 
@@ -207,15 +232,86 @@ def load_key(path, owner=None):
     return validate_key(_read_regular(path, KEY_SIZE, private=True, owner=owner))
 
 
+def _validate_application_size(size):
+    if not 8 <= size <= APPLICATION_PAYLOAD_LIMIT:
+        raise InstallError("Application payload exceeds the conservative existing-allocation capacity limit")
+
+
 def load_candidate(path):
+    _validate_application_size(CANDIDATE_SIZE)
     data = _read_regular(path, CANDIDATE_SIZE)
     if len(data) != CANDIDATE_SIZE or hashlib.sha256(data).hexdigest() != CANDIDATE_SHA256:
         raise InstallError("The firmware does not match the pinned standalone image")
     return data
 
 
+def parse_web_manifest(data):
+    """Return immutable, exact-path allocation metadata for the pinned bundle."""
+    if (not isinstance(data, bytes) or len(data) > 16384
+            or hashlib.sha256(data).hexdigest() != WEB_MANIFEST_SHA256):
+        raise InstallError("The browser manifest does not match the pinned firmware bundle")
+    try:
+        manifest = json.loads(data)
+        if (set(manifest) != {"schema_version", "block_size", "metadata_per_file", "fail_safe", "assets"}
+                or manifest["schema_version"] != 1 or manifest["block_size"] != 4096
+                or manifest["metadata_per_file"] != 512 or manifest["fail_safe"] is not False
+                or not isinstance(manifest["assets"], list)
+                or len(manifest["assets"]) != len(WEB_FILES)):
+            raise ValueError()
+        entries = {}
+        fields = {"source", "file_path", "payload", "content_type", "content_encoding", "length",
+                  "max_size", "allocation_blocks", "sha256", "source_length", "source_sha256"}
+        for item, (source, destination) in zip(manifest["assets"], WEB_FILES):
+            if (set(item) != fields or item["source"] != source or item["file_path"] != destination
+                    or item["payload"] != source + ".gz" or item["content_encoding"] != "gzip"
+                    or any(type(item[field]) is not int for field in
+                           ("length", "max_size", "allocation_blocks", "source_length"))
+                    or not 1 <= item["length"] <= 65024 or not 1 <= item["source_length"] <= 524288
+                    or re.fullmatch(r"[0-9a-f]{64}", item["sha256"]) is None
+                    or re.fullmatch(r"[0-9a-f]{64}", item["source_sha256"]) is None):
+                raise ValueError()
+            blocks = (item["length"] + 512 + 4095) // 4096
+            if item["allocation_blocks"] != blocks or item["max_size"] != blocks * 4096 - 512:
+                raise ValueError()
+            # _sl_GetCreateFsMode in the pinned CC3200 SDK: 256-byte units,
+            # CREATE_IF_ABSENT access, no COMMIT/mirroring/security flags.
+            entry = dict(item, create_mode=0x3000 | (item["max_size"] // 256))
+            entries[destination] = MappingProxyType(entry)
+        return MappingProxyType(entries)
+    except Exception:
+        raise InstallError("The pinned browser manifest has an invalid schema or allocation") from None
+
+
+def load_web_bundle(directory):
+    directory = Path(directory)
+    manifest = _read_regular(directory / "manifest.json", 16384)
+    entries = parse_web_manifest(manifest)
+    payloads = {}
+    for name, entry in entries.items():
+        data = _read_regular(directory / entry["payload"], entry["length"])
+        if (len(data) != entry["length"] or hashlib.sha256(data).hexdigest() != entry["sha256"]):
+            raise InstallError("A browser file differs from the pinned bundle")
+        try:
+            raw = gzip.decompress(data)  # Includes gzip footer/CRC validation.
+        except Exception:
+            raise InstallError("A pinned browser file is not valid gzip") from None
+        if (len(raw) != entry["source_length"] or hashlib.sha256(raw).hexdigest() != entry["source_sha256"]):
+            raise InstallError("A browser file's expanded contents differ from the pinned bundle")
+        payloads[name] = data
+    return manifest, payloads
+
+
 def _image_metadata(data):
     return {"size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
+
+
+def _approved_current_applications(mode):
+    """Exact live images allowed before mutation; install payload stays pinned."""
+    identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
+    if mode == "install":
+        identities.extend(((PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
+                           (CANDIDATE_SIZE, CANDIDATE_SHA256)))
+    return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
 def _expected_public(name):
@@ -224,7 +320,7 @@ def _expected_public(name):
     return preflight.EXPECTED_FILES[name]
 
 
-def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
+def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None):
     """Create a session whose complete write bytes and destinations are pinned.
 
     The inherited guard still owns the exact SRAM-helper upload. Only this
@@ -234,18 +330,25 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
     if mode not in SUCCESS_MARKERS:
         raise InstallError("Unknown operation")
     immutable = MappingProxyType(dict(payloads))
+    web_assets = parse_web_manifest(web_manifest) if mode == "install" else MappingProxyType({})
     expected_names = {APP_NAME} if mode == "restore" else {KEY_NAME}
     if mode == "install":
         expected_names.add(APP_NAME)
+        expected_names.update(web_assets)
     if set(immutable) != expected_names or any(not isinstance(v, bytes) for v in immutable.values()):
         raise InstallError("Write payload registration does not match the selected operation")
     if KEY_NAME in immutable:
         validate_key(immutable[KEY_NAME])
     if APP_NAME in immutable:
+        _validate_application_size(len(immutable[APP_NAME]))
         expected = ((ORIGINAL_SIZE, ORIGINAL_SHA256) if mode == "restore"
                     else (CANDIDATE_SIZE, CANDIDATE_SHA256))
         if (len(immutable[APP_NAME]), hashlib.sha256(immutable[APP_NAME]).hexdigest()) != expected:
             raise InstallError("Registered application payload is not the pinned image")
+    for name, entry in web_assets.items():
+        if (len(immutable[name]) != entry["length"]
+                or hashlib.sha256(immutable[name]).hexdigest() != entry["sha256"]):
+            raise InstallError("Registered browser payload differs from the pinned bundle")
     guarded = backup.guarded_connection(cc, probe_module, port, helper)
 
     class FileConnection(type(guarded)):
@@ -270,6 +373,11 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
             self.key_existing_write_verified = False
             self.application_write_attempted = False
             self.application_verified = False
+            self.web_verified = set()
+            self.web_write_attempted = set()
+            self.web_new_blocks_claimed = 0
+            self.web_new_files_claimed = 0
+            self.web_space_checked = False
             self.mutation_attempts = []
             self._read_digest = None
             self._key_read = bytearray()
@@ -277,6 +385,10 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
         @property
         def payloads(self):
             return immutable
+
+        @property
+        def web_assets(self):
+            return web_assets
 
         def _record(self, event, **fields):
             try:
@@ -341,11 +453,8 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                 raise InstallError("The additional image slot is not confirmed absent")
             if self.operation != "restore":
                 app = self.observed.get(APP_NAME)
-                permitted = [{"size_bytes": ORIGINAL_SIZE, "sha256": ORIGINAL_SHA256}]
-                if self.operation == "install":
-                    permitted.append({"size_bytes": CANDIDATE_SIZE, "sha256": CANDIDATE_SHA256})
-                if app not in permitted:
-                    raise InstallError("Current application is not an approved stock/candidate image; use restore")
+                if app not in _approved_current_applications(self.operation):
+                    raise InstallError("Current application is not an approved stock/standalone image; use restore")
 
         def arm_write(self, name, flags):
             if self.failed or self.phase != "idle" or self.pending is not None or self.armed is not None:
@@ -371,11 +480,37 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                     raise InstallError("Only one existing-application write is permitted per session")
                 if self.operation == "install" and not self.key_existing_write_verified:
                     raise InstallError("The matching key's existing-file rewrite must verify before installation")
+                if self.operation == "install" and self.web_verified != set(self.web_assets):
+                    raise InstallError("Every pinned browser file must verify before the application write")
                 # Restore need not trust logical existence/length of a damaged
                 # file. The raw named allocation is checked independently.
                 if info is None or (not info["exists"] and self.operation != "restore"):
                     raise InstallError("Application presence has not been checked")
                 label = "application-restore" if self.operation == "restore" else "application-install"
+            elif name in self.web_assets and self.operation == "install":
+                if not self.key_existing_write_verified or not self.key_matches:
+                    raise InstallError("The matching key's existing-file rewrite must verify before browser files")
+                if not self.web_space_checked:
+                    raise InstallError("The complete browser bundle's free-space plan has not verified")
+                if self.application_write_attempted or name in self.web_write_attempted:
+                    raise InstallError("Only one browser write per file is allowed, before the application write")
+                allocation = self.layout.get("web_assets", {}).get(name)
+                entry = self.web_assets[name]
+                if info is None or allocation is None:
+                    raise InstallError("Browser file presence and allocation have not been checked")
+                if flags == entry["create_mode"]:
+                    if info["exists"] or not allocation["absent_in_all_fats"]:
+                        raise InstallError("Browser creation requires confirmed logical and FAT absence")
+                    if (self.web_new_blocks_claimed + entry["allocation_blocks"] > self.layout["free_blocks_min"]
+                            or self.web_new_files_claimed + 1 > self.layout["free_file_slots_min"]):
+                        raise InstallError("The verified free space cannot hold the browser bundle")
+                    label = "web-create"
+                elif flags == OPEN_EXISTING_WRITE:
+                    if not info["exists"] or not allocation["existing_write_compatible"]:
+                        raise InstallError("Existing browser allocation cannot hold the pinned file; no delete/create fallback")
+                    label = "web-existing-write"
+                else:
+                    raise InstallError("Unapproved browser file open mode")
             else:
                 raise InstallError("Blocked a write outside the operation's destination allowlist")
             if name not in self.payloads:
@@ -422,7 +557,8 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                 if flags == OPEN_READ:
                     if self.armed is not None or not info or not info["exists"]:
                         raise InstallError("File must be confirmed present before reading")
-                    bound = KEY_SIZE if opened == KEY_NAME else BACKUP_SIZE
+                    bound = (KEY_SIZE if opened == KEY_NAME else
+                             self.web_assets[opened]["max_size"] if opened in self.web_assets else BACKUP_SIZE)
                     if not 0 <= info["size_bytes"] <= bound:
                         raise InstallError("Reported file length exceeds its read bound")
                     access = "read"
@@ -439,8 +575,14 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                     self.mutation_attempts.append(dict(write_event))
                     if opened == APP_NAME:
                         self.application_write_attempted = True
-                    else:
+                    elif opened == KEY_NAME:
                         self.key_matches = False
+                    elif opened in self.web_assets:
+                        self.web_write_attempted.add(opened)
+                        self.web_verified.discard(opened)
+                        if flags != OPEN_EXISTING_WRITE:
+                            self.web_new_blocks_claimed += self.web_assets[opened]["allocation_blocks"]
+                            self.web_new_files_claimed += 1
                     self.observed.pop(opened, None)
                 next_phase = "open_token"
             elif opcode == 0x2B:
@@ -491,6 +633,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                 self.offset = 0
                 self._read_digest = hashlib.sha256() if opened != KEY_NAME else None
                 self._key_read.clear()
+                self._web_read_matches = True
                 if access == "write":
                     self._write_flags = self.armed[1]
                     self.armed = None
@@ -507,6 +650,10 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                 elif kind == "read":
                     if len(payload) != value:
                         raise InstallError("File response length differs from the requested length")
+                    if self.open_file_name in self.web_assets:
+                        approved = self.payloads[self.open_file_name]
+                        self._web_read_matches = (self._web_read_matches and
+                            hmac.compare_digest(payload, approved[self.offset:self.offset + value]))
                     self.offset += value
                     if self.open_file_name == KEY_NAME:
                         self._key_read.extend(payload)
@@ -548,6 +695,10 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal):
                         else:
                             self.observed[name] = {"size_bytes": self.offset,
                                                    "sha256": self._read_digest.hexdigest()}
+                            if name in self.web_assets:
+                                self.web_verified.discard(name)
+                                if self._web_read_matches and self.offset == len(self.payloads[name]):
+                                    self.web_verified.add(name)
                         self.open_file_name = None
                         self.open_access = None
                         self.offset = 0
@@ -630,6 +781,10 @@ def read_live_layout(connection, cc):
     views = []
     key_absent = True
     image3_absent = True
+    web_layout = {name: {"absent_in_all_fats": True, "allocations": []}
+                  for name in connection.web_assets}
+    free_blocks_min = 256
+    free_file_slots_min = 128
     try:
         for index in range(2):
             start = index * 4096
@@ -661,21 +816,58 @@ def read_live_layout(connection, cc):
                 names[name] = entry
                 occupied.update(blocks)
             app = names.get(APP_NAME)
-            if (app is None or app.start_block != 130 or app.size_blocks != 48
+            if (app is None or app.start_block != 130 or app.size_blocks != APPLICATION_ALLOCATION_BLOCKS
                     or app.mirrored or app.flags != 0xC):
                 raise InstallError("The existing image2 allocation differs from the approved 48-block allocation")
             key_absent = key_absent and KEY_NAME not in names
             image3_absent = image3_absent and preflight.OPTIONAL_IMAGE_NAME not in names
-            views.append({"index": index, "revision": revision})
+            free_blocks_min = min(free_blocks_min, 256 - len(occupied))
+            free_file_slots_min = min(free_file_slots_min, 128 - len(names))
+            for name, allocation in web_layout.items():
+                entry = names.get(name)
+                if entry is not None:
+                    allocation["absent_in_all_fats"] = False
+                    allocation["allocations"].append({"fat_index": index,
+                        "start_block": entry.start_block, "size_blocks": entry.size_blocks,
+                        "mirrored": bool(entry.mirrored), "flags": entry.flags})
+            extents = []
+            extent_start = None
+            for block in range(257):
+                if block < 256 and block not in occupied:
+                    if extent_start is None:
+                        extent_start = block
+                elif extent_start is not None:
+                    extents.append({"start_block": extent_start, "blocks": block - extent_start})
+                    extent_start = None
+            known_local = []
+            for name, entry in names.items():
+                if (name in WEB_NAMES or name in (KEY_NAME, "/restart.txt") or
+                        re.fullmatch(r"/local/(?:recipe[0-9]{2}\.[ab]|(?:index|settings|sessions)\.[ab]|"
+                                     r"history[0-9]{2}|history\.(?:meta|tail)\.[ab])", name)):
+                    known_local.append({"file_path": name, "start_block": entry.start_block,
+                        "size_blocks": entry.size_blocks, "total_blocks": entry.total_blocks,
+                        "mirrored": bool(entry.mirrored)})
+            views.append({"index": index, "revision": revision,
+                "allocated_blocks": len(occupied), "free_blocks": 256 - len(occupied),
+                "file_count": len(names), "free_extents": extents,
+                "known_local_allocations": sorted(known_local, key=lambda item: item["file_path"])})
     except InstallError:
         raise
     except Exception:
         raise InstallError("Live FAT/name metadata could not be validated") from None
     if not views:
         raise InstallError("No validated FAT view is available")
+    for name, allocation in web_layout.items():
+        allocation["existing_write_compatible"] = bool(allocation["allocations"]) and all(
+            not item["mirrored"] and item["flags"] == 0xC
+            and item["size_blocks"] >= connection.web_assets[name]["allocation_blocks"]
+            for item in allocation["allocations"])
     result = {"fat_views": views, "application_allocation_verified": True,
+              "application_payload_limit_bytes": APPLICATION_PAYLOAD_LIMIT,
               "key_absent_in_all_fats": key_absent,
-              "image3_absent_in_all_fats": image3_absent}
+              "image3_absent_in_all_fats": image3_absent,
+              "free_blocks_min": free_blocks_min, "free_file_slots_min": free_file_slots_min,
+              "web_assets": web_layout}
     connection.layout = result
     return result
 
@@ -712,6 +904,75 @@ def _write_registered(connection, name, flags):
     connection._close_file()
 
 
+def _plan_web_bundle(connection, details):
+    """Prove destinations and whole-file holes before any install mutation."""
+    plans = []
+    new_blocks = new_files = 0
+    for name, entry in connection.web_assets.items():
+        info = read_file_info(connection, name)
+        allocation = connection.layout["web_assets"][name]
+        if info["exists"]:
+            if not allocation["existing_write_compatible"]:
+                raise InstallError("An existing browser allocation is incompatible; no erase/delete fallback is allowed")
+            flags = OPEN_EXISTING_WRITE
+        else:
+            if not allocation["absent_in_all_fats"]:
+                raise InstallError("An unreadable browser file still has a FAT allocation; creation is blocked")
+            flags = entry["create_mode"]
+            new_blocks += entry["allocation_blocks"]
+            new_files += 1
+        plans.append((name, flags, info))
+    if (new_blocks > connection.layout["free_blocks_min"]
+            or new_files > connection.layout["free_file_slots_min"]):
+        raise InstallError("The verified filesystem lacks room for the complete browser bundle")
+    for view in connection.layout["fat_views"]:
+        holes = [extent["blocks"] for extent in view["free_extents"]]
+        for name, flags, _ in plans:
+            if flags == OPEN_EXISTING_WRITE:
+                continue
+            needed = connection.web_assets[name]["allocation_blocks"]
+            for index, available in enumerate(holes):
+                if available >= needed:
+                    holes[index] -= needed
+                    break
+            else:
+                raise InstallError("Free flash is fragmented; the complete browser bundle does not fit the verified holes")
+    details["web_bundle"] = {"manifest_sha256": WEB_MANIFEST_SHA256,
+        "files": [], "new_allocation_blocks": new_blocks,
+        "maximum_allocation_blocks": sum(entry["allocation_blocks"] for entry in connection.web_assets.values()),
+        "verified": False}
+    connection.web_space_checked = True
+    connection._record("web-plan-verified", new_allocation_blocks=new_blocks,
+                       new_files=new_files, manifest_sha256=WEB_MANIFEST_SHA256)
+    return tuple(plans)
+
+
+def _install_web_bundle(connection, details, progress, plans):
+    """Install the prepared destinations; image2 stays intact until all verify."""
+    for name, flags, info in plans:
+        entry = connection.web_assets[name]
+        already_matches = False
+        if info["exists"] and info["size_bytes"] == len(connection.payloads[name]):
+            current = read_file_bytes(connection, name, expected_max=entry["max_size"])
+            already_matches = hmac.compare_digest(current, connection.payloads[name])
+        if not already_matches:
+            progress("BROWSER: " + ("creating " if flags != OPEN_EXISTING_WRITE else "rewriting ") + name)
+            _write_registered(connection, name, flags)
+            current = read_file_bytes(connection, name, expected_max=entry["max_size"])
+            if not hmac.compare_digest(current, connection.payloads[name]):
+                raise InstallError("Browser readback differs from the complete pinned file")
+        if name not in connection.web_verified:
+            raise InstallError("Browser file byte-for-byte readback did not verify")
+        metadata = {"file_path": name, "size_bytes": entry["length"], "sha256": entry["sha256"],
+                    "already_matches": already_matches, "allocation_blocks": entry["allocation_blocks"]}
+        details["web_bundle"]["files"].append(metadata)
+        connection._record("web-readback-verified", **metadata)
+    if connection.web_verified != set(connection.web_assets):
+        raise InstallError("The complete browser bundle has not verified")
+    details["web_bundle"]["verified"] = True
+    connection._record("web-bundle-verified", manifest_sha256=WEB_MANIFEST_SHA256)
+
+
 def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, journal,
                   progress=report, details=None):
     if details is None:
@@ -742,11 +1003,8 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
         data = read_file_bytes(connection, APP_NAME)
         observed = _image_metadata(data)
         before["application"] = observed
-        accepted = [{"size_bytes": ORIGINAL_SIZE, "sha256": ORIGINAL_SHA256}]
-        if mode == "install":
-            accepted.append({"size_bytes": CANDIDATE_SIZE, "sha256": CANDIDATE_SHA256})
-        if observed not in accepted:
-            raise InstallError("Current application is not an approved stock/candidate image; use restore")
+        if observed not in _approved_current_applications(mode):
+            raise InstallError("Current application is not an approved stock/standalone image; use restore")
         progress(f"VERIFIED: {APP_NAME}: {len(data):,} bytes; SHA256 {observed['sha256']}")
     connection._live_state_ok()
     connection._record("live-preflight-passed", mode=mode)
@@ -764,6 +1022,8 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
             _write_registered(connection, KEY_NAME, OPEN_KEY_CREATE)
             _verify_key(connection, key_bytes)
             connection._record("key-create-readback-verified")
+        if mode == "install":
+            web_plans = _plan_web_bundle(connection, details)
         progress("KEY: proving an existing-file rewrite of the matching private key")
         _write_registered(connection, KEY_NAME, OPEN_EXISTING_WRITE)
         _verify_key(connection, key_bytes)
@@ -774,6 +1034,7 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
                           "existing_write_verified": True, "size_bytes": KEY_SIZE}
 
     if mode == "install":
+        _install_web_bundle(connection, details, progress, web_plans)
         already = before["application"] == {"size_bytes": CANDIDATE_SIZE, "sha256": CANDIDATE_SHA256}
         details["application_already_installed"] = already
         if not already:
@@ -796,6 +1057,9 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
         _verify_key(connection, key_bytes)
         after["key_matches_host"] = True
     after["layout"] = read_live_layout(connection, cc)
+    if mode == "install" and not all(item["existing_write_compatible"]
+                                    for item in after["layout"]["web_assets"].values()):
+        raise InstallError("Installed browser allocations failed the final filesystem check")
     if not after["layout"]["image3_absent_in_all_fats"]:
         raise InstallError("An unexpected image3 appeared during the operation")
     if read_file_info(connection, preflight.OPTIONAL_IMAGE_NAME)["exists"]:
@@ -893,6 +1157,8 @@ def main(argv=None):
             command.add_argument("--key-file", required=True, type=Path, help="Existing private host key file")
         if name == "install":
             command.add_argument("--firmware", required=True, type=Path, help="Pinned standalone binary")
+            command.add_argument("--web-directory", type=Path, default=WEB_DIRECTORY,
+                                 help="Matching pinned browser bundle (defaults to repository firmware/web)")
     args = parser.parse_args(argv)
     if not 1 <= args.power_wait <= 300:
         parser.error("--power-wait must be between 1 and 300 seconds")
@@ -911,6 +1177,8 @@ def main(argv=None):
         original, details["backup"] = verify_backup(args.backup)
         key = load_key(args.key_file, owner) if args.mode != "restore" else None
         candidate = load_candidate(args.firmware) if args.mode == "install" else None
+        web_manifest, web_payloads = (load_web_bundle(args.web_directory)
+                                      if args.mode == "install" else (None, {}))
         if candidate is not None:
             details["candidate"] = _image_metadata(candidate)
         probe_module, cc, helper, version = backup.load_dependencies()
@@ -921,6 +1189,7 @@ def main(argv=None):
         payloads = {APP_NAME: original} if args.mode == "restore" else {KEY_NAME: key}
         if args.mode == "install":
             payloads[APP_NAME] = candidate
+            payloads.update(web_payloads)
         report("LOCAL BACKUP: exact original full-flash backup and stock image verified")
         report("OPERATION: " + args.mode)
         report("REPORT: " + str(files.output))
@@ -946,7 +1215,8 @@ def main(argv=None):
                             payload = probe_module.probe(raw, args.power_wait, report=connection_report)
                             port = backup.USBSerialPort(raw)
                             connection = build_connection(cc, probe_module, port, helper,
-                                                          args.mode, payloads, files)
+                                                          args.mode, payloads, files,
+                                                          web_manifest=web_manifest)
                             connection.vinfo = cc.CC3x00VersionInfo.from_packet(payload)
                             if (not connection.vinfo.is_cc3200
                                     or connection.vinfo.bootloader[1] != 4):

@@ -78,6 +78,36 @@ static void close_client(void *, int client)
 
 static const PicoHttpIo io = {accept_client, receive_client, send_client, close_client};
 
+static int open_asset(void *, const char *path, size_t expected_length)
+{
+    if (!path || !WiFiClass::_initialized)
+        return PICO_HTTP_IO_ERROR;
+    SlFsFileInfo_t info = {};
+    if (sl_FsGetInfo(reinterpret_cast<const _u8 *>(path), 0, &info) != 0 ||
+        static_cast<size_t>(info.FileLen) != expected_length)
+        return PICO_HTTP_IO_ERROR;
+    _i32 handle = -1;
+    if (sl_FsOpen(reinterpret_cast<const _u8 *>(path), FS_MODE_OPEN_READ, NULL, &handle) != 0)
+        return PICO_HTTP_IO_ERROR;
+    return static_cast<int>(handle);
+}
+
+static int read_asset(void *, int handle, size_t offset, uint8_t *data, size_t length)
+{
+    if (!WiFiClass::_initialized || handle < 0 || !data || length > PICO_HTTP_IO_BUDGET)
+        return PICO_HTTP_IO_ERROR;
+    return static_cast<int>(sl_FsRead(static_cast<_i32>(handle), static_cast<_u32>(offset),
+                                     data, static_cast<_u32>(length)));
+}
+
+static void close_asset(void *, int handle)
+{
+    if (WiFiClass::_initialized)
+        sl_FsClose(static_cast<_i32>(handle), NULL, NULL, 0);
+}
+
+static const PicoHttpAssetIo asset_io = {open_asset, read_asset, close_asset};
+
 int pico_energia_local_file_stat(void *, const char *path, size_t *size)
 {
     if (!path || !size || !WiFiClass::_initialized)
@@ -157,6 +187,7 @@ void pico_energia_http_initialize(PicoEnergiaHttpServer *s, PicoHttpHandler hand
     s->listener = -1;
     s->port = port;
     pico_http_server_initialize(&s->http, &io, s, handler, context, assets, asset_count);
+    pico_http_server_set_asset_io(&s->http, &asset_io, s);
 }
 
 void pico_energia_http_shutdown(PicoEnergiaHttpServer *s)

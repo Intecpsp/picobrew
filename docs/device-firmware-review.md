@@ -1,5 +1,9 @@
 # Review of the owner's Pico Pro backup
 
+This document preserves the original device review and first 161,720-byte
+installation. For the new 1.0.0 candidate, separate browser files and revised
+storage/RAM budgets, see [the release notes](release-1.0.0.md).
+
 The owner obtained a verified full serial-flash backup on 2026-11-17 using
 the [macOS direct-USB workflow](macos-usb-backup.md), then supplied
 `firmware-review.zip` containing extracted firmware, both boot-record

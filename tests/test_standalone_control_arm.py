@@ -58,10 +58,14 @@ def main():
         call('arm_prepare')
         assert call('pico_local_control_foreground')==1
         call('pico_local_service'); assert value('arm_poll_count')==1
+        assert value('arm_history_polls')==1
+        assert value('arm_telemetry_polls')==1
         for exception,masked in [(0,1),(16,0),(16,1)]:
             assert call('pico_local_control_foreground',exception,masked)==0
             call('pico_local_service',exception,masked)
             assert value('arm_poll_count')==1
+            assert value('arm_history_polls')==1
+            assert value('arm_telemetry_polls')==1
         for exception,masked in [(0,1),(16,0),(16,1)]:
             call('arm_prepare')
             call('arm_filter_probe',exception,masked)
@@ -69,6 +73,8 @@ def main():
             assert call('arm_signals_enabled')==0
             assert value('arm_outputs')==0 and value('arm_high_writes')==0
             assert value('arm_pause_count')==0 and value('arm_poll_count')==0
+            assert value('arm_history_polls')==0
+            assert value('arm_telemetry_polls')==0
         print('PASS: ARM foreground polling; no polling with IPSR/PRIMASK; ISR filter trip disables all outputs without UI.')
 
 

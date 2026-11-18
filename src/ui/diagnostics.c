@@ -354,11 +354,30 @@ void pico_ui_show_network_addresses(void)
 {
     PicoNetwork *n = pico_ui_active->network;
     pico_display_clear();
+#if PICO_STANDALONE
+    if (n->platform->wifi_status(n->platform_context) != 3 &&
+        !pico_network_ensure_connection(n)) {
+        pico_screen_wifi_connection_failed();
+        pico_display_flush();
+        pico_display_wait_for_click();
+        return;
+    }
+#else
     if (n->platform->wifi_status(n->platform_context) != 3)
         pico_network_ensure_connection(n);
+#endif
     PicoIpv4 addresses[4] = {0};
     n->platform->ip_configuration(n->platform_context, &addresses[0], &addresses[1], &addresses[2],
                                   &addresses[3]);
+#if PICO_STANDALONE
+    if (pico_network_ipv4_is_zero(addresses[0])) {
+        pico_display_clear();
+        pico_screen_wifi_connection_failed();
+        pico_display_flush();
+        pico_display_wait_for_click();
+        return;
+    }
+#endif
     pico_display_clear();
     pico_display_center_text(0, "WIFI STATUS");
     pico_ui_draw_separator(2, 1, 1);

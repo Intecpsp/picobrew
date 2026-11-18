@@ -7,12 +7,16 @@
 
 bool WiFiClass::_initialized;
 WiFiClass WiFi;
-static unsigned cases, calls, socket_calls, accepted_nonblocking, reads, file_closes, socket_closes;
+static unsigned cases, calls, socket_calls, accepted_nonblocking, reads, file_opens, file_closes, socket_closes;
 static uint32_t now_ms;
 static int wifi_status, stat_result, open_result, read_result, close_result, accept_result;
 static const char key[] = "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef";
-static uint8_t file_data[4096];
+static uint8_t file_data[8192];
 static size_t file_size;
+static int file_handle;
+static const char *request;
+static size_t consumed, produced, largest_read;
+static uint8_t response[8192];
 
 uint32_t millis() { return now_ms; }
 uint8_t WiFiClass::status() { return (uint8_t)wifi_status; }
@@ -45,11 +49,21 @@ _i16 sl_Accept(_i16 descriptor, SlSockAddr_t *, SlSocklen_t *)
     assert(descriptor == 3); ++calls;
     int result = accept_result; accept_result = SL_EAGAIN; return (_i16)result;
 }
-_i16 sl_Recv(_i16 descriptor, void *, _i16 length, _i16 flags)
+_i16 sl_Recv(_i16 descriptor, void *data, _i16 length, _i16 flags)
 {
-    assert(descriptor == 0 && length <= 128 && flags == 0); ++calls; return SL_EAGAIN;
+    assert(descriptor == 0 && length <= 128 && flags == 0); ++calls;
+    size_t count = request ? strlen(request) - consumed : 0;
+    if (!count) return SL_EAGAIN;
+    if (count > (size_t)length) count = (size_t)length;
+    memcpy(data, request + consumed, count); consumed += count; return (_i16)count;
 }
-_i16 sl_Send(_i16, const void *, _i16, _i16) { assert(false); return -1; }
+_i16 sl_Send(_i16 descriptor, const void *data, _i16 length, _i16 flags)
+{
+    assert(descriptor == 0 && flags == 0 && length > 0);
+    assert(produced + (size_t)length < sizeof(response));
+    ++calls; memcpy(response + produced, data, (size_t)length); produced += (size_t)length;
+    return length;
+}
 _i16 sl_Close(_i16) { ++calls; ++socket_closes; return 0; }
 _i16 sl_FsGetInfo(const _u8 *path, _u32 token, SlFsFileInfo_t *info)
 {
@@ -60,33 +74,38 @@ _i16 sl_FsGetInfo(const _u8 *path, _u32 token, SlFsFileInfo_t *info)
 _i32 sl_FsOpen(const _u8 *path, _u32 mode, _u32 *token, _i32 *handle)
 {
     assert(path && mode == FS_MODE_OPEN_READ && token == NULL); ++calls;
-    if (!open_result) *handle = 8;
+    if (!open_result) { *handle = file_handle; ++file_opens; }
     return open_result;
 }
 _i32 sl_FsRead(_i32 handle, _u32 offset, _u8 *data, _u32 length)
 {
-    assert(handle == 8 && offset == 0 && length <= sizeof(file_data));
+    assert(handle == file_handle && offset <= file_size && length <= sizeof(file_data));
     ++calls; ++reads;
+    if (length > largest_read) largest_read = length;
     if (read_result) return read_result;
-    size_t count = length < file_size ? length : file_size;
-    memcpy(data, file_data, count);
+    size_t count = length < file_size - offset ? length : file_size - offset;
+    memcpy(data, file_data + offset, count);
     return (_i32)count;
 }
 _i16 sl_FsClose(_i32 handle, const _u8 *certificate, const _u8 *signature, _u32 length)
 {
-    assert(handle == 8 && !certificate && !signature && !length);
+    assert(handle == file_handle && !certificate && !signature && !length);
     ++calls; ++file_closes; return (_i16)close_result;
 }
 }
 
 static void reset()
 {
-    calls = socket_calls = accepted_nonblocking = reads = file_closes = socket_closes = 0;
+    calls = socket_calls = accepted_nonblocking = reads = file_opens = file_closes = socket_closes = 0;
     now_ms = 0;
     wifi_status = WL_CONNECTED;
     stat_result = open_result = read_result = close_result = 0;
     accept_result = SL_EAGAIN;
     WiFiClass::_initialized = false;
+    file_handle = 8;
+    request = NULL;
+    consumed = produced = largest_read = 0;
+    memset(response, 0, sizeof(response));
     memcpy(file_data, key, 64); file_size = 64;
 }
 
@@ -177,5 +196,55 @@ int main()
     pico_energia_http_poll(&server);
     assert(strcmp(server.http.key, key) == 0); ++cases;
     pico_energia_http_shutdown(&server);
+
+    const PicoHttpAsset asset = {"/", "text/html; charset=utf-8", "gzip", NULL, 6501, "/local/web/i.gz"};
+    reset(); WiFiClass::_initialized = true;
+    for (size_t i = 0; i < 6501; ++i) file_data[i] = (uint8_t)(i * 29u);
+    file_size = 6501; file_handle = 0;
+    request = "GET / HTTP/1.1\r\nHost: pico\r\n\r\n";
+    accept_result = 0;
+    pico_energia_http_initialize(&server, NULL, NULL, &asset, 1, 80);
+    server.key_loaded = true; /* Isolate the asset handle from the key-load test. */
+    for (unsigned i = 0; i < 100 && !socket_closes; ++i) {
+        now_ms = i;
+        pico_energia_http_poll(&server);
+    }
+    const char *body = strstr((const char *)response, "\r\n\r\n");
+    assert(body && strncmp((const char *)response, "HTTP/1.1 200 ", 13) == 0);
+    body += 4;
+    assert(produced - (size_t)(body - (const char *)response) == 6501);
+    assert(memcmp(body, file_data, 6501) == 0);
+    assert(file_opens == 1 && file_closes == 1 && reads == 13 && largest_read == 512);
+    assert(server.http.asset_handle == -1);
+    pico_energia_http_shutdown(&server); ++cases;
+
+    for (unsigned mode = 0; mode < 4; ++mode) {
+        reset(); WiFiClass::_initialized = true;
+        file_size = 6501; request = "GET / HTTP/1.1\r\nHost: pico\r\n\r\n"; accept_result = 0;
+        switch (mode) {
+        case 0: stat_result = SL_FS_ERR_FILE_NOT_EXISTS; break;
+        case 1: stat_result = -39; break;
+        case 2: file_size = 6500; break;
+        case 3: open_result = -6; break;
+        }
+        pico_energia_http_initialize(&server, NULL, NULL, &asset, 1, 80);
+        server.key_loaded = true;
+        for (unsigned i = 0; i < 100 && !socket_closes; ++i) pico_energia_http_poll(&server);
+        assert(strncmp((const char *)response, "HTTP/1.1 503 ", 13) == 0);
+        assert(file_opens == 0 && file_closes == 0 && reads == 0);
+        pico_energia_http_shutdown(&server); ++cases;
+    }
+
+    reset(); WiFiClass::_initialized = true;
+    file_size = 6501; request = "GET / HTTP/1.1\r\nHost: pico\r\n\r\n"; accept_result = 0;
+    pico_energia_http_initialize(&server, NULL, NULL, &asset, 1, 80);
+    server.key_loaded = true;
+    pico_energia_http_poll(&server);
+    assert(file_opens == 1 && file_closes == 0 && server.http.asset_handle == file_handle);
+    wifi_status = 0;
+    pico_energia_http_poll(&server);
+    assert(file_closes == 1 && socket_closes == 2 && server.http.asset_handle == -1);
+    pico_energia_http_shutdown(&server);
+    assert(file_closes == 1); ++cases;
     printf("Native HTTP adapter: %u mocked SimpleLink cases passed.\n", cases);
 }

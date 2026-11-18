@@ -8,9 +8,14 @@ installed the pinned standalone image and verified its complete readback on
 2026-11-18. The tool left the application unstarted, and the owner subsequently
 booted it and received HTTP 200 from the public health endpoint. The
 [runtime record](../analysis/device-runtime-20261118.json) preserves the exact
-response and its limits. Authenticated requests and the browser console are
-the next checks. A successful link, file readback or health response cannot
-verify physical outputs, recovery or a heating cycle.
+response and its limits. The owner subsequently showed the connected browser
+console with sensor readings and an inverted OLED preview; the
+[browser record](../analysis/device-browser-20261118.json) preserves those
+observations. These physical results concern the previous 161,720-byte
+candidate. **The new 1.0.0 firmware and separate browser bundle have not yet
+been installed or physically exercised.** A successful link, file readback,
+health response or browser connection cannot verify physical outputs,
+recovery or a heating cycle.
 
 The owner's extracted firmware and boot records were also reviewed. The
 main application exactly matches the original v0.1.34 reference. The
@@ -44,7 +49,8 @@ Pro/C identity.
 | Filter interlock | Pin 11 active-low presence; pump pause/resume; missing-filter prompts and alarms | Not run |
 | Rotary valve/stepper | Capability query, ready/error replies, every compartment, legacy mapping, torque and home position | Not run |
 | RFID/shared SPI | Known 4/7/10-byte cards, card removal/cancel, shared chip selects and simultaneous display activity | Not run |
-| WiFi/API | Compatible local server, loss/reconnection, exact requests and UI failure handling | Public `GET /api/v1/health` passed on 2026-11-18; new-SSID addressing required a reboot; authenticated API, browser UI and failure handling remain unverified |
+| WiFi/API | Compatible local server, loss/reconnection, exact requests and UI failure handling | Public health and connected browser with readings passed on the previous candidate; new-SSID addressing required a reboot. Version 1.0.0 contains a software-tested reconnect fix; physical reconnect and failure handling remain unverified |
+| Version 1.0.0 features | Matching application/browser install, upright OLED, arrow controls, network change, retained brew/export, optional receiver | Software gates documented in the release record; physical checks outstanding |
 | Persistent files | Credentials/preferences/UID, shuttle scaling, restart serialization and failed/short I/O | Not run |
 | Update/recovery | Inactive-image write, full binary integrity, boot-file transition, reset and restore after interrupted update | Not run |
 | Timers/concurrency | ISR frequency, actual clock rate, SPI/display/network interaction and nonreturning fatal path | Not run |
@@ -57,14 +63,16 @@ physical execution has not been demonstrated by this project. Do not treat a
 software assertion or an emulator's simulated sensor value as a physical
 safety test.
 
-## First runtime result and open Wi-Fi issue
+## First runtime results and Wi-Fi correction
 
 The owner supplied an HTTP 200 response from `GET /api/v1/health` on
 2026-11-18. It reported API version 1, standalone mode, `ready: true`,
 `auth_configured: true` and uptime 132,543 ms. This proves the application
 served that public request and reported a configured key; it does not
-prove a bearer-authenticated request, browser rendering or physical sensor
-and output behavior.
+prove a bearer-authenticated request or physical sensor/output behavior.
+The later connected-browser screenshot separately demonstrates browser
+rendering and the application's authenticated reporting path, but no complete
+command or interlock acceptance sequence was supplied.
 
 Before that response, changing the selected SSID showed the new network
 name alongside an address outside the expected subnet. The owner reported
@@ -72,8 +80,16 @@ that a reboot corrected DHCP. Source inspection found that the status
 screen displays the configured SSID, and that the connection adapter can
 return early while the SDK's connecting flag remains set. These findings
 are consistent with the observation, but the exact runtime cause was not
-captured. The issue remains open; no firmware change is included in this
-evidence update.
+captured. Version 1.0.0 now explicitly disconnects, clears cached addresses,
+requests DHCP and waits for a fresh IPv4 callback before reporting success.
+Tests exercise delayed old callbacks, immediate reconnect, missing leases,
+errors and the real foreground socket-service throttle. The fix still needs
+confirmation on the owner's network without a reboot.
+
+For 1.0.0, also check that a recorded brew remains available after closing the
+browser and restarting the appliance, that exports match the displayed
+readings, and that an unavailable optional receiver does not interrupt local
+recording or operation. These are acceptance checks, not completed results.
 
 ## What the offline image checks establish
 

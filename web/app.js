@@ -1,11 +1,14 @@
 'use strict';
 
 const $ = id => document.getElementById(id);
-const state = {key:'', connected:false, generation:0, status:null, recipes:[], events:[],
+const state = {key:'', connected:false, generation:0, status:null, recipes:[],
   settings:{temperature_unit:'F', language:'en', detailed_status:false}, capabilities:[],
-  editorId:null, dirty:false, tab:'overview', polling:false};
+  editorId:null, dirty:false, tab:'overview', polling:false,
+  telemetry:null, telemetryDirty:false, telemetrySaving:false, telemetryAt:0};
 let requestQueue = Promise.resolve();
 let pollTimer;
+let apiExplorer;
+let brewHistory;
 const programLabels = {'sous-vide':'Sous vide', 'cold-brew':'Cold brew', manual:'Manual brewing',
   rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
   'drain-reservoir':'Drain reservoir', 'drain-filter':'Drain step filter', 'rack-beer':'Rack beer',
@@ -29,7 +32,7 @@ function api(path, method='GET', body) {
       if (body !== undefined) headers['Content-Type'] = 'application/json';
       const response = await fetch('/api/v1'+path, {method, headers,
         body:body === undefined ? undefined : JSON.stringify(body),
-        signal:controller.signal, cache:'no-store', credentials:'omit'});
+        signal:controller.signal, cache:'no-store', credentials:'omit', redirect:'error'});
       let data;
       try { data = response.status === 204 ? null : await response.json(); }
       catch (_) { throw new Error('The brewer returned an unreadable response.'); }
@@ -76,7 +79,9 @@ function updateControls() {
   $('saveRecipe').disabled = !ready || busy;
   $('deleteRecipe').disabled = !ready || busy || !state.editorId;
   $('saveSettings').disabled = !ready || busy;
-  $('exportEvents').disabled = !ready;
+  for (const input of $('telemetryForm').elements) input.disabled = !ready || busy || !state.telemetry || state.telemetrySaving;
+  apiExplorer?.update();
+  brewHistory?.update();
 }
 
 function temperature(value) {
@@ -117,8 +122,10 @@ function renderDisplay(frame) {
   const context = $('display').getContext('2d');
   const image = context.createImageData(128,64);
   for (let y=0;y<64;y++) for (let x=0;x<128;x++) {
-    const address = (Math.floor(y/8)*128+x)*2;
-    const lit = (parseInt(frame.data.slice(address,address+2),16) >> (y%8)) & 1;
+    // The API exposes panel-order bytes; the Pico draws with rotation 2.
+    const sourceX=127-x, sourceY=63-y;
+    const address = (Math.floor(sourceY/8)*128+sourceX)*2;
+    const lit = (parseInt(frame.data.slice(address,address+2),16) >> (sourceY%8)) & 1;
     const i=(y*128+x)*4;
     const color = lit ? [199,225,180] : [18,38,32];
     image.data[i]=color[0]; image.data[i+1]=color[1]; image.data[i+2]=color[2]; image.data[i+3]=255;
@@ -204,16 +211,6 @@ async function sendCommand(body) {
   catch(error){notify(error.message,true);}
 }
 
-function renderEvents(data) {
-  state.events=data.events || [];$('events').replaceChildren();
-  for(const event of [...state.events].reverse()) {
-    const row=document.createElement('tr');
-    for(const value of [event.sequence,duration(event.uptime_ms/1000),event.kind,event.detail]){const cell=document.createElement('td');cell.textContent=value ?? '';row.append(cell);}
-    $('events').append(row);
-  }
-  $('emptyEvents').hidden=state.events.length>0;
-}
-
 function download(name,data) {
   const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
   const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -221,6 +218,31 @@ function download(name,data) {
 
 function renderSettings(settings) {
   state.settings=settings;$('temperatureUnit').value=settings.temperature_unit;$('language').value=settings.language;$('detailedStatus').checked=!!settings.detailed_status;
+}
+
+function renderTelemetry(config) {
+  state.telemetry=config;
+  if (!state.telemetryDirty) {
+    $('telemetryEnabled').checked=!!config.enabled;$('telemetryHost').value=config.host || '';
+    $('telemetryPort').value=config.port;$('telemetryHost').required=!!config.enabled;
+  }
+  const status=config.status || {};
+  const labels={disabled:'Forwarding is off.',offline:'Waiting for the Pico’s network connection.',
+    'waiting-idle':'Waiting for the brewer to be idle to look up the receiver.',ready:'Ready to send readings.',
+    connecting:'Connecting to the receiver…',sending:'Sending readings…',receiving:'Waiting for the receiver’s reply…',
+    backoff:'Receiver unavailable. The Pico will retry.'};
+  $('telemetryStatus').textContent=(labels[status.state] || 'Waiting for forwarding status.')+
+    ' Sent: '+(status.sent || 0)+' · Failed: '+(status.failed || 0)+' · Skipped: '+(status.dropped || 0)+
+    (status.last_http_status?' · Last reply: HTTP '+status.last_http_status:'')+
+    (status.storage_error?' · Destination settings could not be saved.':'');
+  updateControls();
+}
+
+async function refreshTelemetry() {
+  const generation=state.generation;
+  state.telemetryAt=Date.now();
+  try {renderTelemetry(await api('/telemetry'));}
+  catch(error) {if(generation===state.generation)$('telemetryStatus').textContent=error.message;}
 }
 
 async function poll() {
@@ -231,7 +253,7 @@ async function poll() {
     if(!document.hidden) {
       renderStatus(await api('/status'));connected(true);
       if(state.tab==='overview')renderDisplay(await api('/display'));
-      if(state.tab==='activity')renderEvents(await api('/events'));
+      if(state.tab==='settings' && Date.now()-state.telemetryAt>=5000)await refreshTelemetry();
     }
   } catch(error) {
     if(generation===state.generation){connected(false);notify(error.message,true);if(error.status===401){state.key='';try{sessionStorage.removeItem('pico-api-key');}catch(_){}}}
@@ -241,12 +263,16 @@ async function poll() {
 function selectTab(tab) {
   state.tab=tab;document.querySelectorAll('.tab-panel').forEach(panel=>panel.hidden=panel.id!==tab);
   document.querySelectorAll('[data-tab]').forEach(button=>{const active=button.dataset.tab===tab;button.classList.toggle('selected',active);if(active)button.setAttribute('aria-current','page');else button.removeAttribute('aria-current');});
-  if(state.connected){if(tab==='recipes')refreshRecipes().catch(error=>notify(error.message,true));if(tab==='activity')api('/events').then(renderEvents).catch(error=>notify(error.message,true));}
+  if(state.connected && tab==='recipes')refreshRecipes().catch(error=>notify(error.message,true));
+  if(state.connected && tab==='settings')refreshTelemetry();
+  if(tab==='history')brewHistory?.activate();
 }
 
 async function connect(key) {
   state.key=key;state.generation++;clearTimeout(pollTimer);
+  state.telemetry=null;state.telemetryDirty=false;state.telemetrySaving=false;state.telemetryAt=0;
   const info=await api('');state.capabilities=info.commands || [];renderPrograms();
+  $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
   renderSettings(await api('/settings'));renderStatus(await api('/status'));await refreshRecipes();
   try{sessionStorage.setItem('pico-api-key',key);}catch(_){}
   connected(true);notify('');$('connectDialog').close();$('apiKey').value='';poll();
@@ -254,6 +280,7 @@ async function connect(key) {
 
 function disconnect() {
   state.generation++;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
+  state.telemetry=null;state.telemetryDirty=false;$('telemetryStatus').textContent='Connect to load forwarding settings.';
   try{sessionStorage.removeItem('pico-api-key');}catch(_){}
   $('operationTitle').textContent='Disconnected from your brewer.';$('operationDetail').textContent='A running program continues on the Pico. Reconnect to see its status.';
   $('apiKey').value='';notify('Device key removed from this tab.');
@@ -301,11 +328,29 @@ $('importFile').addEventListener('change',async event=>{
   }catch(error){notify(error instanceof SyntaxError?'The file is not valid JSON.':error.message,true);}
 });
 $('exportRecipe').addEventListener('click',()=>{const recipe=recipeFromForm();if(recipe)download(recipe.id+'.json',recipe);});
-$('exportEvents').addEventListener('click',()=>download('pico-events.json',{device_uid:state.status?.device_uid,exported_at:new Date().toISOString(),events:state.events}));
 $('settingsForm').addEventListener('submit',async event=>{
   event.preventDefault();try{const settings=await api('/settings','PATCH',{temperature_unit:$('temperatureUnit').value,language:$('language').value,detailed_status:$('detailedStatus').checked});renderSettings(settings);if(state.status)renderStatus(state.status);notify('Preferences saved on the Pico.');}catch(error){notify(error.message,true);}
 });
+$('telemetryForm').addEventListener('input',()=>{
+  state.telemetryDirty=true;$('telemetryHost').required=$('telemetryEnabled').checked;
+});
+$('telemetryForm').addEventListener('submit',async event=>{
+  event.preventDefault();if(!state.telemetry || state.telemetrySaving)return;
+  const generation=state.generation;
+  state.telemetrySaving=true;updateControls();
+  try {
+    const config=await api('/telemetry','PUT',{enabled:$('telemetryEnabled').checked,host:$('telemetryHost').value.trim(),port:Number($('telemetryPort').value)});
+    state.telemetryDirty=false;renderTelemetry(config);notify('Forwarding settings saved on the Pico.');
+  } catch(error) {if(generation===state.generation)notify(error.message,true);}
+  finally {if(generation===state.generation){state.telemetrySaving=false;updateControls();}}
+});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden && state.key)poll();});
+apiExplorer=setupApiExplorer({session:()=>({key:state.key,connected:state.connected,generation:state.generation}),enqueue:task=>{
+  const result=requestQueue.catch(()=>{}).then(task);requestQueue=result;return result;
+}});
+brewHistory=setupHistory({session:()=>({key:state.key,connected:state.connected,generation:state.generation,temperature_unit:state.settings.temperature_unit}),enqueue:task=>{
+  const result=requestQueue.catch(()=>{}).then(task);requestQueue=result;return result;
+}});
 editRecipe({});
 try{state.key=sessionStorage.getItem('pico-api-key') || '';}catch(_){}
 if(/^[0-9a-f]{64}$/.test(state.key))connect(state.key).catch(error=>{connected(false);notify(error.message,true);$('connectDialog').showModal();});

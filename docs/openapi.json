@@ -3,7 +3,7 @@
   "info": {
     "title": "Pico S/Pro Standalone API",
     "version": "1.0.0",
-    "description": "Local appliance API implemented by src/local_api.c. Experimental reconstructed firmware; hardware behavior and timing still require bench validation. The appliance serves HTTP on its LAN address with a separately provisioned bearer key. API calls are bounded to 4095 body bytes, one connection at a time; Content-Length and application/json are required for POST, PUT and PATCH. Chunked transfer, CORS, cookies and arbitrary query parameters are unsupported. Recipes/settings and the local session counter use CRC-checked, readback-verified two-bank SLFS records. Event history is an eight-entry RAM ring. 503 on a write can mean commit verification failed after data was written: read the resource before retrying. Calls that start workflows return acceptance, not completion."
+    "description": "Local appliance API implemented by src/local_api.c. Experimental reconstructed firmware; hardware behavior and timing still require bench validation. The appliance serves HTTP on its LAN address with a separately provisioned bearer key. API calls are bounded to 4095 body bytes, one connection at a time; Content-Length and application/json are required for POST, PUT and PATCH. Chunked transfer, CORS, cookies and query parameters other than the documented history id are unsupported. Recipes/settings and the local session counter use CRC-checked, readback-verified two-bank SLFS records. Recent events are an eight-entry RAM ring. Brew history is stored on the Pico in a bounded shared flash pool and survives normal restarts; the oldest completed histories are retired as space is needed. 503 on a write can mean commit verification failed after data was written: read the resource before retrying. Calls that start workflows return acceptance, not completion."
   },
   "servers": [
     {
@@ -545,7 +545,201 @@
         "tags": [
           "Reporting"
         ],
-        "description": "Contains at most eight recent events since boot, in sequence order. Old events are overwritten. No historical session or full temperature-log export is implemented. Persistent session IDs use a separately committed monotonically increasing counter."
+        "description": "Contains at most eight recent events since boot, in sequence order. Old events are overwritten. Persistent brew samples and session metadata are available from /api/v1/history. Persistent session IDs use a separately committed monotonically increasing counter."
+      }
+    },
+    "/api/v1/history": {
+      "get": {
+        "operationId": "getHistory",
+        "summary": "List retained brews and recording capacity",
+        "tags": [
+          "Reporting"
+        ],
+        "description": "Recorded automatically on the Pico, independent of HTTP clients or Wi-Fi association. Regular snapshots every 15 seconds plus phase/step/status transitions. A current RAM tail is checkpointed at most every 60 seconds while foreground storage is available. A restart marks an unfinished session interrupted; uncommitted readings may be lost. The truncated and storage_error flags identify incomplete histories. Only brewing/manual brewing workflows are recorded; settings and maintenance do not replace them.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/History"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "default": {
+            "$ref": "#/components/responses/ProtocolError"
+          }
+        }
+      }
+    },
+    "/api/v1/history/samples/{offset}": {
+      "parameters": [
+        {
+          "name": "offset",
+          "in": "path",
+          "required": true,
+          "description": "Zero-based row offset; follow next_offset until null.",
+          "schema": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224,
+            "example": 0
+          }
+        },
+        {
+          "name": "id",
+          "in": "query",
+          "required": true,
+          "description": "The id from the retained session metadata. This prevents combining samples from different brews.",
+          "schema": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295,
+            "example": 1
+          }
+        }
+      ],
+      "get": {
+        "operationId": "getHistorySamples",
+        "summary": "Read a page of recorded brew samples",
+        "tags": [
+          "Reporting"
+        ],
+        "description": "At most 32 rows per response. A removed or unknown session id returns 409; refresh the inventory instead of combining pages. An offset equal to record_count returns an empty page. JSON/CSV export is assembled by clients from these pages; the device never builds an entire log in RAM.",
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HistoryPage"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "default": {
+            "$ref": "#/components/responses/ProtocolError"
+          }
+        }
+      }
+    },
+    "/api/v1/telemetry": {
+      "get": {
+        "operationId": "getTelemetry",
+        "summary": "Read optional telemetry destination and delivery status",
+        "tags": [
+          "Reporting"
+        ],
+        "description": "Forwarding defaults off. When enabled the Pico sends best-effort status snapshots to the configured HTTP host/port. Local history and brewing continue independently. Counters are since boot. Hostname resolution is performed only while idle; socket progress is nonblocking and bounded. There is no historical backlog upload.",
+        "responses": {
+          "200": {
+            "description": "Saved configuration and current forwarding status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Telemetry"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "default": {
+            "$ref": "#/components/responses/ProtocolError"
+          }
+        }
+      },
+      "put": {
+        "operationId": "putTelemetry",
+        "summary": "Configure optional telemetry forwarding while idle",
+        "tags": [
+          "Settings"
+        ],
+        "description": "Supply all three fields. Persists two CRC/readback-verified configuration records. Use an IP address or hostname, not a URL. Fixed receiver path /api/v1/telemetry, HTTP only, default port8080. Provider secrets and the Pico API key are never sent to this receiver.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TelemetryConfig"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Saved configuration and current forwarding status",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Telemetry"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed"
+          },
+          "409": {
+            "$ref": "#/components/responses/Conflict"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          },
+          "default": {
+            "$ref": "#/components/responses/ProtocolError"
+          }
+        }
       }
     }
   },
@@ -805,6 +999,12 @@
               1
             ]
           },
+          "firmware_version": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+            "description": "Running firmware release as major.minor.patch, independent of api_version.",
+            "example": "1.0.0"
+          },
           "mode": {
             "type": "string",
             "enum": [
@@ -826,6 +1026,7 @@
         },
         "required": [
           "api_version",
+          "firmware_version",
           "mode",
           "ready",
           "auth_configured",
@@ -841,6 +1042,12 @@
             "enum": [
               1
             ]
+          },
+          "firmware_version": {
+            "type": "string",
+            "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)$",
+            "description": "Running firmware release as major.minor.patch, independent of api_version.",
+            "example": "1.0.0"
           },
           "mode": {
             "type": "string",
@@ -908,10 +1115,35 @@
             "enum": [
               "printable ASCII"
             ]
+          },
+          "history_persistent": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
+          },
+          "history_capacity_records": {
+            "type": "integer",
+            "enum": [
+              4224
+            ]
+          },
+          "history_capacity_sessions": {
+            "type": "integer",
+            "enum": [
+              8
+            ]
+          },
+          "telemetry_forwarding": {
+            "type": "boolean",
+            "enum": [
+              true
+            ]
           }
         },
         "required": [
           "api_version",
+          "firmware_version",
           "mode",
           "recipe_capacity",
           "step_capacity",
@@ -919,7 +1151,11 @@
           "dedicated_pause_resume",
           "front_panel",
           "events_persistent",
-          "recipe_labels"
+          "recipe_labels",
+          "history_persistent",
+          "history_capacity_records",
+          "history_capacity_sessions",
+          "telemetry_forwarding"
         ]
       },
       "Status": {
@@ -1097,7 +1333,7 @@
             "minLength": 2048,
             "maxLength": 2048,
             "pattern": "^[0-9a-f]+$",
-            "description": "1024 bytes as lowercase hex. Pixel (x,y) is bit (y & 7) of byte x + (y / 8 rounded down) * 128."
+            "description": "1024 raw panel-order bytes as lowercase hex. Raw pixel (x,y) is bit (y & 7) of byte x + floor(y / 8) * 128. The Pico uses a fixed 180-degree graphics rotation: upright screen pixel (x,y) reads raw pixel (127-x,63-y). Clients must apply that orientation; the API returns the raw framebuffer unchanged."
           }
         },
         "required": [
@@ -1345,6 +1581,442 @@
           "capacity",
           "volatile"
         ]
+      },
+      "HistorySession": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "available",
+          "id",
+          "command",
+          "recipe_name",
+          "state",
+          "duration_ms",
+          "record_count",
+          "persisted_record_count",
+          "first_elapsed_ms",
+          "gap_count",
+          "truncated",
+          "storage_error",
+          "recovered_after_restart"
+        ],
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "command": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "recipe_name": {
+            "type": "string",
+            "maxLength": 31
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "empty",
+              "recording",
+              "completed",
+              "interrupted"
+            ]
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "record_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224
+          },
+          "persisted_record_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224
+          },
+          "first_elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "gap_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "storage_error": {
+            "type": "boolean"
+          },
+          "recovered_after_restart": {
+            "type": "boolean"
+          }
+        }
+      },
+      "History": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "available",
+          "id",
+          "command",
+          "recipe_name",
+          "state",
+          "duration_ms",
+          "record_count",
+          "persisted_record_count",
+          "first_elapsed_ms",
+          "gap_count",
+          "truncated",
+          "storage_error",
+          "recovered_after_restart",
+          "sample_interval_ms",
+          "checkpoint_interval_ms",
+          "capacity_records",
+          "capacity_sessions",
+          "page_records",
+          "fields",
+          "sessions"
+        ],
+        "properties": {
+          "available": {
+            "type": "boolean"
+          },
+          "id": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "command": {
+            "type": "string",
+            "maxLength": 15
+          },
+          "recipe_name": {
+            "type": "string",
+            "maxLength": 31
+          },
+          "state": {
+            "type": "string",
+            "enum": [
+              "empty",
+              "recording",
+              "completed",
+              "interrupted"
+            ]
+          },
+          "duration_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "record_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224
+          },
+          "persisted_record_count": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224
+          },
+          "first_elapsed_ms": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4294967295
+          },
+          "gap_count": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "truncated": {
+            "type": "boolean"
+          },
+          "storage_error": {
+            "type": "boolean"
+          },
+          "recovered_after_restart": {
+            "type": "boolean"
+          },
+          "sample_interval_ms": {
+            "type": "integer",
+            "enum": [
+              15000
+            ]
+          },
+          "checkpoint_interval_ms": {
+            "type": "integer",
+            "enum": [
+              60000
+            ]
+          },
+          "capacity_records": {
+            "type": "integer",
+            "enum": [
+              4224
+            ]
+          },
+          "capacity_sessions": {
+            "type": "integer",
+            "enum": [
+              8
+            ]
+          },
+          "page_records": {
+            "type": "integer",
+            "enum": [
+              32
+            ]
+          },
+          "fields": {
+            "type": "array",
+            "minItems": 11,
+            "maxItems": 11,
+            "items": {
+              "type": "string"
+            },
+            "example": [
+              "elapsed_ms",
+              "wort_f",
+              "thermoblock_f",
+              "target_f",
+              "step_seconds",
+              "phase",
+              "controller_status",
+              "compartment",
+              "current_step",
+              "flags",
+              "device_state"
+            ]
+          },
+          "sessions": {
+            "type": "array",
+            "maxItems": 8,
+            "description": "Retained sessions in newest-first order. The top-level metadata repeats the current/latest session. Total sample storage is shared; eight is a catalog limit, not a guarantee of eight complete brews.",
+            "items": {
+              "$ref": "#/components/schemas/HistorySession"
+            }
+          }
+        }
+      },
+      "HistoryPage": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "offset",
+          "samples",
+          "next_offset"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 4294967295
+          },
+          "offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224
+          },
+          "samples": {
+            "type": "array",
+            "maxItems": 32,
+            "description": "Each row follows the fields array from GET /history. Temperatures are degrees Fahrenheit or null if unavailable; 255 means an unknown current_step. Flags: ready=1, busy=2, stopped=4, filter inserted=8, sampling gap=16. Recorded times are elapsed milliseconds, without an assumed wall clock.",
+            "items": {
+              "type": "array",
+              "minItems": 11,
+              "maxItems": 11,
+              "items": {
+                "type": "number",
+                "nullable": true
+              }
+            }
+          },
+          "next_offset": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4224,
+            "nullable": true
+          }
+        }
+      },
+      "TelemetryConfig": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "host",
+          "port"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": false
+          },
+          "host": {
+            "type": "string",
+            "maxLength": 127,
+            "default": "",
+            "description": "IPv4 address or ASCII hostname, without scheme, path, credentials or port. Empty is allowed only when disabled."
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 8080
+          }
+        },
+        "example": {
+          "enabled": false,
+          "host": "",
+          "port": 8080
+        }
+      },
+      "Telemetry": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "enabled",
+          "host",
+          "port",
+          "interval_ms",
+          "path",
+          "status"
+        ],
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "default": false
+          },
+          "host": {
+            "type": "string",
+            "maxLength": 127,
+            "default": "",
+            "description": "IPv4 address or ASCII hostname, without scheme, path, credentials or port. Empty is allowed only when disabled."
+          },
+          "port": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 65535,
+            "default": 8080
+          },
+          "interval_ms": {
+            "type": "integer",
+            "enum": [
+              15000
+            ]
+          },
+          "path": {
+            "type": "string",
+            "enum": [
+              "/api/v1/telemetry"
+            ]
+          },
+          "status": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "state",
+              "resolved",
+              "sent",
+              "failed",
+              "dropped",
+              "last_success_ms",
+              "last_http_status",
+              "storage_error",
+              "last_error"
+            ],
+            "properties": {
+              "state": {
+                "type": "string",
+                "enum": [
+                  "disabled",
+                  "offline",
+                  "waiting-idle",
+                  "ready",
+                  "connecting",
+                  "sending",
+                  "receiving",
+                  "backoff"
+                ]
+              },
+              "resolved": {
+                "type": "boolean"
+              },
+              "sent": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "failed": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "dropped": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "last_success_ms": {
+                "type": "integer",
+                "minimum": 0
+              },
+              "last_http_status": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 999
+              },
+              "storage_error": {
+                "type": "boolean"
+              },
+              "last_error": {
+                "type": "string",
+                "enum": [
+                  "none",
+                  "dns",
+                  "socket",
+                  "connect",
+                  "send",
+                  "receive",
+                  "http",
+                  "timeout",
+                  "config",
+                  "capacity"
+                ]
+              }
+            }
+          }
+        }
+      },
+      "TelemetryUpload": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "schema_version",
+          "firmware_version",
+          "status"
+        ],
+        "properties": {
+          "schema_version": {
+            "type": "integer",
+            "enum": [
+              1
+            ]
+          },
+          "firmware_version": {
+            "type": "string"
+          },
+          "status": {
+            "$ref": "#/components/schemas/Status"
+          }
+        },
+        "description": "Outbound JSON sent to the separately configured HTTP receiver. This is not an inbound POST route on the Pico. No device API key is included."
       }
     },
     "responses": {

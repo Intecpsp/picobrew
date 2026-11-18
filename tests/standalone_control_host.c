@@ -14,14 +14,17 @@ static PicoLocalApi api;
 static struct {
     uint32_t now;
     unsigned polls, begins, disconnects, removals, energized_after_stop;
+    unsigned address_reads;
     int pins[40], wifi, open_file;
     size_t file_cursor;
     bool irq_masked, stopping, queue_circulate, stop_on_power, stop_on_poll, stop_in_brew_menu;
+    bool click_on_clock, no_ip;
     uint8_t spi_command, rfid_address;
 } sim;
 static struct { char name[40]; uint8_t data[2048]; size_t length; } files[32];
 
-static uint32_t clock_ms(void *c) { (void)c; return ++sim.now; }
+static uint32_t clock_ms(void *c)
+{ (void)c; if (sim.click_on_clock) app.ui.encoder.click_latch=0; return ++sim.now; }
 static void delay_ms(void *c, uint32_t ms) { (void)c; sim.now += ms; }
 static void no_op(void *c) { (void)c; }
 static void pin_mode(void *c, uint8_t p, uint8_t m) { (void)c; (void)p; (void)m; }
@@ -130,6 +133,11 @@ static int wifi_begin(void *c, const char *s, const uint8_t *p, uint8_t sec, boo
 { (void)c; (void)s; (void)p; (void)sec; (void)binary; ++sim.begins; return sim.wifi; }
 static void disconnect(void *c) { (void)c; ++sim.disconnects; }
 static PicoIpv4 ip(void *c) { (void)c; return (PicoIpv4){{192,168,1,42}}; }
+static void ip_config(void *c, PicoIpv4 *local, PicoIpv4 *dns_ip, PicoIpv4 *gateway, PicoIpv4 *mask)
+{
+    (void)c; ++sim.address_reads;
+    *local=*dns_ip=*gateway=*mask=sim.no_ip ? (PicoIpv4){{0}} : ip(NULL);
+}
 static int dns(void *c, const char *h, PicoIpv4 *a)
 { (void)c; (void)h; (void)a; assert(!"Unexpected DNS request"); return -1; }
 static void set_dns(void *c, PicoIpv4 a) { (void)c; (void)a; assert(!"Unexpected DNS override"); }
@@ -146,7 +154,8 @@ static const PicoNetworkPlatform network = {.millis=clock_ms, .delay_ms=delay_ms
     .resolve_host=dns, .set_dns=set_dns, .client_connect=connect_client,
     .client_connected=disconnected, .mac_address=mac, .md5=md5, .file_begin=no_op,
     .file_open=file_open, .file_read=file_read, .file_write=file_write,
-    .file_close=file_close, .file_remove=file_remove, .reset_mcu=reset_mcu};
+    .file_close=file_close, .file_remove=file_remove, .reset_mcu=reset_mcu,
+    .ip_configuration=ip_config};
 
 static bool outputs_off(void)
 {
@@ -303,8 +312,9 @@ static void test_stop_unwinds_workflows(void)
     assert(sim.stopping && outputs_off());
     initialize(); ready(); pico_local_control_leave_menu(); sim.stop_in_brew_menu=true;
     pico_recipe_program_initialize(&app.recipe,&app.state.session,1,0);
-    PicoStepRequest step={0,1,0,2,"Test Recipe","Hold",0,1,0,0};
+    PicoStepRequest step={0,1,0,2,"Test Recipe","Hold",0,1,7,0};
     assert(pico_recipe_run_step(&app.recipe,&step)==0);
+    assert(app.state.recipe.current_step==7);
     assert(sim.stopping && outputs_off() && !sim.energized_after_stop);
     puts("PASS: queued main-menu dispatch; stop unwinds circulation, drain, thermal wait, pause, in-brew menu");
 }
@@ -317,10 +327,25 @@ static void test_bounded_wifi(void)
     assert(pico_network_check_status(&app.network,false,true)==1);
     puts("PASS: WiFi CONNECTING is bounded and local connectivity requires no DNS");
 }
+static void test_network_status_failure(void)
+{
+    uint8_t expected[PICO_FRAMEBUFFER_SIZE];
+    initialize(); ready(); pico_display_initialize();
+    pico_display_clear(); pico_screen_wifi_connection_failed();
+    memcpy(expected,app.ui.display.framebuffer,sizeof expected);
+    sim.click_on_clock=true;
+    pico_ui_show_network_addresses();
+    assert(sim.address_reads==0 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
+    initialize(); ready(); pico_display_initialize();
+    sim.wifi=3;sim.no_ip=true;sim.click_on_clock=true;
+    pico_ui_show_network_addresses();
+    assert(sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
+    puts("PASS: network status reports connection failure instead of displaying stale or absent addresses");
+}
 int main(void)
 {
     setvbuf(stdout,NULL,_IOLBF,0);
     test_boot_and_offline_adapters(); test_guards_and_queue();
-    test_stop_unwinds_workflows(); test_bounded_wifi();
+    test_stop_unwinds_workflows(); test_bounded_wifi(); test_network_status_failure();
     puts("Standalone control integration tests passed."); return 0;
 }

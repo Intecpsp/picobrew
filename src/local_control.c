@@ -1,6 +1,8 @@
 #include "picobrew/config.h"
 #if PICO_STANDALONE
 #include "picobrew/local_control.h"
+#include "picobrew/local_history.h"
+#include "picobrew/local_telemetry.h"
 #include <limits.h>
 #include <string.h>
 
@@ -78,6 +80,9 @@ const char *pico_local_control_command_name(void)
 }
 void pico_local_control_enter_menu(void)
 {
+    /* Any workflow that returned without its normal history finalizer was
+     * abandoned. Settings and maintenance never start a new history. */
+    pico_history_finish(true);
     local.at_menu = true;
     local.running = false;
     local.active_command = "idle";
@@ -98,7 +103,9 @@ void pico_local_service(void)
         return;
     local.last_poll = now;
     local.serving = true;
+    pico_history_poll();
     local.poll(local.context);
+    pico_telemetry_poll();
     local.serving = false;
 }
 
@@ -258,6 +265,7 @@ bool pico_local_control_run_pending(void)
         a->state.device_state = 2;
     }
     local.running = false;
+    pico_history_finish(true);
     local.active_command = "idle";
     return true;
 }

@@ -6,15 +6,18 @@ REST API on the local network, without a PicoBrew account or a replacement
 PicoBrew server. The existing controller, display, encoder, and program
 workflows remain the execution path.
 
-**This is experimental reconstructed firmware. It has not been run on a
-physical Pico Pro or Pico S.** Software tests establish specific behavior of
-the rebuilt code and simulated boundaries; they do not establish installation,
+**The previous standalone candidate has been installed on the owner's Pico Pro
+and served the health API and connected browser console. The new 1.0.0 candidate
+has not yet been installed on that appliance.** Software tests establish specific
+behavior of rebuilt code and simulated boundaries; they do not establish
 peripheral timing, interlock behavior, or a successful heating cycle. The
 [hardware acceptance record](hardware-validation.md) identifies the physical
 work still required.
 
 The complete machine-readable contract is [openapi.json](openapi.json).
 Authentication setup is in the [key provisioning guide](standalone-provisioning.md).
+The [optional telemetry guide](telemetry.md) covers forwarding live snapshots to
+another computer, including a Python standard-library receiver and SQLite archive.
 
 ## Build and software checks
 
@@ -36,8 +39,8 @@ alternate SDK/compiler paths.
 | Target | Purpose |
 | --- | --- |
 | `make` or `make all` | Build the standalone firmware; `all` now defaults to `standalone` |
-| `make standalone` | Embed browser assets and build/link the native standalone image |
-| `make standalone-test` | Check embedded assets and run portable HTTP, native network-adapter, API/store, and control tests |
+| `make standalone` | Package browser files for serial flash and build/link the native standalone image |
+| `make standalone-test` | Check browser assets/API catalog and run HTTP, native network-adapter, API/store, history, forwarding, receiver and control tests |
 | `make standalone-storage-test` | Build the appliance image and check flash-file retry behavior through its actual ARM SDK code |
 | `make standalone-verify` | Build standalone firmware and run its host, ARM control, and native storage checks |
 | `make web-test` | Run the browser workflow suite against the real portable C API with simulated appliance I/O |
@@ -65,6 +68,12 @@ Use the report from a successful current build for binary size, BSS, reserved
 stack/heap, and remaining RAM. These measurements must not be inferred from a
 previous legacy image. Link/layout success does not measure live stack usage
 or prove timing on the appliance.
+
+The current 1.0.0 native image is **164,600 bytes**. Its layout leaves **952 bytes**
+of unallocated RAM after the original **32 KiB stack and 32 KiB heap** reservations.
+The history tail and optional upload frame lazily allocate up to **4,704 bytes
+plus allocator overhead** from that reserved heap. Compressed browser assets
+total **21,618 bytes**, occupying **eight serial-flash blocks**.
 
 The checked-in `analysis/standalone-validation.json` is an earlier development
 snapshot, including its historical source hashes and browser execution status.
@@ -104,10 +113,10 @@ power-loss recovery.
 
 1. Identify the exact board and preserve a verified production-firmware and
    serial-flash backup, including a proven recovery path. A successful build
-   is not an installation test; the repository does not supply a validated
-   Pico-specific firmware-flashing procedure. The
-   [actual owner's device review](device-firmware-review.md) confirms its
-   v0.1.34 main image and identifies the live boot-record check still needed.
+   is not an installation test. The guarded
+   [macOS USB procedure](macos-usb-installation.md) is restricted to the
+   [reviewed owner's device](device-firmware-review.md), whose original firmware,
+   logical boot record and first standalone installation were verified.
    The [macOS tools](macos-usb-backup.md) provide the physically exercised
    read-only backup path. The older [flash-layout analysis](flash-layout.md)
    describes a different, unidentified Pico and its allocations.
@@ -143,7 +152,8 @@ exposure is configured.
 The browser uses same-origin requests, no CDN, and the API's discovered
 capabilities. It displays live controller values and the appliance's OLED,
 offers encoder rotation/click, edits/imports/exports recipes, launches supported
-programs, changes display preferences, and exports the recent event ring.
+programs, graphs and exports recorded brews, changes display preferences,
+configures optional forwarding, and provides an interactive API explorer.
 The key is retained in the tab's `sessionStorage`; Disconnect removes it.
 Disconnecting the browser does not stop a program already running on the Pico.
 
@@ -178,7 +188,7 @@ Requests use HTTP/1.1 and JSON. POST, PUT, and PATCH require
 `Content-Type: application/json` and `Content-Length`; curl supplies the latter
 for the bodies shown here. The body limit is 4095 bytes. The server handles one
 connection at a time, so clients should serialize requests. Chunked transfer,
-pipelining, arbitrary query parameters, and cross-origin browser calls are
+pipelining, query parameters other than the documented history `id`, and cross-origin browser calls are
 unsupported.
 
 | Route | Behavior |
@@ -195,6 +205,10 @@ unsupported.
 | `GET /api/v1/settings` | Read supported nonsecret preferences |
 | `PATCH /api/v1/settings` | Persist a partial preference update while idle |
 | `GET /api/v1/events` | Read up to eight recent RAM events |
+| `GET /api/v1/history` | Current/latest recording, retained brew inventory, capacities and sample fields |
+| `GET /api/v1/history/samples/{offset}?id={id}` | Read up to 32 samples from a specific retained brew |
+| `GET /api/v1/telemetry` | Read optional forwarding configuration and delivery status |
+| `PUT /api/v1/telemetry` | Save the complete optional forwarding configuration while idle |
 
 Successful recipe creation returns 201, replacement/read returns 200, deletion
 returns 204 with an empty body, and an accepted command returns 202.
@@ -377,10 +391,14 @@ readiness or for invalid/out-of-range values. `uptime_ms` is a wrapping 32-bit
 millisecond counter; no RTC or wall-clock timestamp is assumed.
 `step_seconds` is the existing controller's step counter.
 
-The display response contains 1024 framebuffer bytes encoded as 2048 hex
-characters. Its format is `page-lsb-hex`: pixel `(x,y)` is bit `y & 7` in
-byte `x + floor(y / 8) * 128`. Read the display to understand a prompt before
-sending encoder actions.
+The display response contains 1024 raw panel-order framebuffer bytes encoded
+as 2048 hex characters. Its format is `page-lsb-hex`: raw pixel `(x,y)` is
+bit `y & 7` in byte `x + floor(y / 8) * 128`. The Pico's graphics use a fixed
+180-degree rotation. To reproduce the upright front-panel image, screen
+pixel `(x,y)` must read raw pixel `(127-x,63-y)`. The browser applies this
+mapping; the API does not rotate or alter the raw bytes. Read the display
+to understand a prompt before sending encoder actions. The browser's
+up/down arrows send encoder deltas `-1` and `+1`, respectively.
 
 Update display preferences:
 
@@ -398,13 +416,85 @@ calibration, or direct outputs.
 `GET /api/v1/events` returns at most eight recent events in sequence order.
 The oldest is overwritten when the ring fills; all events disappear on reboot.
 Each entry has `sequence`, `uptime_ms`, `kind`, and `detail`; text is bounded.
-The response explicitly reports `volatile:true`. Browser event export saves
-only the events currently present in that ring.
+The response explicitly reports `volatile:true`. The Activity screen and its
+event export have been removed; this endpoint remains accessible through the
+API explorer.
 
 A separate flash-backed counter allocates local session identifiers before a
 session begins. Identifiers include a device-UID prefix and sequence. Persisted
-identity does not imply persisted session records: completed-session history,
-temperature logs, and historical queries are not implemented.
+session identity is separate from the bounded persistent brew history described below.
+
+## Optional telemetry forwarding
+
+**Settings → Send live readings** can send a full current status snapshot every
+15 seconds to an HTTP receiver on your network. Forwarding defaults off.
+`GET /api/v1/telemetry` reads the destination and volatile delivery counters;
+`PUT /api/v1/telemetry` saves all three configuration fields, `enabled`, `host`,
+and `port`, while the brewer is idle. The host is an IPv4 address or ASCII DNS
+name, without a URL scheme or path; the default port is 8080.
+
+The Pico sends `POST /api/v1/telemetry` to that receiver with a versioned envelope
+and the same readings as `GET /api/v1/status`. The upload contains no device API
+key. Delivery is best effort, with no offline queue or historical backfill.
+Brewing and on-device history continue independently of the receiver.
+
+The [forwarding guide](telemetry.md) includes the complete contract, DNS behavior,
+status meanings, API examples, and an optional macOS/Linux standard-library
+receiver that stores snapshots in SQLite. This is plain HTTP for a trusted LAN.
+
+## Persistent brew history and export
+
+The Pico records recipe and manual brewing itself. It does not require an open
+browser, Wi-Fi association, Internet access, a Mac recorder, or a replacement
+server. Settings and maintenance programs do not create history entries.
+
+`GET /api/v1/history` returns current/latest metadata plus a newest-first
+`sessions` array. At most eight entries share **24 data chunks / 4,224 samples**;
+this is a shared capacity, not eight guaranteed full brews. Snapshots use 20
+bytes each, normally every 15 seconds plus meaningful state changes. Three or
+four ordinary 3–4-hour brews, or two 6-hour brews, are useful estimates;
+phase events and partially used final chunks reduce retention. A very long
+active brew can occupy the entire pool. Once its capacity is reached, `truncated`
+is set explicitly; the beginning is never silently overwritten.
+
+The oldest completed/interrupted history is removed when another entry or
+chunk is needed. Export does not delete history. Choose a retained brew on the
+**Brew history** page to see temperature curves, phase/step changes, gaps, and
+all sampled fields. JSON and CSV downloads are assembled in the browser from
+32-row pages. Each page requires the selected `id`; a removed id returns 409
+so clients cannot accidentally combine two brews. The UI refreshes a visible
+recording every 15 seconds; that refresh does not control recording.
+
+Samples contain elapsed milliseconds, wort/thermoblock/target temperatures,
+step time, phase, controller status, compartment, step index, ready/busy/stop/
+filter/gap flags, and device state. Temperatures in the API/export are Fahrenheit;
+the graph honors the display preference. Times are elapsed from the start of
+the brew; no real-time clock or wall-clock brew-start timestamp is assumed.
+
+The active RAM tail is checkpointed about once a minute using alternating
+verified tail/catalog files. Completed chunks are individually CRC-checked.
+A restart preserves the last committed data and marks an unfinished recording
+`interrupted`; up to the uncommitted tail can be lost. A storage error or sampling
+gap is exposed rather than filled with invented readings. Flash work occurs in
+the guarded foreground service, independently of the HTTP listener.
+
+History uses 28 unmirrored 4 KiB allocations (112 KiB), including the two catalog
+and two checkpoint banks. The [1.0.0 storage budget](release-1.0.0.md#storage-budget)
+uses the actual owner's backup, not the earlier unidentified board screenshot.
+
+## Embedded API explorer and firmware identity
+
+The **API** tab provides all documented operations, path/query inputs, example
+JSON bodies, HTTP status and response bodies. Its catalog is generated from
+`docs/openapi.json`; `make standalone-test` checks for drift. Requests share the
+console's bounded request queue and current device key. Selecting an endpoint
+never sends it automatically. The explorer is served from the Pico without a
+CDN or Swagger UI runtime.
+
+Firmware version is **1.0.0**, defined once in `include/picobrew/version.h`. The
+OLED startup label, console footer, health/discovery responses and build report
+use it. REST `api_version` remains 1. The major version marks the standalone
+release; it does not mean physical acceptance testing is complete.
 
 ## How cloud behavior is replaced
 
@@ -419,6 +509,8 @@ entry binds these local components:
 | `src/local_api.c` | Versioned JSON routes, schema validation, status snapshots, and recent events |
 | `src/local_control.c` | Foreground service callback, command queue, virtual encoder, output-stop latch, and safe workflow boundaries |
 | `src/local_store.c` | Local recipes, catalog commits, preferences, and session sequence |
+| `src/local_history.c`, `platform/energia_history.cpp` | Bounded persistent brew histories, independent native file handles, snapshots and paged reads |
+| `src/local_telemetry.c`, `platform/energia_telemetry.cpp` | Optional destinations, live status uploads, idle-only DNS resolution and bounded socket progress |
 | `src/network/api.c` standalone adapters | Redirect the recovered recipe/session/reporting callbacks to the local services |
 
 The service callback is polled from existing foreground waits and UI/program
@@ -436,7 +528,7 @@ then formats and sends it with interrupts enabled.
 | Session creation | Commit a local monotonically increasing sequence and allocate an ID |
 | State, step, progress, error reports | Add bounded RAM events and expose current status |
 | Server-required maintenance actions | No cloud mandate; user chooses local maintenance flows |
-| Telemetry upload | No cloud upload; status/recent events are available locally |
+| Telemetry upload | Optional live snapshots to a user-configured HTTP receiver; local status and retained brew history remain independent |
 | Firmware discovery/download | Disabled in this profile |
 | PicoStill cloud authorization/control | Unsupported; fails closed |
 
@@ -452,20 +544,25 @@ The native SDK copy for standalone omits Energia's unused global eight-client
 SDK keeps its registry. LTO also removes unused code without reducing the
 original 32 KiB stack or 32 KiB heap reservations.
 
-Automatic background Wi-Fi reconnection is not implemented. Wi-Fi can be
-configured or reconnected through the appliance's existing Settings screens.
+Wi-Fi can be configured through the appliance's existing Settings screens.
+Changing networks disconnects the previous association, clears cached addresses,
+requests DHCP and requires a fresh IPv4 acquisition event before reporting
+success. Timeouts and failed leases report connection failure. The SDK
+autoconnect policy is restored after the new lease; this is not a new independent
+background network manager.
 Inherited fatal hardware-error halts that mask interrupts still require a
 physical reset; HTTP intentionally does not run in those halted contexts.
 
 This branch does not implement PicoStill support, an OTA installation endpoint,
-a durable session/telemetry database, dedicated pause/resume routes, automatic
+unlimited history, dedicated pause/resume routes, automatic
 cloud-account recipe migration, or remote credential/calibration management.
 Some capabilities remain reachable through existing front-panel screens via
 the encoder rather than having a dedicated JSON resource.
 
 The OpenAPI contract is the starting point for another client, including
 Flutter. It does not promise support for routes that are absent from capability
-discovery. Physical hardware acceptance, real-network/flash timing, browser
-execution in an available Chromium environment, and CI completion remain
-separate validation work.
+discovery. Physical acceptance of the 1.0.0 candidate, including real-network
+and flash timing, remains outstanding. Use the CI run for the exact commit to
+check browser execution and software results. The earlier candidate's physical
+boot does not establish those results for the new firmware.
 

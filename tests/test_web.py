@@ -42,7 +42,9 @@ class Handler(BaseHTTPRequestHandler):
             mime = "application/json"
         else:
             assets = {"/": ("index.html", "text/html"), "/app.js": ("app.js", "text/javascript"),
-                      "/style.css": ("style.css", "text/css")}
+                      "/style.css": ("style.css", "text/css"),
+                      "/api-explorer.js": ("api-explorer.js", "text/javascript"),
+                      "/history.js": ("history.js", "text/javascript")}
             if self.path not in assets:
                 code, payload, mime = 404, b"", "text/plain"
             else:
@@ -109,11 +111,32 @@ class BrowserWorkflow(unittest.TestCase):
         self.connect()
         expect(self.page.locator("#wortTemperature")).to_have_text("72.4°F")
         expect(self.page.locator("#displayHint")).to_have_text("LIVE OLED · 128 × 64")
-        pixels = self.page.locator("#display").evaluate("c => Array.from(c.getContext('2d').getImageData(0,0,2,1).data)")
-        self.assertEqual(pixels, [18, 38, 32, 255, 199, 225, 180, 255])
+        pixels = self.page.locator("#display").evaluate("c => Array.from(c.getContext('2d').getImageData(0,63,2,1).data)")
+        self.assertEqual(pixels, [199, 225, 180, 255, 18, 38, 32, 255])
         self.assertEqual(self.page.evaluate("sessionStorage.getItem('pico-api-key')"), TEST_KEY)
         self.assertFalse(self.page.evaluate("document.documentElement.scrollWidth > innerWidth"))
         self.page.screenshot(path=str(self.output / "overview-desktop.png"), full_page=True)
+
+    def test_oled_panel_bytes_render_in_upright_screen_coordinates(self):
+        # Independent panel-byte landmarks: corners, page boundary and
+        # nonzero bit offsets distinguish a half-turn from either reflection.
+        raw = bytearray(1024)
+        raw[1023], raw[1021], raw[772], raw[110] = 0x80, 0x10, 0x40, 0x20
+        frame = {"width": 128, "height": 64, "format": "page-lsb-hex", "data": raw.hex()}
+        self.page.route("**/api/v1/display", lambda route: route.fulfill(json=frame))
+        self.connect()
+        expect(self.page.locator("#displayHint")).to_have_text("LIVE OLED · 128 × 64")
+        lit = self.page.locator("#display").evaluate("""canvas => {
+          const data = canvas.getContext('2d').getImageData(0,0,128,64).data;
+          const result = [];
+          for (let y=0;y<64;y++) for (let x=0;x<128;x++) {
+            const at=(y*128+x)*4;
+            if (data[at]===199 && data[at+1]===225 && data[at+2]===180)
+              result.push([x,y]);
+          }
+          return result;
+        }""")
+        self.assertEqual(lit, [[0, 0], [2, 3], [123, 9], [17, 58]])
 
     def test_recipe_save_load_export_and_empty_delete_response(self):
         self.connect()
@@ -138,10 +161,14 @@ class BrowserWorkflow(unittest.TestCase):
 
     def test_program_encoder_stop_and_idle_only_clear(self):
         self.connect()
-        self.page.locator('[data-encoder="1"]').click()
-        expect(self.page.locator("#notice")).to_have_text("Command accepted.")
-        with LOCK:
-            self.assertEqual(backend.LIB.test_last_delta(), 1)
+        for name, arrow, delta in [("Move up", "↑", -1), ("Move down", "↓", 1)]:
+            button = self.page.get_by_role("button", name=name, exact=True)
+            expect(button).to_have_text(arrow)
+            with self.page.expect_response(lambda response: response.url.endswith("/api/v1/commands")):
+                button.click()
+            expect(self.page.locator("#notice")).to_have_text("Command accepted.")
+            with LOCK:
+                self.assertEqual(backend.LIB.test_last_delta(), delta)
         self.page.locator("#startRecipe").click()
         expect(self.page.locator("#startRecipe")).to_be_disabled()
         self.page.locator("#stopButton").click()
@@ -156,7 +183,7 @@ class BrowserWorkflow(unittest.TestCase):
         self.page.locator("#runProgram").click()
         expect(self.page.locator("#modeBadge")).to_have_text("IN PROGRESS")
 
-    def test_settings_events_and_disconnect(self):
+    def test_settings_and_disconnect(self):
         self.connect()
         self.page.locator('[data-tab="settings"]').click()
         self.page.locator("#temperatureUnit").select_option("C")
@@ -164,11 +191,8 @@ class BrowserWorkflow(unittest.TestCase):
         self.page.locator("#detailedStatus").check()
         self.page.locator("#saveSettings").click()
         expect(self.page.locator("#notice")).to_have_text("Preferences saved on the Pico.")
-        self.page.locator('[data-tab="activity"]').click()
-        expect(self.page.locator("#events")).to_contain_text("settings")
-        with self.page.expect_download() as download:
-            self.page.locator("#exportEvents").click()
-        self.assertTrue(json.loads(Path(download.value.path()).read_text())["events"])
+        self.assertEqual(self.page.locator('[data-tab="activity"]').count(), 0)
+        self.assertEqual(self.page.locator('#exportEvents').count(), 0)
         self.page.locator('[data-tab="overview"]').click()
         expect(self.page.locator("#wortTemperature")).to_have_text("22.4°C")
         self.page.locator('[data-tab="settings"]').click()

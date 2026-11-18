@@ -612,8 +612,8 @@ def probe(port, power_wait=60, report=print, clock=time.monotonic):
     port.reset_input_buffer()
     try:
         port.break_condition = True
-        report("BREAK asserted. Reconnect Pico mains and turn the Pico on NOW.")
-        report(f"Listening for {power_wait:g} seconds. Do not press Return or RESET.")
+        report("BREAK asserted. Power on the Pico or press and release its blue RESET button NOW.")
+        report(f"Listening for {power_wait:g} seconds. Do not press Return; do not reset again after the handshake starts.")
         boot_rx, ack_time = receive_ack(port, "INITIAL ACK", power_wait, clock)
         # No input(), long read, baud/timeout setter, or print before this write.
         port.break_condition = False

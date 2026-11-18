@@ -19,7 +19,10 @@ typedef struct PicoEnergiaHttpServer {
 } PicoEnergiaHttpServer;
 
 /* Initialization binds callbacks only. File/socket I/O starts in poll after
- * the existing application has initialized the network processor and WiFi. */
+ * the existing application has initialized the network processor and WiFi.
+ * Installed web assets use one independent native SLFS read handle. Each poll
+ * reads at most 512 asset bytes into the existing HTTP arena, and all client
+ * completion/error/deadline/shutdown paths release that handle. */
 void pico_energia_http_initialize(PicoEnergiaHttpServer *server, PicoHttpHandler handler,
                                    void *context, const PicoHttpAsset *assets,
                                    size_t asset_count, uint16_t port);

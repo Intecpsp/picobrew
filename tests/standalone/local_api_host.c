@@ -2,12 +2,14 @@
  * run unchanged; flash, clock and already-tested appliance controls are fakes. */
 #include "picobrew/local_api.h"
 #include "picobrew/local_control.h"
+#include "picobrew/local_history.h"
+#include "picobrew/local_telemetry.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-enum { FILES = 64, FILE_BYTES = 512 };
+enum { FILES = 128, FILE_BYTES = 3584 };
 typedef struct File { char name[40]; unsigned length; uint8_t data[FILE_BYTES]; } File;
 static File files[FILES];
 static PicoApplication appliance;
@@ -20,6 +22,7 @@ static unsigned writes, stats, reads, control_calls, encoder_calls;
 static int last_delta;
 static bool last_click;
 static char last_command[32], last_recipe[21];
+static uint32_t now_ms = 123456;
 
 static int find(const char *name)
 {
@@ -27,7 +30,7 @@ static int find(const char *name)
         if (files[i].name[0] && !strcmp(files[i].name, name)) return (int)i;
     return -1;
 }
-static uint32_t clock_ms(void *context) { (void)context; return 123456; }
+static uint32_t clock_ms(void *context) { (void)context; return now_ms; }
 static int stat_file(void *context, const char *name, size_t *size)
 {
     (void)context;
@@ -118,7 +121,24 @@ bool pico_local_control_busy(void) { return busy; }
 bool pico_local_control_stopped(void) { return stopped; }
 const char *pico_local_control_stop_reason(void) { return stopped ? "requested" : "none"; }
 bool pico_local_control_is_ready(void) { return ready; }
+bool pico_local_control_foreground(void) { return true; }
 const char *pico_local_control_command_name(void) { return last_command; }
+static bool history_ready(void *context) { (void)context; return true; }
+static int history_replace(void *context, const char *name, const uint8_t *data, size_t length)
+{
+    (void)context;
+    if (!length || length > FILE_BYTES) return -1;
+    int at = find(name);
+    if (at < 0) {
+        for (unsigned i = 0; i < FILES; ++i) if (!files[i].name[0]) {
+            at = (int)i; snprintf(files[i].name, sizeof files[i].name, "%s", name); break;
+        }
+    }
+    if (at < 0) return -1;
+    memcpy(files[at].data, data, length); files[at].length = (unsigned)length;
+    return 0;
+}
+static const PicoHistoryStorage history_storage = {history_ready, stat_file, read_block, history_replace};
 const char *pico_http_method_name(PicoHttpMethod method)
 {
     static const char *names[] = {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"};
@@ -146,10 +166,26 @@ void test_reset(int clear_files)
     fail_write_at = fail_stat_at = fail_read_at = -1; fail_write_after = 0;
     writes = stats = reads = control_calls = encoder_calls = 0;
     last_command[0] = last_recipe[0] = 0;
+    now_ms = 123456;
     pico_local_api_initialize(&api, &appliance);
     pico_local_store_bind(&appliance.network, stat_file, NULL);
     pico_local_store_set_reader(read_block);
+    pico_history_bind(&appliance, &history_storage, NULL);
+    pico_telemetry_bind(&appliance, &history_storage, NULL, NULL);
 }
+int test_history_start(const char *name)
+{
+    snprintf(appliance.state.screen.recipe_name, sizeof appliance.state.screen.recipe_name, "%s", name);
+    appliance.state.controller.phase = PICO_BREW_PHASE_HEATING;
+    return pico_history_start("brew");
+}
+void test_history_advance(unsigned milliseconds, unsigned phase)
+{
+    now_ms += milliseconds;
+    appliance.state.controller.phase = (uint8_t)phase;
+    pico_history_poll();
+}
+void test_history_finish(int interrupted) { pico_history_finish(interrupted != 0); }
 int test_request(const char *method, const char *path, const char *body, size_t length,
                  char *out, size_t capacity)
 {

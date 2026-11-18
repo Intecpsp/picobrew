@@ -1,9 +1,9 @@
 #ifndef PICOBREW_CONFIG_H
 #define PICOBREW_CONFIG_H
+#include "picobrew/version.h"
 #ifndef PICO_STANDALONE
 #define PICO_STANDALONE 0
 #endif
-#define PICO_STANDALONE_VERSION "standalone-0.1.0"
 #define PICO_LOCAL_API_PORT 80
 #define PICO_LOCAL_API_KEY_FILE "/local/api.key"
 

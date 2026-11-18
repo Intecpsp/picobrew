@@ -9,6 +9,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import struct
 import subprocess
@@ -20,6 +21,13 @@ ROOT=Path(__file__).resolve().parents[1]
 ORIGIN,END=0x20004000,0x20040000
 
 def digest(path):return hashlib.sha256(path.read_bytes()).hexdigest()
+
+def firmware_version(standalone):
+    name='PICO_STANDALONE_VERSION' if standalone else 'PICO_LEGACY_VERSION'
+    pattern=r'^#define '+name+r' "((?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*))"$'
+    matches=re.findall(pattern,(ROOT/'include/picobrew/version.h').read_text(),re.MULTILINE)
+    if len(matches)!=1:raise ValueError('Expected one numeric firmware version for '+name)
+    return matches[0]
 
 def inspect_image(elf_path,bin_path):
     raw=bin_path.read_bytes()
@@ -111,7 +119,8 @@ def main():
     report={'artifact':('Pico S/Pro standalone local API firmware' if a.standalone else
                         'Complete recovered Pico Pro application with native Energia/TI startup and runtime'),
         'profile':'standalone' if a.standalone else 'legacy',
-        'reference_version':'0.1.34','source_reconstruction':True,'hardware_executed':False,
+        'firmware_version':firmware_version(a.standalone),
+        'reference_version':firmware_version(False),'source_reconstruction':True,'hardware_executed':False,
         'production_entry':'platform/firmware_main.cpp','application_composition':'src/application.c',
         'image_layout':layout,'elf_sha256':digest(elf),'binary_sha256':digest(raw),
         'update_body_sha256':digest(update),'update_body_bytes':len(body),
@@ -125,10 +134,19 @@ def main():
     if a.standalone:
         report['cloud_protocol_strings_absent']=True
         report['api_key_embedded']=False
+        report['bounded_feature_heap_payload_bytes'] = 4704
+        report['feature_heap_allocations'] = {
+            'history_tail': {'maximum_payload_bytes': 3552, 'maximum_live_allocations': 1},
+            'optional_telemetry_frame': {'maximum_payload_bytes': 1152, 'maximum_live_allocations': 1},
+            'scope': 'Lazy buffers reused within the retained 32768-byte native heap; allocator overhead and other runtime allocations are additional. Allocation failure is reported without changing brewing controls.'}
+        manifest=ROOT/'firmware/web/manifest.json'
+        report['browser_manifest_sha256']=digest(manifest)
+        report['browser_storage']=json.loads(manifest.read_text())
         report['web_sources_sha256']={str(f.relative_to(ROOT)):digest(f)
                                      for f in sorted((ROOT/'web').glob('*')) if f.is_file()}
     (out/'firmware-report.json').write_text(json.dumps(report,indent=2)+'\n')
-    print(json.dumps({'image':str(raw),'binary_bytes':layout['binary_bytes'],
+    print(json.dumps({'image':str(raw),'firmware_version':report['firmware_version'],
+                     'binary_bytes':layout['binary_bytes'],
                      'unallocated_ram_bytes':layout['unallocated_ram_bytes'],
                      'image_layout_passed':True,'hardware_executed':False},indent=2))
     return 0

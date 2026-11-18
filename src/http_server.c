@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 
-enum { IDLE, REQUEST_LINE, HEADERS, BODY, COMPLETE, SENDING };
+enum { IDLE, REQUEST_LINE, HEADERS, BODY, COMPLETE, OPENING_ASSET, SENDING };
 enum { REQUEST_TIMEOUT_MS = 5000, RESPONSE_TIMEOUT_MS = 8000 };
 
 static char ascii_lower(char c)
@@ -64,6 +64,13 @@ void pico_http_server_initialize(PicoHttpServer *s, const PicoHttpIo *io, void *
     s->assets = assets;
     s->asset_count = asset_count;
     s->client = -1;
+    s->asset_handle = -1;
+}
+
+void pico_http_server_set_asset_io(PicoHttpServer *s, const PicoHttpAssetIo *io, void *context)
+{
+    s->asset_io = io;
+    s->asset_context = context;
 }
 
 bool pico_http_server_set_key(PicoHttpServer *s, const char *key, size_t length)
@@ -84,8 +91,18 @@ bool pico_http_server_set_key(PicoHttpServer *s, const char *key, size_t length)
     return true;
 }
 
+static void close_asset(PicoHttpServer *s)
+{
+    if (s->asset_handle >= 0)
+        s->asset_io->close(s->asset_context, s->asset_handle);
+    s->asset_handle = -1;
+    s->pending_asset = NULL;
+    s->asset_chunk_length = s->asset_chunk_sent = 0;
+}
+
 void pico_http_server_disconnect(PicoHttpServer *s)
 {
+    close_asset(s);
     if (s->client >= 0)
         s->io->close(s->io_context, s->client);
     s->client = -1;
@@ -106,6 +123,8 @@ static void begin_request(PicoHttpServer *s, int client, uint32_t now)
     s->started_ms = now;
     s->line_length = s->header_bytes = s->content_length = s->body_received = 0;
     s->header_length = s->header_sent = s->body_sent = 0;
+    s->asset_chunk_length = s->asset_chunk_sent = 0;
+    s->pending_asset = NULL;
     s->saw_cr = s->http_11 = s->has_host = s->has_length = false;
     s->has_authorization = s->has_content_type = s->content_type_json = false;
     s->request.body = s->arena;
@@ -160,6 +179,25 @@ static void error_response(PicoHttpServer *s, unsigned status, const char *error
     s->response = (PicoHttpResponse){status, "application/json", (const uint8_t *)s->arena,
                                     size > 0 ? (size_t)size : 0, NULL};
     prepare_response(s, now);
+}
+
+static void asset_unavailable(PicoHttpServer *s, uint32_t now)
+{
+    close_asset(s);
+    if (strcmp(s->request.path, "/") == 0 || strcmp(s->request.path, "/index.html") == 0) {
+        static const char fallback[] =
+            "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\">"
+            "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
+            "<title>Pico Local</title><h1>Pico Local</h1>"
+            "<p>The browser files are missing or do not match this firmware. "
+            "Install the matching web files with the firmware installer.</p>"
+            "<p>The local API remains available. <a href=\"/api/v1/health\">Device health</a></p></html>";
+        s->response = (PicoHttpResponse){503, "text/html; charset=utf-8",
+                                        (const uint8_t *)fallback, sizeof(fallback) - 1, NULL};
+        prepare_response(s, now);
+    } else {
+        error_response(s, 503, "web_asset_unavailable", now);
+    }
 }
 
 static bool authorized(const PicoHttpServer *s, const char *value)
@@ -396,6 +434,12 @@ static void dispatch(PicoHttpServer *s, uint32_t now)
         if (strcmp(asset->path, s->request.path) == 0) {
             s->response = (PicoHttpResponse){200, asset->content_type, asset->data,
                                             asset->length, asset->content_encoding};
+            if (asset->file_path) {
+                s->pending_asset = asset;
+                s->response.body = (const uint8_t *)s->arena;
+                s->stage = OPENING_ASSET;
+                return;
+            }
             prepare_response(s, now);
             return;
         }
@@ -409,8 +453,11 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
         return;
     s->in_poll = true;
     size_t budget = PICO_HTTP_IO_BUDGET;
-    /* Reserve one operation for close on EOF/error/completion. */
-    unsigned calls = PICO_HTTP_IO_CALL_BUDGET - 1;
+    /* Reserve file close and socket close on EOF/error/completion. Asset open
+     * costs two operations (native stat/open). At most one 512-byte flash read
+     * is performed per poll, reusing arena after request parsing is complete. */
+    unsigned calls = PICO_HTTP_IO_CALL_BUDGET - 2;
+    unsigned asset_reads = 1;
     if (s->stage == IDLE) {
         --calls;
         int client = s->io->accept(s->io_context);
@@ -419,12 +466,12 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
         begin_request(s, client, now);
     }
     if ((uint32_t)(now - s->started_ms) >
-        (s->stage == SENDING ? RESPONSE_TIMEOUT_MS : REQUEST_TIMEOUT_MS)) {
+        (s->stage >= OPENING_ASSET ? RESPONSE_TIMEOUT_MS : REQUEST_TIMEOUT_MS)) {
         /* Close rather than extending a slow client's deadline with an error. */
         pico_http_server_disconnect(s);
         goto done;
     }
-    while (budget && calls && s->stage != SENDING) {
+    while (budget && calls && s->stage < OPENING_ASSET) {
         uint8_t input[128];
         size_t wanted = budget < sizeof(input) ? budget : sizeof(input);
         --calls;
@@ -450,6 +497,35 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
             break;
         }
     }
+    if (s->stage == OPENING_ASSET && calls >= 3) {
+        if (!s->asset_io || !s->asset_io->open || !s->asset_io->read || !s->asset_io->close) {
+            asset_unavailable(s, now);
+        } else {
+            calls -= 2;
+            s->asset_handle = s->asset_io->open(s->asset_context,
+                s->pending_asset->file_path, s->pending_asset->length);
+            if (s->asset_handle < 0) {
+                asset_unavailable(s, now);
+            } else if (s->request.method == PICO_HTTP_HEAD || !s->response.body_length) {
+                prepare_response(s, now);
+            } else {
+                size_t wanted = s->response.body_length;
+                if (wanted > PICO_HTTP_IO_BUDGET)
+                    wanted = PICO_HTTP_IO_BUDGET;
+                --calls;
+                --asset_reads;
+                int count = s->asset_io->read(s->asset_context, s->asset_handle, 0,
+                                             (uint8_t *)s->arena, wanted);
+                if (count != (int)wanted) {
+                    asset_unavailable(s, now);
+                } else {
+                    s->asset_chunk_length = wanted;
+                    s->asset_chunk_sent = 0;
+                    prepare_response(s, now);
+                }
+            }
+        }
+    }
     while (budget && calls && s->stage == SENDING) {
         const uint8_t *data;
         size_t left;
@@ -457,8 +533,35 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
             data = (const uint8_t *)s->line + s->header_sent;
             left = s->header_length - s->header_sent;
         } else if (s->request.method != PICO_HTTP_HEAD && s->body_sent < s->response.body_length) {
-            data = s->response.body + s->body_sent;
-            left = s->response.body_length - s->body_sent;
+            if (s->asset_handle >= 0) {
+                if (s->asset_chunk_sent == s->asset_chunk_length) {
+                    if (!asset_reads)
+                        break;
+                    size_t wanted = s->response.body_length - s->body_sent;
+                    if (wanted > PICO_HTTP_IO_BUDGET)
+                        wanted = PICO_HTTP_IO_BUDGET;
+                    --calls;
+                    --asset_reads;
+                    int count = s->asset_io->read(s->asset_context, s->asset_handle,
+                        s->body_sent, (uint8_t *)s->arena, wanted);
+                    if (count != (int)wanted) {
+                        /* Headers/body may already be on the wire. A truncated
+                         * Content-Length response fails closed; do not append
+                         * JSON or retry a file that may have changed. */
+                        pico_http_server_disconnect(s);
+                        break;
+                    }
+                    s->asset_chunk_length = wanted;
+                    s->asset_chunk_sent = 0;
+                    if (!calls)
+                        break;
+                }
+                data = (const uint8_t *)s->arena + s->asset_chunk_sent;
+                left = s->asset_chunk_length - s->asset_chunk_sent;
+            } else {
+                data = s->response.body + s->body_sent;
+                left = s->response.body_length - s->body_sent;
+            }
         } else {
             pico_http_server_disconnect(s);
             break;
@@ -476,8 +579,11 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
         budget -= (size_t)count;
         if (s->header_sent < s->header_length)
             s->header_sent += (size_t)count;
-        else
+        else {
             s->body_sent += (size_t)count;
+            if (s->asset_handle >= 0)
+                s->asset_chunk_sent += (size_t)count;
+        }
     }
 done:
     s->in_poll = false;
