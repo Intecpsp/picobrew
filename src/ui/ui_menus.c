@@ -248,9 +248,11 @@ bool pico_ui_confirm_at_row(uint32_t menu_row)
 
 void pico_ui_service_menu(void)
 {
+#if !PICO_STANDALONE
     bool ui_confirm_at_row_result;
-    uint32_t menu_populate_service_result;
     int mcu_image1_exists_result;
+#endif
+    uint32_t menu_populate_service_result;
 
     do {
         pico_display_clear();
@@ -273,6 +275,7 @@ void pico_ui_service_menu(void)
         case 4:
             pico_diagnostics_menu();
             break;
+#if !PICO_STANDALONE
         case 5:
             pico_display_clear();
             pico_ui_draw_firmware_reset_question();
@@ -303,6 +306,7 @@ void pico_ui_service_menu(void)
                 }
             }
             break;
+#endif
         default:
             return;
         }

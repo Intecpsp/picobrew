@@ -1,6 +1,6 @@
 PYTHON ?= python3
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test
+.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test
 .NOTPARALLEL: verify
 all: standalone
 
@@ -24,6 +24,9 @@ standalone-verify: standalone standalone-test standalone-arm-test standalone-sto
 
 web-test:
 	$(PYTHON) tests/test_web.py
+
+usb-test:
+	$(PYTHON) -m unittest discover -s tests -p 'test_pico_*.py'
 
 bootstrap:
 	$(PYTHON) tools/bootstrap_dependencies.py

@@ -132,33 +132,36 @@ void pico_menu_append_wifi_search_actions(int *option_count)
 
 uint32_t pico_menu_populate_service(void)
 {
-    char *label;
-
     if (pico_ui_active->network->settings->language == '\x01') {
         strcpy(pico_ui_active->menu_labels[0], "Verificar el Wi-Fi");
         strcpy(pico_ui_active->menu_labels[1], "Drenar el reservorio");
         strcpy(pico_ui_active->menu_labels[2], "Drenar un filtro");
         strcpy(pico_ui_active->menu_labels[3], "Hacer circular");
         strcpy(pico_ui_active->menu_labels[4], "Pico de prueba");
-        label = "Reinicio por defecto";
     } else if (pico_ui_active->network->settings->language == '\x02') {
         strcpy(pico_ui_active->menu_labels[0], "Test sans fil");
         strcpy(pico_ui_active->menu_labels[1], "Vider le reservoir");
         strcpy(pico_ui_active->menu_labels[2], "Filtre de vidange");
         strcpy(pico_ui_active->menu_labels[3], "Faire circuler");
         strcpy(pico_ui_active->menu_labels[4], "Verificar Pico");
-        label = "Factory Reset";
     } else {
         strcpy(pico_ui_active->menu_labels[0], "Test WiFi");
         strcpy(pico_ui_active->menu_labels[1], "Drain Reservoir");
         strcpy(pico_ui_active->menu_labels[2], "Drain Step Filter");
         strcpy(pico_ui_active->menu_labels[3], "Circulate");
         strcpy(pico_ui_active->menu_labels[4], "Test Pico");
-        label = "Factory Reset";
     }
+#if PICO_STANDALONE
+    /* Stock factory recovery downloads its replacement from PicoBrew. */
+    pico_label_exit(pico_ui_active->menu_labels[5]);
+    return 6;
+#else
+    const char *label = pico_ui_active->network->settings->language == '\x01'
+                            ? "Reinicio por defecto" : "Factory Reset";
     strcpy(pico_ui_active->menu_labels[5], label);
     pico_label_exit(pico_ui_active->menu_labels[6]);
     return 7;
+#endif
 }
 
 uint32_t pico_menu_populate_network(void)

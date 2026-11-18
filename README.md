@@ -14,10 +14,42 @@ successful brew on an appliance.
 Start with the [standalone guide](docs/standalone-api.md), the
 [OpenAPI contract](docs/openapi.json), and the separate
 [device-key provisioning procedure](docs/standalone-provisioning.md).
-The [observed flash-layout analysis](docs/flash-layout.md) records the
-third-party directory listing, storage budget and device-identification limits.
+The [macOS USB guide](docs/macos-usb-backup.md) documents the owner's verified
+backup using a SparkFun CH340C. The [actual device review](docs/device-firmware-review.md)
+records the matching original firmware, bootloader and recovery behavior,
+and installation constraints. The older
+[flash-layout analysis](docs/flash-layout.md) remains a separate third-party
+directory listing with different allocations and unknown Pro/C identity.
 `make` now selects the standalone build on this branch. The preserved legacy
 profile remains available through `make firmware` and `make verify`.
+
+## Device backup and current installation status
+
+On 2026-11-17, the owner completed two matching full **1 MiB** flash reads on
+the actual Pico Pro using macOS and the existing SparkFun CH340C USB-C adapter.
+Direct USB with eight queued receive transfers succeeded after serial-driver
+attempts and the earlier synchronous reader failed. The extracted main image
+is an exact byte-for-byte match to the original **0.1.34** reference.
+
+The actual secondary bootloader maps selector 1 to `mcuimg2.bin` and selector
+2 to `mcuimg3.bin`. Its two saved boot-record copies differ, so a read-only
+logical-file preflight is the next hardware step. Recovery v0.0.3 downloads
+from `picobrew.com`; it is not an offline restore image. The standalone
+Factory Reset action is therefore disabled in the menu, dispatch and deletion
+helper, with regression coverage for standalone and legacy behavior.
+
+| Tool | Purpose | Physical status |
+| --- | --- | --- |
+| `tools/pico_uart_probe.py --transport usb` | Direct-USB handshake and complete version response | Succeeded on the owner's Mac/Pico |
+| `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
+| `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
+| `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Protocol simulations pass; physical run pending |
+
+The USB tools enforce read-only flash access. They upload only the pinned
+temporary helper to SRAM. Firmware installation, restoration and standalone
+boot remain untested. The [macOS guide](docs/macos-usb-backup.md) includes the
+pinned dependencies, exact power-on sequence, backup destination and next
+command. Keep full backups under ignored `firmware/backups/` or `private/`.
 
 ## Standalone features
 
@@ -68,8 +100,16 @@ python -m playwright install chromium
 make web-test
 ```
 
-`.github/workflows/standalone.yml` runs portable tests, browser workflows and
-the ARM firmware build on the feature branch. A CI workflow's presence is not
+The USB protocol, receive-queue and offline-inspection tests run without
+physical hardware:
+
+```sh
+python -m pip install -r requirements-usb.txt
+make usb-test
+```
+
+`.github/workflows/standalone.yml` runs portable tests, browser workflows,
+USB-tool simulations and the ARM firmware build on the feature branch. A CI workflow's presence is not
 a claim that its run passed; inspect the run for the specific commit.
 
 ## Source recovery background

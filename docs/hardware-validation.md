@@ -1,23 +1,28 @@
-# Physical acceptance remains unperformed
+# Physical firmware acceptance and backup status
 
 The source, test executables and complete firmware image have been built and
-checked offline. No Pico Pro is attached to this workspace. Every physical
-result below is therefore **not run**, rather than inferred from the software
-results. A successful link or emulator comparison cannot verify electrical
-wiring, peripheral firmware, flash contents, timing races or a heating cycle.
+checked offline. The owner completed a read-only serial-flash backup on the
+actual Pico Pro on 2026-11-17: two complete 1 MiB reads matched byte-for-byte.
+The [macOS backup record](macos-usb-backup.md) documents that result. No
+standalone firmware has been installed or booted on the appliance. A successful
+link, emulator comparison or flash read cannot verify peripheral behavior,
+application timing, firmware installation/recovery or a heating cycle.
 
-A third-party Pico filesystem screenshot was reviewed on 2026-11-17. The
-[flash-layout analysis](flash-layout.md) records its allocations, the local
-storage budget and the four firmware/boot files needed for comparison. Its
-Pro/C identity is unknown; the listing does not complete any acceptance check
-on the owner's Pro.
+The owner's extracted firmware and boot records were also reviewed. The
+main application exactly matches the original v0.1.34 reference. The
+[device review](device-firmware-review.md) records the actual bootloader's
+selection behavior, the cloud-dependent recovery image, and the flash-space
+constraints. Reading the active logical boot record and physically testing
+installation/restoration remain outstanding. The earlier
+[third-party screenshot](flash-layout.md) has a different layout and unknown
+Pro/C identity.
 
 ## Device acceptance record
 
 | Check | Evidence to record | Current result |
 | --- | --- | --- |
-| Identify device | Main MCU/board revision, auxiliary-controller version, current firmware and serial log | Not run |
-| Preserve recovery | Verified existing application/recovery image and boot-file backup; proven way to restore the device | Not run |
+| Identify device | Main MCU/board revision, auxiliary-controller version, current firmware and serial log | Saved main application is an exact v0.1.34 reference match; remaining hardware identification not run |
+| Preserve recovery | Verified existing application/recovery image and boot-file backup; proven way to restore the device | Full 1 MiB serial-flash backup verified on 2026-11-17; selected files audited; live logical boot record and physical restore procedure remain pending |
 | First boot with outputs isolated | Reset reaches setup/main menu; no unexpected pump/heater activation; reset and service-mode behavior | Not run |
 | Display/encoder | Native font, rotation, navigation, click debounce and all three language selections | Not run |
 | Sensors | Raw ADC counts and independently measured wort/thermoblock temperature at several known points | Not run |

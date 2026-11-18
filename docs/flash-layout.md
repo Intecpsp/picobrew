@@ -2,6 +2,13 @@
 
 ## Evidence and limits
 
+The owner's actual verified backup has since been reviewed. See
+[device-firmware-review.md](device-firmware-review.md) for its confirmed
+v0.1.34 application, actual bootloader behavior, mirrored boot-record
+ambiguity, and 83 free blocks split into three extents. The figures below
+remain a transcription of the earlier third-party screenshot; they must
+not be used as the owner's current installation layout.
+
 On 2026-11-17 the owner supplied a screenshot of a third party's Pico
 filesystem listing. The sender did not know whether the appliance was a
 Pico Pro or Pico C. The screenshot is a directory/allocation listing, not a
@@ -156,7 +163,13 @@ budget cannot establish boot-slot selection, binary compatibility, or a
 successful install. Do not use `mcuimg.bin` as a replacement target merely
 because a generic CC3200 flashing example uses that filename.
 
-## Next evidence from the actual Pro
+## Original evidence request, now partly completed
+
+The owner has since supplied a verified full backup and the four files below.
+Their findings are in the [actual device review](device-firmware-review.md).
+The remaining immediate check is a live logical read of the mirrored boot
+record; the hardware identification and physical acceptance items remain
+separate. The original evidence request is retained here for other appliances.
 
 Preserve a complete verified flash backup and obtain file-level, read-only
 copies of these four files with their exact lengths and SHA-256 hashes:

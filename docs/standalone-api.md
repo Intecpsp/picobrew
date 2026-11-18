@@ -106,9 +106,11 @@ power-loss recovery.
    serial-flash backup, including a proven recovery path. A successful build
    is not an installation test; the repository does not supply a validated
    Pico-specific firmware-flashing procedure. The
-   [observed flash-layout analysis](flash-layout.md) identifies the files
-   needed to compare a device and budgets the standalone storage; the
-   photographed device's Pro/C identity is unknown.
+   [actual owner's device review](device-firmware-review.md) confirms its
+   v0.1.34 main image and identifies the live boot-record check still needed.
+   The [macOS tools](macos-usb-backup.md) provide the physically exercised
+   read-only backup path. The older [flash-layout analysis](flash-layout.md)
+   describes a different, unidentified Pico and its allocations.
 2. Build the standalone candidate and inspect its current report. Use the
    verified device programming connection and recovery procedure for any
    experimental installation. Follow the staged

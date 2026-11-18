@@ -5,6 +5,12 @@ S/Pro reconstruction, starting at `0x20004000`. It includes the REST API and
 compressed browser assets. `firmware-report.json` records its exact hash,
 source hashes, vectors, native link and RAM checks.
 
+This candidate includes the standalone Factory Reset guard: the service
+menu omits the cloud-dependent reset, and stale/direct reset calls cannot
+delete firmware, boot metadata or device identity. The raw image is
+161,720 bytes; use the adjacent report for its exact SHA-256 and source
+hashes. The original 32 KiB stack and 32 KiB heap reservations are retained.
+
 This candidate has **not booted on a physical appliance**. It is not a backup
 of a user's production firmware, a complete serial-flash image, or evidence
 of a validated installation/recovery procedure. Back up the appliance and

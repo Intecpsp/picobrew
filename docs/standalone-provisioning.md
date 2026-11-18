@@ -63,10 +63,12 @@ must not be placed under `www/`. Its non-secured file mode is required because
 this firmware opens it without a SimpleLink secure-file token; the bearer key
 itself is the file's content, not a UniFlash file-access token.
 
-The repository does not include a UART bootloader uploader or a runtime serial
-console command for setting the key. `provision_api_key.py` only creates the
-host file; copying or typing its content into a serial terminal does not
-provision the appliance.
+The repository's [macOS UART-over-USB tools](macos-usb-backup.md) currently
+provide a read-only probe, full backup and logical-file preflight. They block
+flash writes and cannot provision the key or install firmware. There is no
+runtime serial-console command for setting the key. `provision_api_key.py`
+only creates the host file; copying or typing its content into a serial
+terminal does not provision the appliance.
 
 ## 3. Verify the running appliance
 

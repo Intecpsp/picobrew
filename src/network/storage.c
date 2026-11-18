@@ -107,10 +107,16 @@ void pico_storage_delete_wifi(PicoNetwork *n)
 
 void pico_storage_delete_user_files(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    /* Preserve the installed application and identity even if a stale caller
+     * reaches the stock factory-reset helper. Its recovery requires the cloud. */
+    (void)n;
+#else
     const char *files[] = {"userPref.txt",     "SS.txt",      "/sys/mcuimg2.bin",
                            "/sys/mcuimg3.bin", "sys/uid.txt", "/sys/mcubootinfo.bin"};
     for (unsigned i = 0; i < 6; ++i)
         n->platform->file_remove(n->platform_context, files[i]);
+#endif
 }
 
 bool pico_storage_save_display(PicoNetwork *n)
