@@ -23,7 +23,8 @@ SPEC.loader.exec_module(receiver)
 
 
 def snapshot():
-    return {"schema_version": 1, "firmware_version": "1.0.0", "status": {
+    return {"schema_version": 1, "firmware_version": "1.2.0", "status": {
+        "model": "pico-pro", "model_name": "Pico Pro", "model_family": "pico-s-pro",
         "uptime_ms": 123456, "ready": True, "device_uid": "test-pico-0123456789",
         "busy": True, "stopped": False, "stop_reason": "none", "command": "brew",
         "device_state": 3, "phase": 1, "controller_status": 0, "compartment": 2,
@@ -54,6 +55,26 @@ class FakeSocket:
 
 
 class ReceiverTests(unittest.TestCase):
+    def test_model_identity_is_optional_for_old_firmware_and_strict_when_present(self):
+        older = snapshot()
+        older['firmware_version'] = '1.1.0'
+        for key in receiver.IDENTITY_FIELDS:
+            del older['status'][key]
+        self.assertEqual(receiver.validate_payload(json.dumps(older).encode())[0], older)
+        pico_s = snapshot()
+        pico_s['status'].update(model='pico-s', model_name='Pico S')
+        self.assertEqual(receiver.validate_payload(json.dumps(pico_s).encode())[0], pico_s)
+        for field, value in [('model', 'pico-c'), ('model', []), ('model_name', 'Pico S'),
+                             ('model_family', 'zymatic')]:
+            changed = snapshot()
+            changed['status'][field] = value
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                receiver.validate_payload(json.dumps(changed).encode())
+        incomplete = snapshot()
+        del incomplete['status']['model_name']
+        with self.assertRaises(ValueError):
+            receiver.validate_payload(json.dumps(incomplete).encode())
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.database = Path(self.temp.name) / "private" / "pico.sqlite3"
@@ -102,7 +123,7 @@ class ReceiverTests(unittest.TestCase):
         row, = self.rows()
         self.assertEqual(row["payload_json"], raw.decode())
         self.assertEqual(row["device_uid"], document["status"]["device_uid"])
-        self.assertEqual((row["session_id"], row["uptime_ms"], row["firmware_version"]), ("local-1", 123456, "1.0.0"))
+        self.assertEqual((row["session_id"], row["uptime_ms"], row["firmware_version"]), ("local-1", 123456, "1.2.0"))
         received = datetime.fromisoformat(row["received_at"].replace("Z", "+00:00"))
         self.assertGreaterEqual(received.timestamp() + .001, before.timestamp())
         self.assertLessEqual(received, datetime.now(timezone.utc))

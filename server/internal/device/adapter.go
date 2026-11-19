@@ -27,6 +27,25 @@ type Adapter interface {
 	HistoryPage(context.Context, uint64, int) ([]domain.Sample, *int, error)
 }
 
+// ReportedModel validates a firmware build identity. It does not establish
+// physical hardware compatibility. An empty identity denotes older firmware
+// and must never be interpreted as a particular S/Pro model.
+func ReportedModel(c domain.Capabilities) (string, error) {
+	if c.Model == "" {
+		if c.ModelName != "" || c.ModelFamily != "" {
+			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware reported an incomplete machine model identity"}
+		}
+		return "", nil
+	}
+	if c.Model != "pico-s" && c.Model != "pico-pro" {
+		return "", &Error{StatusCode: 409, Code: "unsupported_model", Message: "The firmware reports a machine model that this Hub cannot control"}
+	}
+	if c.ModelFamily != "" && c.ModelFamily != "pico-s-pro" {
+		return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware model and model family are inconsistent"}
+	}
+	return c.Model, nil
+}
+
 // Error never includes a device address, credential or raw transport diagnostic.
 // UnknownOutcome means a mutation may have reached the device; observe/read back
 // before deciding what to do. It must never trigger an automatic write retry.
@@ -149,6 +168,10 @@ func validateTelemetry(settings map[string]any) error {
 	}
 	return nil
 }
+
+// ValidateTelemetry checks a persisted Hub override using the same wire limits
+// enforced immediately before a device write.
+func ValidateTelemetry(settings map[string]any) error { return validateTelemetry(settings) }
 
 func validTelemetryHost(host string) bool {
 	labels := strings.Split(host, ".")

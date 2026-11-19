@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
-import type { Display, MachineRecipe, DeviceSettings, Telemetry, BrewDetail } from '../types'
+import type { Display, MachineRecipe, DeviceSettings, BrewDetail } from '../types'
 import {
   Badge,
   Button,
@@ -37,8 +37,9 @@ import { TransferDialog } from '../components/TransferDialog'
 import { InstalledProgramDialog } from '../components/InstalledProgramDialog'
 import { BrewAIMonitor, type AIMonitorState } from '../components/BrewAIMonitor'
 import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components/DeviceDialogs'
+import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { TemperatureChart } from '../components/Charts'
-import { deviceState, duration, temperature } from '../lib/utils'
+import { deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 const programNames: Record<string, string> = {
   'sous-vide': 'Sous vide',
   'cold-brew': 'Cold brew',
@@ -154,6 +155,7 @@ export default function Machine({ id }: { id: string }) {
       await hub.refresh()
       hub.notify('Machine responded successfully.')
     } catch (error) {
+      await hub.refresh().catch(() => {})
       hub.notify(errorMessage(error), 'error')
     } finally {
       setTestingConnection(false)
@@ -178,7 +180,7 @@ export default function Machine({ id }: { id: string }) {
       <PageTitle
         className="machine-heading"
         back={() => hub.navigate('/overview')}
-        eyebrow={`${device.model.replace(/-/g, ' ')} · ${device.location || 'YOUR BREWERY'}`}
+        eyebrow={`${deviceModelLabel(device)} · ${device.location || 'YOUR BREWERY'}`}
         title={device.name}
         description={device.base_url || 'Virtual brewer in your simulation workspace'}
         actions={
@@ -220,6 +222,16 @@ export default function Machine({ id }: { id: string }) {
         }
       />
       {device.error && <ErrorBanner message={device.error} />}
+      {device.model_error && (
+        <div className="connection-advisory" role="status">
+          <p>{device.model_error}</p>
+          {device.model_selection_required && (
+            <Button variant="secondary" onClick={() => setEditing(true)}>
+              Choose machine model
+            </Button>
+          )}
+        </div>
+      )}
       {device.key_reused && <DeviceKeyNotice />}
       <ErrorBanner message={error} />
       <div className="machine-metrics">
@@ -569,35 +581,20 @@ export default function Machine({ id }: { id: string }) {
 }
 function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
   const hub = useHub()
-  const canForward = !!hub.devices.find((device) => device.id === id)?.capabilities
-    ?.telemetry_forwarding
+  const device = hub.devices.find((device) => device.id === id)
   const settings = useResource<DeviceSettings>(`/devices/${id}/settings`)
-  const forwarding = useResource<Telemetry>(canForward ? `/devices/${id}/telemetry` : null)
   const [form, setForm] = useState<DeviceSettings | null>(null)
-  const [telemetry, setTelemetry] = useState<Telemetry | null>(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
   useEffect(() => {
     if (settings.data) setForm(settings.data)
   }, [settings.data])
-  useEffect(() => {
-    if (forwarding.data) setTelemetry(forwarding.data)
-  }, [forwarding.data])
-  async function save(part: 'settings' | 'telemetry') {
-    if (part === 'telemetry' && !canForward) return
-    setBusy(part)
+  async function save() {
+    setBusy('settings')
     setError('')
     try {
-      await api(`/devices/${id}/${part}`, {
-        method: part === 'settings' ? 'PATCH' : 'PUT',
-        body:
-          part === 'settings'
-            ? form
-            : { enabled: telemetry?.enabled, host: telemetry?.host, port: telemetry?.port },
-      })
-      hub.notify(
-        part === 'settings' ? 'Machine preferences saved.' : 'Telemetry forwarding updated.'
-      )
+      await api(`/devices/${id}/settings`, { method: 'PATCH', body: form })
+      hub.notify('Machine preferences saved.')
     } catch (error) {
       setError(errorMessage(error))
     } finally {
@@ -606,7 +603,7 @@ function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
   }
   return (
     <Modal title="Brewer preferences" onClose={onClose} wide>
-      <ErrorBanner message={error || settings.error || forwarding.error} />
+      <ErrorBanner message={error || settings.error} />
       {!form ? (
         <Loading />
       ) : (
@@ -648,80 +645,12 @@ function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
                 />
                 Show detailed status
               </label>
-              <Button disabled={!!busy} onClick={() => void save('settings')}>
+              <Button disabled={!!busy} onClick={() => void save()}>
                 Save preferences
               </Button>
             </div>
           </div>
-          {!canForward && (
-            <div className="settings-row compact">
-              <div>
-                <h3>Telemetry forwarding</h3>
-                <p>
-                  Unavailable for this machine adapter. The hub still collects available readings
-                  while connected.
-                </p>
-              </div>
-              <div className="settings-fields">
-                <label className="check-field">
-                  <input type="checkbox" disabled checked={false} readOnly />
-                  Send readings to a receiver
-                </label>
-              </div>
-            </div>
-          )}
-          {canForward && telemetry && (
-            <div className="settings-row compact">
-              <div>
-                <h3>Telemetry forwarding</h3>
-                <p>
-                  Optionally send live readings to another receiver. Local history stays on the
-                  machine.
-                </p>
-              </div>
-              <div className="settings-fields">
-                <label className="check-field">
-                  <input
-                    type="checkbox"
-                    checked={telemetry.enabled}
-                    onChange={(event) =>
-                      setTelemetry({ ...telemetry, enabled: event.target.checked })
-                    }
-                  />
-                  Send readings to a receiver
-                </label>
-                <div className="form-grid">
-                  <Field label="Host name or IPv4 address">
-                    <input
-                      value={telemetry.host}
-                      onChange={(event) => setTelemetry({ ...telemetry, host: event.target.value })}
-                      placeholder="brewbox.local"
-                    />
-                  </Field>
-                  <Field label="Port">
-                    <input
-                      type="number"
-                      min="1"
-                      max="65535"
-                      value={telemetry.port}
-                      onChange={(event) =>
-                        setTelemetry({ ...telemetry, port: Number(event.target.value) })
-                      }
-                    />
-                  </Field>
-                </div>
-                <Button disabled={!!busy} onClick={() => void save('telemetry')}>
-                  Save forwarding
-                </Button>
-                {telemetry.status && (
-                  <small className="help-text">
-                    {telemetry.status.state} · Sent {telemetry.status.sent} · Failed{' '}
-                    {telemetry.status.failed}
-                  </small>
-                )}
-              </div>
-            </div>
-          )}
+          {device && <HubConnectionSettings device={device} />}
         </>
       )}
     </Modal>

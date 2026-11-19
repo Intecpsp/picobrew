@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const state = {key:'', connected:false, generation:0, status:null, recipes:[],
   settings:{temperature_unit:'F', language:'en', detailed_status:false}, capabilities:[],
   editorId:null, dirty:false, tab:'overview', polling:false, restoreDefaults:false,
-  telemetry:null, telemetryDirty:false, telemetrySaving:false, telemetryAt:0};
+  telemetry:null, telemetryAt:0};
 let requestQueue = Promise.resolve();
 let pollTimer;
 let apiExplorer;
@@ -80,7 +80,6 @@ function updateControls() {
   $('saveRecipe').disabled = !ready || busy;
   $('deleteRecipe').disabled = !ready || busy || !state.editorId;
   $('saveSettings').disabled = !ready || busy;
-  for (const input of $('telemetryForm').elements) input.disabled = !ready || busy || !state.telemetry || state.telemetrySaving;
   apiExplorer?.update();
   brewHistory?.update();
 }
@@ -99,8 +98,15 @@ function duration(seconds) {
   return minutes+':'+String(value%60).padStart(2,'0');
 }
 
+function renderIdentity(info) {
+  const name={'pico-pro':'Pico Pro','pico-s':'Pico S'}[info.model] || 'Pico S / Pro';
+  $('modelName').textContent=name+' brewing console';
+  document.title=name+' · Pico Local';
+}
+
 function renderStatus(status) {
   state.status = status;
+  if (status.model) renderIdentity(status);
   $('wortTemperature').textContent = temperature(status.wort_f);
   $('blockTemperature').textContent = temperature(status.thermoblock_f);
   $('targetTemperature').textContent = status.target_f === 0 ? 'Unheated' : temperature(status.target_f);
@@ -223,16 +229,14 @@ function renderSettings(settings) {
 
 function renderTelemetry(config) {
   state.telemetry=config;
-  if (!state.telemetryDirty) {
-    $('telemetryEnabled').checked=!!config.enabled;$('telemetryHost').value=config.host || '';
-    $('telemetryPort').value=config.port;$('telemetryHost').required=!!config.enabled;
-  }
+  $('hubDestination').textContent=config.enabled && config.host ?
+    'Sending live readings to '+config.host+':'+config.port+'.' : 'No Hub destination configured.';
   const status=config.status || {};
-  const labels={disabled:'Forwarding is off.',offline:'Waiting for the Pico’s network connection.',
-    'waiting-idle':'Waiting for the brewer to be idle to look up the receiver.',ready:'Ready to send readings.',
-    connecting:'Connecting to the receiver…',sending:'Sending readings…',receiving:'Waiting for the receiver’s reply…',
-    backoff:'Receiver unavailable. The Pico will retry.'};
-  $('telemetryStatus').textContent=(labels[status.state] || 'Waiting for forwarding status.')+
+  const labels={disabled:'Add this brewer in PicoBrew Hub to connect automatically.',offline:'Waiting for the Pico’s network connection.',
+    'waiting-idle':'Waiting for the brewer to be idle to connect.',ready:'Ready to send readings.',
+    connecting:'Connecting…',sending:'Sending readings…',receiving:'Waiting for acknowledgement…',
+    backoff:'Destination unavailable. The Pico will retry.'};
+  $('telemetryStatus').textContent=(labels[status.state] || 'Waiting for connection status.')+
     ' Sent: '+(status.sent || 0)+' · Failed: '+(status.failed || 0)+' · Skipped: '+(status.dropped || 0)+
     (status.last_http_status?' · Last reply: HTTP '+status.last_http_status:'')+
     (status.storage_error?' · Destination settings could not be saved.':'');
@@ -271,8 +275,9 @@ function selectTab(tab) {
 
 async function connect(key) {
   state.key=key;state.generation++;clearTimeout(pollTimer);
-  state.telemetry=null;state.telemetryDirty=false;state.telemetrySaving=false;state.telemetryAt=0;
+  state.telemetry=null;state.telemetryAt=0;
   const info=await api('');state.capabilities=info.commands || [];renderPrograms();
+  renderIdentity(info);
   state.restoreDefaults=info.restore_default_recipes === true;
   $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
   renderSettings(await api('/settings'));renderStatus(await api('/status'));await refreshRecipes();
@@ -282,7 +287,8 @@ async function connect(key) {
 
 function disconnect() {
   state.generation++;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
-  state.telemetry=null;state.telemetryDirty=false;$('telemetryStatus').textContent='Connect to load forwarding settings.';
+  state.telemetry=null;$('telemetryStatus').textContent='Connect to see Hub connection status.';
+  $('hubDestination').textContent='No Hub connection loaded.';
   try{sessionStorage.removeItem('pico-api-key');}catch(_){}
   $('operationTitle').textContent='Disconnected from your brewer.';$('operationDetail').textContent='A running program continues on the Pico. Reconnect to see its status.';
   $('apiKey').value='';notify('Device key removed from this tab.');
@@ -338,19 +344,6 @@ $('importFile').addEventListener('change',async event=>{
 $('exportRecipe').addEventListener('click',()=>{const recipe=recipeFromForm();if(recipe)download(recipe.id+'.json',recipe);});
 $('settingsForm').addEventListener('submit',async event=>{
   event.preventDefault();try{const settings=await api('/settings','PATCH',{temperature_unit:$('temperatureUnit').value,language:$('language').value,detailed_status:$('detailedStatus').checked});renderSettings(settings);if(state.status)renderStatus(state.status);notify('Preferences saved on the Pico.');}catch(error){notify(error.message,true);}
-});
-$('telemetryForm').addEventListener('input',()=>{
-  state.telemetryDirty=true;$('telemetryHost').required=$('telemetryEnabled').checked;
-});
-$('telemetryForm').addEventListener('submit',async event=>{
-  event.preventDefault();if(!state.telemetry || state.telemetrySaving)return;
-  const generation=state.generation;
-  state.telemetrySaving=true;updateControls();
-  try {
-    const config=await api('/telemetry','PUT',{enabled:$('telemetryEnabled').checked,host:$('telemetryHost').value.trim(),port:Number($('telemetryPort').value)});
-    state.telemetryDirty=false;renderTelemetry(config);notify('Forwarding settings saved on the Pico.');
-  } catch(error) {if(generation===state.generation)notify(error.message,true);}
-  finally {if(generation===state.generation){state.telemetrySaving=false;updateControls();}}
 });
 document.addEventListener('visibilitychange',()=>{if(!document.hidden && state.key)poll();});
 apiExplorer=setupApiExplorer({session:()=>({key:state.key,connected:state.connected,generation:state.generation}),enqueue:task=>{

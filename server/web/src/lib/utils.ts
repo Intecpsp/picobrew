@@ -39,6 +39,20 @@ export function deviceState(device: Device) {
           ? 'Ready'
           : 'Connected'
 }
+export function deviceModelLabel(device: Pick<Device, 'model' | 'model_error' | 'enabled'>) {
+  const names: Record<string, string> = {
+    'pico-s': 'Pico S',
+    'pico-pro': 'Pico Pro',
+    'pico-c': 'Pico C',
+    z: 'Pico Z',
+    zymatic: 'Zymatic',
+  }
+  return device.model
+    ? names[device.model] || device.model.replace(/-/g, ' ')
+    : device.model_error || !device.enabled
+      ? 'Model not identified'
+      : 'Detecting model'
+}
 export function slug(value: string) {
   return (
     value

@@ -26,7 +26,9 @@ function profileBatch(current: BatchSelection | undefined, profile?: Profile): B
 export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
   const hub = useHub()
   const native = isNative(recipe)
-  const first = hub.devices.find((device) => device.online)
+  const first = hub.devices.find(
+    (device) => device.online && hub.profiles.some((profile) => profile.id === device.model)
+  )
   const [deviceID, setDeviceID] = useState(first?.id || '')
   const [profileID, setProfileID] = useState(first?.model || hub.profiles[0]?.id || '')
   const profile = hub.profiles.find((item) => item.id === profileID)
@@ -194,9 +196,9 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
           >
             <option value="">Planning only</option>
             {hub.devices.map((device) => (
-              <option key={device.id} value={device.id}>
+              <option key={device.id} value={device.id} disabled={!device.model}>
                 {device.name}
-                {device.online ? '' : ' (offline)'}
+                {!device.model ? ' (model not identified)' : device.online ? '' : ' (offline)'}
               </option>
             ))}
           </select>

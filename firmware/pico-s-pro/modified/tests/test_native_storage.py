@@ -104,7 +104,7 @@ class FileBoundary:
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--elf", type=Path,
-                        default=ROOT / "build/standalone/firmware/pico-s-pro-standalone.elf")
+                        default=ROOT / "build/standalone/pico-pro/firmware/pico-pro-standalone.elf")
     args = parser.parse_args()
     cases = 0
     for error in (-11, -30, -34):  # Missing file, exhausted blocks, exhausted file entries.

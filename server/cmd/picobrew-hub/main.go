@@ -16,32 +16,34 @@ import (
 )
 
 func main() {
-	listen := flag.String("listen", "127.0.0.1:8080", "HTTP listen address")
+	listen := flag.String("listen", "0.0.0.0:8080", "HTTP listen address (demo defaults to 127.0.0.1:8080)")
+	deviceURL := flag.String("device-url", os.Getenv("HUB_DEVICE_URL"), "Optional HTTP URL by which machines reach this Hub (normally detected automatically)")
 	data := flag.String("data", "data", "Persistent data directory")
 	web := flag.String("web", "", "Development override for web assets (default: website bundled in the binary)")
 	demo := flag.Bool("demo", false, "Use local simulation without hardware access")
 	secure := flag.Bool("secure-cookies", false, "Require HTTPS for owner cookies (enable behind TLS proxy)")
 	flag.Parse()
-	if *demo {
-		host, _, err := net.SplitHostPort(*listen)
-		if err != nil || (host != "127.0.0.1" && host != "localhost" && host != "::1") {
-			slog.Error("Demo must bind to loopback; run authenticated mode for network deployment")
-			os.Exit(1)
-		}
+	explicitListen := false
+	flag.Visit(func(f *flag.Flag) { explicitListen = explicitListen || f.Name == "listen" })
+	address, err := selectListenAddress(*listen, *demo, explicitListen)
+	if err != nil {
+		slog.Error(err.Error())
+		os.Exit(1)
 	}
-	app, e := server.New(server.Config{DataDir: *data, WebDir: *web, Password: os.Getenv("HUB_PASSWORD"), Demo: *demo, SecureCookies: *secure})
+	*listen = address
+	listener, e := net.Listen("tcp", *listen)
 	if e != nil {
+		slog.Error("Could not listen", "error", e)
+		os.Exit(1)
+	}
+	app, e := server.New(server.Config{DataDir: *data, WebDir: *web, Password: os.Getenv("HUB_PASSWORD"), Demo: *demo, SecureCookies: *secure, ListenAddress: listener.Addr().String(), DeviceURL: *deviceURL})
+	if e != nil {
+		_ = listener.Close()
 		slog.Error("Startup failed", "error", e)
 		os.Exit(1)
 	}
 	httpServer := &http.Server{Addr: *listen, Handler: app, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, IdleTimeout: 120 * time.Second, MaxHeaderBytes: 16 << 10}
 	httpServer.RegisterOnShutdown(app.BeginShutdown)
-	listener, e := net.Listen("tcp", *listen)
-	if e != nil {
-		slog.Error("Could not listen", "error", e)
-		_ = app.Close()
-		os.Exit(1)
-	}
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt, syscall.SIGTERM)
 	defer stop()
 	done := make(chan error, 1)
@@ -74,4 +76,18 @@ func main() {
 	if exitCode != 0 {
 		os.Exit(exitCode)
 	}
+}
+
+func selectListenAddress(address string, demo, explicit bool) (string, error) {
+	if !demo {
+		return address, nil
+	}
+	if !explicit {
+		return "127.0.0.1:8080", nil
+	}
+	host, _, err := net.SplitHostPort(address)
+	if err != nil || (host != "127.0.0.1" && host != "localhost" && host != "::1") {
+		return "", errors.New("demo must bind to loopback; run authenticated mode for network deployment")
+	}
+	return address, nil
 }

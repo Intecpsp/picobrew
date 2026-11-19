@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Pico S/Pro Standalone API",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "description": "Local appliance API implemented by src/local_api.c. Experimental reconstructed firmware; hardware behavior and timing still require bench validation. The appliance serves HTTP on its LAN address with a separately provisioned bearer key. API calls are bounded to 4095 body bytes, one connection at a time; Content-Length and application/json are required for POST, PUT and PATCH. Chunked transfer, CORS, cookies and query parameters other than the documented history id are unsupported. Recipes/settings and the local session counter use CRC-checked, readback-verified two-bank SLFS records. Recent events are an eight-entry RAM ring. Brew history is stored on the Pico in a bounded shared flash pool and survives normal restarts; the oldest completed histories are retired as space is needed. 503 on a write can mean commit verification failed after data was written: read the resource before retrying. Calls that start workflows return acceptance, not completion."
   },
   "servers": [
@@ -154,7 +154,7 @@
     "/api/v1/display": {
       "get": {
         "operationId": "getDisplay",
-        "summary": "Read the 128\u00d764 appliance display",
+        "summary": "Read the 128×64 appliance display",
         "responses": {
           "200": {
             "description": "Success",
@@ -657,7 +657,7 @@
     "/api/v1/telemetry": {
       "get": {
         "operationId": "getTelemetry",
-        "summary": "Read optional telemetry destination and delivery status",
+        "summary": "Read Hub connection and delivery status",
         "tags": [
           "Reporting"
         ],
@@ -695,11 +695,11 @@
       },
       "put": {
         "operationId": "putTelemetry",
-        "summary": "Configure optional telemetry forwarding while idle",
+        "summary": "Configure Hub-managed telemetry forwarding while idle",
         "tags": [
           "Settings"
         ],
-        "description": "Supply all three fields. Persists two CRC/readback-verified configuration records. Use an IP address or hostname, not a URL. Fixed receiver path /api/v1/telemetry, HTTP only, default port8080. Provider secrets and the Pico API key are never sent to this receiver.",
+        "description": "PicoBrew Hub manages this authenticated endpoint when a brewer is registered. Supply all three fields. Persists two CRC/readback-verified configuration records. Use an IP address or hostname, not a URL. Fixed receiver path /api/v1/telemetry, HTTP only, default port 8080. Provider secrets and the Pico API key are never sent to this receiver. The firmware website displays connection status but does not edit the destination.",
         "requestBody": {
           "required": true,
           "content": {
@@ -876,7 +876,7 @@
                 "maximum": 212
               }
             ],
-            "description": "Fahrenheit; 0 means unheated. Nonzero targets must be 60\u2013212."
+            "description": "Fahrenheit; 0 means unheated. Nonzero targets must be 60–212."
           },
           "minutes": {
             "type": "integer",
@@ -1061,6 +1061,29 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "pico-pro",
+              "pico-s"
+            ],
+            "description": "Physical variant selected when building the firmware. Present since firmware 1.2.0; older shared images do not identify the exact model."
+          },
+          "model_name": {
+            "type": "string",
+            "enum": [
+              "Pico Pro",
+              "Pico S"
+            ],
+            "description": "Display name for the compiled model."
+          },
+          "model_family": {
+            "type": "string",
+            "enum": [
+              "pico-s-pro"
+            ],
+            "description": "Shared hardware implementation family, not a separate physical model."
+          },
           "api_version": {
             "type": "integer",
             "enum": [
@@ -1093,6 +1116,9 @@
           }
         },
         "required": [
+          "model",
+          "model_name",
+          "model_family",
           "api_version",
           "firmware_version",
           "mode",
@@ -1105,6 +1131,29 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "pico-pro",
+              "pico-s"
+            ],
+            "description": "Physical variant selected when building the firmware. Present since firmware 1.2.0; older shared images do not identify the exact model."
+          },
+          "model_name": {
+            "type": "string",
+            "enum": [
+              "Pico Pro",
+              "Pico S"
+            ],
+            "description": "Display name for the compiled model."
+          },
+          "model_family": {
+            "type": "string",
+            "enum": [
+              "pico-s-pro"
+            ],
+            "description": "Shared hardware implementation family, not a separate physical model."
+          },
           "api_version": {
             "type": "integer",
             "enum": [
@@ -1230,6 +1279,9 @@
           }
         },
         "required": [
+          "model",
+          "model_name",
+          "model_family",
           "api_version",
           "firmware_version",
           "mode",
@@ -1253,6 +1305,29 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
+          "model": {
+            "type": "string",
+            "enum": [
+              "pico-pro",
+              "pico-s"
+            ],
+            "description": "Physical variant selected when building the firmware. Present since firmware 1.2.0; older shared images do not identify the exact model."
+          },
+          "model_name": {
+            "type": "string",
+            "enum": [
+              "Pico Pro",
+              "Pico S"
+            ],
+            "description": "Display name for the compiled model."
+          },
+          "model_family": {
+            "type": "string",
+            "enum": [
+              "pico-s-pro"
+            ],
+            "description": "Shared hardware implementation family, not a separate physical model."
+          },
           "uptime_ms": {
             "type": "integer",
             "minimum": 0,
@@ -1373,6 +1448,9 @@
           }
         },
         "required": [
+          "model",
+          "model_name",
+          "model_family",
           "uptime_ms",
           "ready",
           "device_uid",

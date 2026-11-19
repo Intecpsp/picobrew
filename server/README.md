@@ -48,9 +48,9 @@ Then start it with `./picobrew-hub --data ./data` on macOS/Linux, or
 its own website even when launched from another directory; use `--data` to
 choose where that launch stores its database.
 
-Open **http://127.0.0.1:8080**. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart.
+Open **http://127.0.0.1:8080**. Authenticated mode listens on the host's network interfaces at port 8080 so machines can report back to the Hub; an explicit `--listen` still overrides that default. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart. Demo mode remains restricted to loopback.
 
-On **Overview**, click **Add machine**, choose **Pico standalone firmware**, select S or Pro, and enter the brewer's current URL and the API key provisioned with its firmware. The server must be able to reach that URL. Use the key file saved when that brewer was provisioned; see the [API key provisioning guide](../firmware/pico-s-pro/modified/docs/standalone-provisioning.md). Enter it in the local browser form. The hub encrypts it at rest and does not send it back to the browser.
+On **Overview**, click **Add machine**, choose **Pico standalone firmware**, and enter the brewer's current URL and the API key provisioned with its firmware. The Hub reads the model from model-aware firmware automatically, verifies the machine's UID, and sets up the machine's reporting connection back to the Hub. Firmware 1.2.0 has separate Pico S and Pico Pro build identities; older firmware can use an explicit model selection when identification is unavailable. The server must be able to reach the brewer's URL. Use the key file saved when that brewer was provisioned; see the [API key provisioning guide](../firmware/pico-s-pro/modified/docs/standalone-provisioning.md). Enter it in the local browser form. The hub encrypts it at rest and does not send it back to the browser.
 
 The address `http://picobrew.s.local` can be used when the server host resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
 
@@ -125,14 +125,14 @@ docker compose up --build -d
 docker compose logs hub
 ```
 
-The default Compose file publishes only `127.0.0.1:8080` and persists the SQLite database and encryption key in the `hub-data` volume. Use the setup token from the logs to create the owner account. The image runs as a nonroot user with a read-only application filesystem.
+The default Compose file publishes port `8080` on the host so machines can reach the Hub, and persists the SQLite database and encryption key in the `hub-data` volume. Use the setup token from the logs to create the owner account. The image runs as a nonroot user with a read-only application filesystem.
 
 The Compose project name is pinned to `hub`, preserving the default
 `hub_hub-data` volume after moving the source directory from `hub/` to `server/`.
 Existing installations that use a custom project name should continue supplying
 that same `-p` option or `COMPOSE_PROJECT_NAME` value.
 
-For access from other computers on a trusted LAN, change the published host address to the LAN address or `0.0.0.0`. For a public HTTPS site, terminate TLS at a reverse proxy and add `--secure-cookies` to the server command. Preserve the request Host header; do not cache `/api/` responses or buffer `/api/v1/events`. Example Caddy configuration:
+For a specific interface, change the published host address to the desired LAN address. Binding only to `127.0.0.1` deliberately prevents a physical machine from reporting back. For a public HTTPS site, terminate TLS at a reverse proxy and add `--secure-cookies` to the server command. Preserve the request Host header; do not cache `/api/` responses or buffer `/api/v1/events`. Example Caddy configuration:
 
 ```caddyfile
 brew.example.com {
@@ -142,11 +142,15 @@ brew.example.com {
 
 A cloud host needs a private route to the machines, such as a site VPN. This release does not contain an outbound site agent or NAT traversal service. Keep the brewer's HTTP API on that private route; only the authenticated hub needs to be browser-accessible. The on-device UI works independently when the hub is unavailable.
 
-## Optional firmware telemetry forwarding
+## Automatic machine reporting and advanced overrides
 
-The hub accepts the standalone firmware's envelope at `POST /api/v1/telemetry`. Configure the receiver host and port through a machine's settings. Register and connect that machine first so its UID is known.
+The Hub sets up the machine's reporting connection when it connects. It verifies the appliance's UID and configures the destination while the brewer is idle. The firmware website shows connection status without a separate receiver form. Routine reconnects use the saved automatic settings and avoid rewriting unchanged firmware configuration.
 
-That firmware envelope is unsigned. The hub stores it as an explicitly untrusted observation and does not use it to authorize commands or replace authenticated polled status. Full archived brew history comes from the authenticated history API. Forwarding does not make an otherwise unreachable machine remotely controllable.
+For unusual routing or receiver setups, open **Brewer preferences → Advanced Hub connection** in the Hub. Manual mode exposes the destination host, port, and enable setting. Explicit manual choices are saved by the Hub and survive reconnects and restarts; **Return to automatic** restores Hub-managed setup. Adding a machine does not require this advanced section.
+
+The Hub normally determines its reachable address automatically. A deployment-wide `--device-url http://hub-address:port` (or `HUB_DEVICE_URL`) can advertise an alternate HTTP origin for Docker/NAS port mappings or a private route behind an HTTPS browser proxy. Automatic destinations are verified as this Hub before being sent to the machine. The firmware sender uses HTTP and IPv4; the advertised address must be reachable from the brewer. A deliberately loopback-only listener cannot accept a callback from another machine. These reporting limitations do not stop authenticated polling or history reads.
+
+The Hub accepts the standalone envelope at `POST /api/v1/telemetry` after the device UID is known. That envelope is unsigned. The Hub stores it as an explicitly untrusted observation and does not use it to authorize commands or replace authenticated polled status. Full archived brew history comes from the authenticated history API. Reporting does not make an otherwise unreachable machine remotely controllable.
 
 ## Data and recovery
 

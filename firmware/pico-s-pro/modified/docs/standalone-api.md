@@ -6,9 +6,8 @@ REST API on the local network, without a PicoBrew account or a replacement
 PicoBrew server. The existing controller, display, encoder, and program
 workflows remain the execution path.
 
-**The previous standalone candidate has been installed on the owner's Pico Pro
-and served the health API and connected browser console. The new 1.0.0 candidate
-has not yet been installed on that appliance.** Software tests establish specific
+**The model-specific 1.2.0 builds have not been physically installed or brewed
+with.** Software tests establish specific
 behavior of rebuilt code and simulated boundaries; they do not establish
 peripheral timing, interlock behavior, or a successful heating cycle. The
 [hardware acceptance record](hardware-validation.md) identifies the physical
@@ -19,6 +18,15 @@ Authentication setup is in the [key provisioning guide](standalone-provisioning.
 The [optional telemetry guide](telemetry.md) covers forwarding live snapshots to
 another computer, including a Python standard-library receiver and SQLite archive.
 
+## Device identity
+
+Firmware 1.2.0 reports `model`, `model_name`, and `model_family` on
+`GET /api/v1`, `GET /api/v1/health`, and `GET /api/v1/status`. The model is
+`pico-pro` / `Pico Pro` or `pico-s` / `Pico S`; the shared family is always
+`pico-s-pro`. It comes from the compiled image, not a guess from the UID.
+Older shared images do not report an exact S/Pro variant. The Hub uses the
+authenticated discovery response to identify the model automatically.
+
 ## Build and software checks
 
 Use a Linux build environment with Python 3.12 or a release providing
@@ -27,7 +35,8 @@ Use a Linux build environment with Python 3.12 or a release providing
 ```sh
 python3 -m pip install -r requirements-test.txt
 python3 tools/bootstrap_dependencies.py
-make standalone
+make standalone MODEL=pico-pro
+make standalone MODEL=pico-s
 make standalone-test
 ```
 
@@ -53,23 +62,29 @@ startup and runtime compatibility/allocator providers retain their intended
 non-LTO boundaries. The legacy profile keeps its separate build and validation
 path.
 
-Standalone outputs are under `build/standalone/firmware/`:
+`MODEL` accepts `pico-pro` (the default) or `pico-s`. The direct command is
+`python3 tools/build_firmware.py --standalone --model pico-s`. Each model has
+its own application archives and native outputs, preventing a model switch
+from reusing the other model's objects. Unsupported machine names fail before
+building. An explicitly reused archive must match both model and profile.
+
+Standalone outputs are under `build/standalone/<model>/firmware/`:
 
 | File | Purpose |
 | --- | --- |
-| `pico-s-pro-standalone.bin` | Raw native firmware candidate |
-| `pico-s-pro-standalone.elf` | Executable with symbols/debug information |
-| `pico-s-pro-standalone.map` | Link map for memory and provider inspection |
+| `<model>-standalone.bin` | Raw native firmware candidate |
+| `<model>-standalone.elf` | Executable with symbols/debug information |
+| `<model>-standalone.map` | Link map for memory and provider inspection |
 | `firmware-report.json` | Source/artifact hashes, image-layout checks, RAM allocations, and validation scope |
 | `native/compile_report.json` | Actual compile commands, hashes, and diagnostics |
-| `pico-s-pro-standalone.update.txt` | Recovered-format packaging artifact; the standalone firmware does not provide an OTA update route |
+| `<model>-standalone.update.txt` | Recovered-format packaging artifact; the standalone firmware does not provide an OTA update route |
 
 Use the report from a successful current build for binary size, BSS, reserved
 stack/heap, and remaining RAM. These measurements must not be inferred from a
 previous legacy image. Link/layout success does not measure live stack usage
 or prove timing on the appliance.
 
-The current 1.1.0 native image is **165,656 bytes**. Its layout leaves **656 bytes**
+For comparison, the historical 1.1.0 shared native image was **165,656 bytes**. Its layout leaves **656 bytes**
 of unallocated RAM after the original **32 KiB stack and 32 KiB heap** reservations.
 The history tail and optional upload frame lazily allocate up to **4,704 bytes
 plus allocator overhead** from that reserved heap. Compressed browser assets
@@ -115,11 +130,10 @@ power-loss recovery.
    serial-flash backup, including a proven recovery path. A successful build
    is not an installation test. The guarded
    [macOS USB procedure](macos-usb-installation.md) is restricted to the
-   [reviewed owner's device](device-firmware-review.md), whose original firmware,
-   logical boot record and first standalone installation were verified.
-   The [macOS tools](macos-usb-backup.md) provide the physically exercised
-   read-only backup path. The older [flash-layout analysis](flash-layout.md)
-   describes a different, unidentified Pico and its allocations.
+   pinned Pico Pro profile. Its backup, boot-record and protected-image guards
+   must not be bypassed. The [macOS tools](macos-usb-backup.md) provide a
+   read-only backup path. The [flash-layout analysis](flash-layout.md)
+   describes a separate example listing with unconfirmed model identity.
 2. Build the standalone candidate and inspect its current report. Use the
    verified device programming connection and recovery procedure for any
    experimental installation. Follow the staged
@@ -451,10 +465,12 @@ A separate flash-backed counter allocates local session identifiers before a
 session begins. Identifiers include a device-UID prefix and sequence. Persisted
 session identity is separate from the bounded persistent brew history described below.
 
-## Optional telemetry forwarding
+## Hub connection and telemetry
 
-**Settings → Send live readings** can send a full current status snapshot every
-15 seconds to an HTTP receiver on your network. Forwarding defaults off.
+The Pico can send a full current status snapshot every 15 seconds to PicoBrew
+Hub on your network. Forwarding defaults off until the Hub configures a destination. Add the brewer
+in PicoBrew Hub; the firmware website shows read-only **Hub connection** status
+and does not ask for a receiver address.
 `GET /api/v1/telemetry` reads the destination and volatile delivery counters;
 `PUT /api/v1/telemetry` saves all three configuration fields, `enabled`, `host`,
 and `port`, while the brewer is idle. The host is an IPv4 address or ASCII DNS
@@ -506,8 +522,9 @@ gap is exposed rather than filled with invented readings. Flash work occurs in
 the guarded foreground service, independently of the HTTP listener.
 
 History uses 28 unmirrored 4 KiB allocations (112 KiB), including the two catalog
-and two checkpoint banks. The [1.0.0 storage budget](release-1.0.0.md#storage-budget)
-uses the actual owner's backup, not the earlier unidentified board screenshot.
+and two checkpoint banks. Inspect the target appliance's actual allocation
+layout and free extents before installation; the example directory listing
+in the flash-layout guide does not establish its available capacity.
 
 ## Embedded API explorer and firmware identity
 
@@ -518,7 +535,7 @@ console's bounded request queue and current device key. Selecting an endpoint
 never sends it automatically. The explorer is served from the Pico without a
 CDN or Swagger UI runtime.
 
-Firmware version is **1.0.0**, defined once in `include/picobrew/version.h`. The
+Firmware version is **1.2.0**, defined once in `include/picobrew/version.h`. The
 OLED startup label, console footer, health/discovery responses and build report
 use it. REST `api_version` remains 1. The major version marks the standalone
 release; it does not mean physical acceptance testing is complete.
@@ -555,7 +572,7 @@ then formats and sends it with interrupts enabled.
 | Session creation | Commit a local monotonically increasing sequence and allocate an ID |
 | State, step, progress, error reports | Add bounded RAM events and expose current status |
 | Server-required maintenance actions | No cloud mandate; user chooses local maintenance flows |
-| Telemetry upload | Optional live snapshots to a user-configured HTTP receiver; local status and retained brew history remain independent |
+| Telemetry upload | Hub-managed live snapshots; local status and retained brew history remain independent |
 | Firmware discovery/download | Disabled in this profile |
 | PicoStill cloud authorization/control | Unsupported; fails closed |
 

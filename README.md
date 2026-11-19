@@ -48,7 +48,9 @@ make server-start
 
 This builds the Go executable with its bundled website and runs the Hub in the foreground at
 [http://127.0.0.1:8080](http://127.0.0.1:8080). Both entry points use the same
-`server/data` directory. Press **Ctrl-C** to stop.
+`server/data` directory. Authenticated mode also listens on the host's network
+interfaces so connected machines can report back to it. The owner password and
+first-run setup token are still required. Press **Ctrl-C** to stop.
 
 The [server guide](server/README.md) also has direct Go commands if Make is not
 installed. See [platform setup](docs/platforms.md) for firmware compiler, USB
@@ -78,12 +80,21 @@ root to fetch the pinned compiler/SDK and build the active firmware:
 ```sh
 make verify-imports
 make firmware-bootstrap
-make firmware MACHINE=pico-s-pro
-make firmware-test MACHINE=pico-s-pro
+make firmware MODEL=pico-pro
+make firmware MODEL=pico-s
+make firmware-test MODEL=pico-s
 ```
 
-Only S/Pro currently has implemented source builds. Its modified package and
-local browser assets are in `firmware/pico-s-pro/modified/firmware/`. Start with the
+Pico Pro and Pico S share source but produce separate, model-labelled images in
+`firmware/pico-s-pro/modified/build/standalone/<model>/firmware/`. Each build
+reports its selected model to the Hub and uses it in the device display. The
+legacy family-only command defaults to Pico Pro; select `MODEL=pico-s` for an S.
+
+Only S/Pro currently has implemented source builds. Its packaged images are in
+`firmware/pico-s-pro/modified/firmware/standalone/<model>/` and shared browser
+assets are in `firmware/pico-s-pro/modified/firmware/web/`. The [model registry
+and identity contract](docs/machine-identity.md) reserve identifiers for the
+other families without claiming working ports. Start with the
 [S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
 entry points. No build or test target flashes a brewer.
 

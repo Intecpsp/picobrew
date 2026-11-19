@@ -1,6 +1,7 @@
 #ifndef PICOBREW_CONFIG_H
 #define PICOBREW_CONFIG_H
 #include "picobrew/version.h"
+#include "picobrew/model.h"
 #ifndef PICO_STANDALONE
 #define PICO_STANDALONE 0
 #endif

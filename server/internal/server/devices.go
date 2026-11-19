@@ -39,6 +39,14 @@ func (s *Server) attach(d domain.Device) *runtimeDevice {
 	}
 	ctx, cancel := context.WithCancel(s.ctx)
 	rt := &runtimeDevice{view: domain.DeviceView{Device: d}, adapter: a, cancel: cancel, identityMismatch: d.Adapter == "pico-standalone"}
+	if rt.view.ModelSource == "" {
+		if d.Model != "" {
+			rt.view.ModelSource = "manual"
+		} else {
+			rt.view.ModelSource = "pending"
+		}
+	}
+	s.initTelemetry(rt)
 	rt.keyFingerprint, rt.hasKeyFingerprint = fingerprint, hasFingerprint
 	if err != nil {
 		rt.view.Error = "Device credentials or address could not be loaded"
@@ -105,23 +113,14 @@ func (s *Server) refresh(ctx context.Context, d *runtimeDevice) {
 	if d.adapter == nil {
 		return
 	}
-	d.mu.RLock()
-	needsDiscovery := d.view.Capabilities == nil
-	d.mu.RUnlock()
-	if needsDiscovery {
-		caps, e := d.adapter.Discover(ctx)
-		if e != nil {
-			d.mu.Lock()
-			d.view.Online = false
-			d.view.Error = safeMessage(e.Error())
-			d.mu.Unlock()
-			return
-		}
-		d.mu.Lock()
-		d.view.Capabilities = &caps
-		d.mu.Unlock()
+	d.commandMu.Lock()
+	defer d.commandMu.Unlock()
+	if !s.registeredDevice(d) {
+		return
 	}
-	_, _ = s.verifiedStatus(ctx, d)
+	if _, err := s.verifiedStatus(ctx, d); err == nil {
+		s.syncTelemetry(ctx, d, false)
+	}
 }
 
 type deviceIdentity struct {
@@ -170,9 +169,33 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 	}
 	status, e := d.adapter.Status(ctx)
 	identityFailure := false
+	identityVerified := false
+	var caps *domain.Capabilities
 	if e == nil {
 		e = s.pinIdentity(d, status.DeviceUID)
 		identityFailure = e != nil
+		identityVerified = e == nil
+	}
+	if e == nil {
+		d.mu.RLock()
+		physical, needsDiscovery := d.view.Adapter == "pico-standalone", d.view.Capabilities == nil
+		d.mu.RUnlock()
+		if physical || needsDiscovery {
+			var discovered domain.Capabilities
+			discovered, e = d.adapter.Discover(ctx)
+			if e == nil {
+				caps = &discovered
+			}
+			if e == nil && physical {
+				e = validateStatusModel(status, discovered)
+			}
+			if e == nil && physical {
+				e = s.reconcileModel(d, discovered)
+			}
+			if e == nil {
+				caps = &discovered
+			}
+		}
 	}
 	now := time.Now().UTC()
 	d.mu.Lock()
@@ -183,6 +206,19 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 		if identityFailure {
 			d.identityMismatch = true
 		}
+		if identityVerified {
+			d.identityMismatch = false
+			d.view.Status = &status
+			var problem *device.Error
+			if errors.As(e, &problem) && (problem.Code == "unsupported_model" || problem.Code == "invalid_model") {
+				d.view.ModelErrorCode, d.view.ModelError = problem.Code, problem.Message
+				d.view.ModelSelectionRequired = false
+				d.view.Capabilities = nil
+			}
+			if errors.As(e, &problem) && problem.Code == "model_required" {
+				d.view.Capabilities = caps
+			}
+		}
 		return domain.Status{}, e
 	}
 	d.identityMismatch = false
@@ -190,6 +226,9 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 	d.view.Online = true
 	d.view.Error = ""
 	d.view.LastSeen = &now
+	if caps != nil {
+		d.view.Capabilities = caps
+	}
 	return status, nil
 }
 func (s *Server) fleet() []domain.DeviceView {
@@ -229,6 +268,7 @@ func (s *Server) connectionRuntime(w http.ResponseWriter, r *http.Request, allow
 	d.mu.RLock()
 	enabled := d.view.Enabled
 	mismatch := d.identityMismatch || d.view.Adapter == "pico-standalone" && d.view.Status == nil
+	modelReady := modelControlReady(d.view)
 	d.mu.RUnlock()
 	if !enabled {
 		s.fail(w, 409, "device_disabled", "Open Edit connection and enable monitoring before connecting")
@@ -236,6 +276,10 @@ func (s *Server) connectionRuntime(w http.ResponseWriter, r *http.Request, allow
 	}
 	if mismatch && !allowIdentityMismatch {
 		s.fail(w, 409, "device_identity_mismatch", "The registered appliance identity is not verified. Test the original connection before continuing")
+		return nil, false
+	}
+	if !modelReady && !allowIdentityMismatch {
+		s.fail(w, 409, "device_model", "Identify the supported firmware model before using this machine")
 		return nil, false
 	}
 	return d, true
@@ -277,11 +321,14 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 403, "demo", "Demo mode only connects to simulated machines")
 		return
 	}
-	if in.Adapter == "pico-standalone" && in.Model != "pico-pro" && in.Model != "pico-s" {
+	if in.Model == "auto" {
+		in.Model = ""
+	}
+	if in.Adapter == "pico-standalone" && in.Model != "" && in.Model != "pico-pro" && in.Model != "pico-s" {
 		s.fail(w, 400, "unsupported_model", "Standalone control is currently available for Pico S and Pro")
 		return
 	}
-	if _, ok := s.selectProfile(in.Model); !ok {
+	if _, ok := s.selectProfile(in.Model); !ok && !(in.Adapter == "pico-standalone" && in.Model == "") {
 		s.fail(w, 400, "model", "Choose a supported machine profile")
 		return
 	}
@@ -291,6 +338,9 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	}
 	id := chi.URLParam(r, "id")
 	var d domain.Device
+	var previous *runtimeDevice
+	var disabledTelemetry *domain.TelemetryStatus
+	manualSelection := in.Adapter == "pico-standalone" && in.Model != ""
 	version := int64(0)
 	status := 201
 	if id != "" {
@@ -300,7 +350,7 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 			s.storeError(w, e)
 			return
 		}
-		if d.Adapter != in.Adapter || d.Model != in.Model {
+		if d.Adapter != in.Adapter || d.Adapter == "simulator" && d.Model != in.Model {
 			s.fail(w, 409, "identity_change", "Register a new machine to change its model or connection type; its existing brew history belongs to this identity")
 			return
 		}
@@ -308,10 +358,29 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		old := s.devices[id]
 		s.mu.RUnlock()
 		if old != nil {
+			previous = old
 			old.commandMu.Lock()
 			defer old.commandMu.Unlock()
+			// Discovery can reconcile the saved model while this edit waits
+			// for an in-flight operation. Preserve that newly verified identity.
+			version, e = s.db.Get("device", id, &d)
+			if e != nil {
+				s.storeError(w, e)
+				return
+			}
 			old.mu.RLock()
 			busy := old.view.Status != nil && old.view.Status.Busy && !old.identityMismatch
+			reported := old.view.Capabilities != nil && old.view.Capabilities.Model != ""
+			manualSelection = manualSelection && !reported && old.view.ModelErrorCode != "invalid_model" && old.view.ModelErrorCode != "unsupported_model"
+			if old.view.ModelErrorCode == "not_reported" {
+				reported = false
+				manualSelection = in.Model != ""
+			}
+			if reported && in.Model != "" && in.Model != old.view.Model {
+				old.mu.RUnlock()
+				s.fail(w, 409, "model_reported", "This firmware reports its model automatically")
+				return
+			}
 			old.mu.RUnlock()
 			if busy {
 				s.fail(w, 409, "busy", "Finish the current operation before changing its connection")
@@ -340,7 +409,14 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	}
 	d.ID = id
 	d.Name = in.Name
-	d.Model = in.Model
+	if in.Model != "" || in.Adapter == "simulator" {
+		d.Model = in.Model
+		if d.ModelSource != "firmware" || manualSelection {
+			d.ModelSource = "manual"
+		}
+	} else if d.Model == "" {
+		d.ModelSource = "pending"
+	}
 	d.Adapter = in.Adapter
 	d.BaseURL = in.BaseURL
 	d.Location = in.Location
@@ -353,6 +429,10 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	if key != "" {
 		encrypted = s.vault.seal("device:"+id, key)
 	}
+	if previous != nil && !d.Enabled {
+		state := s.releaseTelemetry(r.Context(), previous)
+		disabledTelemetry = &state
+	}
 	if _, e := s.db.PutWithSecret("device", id, d, version, "device:"+id, encrypted); e != nil {
 		s.storeError(w, e)
 		return
@@ -361,6 +441,12 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		_ = s.db.DeleteSecret("device:" + id)
 	}
 	rt := s.attach(d)
+	if disabledTelemetry != nil {
+		rt.mu.Lock()
+		rt.view.Telemetry = *disabledTelemetry
+		rt.mu.Unlock()
+	}
+	s.requestTelemetryPairing(rt, r)
 	rt.mu.RLock()
 	view := rt.view
 	rt.mu.RUnlock()
@@ -383,6 +469,7 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "busy", "Finish the current operation before removing the machine")
 		return
 	}
+	telemetry := s.releaseTelemetry(r.Context(), d)
 	if e := s.db.Delete("device", id); e != nil {
 		s.storeError(w, e)
 		return
@@ -393,13 +480,14 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 	s.updateKeyReuseLocked()
 	s.mu.Unlock()
 	_ = s.db.DeleteSecret("device:" + id)
-	s.json(w, 200, map[string]bool{"deleted": true})
+	s.json(w, 200, map[string]any{"deleted": true, "telemetry": telemetry})
 }
 func (s *Server) testDevice(w http.ResponseWriter, r *http.Request) {
 	d, ok := s.connectionRuntime(w, r, true)
 	if !ok {
 		return
 	}
+	s.requestTelemetryPairing(d, r)
 	s.refresh(r.Context(), d)
 	d.mu.RLock()
 	v := d.view
@@ -462,7 +550,7 @@ func (s *Server) currentDevice(d *runtimeDevice) bool {
 	defer s.mu.RUnlock()
 	d.mu.RLock()
 	defer d.mu.RUnlock()
-	return s.devices[d.view.ID] == d && s.ctx.Err() == nil && !d.identityMismatch && (d.view.Adapter != "pico-standalone" || d.view.Status != nil)
+	return s.devices[d.view.ID] == d && s.ctx.Err() == nil && d.view.Enabled && !d.identityMismatch && modelControlReady(d.view) && (d.view.Adapter != "pico-standalone" || d.view.Status != nil)
 }
 func (s *Server) machineSettings(w http.ResponseWriter, r *http.Request) {
 	d, ok := s.runtime(w, r)
@@ -490,38 +578,6 @@ func (s *Server) machineSettings(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	v, e := d.adapter.Settings(r.Context())
-	if e != nil {
-		s.deviceError(w, e)
-		return
-	}
-	s.json(w, 200, v)
-}
-func (s *Server) machineTelemetry(w http.ResponseWriter, r *http.Request) {
-	d, ok := s.runtime(w, r)
-	if !ok {
-		return
-	}
-	if r.Method == http.MethodPut {
-		d.commandMu.Lock()
-		defer d.commandMu.Unlock()
-		if !s.currentDevice(d) {
-			s.fail(w, 409, "connection_changed", "The machine connection changed; reload before continuing")
-			return
-		}
-		var in map[string]any
-		if !s.decode(w, r, &in) {
-			return
-		}
-		if _, e := s.verifiedStatus(r.Context(), d); e != nil {
-			s.deviceError(w, e)
-			return
-		}
-		if e := d.adapter.UpdateTelemetry(r.Context(), in); e != nil {
-			s.deviceError(w, e)
-			return
-		}
-	}
-	v, e := d.adapter.Telemetry(r.Context())
 	if e != nil {
 		s.deviceError(w, e)
 		return
@@ -677,7 +733,7 @@ func (s *Server) ingestTelemetry(w http.ResponseWriter, r *http.Request) {
 	var found *runtimeDevice
 	for _, d := range s.devices {
 		d.mu.RLock()
-		match := d.view.Status != nil && d.view.Status.DeviceUID == in.Status.DeviceUID
+		match := d.view.Enabled && !d.identityMismatch && modelControlReady(d.view) && d.view.Status != nil && d.view.Status.DeviceUID == in.Status.DeviceUID
 		d.mu.RUnlock()
 		if match {
 			found = d

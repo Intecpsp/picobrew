@@ -4,13 +4,15 @@ else
 PYTHON ?= python3
 endif
 PICOBREW_SDK ?= .deps/energia
+MODEL ?= pico-pro
+STANDALONE_DIR = build/standalone/$(MODEL)/firmware
 
 .PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test tooling-test
 .NOTPARALLEL: verify
 all: standalone
 
 standalone:
-	"$(PYTHON)" tools/build_firmware.py --standalone
+	"$(PYTHON)" tools/build_firmware.py --standalone --model "$(MODEL)"
 
 standalone-test:
 	"$(PYTHON)" tools/generate_starter_recipes.py --check
@@ -20,6 +22,7 @@ standalone-test:
 	"$(PYTHON)" tests/test_energia_http_server.py
 	"$(PYTHON)" tests/test_energia_wifi.py
 	"$(PYTHON)" tests/test_local_api.py
+	"$(PYTHON)" tests/test_machine_identity.py
 	"$(PYTHON)" tests/test_local_history.py
 	"$(PYTHON)" tests/test_local_telemetry.py
 	"$(PYTHON)" tests/test_telemetry_receiver.py
@@ -29,7 +32,7 @@ standalone-arm-test:
 	"$(PYTHON)" tests/test_standalone_control_arm.py
 
 standalone-storage-test: standalone
-	"$(PYTHON)" tests/test_native_storage.py --elf build/standalone/firmware/pico-s-pro-standalone.elf
+	"$(PYTHON)" tests/test_native_storage.py --elf "$(STANDALONE_DIR)/$(MODEL)-standalone.elf"
 
 standalone-verify: standalone standalone-test standalone-arm-test standalone-storage-test
 
@@ -49,7 +52,7 @@ bootstrap:
 	"$(PYTHON)" tools/bootstrap_dependencies.py
 
 build:
-	"$(PYTHON)" tools/build.py
+	"$(PYTHON)" tools/build.py --model "$(MODEL)"
 
 test: build
 	"$(PYTHON)" tests/test_sensors.py --elf build/application-validation.elf
@@ -74,7 +77,7 @@ test: build
 	"$(PYTHON)" tests/test_ui_assets.py --elf build/application-validation.elf --output analysis/ui-assets-tests.json
 
 firmware: build
-	"$(PYTHON)" tools/build_firmware.py --skip-archive-build
+	"$(PYTHON)" tools/build_firmware.py --skip-archive-build --model "$(MODEL)"
 	"$(PYTHON)" tests/test_native_network.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-network-tests.json
 	"$(PYTHON)" tests/test_native_network_direct.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-network-direct-tests.json
 	"$(PYTHON)" tests/test_native_startup.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-startup-tests.json

@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "models": [
+    {"id": "pico-pro", "name": "Pico Pro", "family": "pico-s-pro", "custom_firmware": true},
+    {"id": "pico-s", "name": "Pico S", "family": "pico-s-pro", "custom_firmware": true},
+    {"id": "pico-c", "name": "Pico C", "family": "pico-c", "custom_firmware": false},
+    {"id": "z", "name": "PicoBrew Z", "family": "z-series", "custom_firmware": false},
+    {"id": "zymatic", "name": "PicoBrew Zymatic", "family": "zymatic", "custom_firmware": false}
+  ]
+}

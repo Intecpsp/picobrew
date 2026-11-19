@@ -45,6 +45,10 @@ export interface Device {
   id: string
   name: string
   model: string
+  model_source?: 'pending' | 'firmware' | 'manual'
+  model_error?: string
+  model_error_code?: string
+  model_selection_required?: boolean
   adapter: string
   base_url: string
   location: string
@@ -57,6 +61,15 @@ export interface Device {
   error?: string
   status: DeviceStatus | null
   capabilities: Capabilities | null
+  telemetry?: {
+    state: string
+    mode?: 'automatic' | 'manual'
+    enabled?: boolean
+    message?: string
+    host?: string
+    port?: number
+    last_checked?: string
+  }
 }
 export interface Display {
   width: number
@@ -218,6 +231,7 @@ export interface DeviceSettings {
   detailed_status: boolean
 }
 export interface Telemetry {
+  mode?: 'automatic' | 'manual'
   enabled: boolean
   host: string
   port: number

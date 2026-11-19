@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 from arm_toolchain import find_arm_prefix, sort_sources
+from machine_model import add_model_argument, model_flag
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -26,10 +27,13 @@ def main():
     parser.add_argument('--output-dir', type=Path)
     parser.add_argument('--standalone', action='store_true',
                         help='Build the local API profile without cloud services')
+    add_model_argument(parser)
     parser.add_argument('--archive-only', action='store_true')
     parser.add_argument('--core-only', action='store_true',
                         help='Build portable application core without the Energia adapter')
     options = parser.parse_args()
+    if not options.standalone and options.model != 'pico-pro':
+        parser.error('Model selection is available only for --standalone; the legacy reconstruction is Pico Pro')
     prefix = options.arm_prefix
     if not prefix:
         prefix = find_arm_prefix(ROOT)
@@ -39,13 +43,13 @@ def main():
     if options.standalone:
         ar, nm = prefix + 'gcc-ar', prefix + 'gcc-nm'
     version = subprocess.check_output([gcc, '--version'], text=True).splitlines()[0]
-    output = (options.output_dir or (ROOT / 'build/standalone/core' if options.standalone
+    output = (options.output_dir or (ROOT / 'build/standalone' / options.model / 'core' if options.standalone
                                     else ROOT / 'build')).resolve()
     output.mkdir(parents=True, exist_ok=True)
     flags = ['-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs',
              '--specs=nano.specs', '-std=gnu11', '-Os', '-g', '-ffunction-sections', '-fdata-sections',
              '-fno-fast-math', '-ffp-contract=off', '-fexcess-precision=standard',
-             '-Wall', '-Wextra', '-Werror', '-I' + str(ROOT / 'include')]
+             '-Wall', '-Wextra', '-Werror', '-I' + str(ROOT / 'include'), model_flag(options.model)]
     if options.standalone:
         flags += ['-DPICO_STANDALONE=1', '-flto']
     sources = sort_sources((ROOT / 'src').rglob('*.c'))
@@ -69,7 +73,7 @@ def main():
               'source_sha256': source_hashes,
               'archive_sha256': hashlib.sha256(archive.read_bytes()).hexdigest(),
               'full_firmware': False, 'validation_elf': None,
-              'profile': 'standalone' if options.standalone else 'legacy'}
+              'profile': 'standalone' if options.standalone else 'legacy', 'model': options.model}
     report['header_sha256'] = {
         path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
         for path in sort_sources((ROOT / 'include').rglob('*.h'))}
@@ -82,7 +86,7 @@ def main():
                      '--specs=nano.specs', '-std=gnu++11', '-Os', '-g', '-ffunction-sections', '-fdata-sections',
                      '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics',
                      '-Wall', '-Wextra', '-Werror', '-DENERGIA', '-D__CC3200R1M1RGC__',
-                     '-I' + str(ROOT / 'include')]
+                     '-I' + str(ROOT / 'include'), model_flag(options.model)]
         if options.standalone:
             cpp_flags += ['-DPICO_STANDALONE=1', '-flto']
         for directory in ['cores/cc3200', 'variants/CC3200-LAUNCHXL', 'system',

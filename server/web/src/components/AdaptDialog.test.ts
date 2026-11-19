@@ -168,6 +168,18 @@ afterEach(() => {
 })
 
 describe('recipe adaptation planning and deployment review', () => {
+  it('does not assume a Pro profile belongs to an unidentified physical machine', () => {
+    const unknown = { ...devices[0], id: 'unidentified', model: '', name: 'New machine' }
+    render(element(state({ devices: [unknown] })))
+    expect((screen.getByLabelText('Target machine') as HTMLSelectElement).value).toBe('')
+    expect(
+      (
+        screen.getByRole('option', {
+          name: 'New machine (model not identified)',
+        }) as HTMLOptionElement
+      ).disabled
+    ).toBe(true)
+  })
   it('defaults a 14 L imported recipe to the 5 L Pro profile and retains an unmapped planning schedule', async () => {
     fetchMock.mockResolvedValue(json(plan()))
     const user = userEvent.setup()

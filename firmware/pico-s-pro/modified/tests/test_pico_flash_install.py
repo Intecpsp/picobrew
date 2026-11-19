@@ -323,6 +323,8 @@ class InstallWireTests(unittest.TestCase):
         self.previous_candidate = previous[:-1] + bytes([previous[-1] ^ 0x80])
         released = candidate_image(installer.RELEASED_1_0_0_SIZE)
         self.released_1_0_0 = released[:-1] + bytes([released[-1] ^ 0x40])
+        released_1_1 = candidate_image(installer.RELEASED_1_1_0_SIZE)
+        self.released_1_1_0 = released_1_1[:-1] + bytes([released_1_1[-1] ^ 0x20])
         self.raw_backup = backup_fixture(self.files)
         self.profile = {
             name: {"size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
@@ -350,6 +352,8 @@ class InstallWireTests(unittest.TestCase):
                           hashlib.sha256(self.previous_candidate).hexdigest()).start()
         mock.patch.object(installer, "RELEASED_1_0_0_SHA256",
                           hashlib.sha256(self.released_1_0_0).hexdigest()).start()
+        mock.patch.object(installer, "RELEASED_1_1_0_SHA256",
+                          hashlib.sha256(self.released_1_1_0).hexdigest()).start()
         mock.patch.object(installer, "WEB_MANIFEST_SHA256", hashlib.sha256(self.web_manifest).hexdigest()).start()
         mock.patch.object(installer, "WEB_DIRECTORY", self.web_path).start()
         mock.patch.object(cc.log, "disabled", True).start()
@@ -897,6 +901,32 @@ class InstallWireTests(unittest.TestCase):
         self.assert_protected_verified_before_mutations(fake)
         self.assertEqual(b"".join(payload for name, _, payload in fake.write_chunks if name == APP_NAME),
                          self.candidate)
+
+    def test_install_upgrades_released_1_1_0_with_verified_key_and_browser(self):
+        fake = FakeInstallUSB({**self.files, APP_NAME: self.released_1_1_0,
+                               KEY_NAME: KEY, **self.web_payloads})
+        result, report, transcript, _ = self.run_main(fake, "install")
+        self.assertEqual(result, 0, transcript)
+        self.assertEqual(fake.files[APP_NAME], self.candidate)
+        self.assertEqual(fake.files[KEY_NAME], KEY)
+        self.assertTrue(report["application_readback_verified"])
+        self.assertEqual(report["live_preflight"]["application"], {
+            "size_bytes": len(self.released_1_1_0),
+            "sha256": hashlib.sha256(self.released_1_1_0).hexdigest(),
+        })
+        self.assert_protected_verified_before_mutations(fake)
+
+    def test_released_1_1_0_wrong_hash_or_payload_role_is_rejected_before_any_write(self):
+        corrupted = self.released_1_1_0[:-1] + bytes([self.released_1_1_0[-1] ^ 1])
+        fake = FakeInstallUSB({**self.files, APP_NAME: corrupted, KEY_NAME: KEY, **self.web_payloads})
+        result, _, transcript, _ = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        self.assertEqual(fake.mutations, [])
+        self.candidate_path.write_bytes(self.released_1_1_0)
+        result, _, transcript, factory = self.run_main(fake, "install")
+        self.assertNotEqual(result, 0, transcript)
+        factory.assert_not_called()
+        self.assertEqual(fake.mutations, [])
 
     def test_released_1_0_0_same_size_wrong_hash_is_rejected_before_any_write(self):
         corrupted = self.released_1_0_0[:-1] + bytes([self.released_1_0_0[-1] ^ 1])

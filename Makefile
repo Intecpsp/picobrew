@@ -6,39 +6,44 @@ endif
 GO ?= go
 GO_TEST_FLAGS ?=
 NPM ?= npm
-MACHINE ?= pico-s-pro
-MODIFIED := firmware/$(MACHINE)/modified
-OEM_SOURCE := firmware/$(MACHINE)/reverse-engineered
+MACHINE ?=
+MODEL ?=
+ARCHIVE_MACHINE := $(if $(strip $(MACHINE)),$(MACHINE),pico-s-pro)
+MODEL_ARGS = --machine "$(MACHINE)" --model "$(MODEL)" --make "$(MAKE)" --python "$(PYTHON)"
 
 .DEFAULT_GOAL := help
-.PHONY: help firmware firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem recovery server server-start server-test server-run server-demo verify-imports
+.PHONY: help firmware firmware-models firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem recovery server server-start server-test server-run server-demo verify-imports
 
 help:
 	@echo make server-start - build and run the Hub
-	@echo make firmware / firmware-test / oem / recovery MACHINE=pico-s-pro
+	@echo make firmware / firmware-test MODEL=pico-pro or MODEL=pico-s
+	@echo make firmware-models / oem / recovery MACHINE=pico-s-pro
 	@echo make server / server-test / server-run / server-demo
 	@echo make verify-imports
 
 firmware:
-	"$(MAKE)" -C $(MODIFIED) standalone PYTHON="$(PYTHON)"
+	"$(PYTHON)" tools/firmware_models.py build $(MODEL_ARGS)
+
+firmware-models:
+	"$(PYTHON)" tools/firmware_models.py list
 
 firmware-test:
-	"$(MAKE)" -C $(MODIFIED) standalone-test PYTHON="$(PYTHON)"
+	"$(PYTHON)" tools/firmware_models.py test $(MODEL_ARGS)
 
 firmware-usb-test:
-	"$(MAKE)" -C $(MODIFIED) usb-test PYTHON="$(PYTHON)"
+	"$(PYTHON)" tools/firmware_models.py usb-test $(MODEL_ARGS)
 
 firmware-browser-test:
-	"$(MAKE)" -C $(MODIFIED) web-test PYTHON="$(PYTHON)"
+	"$(PYTHON)" tools/firmware_models.py browser-test $(MODEL_ARGS)
 
 firmware-bootstrap:
-	"$(MAKE)" -C $(MODIFIED) bootstrap PYTHON="$(PYTHON)"
+	"$(PYTHON)" tools/firmware_models.py bootstrap $(MODEL_ARGS)
 
 oem:
-	"$(PYTHON)" tools/build_archive.py oem --machine "$(MACHINE)"
+	"$(PYTHON)" tools/build_archive.py oem --machine "$(ARCHIVE_MACHINE)"
 
 recovery:
-	"$(PYTHON)" tools/build_archive.py recovery --machine "$(MACHINE)"
+	"$(PYTHON)" tools/build_archive.py recovery --machine "$(ARCHIVE_MACHINE)"
 
 server:
 	"$(MAKE)" -C server build GO="$(GO)"

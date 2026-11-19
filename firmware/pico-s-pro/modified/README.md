@@ -8,24 +8,17 @@ The [machine overview](../README.md) links the separate OEM image and unchanged
 The Pico S/Pro implementation provides a **standalone firmware profile**
 with an on-device REST API, browser console, recipe collection, settings,
 local session identifiers, retained brew histories, and optional telemetry
-forwarding. Firmware **1.1.0** keeps the REST contract at `/api/v1`.
+forwarding. Firmware **1.2.0** keeps the REST contract at `/api/v1`.
 It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
 are compressed files on the Pico's serial flash; no companion server or CDN is required.
 
-**The previous 161,720-byte standalone candidate has booted on the owner's
-Pico Pro and served the health API and authenticated browser console.**
-The **1.0.0** application and matching browser files were subsequently
-[installed and readback-verified](analysis/device-upgrade-1.0.0-20261118.json)
-on 2026-11-18. The installer did not start the application; the owner
-subsequently reported that the Pico was running 1.0.0 and supplied Overview
-and Settings screenshots showing that version. The owner confirmed the OLED
-preview is fixed; arrow controls and Brew history/API navigation are visible.
-A new health response and functional feature checks remain pending.
-The current [1.1.0 release](docs/release-1.1.0.md) seeds the local PicoPak catalogue,
+The [1.1.0 release](docs/release-1.1.0.md) seeds the local PicoPak catalogue,
 preserves zero-minute heating steps, adds non-destructive starter restoration,
 and provides explicit checkpoint recovery. It includes the earlier Settings
-layout patch and has not yet been installed on the Pico.
+layout patch. The current [1.2.0 release](docs/release-1.2.0.md) adds separate
+Pico S and Pico Pro builds, explicit device identity, and Hub-managed telemetry.
+The new model-specific images have not been physically installed or brewed with.
 The [release notes](docs/release-1.0.0.md)
 describe its changes. Physical output behavior, interlocks, recovery and a
 complete brew remain unverified. Build, host simulation and ARM instruction
@@ -36,74 +29,39 @@ Start with the [standalone guide](docs/standalone-api.md), the
 [device-key provisioning procedure](docs/standalone-provisioning.md).
 The [optional forwarding guide](docs/telemetry.md) includes a standard-library
 HTTP receiver that archives live readings in SQLite on a Mac or Linux computer.
-The [macOS USB guide](docs/macos-usb-backup.md) documents the owner's verified
-backup using a SparkFun CH340C. The [actual device review](docs/device-firmware-review.md)
-records the matching original firmware, bootloader and recovery behavior,
-and installation constraints. The older
-[flash-layout analysis](docs/flash-layout.md) remains a separate third-party
-directory listing with different allocations and unknown Pro/C identity.
+The [guarded macOS USB installer](docs/macos-usb-installation.md) checks a
+pinned Pico Pro profile before writing. It does not qualify other appliances.
+The [flash-layout analysis](docs/flash-layout.md) describes a separate example
+listing with unknown Pro/C identity.
 `make` now selects the standalone build on this branch. The preserved legacy
 profile remains available through `make firmware` and `make verify`.
 
-## Device backup and current installation status
+## Backup and installation tools
 
-On 2026-11-17, the owner completed two matching full **1 MiB** flash reads on
-the actual Pico Pro using macOS and the existing SparkFun CH340C USB-C adapter.
-Direct USB with eight queued receive transfers succeeded after serial-driver
-attempts and the earlier synchronous reader failed. The extracted main image
-is an exact byte-for-byte match to the original **0.1.34** reference.
+Keep complete flash backups, API keys and installation reports private. A
+firmware build does not establish compatibility with an appliance's board,
+bootloader or flash layout. Review the exact hardware and preserve a verified
+original backup before installation.
 
-The actual secondary bootloader maps selector 1 to `mcuimg2.bin` and selector
-2 to `mcuimg3.bin`. The owner completed the live logical-file preflight on
-2026-11-17: all three firmware hashes match, image 3 is absent, and the
-logical boot record is `01 3d 00 20 ba dc cd ab` (selector 1, normal magic).
-This confirms that the existing image 2 slot is selected. Recovery v0.0.3 downloads
-from `picobrew.com`; it is not an offline restore image. The standalone
-Factory Reset action is therefore disabled in the menu, dispatch and deletion
-helper, with regression coverage for standalone and legacy behavior.
-
-| Tool | Purpose | Physical status |
-| --- | --- | --- |
-| `tools/pico_uart_probe.py --transport usb` | Direct-USB handshake and complete version response | Succeeded on the owner's Mac/Pico |
-| `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison, on-disk verification and private backup files | Verified full 1 MiB backup |
-| `tools/pico_inspect_backup.py` | Offline inspection and a review ZIP excluding network/settings files | Used to inspect that backup |
-| `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes | Qualified on the owner's Mac/Pico; selector 1 confirmed |
-| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration | API key creation/rewrite, earlier standalone installation, and 1.0.0 application/browser installation/readback verified; stock restoration pending |
+| Tool | Purpose |
+| --- | --- |
+| `tools/pico_uart_probe.py --transport usb` | Direct-USB handshake and complete version response |
+| `tools/pico_flash_backup_v2.py` | Two full reads, byte comparison and private backup files |
+| `tools/pico_inspect_backup.py` | Offline inspection with network/settings files excluded from the review ZIP |
+| `tools/pico_flash_preflight.py` | Read logical boot metadata and check live firmware hashes |
+| `tools/pico_flash_install.py` | Separate guarded key provisioning, application installation and stock restoration |
 
 The probe, backup and preflight tools enforce read-only flash access. The
-separate [guarded writer](docs/macos-usb-installation.md) uses the same pinned
-temporary SRAM helper and requires the verified original backup. The owner
-completed `/local/api.key` creation, readback, existing-file rewrite and
-second readback on 2026-11-17; final application and protected-file checks
-passed. The [physical key result](analysis/device-key-provisioning-20261117.json)
-records that evidence. On 2026-11-18, the owner installed the pinned
-161,720-byte standalone image into the existing image 2 allocation. Complete
-application readback, key verification and protected-file postchecks passed;
-the tool did not start the application. The [physical installation
-result](analysis/device-install-20261118.json) records this separate milestone.
-The owner then booted the application and received HTTP 200 from
-`GET /api/v1/health`, with `mode: "standalone"`, `ready: true`,
-`auth_configured: true` and `uptime_ms: 132543`. The
-[first runtime result](analysis/device-runtime-20261118.json) records this
-observation. A subsequent [owner screenshot](analysis/device-browser-20261118.json)
-shows the connected console, sensor readings, and OLED contents. It revealed
-an upside-down browser OLED preview and an overflowing device identifier.
-Changing Wi-Fi SSIDs initially retained a stale address until reboot. Version
-1.0.0 corrects the browser rendering/layout and requires a fresh DHCP acquisition
-after changing networks. The owner confirmed the upright OLED preview in the
-1.0.0 browser; network-change verification remains pending. Stock
-restoration and interrupted-write recovery remain physically untested.
-The later [1.0.0 upgrade result](analysis/device-upgrade-1.0.0-20261118.json)
-records creation and verification of all five browser files, replacement and
-complete readback of image 2, matching-key verification, and unchanged
-bootloader, recovery and boot-record hashes. The application was not started
-by that run; the owner subsequently confirmed it was running 1.0.0 and supplied
-Overview and Settings screenshots. These show the versioned browser, upright
-OLED, visible arrow controls and Brew history/API navigation. No new health
-response or tests of those controls and features have yet been supplied.
-The [macOS backup guide](docs/macos-usb-backup.md) includes
-the pinned dependencies and the successful backup procedure. Keep full backups
-under ignored `firmware/backups/` or `private/`.
+[guarded writer](docs/macos-usb-installation.md) requires its pinned original
+backup and verifies live protected files and allocations before mutation.
+Do not remove those checks to install a differently named image. Its current
+profile supports the pinned Pico Pro candidate; a separate Pico S image does
+not qualify a different device for this writer.
+
+The recovered factory reset path relies on the former cloud service and is
+not an offline restore procedure. Standalone disables that action. Stock
+restoration, interrupted-write recovery, interlocks and brewing still require
+physical acceptance for the current release.
 
 ## Standalone features
 
@@ -117,7 +75,7 @@ under ignored `firmware/backups/` or `private/`.
 | Recipes | 16 on-device recipes, up to 15 steps each, with validated input and CRC-protected alternating records |
 | Browser console | Same-origin HTML/CSS/JavaScript, recipe editing/import/export, live readings, upright OLED preview, up/down controls, history graphs and display preferences |
 | Brew history | Up to eight recent entries sharing 4,224 compact samples; retention depends on brew length and state changes; persistent checkpoints, JSON/CSV export, and eviction of the oldest completed/interrupted brews |
-| Optional forwarding | Off by default; send live status snapshots every 15 seconds to a chosen HTTP host/port; configure through Settings or `GET`/`PUT /api/v1/telemetry` |
+| Optional forwarding | Hub configures live status forwarding when the brewer is added; Settings shows read-only connection status; the authenticated management API remains available |
 | Wi-Fi changes | Clear old addresses and reconnect through a fresh IPv4 DHCP event before reporting success |
 | Authentication | Per-device bearer key in `/local/api.key`; no shared/default credential or embedded secret |
 
@@ -135,11 +93,19 @@ python3 -m venv .venv
 . .venv/bin/activate
 python -m pip install -r requirements-test.txt
 make bootstrap
-make standalone-verify
+make standalone-verify MODEL=pico-pro
+# For a Pico S instead:
+make standalone-verify MODEL=pico-s
 ```
 
-The native image and its report are written under `build/standalone/firmware/`:
-`pico-s-pro-standalone.bin`, matching ELF/map, and `firmware-report.json`.
+Outputs are isolated by model under `build/standalone/<model>/firmware/`:
+`pico-pro-standalone.bin` or `pico-s-standalone.bin`, matching ELF/map, and
+`firmware-report.json`. The default `MODEL=pico-pro` preserves the historical
+build choice. Use `--model pico-s` with `tools/build_firmware.py --standalone`
+for the equivalent CLI build. Only S and Pro are supported by this shared
+implementation; Pico C, Z and Zymatic require their own completed ports.
+`PICO_MODEL` in `include/picobrew/model.h` controls REST identity, serial
+branding and the OLED model name. Browser branding follows that API identity.
 The build checks vectors, the complete link, the physical RAM budget, absence
 of the discontinued cloud protocol strings, and separation from test fixtures.
 For historical comparison, the 1.0.1 image was **164,600 bytes**, with **952 bytes**
@@ -368,20 +334,14 @@ free/reuse and preservation of the old allocation when reallocation fails.
 
 ## What still needs the machine
 
-The 1.0.0 application and matching browser bundle have passed installation and
-readback verification on the owner's Pico Pro, and the owner subsequently
-reported it running 1.0.0. Browser screenshots show its versioned Overview and
-Settings pages, upright OLED and visible arrows/navigation. The captured public
-health response remains from the earlier unversioned 161,720-byte candidate.
-Remaining physical acceptance for 1.0.0 includes a health/version response,
-control and feature operation, recovery, the actual board/peripheral versions, sensor calibration,
+The model-specific 1.2.0 images have not been physically installed or brewed
+with. Physical acceptance includes startup and version/model reporting,
+controls, recovery, board/peripheral identification, sensor calibration,
 outputs and interlocks, rotary valve/RFID operation, networking/filesystem
-behavior, and controlled thermal operation. `docs/hardware-validation.md`
-records that work explicitly rather than marking unperformed tests as passed.
-
-Key provisioning and both application installations passed for the owner's
-pinned device profile; stock restoration remains untested and no successful brew is claimed.
-The reference image and experimental replacement are kept separate.
+behavior, and controlled thermal operation. See
+[hardware validation](docs/hardware-validation.md) for the staged procedure.
+Builds, host simulations and ARM instruction tests do not establish these
+results. The reference image and experimental replacement remain separate.
 
 ## Further reading
 
