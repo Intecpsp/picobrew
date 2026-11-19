@@ -221,7 +221,15 @@ test('brew journal saves notes, exposes all sensor columns and exports', async (
 test('settings, API explorer and contextual assistant are functional', async ({ page }) => {
   await page.goto('/#/settings')
   await expect(page.getByRole('heading', { name: 'Workspace settings.' })).toBeVisible()
-  await expect(page.locator('.settings-row')).toHaveCount(4)
+  for (const name of [
+    'Equipment calibration',
+    'Display preferences',
+    'Brew assistant',
+    'Firmware',
+    'Your data',
+  ]) {
+    await expect(page.getByRole('heading', { name, level: 2, exact: true })).toBeVisible()
+  }
   await expect(page.getByRole('heading', { name: 'Your machines' })).toHaveCount(0)
   await expect(page.getByRole('button', { name: 'Add machine' })).toHaveCount(0)
   await page.screenshot({ path: test.info().outputPath('settings-desktop.png'), fullPage: true })
