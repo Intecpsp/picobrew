@@ -88,31 +88,44 @@ func checkHandle(h windows.Handle, path, user string, directory, private bool) e
 	return nil
 }
 
-func fullPath(path string) (string, error) {
+func validatePath(path string) error {
 	if strings.ContainsFunc(path, func(char rune) bool { return char < 32 }) {
-		return "", errors.New("Windows private paths cannot contain NUL or control characters")
+		return errors.New("Windows private paths cannot contain NUL or control characters")
 	}
-	path, err := filepath.Abs(path)
-	if err != nil {
-		return "", err
-	}
+	path = strings.ReplaceAll(path, "/", `\`)
 	volume := filepath.VolumeName(path)
 	if strings.HasPrefix(path, `\\?\`) || strings.HasPrefix(path, `\\.\`) || strings.Contains(path[len(volume):], ":") {
-		return "", errors.New("private files require a normal filesystem path, without device prefixes or alternate streams")
+		return errors.New("private files require a normal filesystem path, without device prefixes or alternate streams")
 	}
 	for _, part := range strings.Split(path[len(volume):], `\`) {
-		if part == "" {
+		if part == "" || part == "." || part == ".." {
 			continue
 		}
-		stem := strings.ToUpper(strings.SplitN(part, ".", 2)[0])
+		stem := strings.ToUpper(strings.TrimRight(strings.SplitN(part, ".", 2)[0], " "))
 		device := stem == "CON" || stem == "PRN" || stem == "AUX" || stem == "NUL" || stem == "CONIN$" || stem == "CONOUT$"
 		if strings.HasPrefix(stem, "COM") || strings.HasPrefix(stem, "LPT") {
 			suffix := []rune(stem[3:])
 			device = device || len(suffix) == 1 && strings.ContainsRune("123456789¹²³", suffix[0])
 		}
 		if device || strings.HasSuffix(part, ".") || strings.HasSuffix(part, " ") || strings.ContainsAny(part, `<>"|?*`) {
-			return "", errors.New("private paths cannot use reserved Windows names, trailing dots/spaces, or wildcard characters")
+			return errors.New("private paths cannot use reserved Windows names, trailing dots/spaces, or wildcard characters")
 		}
+	}
+	return nil
+}
+
+func fullPath(path string) (string, error) {
+	// filepath.Abs calls Windows GetFullPathName, which can remove a trailing
+	// dot before a later check sees it. Reject ambiguous spelling first.
+	if err := validatePath(path); err != nil {
+		return "", err
+	}
+	path, err := filepath.Abs(path)
+	if err != nil {
+		return "", err
+	}
+	if err := validatePath(path); err != nil {
+		return "", err
 	}
 	return path, nil
 }

@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import stat
+import subprocess
 import sys
 import tempfile
 import unittest
@@ -15,6 +16,8 @@ sys.path.insert(0, str(ROOT / 'tools'))
 
 from arm_toolchain import compiler_prefix, find_arm_prefix, sort_sources
 from bootstrap_dependencies import compiler_for_host, extract_zip, install
+from build_sdk_validation import sdk_include_dirs
+from native_host import compiler
 
 
 class CompilerHostTests(unittest.TestCase):
@@ -61,6 +64,25 @@ class CompilerHostTests(unittest.TestCase):
         expected = [path.as_posix() for path in sorted(PurePosixPath(name) for name in names)]
         self.assertEqual([path.as_posix() for path in sort_sources(PureWindowsPath(name) for name in names)], expected)
         self.assertEqual([path.as_posix() for path in sort_sources(PurePosixPath(name) for name in names)], expected)
+
+    def test_library_header_wins_over_case_insensitive_driverlib_collision(self):
+        with tempfile.TemporaryDirectory(prefix='pico header search ') as directory:
+            root = Path(directory)
+            sdk = root / 'sdk'
+            library = sdk / 'libraries/SPI'
+            driver = sdk / 'system/driverlib'
+            library.mkdir(parents=True)
+            driver.mkdir(parents=True)
+            # Add both aliases to reproduce Windows/macOS lookup on a
+            # case-sensitive Linux checkout too (identical writes on Windows).
+            for name in ('SPI.h', 'spi.h'):
+                (library / name).write_text('extern int SPI;\n', encoding='utf-8')
+                (driver / name).write_text('#define DRIVER_SPI_BASE 0\n', encoding='utf-8')
+            for cxx, header, symbol in [(True, 'SPI.h', 'SPI'), (False, 'spi.h', 'DRIVER_SPI_BASE')]:
+                source = root / ('probe.cpp' if cxx else 'probe.c')
+                source.write_text(f'#include <{header}>\nint probe() {{ return {symbol}; }}\n', encoding='utf-8')
+                subprocess.run([compiler(cxx=cxx), '-fsyntax-only',
+                                *['-I' + str(p) for p in sdk_include_dirs(sdk, root, cxx=cxx)], str(source)], check=True)
 
 
 class CompilerArchiveTests(unittest.TestCase):

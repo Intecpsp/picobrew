@@ -104,11 +104,39 @@ def rewrite_builder_command(command, profile, component):
             or Path(command[0]).resolve() != Path(sys.executable).resolve()):
         return command
     child = Path(command[1]).resolve()
-    allowed = {component / "tools" / name for name in PROFILES[profile]["scripts"]}
+    # Windows TEMP can use an 8.3 user-directory alias; macOS /var may resolve
+    # through /private. Compare canonical paths on both sides of the boundary.
+    component = Path(component).resolve()
+    allowed = {(component / "tools" / name).resolve() for name in PROFILES[profile]["scripts"]}
     if child not in allowed:
         return command
     return [sys.executable, "-X", "utf8", str(ADAPTER), "--run-script", profile,
             child.name, *command[2:]]
+
+
+def prioritize_cpp_spi_header(command):
+    """Select Energia SPI.h ahead of driverlib/spi.h on insensitive filesystems.
+
+    The vendor C HAL needs its lowercase spi.h, so its include order must stay
+    unchanged. Only C++ compilation requires the high-level SPI library first.
+    """
+    if not isinstance(command, (list, tuple)) or not command:
+        return command
+    executable = str(command[0]).replace("\\", "/").rsplit("/", 1)[-1].lower()
+    if executable not in ("arm-none-eabi-g++", "arm-none-eabi-g++.exe") or "-c" not in command:
+        return command
+    library = driver = None
+    for index, argument in enumerate(command):
+        value = str(argument).replace("\\", "/").rstrip("/")
+        if value.startswith("-I") and value.endswith("/libraries/SPI"):
+            library = index
+        elif value.startswith("-I") and value.endswith("/system/driverlib"):
+            driver = index
+    if library is None or driver is None or library < driver:
+        return command
+    rewritten = list(command)
+    rewritten.insert(driver, rewritten.pop(library))
+    return rewritten
 
 
 def run_archived_script(profile, name, arguments):
@@ -125,7 +153,8 @@ def run_archived_script(profile, name, arguments):
     processes.__dict__.update(vars(subprocess))
 
     def run(command, *args, **kwargs):
-        return subprocess.run(rewrite_builder_command(command, profile, component), *args, **kwargs)
+        command = rewrite_builder_command(command, profile, component)
+        return subprocess.run(prioritize_cpp_spi_header(command), *args, **kwargs)
 
     processes.run = run
 
@@ -271,6 +300,7 @@ def main(argv=None):
             "source_rewriting": False,
             "path_ordering": "Case-sensitive POSIX path components, matching the archived Linux builds",
             "path_rendering": "Forward slashes for native compiler arguments and report identities",
+            "cpp_header_priority": "Energia libraries/SPI before system/driverlib for C++ only; C order unchanged",
             "text_io": "UTF-8 reports with LF newlines",
         },
         "archive_manifest": manifest.relative_to(ROOT).as_posix(),

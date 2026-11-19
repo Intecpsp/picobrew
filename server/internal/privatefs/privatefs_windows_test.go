@@ -128,9 +128,12 @@ func TestWindowsDirectoryMustProtectNewChildFiles(t *testing.T) {
 }
 
 func TestWindowsRejectsPathAliasesBeforeFileAccess(t *testing.T) {
-	for _, component := range []string{"data.", "data ", "CON", "nul.txt", "COM1", "LPT²", "CONOUT$", "a*b", "a?b", "file:stream", "key\x00ignored", "control\x1f"} {
+	for _, component := range []string{"data.", "data ", "CON", "CON .txt", "nul.txt", "COM1", "LPT²", "CONOUT$", "a*b", "a?b", "file:stream", "key\x00ignored", "control\x1f"} {
 		if _, err := fullPath(filepath.Join(t.TempDir(), component, "hub.sqlite")); err == nil {
 			t.Fatalf("accepted Windows path alias %q", component)
+		}
+		if _, err := fullPath(component + `/hub.sqlite`); err == nil {
+			t.Fatalf("accepted relative Windows path alias %q", component)
 		}
 	}
 }

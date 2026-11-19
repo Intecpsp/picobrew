@@ -3,6 +3,7 @@ import hashlib
 import json
 from pathlib import Path, PureWindowsPath
 import pathlib
+import os
 import subprocess
 import sys
 import tempfile
@@ -40,6 +41,29 @@ class PathCompatibilityTests(unittest.TestCase):
         self.assertIs(adapter.rewrite_builder_command(compiler, "oem", component), compiler)
         unrelated = [sys.executable, str(component / "tests/test_sensors.py")]
         self.assertIs(adapter.rewrite_builder_command(unrelated, "oem", component), unrelated)
+
+    @unittest.skipIf(os.name == "nt", "Windows canonical TEMP aliases are covered by the runpy fixture")
+    def test_child_routing_canonicalizes_the_component_path_too(self):
+        with tempfile.TemporaryDirectory() as folder:
+            root = Path(folder)
+            component = root / "component"
+            (component / "tools").mkdir(parents=True)
+            alias = root / "alias"
+            alias.symlink_to(component, target_is_directory=True)
+            command = [sys.executable, str(component / "tools/build.py"), "--archive-only"]
+            adapted = adapter.rewrite_builder_command(command, "oem", alias)
+            self.assertEqual(adapted[4:], ["--run-script", "oem", "build.py", "--archive-only"])
+
+    def test_only_cpp_compilation_prioritizes_the_high_level_spi_header(self):
+        includes = ["-I SDK with spaces/cores/cc3200", "-I SDK with spaces/system/driverlib",
+                    "-I SDK with spaces/libraries/WiFi", "-I SDK with spaces/libraries/SPI"]
+        cpp = ["C:/GNU Arm/bin/arm-none-eabi-g++.exe", *includes, "-c", "entry.cpp", "-o", "entry.o"]
+        self.assertEqual(adapter.prioritize_cpp_spi_header(cpp), [cpp[0], includes[0], includes[3],
+                         includes[1], includes[2], *cpp[5:]])
+        c = ["arm-none-eabi-gcc", *includes, "-c", "spi_hal.c", "-o", "spi_hal.o"]
+        self.assertIs(adapter.prioritize_cpp_spi_header(c), c)
+        link = ["arm-none-eabi-g++", *includes, "entry.o", "-o", "app.elf"]
+        self.assertIs(adapter.prioritize_cpp_spi_header(link), link)
 
     def test_script_execution_is_confined_and_preserves_exact_source_bytes(self):
         original_path = pathlib.Path

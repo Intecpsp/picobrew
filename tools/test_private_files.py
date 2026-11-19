@@ -17,6 +17,14 @@ class PrivateFilesTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
 
+    def test_windows_alias_spelling_is_rejected_before_os_normalization(self):
+        for component in ["data.", "data ", "CON", "CON .txt", "nul.txt", "COM1", "LPT²", "a*b", "file:stream", "key\x00ignored"]:
+            for prefix in ["", "C:\\safe\\"]:
+                with self.subTest(component=component, prefix=prefix), self.assertRaises(private.PrivateFileError):
+                    private._validate_windows_path(prefix + component + "\\api.key")
+        for path in ["private\\api.key", ".\\private\\api.key", "..\\private\\api.key", "C:\\safe\\api.key", "\\\\server\\share\\private\\api.key"]:
+            private._validate_windows_path(path)
+
     def test_exclusive_private_creation_and_bounded_read(self):
         directory = self.root / "private" / "nested"
         private.ensure_private_directory(directory, parents=True)

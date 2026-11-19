@@ -12,12 +12,13 @@ import gzip
 import io
 import json
 import logging
+import os
 from pathlib import Path
 import struct
 import sys
 import tempfile
 import unittest
-from private_file_test_support import make_public
+from private_file_test_support import make_public, read_live_private_text
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -532,7 +533,8 @@ class InstallWireTests(unittest.TestCase):
         opened = []
         def before_mutation(event):
             if event["kind"] != "open": return
-            records = [json.loads(line) for line in Path(str(output) + ".journal.jsonl").read_text().splitlines()]
+            records = [json.loads(line) for line in read_live_private_text(
+                Path(str(output) + ".journal.jsonl"), installer.private_files).splitlines()]
             self.assertEqual(records[-1]["event"], "before-write-open")
             self.assertEqual(records[-1]["target"], event["name"])
             if event["name"] == APP_NAME:
@@ -862,8 +864,8 @@ class InstallWireTests(unittest.TestCase):
         def before_mutation(event):
             if event["kind"] != "open" or event["name"] != APP_NAME:
                 return
-            records = [json.loads(line) for line in
-                       Path(str(output) + ".journal.jsonl").read_text().splitlines()]
+            records = [json.loads(line) for line in read_live_private_text(
+                Path(str(output) + ".journal.jsonl"), installer.private_files).splitlines()]
             self.assertEqual(records[-1]["event"], "before-write-open")
             self.assertEqual(records[-1]["target"], APP_NAME)
             for required in ("key-existing-write-readback-verified", "web-bundle-verified"):
@@ -1172,7 +1174,8 @@ class InstallWireTests(unittest.TestCase):
             if event["kind"] != "open":
                 return
             journal_path = Path(str(output) + ".journal.jsonl")
-            records = [json.loads(line) for line in journal_path.read_text().splitlines()]
+            records = [json.loads(line) for line in read_live_private_text(
+                journal_path, installer.private_files).splitlines()]
             last = records[-1]
             self.assertEqual(last["event"], "before-write-open")
             self.assertEqual(last["target"], event["name"])

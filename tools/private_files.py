@@ -14,12 +14,31 @@ real APIs; emulated Unix mode bits are never used as a Windows security test.
 
 from contextlib import contextmanager
 import os
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import stat
 
 
 class PrivateFileError(OSError):
     """A local file cannot be used without weakening its privacy guarantees."""
+
+
+def _validate_windows_path(path):
+    """Validate spelling before GetFullPathName can erase a DOS path alias."""
+    text = os.fspath(path)
+    if any(ord(char) < 32 for char in text):
+        raise PrivateFileError("Windows private paths cannot contain NUL or control characters")
+    parsed = PureWindowsPath(text)
+    spelling = text.replace("/", "\\")
+    if spelling.startswith(("\\\\?\\", "\\\\.\\")) or ":" in spelling[len(parsed.drive):]:
+        raise PrivateFileError("Use a normal filesystem path without device prefixes or alternate streams")
+    for part in parsed.parts:
+        if part in (parsed.anchor, parsed.drive, ".", ".."):
+            continue
+        stem = part.split(".", 1)[0].rstrip(" ").upper()
+        if part.endswith((" ", ".")) or any(c in part for c in '<>"|?*') or stem in {
+                "CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"} or (
+                len(stem) == 4 and stem[:3] in {"COM", "LPT"} and stem[3] in "123456789¹²³"):
+            raise PrivateFileError("Device names and trailing spaces/dots are not private-file paths")
 
 
 if os.name == "nt":
@@ -192,18 +211,9 @@ if os.name == "nt":
 
     def _normal_path(path):
         text = os.fspath(path)
-        if any(ord(char) < 32 for char in text):
-            raise PrivateFileError("Windows private paths cannot contain NUL or control characters")
+        _validate_windows_path(text)
         path = Path(os.path.abspath(text))
-        text = str(path)
-        if text.startswith(("\\\\?\\", "\\\\.\\")) or ":" in text[len(path.drive):]:
-            raise PrivateFileError("Use a normal filesystem path without device prefixes or alternate streams")
-        for part in path.parts[1:]:
-            stem = part.split(".", 1)[0].upper()
-            if part.endswith((" ", ".")) or any(c in part for c in '<>"|?*') or stem in {
-                    "CON", "PRN", "AUX", "NUL", "CONIN$", "CONOUT$"} or (
-                    len(stem) == 4 and stem[:3] in {"COM", "LPT"} and stem[3] in "123456789¹²³"):
-                raise PrivateFileError("Device names and trailing spaces/dots are not private-file paths")
+        _validate_windows_path(path)
         return path
 
     def _native(path):

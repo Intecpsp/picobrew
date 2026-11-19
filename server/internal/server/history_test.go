@@ -410,6 +410,43 @@ func TestHistoryFirstImportKeepsCatalogOrder(t *testing.T) {
 	}
 }
 
+func TestHistoryListPreservesSessionOrderWhenObservationClocksTie(t *testing.T) {
+	s, _, _ := historyFixture(t, ":memory:")
+	observed := time.Date(2026, 11, 19, 12, 0, 0, 0, time.UTC)
+	// IDs 10 and 2 distinguish numeric session order from lexical record order.
+	// Equal timestamps also occur on hosts with a coarse-resolution clock.
+	for _, brew := range []domain.Brew{
+		{ID: "machine-2", DeviceID: "machine", DeviceHistoryID: 2, ObservedAt: observed},
+		{ID: "machine-10", DeviceID: "machine", DeviceHistoryID: 10, ObservedAt: observed},
+		{ID: "another-1", DeviceID: "another", DeviceHistoryID: 1, ObservedAt: observed},
+		{ID: "newer-1", DeviceID: "newer", DeviceHistoryID: 1, ObservedAt: observed.Add(time.Second)},
+	} {
+		if _, err := s.db.Put("brew", brew.ID, brew, 0); err != nil {
+			t.Fatal(err)
+		}
+	}
+	for attempt := 0; attempt < 2; attempt++ {
+		w := httptest.NewRecorder()
+		s.listBrews(w, httptest.NewRequest("GET", "/api/v1/brews", nil))
+		var got []domain.Brew
+		if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil || len(got) != 4 {
+			t.Fatalf("list: %s %v", w.Body.String(), err)
+		}
+		for i, id := range []string{"newer-1", "another-1", "machine-10", "machine-2"} {
+			if got[i].ID != id || got[i].StartedAt != nil {
+				t.Fatalf("session order or unknown start time changed: %+v", got)
+			}
+			wantObserved := observed
+			if i == 0 {
+				wantObserved = observed.Add(time.Second)
+			}
+			if !got[i].ObservedAt.Equal(wantObserved) {
+				t.Fatalf("observation timestamp was fabricated: %+v", got[i])
+			}
+		}
+	}
+}
+
 func TestHistoryStopsOnIdentityMismatch(t *testing.T) {
 	s, d, a := historyFixture(t, ":memory:")
 	d.identityMismatch = true

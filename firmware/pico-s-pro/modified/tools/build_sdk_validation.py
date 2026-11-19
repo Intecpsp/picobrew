@@ -79,6 +79,24 @@ def prepare_sdk(pristine, destination, patches):
     return destination
 
 
+def sdk_include_dirs(sdk, project, extra=(), *, cxx=False):
+    # On the default Windows/macOS filesystems, <SPI.h> also matches the
+    # unrelated driverlib/spi.h. Resolve the Arduino library before the flat
+    # driverlib search directory for C++. C middleware includes unqualified
+    # <spi.h>, so its original driver-first order must remain. C++ low-level
+    # uses spell <driverlib/spi.h>, available through the system directory.
+    libraries = [sdk / 'libraries/WiFi', sdk / 'libraries/SPI']
+    driverlib = sdk / 'system/driverlib'
+    variant = sdk / 'variants/CC3200-LAUNCHXL'
+    specific = [variant, *libraries, driverlib] if cxx else [driverlib, variant, *libraries]
+    return [sdk / 'cores/cc3200', sdk / 'system', sdk / 'system/inc',
+            *specific,
+            sdk / 'libraries/WiFi/utility',
+            sdk / 'libraries/WiFi/utility/middleware/driver',
+            sdk / 'libraries/WiFi/utility/middleware/driver/hal',
+            project / 'include', *[p.resolve() for p in extra]]
+
+
 def main():
     here = Path(__file__).resolve().parent
     project = here.parent
@@ -137,7 +155,6 @@ def main():
         patches += lock['energia']['standalone_patches']
     sdk = prepare_sdk(sdk, out / 'sdk-compatible', patches)
     core = sdk / 'cores/cc3200'
-    variant = sdk / 'variants/CC3200-LAUNCHXL'
     libraries = [sdk / 'libraries/WiFi', sdk / 'libraries/SPI']
     cc, cxx = prefix + 'gcc', prefix + 'g++'
     target_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs']
@@ -154,12 +171,8 @@ def main():
               '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf']
     if args.standalone:
         common.append('-DPICO_STANDALONE=1')
-    include_dirs = [core, sdk / 'system', sdk / 'system/inc', sdk / 'system/driverlib', variant,
-                    *libraries, sdk / 'libraries/WiFi/utility',
-                    sdk / 'libraries/WiFi/utility/middleware/driver',
-                    sdk / 'libraries/WiFi/utility/middleware/driver/hal',
-                    project / 'include', *[p.resolve() for p in args.include]]
-    includes = ['-I' + str(p) for p in include_dirs]
+    includes = {cpp: ['-I' + str(p) for p in sdk_include_dirs(sdk, project, args.include, cxx=cpp)]
+                for cpp in (False, True)}
     upstream = sort_sources([p for directory in [core, *libraries] for p in directory.rglob('*')
                        if p.suffix in ('.c', '.cpp', '.S') and 'examples' not in p.parts])
     application = [args.entry.resolve(), args.runtime_compat.resolve(),
@@ -175,7 +188,7 @@ def main():
             label = source.name
         obj.parent.mkdir(parents=True, exist_ok=True)
         cpp = source.suffix == '.cpp'
-        command = [str(cxx if cpp else cc), *common, *includes,
+        command = [str(cxx if cpp else cc), *common, *includes[cpp],
                    *(['-flto'] if args.standalone and source != args.runtime_compat.resolve()
                      and source.name != 'startup_gcc.c' else []),
                    *(['-std=gnu++11', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics']

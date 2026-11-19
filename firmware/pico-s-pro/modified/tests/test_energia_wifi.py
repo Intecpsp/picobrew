@@ -14,7 +14,7 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
-from native_host import compiler, executable_name, gc_sections_flags, runtime_environment, sanitizer_flags
+from native_host import compiler, executable_name, runtime_environment, sanitizer_flags
 
 SIMPLELINK = r'''
 #pragma once
@@ -154,7 +154,7 @@ def main():
         subprocess.run([compiler(), '-std=c11', *flags, '-c', str(root / 'src/local_control.c'), '-o', str(control)], check=True)
         executable = temp / executable_name('wifi-tests')
         subprocess.run([compiler(cxx=True), '-std=c++11', *flags, str(root / 'tests/energia_wifi_fixture.cpp'),
-                        str(callbacks), str(network), str(control), *gc_sections_flags(), '-lm', '-o', str(executable)], check=True)
+                        str(callbacks), str(network), str(control), '-lm', '-o', str(executable)], check=True)
         env = runtime_environment()
         env.setdefault('ASAN_OPTIONS', 'detect_leaks=0')
         subprocess.run([str(executable)], check=True, env=env, timeout=30)
