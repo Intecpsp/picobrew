@@ -1,0 +1,45 @@
+name: Package verified AI subscription readiness fix
+on:
+  push:
+    branches: [fix/ai-subscription-readiness]
+    paths: [.github/workflows/publish-ai-readiness-bundle.yml]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - name: Require the triggering revision
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+          cache-dependency-path: server/web/package-lock.json
+      - name: Rebuild the reviewed website sources
+        run: |
+          npm --prefix server/web ci --engine-strict
+          npm --prefix server/web run build:bundle
+      - name: Verify exact bytes and publish the generated bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git hash-object server/internal/webui/bundle.zip)" = def597cbc0f03358523723e30ae09bbc50961057
+          test "$(git hash-object server/internal/webui/manifest.json)" = b0613fe6c49db3ae4c8d0f986b7d3339129c3110
+          git add server/internal/webui/bundle.zip server/internal/webui/manifest.json
+          git rm .github/workflows/publish-ai-readiness-bundle.yml
+          test "$(git write-tree)" = 927c8405aea4dd0a1139dd59a8b6734d971fdc1b
+          git restore --source=HEAD --staged --worktree .github/workflows/publish-ai-readiness-bundle.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Package the AI subscription readiness fix'
+          gh auth setup-git
+          git push origin HEAD:refs/heads/fix/ai-subscription-readiness

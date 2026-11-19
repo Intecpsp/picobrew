@@ -86,6 +86,107 @@ afterEach(() => {
 })
 
 describe('contextual AI workflow', () => {
+  it.each(
+    (['openai', 'anthropic'] as const).flatMap((provider) =>
+      (['recipe', 'live', 'analysis'] as const).map((mode) => ({ provider, mode }))
+    )
+  )(
+    'uses a saved $provider subscription for $mode without an API key',
+    async ({ provider, mode }) => {
+      fetchMock.mockImplementation(async (url) => {
+        if (String(url).endsWith('/ai/settings'))
+          return json({
+            enabled: true,
+            auth_mode: 'subscription',
+            key_configured: false,
+            provider,
+            model: 'subscription-model',
+          })
+        if (String(url).endsWith('/ai/assist'))
+          return json({
+            text: 'Subscription response.',
+            recipe: mode === 'recipe' ? draft : undefined,
+            limitations: [],
+          })
+        return json([])
+      })
+      const user = userEvent.setup()
+      mount(createElement(AIWorkbench, { mode, deviceID: 'pro', brewID: 'brew-a' }))
+      await screen.findByText(`${provider} · subscription-model`)
+      expect(screen.queryByText('Not configured')).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Configure assistant' })).toBeNull()
+      await user.type(
+        screen.getByLabelText('What would you like to explore?'),
+        'Use my subscription'
+      )
+      const ask = screen.getByRole('button', { name: 'Ask the assistant' }) as HTMLButtonElement
+      expect(ask.disabled).toBe(false)
+      await user.click(ask)
+      await screen.findByText('Subscription response.')
+      expect(requestBodies()).toEqual([
+        {
+          mode,
+          prompt: 'Use my subscription',
+          ...(mode === 'live' ? { device_id: 'pro' } : {}),
+          ...(mode !== 'recipe' ? { brew_id: 'brew-a' } : {}),
+        },
+      ])
+      if (mode === 'recipe') {
+        await user.click(screen.getByRole('button', { name: 'Review in recipe editor' }))
+        expect(setDraft).toHaveBeenCalledWith({ ...draft, id: '', revision: 0 })
+        expect(navigate).toHaveBeenCalledWith('/recipes/new')
+      }
+    }
+  )
+
+  it.each([
+    {
+      name: 'disabled subscription',
+      enabled: false,
+      auth_mode: 'subscription',
+      model: 'saved-model',
+    },
+    {
+      name: 'subscription without a selected model',
+      enabled: true,
+      auth_mode: 'subscription',
+      model: '',
+    },
+    {
+      name: 'subscription with a blank model',
+      enabled: true,
+      auth_mode: 'subscription',
+      model: '   ',
+    },
+    {
+      name: 'API billing without a key',
+      enabled: true,
+      auth_mode: 'api_key',
+      model: 'saved-model',
+    },
+    {
+      name: 'legacy API billing without a key',
+      enabled: true,
+      auth_mode: undefined,
+      model: 'saved-model',
+    },
+  ])('keeps $name unavailable', async ({ name: _name, ...config }) => {
+    fetchMock.mockImplementation(async (url) =>
+      String(url).endsWith('/ai/settings')
+        ? json({ ...config, key_configured: false, provider: 'openai' })
+        : json([])
+    )
+    const user = userEvent.setup()
+    mount(createElement(AIWorkbench, { mode: 'recipe' }))
+    await screen.findByText('Not configured')
+    expect(await screen.findByText(/Connect a ChatGPT or Claude subscription/)).toBeTruthy()
+    await user.type(screen.getByLabelText('What would you like to explore?'), 'Make a recipe')
+    expect(
+      (screen.getByRole('button', { name: 'Ask the assistant' }) as HTMLButtonElement).disabled
+    ).toBe(true)
+    expect(requestBodies()).toEqual([])
+  })
+
   it('requests optional monitoring only with an explicitly confirmed brew start', async () => {
     let failAfterAcceptedStart = false
     fetchMock.mockImplementation(async (url) => {
