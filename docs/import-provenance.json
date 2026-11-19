@@ -1,0 +1,112 @@
+{
+  "schema_version": 3,
+  "purpose": "Source identities for the canonical machine-oriented firmware repository, its exact OEM snapshots, modified firmware and self-contained server. Historical import identities are retained as provenance rather than current paths.",
+  "destination_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+  "destination_branch": "feature/community-monorepo",
+  "reorganization_parent": {
+    "repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
+    "tree": "3e4246669af22c94eacc47bb1e690b267adf3c5e",
+    "description": "Canonical combined project before moving root firmware into the machine-specific modified directory and hub/ into server/."
+  },
+  "layout": {
+    "firmware_root": "firmware/",
+    "machine_components": [
+      "oem/",
+      "reverse-engineered/",
+      "modified/"
+    ],
+    "machine_directories": [
+      "pico-s-pro",
+      "pico-c",
+      "z1",
+      "z2",
+      "z-series",
+      "zymatic",
+      "picoferm",
+      "picostill"
+    ],
+    "server_component_path": "server/",
+    "generic_tools_path": "tools/"
+  },
+  "oem_device_image": {
+    "component_path": "firmware/pico-s-pro/oem/device/mcuimg2.bin",
+    "version": "0.1.34",
+    "size": 162792,
+    "sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
+    "description": "Verified Pico Pro application image matching the reference used in reconstruction. The private full-flash backup is not imported."
+  },
+  "upstream_firmware_archive": {
+    "source_repository": "https://github.com/chiefwigms/picobrew_pico",
+    "source_ref_at_capture": "master",
+    "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+    "source_root": "app/firmware",
+    "source_tree": "8ec8a87c582aa818d19ff67ddaf9999f9b0850d6",
+    "file_count": 27,
+    "total_size_bytes": 13583860,
+    "manifest": "firmware/upstream-manifest.json",
+    "treatment": "All source files copied unchanged into the corresponding machine-family oem/upstream/ directories, retaining filenames, nesting and Git modes.",
+    "format_note": "The Pico S/Pro and both Pico C files are OEM HTTP update envelopes, preserved without decoding the archived copies. Other upstream binary images are not represented as complete device flash dumps.",
+    "model_note": "Z-series remains a shared archive without inferred Z1/Z2 compatibility. No Zymatic firmware exists in this pinned source tree."
+  },
+  "oem_reconstruction": {
+    "repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "reference_branch": "reference/oem-s-pro-0.1.34",
+    "commit": "ea887709e72c493456583114034cde4aad746099",
+    "tree": "25a3f356c856e558f40220bd3ed63a8895a0e5b2",
+    "file_count": 396,
+    "component_path": "firmware/pico-s-pro/reverse-engineered/",
+    "manifest": "firmware/pico-s-pro/source-manifest.json",
+    "treatment": "Exact source snapshot, including its tooling, documentation and earlier decompiler evidence.",
+    "description": "Buildable OEM reconstruction before v1.x standalone features. Includes documented reconstruction repairs; not original vendor source or a byte-identical OEM rebuild."
+  },
+  "modified_firmware": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "source_commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
+    "source_component": "Firmware files from the previous repository-root layout",
+    "component_path": "firmware/pico-s-pro/modified/",
+    "version": "1.1.0",
+    "treatment": "Current modified firmware component relocated with its on-device website, packages, data, tools, tests and evidence; integration paths updated as needed."
+  },
+  "server": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "source_commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
+    "source_path": "hub/",
+    "component_path": "server/",
+    "treatment": "Self-contained Hub application, bundled catalogue, required assets and development/deployment tools; repository integration paths updated."
+  },
+  "historical_source_provenance": {
+    "standalone_firmware_base": {
+      "repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+      "branch": "feature/standalone-rest-api",
+      "commit": "63c49d01784fb502c56fa85b709472e02f923d78",
+      "tree": "33d86c6b3af76450cec616366bff0d0a847ef02c"
+    },
+    "prior_combined_publication": {
+      "repository": "https://github.com/jeffreydwalter/picobrew-server",
+      "commit": "d097e68c1be023189fbf240016c2eb57740ff798",
+      "firmware_source_path": "firmware/",
+      "firmware_source_tree": "2b2abb70f42f44a98d11218e5527f5bd0245d43a",
+      "server_source_path": "hub/",
+      "server_source_tree": "1ff49c2966c0bed9455d2f76bd4e6fcacb647990",
+      "role": "Historical source of completed catalogue/1.1.0 firmware and Hub work recovered before canonical commit 97dd48f. This reference repository is read-only."
+    },
+    "earlier_decompiler_export": {
+      "source_commit": "07359ac60c458efd59bfedc5e020344108cdf1d1",
+      "component_paths": [
+        "firmware/pico-s-pro/reverse-engineered/legacy/",
+        "firmware/pico-s-pro/modified/legacy/"
+      ],
+      "description": "Earlier Pico S/Pro C decompiler-export evidence, distinct from the complete buildable pre-v1.x baseline."
+    }
+  },
+  "external_zymatic_server_reference": {
+    "upstream_repository": "https://github.com/hotzenklotz/picobrew-server",
+    "fork_repository": "https://github.com/jeffreydwalter/picobrew-server",
+    "original_source_commit": "aa7531965c32d124643797937177431cf9dd1c8d",
+    "imported_as_application": false,
+    "role": "Read-only reverse-engineering reference. Existing attributed catalogue artwork retains its source notices."
+  },
+  "reference_repository_policy": "Read-only. All implementation changes, branches and pull requests belong in the destination repository.",
+  "private_data": "No API keys, private full-flash backups, Hub databases or build/dependency caches are imported."
+}

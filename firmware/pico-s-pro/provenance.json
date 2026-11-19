@@ -1,0 +1,22 @@
+{
+  "machine": "pico-s-pro",
+  "oem_application": {
+    "path": "oem/device/mcuimg2.bin",
+    "version": "0.1.34",
+    "sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
+    "size": 162792,
+    "origin": "Application image extracted from the verified Pico Pro flash backup; matches the existing original reference. This is not the complete flash backup."
+  },
+  "reverse_engineered": {
+    "path": "reverse-engineered",
+    "source_commit": "ea887709e72c493456583114034cde4aad746099",
+    "source_tree": "25a3f356c856e558f40220bd3ed63a8895a0e5b2",
+    "description": "Pre-v1.x buildable OEM reconstruction. Its documented buffer, I/O and allocator repairs and original validation limitations remain attached."
+  },
+  "modified": {
+    "path": "modified",
+    "source_commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
+    "version": "1.1.0",
+    "description": "Current modified standalone firmware and browser; relocated from repository root, with path/build integration updates."
+  }
+}

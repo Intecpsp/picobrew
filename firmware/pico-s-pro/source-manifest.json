@@ -1,0 +1,3178 @@
+{
+  "schema_version": 1,
+  "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+  "source_commit": "ea887709e72c493456583114034cde4aad746099",
+  "source_root": "",
+  "source_tree": "25a3f356c856e558f40220bd3ed63a8895a0e5b2",
+  "purpose": "Exact pre-v1.x OEM reconstruction source snapshot, including its build tooling, evidence and original limitations. Build outputs and local dependency caches are not in this manifest.",
+  "files": [
+    {
+      "source_path": ".clang-format",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/.clang-format",
+      "git_blob_sha": "0e039cce2f42b27513348adbf8be72dcc814bc65",
+      "sha256": "84e80f5e9399606b3766912e2dd67dbb3d8ffe9bcd21d36f2dec7486a48769c9",
+      "size": 136,
+      "mode": "100644"
+    },
+    {
+      "source_path": ".gitignore",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/.gitignore",
+      "git_blob_sha": "e111e03d4a938baf95e565dd0312250c9a7e5dc6",
+      "sha256": "7281faf47f08ce8a8e44d317f23ebf530b8a82639981d3c2b08b0569c7dbeb0e",
+      "size": 43,
+      "mode": "100644"
+    },
+    {
+      "source_path": "CONTENTS.sha256",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/CONTENTS.sha256",
+      "git_blob_sha": "822c5a3c46cdbed58597f2fc85c120608da5cb13",
+      "sha256": "09d174cfea68e99a793ddc67903a9b3d6cd6fbf8f34a1a68fdeab3e1e0166392",
+      "size": 18877,
+      "mode": "100644"
+    },
+    {
+      "source_path": "LICENSES/LGPL-2.1.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/LICENSES/LGPL-2.1.txt",
+      "git_blob_sha": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "size": 26419,
+      "mode": "100755"
+    },
+    {
+      "source_path": "LICENSES/TI-BSD-notice.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/LICENSES/TI-BSD-notice.txt",
+      "git_blob_sha": "85d01e8fda3d50dea9e9df9478bd25699e065232",
+      "sha256": "421eeafc78a2e5fb56515dd883f1af5efd8037c05618f126e0a42b141fc8ae15",
+      "size": 1667,
+      "mode": "100755"
+    },
+    {
+      "source_path": "Makefile",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/Makefile",
+      "git_blob_sha": "33c219741c167bb18e7683357348041251ab1c9b",
+      "sha256": "97137b3bd4fb0bd119a4cb1fd95a0fa1a44fc4652a900a56daf2e154a47fd8e4",
+      "size": 3539,
+      "mode": "100644"
+    },
+    {
+      "source_path": "README.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/README.md",
+      "git_blob_sha": "bb0460cb0de1f0354f2275ab8d6a803cfcb4f052",
+      "sha256": "66058899d4d7950fd0232cb12b43910cb4f7f55ceced97c32d3877d21ece5b26",
+      "size": 11791,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/actuator_tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/actuator_tests.json",
+      "git_blob_sha": "d63f7f81ee85ed49f247b2a8c1d1f64fbd14f74d",
+      "sha256": "af6e77094b7e1f8dae0f1404e4c66cd6c84c03b8433713c4d6b82c8d355bfc7f",
+      "size": 88389,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/application-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/application-tests.json",
+      "git_blob_sha": "e5dc2f54ae57a3024cbe091234a179b01df5836e",
+      "sha256": "7a4d371bc5a849799bceb63ed680121d32166868cc8b3ba822e318a18a52a72a",
+      "size": 7481,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/board-pin-validation.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/board-pin-validation.json",
+      "git_blob_sha": "9d54842f988c4349d7996ec74ba0d5d1e9127908",
+      "sha256": "757c372880c4cadd833946aac7981a0a54fbab762f22422efe8ecc00920d8ff9",
+      "size": 3464,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/bootstrap-full-validation.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/bootstrap-full-validation.json",
+      "git_blob_sha": "c6bd0843ed9d91408b466c1fd2b65e003f7f007d",
+      "sha256": "e033f31e92bb4ac40f9dd3c5b7bffe330664265e28a25b315bd3e23894a5f424",
+      "size": 973,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/bootstrap-validation.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/bootstrap-validation.json",
+      "git_blob_sha": "da6203b62e5afe310bfd6800d490061dce0b21f5",
+      "sha256": "9cd0b8ba98945f76ccc355521179712f1adcb3c103684baec12f32b3fd12d8c9",
+      "size": 669,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/build-report.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/build-report.json",
+      "git_blob_sha": "a669adc3f847c9d5f31c7bf5eddab495737dd634",
+      "sha256": "3eee91b9277ee1924badd0660b7d1f514bcd3cde607b688e1ef311e1ef05e7ef",
+      "size": 8369,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/completion-audit.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/completion-audit.json",
+      "git_blob_sha": "0e958f7ff08016bfa9b45be0dcded81c62eff442",
+      "sha256": "7f763e5297b39de5d90a60469e50702129ac71be2c6fdbbaac64d1abf99b4a57",
+      "size": 1002,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/control-original-disassembly.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/control-original-disassembly.txt",
+      "git_blob_sha": "cf25214f09d40168b26ae5f65a00290a6bbe28b3",
+      "sha256": "fd26ee0a8316ac2c7df469bbf4157cdace1e9a29b98694adced6a393f4055605",
+      "size": 24465,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/control-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/control-tests.json",
+      "git_blob_sha": "5a35fe7dcacaa5182240579e583ad755d75defe9",
+      "sha256": "06f0ed462fccb7cad1c408d5828410044c2fb5bc6129e04b3d9f93732767676a",
+      "size": 177227,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/device-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/device-tests.json",
+      "git_blob_sha": "1a859f19bbd32661b37092ccecc56e58fbd8c276",
+      "sha256": "15b7f6b03dd1329cff880929d7e6e049d887a34eb88ec652a9239c28d022bff6",
+      "size": 44974,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/edit-rebuild-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/edit-rebuild-tests.json",
+      "git_blob_sha": "ace07eb86ecfa627e94bb5235b8c13d64145854d",
+      "sha256": "aad240221af8e6a56054f35b9b97b9601fbfd69606cbfa863f648486831b19d5",
+      "size": 2959,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/native-allocator-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/native-allocator-tests.json",
+      "git_blob_sha": "8b4b7b6aee1cacd91112f8432f41d385fa022b8f",
+      "sha256": "e57c0a1f4b425e2895137defb420450e7caeb553ae087da879d01d55b7ebf894",
+      "size": 13979,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/native-network-direct-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/native-network-direct-tests.json",
+      "git_blob_sha": "c5edf5d79254919a9951bf4dac20cbae19f8a2bd",
+      "sha256": "bcba084c3905c22bb603302dfb95be7c58bd5667446d86775f55c2422f37ecc4",
+      "size": 32744,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/native-network-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/native-network-tests.json",
+      "git_blob_sha": "fb6b41231055902f02235790f1bd5f8054e61e47",
+      "sha256": "67210ced3df4d8ce8c1d940a343a3c12a13b9d76d772bd0412b8536ae5b7b952",
+      "size": 452,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/native-serial-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/native-serial-tests.json",
+      "git_blob_sha": "b46fb84362114f18cb0127e5c1b8b91adef8f9dc",
+      "sha256": "8e336eb94ddff03ced151abbb60c3f5f855934c4046930b6863b293027891611",
+      "size": 50807,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/native-startup-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/native-startup-tests.json",
+      "git_blob_sha": "601bb93b6c6527225fdb886f54d8fb0073f2beb6",
+      "sha256": "42f0b79a3cec7bb4678ac0f7636fe45db5652a4610f08e9acd41a476347e8619",
+      "size": 95383,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/network-direct-still-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/network-direct-still-tests.json",
+      "git_blob_sha": "bb68760d37889e393e4e691aec4f18a5aa81fe33",
+      "sha256": "b58b9174fc4b0d62b302b0edc2e9f9b7861835e0a1f586505ac6e76683018c22",
+      "size": 59155,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/network-direct-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/network-direct-tests.json",
+      "git_blob_sha": "8f4a42c6e632ded035659deb8f6fba81989a2408",
+      "sha256": "2694805d4ca9cf8afbdadee4eaa2218b6d67237498ef7432bca18ba448f15ea6",
+      "size": 70177,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/network-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/network-tests.json",
+      "git_blob_sha": "2080178603e2c42f5e15d3cb9604bef0e8585708",
+      "sha256": "f4d40e5e68ad849d1b8094dad0524e3a0a4cbfa4d8d7da498163238892e609be",
+      "size": 652,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/package-rebuild.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/package-rebuild.json",
+      "git_blob_sha": "a4395bb991503218cc3b099d8052aefc27ff68bf",
+      "sha256": "3ec7da2b1cf71931654400fe59bd36f31773c57bb46010a580d95bb7ef916dfe",
+      "size": 5416,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/phase-original-disassembly.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/phase-original-disassembly.txt",
+      "git_blob_sha": "a4d79366de6d3aada142c84f70119a327bc7c05b",
+      "sha256": "9a1dc694eb3221250120219662d327c1862c535ef2dbbaa9859052c0f2846371",
+      "size": 16480,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/phase-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/phase-tests.json",
+      "git_blob_sha": "93869afd8f26bc97f6c7c86aa8df6cb22aac04ab",
+      "sha256": "95d7462791e43451b59d158efc457fb8ed4624fd916eb52af9f18d62febc44d4",
+      "size": 221422,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/production-source-check.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/production-source-check.json",
+      "git_blob_sha": "15f2c04be4d7fe9af79c161570b10fa83b71805d",
+      "sha256": "6682bb0c12fcc7e0d907eb22733396675a56e8225ce9bacdb639482ca9063faf",
+      "size": 263,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recipe-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recipe-tests.json",
+      "git_blob_sha": "fabf232075762fc6b0ca84af221116edb82bc40b",
+      "sha256": "2def63bd6683461036b33ee17df5f747d8610d012cdc88d67f2800381b72ab33",
+      "size": 354063,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery-map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery-map.json",
+      "git_blob_sha": "eeb961c92e6f3a3ddefc706909dcd4512ff5aeb2",
+      "sha256": "119c9aa29353940961791abdfa529b48796f844e8083c5b744eceb26281b535e",
+      "size": 602117,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery/core.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery/core.json",
+      "git_blob_sha": "b0c68b5be93d53416323ea24587e95d26b8da00b",
+      "sha256": "48d5d89147eba045fdda209a85baccec22c36acfefef96ba4642172712d2b749",
+      "size": 7776,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery/device-rfid-startup.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery/device-rfid-startup.json",
+      "git_blob_sha": "8355f7094cab21d60c1aa276d42034738938d03c",
+      "sha256": "f3833363119678c507f43396bc1150a4c3193135d96aab3931420e6bcb0149c0",
+      "size": 17434,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery/network.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery/network.json",
+      "git_blob_sha": "97f2b319315db580edc8f9cd9642d9eba7619de6",
+      "sha256": "d7c0548749694ccb2c25b92916754d8df0bbccb50f7e258ecee3ebb220075150",
+      "size": 167718,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery/recipe.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery/recipe.json",
+      "git_blob_sha": "d8913a8e519a052972584d822d28a6b663711ee9",
+      "sha256": "36f3316bdaa642b0c947aa3ce5491645a1e6b3357412c0df2991cab265e6906c",
+      "size": 22723,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/recovery/ui.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/recovery/ui.json",
+      "git_blob_sha": "7915edca42a824c1b12b8a51a3c056c5d1172949",
+      "sha256": "b4cd0268000691c888bbaea4ad76d1a515520182fd8332e3a4312b9ab0ea6c14",
+      "size": 211669,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/rfid-application-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/rfid-application-tests.json",
+      "git_blob_sha": "13af778172c9d3b80608a60df18b11a2ea07e243",
+      "sha256": "71843e46af5d432c0c9d271b059fdf5fdda36359d564914e12df07ed47fb9eb8",
+      "size": 10784,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/rfid-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/rfid-tests.json",
+      "git_blob_sha": "875b35398497e844b3159d6e5729248f27f2f224",
+      "sha256": "c75955709e5cbda629826258fcfb67b44fd5b2296a1b4942cb22ef364f269534",
+      "size": 61731,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/sdk-bootstrap-link-validation.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/sdk-bootstrap-link-validation.json",
+      "git_blob_sha": "4b892b3049a5991a694124ae3336ebbf6b465cc2",
+      "sha256": "702fb47974e69cc635a466214e22f6e590f3494ff8da45161fc911e2cbc71826",
+      "size": 2966,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/sdk-boundary-audit.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/sdk-boundary-audit.json",
+      "git_blob_sha": "4638039eb826f12c069cdbdef781e3caa165d434",
+      "sha256": "05f29bddf92a9f1a59ba3effa60fb8bff374a63b7f3eda1a5b9388772f2236aa",
+      "size": 2112,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/sensor_tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/sensor_tests.json",
+      "git_blob_sha": "347dd30347f99899d29a62fe5a25209019c81740",
+      "sha256": "2bcd344b257908fbf39682e6248c08593e5a1429f406d726794615110ee9a2c4",
+      "size": 1195,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/state-pid-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/state-pid-tests.json",
+      "git_blob_sha": "2b148aa00a34cece90cbcf87a39b63a19897c95e",
+      "sha256": "26ffa66f51c6bb2f53416a390b02d4a699357b735ca0ae66ce4db2068d8f3656",
+      "size": 53465,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-assets-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-assets-tests.json",
+      "git_blob_sha": "c2cd0182e465fce5766e1ddd106c0970b6c27296",
+      "sha256": "075ae42aef49dacb369069f2fc0fe2f9ddf9d2dd728b468b653071c23a45b937",
+      "size": 11319,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-assets.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-assets.json",
+      "git_blob_sha": "fb1c488e7786548276fafb6fc4e327e60b20d24a",
+      "sha256": "03529ac5a249e4a2463b2c571ebcd20336ffd5d08682641d2b6b6cb52c8374de",
+      "size": 23017,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-direct-display-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-direct-display-tests.json",
+      "git_blob_sha": "b4e1ac9fd04ee0d9003603b5a2cdae4cabefbe45",
+      "sha256": "a1e60523800cae2f1f789830cd70dabff096fb7ae3d6eb4f2c40a8c4bf4becfc",
+      "size": 201320,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-direct-menus-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-direct-menus-tests.json",
+      "git_blob_sha": "dda7c7c4a9155d29f6d4573a2cd5ccc001d3312c",
+      "sha256": "062201f61816ab94173293804961c80a6e255978044ee463d2ffa9b2d6967ce3",
+      "size": 90307,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-direct-workflows-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-direct-workflows-tests.json",
+      "git_blob_sha": "69b1ba58031afeac7eea2f7beed8626bee2b5bad",
+      "sha256": "905e57c927bc32bbcd071b87fefd0bc675067103ffd3f94a1f179660b5b790ad",
+      "size": 109419,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-interactions-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-interactions-tests.json",
+      "git_blob_sha": "67463cc00ffa98dfc1c0b1a3145ae0269f5823d6",
+      "sha256": "20183b8f33871a3af2c2a7e1c990d87fae1a15ccad9932113ed07ef0a5936396",
+      "size": 60525,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-tests.json",
+      "git_blob_sha": "710d1d787669ea5f46e676b6515cc5a87af18d6a",
+      "sha256": "414c5864178d6efa89d75341fa9f4fb2e541a6a4971163c33044573ced8f91d0",
+      "size": 65349,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/ui-workflows-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/ui-workflows-tests.json",
+      "git_blob_sha": "a6f97fe1f0b5c943c3e85607e3c404c30e36b030",
+      "sha256": "8ee4d03e9b3cf6ac361170d172d87aa80d0cc9a2195b64fb9798f2e7b5e89624",
+      "size": 38870,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/update-package-tests.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/update-package-tests.json",
+      "git_blob_sha": "264691152cdcc6a99ac12911f6dd3b209923a5cc",
+      "sha256": "694536fbc30c3bd0a71db52a53d1d6ff62762d7d8367fd84650a432e2c654651",
+      "size": 671,
+      "mode": "100644"
+    },
+    {
+      "source_path": "analysis/validation-summary.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/analysis/validation-summary.json",
+      "git_blob_sha": "96a80fa7d2e8c1531ee4a9868f1fb78db999a8ea",
+      "sha256": "8f571f52bca3b0c7f051f6b2cf450bd014dbfd0a0ebcfca54fd11ae2e4d261b6",
+      "size": 16757,
+      "mode": "100644"
+    },
+    {
+      "source_path": "dependencies/lock.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/dependencies/lock.json",
+      "git_blob_sha": "c289dce35d8f0a1b27bc83e5c7bb9437948ce480",
+      "sha256": "530369beb1fefce7c46e0d9a3ced9b5e4a63d862249cc2aa1ccaa6f2c93c3e0f",
+      "size": 4040,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/control-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/control-recovery.md",
+      "git_blob_sha": "cd4dc6136c9a513821ce472e18c16f6e1b012c3c",
+      "sha256": "739beef082afa9f7f63b218328ba861117379729e619d40c92cb562c0548b516",
+      "size": 8155,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/device-rfid-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/device-rfid-recovery.md",
+      "git_blob_sha": "33d7402cc7edf804f49b00c4edcea57e4042b736",
+      "sha256": "c3af7593a257c652981f6f10f7dd29e47e352438b36650ca24a3516ff6c97aac",
+      "size": 4563,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/hardware-validation.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/hardware-validation.md",
+      "git_blob_sha": "9e1f0144facc51f131d20e485e9a66a6ad16692b",
+      "sha256": "9e0392b5b6594d8e3f9b64f8e8b66d52d2a352e8d62666497974a4353fafa316",
+      "size": 3430,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/integration-review.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/integration-review.md",
+      "git_blob_sha": "789fd03c506ad43c1b8522dac0deec41a2249dca",
+      "sha256": "a78dd757403e4059d225fb24af364ed41892199eb63384f049664432801e7389",
+      "size": 3949,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/network-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/network-recovery.md",
+      "git_blob_sha": "c32e900c62713572acc7f45177fc2b54e31725a6",
+      "sha256": "8ebf29427142a9bf0124a5f909a07875fff3b204b8ada3d81e5c99814054ae58",
+      "size": 20573,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/phase-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/phase-recovery.md",
+      "git_blob_sha": "34431b4b568cc943170f22a7e1219389c25295d4",
+      "sha256": "d544c58551fe69458c4ea58dfe51ff9410a93352b489f484d594e5d62d0fff2d",
+      "size": 8226,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/recipe-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/recipe-recovery.md",
+      "git_blob_sha": "69626fc6da5bfa8fff70bd482a51614b9f8b729c",
+      "sha256": "bec69112c6320a02b3c6b284fa36e56bca91f9e4ba6bcc60f9d6e2d46eda714d",
+      "size": 12240,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/sdk-boundary-review.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/sdk-boundary-review.md",
+      "git_blob_sha": "3d26eb3e2544d419de816b088fd75a52b38f2362",
+      "sha256": "5eebaf463208a02ec3e7c811d6000c93b6dc8f75ac460a686ae21131885b3735",
+      "size": 13856,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/sdk-build.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/sdk-build.md",
+      "git_blob_sha": "206856bf672aea391c07ba1929e96de01aa09001",
+      "sha256": "d7fed77d998714fd7b277790440f243b86a4a505e5ba7c9b69f2667c941a936a",
+      "size": 16378,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/state-pid-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/state-pid-recovery.md",
+      "git_blob_sha": "3c91d865be0792957bfcf59d079082171656a4a6",
+      "sha256": "6b0e4e6369f76fb607c1a96a8476355623d0c23ade6c2ddbdc70f2830883a130",
+      "size": 9301,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/ui-recovery.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/ui-recovery.md",
+      "git_blob_sha": "d5f615d4fa3db99c1e850d488afc37906b7ae005",
+      "sha256": "11ac189da2a7b75ad913c7e46fe03bb03ae01a3241fffccce2f804bec5f893e3",
+      "size": 9963,
+      "mode": "100644"
+    },
+    {
+      "source_path": "docs/ui-repairs.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/docs/ui-repairs.md",
+      "git_blob_sha": "a0eb655aa9d2ec65fe7cbe67c19ee22020502969",
+      "sha256": "635bdbfd9f47b16bbead9c97bd8d7beae848c01e56a70aeb8d1c892fa27156c5",
+      "size": 6177,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/allocator_providers.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/allocator_providers.json",
+      "git_blob_sha": "c84fffa8fe2e8d98b21acc6c05f8b51e2f403c02",
+      "sha256": "9dbe09002c18c8e36997790d881c63254a71a9a01310f2357d013b1d6c7e64c8",
+      "size": 5566,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/compile_report.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/compile_report.json",
+      "git_blob_sha": "3e46d592f184a4b35e0164537fc0cfe5edf12feb",
+      "sha256": "a8ae5b004be7f7afb7c7c5dd2cfcd1707c73c725a2f646043f3e17a08f263fdf",
+      "size": 165525,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/link_report.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/link_report.json",
+      "git_blob_sha": "f32e74f51ecce84e5cb2f478fab8f4e79961dd9b",
+      "sha256": "2fa7a6afdd36b509cb265bbf2160424dae32f4e5e2bd3f2ad43832c4b50da158",
+      "size": 32692,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/runtime_boundary.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/runtime_boundary.json",
+      "git_blob_sha": "4b5a7038a3d424fb4d0e1e56bcc620a2ec605f7e",
+      "sha256": "c5de4866fa95e7bb21033753c5855e986b636de0e2af1a90240298f9ce5d79c0",
+      "size": 10295,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/sdk_compatibility_patches.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/sdk_compatibility_patches.json",
+      "git_blob_sha": "9b51b5e621028cab0a38140bb6b90d6d72dee183",
+      "sha256": "7465722858af8da7e4ded35451043d9072eb22dfb73bd67661a28d8e8579b629",
+      "size": 1392,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/build-evidence/validation.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/build-evidence/validation.json",
+      "git_blob_sha": "8fd1ea30da5e9934eaf3cf9221b9991114a6ac8c",
+      "sha256": "b3c42f7f5467cd823eb580a51bf025b9767627c0ef21423beeb01bcd91344aa2",
+      "size": 31320,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/firmware-report.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/firmware-report.json",
+      "git_blob_sha": "7bfe230eb667ad3e46e5ca4e99b0ba1b3b1dc7ae",
+      "sha256": "4bf98118e862bb0e3690e5e6e556c9ad8af962aa1fe5965716cf44272abf7e3c",
+      "size": 27403,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/pico-pro-recovered.bin",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/pico-pro-recovered.bin",
+      "git_blob_sha": "058fcec643aeb975d0ec76b3ef6b8b950b4adf9c",
+      "sha256": "ae2703e62fea7c56e266c5aefcdd98b1170b9fce45b2696124838d8c1551e31b",
+      "size": 160296,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/pico-pro-recovered.elf",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/pico-pro-recovered.elf",
+      "git_blob_sha": "619c51b859825c8a8fdfd31b82acd50821006b98",
+      "sha256": "38d4e0426c0928ad9b84c862979c539f788168a2f4e66c6f0ef7071d47e33cd6",
+      "size": 1516888,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/pico-pro-recovered.map",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/pico-pro-recovered.map",
+      "git_blob_sha": "22c4b8bfa036006a8adc660c92abf832bff4dab0",
+      "sha256": "728403488323768253c9b7701248f4110e8af37e814c48426275b6a21e172717",
+      "size": 1437432,
+      "mode": "100644"
+    },
+    {
+      "source_path": "firmware/pico-pro-recovered.update.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/firmware/pico-pro-recovered.update.txt",
+      "git_blob_sha": "5302c14b78ba5950905eafc060bc6082c2c5a4e0",
+      "sha256": "d19c8feeadeba81ae82505ae51c09a1b9a61bea35210fba254a5cdb732316a08",
+      "size": 320634,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/actuators.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/actuators.h",
+      "git_blob_sha": "4ed0041a57c87e72e59422d0c3cd77fec31a128f",
+      "sha256": "c82c7499378fb3f448e912f353207dbd2a1c6b423976b3240f75f6bd357a7464",
+      "size": 2312,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/application.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/application.h",
+      "git_blob_sha": "ee5a48b139afa010e179b708e6193d25fbaf1439",
+      "sha256": "dce8b2ff513ec6f182e6a3a3aa95d2b369a81438d456464f073f8235c559016d",
+      "size": 2403,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/config.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/config.h",
+      "git_blob_sha": "72726bf82b42e4cf35ac5bcce22d5b2c7b9f13fe",
+      "sha256": "547c141286b3ccaae77520901697168c9e7468e787d8bf0dcc3a20f398259bbc",
+      "size": 344,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/control.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/control.h",
+      "git_blob_sha": "a4d2dc2bf92e8cce33b7f8bf427623b4173f3a2b",
+      "sha256": "7e2567d5aeb4cbfafb0c1c4aea050d4fdc9354bed36013f159e067d0eb6f66b2",
+      "size": 3179,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/device.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/device.h",
+      "git_blob_sha": "9169afcf437a44624f9aecfb5b1e487e793e2c8c",
+      "sha256": "ee34af4181809b1cf88907f7b3b1defa72d3f7ea9cc0db4c630b52cfafda8033",
+      "size": 2523,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/energia_cc3200.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/energia_cc3200.h",
+      "git_blob_sha": "a6b6f14b4c873651dba8bcaada9e2190be240f6a",
+      "sha256": "b68298a6b4db5a3856ec7ae4a7ab0124df0af1cac0ce3e2b74ed3f97e0c2f089",
+      "size": 2725,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/energia_network.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/energia_network.h",
+      "git_blob_sha": "b60cc2d0a74993cae67428bf8648b1363eee4057",
+      "sha256": "4c07f22791a46806fad3a3d3478b1e4ac5a607c53390f7648ba4eec8b1088b57",
+      "size": 348,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/network.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/network.h",
+      "git_blob_sha": "9a394031d476f81a6a16e9b0bd9a71672494d4c9",
+      "sha256": "ce032e5a2bda66918527268eecaa076637731b70b79c7737e7121fdf769038e9",
+      "size": 11711,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/phase.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/phase.h",
+      "git_blob_sha": "70948175f442b8e305b251e66a9aa680fe29a201",
+      "sha256": "9b594aab9540b93728816fafa5732c100396e1aab89e2e17fb0ef10a61a33b56",
+      "size": 2612,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/pico_http_client.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/pico_http_client.h",
+      "git_blob_sha": "c99917a2fa283509f94e1581b127a643d863e7bd",
+      "sha256": "e5aa2468f134db47c47ffdcc9e50bac6b8aabdb722488e0e48fc3aa5caa16e17",
+      "size": 473,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/pid.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/pid.h",
+      "git_blob_sha": "936a48398f9d4dcb5c9ef05f112ddc3dba8c6ac4",
+      "sha256": "cbac06bfdb814e75d6c04e3f83bc5c76f87d1948e01605b421cfde71866df48a",
+      "size": 2426,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/recipe.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/recipe.h",
+      "git_blob_sha": "38f3b117fea36e2bdba70a5d65a09b114b6a5c5f",
+      "sha256": "ee69ae004b7511570244e404a412ee6593b52a0805b5c8a2c2141c0f430f1e97",
+      "size": 12087,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/rfid.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/rfid.h",
+      "git_blob_sha": "448d92b1d42611f7819c2c4c7f9f0c74e0b47c83",
+      "sha256": "46cd9701e39028d63654b941a0fb1c5a1fd636f4678e814f9f38091694531afc",
+      "size": 4507,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/sensors.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/sensors.h",
+      "git_blob_sha": "bbd06f0160e0485656888481268c59853489618f",
+      "sha256": "f6caff9f9cc628f6d931235a97904dbea1c49f01a211006661657adbfe0be1b5",
+      "size": 512,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/state.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/state.h",
+      "git_blob_sha": "56c91e662281d7dc02e9086990fe6c6a341ab649",
+      "sha256": "0b2735efe0603782caf628c07566aee6fa92629b0d28d3c4f6c5120203b98fd7",
+      "size": 7194,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/text.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/text.h",
+      "git_blob_sha": "b3c1f9013bde830bdd127e870dc06bc7fa1f3e7b",
+      "sha256": "0521837aae25b90de024edbc20d5029d92a2be40c2928810ac0f52d65cc15626",
+      "size": 718,
+      "mode": "100644"
+    },
+    {
+      "source_path": "include/picobrew/ui.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/include/picobrew/ui.h",
+      "git_blob_sha": "fe5b4dc3f82b641286223b243bac673f94646a80",
+      "sha256": "589c6468957f1fb4151022ac763a112db3f737c9bd4ef9c8be5407904a7e09ab",
+      "size": 21836,
+      "mode": "100644"
+    },
+    {
+      "source_path": "legacy/.clang-format",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/.clang-format",
+      "git_blob_sha": "4897a0df2b98f8a74efb9d0e92314cd5c5243470",
+      "sha256": "b4fef878fff3ca6b462755cad47f91e933e544c404e1b96b21005d350d9162c0",
+      "size": 224,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/LICENSES/LGPL-2.1.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/LICENSES/LGPL-2.1.txt",
+      "git_blob_sha": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "size": 26419,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/LICENSES/TI-BSD-notice.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/LICENSES/TI-BSD-notice.txt",
+      "git_blob_sha": "85d01e8fda3d50dea9e9df9478bd25699e065232",
+      "sha256": "421eeafc78a2e5fb56515dd883f1af5efd8037c05618f126e0a42b141fc8ae15",
+      "size": 1667,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/Makefile",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/Makefile",
+      "git_blob_sha": "b3568c7f2a740a806b1bad312de0fa69772e45d4",
+      "sha256": "b48584787588d736ddc4a82675259679f9aade959d414bc52ee38deb974af8a2",
+      "size": 74,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/README.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/README.md",
+      "git_blob_sha": "b7eca7b7a6d55f90801e6a2f66760fdd72d63f73",
+      "sha256": "a65d4bf6a8c79ba0438d1ab32aa960e0fe53d737a5fe55825d5316ac5d5f5f86",
+      "size": 7360,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/SHA256SUMS.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/SHA256SUMS.txt",
+      "git_blob_sha": "65a27e0854fbedf6ca6fe354e26444458c74fbe2",
+      "sha256": "c346f6fd7333c9548e45acfac386b395e8213911885afcbdebdaf18efd0145bd",
+      "size": 17743,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/core_return_audit.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/core_return_audit.txt",
+      "git_blob_sha": "fb5bb484b3596b31aeb5767fb16fbcb1caab8f5c",
+      "sha256": "690fe30db12d8865ca4d8018219d06a5ebb9995c0f439e5169ce6cd56100cdf2",
+      "size": 10782,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/function_map.csv",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/function_map.csv",
+      "git_blob_sha": "1215531051ac31ae05850bf950485f9522f19ebe",
+      "sha256": "02125edbe03b616453ed265445912bb71edfc0def2aee9e4b5b3dfadf7feab64",
+      "size": 74861,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/function_map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/function_map.json",
+      "git_blob_sha": "3400c64d01d1190f9e4e80a747e31f2e5a9f3eab",
+      "sha256": "f17de0dc3a56761fadbb48c17d35f190adbd0ee8d61e9b981de187e05fffb182",
+      "size": 376569,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/global_map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/global_map.json",
+      "git_blob_sha": "524c525efb72d78e7e32789b999eeefe5ab0b854",
+      "sha256": "f06f131c6edfab4df4b2ce872845a2a21fa1cb742c3bb2f726e338e3394e3267",
+      "size": 234034,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/analysis-tools.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/analysis-tools.json",
+      "git_blob_sha": "e6076afbb8a4b78d783381d7bc71443c6a87b69e",
+      "sha256": "e055b1baa0eb7492f13b3344dbebf00e4490476f9f1114a2d272cd401df767fd",
+      "size": 616,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/annotations.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/annotations.json",
+      "git_blob_sha": "8e39026e07d627c19dfaf8ff583d981c8c411f01",
+      "sha256": "dff4c6ed3f9526ebf50722497ce95ef838e6e337100d4ab702de36d46f216b44",
+      "size": 39055,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/checksum-crosschecks.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/checksum-crosschecks.json",
+      "git_blob_sha": "b6e7efad8b897ca401fb33e6adcd81ae4c3fc3b9",
+      "sha256": "2bc4ef7daca9538ef97b8ae08d68b14b736adc1734f4855527def2ba5112c241",
+      "size": 1175,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/driverlib-byte-matches.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/driverlib-byte-matches.json",
+      "git_blob_sha": "c73f2fa373ceb39aa4e44c79d17ffd8b802186de",
+      "sha256": "b7fd23e09802774dc73eb3a2f9deb78c83f5a32eab47710e3be68c97128d170b",
+      "size": 19234,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/findings.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/findings.json",
+      "git_blob_sha": "ee686b4b61c776d50988df6046284c08f6de13ef",
+      "sha256": "8dbf6b0ac1e9e6cc19c65c2e00c980c07abdd8032bd254545ed835ae18e2277e",
+      "size": 2064,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/sdk-provenance.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/sdk-provenance.json",
+      "git_blob_sha": "f726f9725b7fe379c08e6c17977d38a13d539fd4",
+      "sha256": "8fe46e8097d8f1e272b957c0eaf5086dc520dc987286edaffc6e8182c12a6f87",
+      "size": 10233,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/provenance/upstream-provenance.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/provenance/upstream-provenance.json",
+      "git_blob_sha": "ffe29e0e1581102fedb296e9b3b6dc783a80f9b1",
+      "sha256": "17f6f12ffcf6955781f6a5e4169a73b969cd6a5109999739a13d0fb1dc2c4f23",
+      "size": 1633,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/runtime_float_audit.md",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/runtime_float_audit.md",
+      "git_blob_sha": "a4792784b3a66881afb949aa7aeee236889625f3",
+      "sha256": "425973e92c83eb044b2df6ce1794aa182dba06e17592180d8a077af389409768",
+      "size": 6195,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/summary.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/summary.json",
+      "git_blob_sha": "bd3ead9089c0398259bdb11df596f0889923daae",
+      "sha256": "4c85f9a386604495183826cd16b0da88f3c8e49ebd08c21a08f6d5f0bdc0c575",
+      "size": 622,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/syntax_check.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/syntax_check.json",
+      "git_blob_sha": "18204813575727c02143fda6fadf4e1d7bff826d",
+      "sha256": "6ce5c260e3db6ecadc2b81deaf2c3eb14fa061173c0f10a1135b0703aa2f4a32",
+      "size": 91504,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/unresolved_abi.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/unresolved_abi.json",
+      "git_blob_sha": "bf10fe77707e4be2fb4e9ac1688bd1c72c44bca3",
+      "sha256": "0d3b2b3e6eb0c706ac753fa4dcc48fd598ef55c68dd55344c61962f4b864ca94",
+      "size": 3404,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/variable_map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/variable_map.json",
+      "git_blob_sha": "7053b84c8ad92814f81b5121d1e9b586cfc3f41e",
+      "sha256": "65c58267f520d2299c0fb26c48fe8a96e05c5e33437ea860f861d933df72964c",
+      "size": 628325,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/analysis/verified_return_fixes.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/analysis/verified_return_fixes.json",
+      "git_blob_sha": "8338b466203e562e4d19c5f1b2d72b71b239fab1",
+      "sha256": "4dcd611a69bb06b96ff2c3e9dadc8d5801396eeb7238291e9e2b5651382fb823",
+      "size": 11066,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/action_ids.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/action_ids.h",
+      "git_blob_sha": "56c8b1408228cb009661dcb4423032aeabc05e03",
+      "sha256": "0850c411f0c92c4f06607f8d679aec3847b08c1b6b7c3bfc7b91a82723cb26d1",
+      "size": 2090,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/action_tables.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/action_tables.h",
+      "git_blob_sha": "5fe02a0c4837585a96e1773c6931bcd5e01407d1",
+      "sha256": "612e0cc1da28638272ce2a0ddc474c992912157c37a215ea16d51e95291f1782",
+      "size": 153,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/actions.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/actions.h",
+      "git_blob_sha": "1152d7c3b6bd6f7d309f7c3edf46e8bb45752d39",
+      "sha256": "1d0908bef6a0455aebea62f147c4adebff3112bc5aa755d09f93221da4921a47",
+      "size": 275,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/actuators.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/actuators.h",
+      "git_blob_sha": "508c3a726efcb9897ba93a1e252c18f370e69c75",
+      "sha256": "4eabe2e9169bfa4df32b1098d539e79ddca114f6ed396c126702766aa00f394b",
+      "size": 494,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/arduino_string.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/arduino_string.h",
+      "git_blob_sha": "da8a3eccb2dcde8be68ccec30a475d290bb46f7a",
+      "sha256": "35efcf25b4854996e24a0b5ac1941a5b2a677f0e6f0b5636f693e6f7605c42f9",
+      "size": 579,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/boot_image.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/boot_image.h",
+      "git_blob_sha": "07bcca77ca8a702c19267726583f7b90ea6e37e8",
+      "sha256": "789e645541ff85a1581dc0b8a2d95660eccbcad09d05ce4d99478029261a0dcd",
+      "size": 509,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/brewing.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/brewing.h",
+      "git_blob_sha": "d721d6b29670e410da1eadb63a5df025ce74ec17",
+      "sha256": "de4e929cb215bc39f636ec4e203b5ffd98fe9ad4000dce2beda3d0ebd0562bd3",
+      "size": 2182,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/c_library.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/c_library.h",
+      "git_blob_sha": "09a90e1e0857895379ac2180b4aaa6436921192b",
+      "sha256": "75a3a408008a89a711fc5f83b90adbd921792a5fe4250990edd82de39f7dfc7d",
+      "size": 2598,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_adc.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_adc.h",
+      "git_blob_sha": "f706886084b7c5ba2f8f6946fc5392635ef58d8a",
+      "sha256": "763ea9e59fb15365bb119e23d93e64e8225eb32e070b52f5a7b7a06f8c744017",
+      "size": 333,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_clock.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_clock.h",
+      "git_blob_sha": "eab551ef2757a2e84826f092a75bce7443b9f309",
+      "sha256": "ae8fd812e483f6e703e1b77524f5b63a51321107952509da81152bb08b333c90",
+      "size": 584,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_dma.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_dma.h",
+      "git_blob_sha": "55a3b9642cc949aa0362fcc65141e217f00852c8",
+      "sha256": "14fc7926f6180ece34d62a5a955977cab4cb3e9b1fa584c19ae6753d7124f3c0",
+      "size": 797,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_driver_helpers.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_driver_helpers.h",
+      "git_blob_sha": "a463a92b189ac7dffc991c6e641988eb79780747",
+      "sha256": "246ceb77ee07c6be7f0e5ba62e30a9c38c5ae53a384696e64ff7fb8f7c6e8591",
+      "size": 1259,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_gpio.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_gpio.h",
+      "git_blob_sha": "d62a6856f58da7aa6fe06335b7ee477bd8086c32",
+      "sha256": "760df1ce9c522580359a4bf51011a78ee95c1212485e03f399b42ad567116b8a",
+      "size": 757,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_hash.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_hash.h",
+      "git_blob_sha": "f14a04d6105e4f179ef4b7ac28ff3a733e7eb96f",
+      "sha256": "95f196fe38232c64b557038abfb7cf8ca673a22689fac10c12b57b18ae2ef41d",
+      "size": 715,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_interrupts.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_interrupts.h",
+      "git_blob_sha": "108170b8b21fd34b477c6e6fe9a73bb734396438",
+      "sha256": "16d0cf8bf3137433056a0d3588aefc7f8113ae92ce379ef0e02efb77a3a9b20d",
+      "size": 574,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_spi.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_spi.h",
+      "git_blob_sha": "dc97caeff4c890b17fe87831f5fa763bf029cd5c",
+      "sha256": "02dfbddc85f9d2e5a0f795725d5a112d4df7a02eeab53950b593d3263734dbbc",
+      "size": 1080,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_timer.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_timer.h",
+      "git_blob_sha": "c0beff30cfb754ea1d1b3376c53aca1e50d91680",
+      "sha256": "d5e8cb6f910ad347386c771fbe6a6a0efdc2d70e298816eb5c8969016b768fc0",
+      "size": 568,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cc3200_uart.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cc3200_uart.h",
+      "git_blob_sha": "443e570731b49126ac10071f610fc9d2f48706f4",
+      "sha256": "e4d9a8c0b544b9ce0c33dc44f23189532f6337174cad498271786879a145c600",
+      "size": 541,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/checksum.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/checksum.h",
+      "git_blob_sha": "fee567317e672a1604697746e3ffbc5c84571e81",
+      "sha256": "eb813ff4442cc3128975d85c5d8bf0a7d5d08c2a9b8be120ddec31a0b9168278",
+      "size": 252,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/core_layouts.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/core_layouts.h",
+      "git_blob_sha": "6ffac621592ab5831937411272501ce3cd3fd0e2",
+      "sha256": "54c3e99104982e89502156b7dbf01e280a9e438c6545d7b766c93d148d00dc1f",
+      "size": 2805,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/cstring.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/cstring.h",
+      "git_blob_sha": "3832feb457e0a0c0dcd767bc9b47028293cb82fa",
+      "sha256": "d68fdfee723addcb1cdf8d464126b46e6e7fe44cfbb34a0276a9a23c55716de4",
+      "size": 325,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/diagnostics.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/diagnostics.h",
+      "git_blob_sha": "4dc31f0e32c99e33f91f2544614ca9ed7d0062fe",
+      "sha256": "40aedf5fab52ea267767b1a06ee125c3d2491a26b4cd1b1c1791653164c7509b",
+      "size": 900,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/display.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/display.h",
+      "git_blob_sha": "ef1a6d7470c7aac63e1d87cfcb6ff912722976df",
+      "sha256": "2959f969578eb18b7382a6e1913b58d4e96404160c0ff15fae6a76cfe7245763",
+      "size": 3354,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/display_driver.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/display_driver.h",
+      "git_blob_sha": "533c2cc89bf13148535a78c7a7eff6691926f4d9",
+      "sha256": "fe9c569a2dbaeb1bfef872c0d57be9afe448ae718750985edb350dca8cb72cfb",
+      "size": 281,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/encoder.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/encoder.h",
+      "git_blob_sha": "5fbc92056a4b85106d1e067f249d21995897fb9d",
+      "sha256": "82f4ea07818ff6ae83c4bb107d055272f7dc25e771741333a16fb04ad1153272",
+      "size": 1199,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/energia_runtime.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/energia_runtime.h",
+      "git_blob_sha": "6d65cc144281d95f3c5799ae9c23134aea7b21a2",
+      "sha256": "30246e5e05e188b1d3c64be342e2246c8d92236976b6753294c9366245d0b4cf",
+      "size": 442,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/filesystem.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/filesystem.h",
+      "git_blob_sha": "ace152f8d74ed3ddd1e45e4856a2a1da336569cc",
+      "sha256": "18f0f4d65069d53a05d91e60b3e83b44a864ca3555473f7575acff3dff90e5a1",
+      "size": 418,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/firmware.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/firmware.h",
+      "git_blob_sha": "5e9652e902c9c632b7d746d1de86b8ef50cf4de1",
+      "sha256": "d0c47558aea04d26aa060557cd4b85052c84d3f9d9d7f4fec9b9e20b3c981c0d",
+      "size": 2610,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/firmware_update.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/firmware_update.h",
+      "git_blob_sha": "8880a33c9baa283abf0be077967a2d68fc6277f8",
+      "sha256": "62ef1e851ebac817277f83095c2a69956d58f08ace6dacfc491c97af165a18a9",
+      "size": 528,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/floating_point.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/floating_point.h",
+      "git_blob_sha": "90e3c56328ee389bffdbc00b95fdf955b6324fa7",
+      "sha256": "0c4babdadf0848fd43fd5b7c595c8387657aad8e44a610b7837cf201137e93b9",
+      "size": 906,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/formatting.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/formatting.h",
+      "git_blob_sha": "047a47a375bfba666271287051850991b51c38f7",
+      "sha256": "a354b3d88ca511b3ee9f9117e971db6541a52428b54a5cc89f63901272a70a06",
+      "size": 245,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/graphics.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/graphics.h",
+      "git_blob_sha": "cfce161fb5d7b9c41291e34785682782976bbc8b",
+      "sha256": "5c99d6575c8cfb60b3b815cf44087f0cc568e0b12c9414b1948fc07a88f26f2b",
+      "size": 2185,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/hardware_control.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/hardware_control.h",
+      "git_blob_sha": "b03cb557f6e67bc574eed4d66f86ec6ed5cad1f9",
+      "sha256": "8e299c135d266776edd18a645d497c799c482a0a36bb9c3551c3c760c89be525",
+      "size": 1593,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/hardware_serial.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/hardware_serial.h",
+      "git_blob_sha": "6eaa971608634195549d89513050f5bdcf015cf9",
+      "sha256": "46a80fb7dbcb8211f677713575c7f0b2f96bd35a0ef8692d3c463d6d48f576a9",
+      "size": 777,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/identity.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/identity.h",
+      "git_blob_sha": "197b0d461ea53f1e9564fe2459617f7ce78aaa8a",
+      "sha256": "86fc37b72067c1973d9fb37927fb7239e8441016fcdbf769a26560fcdf7389aa",
+      "size": 184,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/initialization.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/initialization.h",
+      "git_blob_sha": "8ad84e09800967fa0e5201cd5f539dc1f2d343c4",
+      "sha256": "6aa6eaf0403337c4f97e61c96862931f01e26b87da24c3007c7ddb831ca8b612",
+      "size": 210,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/integer_arithmetic.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/integer_arithmetic.h",
+      "git_blob_sha": "4c22d4b40a65b0db78c4e6d963121c6255ff02e3",
+      "sha256": "018216a2b342003b2a837df5193aeef4e00d28520d8d8d77c4552663788c1f09",
+      "size": 223,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/libc.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/libc.h",
+      "git_blob_sha": "0b8f1cd88bb0f67faf10d548d648777a309e607e",
+      "sha256": "f8ebf0f3308e7c932a52559be310b7f2d45617b3be47af369b5092b34bdf15fc",
+      "size": 1082,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/logging.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/logging.h",
+      "git_blob_sha": "5dc4e57b2049faa52395763a6c25b77518ee6817",
+      "sha256": "8a3024d04368c0117888f55593f8d9d2bcf811ded4d3da1348f5fc808a7092db",
+      "size": 314,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/main.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/main.h",
+      "git_blob_sha": "b0d3d470daab6d79859e9d24662e8795eb8678c0",
+      "sha256": "3fc93528c2f6c39b7ed8e431768fb1539f7d6c7b170c571cb28a68cc72b42a0c",
+      "size": 204,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/memory.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/memory.h",
+      "git_blob_sha": "5f7199f319ca1353de7a0f783b892296bb9d15e3",
+      "sha256": "07ac24541bdf5a64ddeaa7ff8554b7d02c01794ce8b5a921f7743d1b1cbde40e",
+      "size": 118131,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/menus.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/menus.h",
+      "git_blob_sha": "1ad4477e60fe7d8c34974c7ef0d2d767f58a404b",
+      "sha256": "8b2a121f5022e3b99a90c0b34d376d9776503721898a3c5eb27c28c2d5cc1896",
+      "size": 1214,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/network.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/network.h",
+      "git_blob_sha": "8777d8aeccb208de19632024fca91e27b5ad934e",
+      "sha256": "ce3e59a2bcbd206493dd65aaeece804af2287414ad6e8937b7b7e7ac45ab98c6",
+      "size": 849,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/network_addresses.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/network_addresses.h",
+      "git_blob_sha": "c6de19c69fdb40cfeda72fc389b714ae957baeaf",
+      "sha256": "9196dced85d72186f8b9b376352f3c415acbe1a037a62da14f87ea4baa4f1c2b",
+      "size": 622,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/network_api.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/network_api.h",
+      "git_blob_sha": "86a163e71f1444649b4198ed5ae6f7ffaab5bbe4",
+      "sha256": "2d0cf3afdfa1eb421ec86280d1cb6a448d972dba1fdf9c19fd3079766c5ea35b",
+      "size": 2197,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/oled_display.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/oled_display.h",
+      "git_blob_sha": "509962c909db7863ced7c0ac712c183a497d24d9",
+      "sha256": "f9e5374a78110754752b95677f45bad2c8c3c368a60ee194c2cc2e43b42466ff",
+      "size": 259,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/parsing.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/parsing.h",
+      "git_blob_sha": "4a028cdf7a96efb41d7502f74f2bb8865b690989",
+      "sha256": "96ed179361725d8fed2b227c997df470821d627b588e21ccc9514fdd216d881c",
+      "size": 478,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/persistence.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/persistence.h",
+      "git_blob_sha": "2aa3c13526b7f106a1341342d462bbb20d01bc15",
+      "sha256": "1c53f0a23805b982ba740b5ea79ebacb4687dbf969ebf21ef97ffb987903f3dc",
+      "size": 1435,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/picostill.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/picostill.h",
+      "git_blob_sha": "ff64cfdd2cae9faeb53de9a66a2d23383d086847",
+      "sha256": "d4b3e4b21b2f1bf32c3da509792fc5d8c743a328bc6d531d27fc5df0c1381a1d",
+      "size": 1347,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/pid_controller.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/pid_controller.h",
+      "git_blob_sha": "229d703554a2472041ab57d57f718207bf56b5f0",
+      "sha256": "36ffcee5350835b0d421f50e9956a8775579d4d6194ba85cb77601b3f3dd87c4",
+      "size": 927,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/pid_controller_layout.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/pid_controller_layout.h",
+      "git_blob_sha": "dd3907dc0c4b227581325531187ebc963655d2b9",
+      "sha256": "8adf8b64e5675c901109c9b78a7bd402bd22ced7547f42d5a65ed2bf9b58daec",
+      "size": 2191,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/print_stream.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/print_stream.h",
+      "git_blob_sha": "0678f7ec826a3916292ea9d9065d3286693e72ca",
+      "sha256": "267af181b6c26804f0a51a130fcfdca451b58d52f4bbfa1c9dc0a60437cc972f",
+      "size": 1294,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/programs.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/programs.h",
+      "git_blob_sha": "866703fd9e452a3bae343611b735b684313696ff",
+      "sha256": "cbdf18206d712b07394aaf411fbf6f10c1acb3abddf172d44f6889cd3f9f59c9",
+      "size": 720,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/recovered_types.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/recovered_types.h",
+      "git_blob_sha": "853f4a7af34cffc4633daa4f19a84aff6b70b88b",
+      "sha256": "e7b0c38bb7d7181c9f74e9940a84d35199d2bb32d9ef2dbd3ead6a8a3bc8ed93",
+      "size": 4466,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/rfid.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/rfid.h",
+      "git_blob_sha": "9fd00cbe29068ca7af68c28af81e37b4009eca52",
+      "sha256": "8d5f7e9b497cd47b4a0465c551331e5e921256cc6f620ba5e1936fb02fc2a8cb",
+      "size": 488,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/rfid_reader.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/rfid_reader.h",
+      "git_blob_sha": "fc63476f7ab46418bbb9e1d09d569e47f956e192",
+      "sha256": "7eb814c524dc6361375ed9d3b3d2ecea5451158f4adbe237ddba8584495b560a",
+      "size": 2008,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/screens.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/screens.h",
+      "git_blob_sha": "f384975ab4e3811660fca9671295fccfcb5fb6e8",
+      "sha256": "942259560aee232325804d7374a9acb081bf3544290a8c661124ce8891d9da74",
+      "size": 2115,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/sensors.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/sensors.h",
+      "git_blob_sha": "4c16fab03257ae47b17771dcbb019dd50160a6b1",
+      "sha256": "ac8a8a8116a5edcf8cf44b22a8489aeac29c3220d42c3a01b5658b1d0c13492d",
+      "size": 478,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/serial_flash.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/serial_flash.h",
+      "git_blob_sha": "805759fc3580e7afcdee085632cf969961f915e2",
+      "sha256": "1a069155ac5907220caf63b477602d389d9d5cb4e36793e9d27f38f2a8e58313",
+      "size": 630,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/session.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/session.h",
+      "git_blob_sha": "7ad308ad2273d525da0ab442533269f3372b9e1c",
+      "sha256": "60af7e02164bb8ad292a3455e8793ffb9d616472b99caca027511978870e5c92",
+      "size": 410,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_device.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_device.h",
+      "git_blob_sha": "07a3e3b3e63b8650eeacdd8a17cea3fad1f9c913",
+      "sha256": "1f0787a9d11e852156b1eb8bc7ff710e5e394b92e7e253ab66be684d15b05e96",
+      "size": 288,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_fs.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_fs.h",
+      "git_blob_sha": "47198a6ed570405f47b812624a17ed4e54994002",
+      "sha256": "dbb670cbe2954a13c0672d8cd2ed32e18806ee3aed4736ec7ae87ac059d6338a",
+      "size": 685,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_netapp.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_netapp.h",
+      "git_blob_sha": "c57bf646a9bc3a4a0adb6c528f14ebb09eafcae6",
+      "sha256": "42ce646e866dca427fb4a40995d43bab17d324596bef7ea564decbc1a841bdb1",
+      "size": 713,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_netcfg.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_netcfg.h",
+      "git_blob_sha": "79bf32940c7a05134a648e6092a96f2c60091898",
+      "sha256": "da035771862f94ccbbb998eaa97455d77a0faac40f22d6356ed5d8a37219029e",
+      "size": 365,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_protocol.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_protocol.h",
+      "git_blob_sha": "491561ed6f0c43ccb1f1800fbaf4962e3ccfb267",
+      "sha256": "b84f6d5eb1d8ce79bf1c488579cc88f03280fb4ea072cc937f0236e3a6b67332",
+      "size": 4868,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_socket.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_socket.h",
+      "git_blob_sha": "d41e6a5fa2ddacee809bbd6638a2ccf68d0a2df7",
+      "sha256": "03c3cb48d727094d7c5ac0e116b3a214add723b278e6eb274585523c797bdc85",
+      "size": 765,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_spi_transport.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_spi_transport.h",
+      "git_blob_sha": "0336a7f9a5c75a429d2859942ad0a379e31ef42e",
+      "sha256": "a17443316217e870f574596d513b2e96ca7073d3e53b2b92413e8d965d255d11",
+      "size": 699,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/simplelink_wlan.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/simplelink_wlan.h",
+      "git_blob_sha": "9dbeadd4f6a01033e5323db072b8baaeba7792a1",
+      "sha256": "c53f0cbd67aa55a218a56ae2e05642537db2cd622677f9301714eddfe328562e",
+      "size": 463,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/software_float.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/software_float.h",
+      "git_blob_sha": "d21ca6addf38e48ace08b50af6954855e4c35d8a",
+      "sha256": "28b7164e8f1570ae9124d8f665c42794c3151a87ec3b0db9b42af7b44f39dedf",
+      "size": 3237,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/spi_bus.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/spi_bus.h",
+      "git_blob_sha": "ac2289ba42da7d8e025b22fcb5fa101e879d2e5f",
+      "sha256": "1c8ef1f988be79794f18da5535aad35550611cdee06c2a1c0fe699b191dbd196",
+      "size": 367,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/spi_link.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/spi_link.h",
+      "git_blob_sha": "7a125ea558bb6115170382b32bc08c3cf0d8c241",
+      "sha256": "257e7a802bfdd5b652fda9f89db5bdef99d1a09f8fb6d08d5acded1be388611d",
+      "size": 306,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/startup.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/startup.h",
+      "git_blob_sha": "f1c6f1fb1476280b7a5c21ad294892164846bb21",
+      "sha256": "95c654e2ec8a919306233d40823a0474c860ec6895ac9883916829df0273c718",
+      "size": 290,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/still.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/still.h",
+      "git_blob_sha": "cac2f835523e8fb77d9c1e4d0f58afff09cd7b84",
+      "sha256": "d1e63148bacb5fa9486e505c9fb5f456174a3ad834fbaff395054f8c0fa9f4f3",
+      "size": 709,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/storage_settings.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/storage_settings.h",
+      "git_blob_sha": "9544a3e3966d9c4ecc34c73eb6da6f5215404336",
+      "sha256": "cfb97ef4b3b9d6344de1c28c93d414257b04555ca4b19cb5ea3e4d3883cccc54",
+      "size": 515,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/strings.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/strings.h",
+      "git_blob_sha": "57ec8de2f5d23f88503572a37bd92bf4c5afd0d8",
+      "sha256": "454d898cea141c041577f89c28ae489fde64286f667fe88dc3de3c186aa33c44",
+      "size": 300,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/temperature.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/temperature.h",
+      "git_blob_sha": "a6ef08d49aa3e0f00e0fb09bbcaf2c5f810d590c",
+      "sha256": "510e387aa1052f0da7858feba8ec73f54ef7e77a147ce1f130e26efb85c6b615",
+      "size": 546,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/ti_drivers.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/ti_drivers.h",
+      "git_blob_sha": "a94eb75f94d8aab8454017cc24a5d97f18dfd5f9",
+      "sha256": "81c22394a11c89749581a128c52320446d71c8b019c032321f16c814d2822ed5",
+      "size": 640,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/timers.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/timers.h",
+      "git_blob_sha": "d12babf45707c3e2bbb68a395e9536a41aa1d7f9",
+      "sha256": "27c01e5dec47230f5b99ebc92103a4bb522bf1715c4b11d4b298c63e47a11ac1",
+      "size": 181,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/translations.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/translations.h",
+      "git_blob_sha": "4503fe1d07cf7f851a2bd43332ace3957453e08d",
+      "sha256": "9ca322b9f6a05e85413656bacf7e89c2d7232bb33693da2251185531e66617d2",
+      "size": 1077,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/ui_menus.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/ui_menus.h",
+      "git_blob_sha": "dc695875d97be0dd48a24db24e0f9c57b16c6c54",
+      "sha256": "21558379003fde033811291b0da36faa2733017132569290d9dbe50b4be20c68",
+      "size": 1215,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/ui_screens.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/ui_screens.h",
+      "git_blob_sha": "9a43f3e66d5aa5491b8ce3c26f3ae0c10445fbd2",
+      "sha256": "af4f2f4b696a14d8c5d94ad11a420d440ce7605094c59760a460864472f6e2b7",
+      "size": 2796,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/ui_workflows.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/ui_workflows.h",
+      "git_blob_sha": "1e93bbd081c7bb79e93b85e50656502b3f7fae18",
+      "sha256": "29981973655d956077a62dc2ef03a3933935a7fdcb809a75cddc33790b93cbf1",
+      "size": 2133,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/wifi.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/wifi.h",
+      "git_blob_sha": "9570d26995b94338550f8d0d3b30d8e476a9cd81",
+      "sha256": "a536a730da29f238bec7dc4b5fd03eca062e22c66704ac31055f0347bd9df65d",
+      "size": 1579,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/wifi_client.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/wifi_client.h",
+      "git_blob_sha": "273e296ffa357bb274e6b408ac81d20a7b0e0502",
+      "sha256": "9f91e3f8becebc727a2bf0be4910961be7ea18e313d6053b9e6c902e30b93f9f",
+      "size": 1162,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/wiring_adc.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/wiring_adc.h",
+      "git_blob_sha": "7533ba0ce5419e8949f6c69ed5ceb5c962b81e8c",
+      "sha256": "fea2ef16f2cbcb47bf36aa5a4f501d08500f6a3fce3f2b84f2844bf1358e6636",
+      "size": 180,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/include/pico/wiring_gpio.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/include/pico/wiring_gpio.h",
+      "git_blob_sha": "f87caadd1eea286273a6b26a3347afe28b6ae975",
+      "sha256": "a6dce824e1cb131f546e230b567a7d7d04c66269388243746436d090e42f9492",
+      "size": 466,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/mcuimg2.bin",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/mcuimg2.bin",
+      "git_blob_sha": "205f96477f9af5fd05e5506304d4e4b79e753c94",
+      "sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
+      "size": 162792,
+      "mode": "100644"
+    },
+    {
+      "source_path": "legacy/src/application/action_tables.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/action_tables.c",
+      "git_blob_sha": "5d5099e70eec1e96fd9bfa16675fdb0319dacf10",
+      "sha256": "bbd215f8c224d4a741a13374101ad8d14c2add03df26db81d309fd52e99f7a6d",
+      "size": 3431,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/actions.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/actions.c",
+      "git_blob_sha": "0fe2431829cff1510111d1aa999e1af77893fcf3",
+      "sha256": "c31bc13c68e9a711fd8f2d33d2746cf694100615acc93a148fae441cea231388",
+      "size": 1246,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/actuators.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/actuators.c",
+      "git_blob_sha": "efa3d95761d891e4d4faa74ab579d0de3e350a99",
+      "sha256": "b948c7c94ef377c700e48497b033eb5ac8e0e593e050f46446c69ff670b7fd3e",
+      "size": 2127,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/brewing.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/brewing.c",
+      "git_blob_sha": "41704cd5f31c1a7fd3771fe7a010d90f6989c3d4",
+      "sha256": "7de6e00e36b7fa3d527a6f666f79daea6e6ff78e96bffbc2e6ae2e0bb0be7566",
+      "size": 92802,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/checksum.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/checksum.c",
+      "git_blob_sha": "d2f6396017eeeee461a81dd3df5512f909e84726",
+      "sha256": "eae1690eafd4c70c131cc92e73af632cdbb241b41406952d941e8930b535f22b",
+      "size": 2959,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/cstring.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/cstring.c",
+      "git_blob_sha": "508fc6994a91805070ae011819f137637ef66e9b",
+      "sha256": "cc87f6be08ac51092d30fbbee0c0be90e1aaaeb31b431322173b8e98ada4ec2e",
+      "size": 1991,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/diagnostics.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/diagnostics.c",
+      "git_blob_sha": "79ba56af0e57cd28c507de604f8ee47661b21f7c",
+      "sha256": "1363cea9255ac45288f28ccdf5c3daf8dd8d345ce5403850f4394aad45fc44f2",
+      "size": 19713,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/display.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/display.c",
+      "git_blob_sha": "6ba161bca4d2e1b224a2f991b056a22510748c4b",
+      "sha256": "5ddc7c0bfcc504d76892d59ba630b4f88fc74caa87e930ddb4b7c9381db8913b",
+      "size": 32140,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/display_driver.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/display_driver.c",
+      "git_blob_sha": "51e1618cba8f9ed68b1e87f2d634e344324995bd",
+      "sha256": "0f89094c6f89317985f4ad382d468b51568dc6a98af4d128bba3acb328c97b5f",
+      "size": 2687,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/encoder.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/encoder.c",
+      "git_blob_sha": "3a12dc3cb241f125cd5f52a7ebcabb0a9630d324",
+      "sha256": "a84040da570b7500d1926af4ee1da5cd7257e82861031a517396bc7f980b6502",
+      "size": 14646,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/firmware_update.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/firmware_update.c",
+      "git_blob_sha": "ff744d0f48fe8f27cbbc73af6d6af29bdd533580",
+      "sha256": "2602e5c0f1d6bf300f143cb992eb8e7a14d83de62fcb9b1a324446e93fab2d20",
+      "size": 9792,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/formatting.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/formatting.c",
+      "git_blob_sha": "3eddc6ee26fc74f0c85c98ab87ebc0536536758f",
+      "sha256": "2df6b46a87fdf9bc95a6e16967d6832730f6c3192d134132dd449ebbffddc15c",
+      "size": 1889,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/hardware_control.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/hardware_control.c",
+      "git_blob_sha": "5d16462fd613a700329735bce6dd67ff64173398",
+      "sha256": "01380fb4f250d8f4a282de03783a61b26ebecde1b81368885ed1f24743f8e8af",
+      "size": 31060,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/identity.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/identity.c",
+      "git_blob_sha": "7c87df0923d6b831a4e923d7a6e2eb2610796f28",
+      "sha256": "68b28d1b1cfc5c524eab92337ef4598b162de83b8324c86da922df2f7bb855b2",
+      "size": 1761,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/initialization.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/initialization.c",
+      "git_blob_sha": "45e1beaed240e032bb593be9656abec204a446a8",
+      "sha256": "6ca5520613c06300f98bb9f5dd2881214b6067a8d0d335dcf4101da7e3a4e5df",
+      "size": 4711,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/logging.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/logging.c",
+      "git_blob_sha": "035d1b1e8c91011b3c939602626868e780497f2e",
+      "sha256": "15f7a2045b1b946c9a1f6f3626560d242f310556fe6246db4335ef6251e0ff9a",
+      "size": 1803,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/main.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/main.c",
+      "git_blob_sha": "bb39508414cbed49d62c3efacce3c98ddcdb3673",
+      "sha256": "a0cc48bb5a89bd7b610e416bb70efdbe0b46618a2b121b0f65bb4a65513a9693",
+      "size": 5174,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/menus.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/menus.c",
+      "git_blob_sha": "944029884c1ed8aae5a357324c7806c8fcddb203",
+      "sha256": "22cd7e7f76b373ecff619f5e032a80aee3b7ee78cd87ee219f63fcbca8fa93c0",
+      "size": 12495,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/network.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/network.c",
+      "git_blob_sha": "2f897a51c464dc906214c52341a546b6d8f9384e",
+      "sha256": "a0c41b9ef132001f03965fc7e506d233316fe8a48ff7e0402e50069fdc90dc58",
+      "size": 13282,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/network_api.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/network_api.c",
+      "git_blob_sha": "47e7515bcad921e6785c6f697eda3dca477a402e",
+      "sha256": "1ba0638a1fcb28a95bd6676522f7002da114e9d272e201191c2156db3963bad3",
+      "size": 42227,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/parsing.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/parsing.c",
+      "git_blob_sha": "203180db9c3288b74dfd4bf5035764132afc4b70",
+      "sha256": "e10766dea5db78495bc1626e4bf63d4806e759d345ac384488adbb92d8739bfc",
+      "size": 10648,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/persistence.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/persistence.c",
+      "git_blob_sha": "6d429d9dce17d89a0b357ed86acdb06f6c1cd639",
+      "sha256": "1e2330316fcc9ff3e0de551dde9265902f2fdbea9a2ff58997e94b63882686b5",
+      "size": 9228,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/picostill.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/picostill.c",
+      "git_blob_sha": "63b339b95ecb759ab66a5d3ae14c8d774cf4e5b4",
+      "sha256": "4b4f197987c44d7a2abf1eff1dd4eb754bb3f9f3e8bd57f6ae8c6980ba129c3d",
+      "size": 24869,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/programs.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/programs.c",
+      "git_blob_sha": "919cea09fb2edfa2ff7fc0e7d00aa0493c2a55c1",
+      "sha256": "fce4ec98df56ff8b695155f7685ed50b46fd782818b10cd4e146a64e406ee7b3",
+      "size": 10634,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/rfid.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/rfid.c",
+      "git_blob_sha": "91251f17d46892e395b451238aa8ae2141ea7b49",
+      "sha256": "210a1ae3dcc680aa59128f665521efca62a8ae6819391be14caf87ed53350c0e",
+      "size": 6005,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/screens.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/screens.c",
+      "git_blob_sha": "0b5128a5d14b5293bd5e5cc55e9f9f7f4fbd6c61",
+      "sha256": "5376230b303705a901ae00e7d49092fcc0bea483b552e1fa5c63e807404374e2",
+      "size": 44064,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/sensors.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/sensors.c",
+      "git_blob_sha": "7204eb5fd4062fbbc05b571de8f770e4cf2d658f",
+      "sha256": "49d5c1fcde4d6b5bafd8a386d8a0ec0883716c0b4fac06cdd4a7b6a141845824",
+      "size": 6205,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/session.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/session.c",
+      "git_blob_sha": "4d30154c69fcbbf1c65c862d3ea8663509578249",
+      "sha256": "c29a7fd3a1d6efa1603b13646d63e013140e12135a742a39a325f2000ebf4b19",
+      "size": 15579,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/spi_link.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/spi_link.c",
+      "git_blob_sha": "7bc895416c60da23876280978d86f067032a99c4",
+      "sha256": "54b781b99161f4a86b139d1ba174cafea7a95bfd555d9050d63df64eb0ea0e6a",
+      "size": 1501,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/still.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/still.c",
+      "git_blob_sha": "f375920f4de0c3891e9982075ac76380c5d8a555",
+      "sha256": "acd13d28fc7324cdf8f1705e1757f4dbc2b7680714d7bc3796e2b043e2fdb706",
+      "size": 7499,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/storage_settings.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/storage_settings.c",
+      "git_blob_sha": "0f413c43496981663b2db34fdd3d174423aba5ee",
+      "sha256": "1c826997e59705b25a026719e2c67da345c3e18bcdacf94ffe1edb08aee43d60",
+      "size": 5758,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/strings.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/strings.c",
+      "git_blob_sha": "8859aa7f7d2676984172ac72f27b2c7b06e5b807",
+      "sha256": "652fb9145123c08d87c4f6733426ef34cef82f981275d9cc6c7a91d254a35b25",
+      "size": 857,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/temperature.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/temperature.c",
+      "git_blob_sha": "99f55de9d25eae70bd39d75934b2ba3a39352937",
+      "sha256": "0b632b532a8af0e441ed8e1af92f6d1ceacbea769ee001fe93ed04577264a2e5",
+      "size": 9935,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/timers.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/timers.c",
+      "git_blob_sha": "c81e48fbb08c939379d03512a4871ba9b8b75175",
+      "sha256": "7d976f92c1debe0da5a0ac4db783b5187a9337608a9103b032a9276c36c2ff93",
+      "size": 996,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/translations.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/translations.c",
+      "git_blob_sha": "12b5d848414927b886c0026e9356a239638561de",
+      "sha256": "d033e3c53d380aaed9752d0faf1a3b6ae0b0c8f4795709cb6e25296606a07ea5",
+      "size": 8820,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/ui_menus.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/ui_menus.c",
+      "git_blob_sha": "f9618e2db59ba999cfbf5fc002d427d6c8908152",
+      "sha256": "1fe17964a39ce9fba3aa2959edc494a7ca0ac065356eb0f14bacbea785dca848",
+      "size": 17574,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/ui_screens.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/ui_screens.c",
+      "git_blob_sha": "38a7e4b4d0be48ef3b73f129979da96a268f0b38",
+      "sha256": "e1cc9a62d2f4e224f83372b0aca8e9d6f60d5bc64ebcd85305815ab6c89afc7e",
+      "size": 46455,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/application/ui_workflows.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/application/ui_workflows.c",
+      "git_blob_sha": "e0db961042a1738e26b903a4c78a4cf1ebaa2a5f",
+      "sha256": "5f451ebcbf68f0f67f76fdcb4cc7df111d113e62e0c75b2de84387185058ab8a",
+      "size": 53313,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/arduino_string.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/arduino_string.c",
+      "git_blob_sha": "59182e89ee030832e2fcda23748210612ad2291e",
+      "sha256": "5fc06f64fb0a5cba7b952924d2f69b101758fd06ea64b63aad5998ae029bb03b",
+      "size": 3496,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/boot_image.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/boot_image.c",
+      "git_blob_sha": "b66e019d5b64593a38d4a32b97adfb51648e12cc",
+      "sha256": "b116a729c3871bda35200b89d24bd02a6bc4df314eb3fbef68d2886d237cbc17",
+      "size": 3433,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/c_library.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/c_library.c",
+      "git_blob_sha": "2622b843759da71a6623ac227a57d252c6e7de72",
+      "sha256": "be7abb78bc5492d6b646722abe39378b97491d63202b4cd41c8e39cf55155b43",
+      "size": 166290,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_adc.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_adc.c",
+      "git_blob_sha": "19c991db3104785637cc4780a5ccf46a4ac82ee0",
+      "sha256": "838420a52dbef0c7b306aaae828ae789db71654e1de0c4f86eba209bdf400fec",
+      "size": 1410,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_clock.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_clock.c",
+      "git_blob_sha": "abdba540e772d564877bdff2fc9d41429488b2de",
+      "sha256": "69222ce735f00727ac87ef92be8820abca401f417e7b647fb712a389f1e564f6",
+      "size": 6133,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_dma.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_dma.c",
+      "git_blob_sha": "d31721d500221b4b8556f54a63571a4373143ffa",
+      "sha256": "5947b782857d9225f08394eac03bcab5821cee6c58a9686d9915c5f30aba1b8f",
+      "size": 4832,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_driver_helpers.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_driver_helpers.c",
+      "git_blob_sha": "6bd916a8ddbe005bccc12bcbfb1082d0c1f0b241",
+      "sha256": "2252c74bbda46b79aefa80c18ab75f0719c3ca17c311e922d1615deb383f8296",
+      "size": 7107,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_gpio.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_gpio.c",
+      "git_blob_sha": "eb445e562c522a96a2eaf1e8d03cb7356d1508ca",
+      "sha256": "2cabf8bc8334270c5891643795bd8ae9f2e9e089969e5308bf0b1a93aff0e249",
+      "size": 5477,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_hash.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_hash.c",
+      "git_blob_sha": "61fcdad249188a72f0508358b68734511983f2ad",
+      "sha256": "6cae037cc6e8afe9dc8e621841fbd3af20aac077e221dfc4abc8efcad25d9aa9",
+      "size": 5211,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_interrupts.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_interrupts.c",
+      "git_blob_sha": "e714ed505cc7eab2dd49904bfab4fbe2a4682fcf",
+      "sha256": "0ec0b69aa4e0fc21dcf958a6d56dd5d9cce9ff69aa85b1ae869ab67513a140ec",
+      "size": 6012,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_spi.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_spi.c",
+      "git_blob_sha": "9c7a8d670fc13a4f0e598cb8759a6098185847f0",
+      "sha256": "67770437e336cd2a803f3d9519aabe3b2d846d5b057d4ce5dfbb22915fea863a",
+      "size": 10374,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_timer.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_timer.c",
+      "git_blob_sha": "d3745599bf41e3dc2a9a447bec9fd80954079247",
+      "sha256": "306225e65bd5cef777f4bffce62181b1cbb6e2bf48ceb5448686dbac498c39cc",
+      "size": 3531,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/cc3200_uart.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/cc3200_uart.c",
+      "git_blob_sha": "f30c89e0207c003c7f3f5ee4395771c755670db0",
+      "sha256": "1b429fd6e6cb6831500ee6fec724043f4a0d41a4775c42e852e0386318f46e29",
+      "size": 2972,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/energia_runtime.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/energia_runtime.c",
+      "git_blob_sha": "07929a9b71163bcfaf6f0b787f6a0f5f97e0efd5",
+      "sha256": "67da8d873e0b9a643cc57422288d56806cb568a7fa9d70cac9b911bebd8036af",
+      "size": 4855,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/filesystem.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/filesystem.c",
+      "git_blob_sha": "7cd8ac4f1e1f7f865ca7b523750c5a3465cb2d3d",
+      "sha256": "5eff13635dc4964bf3d4474b9d886a4f05eb3ccb084b3208631a189a096cdc1a",
+      "size": 2385,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/floating_point.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/floating_point.c",
+      "git_blob_sha": "d370fbdd3d7a3d92770d9ff58da3669f8c1002b3",
+      "sha256": "6c9c8d0a9d5632351ba67dec9f066105b499a5d9ecaeaa3607c889fb1ddba59c",
+      "size": 11662,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/graphics.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/graphics.c",
+      "git_blob_sha": "ee2d2cb8553b44ff3740cbd37662f94cb917a5ed",
+      "sha256": "e39b793598003d3b67a1f260ebeab1a8a1315b440254de58caf7d02a97a27c9a",
+      "size": 32920,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/hardware_serial.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/hardware_serial.c",
+      "git_blob_sha": "055f326a84707fa8f2403b0bef99aee278d61ae3",
+      "sha256": "6590d7568538b555fb40a8db03f6fcc3a5aad66b45466b2756dfc97a11e3a328",
+      "size": 12547,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/integer_arithmetic.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/integer_arithmetic.c",
+      "git_blob_sha": "412880dfc4637cb5952846bbc29a85bd82e6fc1c",
+      "sha256": "eaf904aaacbe0107abfbceb8ab809c2ce74fea9a813657c1ed249f28d6a0ff45",
+      "size": 219,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/libc.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/libc.c",
+      "git_blob_sha": "83a8f5bc80229635dae91fcc164e7507022ffa79",
+      "sha256": "91ad232e6243c4c57ea45904e2ac770650c989c916212fcfe3803a84e68f74dd",
+      "size": 82937,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/network_addresses.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/network_addresses.c",
+      "git_blob_sha": "9b4e2c8703a41cf5ec021662ee633963be4d3696",
+      "sha256": "3c362149741acede1992d5c7124e088ecedbc411ccf6420fbd4b8a08309a2de3",
+      "size": 4592,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/oled_display.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/oled_display.c",
+      "git_blob_sha": "cfede5787764c62f2644439f9252965232414ae0",
+      "sha256": "01b77b33a3703985f026d70ecab8261c3de3d975b0e39ee849cdd0bb10341034",
+      "size": 2607,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/pid_controller.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/pid_controller.c",
+      "git_blob_sha": "d2e37909ee56db620aafed63c3eac1d4d8faa5c2",
+      "sha256": "de6d3ea986adc20da744ef1d8962426de88ddac41a3b14e6ca2811c9dbe22497",
+      "size": 6570,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/print_stream.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/print_stream.c",
+      "git_blob_sha": "1a7b954387be2a2462de330d0e5d2fddd3a61f0b",
+      "sha256": "580a0edec3990b880153ae9df266f0a85f73fa2ca7d1ddfb166ed4fa5e72cbcb",
+      "size": 12353,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/rfid_reader.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/rfid_reader.c",
+      "git_blob_sha": "4df5e4c110dd60037076b880e6db2b1f9f7b35e4",
+      "sha256": "047eddc32a739cfc8640fece333e33ce765adb3a12cf061d36c3c7de66cfccd1",
+      "size": 26856,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/serial_flash.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/serial_flash.c",
+      "git_blob_sha": "7c226ea54630d2f81248da638c81a8cdeb4a8c20",
+      "sha256": "26200172b78693222b2594720294ee7153512fdbf29b19c2683c91a72bd444c8",
+      "size": 9412,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_device.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_device.c",
+      "git_blob_sha": "763965b0ac273e07b767ad4466e7a753b5baafa2",
+      "sha256": "55c3ca83549dcc378c315d299567f608c1ab403f67a3a7b91f0727200b0e0419",
+      "size": 3526,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_fs.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_fs.c",
+      "git_blob_sha": "49f763cc90add410db56584b9b4b997eb64b62a0",
+      "sha256": "a7df76827966433dc96491eab1a10a176f577b1665dc38fece30165de5487240",
+      "size": 7976,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_netapp.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_netapp.c",
+      "git_blob_sha": "7cccfc604bc900fad5c8c326b260466faebcca70",
+      "sha256": "a98cb196142ca0de71c15ee5555eb1db24354b0610e7ae80f25879f00b9b96e4",
+      "size": 7689,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_netcfg.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_netcfg.c",
+      "git_blob_sha": "b480fd1b1e8dd1ee6a3769699eddbcbec029ca4a",
+      "sha256": "331e388745054ce3d79beb1adb9b263623027a270ffd96e5d95eb98d0e2c7f90",
+      "size": 3191,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_protocol.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_protocol.c",
+      "git_blob_sha": "b9dbd58eb69acf680f01e01a552df6472f1ef4ad",
+      "sha256": "fca717190078ca55e37c25c1199b1c1dc394205829969e91156c0b733ce9e7ee",
+      "size": 74298,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_socket.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_socket.c",
+      "git_blob_sha": "5fb3560d2bcc886900cf47553bb845031270be65",
+      "sha256": "3bab3bf4622f1339b1bff7f42b85fa8b8135696012321e5c9886c2227223ecc2",
+      "size": 11011,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_spi_transport.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_spi_transport.c",
+      "git_blob_sha": "68b4ee2e29cea03050b457da894a90007f297ff1",
+      "sha256": "39cfa023765a6357a64ba9a33d2f1ade574b686b451d52da1dc6c2aedaad08d7",
+      "size": 11287,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/simplelink_wlan.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/simplelink_wlan.c",
+      "git_blob_sha": "ffbc8c7a677833875b0047d8984b6da19445f8d1",
+      "sha256": "b6d3ec82adeb6e180f6650bb456e12aefd4af2a5be5e502c493f9ae32c5b818e",
+      "size": 4266,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/software_float.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/software_float.c",
+      "git_blob_sha": "59ebcb6c9edc45d7dcb24dd66c74bcf5b839c648",
+      "sha256": "13972b2cd01eb5e838293d4c9558283c53e7389d7acb6047666fb762a51f47ee",
+      "size": 117113,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/spi_bus.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/spi_bus.c",
+      "git_blob_sha": "aa58ef17b738fe31ac7660b951d5985f00fe87c2",
+      "sha256": "2ea305e8b7b73b1a3f6c634cf17ff795f3caaa2faeab66c760bc7e653048357d",
+      "size": 3812,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/startup.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/startup.c",
+      "git_blob_sha": "56e9b5215261b6bbb55fd6ba8c05ec79054e5a19",
+      "sha256": "6839904bf09d4cb2e9fd8d25242cb4d2b6b2c4ef4c427ccd7fa509c89412fd50",
+      "size": 2078,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/ti_drivers.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/ti_drivers.c",
+      "git_blob_sha": "0c2fed2f61a887d0d0628856cc62a7ae3afae4e7",
+      "sha256": "7abb8180a21a474bbc0cf83dabec79f7fe9bf0d66c137fa286b32fdf8776aa5e",
+      "size": 1687,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/wifi.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/wifi.c",
+      "git_blob_sha": "cba27107cd4d62ea029aef3fd27a380dc5db1612",
+      "sha256": "3c1551e6c4c5d87fe5fa66bfe96d4ec6a07671f61d3580e01680e717d71fafa8",
+      "size": 16939,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/wifi_client.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/wifi_client.c",
+      "git_blob_sha": "cd6c7db2f2b28d340117f5f0b295f8c4a444d2e6",
+      "sha256": "3d2cbee8e02348e4490aaba0bfb9b4904812f74339da7c971d6add823119dd84",
+      "size": 16653,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/wiring_adc.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/wiring_adc.c",
+      "git_blob_sha": "1e786d7b8fa7eb231e9a8612a5b7fd3c3843fc35",
+      "sha256": "ed529932b120d1e9368b890f278e7a912964d169a654098bd853d9df6b929422",
+      "size": 1710,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/src/platform/wiring_gpio.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/src/platform/wiring_gpio.c",
+      "git_blob_sha": "96eea4154af22bd1cde00d0ba8108c68fda938b6",
+      "sha256": "9287720bcf560289b70f8d78206edee56fd6079991a22564b4d24bd70bbaa58b",
+      "size": 7978,
+      "mode": "100755"
+    },
+    {
+      "source_path": "legacy/tools/check_sources.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/legacy/tools/check_sources.py",
+      "git_blob_sha": "412fc18b579264bc5ac0c32fa2f2e8fb718e2806",
+      "sha256": "e8fa47e800e8667cf5e96187d4cf2c590c61a43b44efdfbd5bac1894d7c09c2e",
+      "size": 4609,
+      "mode": "100755"
+    },
+    {
+      "source_path": "mcuimg2.bin",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/mcuimg2.bin",
+      "git_blob_sha": "205f96477f9af5fd05e5506304d4e4b79e753c94",
+      "sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
+      "size": 162792,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/energia_cc3200.cpp",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/energia_cc3200.cpp",
+      "git_blob_sha": "078bf74d28576f3ee1cfd5990edfc8e874ae321e",
+      "sha256": "7d562c490af20b701809465243f350fb53c119957faa52cb1a0646548718d71b",
+      "size": 8477,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/energia_network.cpp",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/energia_network.cpp",
+      "git_blob_sha": "39c599505e19bec5479bfc13df023efef1dfbcef",
+      "sha256": "03314d6b11d11b6f3ed7db80eb64c6eb80119cf803f009d71dde6c8607d9d757",
+      "size": 7941,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/energia_runtime_compat.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/energia_runtime_compat.c",
+      "git_blob_sha": "cda340bf70cc65247ad3cc1dd5172bc097b43db2",
+      "sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+      "size": 2122,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/firmware_main.cpp",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/firmware_main.cpp",
+      "git_blob_sha": "d45ca143e129786f8e28f58cb7507e4720331d99",
+      "sha256": "2df895a6134b0debb536a5e2b205be5ac038ffabd84680979d21d10a21f26149",
+      "size": 4391,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/pico_cc3200.ld",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/pico_cc3200.ld",
+      "git_blob_sha": "a3d9f259872cf22c8b9b1766713d921a57659e20",
+      "sha256": "3f01e3473781da93be166f2ccb5bb2bd16acb5e508901d453ddd9e8a62ab7bc1",
+      "size": 2003,
+      "mode": "100644"
+    },
+    {
+      "source_path": "platform/pico_http_client.cpp",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/platform/pico_http_client.cpp",
+      "git_blob_sha": "e98bc45a678647e89c5049da002357792e6e4696",
+      "sha256": "687b69337b839b72443f5dbade71b2fe20951612f620a6a1fa0a057675ba42fe",
+      "size": 2448,
+      "mode": "100644"
+    },
+    {
+      "source_path": "reference/function_map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/reference/function_map.json",
+      "git_blob_sha": "7f9a152b160de211b9c5e3b1ebfca4bf3b2fe6a1",
+      "sha256": "3d5f0e9bd265fe794482750d2506a66157c9f80d0330c6e4d82a88176f0b4465",
+      "size": 385061,
+      "mode": "100644"
+    },
+    {
+      "source_path": "reference/global_map.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/reference/global_map.json",
+      "git_blob_sha": "60ad70b7c12ba20c631f6934f127b54141596c25",
+      "sha256": "72a6b4b2fe144aa8e537187277bdefd3b93e2539178037d77a9543f60a4b3806",
+      "size": 235481,
+      "mode": "100644"
+    },
+    {
+      "source_path": "reference/original-0.1.34.bin",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/reference/original-0.1.34.bin",
+      "git_blob_sha": "205f96477f9af5fd05e5506304d4e4b79e753c94",
+      "sha256": "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702",
+      "size": 162792,
+      "mode": "100644"
+    },
+    {
+      "source_path": "reference/provenance.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/reference/provenance.json",
+      "git_blob_sha": "db779d61dda47f8a91258b8fde24a4936f1759e3",
+      "sha256": "10f222462a67d8c082ae708bc268e2d6666e93bb2e4e17d880ef5280ae2a6ed1",
+      "size": 944,
+      "mode": "100644"
+    },
+    {
+      "source_path": "requirements-test.txt",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/requirements-test.txt",
+      "git_blob_sha": "1cea8cfda592bcd78a832361b842dd1dfbe7be03",
+      "sha256": "ce5d9382edbf8ec68df5b5c0e65f49a19a5f5e888123d6be3df2a44d572108d8",
+      "size": 32,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/actuators.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/actuators.c",
+      "git_blob_sha": "fae0d6062fcdb2d60dff264ea4b4bdf302c53ab8",
+      "sha256": "ac3f87c6444cb410b350c6435dfa4c5da2c4cf63802bedd1a9857ef30647807c",
+      "size": 4247,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/application.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/application.c",
+      "git_blob_sha": "29cfb7b2e1bd24c9c55051dfd33f775fa6eafa8a",
+      "sha256": "c40c90eb59710e4436e37cadc514bc38dad2b1326689c689bc80c48fede0ffad",
+      "size": 35224,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/control.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/control.c",
+      "git_blob_sha": "571c5ff59a18557f0b5638b9772056cc56bca62c",
+      "sha256": "927e8104a1ac5d6d33c0e3a1539b13aa2eb3771978ac98827fbc6bd2d2780dec",
+      "size": 12259,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/device.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/device.c",
+      "git_blob_sha": "bc5e6894d87b3d493e6c4c250cc4af7cad7dcfe4",
+      "sha256": "1021304e106cc16e9aefd4b2859a44dceaaf5343f54d29f102215b81c1708c7f",
+      "size": 8891,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/api.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/api.c",
+      "git_blob_sha": "0caefe5d5202e08ed42c4870efa03dc57a173dd1",
+      "sha256": "464895b76775534342b8c84f1e9fd90f9a8c51c9873a5bb8aa69e7a0c225b576",
+      "size": 10766,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/network.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/network.c",
+      "git_blob_sha": "5cd750a4403be2726861e13a678bf93883170d59",
+      "sha256": "f177eadeedde3e5161f92adbc625dd6ec34b9a07ec93311e21c8fed0f1043b86",
+      "size": 16646,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/network_internal.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/network_internal.h",
+      "git_blob_sha": "b2f4954409d1c907aa4b4dd03809ef807fd9feda",
+      "sha256": "437e7ec3d9ac98a3e5853900726077a95e06d64ccb1243c0ce2d09562fbd568f",
+      "size": 2012,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/still_network.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/still_network.c",
+      "git_blob_sha": "5a660a28e3d096e06e061581a82d34f061891684",
+      "sha256": "d0014f21f436199b4c672f9d3e5ce9863e74ccc3245624ba2962c28f571486d3",
+      "size": 12712,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/storage.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/storage.c",
+      "git_blob_sha": "26036e7761c43b2154f17ac0232c656a2a476e9d",
+      "sha256": "1bfc83cbb0e8be78ec028ba0629a7619a95d8a95dad74f43d28f00b299cb0bf0",
+      "size": 8072,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/text.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/text.c",
+      "git_blob_sha": "1e08e4c232932cac61c514afa3db017057ebed3d",
+      "sha256": "8b83150ae17fd8ffe497eafe2647b2cd99a51268a626f1babdfe7407319728b2",
+      "size": 1030,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/network/update.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/network/update.c",
+      "git_blob_sha": "5654553a14fe8cd352d71a408937b665d0294eac",
+      "sha256": "440fa2fc20ff99676b294094d6ff7a1459d5c371b0cc568046ff680a6eb7da36",
+      "size": 7360,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/phase.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/phase.c",
+      "git_blob_sha": "809599fd27d6c2558f0291d81ff9ac8bdfffdbe0",
+      "sha256": "31bf3239edceaefbbcaaa4ca390fa3343cc44698bbc463dc6860de9404190f41",
+      "size": 8267,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/pid.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/pid.c",
+      "git_blob_sha": "9a264f17ac18f894abbd8e941736c759c618f546",
+      "sha256": "b7b84aaa655b1ab70f068a197308fc858dfc7b6a54f11d0d0f3073dddff25207",
+      "size": 5391,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/recipe.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/recipe.c",
+      "git_blob_sha": "c3a206e347e1b0bd50cadf66a9f0267ff58e2258",
+      "sha256": "1fefacfea722931d3a4a7b82b710df61f22513410ebc10971703db5cd0f1c24c",
+      "size": 48388,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/recipe_data.inc",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/recipe_data.inc",
+      "git_blob_sha": "b0c4d60656d91fed4b4a478592fedacae121dedc",
+      "sha256": "f080fd4ca64b8789cae24f2f1286cfe8b77a9ca8a394a00506cf672877fc5b92",
+      "size": 2663,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/recipe_programs.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/recipe_programs.c",
+      "git_blob_sha": "6458c49a646f70afffd47f050c1907c38ac6ecf7",
+      "sha256": "091fc17523a43e7beb5b317c7f81e00087ec76f29865938fdf8aa2c0673c04ad",
+      "size": 14124,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/recipe_utilities.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/recipe_utilities.c",
+      "git_blob_sha": "fd8651c6972e6c57b8f6604c5cc64876d783ea8c",
+      "sha256": "46d11ef966be041c9a95fa2d248371cd49985b41e2103d95d06e97c5cfe80077",
+      "size": 22645,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/rfid.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/rfid.c",
+      "git_blob_sha": "20fa5d793facd29cf9acac8003d4011ffbdccc12",
+      "sha256": "d6ef598b9e06fe7ec2351c26731d06b4896e2f3beb32ac7429887227acd5230d",
+      "size": 15747,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/sensors.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/sensors.c",
+      "git_blob_sha": "9da95bc87a2d20c0447ba04e7ef808c9e81a3653",
+      "sha256": "ea7e2a9ce237afe0404e5bca4b244179b6466b3fd763a0b36a19d7d7d51aed19",
+      "size": 2256,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/state.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/state.c",
+      "git_blob_sha": "2c947b708595fdfcb789ee5be1cffe8bd10c453b",
+      "sha256": "ed7d42961699c8c2a06681422f015b10c1607790ffa3ec24feaa911180183be0",
+      "size": 5231,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/action_tables.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/action_tables.c",
+      "git_blob_sha": "3c47005b7f01c2c0c3de3979e6eae430a4e9b9f1",
+      "sha256": "be744a227f83f000ea73b5ec99e8c6f38ac08ce78c990803dc44bc83688b9144",
+      "size": 3436,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/actions.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/actions.c",
+      "git_blob_sha": "6fcd66046928145642a92074bcb2595e53829bd4",
+      "sha256": "6bf785253181cfd68f5af33e8b6110239dc4c416aa062886b0c1731b632449da",
+      "size": 915,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/assets.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/assets.c",
+      "git_blob_sha": "0161022ec0beccbb6c946915c0115fbb73870136",
+      "sha256": "f7a64b90435f253304bead5b4dcb302f8ce6ec11565d8a3855c6605d355b2a14",
+      "size": 67283,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/context.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/context.c",
+      "git_blob_sha": "c6f35d5fb77e52a2587c5877b3c9b119c61b53ff",
+      "sha256": "3f335790531204ec865a550467802dfde942708be23aef881ca836bea39df561",
+      "size": 1493,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/diagnostics.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/diagnostics.c",
+      "git_blob_sha": "42ef0a9128f27a38ce5818e2025f51d5c4556d18",
+      "sha256": "bec38d05eaac3d01bc391b39a1543b3f393ec97404362780a9abc608817d9e8e",
+      "size": 13565,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/display.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/display.c",
+      "git_blob_sha": "999d87039d7277ca7bd4162c44a28e76989ae054",
+      "sha256": "25ebceda0bf649442b5c039ebd4e99b87393dc842cd4d478adbb71088088114b",
+      "size": 10340,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/display_values.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/display_values.c",
+      "git_blob_sha": "aadfad80f93854bbc173a7024c794c16a3e3a305",
+      "sha256": "a36d983f344248b37656d8d8375fef9688c8edfe8c934ce1e98f9642189c74c6",
+      "size": 8914,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/encoder.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/encoder.c",
+      "git_blob_sha": "8030715e9b4efccfccb0809e7ae6e3ba93ecb1a4",
+      "sha256": "6b7b1a0e32acc3c5ab438d2d14a20cdb73d452da5ccca3ec25f2df709e76287d",
+      "size": 3150,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/encoder_editor.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/encoder_editor.c",
+      "git_blob_sha": "d46c542aac88d7f94b8ffae0b5f216801d85717e",
+      "sha256": "a1b59ede9f6c7d568c7f0409e188c3d72d3e02c170add524cd897c67ac9a34cd",
+      "size": 5756,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/graphics.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/graphics.c",
+      "git_blob_sha": "cc88c9447ed5f70f0e027ab395bb1179d1c411cb",
+      "sha256": "01b3ddeb63e35b516c4d9fd94863c6cac819e2dba0aa38e8b9dd592b0c19eccc",
+      "size": 8487,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/instruction_screens.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/instruction_screens.c",
+      "git_blob_sha": "a25bca9649960828d335842b5084261853abd6c6",
+      "sha256": "c8038ee407e0e228f6cc1ccd5cb33dbe38abec9aa5636fe8a4d665b3be19204f",
+      "size": 5070,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/menus.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/menus.c",
+      "git_blob_sha": "82f4269f985b1c5eaf49bf6d6a510037590db4c1",
+      "sha256": "a39921ace7a273c47aa414bfabd15e620e52421660b8763de0a71f2eb9c4d61e",
+      "size": 11354,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/pages.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/pages.c",
+      "git_blob_sha": "37f7df5040b5265ccd8f353104111dbe875f8951",
+      "sha256": "b8a950f53b9818bc38bc50a233344e13420f64d077e056f5aea7c280e0a307e9",
+      "size": 11150,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/screens.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/screens.c",
+      "git_blob_sha": "1eb1bf98e9e53d402f015a559b1028826ae23c49",
+      "sha256": "74f64560b3a330fa7e8ec71676eb3ff1daae2d0ab1349bbe575c6640bb53e967",
+      "size": 17827,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/still_ui.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/still_ui.c",
+      "git_blob_sha": "77add78596086251d9ca17acc98bff56cc7bbae2",
+      "sha256": "ea0834e1badecf625238318c2ec53a92769eda4e147723bbcf92339fc8fb820b",
+      "size": 3831,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/strings.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/strings.c",
+      "git_blob_sha": "15c51b2e666d4be5fd342118745cdc274bf1741f",
+      "sha256": "c6ddda204dae55e2734a92af9ed42a92fa2475ae74f6d509977d76208b1d862b",
+      "size": 411,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/translations.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/translations.c",
+      "git_blob_sha": "ff78089b31b21e6891749abe92f10992694112c8",
+      "sha256": "dc7aad7b120015c3f01589fb5bb538965137a025b1f500cd780db183a0604d80",
+      "size": 8375,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/ui_assets.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_assets.h",
+      "git_blob_sha": "ee3c40aa90628ea13fab45e98cead8b64414846f",
+      "sha256": "c8a77012448c6f31ac099cb11f958dee0dbf273f4f541471f2458f36edd50638",
+      "size": 3032,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/ui_internal.h",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_internal.h",
+      "git_blob_sha": "8483882a73e2fc0161915da786836cc76350e4da",
+      "sha256": "238f9ea39458d1147e1447286a2d88e4ff9fb3040bdb9c9c6daba33e1ebc372a",
+      "size": 3496,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/ui_menus.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_menus.c",
+      "git_blob_sha": "13479432d654786c8494dd364e7e260459472ee0",
+      "sha256": "f7abed34155c3127532488253d5d12cfecabcb059ed1e7601064b10b564a4035",
+      "size": 14480,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/ui_screens.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_screens.c",
+      "git_blob_sha": "d0ec4e52eb0d4d345f2f2b7ff4af01a56daae68d",
+      "sha256": "583ab2071461bd1b8b368fd5796a682878d20698eaa88944537a3c6ef60b2ca4",
+      "size": 26056,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/ui_workflows.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_workflows.c",
+      "git_blob_sha": "d936e987207326b0cb746f1daee1d5eebe8d267f",
+      "sha256": "98e83cc6b70b0bea96e7b88a0c9e4c752c165e700bb8d19d4bb0cfdd423d8d4b",
+      "size": 38831,
+      "mode": "100644"
+    },
+    {
+      "source_path": "src/ui/workflow_adapters.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/src/ui/workflow_adapters.c",
+      "git_blob_sha": "60d22fd42d3d8c31c91921a9c1e62c36773602bd",
+      "sha256": "a1c13904e074f08e192cc08c4044092c0715cb17f4e55d9a905f899fa3d38530",
+      "size": 10826,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/actuator_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/actuator_fixture.c",
+      "git_blob_sha": "26cf2faa4886e5006856eadb6d7ab6b5f00a1c55",
+      "sha256": "f6c4ead6b42dd15e27dd22af48722ecd6fc30d0fcd0d5d11a6fe256de3e39f69",
+      "size": 3711,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/application_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/application_fixture.c",
+      "git_blob_sha": "7336226b732861f9e5e3a2cf9a4936d2af784ad1",
+      "sha256": "8f6958e5b52fb911cb19cb403858156e9c71da169c3683bda23d4410ebf8f3ff",
+      "size": 4952,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/control_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/control_fixture.c",
+      "git_blob_sha": "09b2ac63ed0325d23fc309800de81c39cf25b014",
+      "sha256": "cdb7867428de9e65d3c5a769c8674e64a35806817c8d5b6ce46aa6c9522c767a",
+      "size": 11002,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/device_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/device_fixture.c",
+      "git_blob_sha": "aaebf31995fcd059abb9780edff316514f3b778c",
+      "sha256": "5a08f15689edb4e9358a744b977a1a399886391b71a2523943f4320c78982a25",
+      "size": 2970,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/fast_arm.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/fast_arm.py",
+      "git_blob_sha": "6757173eb175dbf8b62d7c3f419cd0c2c08c2845",
+      "sha256": "99d1d019889042234438811cb8880816f060db90de70dfec2405c06b57feeb12",
+      "size": 2060,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/network_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/network_fixture.c",
+      "git_blob_sha": "e63c0da27bd3f0cf3dff1de838cab03115715e23",
+      "sha256": "725d5b71821547fbacecec282c828e3e545f52e21abd490aac367bc9f9057f2d",
+      "size": 8147,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/phase_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/phase_fixture.c",
+      "git_blob_sha": "12a80dbb97ae829b1117f17416a756f8e4a6b64e",
+      "sha256": "5b5571c042cb645326affee42efb7f0367b9011094c2bfea914aeefc6fb96567",
+      "size": 13319,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/recipe_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/recipe_fixture.c",
+      "git_blob_sha": "b523f3bb5a0f63aae2f6819e7613f2f8e0bb259d",
+      "sha256": "e7f9c01de8f6e4963f29b94f8e4fdcee104e2a3c7f39296255b6d8a6b5b6ab28",
+      "size": 21697,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/recipe_reference.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/recipe_reference.json",
+      "git_blob_sha": "c947f3a776461242c6fe2857221a7f77bc00f84e",
+      "sha256": "6f089cb5420f60aa917507ad97c094874d767a9dfacc7635fb85ec52c1da6eac",
+      "size": 44364,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/rfid_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/rfid_fixture.c",
+      "git_blob_sha": "fbb3bc1801c6d1ff271a8d70fd5c47255e152618",
+      "sha256": "10a1923c376535b7b0cbf6b7225dad5db526bc5716019f54e860883bed6ae894",
+      "size": 2185,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/sdk_validation.cpp",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/sdk_validation.cpp",
+      "git_blob_sha": "28c3149a7b209c834d8d29f13e6dc26912f59442",
+      "sha256": "a6a7c4134ae4bb69a81f97b6d514dd037c90f4ba615b8dca2636e1806a3579b3",
+      "size": 1034,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/state_pid_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/state_pid_fixture.c",
+      "git_blob_sha": "c2fd84d7e363394cdb36d3691df740791454a649",
+      "sha256": "4ad11028ddbdaaee7262f6a928ac2e082e83966cf79c67e45b7f1d1508162066",
+      "size": 16905,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_actuators.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_actuators.py",
+      "git_blob_sha": "373560371d481f4da3a1fd7dec7171fd42e8dca1",
+      "sha256": "04d36e0a97a479def2a9b6960c90ffa345c942d7bf0c6fb5023c73e50cd01b82",
+      "size": 6870,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_application.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_application.py",
+      "git_blob_sha": "f9822d1126aef896e9db6910cc67ff756ed11d73",
+      "sha256": "2f01327002128e8d3157d6122bf117a7cbfa1e88a7478a97b2d642b396c07288",
+      "size": 9011,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_control.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_control.py",
+      "git_blob_sha": "0988702ebda78a1b5be532ebf1893884da09816a",
+      "sha256": "9869fed170a4e3eb0c5d226b82ca1e7d2b4edf187ced3964aea6060afa92403b",
+      "size": 16545,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_device.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_device.py",
+      "git_blob_sha": "c6238810a744b4583d6f1db14dfdf08517a12f88",
+      "sha256": "546849c8a2a645773211614f28276835bb037535bf3e08c5099ba57e0b5242bc",
+      "size": 9905,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_edit_rebuild.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_edit_rebuild.py",
+      "git_blob_sha": "ad9507ef62a8a44ffd8f48f01e16321023d56ed5",
+      "sha256": "8002d114ca5a7daba3e0922d67726da2b7fdf99c1f3843f368a6811f330dd1bf",
+      "size": 4364,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_native_allocator.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_native_allocator.py",
+      "git_blob_sha": "4c99a6493e30ee1710f82a2311de89650d00e94b",
+      "sha256": "283d6dfc18686e30347650c00914e9e0eff29ca859970893e4542cd47aa17c1e",
+      "size": 14719,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_native_network.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_native_network.py",
+      "git_blob_sha": "204003dd44e6ce1aa96662ff93f23ebe5059afe7",
+      "sha256": "3b71bfeb76e909d20ae4f477567def33ed3ac675267fe15ee7d92d6ec4668cc2",
+      "size": 7108,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_native_network_direct.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_native_network_direct.py",
+      "git_blob_sha": "697b39eea27ec0f9cef65c22b1875d4e608745fd",
+      "sha256": "3f32fcf566201e2d7808b4eb195401bab7bbc4ce92f7a7198a14fd77955916be",
+      "size": 11631,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_native_serial.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_native_serial.py",
+      "git_blob_sha": "d95f0da13d2ed05350e9f9f6bdc17f620fc712e1",
+      "sha256": "b1fd1c528ff121384d75763c475ab3c2dca7ee6f45ec12abf2e685cf21b54f6c",
+      "size": 10726,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_native_startup.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_native_startup.py",
+      "git_blob_sha": "0a4a67b628c5af5a6318e8e88e0db358f99c49f5",
+      "sha256": "66af69e42ebeb4c18d236fe39ae990924a7f76b617fb1e7836f025eb85b628ab",
+      "size": 24371,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_network.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_network.py",
+      "git_blob_sha": "d5679de54886ce3d7e9eea0ba6fac840d7d9b12e",
+      "sha256": "19b38d642a58fe30379a3819ff78f698a582fbb3b905032cd7d49b7bd2a33634",
+      "size": 34182,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_network_direct.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_network_direct.py",
+      "git_blob_sha": "a354f142b9b8e19d13d62425baa991503f6e6901",
+      "sha256": "baa4c37752cf5a191426b8cfb19f5c2fed57997178c662adbeb7f5490ba1783f",
+      "size": 26284,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_network_direct_still.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_network_direct_still.py",
+      "git_blob_sha": "848b03130dfd2e9d2cee6b59e9d246c9379f1c37",
+      "sha256": "e276aca28b5746dcac985d4a05c82601400db7e6026629f7818246a581fbf79f",
+      "size": 20054,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_phase.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_phase.py",
+      "git_blob_sha": "5886ee4f83c85980f0c0f46dc71e566905f70777",
+      "sha256": "5396a2e291e643b8702991ea677333d27dc3fb88cdbbdbb401c4b172f7d366e7",
+      "size": 20354,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_recipe.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_recipe.py",
+      "git_blob_sha": "240128c861ad6eca42e77b829d86431466896c55",
+      "sha256": "7568d04712b843c401616c13401aa4faa7ff361fbd3af01850f06965efa8fbb6",
+      "size": 53850,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_rfid.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_rfid.py",
+      "git_blob_sha": "ab9a7464b8c901de09dcdb28c087fa8f3bcd1837",
+      "sha256": "96fd23e477afb2d1060c96f9bf083818171ad74c601645860c423ee134d6f912",
+      "size": 13091,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_rfid_application.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_rfid_application.py",
+      "git_blob_sha": "ffda5b4e9ccbebab030a44c3c89c56517927d933",
+      "sha256": "84c35d7196c6fe0a1ff1a40a7df19ccd94b17e822679933f9a33edcdd2eb5c7d",
+      "size": 5764,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_sensors.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_sensors.py",
+      "git_blob_sha": "5c8a7b8347dfeb720f14835df21c30f20d6e9387",
+      "sha256": "8ae2b4a08cc700aecb94c0ffdb5f8e451b3d70556adcd50ac842fef3c11d01ff",
+      "size": 4976,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_state_pid.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_state_pid.py",
+      "git_blob_sha": "5225acd699eacd34d386564fa67a5a91e6ab4f3a",
+      "sha256": "73b545f29fc0df243144a72454b575e4f85650343c17cd0d50ce6ed8d0ecece1",
+      "size": 22182,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui.py",
+      "git_blob_sha": "c8c72695e593e7a61ac88819697a54668033655c",
+      "sha256": "587770e9f6cf61ec1f4bb8b76b006804c4f302ea176e3a14fde77e7422f538b9",
+      "size": 6141,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_assets.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_assets.py",
+      "git_blob_sha": "8caceead7a9a8e30dc2147076d18ffa79d3f3c8a",
+      "sha256": "a97470e637161c389e569f4fb24d14a3c34ac38e54faefc3b5dc4ac0deab969d",
+      "size": 2023,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_direct_display.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_direct_display.py",
+      "git_blob_sha": "04eca4c564629f040449aefa81e066b1a6ee32a3",
+      "sha256": "ff220f5d81938dd44e625e48cfdf778ecba02e6cdbd9a3b45f9fa3b8814684d4",
+      "size": 35337,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_direct_menus.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_direct_menus.py",
+      "git_blob_sha": "1a90114137f4a510fb9a55a4c6e376b83f62fd69",
+      "sha256": "042d0f3aa0ccb45b2eedfd38b53ef7668347b71e37de4652103d7d29a58130f9",
+      "size": 30674,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_direct_workflows.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_direct_workflows.py",
+      "git_blob_sha": "8e5796380e5f8634dc4a59368b005468b521a642",
+      "sha256": "d04a81b862c9fb40ef382491df94966bb589483edb08947aa71c187d3dabe71d",
+      "size": 31190,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_interactions.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_interactions.py",
+      "git_blob_sha": "e645a29fffc3ad03c31bc35f75f0629dbd83653e",
+      "sha256": "ddd780c49e2f2a6d0f8e73f201a84d48cf6722073827377ac0c7dda6a69aef7e",
+      "size": 9540,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_ui_workflows.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_ui_workflows.py",
+      "git_blob_sha": "a44c04d5a6ab0256efaa24f3efd73addbf875f60",
+      "sha256": "fe8bc6a00db97422a5b49a66dd4deeb13ebd2c45b0ef3751e16180aeab2fcbab",
+      "size": 9441,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/test_update_package.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/test_update_package.py",
+      "git_blob_sha": "661edfef2e923af5ca1b0360e7586dcfb8d9bb10",
+      "sha256": "f3a3cd5936a18b5fd24cd13ccbb4268cbcc23969e2f6b288724183601aaf5650",
+      "size": 2017,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/ui_fixture.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/ui_fixture.c",
+      "git_blob_sha": "796d9fa3bf6bebda5cc55464630b656265c8ba46",
+      "sha256": "e5eed2751cbce20ce3ce1c91c8ff39435955e8b53ab96875482e5bc69bb2f99d",
+      "size": 5866,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/ui_original_entries.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/ui_original_entries.json",
+      "git_blob_sha": "2168923491cfc89cf9c8be2acb495df706cc0e2d",
+      "sha256": "048b5fbe9b937440b50cf9867c2ff14864e7f0975f3a63967d29f98f2fca59b7",
+      "size": 37592,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/ui_original_inventory.json",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/ui_original_inventory.json",
+      "git_blob_sha": "b419b9651542524882d5239696bdfa4089557ffd",
+      "sha256": "0cd32b3cfc5e1b4b8a3e0c87621e927f090f3aa66d648262346695326a5dea85",
+      "size": 42811,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/ui_test_support.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/ui_test_support.py",
+      "git_blob_sha": "d70520cd09d8d582d412d1d7c9ba7289b14c5193",
+      "sha256": "54fef2e5f2f01e87c0a8e7976e994dd73b704ba081fe3459a9b3f0759492f344",
+      "size": 5593,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/validation.ld",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/validation.ld",
+      "git_blob_sha": "65b753d5be2c06938db4391208ea077cbf6dc79b",
+      "sha256": "48df1267a0cbeb048252e536ebaedc0ff0d3e92c8952b03b38de03e632419d79",
+      "size": 881,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tests/validation_entry.c",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tests/validation_entry.c",
+      "git_blob_sha": "dff78671f382329eac65ad69f21d1ddbf0f975ba",
+      "sha256": "7dd12a304b183cac9cc3bc579c8b50b0e7ef663677a3bea21c66d49a4efa78a4",
+      "size": 236,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/audit_completion.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/audit_completion.py",
+      "git_blob_sha": "7b032108fed7e17fcb4007a7882a19f885803d74",
+      "sha256": "6a99752357b876068f8b60957ea7b5fabc03f53aa4e958f5cec1d844b5f60542",
+      "size": 3317,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/bootstrap_dependencies.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/bootstrap_dependencies.py",
+      "git_blob_sha": "2431e724cd326ebac96a9726dc412c0c3d221501",
+      "sha256": "fd213448a9c3aab4168efd8d093184444e04d2d929ac49f067f6df22531ed728",
+      "size": 5286,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/build.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/build.py",
+      "git_blob_sha": "aec3d1b1751e46b1b3506e6a49d37a163e227b96",
+      "sha256": "b3c0bb618b3fddb2227cc223802b93f82feff0f896826a9a569d7db47a18bf89",
+      "size": 8436,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/build_firmware.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/build_firmware.py",
+      "git_blob_sha": "3b8b4f76e85a5fa2a20e416a1ea007e04daf372f",
+      "sha256": "2820512e496997185f65fc4b4699ab912407fe6d713979f1e5e13033f1c9d219",
+      "size": 7590,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/build_sdk_validation.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/build_sdk_validation.py",
+      "git_blob_sha": "ef8fec062f0d4ffc4bdbf4810cef20e0e64c0b33",
+      "sha256": "3b2a0d467a59f1594794433ce9415cbce7016d7648bf2b2b6c217f6e87931afc",
+      "size": 19644,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/original_arm.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/original_arm.py",
+      "git_blob_sha": "c539b8b005149613ba75c3c76961f572d564d07c",
+      "sha256": "797150c1e6a0a5fad6f208875bce0707d7e0289ff9c19be7ee634b1f47b755f9",
+      "size": 6408,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/package_update.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/package_update.py",
+      "git_blob_sha": "7e6c75202917364a3c2479858886ad2935015e12",
+      "sha256": "5e1573222564989b3292217604bea51e1e991989d3237f7a2d9b36e53b65ca53",
+      "size": 2079,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/rebuilt_arm.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/rebuilt_arm.py",
+      "git_blob_sha": "661adba7afcca3b769d346ee62fb3c775b294a8b",
+      "sha256": "5fe8b33b29e90295ecfc9c6befe5be3aa8db82d1694da9428da29cc04cc4687a",
+      "size": 2361,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/summarize_validation.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/summarize_validation.py",
+      "git_blob_sha": "8a6162363eece17720526aff5953677fb76abdc4",
+      "sha256": "c97e15b1757962c402da2aefbdd553f90d0703b46c159044424cb4490f1bd44d",
+      "size": 11220,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/ui_assets/extract_assets.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/ui_assets/extract_assets.py",
+      "git_blob_sha": "4a3cc3f6a47a4e236458a1b8b2f318aaa042dadf",
+      "sha256": "9bc35cfbf14918acf6e21e3d50059ad3fdbb814996293b852af0e9e0bbd65ff4",
+      "size": 9657,
+      "mode": "100644"
+    },
+    {
+      "source_path": "tools/verify_energia_pin_tables.py",
+      "destination_path": "firmware/pico-s-pro/reverse-engineered/tools/verify_energia_pin_tables.py",
+      "git_blob_sha": "3ff4854fde42758690154169a31858d26e7927a2",
+      "sha256": "cbd540348d0a0c2ddabc9f9e114fa98a108acc9cf58e0686a97deb00d0417f89",
+      "size": 3835,
+      "mode": "100644"
+    }
+  ]
+}

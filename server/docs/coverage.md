@@ -1,0 +1,46 @@
+# Feature and hardware coverage
+
+This table records implemented behavior. It is deliberately not a claim of feature parity with every release of every PicoBrew project.
+
+The [project target](../../docs/project-roadmap.md) is custom firmware for
+Pico C, S/Pro, Z-family and Zymatic with a common standalone API and local browser
+experience. The table below describes the current implementation, not the final
+model scope.
+
+| Area | Implemented | Boundary |
+|---|---|---|
+| Fleet | Persistent machine registry, simultaneous independent polling, connection status, live browser stream | One owner; no team roles or remote-site agent |
+| Pico S/Pro | Adapter for the standalone API v1: OLED, dial, programs, stop latch, recipes, preferences, history and forwarding | Requires that firmware; protocol-tested with local HTTP fixtures, not newly tested on a physical brewer in this project |
+| Z / Zymatic / Pico C | Recipe planning profiles, quantity adaptation and export; simulated operation for demos | Custom firmware ports and live Hub compatibility remain to be implemented |
+| Recipe library | CRUD, revision conflict protection, archived revisions, ingredient plans and distinct native-program editor | Program-only records have no inferred ingredients, batch volume or efficiency; full ingredient/style databases are not included |
+| Community catalogue | 5,282 pinned entries, 88 bundled image/text assets, original source records, attribution and independent library copies | Incomplete/unsupported conversions remain visible as review items or reference-only entries; optional PDF manuals require local installation |
+| Brewing details | Water chemistry, fermentation/carbonation metadata, mash and boil attributes | Metadata does not imply a connected fermenter or automatic addition hardware |
+| Adaptation | Volume/efficiency scaling, saved profile overrides, sourced C/S/Pro starting defaults, native compilation and review warnings | Efficiency defaults are estimates; S/Pro grain capacity is unknown. Hop utilization is not fully modeled; plumbing must be explicitly supplied |
+| Recipe deployment | Single and bulk transfer; capacity preview, explicit matching-ID updates, profile/revision/inventory checks, native write/readback, durable receipts and interruption recovery | Does not start automatically; an uncertain write stops the batch and is never automatically repeated or rolled back |
+| Installed recipes | Read, edit with expected-value check, deploy/overwrite, choose for brewing, remove while idle | Limited by the appliance's slots and protocol; the firmware has no atomic conditional-write operation across independent browser clients |
+| History | Retained-session imports, durable samples, temperature/state graphs, notes/rating, CSV/JSON | Cannot recover overwritten source samples; old start times may be unknown |
+| AI recipe creation | OpenAI/Anthropic API integration, validated structured drafts, explicit save | Provider key/model and external API access required |
+| AI model discovery | Account model catalogue, automatic lookup with a saved key, pre-save connection, refresh and manual entry | Model-list permission and chat compatibility are distinct; discovery does not invoke inference |
+| AI monitoring | On-demand live advice and optional five-minute active-brew checks with saved results | Advisory; no low-level control or live recipe/temperature overrides |
+| AI analysis | Analysis of selected history, downsampled bounded context | No invented measurements; raw archive/export remains available |
+| Shopping list | Aggregate selected recipes by ingredient and unit | Inventory purchasing, supplier integrations and stock deduction are absent |
+| Telemetry forwarding | Configure machine receiver; ingest known-UID unsigned observations | Unsigned forwarding is not authoritative status or a control channel |
+| Data | SQLite persistence, encrypted credentials, portable nonsecret ZIP, full-directory recovery instructions | No browser upload/restore of a full encrypted data directory |
+| API | Authenticated REST endpoints, OpenAPI schemas/catalog, in-app explorer, SSE | Hub authentication differs from the appliance's bearer-key API |
+| Packaging | Source, pinned dependencies, Dockerfile, Compose, Go/frontend/browser CI | No managed hosting or app-store package |
+
+## Prior projects considered
+
+The product scope was informed by these primary project descriptions and documentation:
+
+- [chiefwigms/picobrew_pico](https://github.com/chiefwigms/picobrew_pico): local cloud replacement, appliance-specific protocol handling and session/recipe workflows.
+- [hotzenklotz/picobrew-server](https://github.com/hotzenklotz/picobrew-server): Zymatic protocol and local recipe/session server.
+- [PicoClaw](https://github.com/cetezadi/picobrew_picoclaw): another community PicoBrew server implementation.
+- [Small Brew Companion documentation](https://www.smallbrewcompanion.com/docs/): recipe creation, equipment/brewing profiles, brewing logs, ingredients/water/fermentation/carbonation and shopping-list workflows.
+- [Standalone Pico S/Pro API contract](../../firmware/pico-s-pro/modified/docs/standalone-api.md) and [OpenAPI](../../firmware/pico-s-pro/modified/docs/openapi.json): the implemented hardware contract in this checkout and the reference for subsequent firmware ports.
+
+No application code from those servers or from GoMVC is imported. The UI and
+server are an independent implementation. New machine support should come from
+firmware ports that implement the shared contract, with the Hub respecting each
+machine's verified capabilities and limits. A planning profile alone does not
+establish live hardware support.
