@@ -94,7 +94,13 @@ export function AIWorkbench({
       setBusy(false)
     }
   }
-  const enabled = settings.data?.enabled && settings.data?.key_configured
+  const configuration = settings.data
+  const authMode = configuration?.auth_mode || 'api_key'
+  const enabled = Boolean(
+    configuration?.enabled &&
+    configuration.model?.trim() &&
+    (authMode === 'subscription' || (authMode === 'api_key' && configuration.key_configured))
+  )
   const title =
     mode === 'recipe'
       ? 'Create a recipe with AI.'
@@ -134,7 +140,8 @@ export function AIWorkbench({
           <div>
             <h3>Bring your own brewing companion.</h3>
             <p>
-              Add an OpenAI or Anthropic API key to enable the assistant. Your workspace works fully
+              Connect a ChatGPT or Claude subscription, or add a provider API key, in Settings.
+              Choose a model and save with the brew assistant enabled. Your workspace works fully
               without it.
             </p>
           </div>
