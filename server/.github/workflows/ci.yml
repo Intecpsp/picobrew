@@ -41,12 +41,13 @@ jobs:
           cache: true
       - uses: actions/setup-node@v4
         with:
-          node-version: '24'
+          # Exercise the oldest supported release, including jsdom's patch floor.
+          node-version: '22.22.2'
           cache: npm
           cache-dependency-path: web/package-lock.json
       - name: Build and test browser client
         run: |
-          npm --prefix web ci
+          npm --prefix web ci --engine-strict
           npm --prefix web run build
           npm --prefix web test
           npm --prefix web run test:integration
