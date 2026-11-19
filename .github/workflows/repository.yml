@@ -8,12 +8,19 @@ permissions:
   contents: read
 jobs:
   firmware-imports:
-    runs-on: ubuntu-latest
+    name: Firmware imports / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
       - name: Verify complete OEM imports and clean reconstruction
-        run: make verify-imports
+        run: python tools/verify_firmware_import.py
+      - name: Check portable repository tools
+        run: python -m unittest discover -s tools -p 'test_*.py'

@@ -12,47 +12,47 @@ currently have recipe planning profiles and simulated operation; their firmware
 ports and live Hub compatibility are not implemented. See
 [support and feature coverage](docs/coverage.md).
 
-## Run it on your Mac
+## Run locally on Windows, macOS or Linux
 
-Install Go **1.26 or newer** and Node.js **24.15.0 or newer in the 24.x line**
-(recommended). Node **22.22.2 or newer in 22.x**, or **26.0.0 and newer**, is also
-supported. These patch-level minimums include the frontend's test dependencies.
-Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the
-C compiler is unavailable (`xcode-select --install`).
+Install Go **1.26 or newer** and GNU Make. The server includes the compiled
+website and uses a pure-Go SQLite driver. Building and running it does not
+require Node, npm, a C compiler, or a separate SQLite installation.
 
 The application is self-contained in `server/`: its Go module, frontend,
 catalogue, tests, Dockerfile and Compose configuration are all in that directory.
-It builds and runs without the sibling firmware trees. Run the commands below
-from the directory containing `go.mod`, `cmd/` and `web/`. In a full repository
-checkout, you can select that directory from anywhere inside the checkout with:
+It builds and runs without the sibling firmware trees. From either the repository
+root or `server/`, build and start the Hub with:
 
 ```sh
-cd "$(git rev-parse --show-toplevel)/server"
+make server-start
 ```
 
-If you already have `go.mod`, `cmd/` and `web/` in your current directory, you are
-in the right place; do not run another `cd server`. An isolated copy of the
-server also builds directly from its own root.
+This builds the Go executable with its bundled website and runs the Hub in the
+foreground. Both entry points use the same
+`server/data` directory; an isolated server copy uses its own `data` directory.
+Press **Ctrl-C** to stop, including when the browser is receiving live updates.
 
-Build the frontend and Go executable, then start the Hub:
+For a build without starting, use `make server` at the repository root or `make`
+inside `server/`. The output is `picobrew-hub.exe` on Windows and `picobrew-hub`
+on macOS/Linux. Both use the existing SQLite data files directly.
+
+If Make is not installed, run the following from the directory containing
+`go.mod`, `cmd/` and `internal/` (`server/` in the full checkout):
 
 ```sh
-npm --prefix web ci
-npm --prefix web run build
-mkdir -p bin
-go build -trimpath -o bin/picobrew-hub ./cmd/picobrew-hub
-./bin/picobrew-hub --data ./data
+go build -trimpath ./cmd/picobrew-hub
 ```
 
-Alternatively, `make` in `server/` (or `make server` at the repository root)
-builds `server/picobrew-hub`; from `server/`, run
-`./picobrew-hub --data ./data`.
+Then start it with `./picobrew-hub --data ./data` on macOS/Linux, or
+`.\picobrew-hub.exe --data .\data` in Windows PowerShell. The executable serves
+its own website even when launched from another directory; use `--data` to
+choose where that launch stores its database.
 
 Open **http://127.0.0.1:8080**. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart.
 
-On **Overview**, click **Add machine**, choose **Pico standalone firmware**, select S or Pro, and enter the brewer's current URL and the API key provisioned with its firmware. The server must be able to reach that URL. For the existing Pico project, the provisioned key is in `~/Code/pico-pro-source/private/api.key`; enter it in the local browser form, not in a chat or a recipe. The hub encrypts it at rest and does not send it back to the browser.
+On **Overview**, click **Add machine**, choose **Pico standalone firmware**, select S or Pro, and enter the brewer's current URL and the API key provisioned with its firmware. The server must be able to reach that URL. Use the key file saved when that brewer was provisioned; see the [API key provisioning guide](../firmware/pico-s-pro/modified/docs/standalone-provisioning.md). Enter it in the local browser form. The hub encrypts it at rest and does not send it back to the browser.
 
-The address `http://picobrew.s.local` can be used when your Mac resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
+The address `http://picobrew.s.local` can be used when the server host resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
 
 Edit or remove a connection from its Overview card or its individual machine page, including while it is offline. **Edit connection** manages the Hub registration; **Brewer preferences** changes settings on an online brewer. Removing a registration retains its archived Hub brew history. Active-operation restrictions still apply. See [machine connections and API keys](docs/device-connections.md).
 
@@ -60,9 +60,13 @@ Use a unique provisioned API key for each physical brewer. The Hub shows **Share
 
 ### Explore the simulator first
 
+From `server/`, after building:
+
 ```sh
-./bin/picobrew-hub --demo --data ./demo-data
+./picobrew-hub --demo --data ./demo-data
 ```
+
+On Windows use `.\picobrew-hub.exe --demo --data .\demo-data`.
 
 This seeds three simulated brewers, two example recipes and three historical brew traces. Demo mode is restricted to loopback and rejects hardware adapters, including hardware records found in an existing data directory. Use a different directory from your real workspace. Seed recipes and traces are examples, not measurements from your machines. No provider credentials are included; AI requests are disabled until you explicitly configure them.
 
@@ -148,11 +152,23 @@ For a complete backup, stop the server, copy the **entire data directory**, and 
 
 ## Development and tests
 
+Node is only needed for frontend development and its tests. Supported versions
+are **22.22.2 or newer in 22.x**, **24.15.0 or newer in 24.x**, or **26.0.0 and
+newer**. If you use `nvm` on macOS/Linux, `nvm install` followed by `nvm use`
+selects the checked `.nvmrc` version, 22.22.2. Updating the repository does not
+upgrade your installed Node runtime.
+
+After changing frontend source, regenerate the committed website package with
+`npm --prefix web ci` and `npm --prefix web run build:bundle`. Commit the bundle
+and its manifest together with the source changes. CI rebuilds the frontend and
+rejects stale bundle content or source hashes. Normal `go build` and
+`make server-start` use this verified package without invoking npm.
+
 ```sh
 # Go tests, including SQLite, HTTP adapters, concurrency and command outcomes
-go test -race ./...
+go test ./...
 go vet ./...
-python3 -m unittest discover -s tools -p 'test_*.py'
+python -m unittest discover -s tools -p "test_*.py"
 
 # Frontend typecheck / optimized build and focused unit tests
 npm --prefix web ci
@@ -165,6 +181,24 @@ npx playwright install chromium
 npm run test:browser
 ```
 
+Use `python3` instead of `python` if that is your Python command. The normal Hub
+build and tests are CGo-free. Go's optional race instrumentation requires a C
+compiler: use `go test -race ./...` or `make test GO_TEST_FLAGS=-race` in a
+configured development environment.
+
+The explicit process checks build an isolated workspace, exercise paths with
+spaces and failed builds, hold an authenticated live event stream open, send a
+native terminal interrupt, and verify saved data after restarting. From `server/`:
+
+```sh
+python tools/check_server_start.py
+python tools/check_server_start.py --make
+```
+
+These checks use an empty machine registry, temporary data, and a process PATH
+without Node or npm. They require Python only for testing; building the Hub
+requires Go, and the one-command startup also uses Make.
+
 If Chromium is installed separately, set `CHROMIUM_PATH` to its executable. `HUB_TEST_URL` targets an existing **demo** instance instead of starting the suite's isolated server on port 18080. The suite checks demo mode before making any changes.
 
 In a full project checkout, the Python suite also compares catalogue starters
@@ -172,7 +206,12 @@ with `../firmware/pico-s-pro/modified/data/starter-recipes.json`. An isolated
 server checkout skips that cross-component check. Set
 `CATALOG_REQUIRE_FIRMWARE=1` to require it, as the repository CI does.
 
-For interactive development run the Go server and `npm --prefix web run dev`. Vite proxies `/api` to the Go server. The server serves production assets from `web/dist` by default; `--web` changes this path. `HUB_PASSWORD` can provision a password noninteractively only when no owner account exists. Existing owner credentials are never overwritten by that variable.
+For interactive development run the Go server and `npm --prefix web run dev`.
+Vite proxies `/api` to the Go server. The server serves its embedded production
+website by default; `--web web/dist` explicitly selects a local development
+build instead. `HUB_PASSWORD` can provision a password noninteractively only
+when no owner account exists. Existing owner credentials are never overwritten
+by that variable.
 
 ## Project map
 
@@ -184,6 +223,7 @@ For interactive development run the Go server and `npm --prefix web run dev`. Vi
 | `internal/recipe` | Canonical recipe validation, adaptation, native compilation, JSON/BeerXML exchange |
 | `internal/catalog` | Pinned offline recipes, native programs, original records, illustrations and source provenance |
 | `internal/store` | SQLite migrations, record versions, encrypted blobs, deduplicated telemetry |
+| `internal/webui` | Embedded compiled website, dependency notices and build manifest |
 | `internal/ai` | Bounded OpenAI/Anthropic clients with no machine tools |
 | `internal/domain` | Shared server models |
 | `web` | React/TypeScript UI, SCSS, unit and browser tests |

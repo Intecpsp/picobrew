@@ -6,7 +6,7 @@
 |---|---|---|
 | `--listen` | `127.0.0.1:8080` | Hub HTTP bind address |
 | `--data` | `data` | SQLite database and encryption key directory |
-| `--web` | `web/dist` | Production UI assets |
+| `--web` | unset | Optional directory overriding the embedded website for development |
 | `--secure-cookies` | false | Mark session cookies Secure; enable for an HTTPS reverse proxy |
 | `--demo` | false | Loopback-only, hardware-rejecting simulator workspace |
 | `HUB_PASSWORD` | unset | Provision the initial owner account without the setup form; ignored when an account already exists |
@@ -15,9 +15,34 @@ The health endpoint is `GET /healthz`. It reports process availability and versi
 
 Run one process for each data directory. Starting additional instances against the same database does not create a distributed fleet scheduler. The server shuts down its HTTP listener and cancels polling/history/AI workers before closing SQLite.
 
+## Start and stop
+
+Run `make server-start` from the repository root or from `server/` to build
+the Go executable with its bundled website and run the Hub in the foreground.
+Only Go and Make are required; Node and npm are not invoked.
+Both entry points use `server/data` in a full checkout. An
+isolated server copy uses its own `data` directory.
+
+Without Make, run `go build -trimpath ./cmd/picobrew-hub` from `server/`, then
+`./picobrew-hub --data ./data` on macOS/Linux or
+`.\picobrew-hub.exe --data .\data` in Windows PowerShell.
+The SQLite format and schema are unchanged by the pure-Go driver; existing data
+does not require an export/import conversion.
+
+Press **Ctrl-C** for a clean shutdown. The Hub stops accepting connections and
+ends live browser event streams, then lets ordinary in-flight requests finish
+before closing the database. Idle live views no longer hold shutdown open for
+the 15-second request-drain deadline. A second Ctrl-C forces exit if a request
+is genuinely stuck.
+
 ## Updates
 
-Stop the hub and make a complete data-directory backup before changing versions. Build the new Go binary and frontend from the same revision, then restart using the same `--data` path. The frontend version is part of the application release; do not mix arbitrary old browser assets with a new API build. The SQLite migration gate refuses unknown newer schemas.
+Stop the hub and make a complete data-directory backup before changing versions.
+Pull the new revision and run `make server-start` using the same data directory.
+The website is bundled with that revision and embedded during the Go build.
+Only frontend developers need to rebuild it with Node; CI verifies that the
+committed bundle matches its source. The SQLite migration gate refuses unknown
+newer schemas.
 
 Machine identity is tied to its registration and archived history. Use a new registration to replace a machine with a different model or adapter. Updating an address for the same machine is supported. The hub pins the first authenticated hardware UID; a different UID makes that registration unavailable until the original device is restored or the replacement is registered separately. If the firmware is reformatted and native history counters reset, use a new registration rather than merging reused session IDs into its previous archive.
 

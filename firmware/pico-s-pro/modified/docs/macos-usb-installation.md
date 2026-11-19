@@ -69,9 +69,11 @@ python3 -m venv .venv
 mkdir -p "$PICO_CHECKOUT/firmware/backups"
 ```
 
-The writer imports the repository's probe, queued-backup, preflight and
-offline-inspection modules. Run it from the checkout; copying only the
-writer into Downloads is insufficient. The proven transport sequence is retained; the initial prompt now describes
+The writer imports the repository's probe, queued-backup, preflight,
+offline-inspection and private-file modules. The latter use this component's
+`tools/pico_private_files.py` and the repository root's `tools/private_files.py`;
+both must accompany any standalone copies of the scripts. Run the writer from
+the complete checkout. The proven transport sequence is retained; the initial prompt now describes
 both power-on and reset-button entry.
 
 ## Enter a fresh programming session

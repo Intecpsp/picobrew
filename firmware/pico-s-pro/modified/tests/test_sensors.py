@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compare portable sensor C and optionally the rebuilt ARM ELF to the original."""
 import argparse
+from contextlib import ExitStack
 import ctypes
 import hashlib
 import json
@@ -13,6 +14,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from original_arm import ArmFirmware, IMAGE_SHA256
+from native_host import compiler, library_name, pic_flags, shared_flags, native_library
 
 
 def main():
@@ -25,13 +27,13 @@ def main():
         from rebuilt_arm import RebuiltArm
         rebuilt = RebuiltArm(options.elf)
     original = ArmFirmware()
-    function_map = json.loads((ROOT / 'reference/function_map.json').read_text())
+    function_map = json.loads((ROOT / 'reference/function_map.json').read_text(encoding='utf-8'))
     addresses = {item['name']: int(item['address'], 16) for item in function_map}
     count_fixture = [0]
     calls = []
     original.hook(addresses['analogRead'], lambda runner: count_fixture[0])
     original.hook(addresses['pinMode'], lambda runner: calls.append((runner.reg(0), runner.reg(1))))
-    global_map = json.loads((ROOT / 'reference/global_map.json').read_text())
+    global_map = json.loads((ROOT / 'reference/global_map.json').read_text(encoding='utf-8'))
     session_address = None
     for item in global_map:
         if item.get('name') == 'g_session_type':
@@ -40,13 +42,13 @@ def main():
     if session_address is None:
         raise ValueError('Session address absent from reference map')
     groups, mismatches = [], []
-    with tempfile.TemporaryDirectory(prefix='pico-sensors-') as temporary:
-        so = Path(temporary) / 'sensors.so'
-        subprocess.run(['gcc', '-shared', '-fPIC', '-std=c11', '-O2', '-Wall', '-Wextra',
+    with tempfile.TemporaryDirectory(prefix='pico-sensors-') as temporary, ExitStack() as libraries:
+        so = Path(temporary) / library_name('sensors')
+        subprocess.run([compiler(), *shared_flags(), *pic_flags(), '-std=c11', '-O2', '-Wall', '-Wextra',
                         '-Werror', '-fno-fast-math', '-ffp-contract=off',
                         '-fexcess-precision=standard', '-I' + str(ROOT / 'include'),
                         str(ROOT / 'src/sensors.c'), '-lm', '-o', str(so)], check=True)
-        native = ctypes.CDLL(str(so))
+        native = libraries.enter_context(native_library(so))
         for pin, session in [(26, 1), (25, 1), (25, 2), (25, 4)]:
             name = f'pico_temperature_pin{pin}_from_adc'
             reference_name = f'pico_temperature_read_pin{pin}'
@@ -87,7 +89,7 @@ def main():
         'limits': 'No physical sensor calibration, full appliance, or input outside the documented ADC domain.'
     }
     options.output.parent.mkdir(parents=True, exist_ok=True)
-    options.output.write_text(json.dumps(report, indent=2) + '\n')
+    options.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     return 0 if report['passed'] else 1
 
 

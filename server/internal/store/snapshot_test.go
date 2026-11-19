@@ -5,17 +5,17 @@ import (
 	"database/sql"
 	"encoding/json"
 	"errors"
-	"net/url"
 	"path/filepath"
 	"testing"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
-	"github.com/mattn/go-sqlite3"
+	"modernc.org/sqlite"
+	sqlite3 "modernc.org/sqlite/lib"
 )
 
 func TestSnapshotKeepsRecordsAndSamplesConsistent(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "snapshot.db")
+	path := filepath.Join(t.TempDir(), "private", "snapshot.db")
 	s := open(t, path)
 	if _, err := s.Put("brew", "one", map[string]int{"generation": 1}, 0); err != nil {
 		t.Fatal(err)
@@ -23,7 +23,7 @@ func TestSnapshotKeepsRecordsAndSamplesConsistent(t *testing.T) {
 	if err := s.AppendSamples("one", []domain.Sample{{ElapsedMS: 1}}); err != nil {
 		t.Fatal(err)
 	}
-	other, err := sql.Open("sqlite3", (&url.URL{Scheme: "file", Path: path}).String()+"?_busy_timeout=1")
+	other, err := sql.Open("sqlite", path+"?_busy_timeout=1")
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -36,8 +36,8 @@ func TestSnapshotKeepsRecordsAndSamplesConsistent(t *testing.T) {
 		// A separate writer either commits under WAL or is blocked by SQLite's
 		// immediate transaction. In either case the snapshot must stay unchanged.
 		_, err = other.Exec(`UPDATE records SET payload='{"generation":2}' WHERE kind='brew'`)
-		var sqliteErr sqlite3.Error
-		if err != nil && (!errors.As(err, &sqliteErr) || sqliteErr.Code != sqlite3.ErrBusy) {
+		var sqliteErr *sqlite.Error
+		if err != nil && (!errors.As(err, &sqliteErr) || sqliteErr.Code()&0xff != sqlite3.SQLITE_BUSY) {
 			return err
 		}
 		after, err := snapshot.List("brew")

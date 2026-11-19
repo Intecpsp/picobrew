@@ -21,6 +21,7 @@ from http.server import BaseHTTPRequestHandler, HTTPServer
 import json
 import math
 import os
+import pico_private_files as private_files
 from pathlib import Path
 import re
 import sqlite3
@@ -99,16 +100,11 @@ class TelemetryStore:
 
     def __init__(self, database):
         self.database = Path(database).expanduser().absolute()
-        self.database.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-        flags = os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0)
-        descriptor = os.open(self.database, flags, 0o600)
-        try:
-            if not stat.S_ISREG(os.fstat(descriptor).st_mode):
-                raise OSError("Database must be a regular file")
-            if os.name == "posix":
-                os.fchmod(descriptor, 0o600)
-        finally:
-            os.close(descriptor)
+        private_files.ensure_private_directory(self.database.parent, parents=True, exist_ok=True)
+        private_files.ensure_private_file(self.database)
+        journal = Path(str(self.database) + "-journal")
+        if os.path.lexists(journal):
+            private_files.ensure_private_file(journal)
         with closing(self._connection()) as connection:
             connection.execute("PRAGMA journal_mode=DELETE")
             with connection:

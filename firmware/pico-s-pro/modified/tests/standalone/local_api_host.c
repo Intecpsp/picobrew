@@ -283,7 +283,7 @@ int main(void)
             test_request(methods[endpoint], paths[endpoint], body, length, result, sizeof result);
         }
     }
-    puts("local API ASan/UBSan: truncations and 21000 random/structured input trials passed");
+    puts("local API input selftest: truncations and 21000 random/structured input trials passed");
     return 0;
 }
 #endif

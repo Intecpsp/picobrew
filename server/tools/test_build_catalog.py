@@ -18,7 +18,7 @@ class CatalogBuilderTests(unittest.TestCase):
             if os.environ.get("CATALOG_REQUIRE_FIRMWARE") == "1":
                 self.fail("the community checkout is missing its firmware starter recipe data")
             self.skipTest("isolated Hub source archive: firmware tree is not included")
-        source = json.loads(starters.read_text())
+        source = json.loads(starters.read_text(encoding="utf-8"))
         bundle = server / "internal/catalog/data/catalog.zip"
         with zipfile.ZipFile(bundle) as archive:
             index = json.loads(archive.read("index.json"))

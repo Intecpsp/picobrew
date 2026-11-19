@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "note": "Additional host packages of the same GNU Arm Embedded Toolchain 10.3-2021.10. The Linux baseline remains unchanged in lock.json. Each archive was downloaded from Arm and its size and SHA-256 measured before inclusion.",
+  "toolchains": {
+    "windows-x86": {
+      "name": "GNU Arm Embedded Toolchain 10.3-2021.10 for Windows",
+      "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-win32.zip",
+      "archive_filename": "gcc-arm-none-eabi-10.3-2021.10-win32.zip",
+      "archive_root": "gcc-arm-none-eabi-10.3-2021.10",
+      "directory": "toolchain",
+      "bytes": 200578763,
+      "sha256": "d287439b3090843f3f4e29c7c41f81d958a5323aecefcf705c203bfd8ae3f2e7",
+      "host": "Windows x86/x86-64",
+      "target": "arm-none-eabi"
+    },
+    "darwin-x86_64": {
+      "name": "GNU Arm Embedded Toolchain 10.3-2021.10 for macOS",
+      "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-mac.tar.bz2",
+      "archive_filename": "gcc-arm-none-eabi-10.3-2021.10-mac.tar.bz2",
+      "archive_root": "gcc-arm-none-eabi-10.3-2021.10",
+      "directory": "toolchain",
+      "bytes": 158961466,
+      "sha256": "fb613dacb25149f140f73fe9ff6c380bb43328e6bf813473986e9127e2bc283b",
+      "host": "macOS x86-64",
+      "target": "arm-none-eabi",
+      "compatibility_note": "Apple Silicon requires Rosetta 2 to run this pinned Intel compiler. The Hub runs natively and does not require Rosetta. Bootstrap also downloads the pinned Linux archive once to obtain five canonical ARM target libraries; the macOS compiler and LTO plugin stay native.",
+      "target_runtime_original_sha256": {
+        "arm-none-eabi/lib/thumb/v7e-m/nofp/libc.a": "b1823a3df85a7e1581b5883c2c11f00df156bb9c76872021915673875fa9d124",
+        "arm-none-eabi/lib/thumb/v7e-m/nofp/libc_nano.a": "e3b95b854748e1b312d79aa2e90fe9983224e776e290a455554d6b6ae9dd91ed",
+        "arm-none-eabi/lib/thumb/v7e-m/nofp/libm.a": "7b46e8d86059b8d6a865318c9de9d9267c3faba6c930f77b219b102b61647416",
+        "arm-none-eabi/lib/thumb/v7e-m/nofp/libnosys.a": "d4a7d1e63ce37934aa9e5810d6fcec2b3b5528173f6755b500b19f090ccf68a6",
+        "lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/libgcc.a": "6732583f5aa7b04e09e1491dcdff51e9e2962ea5485f50199294e52834e80bb1"
+      }
+    }
+  },
+  "target_runtime": {
+    "multilib": "thumb/v7e-m/nofp",
+    "source": "Existing Linux toolchain archive pin in dependencies/lock.json",
+    "reason": "The official macOS package embeds different vendor build paths in newlib. Use the exact Linux-baseline Cortex-M4 soft-float runtime archives on every host so firmware and preserved archive images remain byte reproducible. Windows already contains these exact target archives; native host executables and LTO plugins are never replaced.",
+    "files": [
+      {
+        "path": "arm-none-eabi/lib/thumb/v7e-m/nofp/libc.a",
+        "bytes": 1098292,
+        "sha256": "c83ed30a03d0c5d8e477f7dec11cfd78328916e383421f87b38add00bf18b072"
+      },
+      {
+        "path": "arm-none-eabi/lib/thumb/v7e-m/nofp/libc_nano.a",
+        "bytes": 980444,
+        "sha256": "074f5657eecbeb9756024d83671acbdfe9edc4be31fd30bfb08edd362a61d26a"
+      },
+      {
+        "path": "arm-none-eabi/lib/thumb/v7e-m/nofp/libm.a",
+        "bytes": 562526,
+        "sha256": "01146695f2bfa579c28455cee4b6df8d3c66a1b14cb45bd05115dc41337d5e2f"
+      },
+      {
+        "path": "arm-none-eabi/lib/thumb/v7e-m/nofp/libnosys.a",
+        "bytes": 29270,
+        "sha256": "7778d81b0b7436fe0f263e1c9057a68fff788afcbd4d859e08cadb6e53930134"
+      },
+      {
+        "path": "lib/gcc/arm-none-eabi/10.3.1/thumb/v7e-m/nofp/libgcc.a",
+        "bytes": 1513784,
+        "sha256": "5f6d489a227b3310a6acc513c556805cde1720fde79781e4a97e176334f6517f"
+      }
+    ]
+  }
+}

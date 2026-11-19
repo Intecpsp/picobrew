@@ -360,9 +360,8 @@ class PreflightReportFile:
             raise PreflightError("Short report-file write")
         self.handle.flush()
         os.fsync(self.handle.fileno())
-        os.link(self.partial, self.output)
+        backup.private_files.publish(self.handle, self.partial, self.output)
         self.published = True
-        self.partial.unlink()
 
     def __exit__(self, exc_type, exc, traceback):
         if self.handle is not None:

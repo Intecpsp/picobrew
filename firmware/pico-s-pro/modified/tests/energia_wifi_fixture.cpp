@@ -7,6 +7,7 @@
 #include <string>
 #include <stdlib.h>
 #include "platform/energia_network.cpp"
+#include "picobrew/local_history.h"
 
 bool WiFiClass::_initialized = true, WiFiClass::_connecting = false;
 volatile uint32_t WiFiClass::local_IP;
@@ -19,6 +20,29 @@ SerialClass Serial;
 FlashClass SerFlash;
 static void unexpected() __attribute__((noreturn));
 static void unexpected() {fputs("Unexpected unrelated driver operation\n",stderr);abort();}
+/* COFF linkers may retain these unrelated local-control sections even when
+ * ELF/Mach-O discard them. Supply checked failure boundaries so this fixture
+ * has complete linkage without ever simulating a brew as a successful no-op. */
+extern "C" void pico_history_finish(bool) {unexpected();}
+extern "C" void pico_actuators_all_off(PicoActuators*) {unexpected();}
+extern "C" bool pico_control_stop(PicoControl*) {unexpected();}
+extern "C" void pico_recipe_run_brew_program(PicoRecipeRuntime*,PicoRecipe*) {unexpected();}
+extern "C" void pico_recipe_program_initialize(PicoRecipeRuntime*,PicoProgramContext*,uint32_t,uint32_t) {unexpected();}
+extern "C" int pico_api_fetch_recipe(PicoNetwork*,const char*,int,int) {unexpected();}
+extern "C" bool pico_recipe_session_start(PicoRecipeRuntime*,bool) {unexpected();}
+extern "C" bool pico_recipe_run(PicoRecipeRuntime*,PicoRecipe*,bool) {unexpected();}
+extern "C" void pico_recipe_run_cooking_program(PicoRecipeRuntime*,uint32_t) {unexpected();}
+extern "C" void pico_recipe_manual_program(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_rinse(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_first_rinse(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_descale(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_circulate(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_drain_reservoir(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_drain_filter(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_rack_beer(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_utilities_menu() {unexpected();}
+extern "C" void pico_settings_menu() {unexpected();}
+extern "C" bool pico_storage_load_wifi(PicoNetwork*) {unexpected();}
 void SerialClass::print(const char*) {unexpected();}
 void SerialClass::print(float,unsigned) {unexpected();}
 void FlashClass::begin() {unexpected();}

@@ -288,7 +288,22 @@ func (s *Server) listBrews(w http.ResponseWriter, r *http.Request) {
 			out = append(out, v)
 		}
 	}
-	sort.Slice(out, func(i, j int) bool { return out[i].ObservedAt.After(out[j].ObservedAt) })
+	sort.Slice(out, func(i, j int) bool {
+		a, b := out[i], out[j]
+		if !a.ObservedAt.Equal(b.ObservedAt) {
+			return a.ObservedAt.After(b.ObservedAt)
+		}
+		// A host clock may give several imports the same observation time.
+		// Device session IDs increase monotonically, so use their numeric order
+		// within a machine without fabricating a wall-clock brew start time.
+		if a.DeviceID != b.DeviceID {
+			return a.DeviceID < b.DeviceID
+		}
+		if a.DeviceHistoryID != b.DeviceHistoryID {
+			return a.DeviceHistoryID > b.DeviceHistoryID
+		}
+		return a.ID < b.ID
+	})
 	s.json(w, 200, out)
 }
 func (s *Server) brewDetail(id string) (domain.BrewDetail, error) {

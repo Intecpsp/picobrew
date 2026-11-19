@@ -9,16 +9,17 @@ import argparse
 import os
 from pathlib import Path
 import secrets
+import pico_private_files as private_files
 
 
 def create_key(path):
     path = Path(path)
-    path.parent.mkdir(parents=True, exist_ok=True)
+    private_files.ensure_private_directory(path.parent, parents=True, exist_ok=True)
     # Exclusive creation protects the only copy of a previously provisioned key.
-    descriptor = os.open(path, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    handle = private_files.new_private_file(path)
     try:
-        with os.fdopen(descriptor, 'w', encoding='ascii', newline='\n') as handle:
-            handle.write(secrets.token_hex(32) + '\n')
+        with handle:
+            handle.write((secrets.token_hex(32) + '\n').encode('ascii'))
             handle.flush()
             os.fsync(handle.fileno())
     except BaseException:
@@ -36,6 +37,8 @@ def main():
         path = create_key(args.output)
     except FileExistsError:
         parser.error('Key file already exists; choose another output path to rotate a key.')
+    except OSError as exc:
+        parser.error(str(exc))
     print('Created private API key: ' + str(path.resolve()))
     print('Device destination: /local/api.key (provisioning is a separate UART operation).')
 

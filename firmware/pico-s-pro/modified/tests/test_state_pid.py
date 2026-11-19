@@ -7,6 +7,7 @@ helper instructions execute. Host structures are serialized into the original
 32-bit layout explicitly; production code contains none of these addresses.
 """
 import argparse
+from contextlib import ExitStack
 import ctypes
 import hashlib
 import json
@@ -22,6 +23,7 @@ WORKSPACE = HERE.parents[1]
 PROJECT = HERE.parent if (HERE.parent / 'tools/original_arm.py').exists() else WORKSPACE / 'picobrew-application'
 sys.path.insert(0, str(PROJECT / 'tools'))
 from original_arm import ArmFirmware, IMAGE_SHA256, words_from_double
+from native_host import compiler, library_name, pic_flags, shared_flags, native_library
 
 RAM_START = 0x2002bc00
 RAM_LENGTH = 0x2000
@@ -344,17 +346,17 @@ def main():
     parser.add_argument('--output',type=Path,default=HERE/'validation.json')
     args=parser.parse_args()
     if args.write_fixture:
-        args.write_fixture.write_text(native_wrapper());return
+        args.write_fixture.write_text(native_wrapper(), encoding='utf-8', newline='\n');return
     source=args.source_root.resolve() if args.source_root else (PROJECT if HERE.name=='tests' else HERE)
     include=source/'include'
     source_files=[source/'src/state.c',source/'src/pid.c'] if (source/'src/state.c').exists() else [source/'state.c',source/'pid.c']
-    with tempfile.TemporaryDirectory(prefix='pico-state-') as tmp:
-        tmp=Path(tmp);wrapper=tmp/'wrapper.c';wrapper.write_text(native_wrapper())
-        library=tmp/'libstate.so'
-        subprocess.run(['gcc','-std=gnu11','-O2','-fPIC','-shared','-Wall','-Wextra','-Werror',
+    with tempfile.TemporaryDirectory(prefix='pico-state-') as tmp, ExitStack() as libraries:
+        tmp=Path(tmp);wrapper=tmp/'wrapper.c';wrapper.write_text(native_wrapper(), encoding='utf-8', newline='\n')
+        library=tmp/library_name('libstate')
+        subprocess.run([compiler(),'-std=gnu11','-O2',*pic_flags(),*shared_flags(),'-Wall','-Wextra','-Werror',
                         '-fno-fast-math','-ffp-contract=off','-fexcess-precision=standard',
                         '-I'+str(include),*[str(p) for p in source_files],str(wrapper),'-o',str(library)],check=True)
-        lib=NativeBackend(ctypes.CDLL(str(library)))
+        lib=NativeBackend(libraries.enter_context(native_library(library)))
         initializers=check_initializers(lib,args.image)
         pid=check_pid(lib,args.image)
     rebuilt=None;rebuilt_initializers=[];rebuilt_pid=[]
@@ -372,7 +374,7 @@ def main():
             'initializer_results':initializers,'pid_results':pid,
             'scope':'Original global initializer/PID/telemetry/menu/numeric instructions versus portable compiled C; 8 KiB of application RAM, service ordering and state at each service boundary compared. SDK construction/registration calls mocked.',
             'limitations':'Finite selected PID inputs; native C struct padding is not device layout. Snapshot tests explicitly serialize named fields/pointers. No interrupt concurrency, hardware or full application boot validation.'}
-    args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(report,indent=2)+'\n')
+    args.output.parent.mkdir(parents=True,exist_ok=True);args.output.write_text(json.dumps(report,indent=2)+'\n', encoding='utf-8', newline='\n')
     print(json.dumps({k:report[k] for k in ['passed','initializer_cases','pid_cases','total_cases','mismatches','original_instructions','rebuilt_arm_cases','rebuilt_arm_instructions']},indent=2))
 
 if __name__=='__main__':main()

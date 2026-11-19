@@ -1,0 +1,14 @@
+# Active project text has one checkout format on Windows, macOS and Linux.
+* text=auto eol=lf
+
+# Imported originals, preserved reconstruction/recovery sources, and packaged
+# firmware must retain their exact recorded bytes, including any line endings.
+firmware/**/oem/** -text
+firmware/**/reverse-engineered/** -text
+firmware/pico-s-pro/modified/recovery/** -text
+firmware/**/modified/firmware/** -text
+
+*.bin -text
+*.elf -text
+*.zip -text
+*.gz -text

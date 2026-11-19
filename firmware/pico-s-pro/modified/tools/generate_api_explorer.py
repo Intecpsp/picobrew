@@ -88,7 +88,7 @@ def catalog(spec):
 
 
 def generate(text):
-    spec = json.loads((ROOT / 'docs/openapi.json').read_text())
+    spec = json.loads((ROOT / 'docs/openapi.json').read_text(encoding='utf-8'))
     operations = catalog(spec)
     compact = lambda value: json.dumps(value, ensure_ascii=False, separators=(',', ':'))
     block = f'{BEGIN}\nconst apiOperations={compact(operations)};\n{END}'
@@ -102,12 +102,12 @@ def main():
     parser.add_argument('--check', action='store_true')
     args = parser.parse_args()
     path = ROOT / 'web/api-explorer.js'
-    previous = path.read_text()
+    previous = path.read_text(encoding='utf-8')
     result, count = generate(previous)
     if args.check and previous != result:
         parser.error('API explorer catalog is stale; run tools/generate_api_explorer.py')
     if not args.check and previous != result:
-        path.write_text(result)
+        path.write_text(result, encoding='utf-8', newline='\n')
     packed = gzip.compress(result.encode(), compresslevel=9, mtime=0)
     print(f'API explorer: {count} operations; {len(result.encode())} bytes; {len(packed)} gzip bytes')
 

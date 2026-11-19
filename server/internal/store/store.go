@@ -13,7 +13,8 @@ import (
 	"strings"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
-	_ "github.com/mattn/go-sqlite3"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
+	_ "modernc.org/sqlite"
 )
 
 var (
@@ -37,19 +38,39 @@ func Open(path string) (*Store, error) {
 		if err != nil {
 			return nil, err
 		}
-		if err := os.MkdirAll(filepath.Dir(absolute), 0700); err != nil {
+		if err := privatefs.EnsureDir(filepath.Dir(absolute)); err != nil {
 			return nil, err
 		}
-		file, err := os.OpenFile(absolute, os.O_CREATE|os.O_RDWR, 0600)
+		file, err := privatefs.OpenFile(absolute, os.O_CREATE|os.O_RDWR)
 		if err != nil {
 			return nil, err
 		}
 		if err := file.Close(); err != nil {
 			return nil, err
 		}
-		dsn = (&url.URL{Scheme: "file", Path: absolute}).String()
+		// Existing SQLite sidecars can contain the same private data as the
+		// database. New sidecars inherit the protected data-directory ACL.
+		for _, suffix := range []string{"-wal", "-shm", "-journal"} {
+			file, err := privatefs.OpenFile(absolute+suffix, os.O_RDONLY)
+			if errors.Is(err, os.ErrNotExist) {
+				continue
+			}
+			if err != nil {
+				return nil, err
+			}
+			if err := file.Close(); err != nil {
+				return nil, err
+			}
+		}
+		// SQLite file URIs use forward slashes on every platform. Windows drive
+		// paths additionally need a leading slash, e.g. file:///C:/data/hub.db.
+		uriPath := filepath.ToSlash(absolute)
+		if !strings.HasPrefix(uriPath, "/") {
+			uriPath = "/" + uriPath
+		}
+		dsn = (&url.URL{Scheme: "file", Path: uriPath}).String()
 	}
-	db, err := sql.Open("sqlite3", dsn+"?_busy_timeout=5000&_foreign_keys=on&_journal_mode=WAL&_synchronous=FULL&_txlock=immediate")
+	db, err := sql.Open("sqlite", dsn+"?_busy_timeout=5000&_foreign_keys=on&_journal_mode=WAL&_synchronous=FULL&_txlock=immediate")
 	if err != nil {
 		return nil, err
 	}

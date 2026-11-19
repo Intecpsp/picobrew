@@ -26,6 +26,7 @@ from importlib import metadata
 import json
 import math
 import os
+import pico_private_files as private_files
 from pathlib import Path
 import struct
 import sys
@@ -95,6 +96,7 @@ class _NativeUSBReceiveDriver:
         self._handle = raw._device._ctx.handle.handle
         self._endpoint = raw._in_ep
         self._callback = None
+        self._callback_thunk = None
         self._slots = {}
         transfer_pointer = ctypes.POINTER(libusb1._libusb_transfer)
         self._lib.libusb_alloc_transfer.argtypes = [ctypes.c_int]
@@ -131,7 +133,18 @@ class _NativeUSBReceiveDriver:
                 # handling. The owning queue turns this into a read failure.
                 callback(key, -1, b"", error=exc)
 
-        self._callback = self._abi._libusb_transfer_cb_fn_p(deliver)
+        # libusb's LIBUSB_CALL is WINAPI (stdcall) on Windows, including its
+        # callbacks. PyUSB 1.3.1 declares the transfer field with CFUNCTYPE on
+        # every platform. Store the correctly calling thunk's address in that
+        # field without changing PyUSB's shared structure definition. Retain
+        # both objects until all native transfers have finished cancellation.
+        if sys.platform == "win32":
+            callback_type = ctypes.WINFUNCTYPE(None, ctypes.POINTER(self._abi._libusb_transfer))
+            self._callback_thunk = callback_type(deliver)
+            self._callback = ctypes.cast(self._callback_thunk, self._abi._libusb_transfer_cb_fn_p)
+        else:
+            self._callback_thunk = self._abi._libusb_transfer_cb_fn_p(deliver)
+            self._callback = self._callback_thunk
 
     def allocate(self, size):
         pointer = self._lib.libusb_alloc_transfer(0)
@@ -699,15 +712,7 @@ def sudo_owner():
 
 
 def new_private_file(path, owner):
-    flags = os.O_CREAT | os.O_EXCL | os.O_RDWR | getattr(os, "O_NOFOLLOW", 0)
-    fd = os.open(path, flags, 0o600)
-    try:
-        if owner is not None:
-            os.fchown(fd, *owner)
-        return os.fdopen(fd, "w+b")
-    except BaseException:
-        os.close(fd)
-        raise
+    return private_files.new_private_file(path, owner)
 
 
 class BackupFiles:
@@ -753,12 +758,11 @@ class BackupFiles:
             if disk_digest(file) != (expected, total):
                 raise BackupError("An on-disk backup differs from the verified reads")
             os.fsync(file.fileno())
-        # Hard-link creation is atomic and fails if the final path exists.
-        # Keep the original inode, permissions and invoking-user ownership.
-        os.link(self.partial, self.output)
+        # Publish the verified open file without replacement, retaining its
+        # native permissions/ACL and invoking-user ownership.
+        private_files.publish(self.first, self.partial, self.output)
         self.published = True
-        self.partial.unlink()
-        self.verify_partial.unlink()
+        private_files.discard(self.second, self.verify_partial)
         for path, data in (
             (self.checksum, f"{expected}  {self.output.name}\n".encode()),
             (self.manifest, (json.dumps(details, indent=2, sort_keys=True) + "\n").encode()),

@@ -5,6 +5,7 @@ import (
 	"math"
 	"path/filepath"
 	"reflect"
+	"runtime"
 	"sync"
 	"testing"
 
@@ -23,7 +24,11 @@ func open(t *testing.T, path string) *store.Store {
 }
 
 func TestRestartKeepsRecordsSecretsAndSamples(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "private", "hub ?#.db")
+	filename := "hub ?#%.db"
+	if runtime.GOOS == "windows" {
+		filename = "hub #%.db" // A question mark is not a valid Windows filename.
+	}
+	path := filepath.Join(t.TempDir(), "private", filename)
 	s := open(t, path)
 	want := domain.Recipe{ID: "ale", Name: "Ale", BatchLiters: 5, Revision: 7}
 	if version, err := s.Put("recipes", "ale", want, 0); err != nil || version != 1 {
@@ -136,7 +141,7 @@ func TestPutWithSecretCommitsTogetherAndRollsBackConflict(t *testing.T) {
 }
 
 func TestCompetingHandlesHaveOneCASWinner(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "hub.db")
+	path := filepath.Join(t.TempDir(), "private", "hub.db")
 	first, second := open(t, path), open(t, path)
 	if _, err := first.Put("recipes", "a", 0, 0); err != nil {
 		t.Fatal(err)

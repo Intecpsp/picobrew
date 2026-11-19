@@ -35,6 +35,12 @@ The default database location is `private/pico-telemetry.sqlite3`. The repositor
 ignores `private/`. On POSIX systems, the receiver creates a new private directory
 with mode `0700` and restricts the database file to `0600`. An explicitly supplied
 database path can be outside the repository.
+On Windows, the receiver creates a protected owner-only ACL and checks that an
+existing database directory gives new journal files private inherited access.
+It rejects unsafe existing ACLs and reparse paths without changing their
+permissions. SYSTEM and local Administrators remain trusted. Run from the
+complete checkout, or copy this component's `tools/pico_private_files.py` and
+the repository root's `tools/private_files.py` beside a copied receiver script.
 
 ## Enable forwarding in the browser
 

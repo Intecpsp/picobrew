@@ -12,6 +12,9 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
+
+from arm_toolchain import find_arm_prefix, sort_sources
 
 
 # The pinned newlib-nano allocator dereferences its empty free list after an
@@ -24,17 +27,33 @@ ALLOCATION_MEMBERS = (
     'reallocarray', 'reallocf')
 
 
+def read_archive_members(archiver, library, members):
+    """Read native object bytes without a Windows text-mode stdout pipe."""
+    resolved = shutil.which(archiver)
+    if not resolved:
+        raise FileNotFoundError('Archive tool not found: ' + archiver)
+    archiver = str(Path(resolved).resolve())
+    library = Path(library).resolve(strict=True)
+    # GNU ar's Windows `p` command can translate binary bytes on stdout. The
+    # `x` command writes the original member bytes directly to binary files.
+    # A fresh directory also prevents a missing member reusing stale output.
+    with tempfile.TemporaryDirectory(prefix='pico allocator ') as temporary:
+        subprocess.run([archiver, 'x', str(library), *members], cwd=temporary, check=True)
+        return {member: (Path(temporary) / member).read_bytes() for member in members}
+
+
 def prepare_allocator(prefix, cc, target_flags, destination):
     """Extract native allocator objects from the same compiler's full libc."""
     library = Path(subprocess.check_output(
         [cc, *target_flags, '-print-file-name=libc.a'], text=True).strip()).resolve()
     if not library.is_file():
         raise ValueError('Selected compiler must provide full libc.a allocation objects')
+    members = ['lib_a-' + name + '.o' for name in ALLOCATION_MEMBERS]
+    contents = read_archive_members(prefix + 'ar', library, members)
     destination.mkdir(parents=True, exist_ok=True)
     objects = []
-    for name in ALLOCATION_MEMBERS:
-        member = 'lib_a-' + name + '.o'
-        data = subprocess.check_output([prefix + 'ar', 'p', str(library), member])
+    for member in members:
+        data = contents[member]
         if not data.startswith(b'\x7fELF'):
             raise ValueError('Missing native allocation object: ' + member)
         path = destination / member
@@ -73,8 +92,26 @@ def prepare_sdk(pristine, destination, patches):
             raise ValueError('Unexpected compatibility patch output: ' + relative)
         path.write_bytes(patched)
         records.append(dict(edit, input_already_patched=False))
-    (destination.parent / 'sdk_compatibility_patches.json').write_text(json.dumps(records, indent=2) + '\n')
+    (destination.parent / 'sdk_compatibility_patches.json').write_text(json.dumps(records, indent=2) + '\n', encoding='utf-8', newline='\n')
     return destination
+
+
+def sdk_include_dirs(sdk, project, extra=(), *, cxx=False):
+    # On the default Windows/macOS filesystems, <SPI.h> also matches the
+    # unrelated driverlib/spi.h. Resolve the Arduino library before the flat
+    # driverlib search directory for C++. C middleware includes unqualified
+    # <spi.h>, so its original driver-first order must remain. C++ low-level
+    # uses spell <driverlib/spi.h>, available through the system directory.
+    libraries = [sdk / 'libraries/WiFi', sdk / 'libraries/SPI']
+    driverlib = sdk / 'system/driverlib'
+    variant = sdk / 'variants/CC3200-LAUNCHXL'
+    specific = [variant, *libraries, driverlib] if cxx else [driverlib, variant, *libraries]
+    return [sdk / 'cores/cc3200', sdk / 'system', sdk / 'system/inc',
+            *specific,
+            sdk / 'libraries/WiFi/utility',
+            sdk / 'libraries/WiFi/utility/middleware/driver',
+            sdk / 'libraries/WiFi/utility/middleware/driver/hal',
+            project / 'include', *[p.resolve() for p in extra]]
 
 
 def main():
@@ -115,17 +152,15 @@ def main():
     if args.toolchain:
         prefix = str(args.toolchain.resolve() / 'bin/arm-none-eabi-')
     if not prefix:
-        candidate = project / '.deps/toolchain/bin/arm-none-eabi-gcc'
-        compiler = str(candidate) if candidate.is_file() else shutil.which('arm-none-eabi-gcc')
-        if not compiler:
+        prefix = find_arm_prefix(project)
+        if not prefix:
             parser.error('ARM compiler missing; bootstrap dependencies or set --arm-prefix')
-        prefix = compiler[:-3]
     sdk, out = args.sdk_root.resolve(), args.output_dir.resolve()
     if not (sdk / 'cores/cc3200/Energia.h').is_file():
         parser.error('SDK missing; bootstrap dependencies or set --sdk-root')
     if not args.lock.is_file():
         parser.error('Dependency lock missing: ' + str(args.lock))
-    lock = json.loads(args.lock.read_text())
+    lock = json.loads(args.lock.read_text(encoding='utf-8'))
     selected_archives = [p.resolve() for p in (args.application_lib, args.adapter_lib) if p]
     for path in [args.entry, args.runtime_compat, *args.source, *selected_archives]:
         if not path.is_file():
@@ -137,7 +172,6 @@ def main():
         patches += lock['energia']['standalone_patches']
     sdk = prepare_sdk(sdk, out / 'sdk-compatible', patches)
     core = sdk / 'cores/cc3200'
-    variant = sdk / 'variants/CC3200-LAUNCHXL'
     libraries = [sdk / 'libraries/WiFi', sdk / 'libraries/SPI']
     cc, cxx = prefix + 'gcc', prefix + 'g++'
     target_flags = ['-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs']
@@ -146,7 +180,7 @@ def main():
     if not nosys_library.is_file():
         parser.error('The selected compiler must provide libnosys.a for unsupported process/file-descriptor operations')
     allocator = prepare_allocator(prefix, cc, target_flags, out / 'runtime-allocator')
-    (out / 'allocator_providers.json').write_text(json.dumps(allocator, indent=2) + '\n')
+    (out / 'allocator_providers.json').write_text(json.dumps(allocator, indent=2) + '\n', encoding='utf-8', newline='\n')
     common = ['-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs',
               '--specs=nano.specs', '-Os', '-g', '-ffunction-sections', '-fdata-sections', '-fcommon',
               '-fno-fast-math', '-ffp-contract=off', '-Wall', '-DF_CPU=80000000L',
@@ -154,13 +188,9 @@ def main():
               '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf']
     if args.standalone:
         common.append('-DPICO_STANDALONE=1')
-    include_dirs = [core, sdk / 'system', sdk / 'system/inc', sdk / 'system/driverlib', variant,
-                    *libraries, sdk / 'libraries/WiFi/utility',
-                    sdk / 'libraries/WiFi/utility/middleware/driver',
-                    sdk / 'libraries/WiFi/utility/middleware/driver/hal',
-                    project / 'include', *[p.resolve() for p in args.include]]
-    includes = ['-I' + str(p) for p in include_dirs]
-    upstream = sorted([p for directory in [core, *libraries] for p in directory.rglob('*')
+    includes = {cpp: ['-I' + str(p) for p in sdk_include_dirs(sdk, project, args.include, cxx=cpp)]
+                for cpp in (False, True)}
+    upstream = sort_sources([p for directory in [core, *libraries] for p in directory.rglob('*')
                        if p.suffix in ('.c', '.cpp', '.S') and 'examples' not in p.parts])
     application = [args.entry.resolve(), args.runtime_compat.resolve(),
                    *[p.resolve() for p in args.source]]
@@ -168,14 +198,14 @@ def main():
         try:
             relative = source.relative_to(sdk)
             obj = out / 'objects/upstream' / relative.with_suffix(source.suffix + '.o')
-            label = str(relative)
+            label = relative.as_posix()
         except ValueError:
             unique = hashlib.sha256(str(source).encode()).hexdigest()[:10]
             obj = out / 'objects/application' / (source.stem + '_' + unique + '.o')
             label = source.name
         obj.parent.mkdir(parents=True, exist_ok=True)
         cpp = source.suffix == '.cpp'
-        command = [str(cxx if cpp else cc), *common, *includes,
+        command = [str(cxx if cpp else cc), *common, *includes[cpp],
                    *(['-flto'] if args.standalone and source != args.runtime_compat.resolve()
                      and source.name != 'startup_gcc.c' else []),
                    *(['-std=gnu++11', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics']
@@ -187,7 +217,7 @@ def main():
                 'command': command}
     with ThreadPoolExecutor(max_workers=args.jobs) as pool:
         compiled = list(pool.map(compile_one, upstream + application))
-    (out / 'compile_report.json').write_text(json.dumps(compiled, indent=2) + '\n')
+    (out / 'compile_report.json').write_text(json.dumps(compiled, indent=2) + '\n', encoding='utf-8', newline='\n')
     failures = [x for x in compiled if x['exit_code']]
     if failures:
         for item in failures:
@@ -244,7 +274,7 @@ def main():
             '-Wl,--end-group']
     result = subprocess.run(link, capture_output=True, text=True)
     (out / 'link_report.json').write_text(json.dumps({'command': link,
-             'exit_code': result.returncode, 'diagnostics': result.stdout + result.stderr}, indent=2) + '\n')
+             'exit_code': result.returncode, 'diagnostics': result.stdout + result.stderr}, indent=2) + '\n', encoding='utf-8', newline='\n')
     if result.returncode:
         print(result.stdout + result.stderr)
         return result.returncode
@@ -260,7 +290,7 @@ def main():
     missing_application_symbols = [] if args.standalone else discarded_application_symbols
     # In GNU ld's cross-reference table the definition is listed first for a
     # resolved symbol. Check the selected definition, not merely its presence.
-    cross_references = map_path.read_text().partition('Cross Reference Table')[2]
+    cross_references = map_path.read_text(encoding='utf-8').partition('Cross Reference Table')[2]
     providers = {}
     for line in cross_references.splitlines():
         if line and not line[0].isspace():
@@ -271,18 +301,22 @@ def main():
                         '_fstat', '_isatty', '_lseek', '_read')
     sbrk_linked = '_sbrk' in linked_definitions
     expected_sbrk_provider = str(archive) + '(startup_gcc.c.o)'
+    def same_provider(actual, expected):
+        # The Windows tools may spell their output with either path separator.
+        # Still compare the complete selected provider, including archive member.
+        return actual is not None and os.path.normcase(actual).replace(os.sep, '/') == os.path.normcase(expected).replace(os.sep, '/')
     sdk_heap_provider_verified = (not sbrk_linked or
-                                  providers.get('_sbrk') == expected_sbrk_provider)
+                                  same_provider(providers.get('_sbrk'), expected_sbrk_provider))
     expected_allocator = {
         'malloc': 'malloc', 'free': 'malloc', 'calloc': 'calloc', 'realloc': 'realloc',
         '_malloc_r': 'mallocr', '_free_r': 'freer', '_calloc_r': 'callocr',
         '_realloc_r': 'reallocr'}
     allocation_providers = {name: providers.get(name) for name in expected_allocator}
     allocator_provider_verified = all(
-        allocation_providers[name] == str(out / 'runtime-allocator' / ('lib_a-' + member + '.o'))
+        same_provider(allocation_providers[name], str(out / 'runtime-allocator' / ('lib_a-' + member + '.o')))
         for name, member in expected_allocator.items())
     runtime_object = compiled[len(upstream) + 1]['object']
-    bounded_heap_adapter_verified = providers.get('__wrap__sbrk') == runtime_object
+    bounded_heap_adapter_verified = same_provider(providers.get('__wrap__sbrk'), runtime_object)
     runtime_boundary = {
         'support_library': str(nosys_library),
         'support_library_sha256': hashlib.sha256(nosys_library.read_bytes()).hexdigest(),
@@ -305,10 +339,10 @@ def main():
         'allocator': allocator,
         'sdk_heap_contract': 'Unmodified Energia startup_gcc.c owns heap_end. __wrap__sbrk checks signed growth/shrink against linker _heap/_eheap before invoking it and reports (void*)-1 with syscall errno=ENOMEM on failure. Full-newlib allocation objects from the selected compiler replace the unsafe nano allocation family; nano stdio remains in use.',
         'scope': 'Link integration and selected provider verification; no OS services or hardware-execution claim'}
-    (out / 'runtime_boundary.json').write_text(json.dumps(runtime_boundary, indent=2) + '\n')
+    (out / 'runtime_boundary.json').write_text(json.dumps(runtime_boundary, indent=2) + '\n', encoding='utf-8', newline='\n')
     sizes = capture('size', '-A', str(elf))
-    (out / 'elf_attributes.txt').write_text(attrs)
-    (out / 'size.txt').write_text(sizes)
+    (out / 'elf_attributes.txt').write_text(attrs, encoding='utf-8', newline='\n')
+    (out / 'size.txt').write_text(sizes, encoding='utf-8', newline='\n')
     report = {'scope': ('Complete recovered Pico Pro application and pinned native SDK compile/link; hardware not executed'
                         if args.appliance_image else 'Pinned native SDK compile/link smoke entry; not full PicoBrew firmware'),
               'compiler': subprocess.check_output([str(cc), '--version'], text=True).splitlines()[0],
@@ -332,7 +366,7 @@ def main():
               'pass': not bool(undefined) and not missing_application_symbols and sdk_heap_provider_verified
                       and bounded_heap_adapter_verified and allocator_provider_verified
                       and 'soft-float ABI' in attrs and 'ARM' in attrs}
-    (out / 'validation.json').write_text(json.dumps(report, indent=2) + '\n')
+    (out / 'validation.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps(report, indent=2))
     return 0 if report['pass'] else 1
 

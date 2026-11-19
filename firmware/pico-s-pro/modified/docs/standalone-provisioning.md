@@ -38,8 +38,17 @@ python tools/provision_api_key.py --output private/api.key
 
 This writes 64 lowercase hexadecimal characters generated from 32 random bytes,
 followed by a newline. On POSIX systems it creates the file with mode `0600`.
+On Windows it creates an owner-only protected ACL before writing the key; new
+private directories also give child files private inherited permissions. Unsafe
+existing Windows permissions and reparse paths are rejected without changing
+their ACLs. SYSTEM and local Administrators are trusted operating-system accounts.
 The command refuses to overwrite an existing file and does not print its key,
 connect to an appliance, or flash anything. `private/` is ignored by Git.
+
+Run the script from the complete checkout. If copying it elsewhere, also copy
+`tools/pico_private_files.py` from this firmware component and
+`tools/private_files.py` from the repository root beside the script. Missing
+privacy helpers stop the command; there is no weaker Windows permission fallback.
 
 Generate a different key for each appliance. Store the file and any programmer
 session containing it privately; do not add them to a commit, firmware package,

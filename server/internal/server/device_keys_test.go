@@ -146,7 +146,7 @@ func TestDeviceKeyReuseAdvisoryTracksRegistrationChanges(t *testing.T) {
 }
 
 func TestDeviceKeyReuseAdvisoryRestartsAndCredentialFailureIsVisible(t *testing.T) {
-	cfg := Config{DataDir: t.TempDir(), Password: ownerPassword, PollInterval: time.Hour, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))}
+	cfg := Config{DataDir: newTestDataDir(t), Password: ownerPassword, PollInterval: time.Hour, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))}
 	s, err := New(cfg)
 	if err != nil {
 		t.Fatal(err)

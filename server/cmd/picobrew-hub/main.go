@@ -18,7 +18,7 @@ import (
 func main() {
 	listen := flag.String("listen", "127.0.0.1:8080", "HTTP listen address")
 	data := flag.String("data", "data", "Persistent data directory")
-	web := flag.String("web", "web/dist", "Built web assets directory")
+	web := flag.String("web", "", "Development override for web assets (default: website bundled in the binary)")
 	demo := flag.Bool("demo", false, "Use local simulation without hardware access")
 	secure := flag.Bool("secure-cookies", false, "Require HTTPS for owner cookies (enable behind TLS proxy)")
 	flag.Parse()
@@ -35,6 +35,7 @@ func main() {
 		os.Exit(1)
 	}
 	httpServer := &http.Server{Addr: *listen, Handler: app, ReadHeaderTimeout: 5 * time.Second, ReadTimeout: 30 * time.Second, IdleTimeout: 120 * time.Second, MaxHeaderBytes: 16 << 10}
+	httpServer.RegisterOnShutdown(app.BeginShutdown)
 	listener, e := net.Listen("tcp", *listen)
 	if e != nil {
 		slog.Error("Could not listen", "error", e)
@@ -56,6 +57,9 @@ func main() {
 			exitCode = 1
 		}
 	case <-ctx.Done():
+		// Restore the default signal behavior so another Ctrl-C can interrupt
+		// a request that is taking too long to finish its graceful shutdown.
+		stop()
 		shutdown, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 		e = httpServer.Shutdown(shutdown)
 		cancel()

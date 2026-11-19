@@ -9,7 +9,6 @@ import (
 	"log/slog"
 	"net"
 	"net/http"
-	"os"
 	"path/filepath"
 	"strings"
 	"sync"
@@ -20,7 +19,9 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/webui"
 )
 
 const Version = "0.1.0"
@@ -69,13 +70,15 @@ func New(cfg Config) (*Server, error) {
 	if cfg.DataDir == "" {
 		cfg.DataDir = "data"
 	}
-	if cfg.WebDir == "" {
-		cfg.WebDir = "web/dist"
-	}
 	if cfg.PollInterval <= 0 {
 		cfg.PollInterval = 3 * time.Second
 	}
-	if err := os.MkdirAll(cfg.DataDir, 0700); err != nil {
+	if cfg.WebDir == "" {
+		if _, err := webui.Files(); err != nil {
+			return nil, fmt.Errorf("initialize bundled website: %w", err)
+		}
+	}
+	if err := privatefs.EnsureDir(cfg.DataDir); err != nil {
 		return nil, err
 	}
 	v, e := openVault(cfg.DataDir)
@@ -139,8 +142,16 @@ func New(cfg Config) (*Server, error) {
 	s.router = s.routes()
 	return s, nil
 }
-func (s *Server) Close() error {
+
+// BeginShutdown stops monitoring and live event streams while leaving the store
+// open for accepted HTTP requests to finish. Register it with net/http's
+// RegisterOnShutdown, then call Close after HTTP shutdown has drained handlers.
+func (s *Server) BeginShutdown() {
 	s.cancel()
+}
+
+func (s *Server) Close() error {
+	s.BeginShutdown()
 	s.mu.Lock()
 	for _, d := range s.devices {
 		d.cancel()
@@ -254,6 +265,7 @@ func (s *Server) routes() http.Handler {
 		})
 	})
 	r.Get("/*", s.static)
+	r.Head("/*", s.static)
 	return r
 }
 func (s *Server) json(w http.ResponseWriter, status int, v any) {
@@ -328,25 +340,6 @@ func safeMessage(v string) string {
 		return v[:220]
 	}
 	return v
-}
-func (s *Server) static(w http.ResponseWriter, r *http.Request) {
-	if strings.HasPrefix(r.URL.Path, "/api/") {
-		s.fail(w, 404, "not_found", "API endpoint not found")
-		return
-	}
-	clean := filepath.Clean("/" + r.URL.Path)
-	name := filepath.Join(s.cfg.WebDir, clean)
-	if st, e := os.Stat(name); e == nil && !st.IsDir() {
-		http.ServeFile(w, r, name)
-		return
-	}
-	index := filepath.Join(s.cfg.WebDir, "index.html")
-	if _, e := os.Stat(index); e != nil {
-		http.Error(w, "Build the web application with npm --prefix web ci && npm --prefix web run build", 503)
-		return
-	}
-	w.Header().Set("Cache-Control", "no-cache")
-	http.ServeFile(w, r, index)
 }
 func (s *Server) events(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/event-stream")

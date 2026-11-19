@@ -1,21 +1,32 @@
 #!/usr/bin/env python3
 """Execute the real ARM IPSR/PRIMASK guard and ISR filter interlock in Unicorn."""
 import argparse
+import os
 from pathlib import Path
 import struct
 import subprocess
+import sys
 import tempfile
 from elftools.elf.elffile import ELFFile
 from unicorn import Uc, UC_ARCH_ARM, UC_MODE_THUMB, UC_MODE_MCLASS, UC_HOOK_CODE
 from unicorn.arm_const import (UC_ARM_REG_R0, UC_ARM_REG_SP, UC_ARM_REG_LR,
                                UC_ARM_REG_XPSR, UC_ARM_REG_PRIMASK)
 
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from arm_toolchain import find_arm_prefix
+
 
 def main():
     root=Path(__file__).resolve().parents[1]
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--cc', default=str(root/'.deps/toolchain/bin/arm-none-eabi-gcc'))
+    parser.add_argument('--cc')
     args=parser.parse_args()
+    if not args.cc:
+        prefix = os.environ.get('PICOBREW_ARM_PREFIX') or find_arm_prefix(root)
+        if not prefix:
+            parser.error('ARM compiler missing; bootstrap dependencies or set PICOBREW_ARM_PREFIX')
+        args.cc = prefix + 'gcc'
     with tempfile.TemporaryDirectory(prefix='pico-arm-control-') as directory:
         elf_path=Path(directory)/'guard.elf'
         keep=['arm_prepare','arm_filter_probe','arm_signals_enabled',

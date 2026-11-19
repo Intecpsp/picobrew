@@ -8,7 +8,12 @@ flash durability, interrupt latency, or socket timing on a physical CC3200.
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from native_host import compiler, executable_name, runtime_environment, sanitizer_flags
 
 SIMPLELINK = r'''
 #ifndef SIMPLELINK_TEST_H
@@ -68,20 +73,20 @@ def main():
     with tempfile.TemporaryDirectory(prefix='pico-energia-http-test-') as directory:
         temp = Path(directory)
         (temp / 'utility').mkdir()
-        (temp / 'utility/simplelink.h').write_text(SIMPLELINK)
+        (temp / 'utility/simplelink.h').write_text(SIMPLELINK, encoding='utf-8', newline='\n')
         for name in ['fs.h', 'netapp.h', 'socket.h']:
-            (temp / 'utility' / name).write_text('#include "simplelink.h"\n')
-        (temp / 'WiFi.h').write_text(WIFI)
-        flags = ['-Wall', '-Wextra', '-Werror', '-g', '-O1', '-fsanitize=address,undefined',
-                 '-fno-omit-frame-pointer', '-I' + str(temp), '-I' + str(root / 'include')]
+            (temp / 'utility' / name).write_text('#include "simplelink.h"\n', encoding='utf-8', newline='\n')
+        (temp / 'WiFi.h').write_text(WIFI, encoding='utf-8', newline='\n')
+        flags = ['-Wall', '-Wextra', '-Werror', '-g', '-O1', *sanitizer_flags(),
+                 '-I' + str(temp), '-I' + str(root / 'include')]
         object_file = temp / 'http.o'
-        subprocess.run(['gcc', '-std=c11', *flags, '-c', str(root / 'src/http_server.c'),
+        subprocess.run([compiler(), '-std=c11', *flags, '-c', str(root / 'src/http_server.c'),
                         '-o', str(object_file)], check=True)
-        executable = temp / 'native-http-tests'
-        subprocess.run(['g++', '-std=c++11', *flags, str(root / 'platform/energia_http_server.cpp'),
+        executable = temp / executable_name('native-http-tests')
+        subprocess.run([compiler(cxx=True), '-std=c++11', *flags, str(root / 'platform/energia_http_server.cpp'),
                         str(root / 'tests/energia_http_fixture.cpp'), str(object_file),
                         '-o', str(executable)], check=True)
-        env = dict(os.environ)
+        env = runtime_environment()
         env.setdefault('ASAN_OPTIONS', 'detect_leaks=0')
         subprocess.run([str(executable)], check=True, env=env)
 

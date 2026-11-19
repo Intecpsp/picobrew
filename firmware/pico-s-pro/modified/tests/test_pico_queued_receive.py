@@ -115,6 +115,18 @@ class QueuedReceiveTests(unittest.TestCase):
         self.assert_closed_cleanly(raw)
         self.assertEqual(raw.native.callback_count, 3)
 
+    def test_individual_cancel_drains_every_transfer_before_free(self):
+        raw = FakeRawUSB(FakeAsyncLib(cancel_endpoint=False))
+        with QueuedUSBReceive(raw) as rx:
+            self.assertEqual(len(raw.native.pending), 8)
+        self.assertEqual(rx.stats["cancelled"], 8)
+        cancelled = {event[1] for event in raw.native.trace if event[0] == "cancel"}
+        self.assertEqual(cancelled, set(raw.native.allocations))
+        callbacks = [i for i, event in enumerate(raw.native.trace) if event[0] == "callback"]
+        frees = [i for i, event in enumerate(raw.native.trace) if event[0] == "free"]
+        self.assertLess(max(callbacks), min(frees))
+        self.assert_closed_cleanly(raw)
+
     def test_fatal_transfer_error_is_never_returned_as_valid_data(self):
         raw = FakeRawUSB()
         with QueuedUSBReceive(raw) as rx:

@@ -84,7 +84,7 @@ class BackupTests(unittest.TestCase):
         self.assertGreater(fake.read_count, 65000)
         self.assertTrue(fake.closed)
         self.assertFalse(fake.break_condition)
-        self.assertEqual(stat.S_IMODE(self.output.stat().st_mode), 0o600)
+        backup.private_files.assert_private(self.output)
         self.assertFalse(Path(str(self.output) + ".partial").exists())
         self.assertFalse(Path(str(self.output) + ".verify.partial").exists())
         expected = hashlib.sha256(fake.flash).hexdigest()
@@ -153,7 +153,12 @@ class BackupTests(unittest.TestCase):
 
     def test_dangling_output_symlink_is_never_followed(self):
         target = self.output.parent / "missing"
-        self.output.symlink_to(target)
+        try:
+            self.output.symlink_to(target)
+        except OSError as exc:
+            if os.name == "nt" and exc.winerror == 1314:
+                self.skipTest("Windows symlink privilege unavailable; mandatory junction tests cover reparse paths")
+            raise
         fake = FakePicoUSB(HELPER, flash_size=8192)
         result, transcript = self.run_main(fake)
         self.assertEqual(result, 1, transcript)
@@ -232,6 +237,7 @@ class BackupTests(unittest.TestCase):
                 raise RuntimeError("test")
         self.assertEqual(connection.port.timeout, initial)
 
+    @unittest.skipUnless(os.name == "posix", "POSIX uid/gid ownership; native ACL ownership is tested separately")
     def test_private_file_ownership_is_applied(self):
         with mock.patch.object(backup.os, "fchown") as fchown:
             with backup.new_private_file(self.output, (123, 456)) as file:

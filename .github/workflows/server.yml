@@ -14,13 +14,15 @@ concurrency:
   cancel-in-progress: true
 jobs:
   backend:
-    name: Go / ${{ matrix.os }}
+    name: Server and tools / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
+    env:
+      CGO_ENABLED: '0'
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-go@v5
@@ -31,13 +33,52 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Install GNU Make on Windows
+        if: runner.os == 'Windows'
+        run: choco install make --yes --no-progress
       - name: Test and build backend
+        shell: bash
+        env:
+          CATALOG_REQUIRE_FIRMWARE: '1'
         run: |
-          go test -race ./...
-          CATALOG_REQUIRE_FIRMWARE=1 python3 -m unittest discover -s tools -p 'test_*.py'
+          go test ./...
+          python -m unittest discover -s tools -p 'test_*.py'
           go vet ./...
           mkdir -p bin
-          go build -trimpath -o bin/picobrew-hub ./cmd/picobrew-hub
+          go build -trimpath -o bin/ ./cmd/picobrew-hub
+      - name: Check backend races
+        if: runner.os != 'Windows'
+        env:
+          CGO_ENABLED: '1'
+        run: go test -race ./...
+      - name: Check native build, terminal shutdown and saved data
+        run: python tools/check_server_start.py
+      - name: Check both make server-start entry points
+        run: python tools/check_server_start.py --make
+  frontend:
+    name: Embedded website freshness / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          # Node is a frontend development dependency, not a server prerequisite.
+          node-version: '22.22.2'
+          cache: npm
+          cache-dependency-path: server/web/package-lock.json
+      - name: Rebuild and compare the committed browser bundle
+        shell: bash
+        run: |
+          npm --prefix web ci --engine-strict
+          npm --prefix web run build
+          npm --prefix web run check:bundle
+          npm --prefix web run test:bundle
+          npm --prefix web test
   browser:
     name: Web build and browser integration
     runs-on: ubuntu-latest
@@ -59,7 +100,7 @@ jobs:
         run: |
           npm --prefix web ci --engine-strict
           npm --prefix web run build
-          npm --prefix web test
+          npm --prefix web run check:bundle
           npm --prefix web run test:integration
       - name: Install test browser
         working-directory: server/web
@@ -82,7 +123,7 @@ jobs:
       - uses: actions/checkout@v4
       - name: Build image
         run: docker build -t picobrew-hub:test .
-      - name: Start with persistent volume and check health
+      - name: Check the embedded website and persistent volume
         run: |
           docker volume create hub-ci-data
           docker run -d --name hub-ci --read-only --tmpfs /tmp --cap-drop ALL --security-opt no-new-privileges --mount source=hub-ci-data,target=/data -p 127.0.0.1:18081:8080 -e HUB_PASSWORD=isolated-ci-password-not-for-production picobrew-hub:test
@@ -92,6 +133,8 @@ jobs:
             sleep 0.5
           done
           curl --fail --silent http://127.0.0.1:18081/healthz
+          [[ "$(curl --fail --silent http://127.0.0.1:18081/)" == *'<title>PicoBrew Hub</title>'* ]]
+          curl --fail --silent http://127.0.0.1:18081/third-party-licenses.md --output /dev/null
           docker restart hub-ci
           for attempt in $(seq 1 40); do
             if curl --fail --silent http://127.0.0.1:18081/healthz; then break; fi
