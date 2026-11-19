@@ -1957,6 +1957,9 @@ hr,
 .settings-fields .help-text {
   font-size: $text-small;
 }
+.settings-fields code {
+  overflow-wrap: anywhere;
+}
 .settings-fields > h3 {
   font-size: 1rem;
   font-weight: 600;

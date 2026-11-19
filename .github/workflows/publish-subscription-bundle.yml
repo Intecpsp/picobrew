@@ -1,0 +1,45 @@
+name: Publish verified subscription website bundle
+on:
+  push:
+    branches: [feature/ai-subscription-auth]
+    paths: [.github/workflows/publish-subscription-bundle.yml]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - name: Require the triggering revision
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+          cache-dependency-path: server/web/package-lock.json
+      - name: Rebuild the committed website sources
+        run: |
+          npm --prefix server/web ci --engine-strict
+          npm --prefix server/web run build:bundle
+      - name: Verify exact bytes and publish the recovered tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git hash-object server/internal/webui/bundle.zip)" = cdca36a1eb4b867ca8616d46547db809d470f20f
+          test "$(git hash-object server/internal/webui/manifest.json)" = 9ea4777a184d49e409df54d6310b51f0a36bb393
+          git add server/internal/webui/bundle.zip
+          git rm .github/workflows/publish-subscription-bundle.yml
+          test "$(git write-tree)" = 3afe982f4bd7559bdb5e91b4b9173262a6c916ad
+          git restore --source=HEAD --staged --worktree .github/workflows/publish-subscription-bundle.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Package the verified subscription settings website'
+          gh auth setup-git
+          git push origin HEAD:refs/heads/feature/ai-subscription-auth

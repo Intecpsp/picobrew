@@ -69,7 +69,7 @@ The browser workspace ZIP excludes authentication and provider/device credential
 - **Unauthorized from brewer:** replace that machine's stored API key with the provisioned key. Owner login and brewer authentication are separate.
 - **Uncertain command or mutation:** inspect the front panel/current stored recipe before issuing a new action. The hub deliberately records this state rather than retrying a command that may have reached the brewer.
 - **History is partial:** reconnect while the session is still retained. The next sync retries incomplete data, but samples already overwritten on the device cannot be reconstructed.
-- **AI returns an error:** verify the selected provider's API key, model availability, quota and billing. Advice is optional; device polling/control and local history continue without an AI provider.
+- **AI returns an error:** check the selected connection method in Settings. For ChatGPT, check its connection or sign in again. For Claude subscription, verify native Claude Code 2.1.259 or newer is installed and `claude auth login` was completed as the Hub user on the Hub host. For API keys, check the selected provider's key, model permissions, quota and billing. Subscription failures never switch to API-key billing. Advice is optional; device polling/control and local history continue without an AI provider.
 
 ## Deployment notes
 

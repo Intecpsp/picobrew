@@ -29,11 +29,12 @@ func invalidProviderKey(key string) bool {
 func (s *Server) aiSettings(w http.ResponseWriter, r *http.Request) {
 	s.configMu.Lock()
 	defer s.configMu.Unlock()
-	cfg := ai.Config{Provider: "openai"}
+	cfg := ai.Config{Provider: "openai", AuthMode: ai.AuthAPIKey}
 	if _, err := s.db.Get("config", "ai", &cfg); err != nil && !errors.Is(err, store.ErrNotFound) {
 		s.internal(w, err)
 		return
 	}
+	cfg.AuthMode = ai.NormalizeAuthMode(cfg.AuthMode)
 	if r.Method == http.MethodPut {
 		var in struct {
 			ai.Config
@@ -43,22 +44,51 @@ func (s *Server) aiSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		in.Model = strings.TrimSpace(in.Model)
-		if in.Provider != "openai" && in.Provider != "anthropic" {
+		in.AuthMode = ai.NormalizeAuthMode(in.AuthMode)
+		if !validAIProvider(in.Provider) {
 			s.fail(w, 400, "provider", "Choose OpenAI or Anthropic")
+			return
+		}
+		if !validAIAuthMode(in.AuthMode) {
+			s.fail(w, 400, "auth_mode", "Choose subscription or API key")
 			return
 		}
 		if len(in.Model) > 512 || invalidProviderKey(in.APIKey) {
 			s.fail(w, 400, "config", "Invalid model or API key")
 			return
 		}
-		key := in.APIKey
-		if key == "" {
-			key, _ = s.readSecret("ai:" + in.Provider)
-		}
-		in.KeyConfigured = key != ""
-		if in.Enabled && (!in.KeyConfigured || in.Model == "") {
-			s.fail(w, 400, "config", "Set an API key and model before enabling AI")
-			return
+		in.KeyConfigured = false
+		if in.AuthMode == ai.AuthSubscription {
+			if in.APIKey != "" {
+				s.fail(w, 400, "auth_mode", "API keys cannot be supplied in subscription mode")
+				return
+			}
+			if in.Enabled {
+				status, err := s.subscriptionStatus(r.Context(), in.Provider)
+				if err != nil {
+					s.fail(w, 502, "ai_subscription", "Could not check the subscription connection")
+					return
+				}
+				if !status.Authenticated || in.Model == "" {
+					s.fail(w, 409, "ai_subscription_missing", "Connect your subscription and choose a model before enabling AI")
+					return
+				}
+			}
+		} else {
+			key := in.APIKey
+			if key == "" {
+				var err error
+				key, err = s.readSecret("ai:" + in.Provider)
+				if err != nil && !errors.Is(err, store.ErrNotFound) {
+					s.internal(w, err)
+					return
+				}
+			}
+			in.KeyConfigured = key != ""
+			if in.Enabled && (!in.KeyConfigured || in.Model == "") {
+				s.fail(w, 400, "config", "Set an API key and model before enabling AI")
+				return
+			}
 		}
 		cfg = in.Config
 		var encrypted []byte
@@ -70,9 +100,24 @@ func (s *Server) aiSettings(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	key, _ := s.readSecret("ai:" + cfg.Provider)
-	cfg.KeyConfigured = key != ""
+	cfg.KeyConfigured = false
+	if cfg.AuthMode == ai.AuthAPIKey {
+		key, err := s.readSecret("ai:" + cfg.Provider)
+		if err != nil && !errors.Is(err, store.ErrNotFound) {
+			s.internal(w, err)
+			return
+		}
+		cfg.KeyConfigured = key != ""
+	}
 	s.json(w, 200, cfg)
+}
+
+func validAIProvider(provider string) bool {
+	return provider == "openai" || provider == "anthropic"
+}
+
+func validAIAuthMode(mode string) bool {
+	return mode == ai.AuthAPIKey || mode == ai.AuthSubscription
 }
 
 func (s *Server) aiConfiguration() (ai.Config, string, error) {
@@ -82,8 +127,18 @@ func (s *Server) aiConfiguration() (ai.Config, string, error) {
 	if _, err := s.db.Get("config", "ai", &cfg); err != nil {
 		return cfg, "", errors.New("configure AI in Settings first")
 	}
+	cfg.AuthMode = ai.NormalizeAuthMode(cfg.AuthMode)
+	if !validAIProvider(cfg.Provider) || !validAIAuthMode(cfg.AuthMode) || cfg.Model == "" || !cfg.Enabled {
+		return cfg, "", errors.New("connect an AI provider, choose a model and enable AI in Settings first")
+	}
+	if cfg.AuthMode == ai.AuthSubscription {
+		// Never read or return an API key for subscription requests, including
+		// expired or disconnected subscriptions. The subscription client fails
+		// explicitly; it cannot silently change the billing method.
+		return cfg, "", nil
+	}
 	key, err := s.readSecret("ai:" + cfg.Provider)
-	if err != nil || key == "" || cfg.Model == "" || !cfg.Enabled {
+	if err != nil || key == "" {
 		return cfg, "", errors.New("enable AI with a provider API key and model in Settings first")
 	}
 	return cfg, key, nil
@@ -139,7 +194,13 @@ func (s *Server) aiContext(input ai.Request) (map[string]any, error) {
 }
 
 func (s *Server) performAI(ctx context.Context, cfg ai.Config, key string, input ai.Request, data map[string]any) (ai.Result, error) {
-	result, err := s.aiClient.Assist(ctx, cfg, key, input, data)
+	var result ai.Result
+	var err error
+	if ai.NormalizeAuthMode(cfg.AuthMode) == ai.AuthSubscription && cfg.Provider == "openai" {
+		result, err = s.performChatGPT(ctx, cfg, input, data)
+	} else {
+		result, err = s.aiClient.Assist(ctx, cfg, key, input, data)
+	}
 	if err != nil {
 		return result, err
 	}
