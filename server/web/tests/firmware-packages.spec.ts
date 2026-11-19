@@ -152,6 +152,12 @@ for (const viewport of [
     const fetched = stored.getByRole('article', { name: 'Pico S 1.1.0' })
     await fetched.getByText('Package details', { exact: true }).click()
     await expect(fetched.getByText(candidate.binary_sha256, { exact: true })).toBeVisible()
+    // Success notifications dismiss after six seconds; keep the package details unobstructed.
+    await expect(
+      page.getByRole('status').filter({
+        has: page.getByRole('button', { name: 'Dismiss notification', exact: true }),
+      })
+    ).toHaveCount(0, { timeout: 10000 })
     await firmware.screenshot({
       path: test.info().outputPath(`firmware-settings-${viewport.name}.png`),
     })
