@@ -202,6 +202,7 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 	defer d.mu.Unlock()
 	if e != nil {
 		d.view.Online = false
+		d.telemetryReconnect = false
 		d.view.Error = safeMessage(e.Error())
 		if identityFailure {
 			d.identityMismatch = true
@@ -220,6 +221,9 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 			}
 		}
 		return domain.Status{}, e
+	}
+	if d.view.Adapter == "pico-standalone" && (!d.view.Online || d.view.Status != nil && status.UptimeMS < d.view.Status.UptimeMS) {
+		d.telemetryReconnect = true
 	}
 	d.identityMismatch = false
 	d.view.Status = &status

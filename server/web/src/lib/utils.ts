@@ -1,4 +1,4 @@
-import type { Device, Recipe, Sample, Unit } from '../types'
+import type { Device, Recipe, Sample, Telemetry, Unit } from '../types'
 export function temperature(value: number | null | undefined, unit: Unit = 'F') {
   return value == null
     ? '—'
@@ -52,6 +52,34 @@ export function deviceModelLabel(device: Pick<Device, 'model' | 'model_error' | 
     : device.model_error || !device.enabled
       ? 'Model not identified'
       : 'Detecting model'
+}
+export function liveReadingsStatus(status?: Partial<Telemetry>) {
+  switch (status?.state) {
+    case 'configured':
+      return status.enabled === false
+        ? 'Saved. Live readings are off.'
+        : 'Saved. Live readings are configured.'
+    case 'pending':
+      return 'Saved. Will apply when the machine is available.'
+    case 'waiting_idle':
+      return 'Saved. Will apply when the machine is idle.'
+    case 'disabled':
+      return 'Saved. Will apply when monitoring is enabled.'
+    case 'unsupported':
+      return 'Saved. This firmware cannot send live readings.'
+    case 'needs_hub_url':
+      return 'Enter the Hub address and port the machine can reach.'
+    case 'outcome_unknown':
+      return 'Saved. Waiting for the machine to confirm the connection.'
+    case 'conflict':
+      return 'Receiver settings changed on the machine. Save to apply these settings.'
+    case 'error':
+      return 'Reconnect the machine to apply these settings.'
+    case 'simulator':
+      return 'Live readings stay in this Hub.'
+    default:
+      return 'Settings will apply when the machine is available.'
+  }
 }
 export function slug(value: string) {
   return (

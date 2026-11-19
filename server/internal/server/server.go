@@ -34,21 +34,20 @@ type Config struct {
 	Logger                    *slog.Logger
 }
 type runtimeDevice struct {
-	mu                sync.RWMutex
-	statusMu          sync.Mutex
-	view              domain.DeviceView
-	adapter           device.Adapter
-	cancel            context.CancelFunc
-	commandMu         sync.Mutex
-	historyMu         sync.Mutex
-	lastHistory       time.Time
-	identityMismatch  bool
-	keyFingerprint    [32]byte // Private, immutable, and never persisted or returned.
-	hasKeyFingerprint bool
-	telemetryNext     time.Time
-	telemetryAttempts int
-	telemetryClaim    bool
-	telemetryOrigin   string
+	mu                 sync.RWMutex
+	statusMu           sync.Mutex
+	view               domain.DeviceView
+	adapter            device.Adapter
+	cancel             context.CancelFunc
+	commandMu          sync.Mutex
+	historyMu          sync.Mutex
+	lastHistory        time.Time
+	identityMismatch   bool
+	keyFingerprint     [32]byte // Private, immutable, and never persisted or returned.
+	hasKeyFingerprint  bool
+	telemetryNext      time.Time
+	telemetryAttempts  int
+	telemetryReconnect bool // Guarded by mu; set by a verified reconnect or uptime rollback.
 }
 type Server struct {
 	cfg                       Config

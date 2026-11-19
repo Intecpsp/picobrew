@@ -63,7 +63,6 @@ export interface Device {
   capabilities: Capabilities | null
   telemetry?: {
     state: string
-    mode?: 'automatic' | 'manual'
     enabled?: boolean
     message?: string
     host?: string
@@ -231,12 +230,14 @@ export interface DeviceSettings {
   detailed_status: boolean
 }
 export interface Telemetry {
-  mode?: 'automatic' | 'manual'
   enabled: boolean
   host: string
   port: number
   interval_ms?: number
   path?: string
+  state?: string
+  message?: string
+  last_checked?: string
   status?: { state: string; sent: number; failed: number; dropped: number }
 }
 export type AIAuthMode = 'api_key' | 'subscription'

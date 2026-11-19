@@ -2,7 +2,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { KeyRound, Loader2, Plus, RefreshCw, Save, Trash2 } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
-import { deviceModelLabel } from '../lib/utils'
+import { deviceModelLabel, liveReadingsStatus } from '../lib/utils'
 import type { Device } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
 
@@ -19,59 +19,10 @@ export function DeviceKeyNotice() {
 }
 
 export function HubConnectionStatus({ device }: { device: Device }) {
-  const manual = device.telemetry?.mode === 'manual'
-  const state =
-    device.telemetry?.state ||
-    (device.adapter === 'simulator'
-      ? 'simulator'
-      : !device.enabled
-        ? 'disabled'
-        : device.capabilities && !device.capabilities.telemetry_forwarding
-          ? 'unsupported'
-          : 'pending')
-  const labels: Record<string, string> = {
-    pending: 'Connecting live readings',
-    configured: manual ? 'Manual receiver configured' : 'Live readings configured',
-    waiting_idle: 'Waiting for the machine to finish',
-    needs_hub_url: 'Hub address needed',
-    conflict: 'Connection needs attention',
-    unsupported: 'Readings collected by the Hub',
-    error: 'Live readings need attention',
-    outcome_unknown: 'Checking the live connection',
-    disabled: manual && device.enabled ? 'Live readings disabled' : 'Monitoring paused',
-    simulator: 'Virtual brewer connected',
-  }
-  const descriptions: Record<string, string> = {
-    pending: 'The Hub sets up live readings automatically when it connects to this machine.',
-    configured: manual
-      ? 'This machine uses your saved manual receiver. Reconnecting preserves these settings.'
-      : 'This machine is configured to send live readings to this Hub automatically.',
-    waiting_idle: 'The Hub will finish setting up live readings when the machine is idle.',
-    needs_hub_url:
-      'The Hub needs a network address that this machine can reach. Configure the Hub device URL on the server, then test the connection again.',
-    conflict:
-      'Live readings now point elsewhere. Test the connection to reconnect this machine to this Hub.',
-    unsupported:
-      'The Hub collects readings while connected. This firmware does not support automatic live updates.',
-    error: 'The Hub could not finish setting up live readings. Test the connection to try again.',
-    outcome_unknown:
-      'The Hub is checking whether the machine accepted its live connection settings.',
-    disabled:
-      manual && device.enabled
-        ? 'Sending to the manual receiver is disabled. Your saved connection remains available in Advanced Hub connection.'
-        : 'Enable monitoring to connect this machine and collect its readings.',
-    simulator: 'The Hub collects readings directly from this virtual brewer.',
-  }
   return (
-    <section className="settings-row compact" aria-label="Hub connection">
-      <div>
-        <h3>Hub connection</h3>
-        <p>{device.telemetry?.message || descriptions[state] || descriptions.pending}</p>
-      </div>
-      <div className="settings-fields" role="status">
-        {labels[state] || 'Checking the Hub connection'}
-      </div>
-    </section>
+    <p className="help-text" role="status">
+      {liveReadingsStatus(device.telemetry)}
+    </p>
   )
 }
 

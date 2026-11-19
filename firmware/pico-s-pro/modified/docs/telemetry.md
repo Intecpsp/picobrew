@@ -26,7 +26,7 @@ Keep that process running while you want to collect readings. `Ctrl+C` stops
 the receiver. The Pico continues brewing and recording local history.
 
 The receiver defaults to `127.0.0.1` if `--bind` is omitted. The explicit
-`0.0.0.0` above makes it reachable on the computer's IPv4 interfaces. In the Pico
+`0.0.0.0` above makes it reachable on the computer's IPv4 interfaces. In the Hub's live-data
 settings, use the computer's **LAN IPv4 address or resolvable host name**, not
 `0.0.0.0` or `127.0.0.1`. Permit inbound traffic on the chosen port through the
 computer's firewall if needed.
@@ -45,14 +45,20 @@ the repository root's `tools/private_files.py` beside a copied receiver script.
 ## Connect through PicoBrew Hub
 
 Add the brewer in PicoBrew Hub using its address and provisioned device key.
-The Hub configures the destination through the authenticated management API.
+In **Brewer preferences → Live readings**, receiver host, receiver port, and
+**Send live readings** are always visible. The Hub fills the initial destination
+with its verified reachable address and retains your saved values across
+reconnects and restarts. It applies those values through the authenticated
+management API when the machine connects or the settings are saved. Offline or
+busy machines receive pending changes when available and idle.
 On the brewer website, **Settings → Hub connection** shows the saved destination
 and current delivery status. There is no receiver address or port to enter on
 the brewer website. Existing saved destinations remain supported.
 
 The standalone Python receiver above is an alternative integration for users
-who explicitly need a separate archive. Its destination is configured through
-the API below, rather than through the brewer website.
+who explicitly need a separate archive. Set its host and port in the Hub
+form above, or use the authenticated Pico API below. The brewer website keeps
+the connection display read-only.
 
 ## Configure it through the Pico API
 

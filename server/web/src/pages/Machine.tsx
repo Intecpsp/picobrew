@@ -210,7 +210,11 @@ export default function Machine({ id }: { id: string }) {
               <Pencil size={16} />
               Edit connection
             </Button>
-            <Button variant="secondary" disabled={!device.online} onClick={() => setSettings(true)}>
+            <Button
+              variant="secondary"
+              disabled={!device.online && device.adapter !== 'pico-standalone'}
+              onClick={() => setSettings(true)}
+            >
               <SlidersHorizontal size={16} />
               Brewer preferences
             </Button>
@@ -582,7 +586,7 @@ export default function Machine({ id }: { id: string }) {
 function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
   const hub = useHub()
   const device = hub.devices.find((device) => device.id === id)
-  const settings = useResource<DeviceSettings>(`/devices/${id}/settings`)
+  const settings = useResource<DeviceSettings>(device?.online ? `/devices/${id}/settings` : null)
   const [form, setForm] = useState<DeviceSettings | null>(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
@@ -604,55 +608,55 @@ function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
   return (
     <Modal title="Brewer preferences" onClose={onClose} wide>
       <ErrorBanner message={error || settings.error} />
-      {!form ? (
+      {device?.online && form ? (
+        <div className="settings-row compact">
+          <div>
+            <h3>Display preferences</h3>
+            <p>Saved on the machine.</p>
+          </div>
+          <div className="settings-fields">
+            <div className="form-grid">
+              <Field label="Temperature unit">
+                <select
+                  value={form.temperature_unit}
+                  onChange={(event) =>
+                    setForm({ ...form, temperature_unit: event.target.value as 'F' | 'C' })
+                  }
+                >
+                  <option value="F">Fahrenheit (°F)</option>
+                  <option value="C">Celsius (°C)</option>
+                </select>
+              </Field>
+              <Field label="Front-panel language">
+                <select
+                  value={form.language}
+                  onChange={(event) => setForm({ ...form, language: event.target.value })}
+                >
+                  <option value="en">English</option>
+                  <option value="es">Español</option>
+                  <option value="fr">Français</option>
+                </select>
+              </Field>
+            </div>
+            <label className="check-field">
+              <input
+                type="checkbox"
+                checked={form.detailed_status}
+                onChange={(event) => setForm({ ...form, detailed_status: event.target.checked })}
+              />
+              Show detailed status
+            </label>
+            <Button disabled={!!busy} onClick={() => void save()}>
+              Save preferences
+            </Button>
+          </div>
+        </div>
+      ) : device?.online && settings.loading ? (
         <Loading />
       ) : (
-        <>
-          <div className="settings-row compact">
-            <div>
-              <h3>Display preferences</h3>
-              <p>Saved on the machine.</p>
-            </div>
-            <div className="settings-fields">
-              <div className="form-grid">
-                <Field label="Temperature unit">
-                  <select
-                    value={form.temperature_unit}
-                    onChange={(event) =>
-                      setForm({ ...form, temperature_unit: event.target.value as 'F' | 'C' })
-                    }
-                  >
-                    <option value="F">Fahrenheit (°F)</option>
-                    <option value="C">Celsius (°C)</option>
-                  </select>
-                </Field>
-                <Field label="Front-panel language">
-                  <select
-                    value={form.language}
-                    onChange={(event) => setForm({ ...form, language: event.target.value })}
-                  >
-                    <option value="en">English</option>
-                    <option value="es">Español</option>
-                    <option value="fr">Français</option>
-                  </select>
-                </Field>
-              </div>
-              <label className="check-field">
-                <input
-                  type="checkbox"
-                  checked={form.detailed_status}
-                  onChange={(event) => setForm({ ...form, detailed_status: event.target.checked })}
-                />
-                Show detailed status
-              </label>
-              <Button disabled={!!busy} onClick={() => void save()}>
-                Save preferences
-              </Button>
-            </div>
-          </div>
-          {device && <HubConnectionSettings device={device} />}
-        </>
+        <p className="help-text">Connect the machine to change its display preferences.</p>
       )}
+      {device && <HubConnectionSettings device={device} />}
     </Modal>
   )
 }

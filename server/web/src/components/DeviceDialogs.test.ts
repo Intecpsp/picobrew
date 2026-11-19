@@ -134,7 +134,7 @@ describe('automatic physical-machine connections', () => {
     show(machine())
     expect((screen.getByLabelText('Machine model') as HTMLInputElement).value).toBe('Pico S')
     expect(screen.queryByRole('combobox', { name: 'Machine model' })).toBeNull()
-    expect(screen.getByText('Live readings configured')).toBeTruthy()
+    expect(screen.getByText('Saved. Live readings are configured.')).toBeTruthy()
     await user.clear(screen.getByLabelText('Machine name'))
     await user.type(screen.getByLabelText('Machine name'), 'Renamed S')
     await user.click(screen.getByRole('button', { name: 'Save machine' }))
@@ -212,7 +212,7 @@ describe('automatic physical-machine connections', () => {
 
   it('shows automatic Hub connection status without receiver configuration controls', () => {
     render(createElement(HubConnectionStatus, { device: machine() }))
-    expect(screen.getByRole('status').textContent).toBe('Live readings configured')
+    expect(screen.getByRole('status').textContent).toBe('Saved. Live readings are configured.')
     expect(screen.queryByRole('textbox')).toBeNull()
     expect(screen.queryByRole('spinbutton')).toBeNull()
     expect(screen.queryByRole('checkbox')).toBeNull()
