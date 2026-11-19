@@ -104,6 +104,7 @@ func (s *Server) adaptRecipe(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 422, "adaptation", e.Error())
 		return
 	}
+	adapted.ProfileFingerprint = profileFingerprint(p)
 	s.json(w, 200, adapted)
 }
 func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
@@ -112,10 +113,11 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct {
-		RecipeID       string  `json:"recipe_id"`
-		ProfileID      string  `json:"profile_id"`
-		BatchLiters    float64 `json:"batch_liters"`
-		SourceRevision int64   `json:"source_revision"`
+		RecipeID           string  `json:"recipe_id"`
+		ProfileID          string  `json:"profile_id"`
+		BatchLiters        float64 `json:"batch_liters"`
+		SourceRevision     int64   `json:"source_revision"`
+		ProfileFingerprint string  `json:"profile_fingerprint"`
 	}
 	if !s.decode(w, r, &in) {
 		return
@@ -150,13 +152,21 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 400, "profile", "Unknown machine profile")
 		return
 	}
+	if in.ProfileFingerprint != "" && in.ProfileFingerprint != profileFingerprint(p) {
+		s.fail(w, 409, "profile_changed", "Equipment calibration changed; preview the adaptation again before sending it")
+		return
+	}
 	a, e := recipe.Adapt(v, p, in.BatchLiters)
 	if e != nil {
 		s.fail(w, 422, "adaptation", e.Error())
 		return
 	}
 	if !a.CanDeploy || a.MachineRecipe == nil {
-		s.fail(w, 422, "unsupported_deployment", "This profile currently supports planning and export; live control is not available")
+		message := "This recipe and profile support planning only; no machine program is available"
+		if len(a.DeploymentBlockers) > 0 {
+			message = strings.Join(a.DeploymentBlockers, "; ")
+		}
+		s.fail(w, 422, "unsupported_deployment", message)
 		return
 	}
 	status, e := s.verifiedStatus(r.Context(), d)

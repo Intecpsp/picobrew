@@ -1,0 +1,410 @@
+{
+  "schema_version": 1,
+  "purpose": "Preserve the independent S/Pro web recovery candidate without changing the current brewing firmware.",
+  "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+  "source_branch_at_import": "feature/web-recovery",
+  "source_commit": "256751aa57741fd4e75ecba685c91ceea28d6794",
+  "branch_merge_base": "adc2fc19617ccebc06fbcb6fd68cb33aa8d5f2b9",
+  "unique_commits": [
+    "e84199f6e0a529719ae7a12c70dc944705bd1b97",
+    "350418bacf1d163bef8eb11388b24788c68c886a",
+    "256751aa57741fd4e75ecba685c91ceea28d6794"
+  ],
+  "candidate_status": {
+    "firmware_version": "0.1.0",
+    "installation_supported": false,
+    "hardware_validated": false,
+    "target_logical_file": "/sys/mcuimg1.bin",
+    "binary_sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593"
+  },
+  "component_path": "firmware/pico-s-pro/modified/recovery",
+  "shared_source_policy": "Pinned component-local copies of the original linker, SDK helper, HTTP transport, headers and dependency lock keep this candidate reproducible independently of the current brewing firmware.",
+  "source_files": [
+    {
+      "source_path": ".github/workflows/recovery.yml",
+      "path": "reference/source-workflow.yml",
+      "git_blob": "95a272cf3fa4021b13f7211f9bd67be513491946",
+      "mode": "100644",
+      "sha256": "1f40addbf5400b4722efe3a924a1a4bde271c4536e8546d090b932b45153d9cc",
+      "size_bytes": 2148
+    },
+    {
+      "source_path": ".gitignore",
+      "path": ".gitignore",
+      "git_blob": "f6b4ca91f5211364eecdbb47bd7de25308a05dd0",
+      "mode": "100644",
+      "sha256": "2c94d9bec63fa836cd63f0f59819fe8db31ee2b94e6ca3176d289625a3537408",
+      "size_bytes": 72
+    },
+    {
+      "source_path": "LICENSES/LGPL-2.1.txt",
+      "path": "LICENSES/LGPL-2.1.txt",
+      "git_blob": "f6683e74e0f0130f246dbf7054f4cacc88ca84b0",
+      "mode": "100755",
+      "sha256": "20e50fe7aae3e56378ebf0417d9de904f55a0e61e4df315333e632a4d3555d95",
+      "size_bytes": 26419
+    },
+    {
+      "source_path": "LICENSES/TI-BSD-notice.txt",
+      "path": "LICENSES/TI-BSD-notice.txt",
+      "git_blob": "85d01e8fda3d50dea9e9df9478bd25699e065232",
+      "mode": "100755",
+      "sha256": "421eeafc78a2e5fb56515dd883f1af5efd8037c05618f126e0a42b141fc8ae15",
+      "size_bytes": 1667
+    },
+    {
+      "source_path": "analysis/device-flash-layout.json",
+      "path": "analysis/device-flash-layout.json",
+      "git_blob": "2f30080030b2fe6f96896194783afcb5deddfacc",
+      "mode": "100644",
+      "sha256": "e69beab37d96771e4aec0ad973f25aa511b8cbd755dafc5e9624eb9e69960541",
+      "size_bytes": 4237
+    },
+    {
+      "source_path": "analysis/web-recovery-validation.json",
+      "path": "analysis/web-recovery-validation.json",
+      "git_blob": "73976853998cd7a0438bb93e29db8e7d0edc5233",
+      "mode": "100644",
+      "sha256": "a5aa7325e3e9c9891c60b0e2e125f53a3c3b8f6711a69edfe26df63f7c6ccc36",
+      "size_bytes": 2752
+    },
+    {
+      "source_path": "dependencies/lock.json",
+      "path": "dependencies/lock.json",
+      "git_blob": "e69252462b0377b006e6845f852fcfe03dbbe8c9",
+      "mode": "100644",
+      "sha256": "538be7bc1129a21924984299c7b96a2d540f3f687ba53a909ec4406852cd6865",
+      "size_bytes": 12959
+    },
+    {
+      "source_path": "docs/web-recovery.md",
+      "path": "docs/web-recovery.md",
+      "git_blob": "94476568e4d7df287cc9a85ca0c25da89edaf475",
+      "mode": "100644",
+      "sha256": "8af497900eff7d3b2deb95e49b8aa40dc57500f84349304d85014763b69e81b0",
+      "size_bytes": 10758
+    },
+    {
+      "source_path": "firmware/recovery/README.md",
+      "path": "firmware/recovery/README.md",
+      "git_blob": "f546ef499407b5c8be6329474d3b018b7360e3d9",
+      "mode": "100644",
+      "sha256": "abf8382c3023cd9b6f7702d0261cc059661a148413f88161afb6436d9959ff54",
+      "size_bytes": 1833
+    },
+    {
+      "source_path": "firmware/recovery/pico-web-recovery.bin",
+      "path": "firmware/recovery/pico-web-recovery.bin",
+      "git_blob": "54dc9097ebb213d8c24a1b05b436c82fd0c97ec4",
+      "mode": "100644",
+      "sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593",
+      "size_bytes": 42984
+    },
+    {
+      "source_path": "firmware/recovery/recovery-report.json",
+      "path": "firmware/recovery/recovery-report.json",
+      "git_blob": "3923024db3e7a1ac8734415f49c5af0beeddc6df",
+      "mode": "100644",
+      "sha256": "79f6e8f6738ba1d999c0c2e53ea4e1a8516ae7833828f1b0f6551972afe76ce7",
+      "size_bytes": 21473
+    },
+    {
+      "source_path": "firmware/web/manifest.json",
+      "path": "firmware/web/manifest.json",
+      "git_blob": "543bf4efdf25ab89b5320fbdde67f4aa1f403cb5",
+      "mode": "100644",
+      "sha256": "c14d40b8b91cfc9c0591690dae681d3587da83d8d2afb7427563a59493c4656f",
+      "size_bytes": 2548
+    },
+    {
+      "source_path": "include/picobrew/actuators.h",
+      "path": "include/picobrew/actuators.h",
+      "git_blob": "4ed0041a57c87e72e59422d0c3cd77fec31a128f",
+      "mode": "100644",
+      "sha256": "c82c7499378fb3f448e912f353207dbd2a1c6b423976b3240f75f6bd357a7464",
+      "size_bytes": 2312
+    },
+    {
+      "source_path": "include/picobrew/http_server.h",
+      "path": "include/picobrew/http_server.h",
+      "git_blob": "aeafb53a408aff657c77110fa310f6654c3f7679",
+      "mode": "100644",
+      "sha256": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+      "size_bytes": 5096
+    },
+    {
+      "source_path": "platform/energia_runtime_compat.c",
+      "path": "platform/energia_runtime_compat.c",
+      "git_blob": "cda340bf70cc65247ad3cc1dd5172bc097b43db2",
+      "mode": "100644",
+      "sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+      "size_bytes": 2122
+    },
+    {
+      "source_path": "platform/pico_cc3200.ld",
+      "path": "platform/pico_cc3200.ld",
+      "git_blob": "a3d9f259872cf22c8b9b1766713d921a57659e20",
+      "mode": "100644",
+      "sha256": "3f01e3473781da93be166f2ccb5bb2bd16acb5e508901d453ddd9e8a62ab7bc1",
+      "size_bytes": 2003
+    },
+    {
+      "source_path": "recovery/http.c",
+      "path": "recovery/http.c",
+      "git_blob": "140c0cc44ab67720847ca348eccfa7ec41e29611",
+      "mode": "100644",
+      "sha256": "4a848fb39be75875a5b5afbba5974d79b5930137fcf271ece4dff26345458f9a",
+      "size_bytes": 15703
+    },
+    {
+      "source_path": "recovery/http.h",
+      "path": "recovery/http.h",
+      "git_blob": "841513078e17e31b388785c79aa3686033bcf38f",
+      "mode": "100644",
+      "sha256": "971d442c10defc0f3e3a1cd80df0f6e8b53f83859927b14ccbf1a96e7d237501",
+      "size_bytes": 520
+    },
+    {
+      "source_path": "recovery/native.cpp",
+      "path": "recovery/native.cpp",
+      "git_blob": "bed939f24c8056bd2f1f0c10206918079c8cbb49",
+      "mode": "100644",
+      "sha256": "9ef76ef072b276162a716e6ce963cb30dc3745f339d325e2febea4f7d05c33db",
+      "size_bytes": 20450
+    },
+    {
+      "source_path": "recovery/recovery.c",
+      "path": "recovery/recovery.c",
+      "git_blob": "0a36528f12b0aeda9b9d62c5d2c9145b0d0992d2",
+      "mode": "100644",
+      "sha256": "a0fbe565c33af2863b9d6b43f96f864b43fcc917d6bf313888287aacb3225847",
+      "size_bytes": 16165
+    },
+    {
+      "source_path": "recovery/recovery.h",
+      "path": "recovery/recovery.h",
+      "git_blob": "f54dda8bf9a9abb33f2fdb1ab3ae2d558919bf91",
+      "mode": "100644",
+      "sha256": "254a81e317f5f9e633cd2303b786ccd8f1dbda15a3e42139f99e54ea468664e1",
+      "size_bytes": 4866
+    },
+    {
+      "source_path": "recovery/sha256.c",
+      "path": "recovery/sha256.c",
+      "git_blob": "8f23ac97e353f612a81fd5654e795c920689a389",
+      "mode": "100644",
+      "sha256": "d6af914aa4bd2ec9d81bd98a6926da57652f07cf426f34293302368a3679b6a4",
+      "size_bytes": 3834
+    },
+    {
+      "source_path": "recovery/sha256.h",
+      "path": "recovery/sha256.h",
+      "git_blob": "de4a66dc1de6f90e15955dcbc3347993c57530b3",
+      "mode": "100644",
+      "sha256": "92cb6786c5db326cf5241a615754cf84da5f2faa3dcbfb42d462278ddc35fbcc",
+      "size_bytes": 441
+    },
+    {
+      "source_path": "recovery/web/index.html",
+      "path": "recovery/web/index.html",
+      "git_blob": "f5c0591882d27c636a3bf3b20904dc3f6fec40c5",
+      "mode": "100644",
+      "sha256": "ac3a5ab0a6106b061758157a7d706f0ce7bb74048ec2d343066921b71ee9459f",
+      "size_bytes": 2796
+    },
+    {
+      "source_path": "recovery/web/recovery.js",
+      "path": "recovery/web/recovery.js",
+      "git_blob": "49696714439538c80aa773e9ba484fc1562f3ee5",
+      "mode": "100644",
+      "sha256": "c413d36b747ffced73445a576cb3db70581adf5430c5ec7d3efc934de2c742fb",
+      "size_bytes": 11822
+    },
+    {
+      "source_path": "recovery/web/style.css",
+      "path": "recovery/web/style.css",
+      "git_blob": "5e757655fdc11c9ddc3c8158b3c128a728349eb3",
+      "mode": "100644",
+      "sha256": "5517167f5a22f8e3b13efe5a6e64bf1969a8599c7546eafa38d55648ef115a9e",
+      "size_bytes": 1303
+    },
+    {
+      "source_path": "recovery/web_assets.c",
+      "path": "recovery/web_assets.c",
+      "git_blob": "aacee8b4576752ece82dbff88394e49e06d34833",
+      "mode": "100644",
+      "sha256": "b58012838ffa0eb72a0eb994c1c66a1c0fa99ac7737a16a248ebe128bb625927",
+      "size_bytes": 34027
+    },
+    {
+      "source_path": "recovery/web_assets.h",
+      "path": "recovery/web_assets.h",
+      "git_blob": "4bf594185270425ab955bd39b065a6eedc8bcb4e",
+      "mode": "100644",
+      "sha256": "2c0e2d1bc5c45e2a8b75b5c298d5e359d2020edfe8dbe6aefc9082f9b3831746",
+      "size_bytes": 325
+    },
+    {
+      "source_path": "requirements-test.txt",
+      "path": "requirements-test.txt",
+      "git_blob": "1cea8cfda592bcd78a832361b842dd1dfbe7be03",
+      "mode": "100644",
+      "sha256": "ce5d9382edbf8ec68df5b5c0e65f49a19a5f5e888123d6be3df2a44d572108d8",
+      "size_bytes": 32
+    },
+    {
+      "source_path": "requirements-web-test.txt",
+      "path": "requirements-web-test.txt",
+      "git_blob": "d3e8a34b31d68ed3e1ffb0db60e20604339e1ebc",
+      "mode": "100644",
+      "sha256": "1eaea11b84372239a20647db61de397267a844f072bb9e13bf01f5b0714e838e",
+      "size_bytes": 94
+    },
+    {
+      "source_path": "src/http_server.c",
+      "path": "src/http_server.c",
+      "git_blob": "123cac09917a69982ec9c804966794934ed2f740",
+      "mode": "100644",
+      "sha256": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+      "size_bytes": 22135
+    },
+    {
+      "source_path": "tests/http_asset_fixture.c",
+      "path": "tests/http_asset_fixture.c",
+      "git_blob": "d4384a95e9232e232730d91107caf8f3264ae7f9",
+      "mode": "100644",
+      "sha256": "bd040f7cee95ad355804fb9221a7355fbf8580795a7760025b1ee0efa8839325",
+      "size_bytes": 8967
+    },
+    {
+      "source_path": "tests/http_server_fixture.c",
+      "path": "tests/http_server_fixture.c",
+      "git_blob": "49e7cf55f8d446865e9035cdfa28a4bf0be0a23b",
+      "mode": "100644",
+      "sha256": "fea21742a1bf9c70ea09446c79afe0cffcf4982c568d19833792ac18142c93d4",
+      "size_bytes": 12125
+    },
+    {
+      "source_path": "tests/recovery_core_host.c",
+      "path": "tests/recovery_core_host.c",
+      "git_blob": "6d1457cfd9de7f933ed1743ac983996a9e734468",
+      "mode": "100644",
+      "sha256": "841a2feffaef2eb835fc0996d25e8eaf524df4aa1c44b8a249364d99efdd150d",
+      "size_bytes": 11434
+    },
+    {
+      "source_path": "tests/recovery_http_host.c",
+      "path": "tests/recovery_http_host.c",
+      "git_blob": "13fb1879650bbb09c8ce7e1efe38d68c7cd12bef",
+      "mode": "100644",
+      "sha256": "e97cf7cda0968f4f2d30ebe5ece723417e004e767a4fbca4c2b75bc8b7829ba9",
+      "size_bytes": 5902
+    },
+    {
+      "source_path": "tests/recovery_native_fixture.cpp",
+      "path": "tests/recovery_native_fixture.cpp",
+      "git_blob": "57256e862db292d5cf40f11317cbafeb27842fc6",
+      "mode": "100644",
+      "sha256": "e8387cb5148307bd5677b4ab3838a41f95e67a4fe2c8624b2d6a7440a7af9d4b",
+      "size_bytes": 21835
+    },
+    {
+      "source_path": "tests/test_http_server.py",
+      "path": "tests/test_http_server.py",
+      "git_blob": "461710f0ae470d8f0fe36d1a03c65236707dc34b",
+      "mode": "100644",
+      "sha256": "d4227de0dd9908fd1c2a96c1980ffc4177f951e6f1df8cccedec88c36ff7ee84",
+      "size_bytes": 1674
+    },
+    {
+      "source_path": "tests/test_recovery_core.py",
+      "path": "tests/test_recovery_core.py",
+      "git_blob": "7892156ac60d143115e7d20bcd5406e005d0a80c",
+      "mode": "100644",
+      "sha256": "0336ad606ceef0ba7d2d56691218ab895c7b404b07fbee5b42b90e7cddb53fc4",
+      "size_bytes": 30183
+    },
+    {
+      "source_path": "tests/test_recovery_http.py",
+      "path": "tests/test_recovery_http.py",
+      "git_blob": "c0dab1c76c4f3b17d91e7197c27b53b88bc8efc8",
+      "mode": "100644",
+      "sha256": "1ff04d8fb651cd86bd4acf7cbe61f8dfc933532c0f996a06077547bf52b230d2",
+      "size_bytes": 9417
+    },
+    {
+      "source_path": "tests/test_recovery_native.py",
+      "path": "tests/test_recovery_native.py",
+      "git_blob": "3dcb0761bd7bc5866e0589b44084e14d0ef9c9a0",
+      "mode": "100644",
+      "sha256": "7610a698d12b9997769233fdc1f41caa6f445ef96f492327612e4ab0ce340143",
+      "size_bytes": 5731
+    },
+    {
+      "source_path": "tests/test_recovery_web.py",
+      "path": "tests/test_recovery_web.py",
+      "git_blob": "b8f92d11fe299d9253e970e3bed358901f640b4f",
+      "mode": "100644",
+      "sha256": "60699ea6c3801655ee4b1570960e97747829d5f60d751cb3e34309291b1d0da5",
+      "size_bytes": 19420
+    },
+    {
+      "source_path": "tools/bootstrap_dependencies.py",
+      "path": "tools/bootstrap_dependencies.py",
+      "git_blob": "2431e724cd326ebac96a9726dc412c0c3d221501",
+      "mode": "100644",
+      "sha256": "fd213448a9c3aab4168efd8d093184444e04d2d929ac49f067f6df22531ed728",
+      "size_bytes": 5286
+    },
+    {
+      "source_path": "tools/build_recovery.py",
+      "path": "tools/build_recovery.py",
+      "git_blob": "a7c081c91d0326e7f2158c896c096110ebafc692",
+      "mode": "100644",
+      "sha256": "65c28f659f82582f7af1244d86b64cab82cb0d3d37cf564fe1c413515bf1ef13",
+      "size_bytes": 9948
+    },
+    {
+      "source_path": "tools/build_sdk_validation.py",
+      "path": "tools/build_sdk_validation.py",
+      "git_blob": "5300979bac3cd4c428394ca4f12b36c73e9ac97f",
+      "mode": "100644",
+      "sha256": "dee52053d8b32fe33d87cbe2b640c91b03b400cb8fc528a98611007c7a942884",
+      "size_bytes": 22342
+    },
+    {
+      "source_path": "tools/embed_recovery_web.py",
+      "path": "tools/embed_recovery_web.py",
+      "git_blob": "b53d905b2c9f2e22d08afad253cbaa08585ff74b",
+      "mode": "100644",
+      "sha256": "f2236baebbcfaacc778a95ee8a94b739464d69493c5a1921f7c2f517da8a082b",
+      "size_bytes": 2654
+    }
+  ],
+  "integration_files": [
+    "README.md",
+    "Makefile",
+    "verify_import.py",
+    "docs/device-firmware-review.md",
+    "docs/release-1.0.0.md"
+  ],
+  "active_workflow": ".github/workflows/recovery.yml",
+  "shared_changes": [
+    {
+      "source_path": "Makefile",
+      "treatment": "Candidate targets provided by a separate component Makefile; current firmware Makefile unchanged."
+    },
+    {
+      "source_path": "README.md",
+      "treatment": "Branch introduction replaced by this component overview; current firmware overview unchanged."
+    },
+    {
+      "source_path": "docs/macos-usb-installation.md",
+      "treatment": "Historical startup corrections are already carried forward and updated in the current main firmware guide; do not replace it with the old guide."
+    },
+    {
+      "source_path": "tools/build_sdk_validation.py",
+      "treatment": "Exact branch copy retained inside this component; main firmware builder unchanged."
+    }
+  ]
+}

@@ -22,6 +22,11 @@ version 1.1.0. Both retain their own build tools, dependency manifests, tests,
 reference fixtures and documentation. The OEM reconstruction's documented
 repairs and validation limits remain attached to that source.
 
+The separate [S/Pro web recovery candidate](firmware/pico-s-pro/modified/recovery/README.md)
+is preserved under `modified/recovery/`, with its own pinned source, build tools,
+tests and original image. It is an experimental image1 application; installation
+and physical recovery are not yet supported or validated.
+
 The [firmware inventory](firmware/README.md) describes every machine directory.
 The complete **27-file** `app/firmware` directory from Chiefwigms is copied at
 commit `36acae3003845b72568ef5f7d6cf168acb6f9b69`, including Pico S/Pro, Pico C,
@@ -55,6 +60,11 @@ make firmware MACHINE=pico-s-pro
 make firmware-test MACHINE=pico-s-pro
 make oem MACHINE=pico-s-pro
 ```
+
+Bootstrap the selected source component before its first ARM build. The modified
+firmware uses `make firmware-bootstrap`; the preserved OEM reconstruction uses
+`make -C firmware/pico-s-pro/reverse-engineered bootstrap`. Each component's
+guide describes its Python dependencies and existing-toolchain options.
 
 The root Makefile delegates to the selected machine's source directory. Only
 S/Pro currently has implemented source builds. Its modified package and local

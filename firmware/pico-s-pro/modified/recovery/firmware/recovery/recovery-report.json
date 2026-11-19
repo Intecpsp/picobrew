@@ -1,0 +1,463 @@
+{
+  "artifact": "Independent Pico web recovery candidate",
+  "profile": "recovery",
+  "firmware_version": "0.1.0",
+  "hardware_executed": false,
+  "installation_supported": false,
+  "production_entry": "recovery/native.cpp",
+  "image_layout": {
+    "passed": true,
+    "load_address": "0x20004000",
+    "ram_end": "0x20040000",
+    "initial_stack_pointer": "0x20016800",
+    "reset_vector": "0x2000a311",
+    "binary_bytes": 42984,
+    "image_limit_bytes": 57344,
+    "image_headroom_bytes": 14360,
+    "bss_bytes": 41032,
+    "heap_bytes": 32768,
+    "sdk_stack_bytes": 32768,
+    "unallocated_ram_bytes": 128952,
+    "load_segments": [
+      {
+        "start": "0x20004000",
+        "memory_bytes": 42984,
+        "file_bytes": 42984
+      }
+    ],
+    "undefined_symbols": [],
+    "brewing_or_test_symbols": [],
+    "required_entry_symbols": {
+      "ResetISR": "0x2000a311",
+      "main": "0x200095f9",
+      "setup": "0x20008f41",
+      "loop": "0x200092b9",
+      "g_pfnVectors": "0x20004000",
+      "_heap": "0x20018848",
+      "_eheap": "0x20020848",
+      "_bss": "0x2000e800",
+      "_ebss": "0x20018848",
+      "pui32Stack": "0x2000e800"
+    }
+  },
+  "binary_sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593",
+  "elf_sha256": "5ae30b21dd5e87e99fcafa9d7d9ee65b97061802b650212c75cb586cf1a75809",
+  "sdk_link_passed": true,
+  "runtime_boundary": {
+    "support_library": "/workspace/scratch/e6da7f9ef6da/picobrew-pico-pro-firmware/.deps/toolchain/arm-none-eabi/lib/thumb/v7e-m/nofp/libnosys.a",
+    "support_library_sha256": "7778d81b0b7436fe0f263e1c9057a68fff788afcbd4d859e08cadb6e53930134",
+    "process_file_descriptor_providers": {},
+    "contract_for_pinned_toolchain": {
+      "process_and_file_descriptors": "Unsupported; libnosys reports ENOSYS rather than successful I/O/process services",
+      "read_write_close_fstat_lseek_kill_getpid": "Return -1 and set errno to ENOSYS (88)",
+      "isatty": "Return 0 and set errno to ENOSYS (88)",
+      "exit": "Does not return; enters an infinite loop",
+      "device_io": "No POSIX descriptor retargeting to Serial, WiFi, or SLFS is supplied"
+    },
+    "sbrk_linked": true,
+    "sbrk_provider": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/energia_cc3200.a(startup_gcc.c.o)",
+    "sdk_heap_provider_verified": true,
+    "bounded_heap_adapter_provider": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/objects/application/energia_runtime_compat_55c4781807.o",
+    "bounded_heap_adapter_verified": true,
+    "allocation_providers": {
+      "malloc": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malloc.o",
+      "free": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malloc.o",
+      "calloc": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-calloc.o",
+      "realloc": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-realloc.o",
+      "_malloc_r": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-mallocr.o",
+      "_free_r": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-freer.o",
+      "_calloc_r": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-callocr.o",
+      "_realloc_r": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-reallocr.o"
+    },
+    "allocator_provider_verified": true,
+    "allocator": {
+      "library": "/workspace/scratch/e6da7f9ef6da/picobrew-pico-pro-firmware/.deps/toolchain/arm-none-eabi/lib/thumb/v7e-m/nofp/libc.a",
+      "library_sha256": "c83ed30a03d0c5d8e477f7dec11cfd78328916e383421f87b38add00bf18b072",
+      "objects": [
+        {
+          "member": "lib_a-malloc.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malloc.o",
+          "sha256": "113ee69ac2a688f414304ccc041a4c58e6e17eb6facddcff869c4040bed6d214"
+        },
+        {
+          "member": "lib_a-calloc.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-calloc.o",
+          "sha256": "1668a05cf54a08584287282ae565b08292f1c284db2286d516cbfcf3f4ef7807"
+        },
+        {
+          "member": "lib_a-realloc.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-realloc.o",
+          "sha256": "a45bbc29b8b07f3e69539999dff7f338a243d28f717755a3d8b0462401198f24"
+        },
+        {
+          "member": "lib_a-mallocr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-mallocr.o",
+          "sha256": "53abd33a50b9b862f75d0decb839b0befe636453040dcf7ff0146864f6bc85b8"
+        },
+        {
+          "member": "lib_a-callocr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-callocr.o",
+          "sha256": "f649e3d0ec5d88cabb0a77af783b718f6d2b4de5123fbe33ab6f557cd67d2a92"
+        },
+        {
+          "member": "lib_a-freer.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-freer.o",
+          "sha256": "dc86b88c9da292570403ead78b81df42c8369b94e790e543794ae7b295e15d63"
+        },
+        {
+          "member": "lib_a-reallocr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-reallocr.o",
+          "sha256": "564982180b55017bd569b04604342a382790ae677fc6f77dfb82c4e62c938134"
+        },
+        {
+          "member": "lib_a-msizer.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-msizer.o",
+          "sha256": "eed0cc2193b1ba21157bf7053d212b642e1137def1c066ee973b9b2cb14cdc37"
+        },
+        {
+          "member": "lib_a-aligned_alloc.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-aligned_alloc.o",
+          "sha256": "87827b49bb967aecf1369bf1b2cdd7c91e80a33210859dc096d617eb9ed5e45d"
+        },
+        {
+          "member": "lib_a-malign.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malign.o",
+          "sha256": "e042f8e01999d3e349fc262ea92ae9335bda190bcfd0e85558e79d2a0b193301"
+        },
+        {
+          "member": "lib_a-malignr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malignr.o",
+          "sha256": "bc64106b822e6e649670bbcce95bd3071a16394d245fbb147a17a2bb5c8c43be"
+        },
+        {
+          "member": "lib_a-valloc.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-valloc.o",
+          "sha256": "69f47583da07c1b7ff18e30617841535a61908e91e7b74f68efc0417413456f8"
+        },
+        {
+          "member": "lib_a-vallocr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-vallocr.o",
+          "sha256": "33838c0a38c3b472572c9fb6dacb3eac81b7340aff3b10b9c18daf1227cdbd0a"
+        },
+        {
+          "member": "lib_a-pvallocr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-pvallocr.o",
+          "sha256": "9d055c3d7864eba259058129cd834149fc10a98ebade44c308aefca3a7b90a49"
+        },
+        {
+          "member": "lib_a-cfreer.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-cfreer.o",
+          "sha256": "f14d11be306904aeae041e28089f5f38d1b600eeabc7aa2259a1ac44d5596449"
+        },
+        {
+          "member": "lib_a-mallinfor.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-mallinfor.o",
+          "sha256": "3b8a3a60379fa09c3366fadc5694561763d4ab9f0e3e09cb7da037728eb78db4"
+        },
+        {
+          "member": "lib_a-malloptr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-malloptr.o",
+          "sha256": "67ee21f04e0e5486b44c644c4b0748ed296e803f9111ff72adaa41205714034f"
+        },
+        {
+          "member": "lib_a-mallstatsr.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-mallstatsr.o",
+          "sha256": "6ecac1a9dde946fd109afede8d928a8b103e9174d74e4be242df85b3c59050f2"
+        },
+        {
+          "member": "lib_a-reallocarray.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-reallocarray.o",
+          "sha256": "aca86ee1a0ca9a6ff04df1bd5d55e55a4ceca64c19ed5ae10c0887499f2bd504"
+        },
+        {
+          "member": "lib_a-reallocf.o",
+          "path": "/workspace/scratch/e6da7f9ef6da/pico-web-recovery/build/recovery/native/runtime-allocator/lib_a-reallocf.o",
+          "sha256": "80af8b4558c8eed8a94238c4c2ad3ae314a3b8a8ec49c5640dd8bb20c8b0bb42"
+        }
+      ],
+      "reason": "Use one coherent full-newlib allocation family; pinned nano malloc has an empty-free-list exhaustion defect. Nano stdio remains selected."
+    },
+    "sdk_heap_contract": "Unmodified Energia startup_gcc.c owns heap_end. __wrap__sbrk checks signed growth/shrink against linker _heap/_eheap before invoking it and reports (void*)-1 with syscall errno=ENOMEM on failure. Full-newlib allocation objects from the selected compiler replace the unsafe nano allocation family; nano stdio remains in use.",
+    "scope": "Link integration and selected provider verification; no OS services or hardware-execution claim"
+  },
+  "compiled_sources": [
+    {
+      "source": "cores/cc3200/HardwareSerial.cpp",
+      "sha256": "41ff431d1c2bfe7c061bb92e3e519646892ba800ef9c72ccc7fb4cfb5f66da04"
+    },
+    {
+      "source": "cores/cc3200/IPAddress.cpp",
+      "sha256": "5e45486f54e5b3dd21079340ba8c0f97464c1269115dc5e2643597412568cda2"
+    },
+    {
+      "source": "cores/cc3200/MACAddress.cpp",
+      "sha256": "6f5ea64a56867e73e4cef787011477af2a4311843d6c65baf672151c7c8e56cd"
+    },
+    {
+      "source": "cores/cc3200/Print.cpp",
+      "sha256": "8ad41510444702fdeb2e25e4f0b1a54e10953bce75f530ef5b350f5ffce4dc3c"
+    },
+    {
+      "source": "cores/cc3200/Stream.cpp",
+      "sha256": "6b66596b66fa2ee458e43a6307df775e00af6dacbaa7fc7e5821583132ea057d"
+    },
+    {
+      "source": "cores/cc3200/Tone.cpp",
+      "sha256": "08b93295f4ef1ec5e269396621f4f207da9e8c61fc4e71737b66a5e9893e563d"
+    },
+    {
+      "source": "cores/cc3200/WInterrupts.c",
+      "sha256": "53a779dfd460de1c7a49360cbc66a1f87feb7493c37641e1c76f6fc4e5170df9"
+    },
+    {
+      "source": "cores/cc3200/WMath.cpp",
+      "sha256": "337918e19815ab3b2ed5fd5158c8a8d86fa00b144671416c2e8aa274e28600ae"
+    },
+    {
+      "source": "cores/cc3200/WString.cpp",
+      "sha256": "ca127ee557cbd2cf13de97982e8d7453d016ace3e0c2eef03007db27edba9cc8"
+    },
+    {
+      "source": "cores/cc3200/avr/dtostrf.c",
+      "sha256": "5c3a2812e97738b5fe30797ed41465d6fbb6edb63d8215ca069aa43281fd3c57"
+    },
+    {
+      "source": "cores/cc3200/itoa.c",
+      "sha256": "c40290cc1365ab31701bdb28f52326b8b051c13872815fe9229db9fdd2ecb38b"
+    },
+    {
+      "source": "cores/cc3200/main.cpp",
+      "sha256": "52f427daa1605476d9f5d7cbbc98b8cf6105d65398b6482ce2c75d5d9c71bde5"
+    },
+    {
+      "source": "cores/cc3200/new.cpp",
+      "sha256": "ad16fb099ac4208af82700d41becb45e04c1704df255d425564c9a00d5423da5"
+    },
+    {
+      "source": "cores/cc3200/random.c",
+      "sha256": "230c393881d9d73a72563cd874e1718e26707ffe89c3b5a29a2a4dabc09ab46b"
+    },
+    {
+      "source": "cores/cc3200/startup_gcc.c",
+      "sha256": "55117fb3405ae1f011704b975a4fa09981c05708c63cce8e56c54266a11e16b8"
+    },
+    {
+      "source": "cores/cc3200/udma_if.c",
+      "sha256": "298b62f1c7444becacbe024e3c9583009ad63d2a20afef90c3f6403b594639f4"
+    },
+    {
+      "source": "cores/cc3200/wiring.c",
+      "sha256": "7c07458fc137a15f148ee8cb3c7724a65b6afc48057be77a9be46895d70d5779"
+    },
+    {
+      "source": "cores/cc3200/wiring_analog.c",
+      "sha256": "6f05bb1149f21d21a4533c114df526110ae29db65b80b4130f1dac38913f12a2"
+    },
+    {
+      "source": "cores/cc3200/wiring_digital.c",
+      "sha256": "5025d391057e06df4050a6f304c99586834d0842505c9236b293ad49aace1b4d"
+    },
+    {
+      "source": "cores/cc3200/wiring_pulse.c",
+      "sha256": "c7902032e7a2e1ea672f3e2a418c915344c89a989518fc96a59d5d0142f9be58"
+    },
+    {
+      "source": "cores/cc3200/wiring_shift.c",
+      "sha256": "ee9c9db77a6971826f30e92d7766de73aa87be295f917187b55f63acf4bd1986"
+    },
+    {
+      "source": "libraries/SPI/SPI.cpp",
+      "sha256": "53c90963da34fe0edc2f5ce5301ffd10b9a394212c30774557df3220c01736d1"
+    },
+    {
+      "source": "libraries/WiFi/SLFS.cpp",
+      "sha256": "a94df4c9748075bda1bdbaa4f5153a4c722f0d7cf083ffc53aed545080091ccb"
+    },
+    {
+      "source": "libraries/WiFi/WiFi.cpp",
+      "sha256": "5aee58bed6fb37a830541bf08e0dd391daf97872b946c2044c0e8f63d3885242"
+    },
+    {
+      "source": "libraries/WiFi/WiFiClient.cpp",
+      "sha256": "fcb094c40340e4d4dd396cc786168dc625462e739718f0d2a0a4e67aa7a44de6"
+    },
+    {
+      "source": "libraries/WiFi/WiFiServer.cpp",
+      "sha256": "702d47e88ab2adf44e45dc0b305d8e1d362441373171e9192bb2f45870223579"
+    },
+    {
+      "source": "libraries/WiFi/WiFiUdp.cpp",
+      "sha256": "5a85dcb1979c92213a639825a57c4be75b8a2382d0733c17e2b05680f8bc9569"
+    },
+    {
+      "source": "libraries/WiFi/utility/SimpleLinkCallbacks.cpp",
+      "sha256": "b01e041ce6cc604bea6d0a912881603c958027a7590dcf6743f5e09368aca4f8"
+    },
+    {
+      "source": "libraries/WiFi/utility/cc_io_park.c",
+      "sha256": "147679b5dc35c2fe95c88b62e2eb736125d601b0628b34aaf9f929f5549e2fff"
+    },
+    {
+      "source": "libraries/WiFi/utility/cc_pal.c",
+      "sha256": "b2f45fff62f36871cc396b4e1c40e1013b0aadb2b325f9c2e3b842d899ec1316"
+    },
+    {
+      "source": "libraries/WiFi/utility/cc_pm.c",
+      "sha256": "d77e2575ff0c3e2b2847439e509c2f8e959208da4dbe72a8ae848d517fcc9edc"
+    },
+    {
+      "source": "libraries/WiFi/utility/cc_pm_ops.c",
+      "sha256": "6abb389be40f5595ab40d97fe188281e349a522db69796819f2660b80ff11dda"
+    },
+    {
+      "source": "libraries/WiFi/utility/device.c",
+      "sha256": "0d068b5ca61da614cde14a225d4055b71753dffb4b2061960d7a038205f26489"
+    },
+    {
+      "source": "libraries/WiFi/utility/driver.c",
+      "sha256": "cfbcf753922be005cabde3228f251bd32927c72eb3239a476bc29620c86c5aca"
+    },
+    {
+      "source": "libraries/WiFi/utility/flowcont.c",
+      "sha256": "0c9bbcdc74253a1f8e16e863c00fd30602fe194e9a2706ea415f06e08a330cc0"
+    },
+    {
+      "source": "libraries/WiFi/utility/fs.c",
+      "sha256": "feb1a474ae254619ced1cf27011ae12e225da12db7c5ef1b5e7402ca548e80fc"
+    },
+    {
+      "source": "libraries/WiFi/utility/gpio_hal.c",
+      "sha256": "fc43fd68e7558a80a0d0ff31c8756d5b1898ee81534429b765500fa2b18180f2"
+    },
+    {
+      "source": "libraries/WiFi/utility/interrupt_hal.c",
+      "sha256": "ee0c72373e24d4cfac7c781b716a84e91ff545ffb1cf56a2f662aa7027d585a3"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/dma_hal.c",
+      "sha256": "c702e2296d857df5b022ff0c9b6b00177e8ef93efdd85376d91439f3fcae2275"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/hw_timer32.c",
+      "sha256": "248d80216c7ae2792d55316e39bcf4deda2e55a073b8b70d4411347ece16570e"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/rtc_hal.c",
+      "sha256": "00ee55343e08490af1b016ec97d352bc8e6d809ef2649ab945159ea866ec3542"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/spi_hal.c",
+      "sha256": "1a25775b911af8b2175ffb60d583691d8c06b2dacf16b43c231a36dd6b1e2767"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/uart_hal.c",
+      "sha256": "3e6cced2d39855369a97bc6cc09f5947b5b18a0068154369f1b08443924d7a43"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/hal/util64.c",
+      "sha256": "5ab53c4fab84ecfa31ac5602ab34db3cddde4d6f74e5dddda97687219f3a1cfe"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/spi_drv.c",
+      "sha256": "bb84046415432ddc524f9d0c011702d816b74807f285859b9382b0f18e6a4f7e"
+    },
+    {
+      "source": "libraries/WiFi/utility/middleware/driver/uart_drv.c",
+      "sha256": "1aeb12f6fb7f12229ee7f126e638c9c6522f9f9c7f709b75a07ab248d260c723"
+    },
+    {
+      "source": "libraries/WiFi/utility/netapp.c",
+      "sha256": "648e404152960dc667e48589f56047996d6d5e30c38835116bd0e6a26115b726"
+    },
+    {
+      "source": "libraries/WiFi/utility/netcfg.c",
+      "sha256": "6bf5b9e5c61874da95305c341eb8a39b7f918c6d3690d6992af314987647debe"
+    },
+    {
+      "source": "libraries/WiFi/utility/nonos.c",
+      "sha256": "7fd3daa135821d3412694c9925d3c53728407280bd6a041bf92eaec273468ace"
+    },
+    {
+      "source": "libraries/WiFi/utility/socket.c",
+      "sha256": "ccffa52dd46be8033def71a8aad2dac885255ab223a61e7196f120e8295b6b01"
+    },
+    {
+      "source": "libraries/WiFi/utility/spawn.c",
+      "sha256": "3a9e82c88c897df59ee4669c81f34a785170e03e967bd1c57c8386c98e8ad6c7"
+    },
+    {
+      "source": "libraries/WiFi/utility/udma_if.c",
+      "sha256": "13893dead93a8920cdf888a5738055f5b9b8dfe8c5ae7d95d7720977339deb5f"
+    },
+    {
+      "source": "libraries/WiFi/utility/wlan.c",
+      "sha256": "9219471b94eeb0a645ecd5c665d2ad6b315d51a5861029a2dde03b1fe0cb01e0"
+    },
+    {
+      "source": "native.cpp",
+      "sha256": "9ef76ef072b276162a716e6ce963cb30dc3745f339d325e2febea4f7d05c33db"
+    },
+    {
+      "source": "energia_runtime_compat.c",
+      "sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81"
+    },
+    {
+      "source": "recovery.c",
+      "sha256": "a0fbe565c33af2863b9d6b43f96f864b43fcc917d6bf313888287aacb3225847"
+    },
+    {
+      "source": "sha256.c",
+      "sha256": "d6af914aa4bd2ec9d81bd98a6926da57652f07cf426f34293302368a3679b6a4"
+    },
+    {
+      "source": "http.c",
+      "sha256": "4a848fb39be75875a5b5afbba5974d79b5930137fcf271ece4dff26345458f9a"
+    },
+    {
+      "source": "web_assets.c",
+      "sha256": "b58012838ffa0eb72a0eb994c1c66a1c0fa99ac7737a16a248ebe128bb625927"
+    },
+    {
+      "source": "http_server.c",
+      "sha256": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f"
+    }
+  ],
+  "project_sources_sha256": {
+    "dependencies/lock.json": "538be7bc1129a21924984299c7b96a2d540f3f687ba53a909ec4406852cd6865",
+    "include/picobrew/http_server.h": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+    "platform/energia_runtime_compat.c": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+    "platform/pico_cc3200.ld": "3f01e3473781da93be166f2ccb5bb2bd16acb5e508901d453ddd9e8a62ab7bc1",
+    "recovery/http.c": "4a848fb39be75875a5b5afbba5974d79b5930137fcf271ece4dff26345458f9a",
+    "recovery/http.h": "971d442c10defc0f3e3a1cd80df0f6e8b53f83859927b14ccbf1a96e7d237501",
+    "recovery/native.cpp": "9ef76ef072b276162a716e6ce963cb30dc3745f339d325e2febea4f7d05c33db",
+    "recovery/recovery.c": "a0fbe565c33af2863b9d6b43f96f864b43fcc917d6bf313888287aacb3225847",
+    "recovery/recovery.h": "254a81e317f5f9e633cd2303b786ccd8f1dbda15a3e42139f99e54ea468664e1",
+    "recovery/sha256.c": "d6af914aa4bd2ec9d81bd98a6926da57652f07cf426f34293302368a3679b6a4",
+    "recovery/sha256.h": "92cb6786c5db326cf5241a615754cf84da5f2faa3dcbfb42d462278ddc35fbcc",
+    "recovery/web/index.html": "ac3a5ab0a6106b061758157a7d706f0ce7bb74048ec2d343066921b71ee9459f",
+    "recovery/web/recovery.js": "c413d36b747ffced73445a576cb3db70581adf5430c5ec7d3efc934de2c742fb",
+    "recovery/web/style.css": "5517167f5a22f8e3b13efe5a6e64bf1969a8599c7546eafa38d55648ef115a9e",
+    "recovery/web_assets.c": "b58012838ffa0eb72a0eb994c1c66a1c0fa99ac7737a16a248ebe128bb625927",
+    "recovery/web_assets.h": "2c0e2d1bc5c45e2a8b75b5c298d5e359d2020edfe8dbe6aefc9082f9b3831746",
+    "src/http_server.c": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+    "tools/build_recovery.py": "65c28f659f82582f7af1244d86b64cab82cb0d3d37cf564fe1c413515bf1ef13",
+    "tools/build_sdk_validation.py": "dee52053d8b32fe33d87cbe2b640c91b03b400cb8fc528a98611007c7a942884",
+    "tools/embed_recovery_web.py": "f2236baebbcfaacc778a95ee8a94b739464d69493c5a1921f7c2f517da8a082b"
+  },
+  "constraints": {
+    "brewing_modules_linked": false,
+    "image1_write_available": false,
+    "application_slot_creation_available": false,
+    "raw_flash_delete_format_available": false,
+    "normal_selector_zero_required_for_mutations": true,
+    "embedded_recovery_assets": true,
+    "upload_inactivity_timeout_ms": 30000,
+    "upload_timeout_waits_for_http_idle": true
+  },
+  "validation_scope": "Native compile/link, vector/layout, symbol exclusions and size checks; physical startup, radio, actuator pins, flash writes and power-failure recovery are not exercised.",
+  "files": {
+    "elf": "pico-web-recovery.elf",
+    "binary": "pico-web-recovery.bin",
+    "map": "pico-web-recovery.map"
+  }
+}

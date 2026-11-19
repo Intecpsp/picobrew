@@ -17,7 +17,7 @@ import {
   Pencil,
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
-import { api, errorMessage } from '../lib/api'
+import { api, APIError, errorMessage } from '../lib/api'
 import type { Display, MachineRecipe, DeviceSettings, Telemetry, BrewDetail } from '../types'
 import {
   Badge,
@@ -35,6 +35,7 @@ import {
 import OLED from '../components/OLED'
 import { TransferDialog } from '../components/TransferDialog'
 import { InstalledProgramDialog } from '../components/InstalledProgramDialog'
+import { BrewAIMonitor, type AIMonitorState } from '../components/BrewAIMonitor'
 import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components/DeviceDialogs'
 import { TemperatureChart } from '../components/Charts'
 import { deviceState, duration, temperature } from '../lib/utils'
@@ -60,6 +61,8 @@ export default function Machine({ id }: { id: string }) {
     device?.online ? `/devices/${id}/recipes` : null
   )
   const [program, setProgram] = useState('rinse')
+  const [monitorNextBrew, setMonitorNextBrew] = useState(false)
+  const monitor = useResource<AIMonitorState>(device ? `/devices/${id}/ai-monitor` : null, 5000)
   const [recipeID, setRecipeID] = useState('')
   const [pending, setPending] = useState('')
   const [confirm, setConfirm] = useState<{
@@ -83,6 +86,11 @@ export default function Machine({ id }: { id: string }) {
     device?.status?.busy ? 10000 : 0
   )
   const recipes = Array.isArray(native.data) ? native.data : native.data?.recipes || []
+  function requestStart(value: NonNullable<typeof confirm>) {
+    setMonitorNextBrew(false)
+    setError('')
+    setConfirm(value)
+  }
   async function command(command: string, extra: Record<string, unknown> = {}) {
     setPending(command)
     setError('')
@@ -101,10 +109,28 @@ export default function Machine({ id }: { id: string }) {
               : 'Command acknowledged by the brewer.'
         )
       setConfirm(null)
+      if (command === 'brew' || command === 'manual') setMonitorNextBrew(false)
+      monitor.reload()
       display.reload()
       await hub.refresh()
     } catch (error) {
-      setError(errorMessage(error))
+      setError(
+        error instanceof APIError
+          ? errorMessage(error)
+          : `${errorMessage(error)} Command delivery was not confirmed. Inspect the machine before issuing another command.`
+      )
+      if (
+        !(error instanceof APIError) ||
+        ['ai_monitor_receipt_error', 'receipt_error', 'command_outcome_unknown'].includes(
+          error.code
+        )
+      ) {
+        setConfirm(null)
+        setMonitorNextBrew(false)
+        monitor.reload()
+        display.reload()
+        await hub.refresh()
+      }
     } finally {
       setPending('')
     }
@@ -283,7 +309,7 @@ export default function Machine({ id }: { id: string }) {
             className="full-width"
             disabled={!recipeID || !allowed('brew') || !!pending || !!status?.busy}
             onClick={() =>
-              setConfirm({
+              requestStart({
                 command: 'brew',
                 recipe_id: recipeID,
                 label: recipes.find((recipe) => recipe.id === recipeID)?.name || 'this recipe',
@@ -347,7 +373,7 @@ export default function Machine({ id }: { id: string }) {
             className="full-width"
             disabled={!allowed(program) || !!pending || !!status?.busy}
             onClick={() =>
-              setConfirm({ command: program, label: programNames[program] || program })
+              requestStart({ command: program, label: programNames[program] || program })
             }
           >
             Open program
@@ -372,7 +398,7 @@ export default function Machine({ id }: { id: string }) {
               variant="secondary"
               className="full-width"
               disabled={!allowed('clear-stop') || !!pending}
-              onClick={() => setConfirm({ command: 'clear-stop', label: 'clear the stop latch' })}
+              onClick={() => requestStart({ command: 'clear-stop', label: 'clear the stop latch' })}
             >
               Clear stop latch
             </Button>
@@ -416,6 +442,14 @@ export default function Machine({ id }: { id: string }) {
           />
         )}
       </section>
+      <BrewAIMonitor
+        deviceID={id}
+        deviceName={device.name}
+        monitor={monitor.data}
+        error={monitor.error}
+        loading={monitor.loading}
+        reload={monitor.reload}
+      />
       <div className="machine-footnotes">
         <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
         <span>API v{device.capabilities?.api_version || '—'}</span>
@@ -430,7 +464,7 @@ export default function Machine({ id }: { id: string }) {
           description={
             confirm.command === 'clear-stop'
               ? 'This re-enables machine controls. Confirm that the operation has ended and the brewer is ready.'
-              : `This sends a command to ${device.name}. Confirm the brewer is prepared, then follow any prompts on its front panel.`
+              : `This sends a command to ${device.name}. Confirm the brewer is prepared, then follow any prompts on its front panel.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
           }
           label={confirm.command === 'clear-stop' ? 'Clear stop' : 'Start program'}
           busy={!!pending}
@@ -438,10 +472,41 @@ export default function Machine({ id }: { id: string }) {
           onConfirm={() =>
             void command(confirm.command, {
               ...(confirm.recipe_id ? { recipe_id: confirm.recipe_id } : {}),
+              ...(['brew', 'manual'].includes(confirm.command)
+                ? { ai_monitor: monitorNextBrew }
+                : {}),
               confirm: true,
             })
           }
-        />
+        >
+          <ErrorBanner message={error} />
+          {['brew', 'manual'].includes(confirm.command) && (
+            <>
+              <label className="check-field">
+                <input
+                  type="checkbox"
+                  checked={monitorNextBrew}
+                  disabled={
+                    !monitor.data?.configured || !!monitor.error || monitor.loading || !!pending
+                  }
+                  onChange={(event) => setMonitorNextBrew(event.target.checked)}
+                />
+                Monitor this brew with AI
+              </label>
+              <p className="help-text">
+                {monitor.data?.configured ? (
+                  'Optional observations for this session. Monitoring ends with this brew; it does not control heating or pumping.'
+                ) : (
+                  <>
+                    To enable optional brew monitoring,{' '}
+                    <a href="#/settings">configure an AI provider in Settings</a>.
+                  </>
+                )}
+              </p>
+              <ErrorBanner message={monitor.error} retry={monitor.reload} />
+            </>
+          )}
+        </Confirm>
       )}
       {removeRecipe && (
         <Confirm

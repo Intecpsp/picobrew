@@ -36,6 +36,14 @@ Canonical recipes contain ingredient quantities and units, arbitrary text labels
 
 Adaptation produces a copy for the selected batch and profile. Grain quantities account for volume and the efficiency ratio; known extract/sugar additions scale by volume. Hop amounts use volume scaling and carry a utilization warning, rather than implying an equivalent bitterness calculation. Model calibration can replace the default batch size, assumed efficiency and grain limit. Firmware capabilities and hard protocol limits cannot be edited through calibration.
 
+The adaptation dialog starts with the effective profile's default batch size,
+including saved calibration, rather than copying a potentially oversized source
+batch. Missing routing or unsupported native conversions are returned as
+`deployment_blockers` alongside a usable planning result. Invalid quantities and
+physical capacity violations remain validation errors. Single and bulk writes
+require successful compilation; a supplied preview fingerprint also detects
+profile changes before a single transfer.
+
 A successful native compilation must satisfy label encoding/length, ID, temperature, step count, timing, routing and payload-size rules. Unknown compartments, incompatible infusions/decoction/timed ramps or unsupported models produce a planning result with deployment disabled. The Z profile describes a single brewing module; it does not pretend to coordinate stock Z2/Z4 hardware.
 
 BeerXML v1 exchange preserves the supported structured fields and a `HUB_STEPS` extension retains an explicit machine program on a hub-to-hub round trip. Arbitrary vendor extensions or all possible BeerXML fields are not guaranteed lossless. JSON is the full-fidelity hub format. See `internal/recipe/README.md` for exact representation and validation rules.
@@ -60,7 +68,31 @@ Provider integrations have bounded context and response sizes, request timeouts,
 
 Authenticated `GET /ai/models` discovers models with a saved provider key. CSRF-protected `POST /ai/models` can test a supplied key without saving it, so initial setup does not require selecting a model before discovery. Both use a separate bounded provider request and return only IDs/display names. Anthropic cursor pages are collected before returning a complete catalogue. The browser cancels obsolete lookups on provider/key changes; an older response cannot replace the new provider's list. Provider authentication failures return a provider error, not a Hub session-expiration response.
 
-Manual requests and the optional monitor share a concurrency gate. The monitor checks online active machines at most every five minutes, records failures as well as successful advice, and retains the latest 500 advisory records. Advice cannot call machine operations. Generated recipes pass canonical validation and still require an explicit save, adaptation review and deployment. Live recipe/temperature changes are absent from the current firmware contract; an AI setting cannot add them.
+Recipe creation lives in the recipe workspace. Live advice is scoped to the
+machine's verified current brew, and historical analysis is scoped to the
+selected journal entry. Archived analysis remains available after its machine
+registration is removed. Generated recipes pass canonical validation and still
+require review in the editor, an explicit save, adaptation review and deployment.
+
+Automatic monitoring requires consent for one brew. The owner can opt in during
+a confirmed brew/manual start or enable it for an already active session. The
+start intent is stored only after the machine accepts the command; it binds to
+one new matching history session on the same verified device. Pending intent
+expires after 15 minutes, is cancelled on Hub restart, and cannot attach to a
+later brew after an ambiguous session transition. Bound consent uses the device
+UID, native history ID and live session ID, and does not roll into the next brew.
+The legacy global monitoring setting grants no per-brew consent.
+
+Manual requests and the monitor share a concurrency gate. Automatic attempts
+occur at most once every five minutes for the consented brew, with the last
+attempt persisted across restart. Each brew retains its latest 200 successful
+advice/analysis records and 20 errors; stored advice text is capped at 64 KiB.
+Unbound recipe advice retains the latest 500 records. Live and journal queries
+filter by their exact context, and brew JSON exports include the saved advice.
+
+Advice cannot call machine operations. The firmware's ordinary controls remain
+explicit owner actions. Live recipe/temperature changes are absent from the
+current firmware contract; an AI setting cannot add them.
 
 ## Deployment boundary
 

@@ -70,8 +70,8 @@ func TestBeerXMLRoundTripPreservesUnitsTimingAndPlanning(t *testing.T) {
 	if plan.Recipe.Steps[0].InfuseLiters != 2.75 || plan.Recipe.Water["calcium"] != 50 || plan.Recipe.Fermentation[0].Days != 7.5 {
 		t.Fatal("volume scaling changed concentration or fermentation timing")
 	}
-	if _, err := recipe.Adapt(got, recipe.Profiles()[0], 5); err == nil {
-		t.Fatal("unmapped infusion was silently deployed")
+	if plan, err := recipe.Adapt(got, recipe.Profiles()[0], 5); err != nil || plan.CanDeploy || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 || plan.Recipe.Steps[0].InfuseLiters != 2.75 {
+		t.Fatalf("unmapped infusion did not remain available for planning only: %+v %v", plan, err)
 	}
 }
 
@@ -99,8 +99,8 @@ func TestExternalBeerXMLWithoutExtensionHasUnmappedLocations(t *testing.T) {
 			t.Fatal("import invented chamber location")
 		}
 	}
-	if _, err := recipe.Adapt(values[0], recipe.Profiles()[0], 5); err == nil {
-		t.Fatal("unmapped external recipe is deployable")
+	if plan, err := recipe.Adapt(values[0], recipe.Profiles()[0], 5); err != nil || plan.CanDeploy || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 {
+		t.Fatalf("unmapped external recipe did not remain available for planning only: %+v %v", plan, err)
 	}
 }
 

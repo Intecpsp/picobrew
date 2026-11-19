@@ -10,13 +10,13 @@ recipe to a brewer or starts a program.
 
 | Source | Original records | Catalogue entries | Treatment |
 | --- | ---: | ---: | --- |
-| Public PicoBrew recipes | 1,320 | 1,320 | Ingredient recipes with source quantities, declared mash/boil plans and conversion warnings. |
-| PicoPak/ZPak library | 10,161 | 3,925 | Native machine programs. Exact duplicate PicoPak variants are grouped; all originals remain available. |
+| Public PicoBrew recipes | 1,320 | 1,316 | Ingredient recipes with source quantities, declared mash/boil plans and conversion warnings; four reviewed disposable records are hidden. |
+| PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-There are **5,282 browsable entries**: 1,320 ingredient recipes, 3,959 native
-programs and three maintenance programs. Of these, 5,272 can be copied into the
-library. There are 3,755 programs within Pico S/Pro wire limits; deployment also
+There are **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+programs and three maintenance programs. Of these, 5,206 can be copied into the
+library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
 
 The PicoPak archive contains 247 malformed JSON records and 107 empty programs.
@@ -26,10 +26,29 @@ remain copyable, but require explicit editing before deployment; labels and
 timings are never silently rewritten during native import.
 
 The bundle also contains 88 image/text assets, including beer colour/style
-illustrations, machine drawings and support text. These illustrations are labelled
-by kind; they are not presented as photographs of the named beers. An additional
+illustrations, machine drawings and support text. Illustration credits and kinds
+are available in source details; they are not photographs of named beers. An additional
 27 original PDF assets are optional local references. The references API reports
 which files are actually available.
+
+## Catalogue curation
+
+A review of all 5,282 previously browsable entries removed **66 clearly
+disposable entries representing 498 original records**: explicit test/default
+placeholders, keyboard-mash names, unheated test fixtures, three diagnostic-only
+ingredient records and one unnamed draft with a proven identical named successor.
+Named experimental beers and functional maintenance/extraction programs remain.
+The [review summary](catalogue-curation.md) and
+[exact curation manifest](../tools/catalog-curation.json) record each decision,
+reason, evidence and original checksum. Changed source records require a new
+review. Every original remains archived byte-for-byte; `excluded.json` now
+accounts for 852 records, including the 354 malformed or empty records excluded
+before this review. Saved library recipes, revisions and installed brewer
+programs are not removed or rewritten.
+
+The normal source builder applies these explicit decisions before writing its
+index. `catalog_curation.py` also reproduces the same bundle from the exact
+original ZIP hash recorded in the review, without downloading source data.
 
 ## Recipe semantics
 
@@ -60,6 +79,14 @@ attribution/license notice and conversion warnings. Grouped PicoPak entries expo
 each original record independently. Public recipe statistics come from the source;
 unverified native `Abv`, `Ibu`, `MinTime` and `MaxTime` fields remain source
 parameters rather than being misrepresented as measured statistics or controls.
+
+The recipe pages round quantities and temperatures for readable display without
+changing the archived measurements. Sources and credits are available in an
+expandable section. **Machine Guides & Artwork** opens bundled Markdown in a
+reader dialog with tables, images, headings and internal navigation. Links to
+other bundled references stay in the reader; external resources remain source
+links. Optional manuals open in the reader when their verified local PDF is
+installed, with an archived-source link shown when it is absent.
 
 ## API
 

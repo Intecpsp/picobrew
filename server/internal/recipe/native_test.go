@@ -77,13 +77,13 @@ func TestNativeProgramsRespectModelAndDeviceLimits(t *testing.T) {
 	if err := recipe.Validate(r); err != nil {
 		t.Fatal("source label should remain editable", err)
 	}
-	if _, err := recipe.Adapt(r, recipe.Profiles()[0], 0); err == nil {
-		t.Fatal("overlong native label silently truncated")
+	if plan, err := recipe.Adapt(r, recipe.Profiles()[0], 0); err != nil || plan.CanDeploy || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 || !reflect.DeepEqual(plan.Recipe.NativeProgram, r.NativeProgram) {
+		t.Fatalf("overlong native label did not remain an exact blocked reference: %+v %v", plan, err)
 	}
 	r = archivedProgram()
 	r.SourceModel = "zymatic"
-	if _, err := recipe.Adapt(r, recipe.Profiles()[0], 0); err == nil {
-		t.Fatal("Zymatic routing sent to Pico")
+	if plan, err := recipe.Adapt(r, recipe.Profiles()[0], 0); err != nil || plan.CanDeploy || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 || !reflect.DeepEqual(plan.Recipe.NativeProgram, r.NativeProgram) {
+		t.Fatalf("Zymatic routing did not remain an exact blocked reference: %+v %v", plan, err)
 	}
 	p := recipe.Profiles()[4]
 	p.ControlSupported = true

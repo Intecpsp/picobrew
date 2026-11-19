@@ -90,9 +90,6 @@ func adaptNative(r domain.Recipe, profile, builtIn domain.Profile, batchLiters f
 	if batchLiters != 0 {
 		return domain.Adapted{}, errors.New("native machine programs cannot be scaled by batch volume; their exact source schedule is retained")
 	}
-	if !nativeModelMatches(r.SourceModel, profile.ID) {
-		return domain.Adapted{}, fmt.Errorf("native %s routing cannot be used on %s", r.SourceModel, profile.ID)
-	}
 	// A complete copy keeps the original immutable even if a caller edits the
 	// preview, its steps or source warnings before confirming deployment.
 	data, err := json.Marshal(r)
@@ -103,15 +100,19 @@ func adaptNative(r domain.Recipe, profile, builtIn domain.Profile, batchLiters f
 	if err := json.Unmarshal(data, &copy); err != nil {
 		return domain.Adapted{}, err
 	}
-	plan := domain.Adapted{Recipe: copy, Profile: profile, SourceRevision: r.Revision, Warnings: []string{
+	plan := domain.Adapted{Recipe: copy, Profile: profile, SourceRevision: r.Revision, DeploymentBlockers: []string{}, Warnings: []string{
 		"Native machine program: exact source temperatures, timings and routing are retained. No ingredient or batch scaling is performed.",
 	}}
 	if r.Provenance != nil {
 		plan.Warnings = append(plan.Warnings, r.Provenance.Warnings...)
 	}
+	if !nativeModelMatches(r.SourceModel, profile.ID) {
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, fmt.Sprintf("Native %s routing cannot be used on %s; the exact source schedule is retained for reference.", r.SourceModel, profile.ID))
+		return plan, nil
+	}
 	if !builtIn.ControlSupported || !profile.ControlSupported {
 		plan.Profile.ControlSupported = false
-		plan.Warnings = append(plan.Warnings, "Reference/export only: this source model has no enabled Hub control adapter.")
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, "This source model has no enabled Hub control adapter. The exact program is available for reference and export only.")
 		return plan, nil
 	}
 	if profile.MaxSteps > 0 && len(copy.NativeProgram.Steps) > profile.MaxSteps {
@@ -123,7 +124,8 @@ func adaptNative(r domain.Recipe, profile, builtIn domain.Profile, batchLiters f
 		}
 	}
 	if _, err := NativeJSON(*copy.NativeProgram); err != nil {
-		return domain.Adapted{}, fmt.Errorf("source program needs an explicit edit before deployment: %w", err)
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, fmt.Sprintf("Source program needs an explicit edit before deployment: %v", err))
+		return plan, nil
 	}
 	program := *copy.NativeProgram
 	program.Steps = append([]domain.MachineStep(nil), copy.NativeProgram.Steps...)

@@ -6,7 +6,7 @@ general repository tools live at root `tools/`.
 
 | Directory | OEM material | Source status |
 | --- | --- | --- |
-| [`pico-s-pro/`](pico-s-pro/README.md) | Verified device application image plus 1 upstream update envelope | Pre-v1 OEM reconstruction and modified 1.1.0 source populated |
+| [`pico-s-pro/`](pico-s-pro/README.md) | Verified device application image plus 1 upstream update envelope | Pre-v1 OEM reconstruction, modified 1.1.0 brewing firmware, and isolated experimental web recovery source populated |
 | [`pico-c/`](pico-c/README.md) | 2 upstream update envelopes, including the alternate 0.1.34 image | Source placeholders |
 | [`z1/`](z1/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Source placeholders |
 | [`z2/`](z2/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Source placeholders |

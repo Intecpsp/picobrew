@@ -18,5 +18,23 @@
     "source_commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
     "version": "1.1.0",
     "description": "Current modified standalone firmware and browser; relocated from repository root, with path/build integration updates."
+  },
+  "web_recovery_candidate": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "source_branch_at_import": "feature/web-recovery",
+    "source_commit": "256751aa57741fd4e75ecba685c91ceea28d6794",
+    "unique_commits": [
+      "e84199f6e0a529719ae7a12c70dc944705bd1b97",
+      "350418bacf1d163bef8eb11388b24788c68c886a",
+      "256751aa57741fd4e75ecba685c91ceea28d6794"
+    ],
+    "component_path": "modified/recovery/",
+    "manifest": "modified/recovery/import-provenance.json",
+    "version": "0.1.0",
+    "candidate_size_bytes": 42984,
+    "candidate_sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593",
+    "source_files_preserved": 45,
+    "physical_status": "Experimental image1 candidate; not installed or physically validated. Current guarded installer and main firmware cannot install or enter it.",
+    "main_firmware_unchanged": true
   }
 }

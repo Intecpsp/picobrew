@@ -195,6 +195,8 @@ func supportedProfile(id string) (domain.Profile, bool) {
 // efficiency. Known extracts/sugars, hops and other ingredients scale by volume.
 // It preserves source data and returns a new plan.
 // It does not solve hop utilization, mash water, losses or yeast cell counts.
+// A valid ingredient plan remains available when native compilation is blocked;
+// deployment always requires CanDeploy and a non-nil MachineRecipe.
 func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain.Adapted, error) {
 	if err := Validate(r); err != nil {
 		return domain.Adapted{}, err
@@ -218,7 +220,7 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	if profile.MaxSteps > 0 && len(r.Steps) > profile.MaxSteps {
 		return domain.Adapted{}, fmt.Errorf("recipe has %d steps; configured profile allows %d", len(r.Steps), profile.MaxSteps)
 	}
-	plan := domain.Adapted{Recipe: r, Profile: profile, SourceRevision: r.Revision, Warnings: []string{}}
+	plan := domain.Adapted{Recipe: r, Profile: profile, SourceRevision: r.Revision, Warnings: []string{}, DeploymentBlockers: []string{}}
 	plan.Recipe.Ingredients = append([]domain.Ingredient(nil), r.Ingredients...)
 	plan.Recipe.Steps = append([]domain.RecipeStep(nil), r.Steps...)
 	plan.Recipe.Tags = append([]string(nil), r.Tags...)
@@ -290,12 +292,22 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	}
 	if !builtIn.ControlSupported || !profile.ControlSupported {
 		plan.Profile.ControlSupported = false
-		plan.Warnings = append(plan.Warnings, "Planning/export only: this profile has no enabled hub control adapter. No machine program was generated.")
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, "This profile has no enabled Hub control adapter. The recipe is available for planning and export only.")
 		return plan, nil
 	}
+	plan.MachineRecipe, plan.DeploymentBlockers = compileMachineRecipe(r, &plan.Warnings)
+	plan.CanDeploy = plan.MachineRecipe != nil && len(plan.DeploymentBlockers) == 0
+	return plan, nil
+}
+
+// compileMachineRecipe is the single canonical-to-native conversion boundary.
+// Missing routes and unsupported instructions are reported without discarding
+// the ingredient plan. No partial machine program is returned on failure.
+func compileMachineRecipe(r domain.Recipe, warnings *[]string) (*domain.MachineRecipe, []string) {
 	if len(r.Steps) > 15 {
-		return domain.Adapted{}, errors.New("standalone firmware accepts at most 15 steps")
+		return nil, []string{"Standalone firmware accepts at most 15 steps."}
 	}
+	blockers := []string{}
 	machine := &domain.MachineRecipe{ID: r.ID, Steps: make([]domain.MachineStep, 0, len(r.Steps))}
 	if !nativeID.MatchString(machine.ID) {
 		basis := r.ID
@@ -305,41 +317,42 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 		}
 		sum := sha256.Sum256([]byte(basis))
 		machine.ID = "hub-" + hex.EncodeToString(sum[:8])
-		plan.Warnings = append(plan.Warnings, "Native recipe ID is "+machine.ID+" because firmware IDs allow only 1–20 ASCII letters, digits, '_' or '-'.")
+		*warnings = append(*warnings, "Native recipe ID is "+machine.ID+" because firmware IDs allow only 1–20 ASCII letters, digits, '_' or '-'.")
 	}
-	machine.Name = label(r.Name, 31, "Recipe", &plan.Warnings)
+	machine.Name = label(r.Name, 31, "Recipe", warnings)
 	for i, step := range r.Steps {
 		if step.InfuseLiters > 0 || step.RampMinutes > 0 || step.Type != "" && !strings.EqualFold(step.Type, "Temperature") {
-			return domain.Adapted{}, fmt.Errorf("step %d has infusion, decoction or timed-ramp instructions with no verified native mapping; prepare an explicit machine program first", i+1)
+			blockers = append(blockers, fmt.Sprintf("Step %d has infusion, decoction or timed-ramp instructions with no verified native mapping; prepare an explicit machine program first.", i+1))
 		}
 		if step.Kind == "cool" || step.Kind == "fermentation" {
-			return domain.Adapted{}, fmt.Errorf("step %d kind %q has no verified standalone firmware mapping", i+1, step.Kind)
+			blockers = append(blockers, fmt.Sprintf("Step %d kind %q has no verified standalone firmware mapping.", i+1, step.Kind))
 		}
 		if step.Location < 1 || step.Location > 6 {
-			return domain.Adapted{}, fmt.Errorf("step %d requires an explicitly verified chamber location 1–6; no routing is inferred", i+1)
+			blockers = append(blockers, fmt.Sprintf("Step %d requires an explicitly verified chamber location 1–6; no routing is inferred.", i+1))
 		}
 		if step.Minutes > 599 || step.DrainMinutes > 120 {
-			return domain.Adapted{}, fmt.Errorf("step %d exceeds firmware duration limits (599 active / 120 drain minutes)", i+1)
+			blockers = append(blockers, fmt.Sprintf("Step %d exceeds firmware duration limits (599 active / 120 drain minutes).", i+1))
 		}
 		target := 0
 		if step.TargetC != 0 {
 			exact := step.TargetC*9/5 + 32
 			if exact < 60 || exact > 212 {
-				return domain.Adapted{}, fmt.Errorf("step %d is outside the firmware range of 60–212F", i+1)
+				blockers = append(blockers, fmt.Sprintf("Step %d is outside the firmware range of 60–212F.", i+1))
 			}
 			target = int(math.Round(exact))
 			if math.Abs(exact-float64(target)) > 1e-9 {
-				plan.Warnings = append(plan.Warnings, fmt.Sprintf("Step %d temperature rounds from %.3fC to %dF for the firmware integer target.", i+1, step.TargetC, target))
+				*warnings = append(*warnings, fmt.Sprintf("Step %d temperature rounds from %.3fC to %dF for the firmware integer target.", i+1, step.TargetC, target))
 			}
 		}
-		machine.Steps = append(machine.Steps, domain.MachineStep{Name: label(step.Name, 21, fmt.Sprintf("Step %d", i+1), &plan.Warnings), Location: step.Location, TargetF: target, Minutes: step.Minutes, DrainMinutes: step.DrainMinutes})
+		machine.Steps = append(machine.Steps, domain.MachineStep{Name: label(step.Name, 21, fmt.Sprintf("Step %d", i+1), warnings), Location: step.Location, TargetF: target, Minutes: step.Minutes, DrainMinutes: step.DrainMinutes})
+	}
+	if len(blockers) > 0 {
+		return nil, blockers
 	}
 	if _, err := NativeJSON(*machine); err != nil {
-		return domain.Adapted{}, err
+		return nil, []string{err.Error()}
 	}
-	plan.MachineRecipe = machine
-	plan.CanDeploy = true
-	return plan, nil
+	return machine, blockers
 }
 
 func label(original string, max int, fallback string, warnings *[]string) string {

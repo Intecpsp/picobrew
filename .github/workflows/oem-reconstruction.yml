@@ -2,7 +2,7 @@ name: OEM S/Pro reconstruction
 
 on:
   push:
-    branches: [master, feature/community-monorepo]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 

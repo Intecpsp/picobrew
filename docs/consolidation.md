@@ -15,6 +15,7 @@ and generic repository tooling lives in root `tools/`.
 | `firmware/<family>/oem/upstream/` | Complete, unchanged files from the corresponding pinned Chiefwigms archive directory |
 | `firmware/pico-s-pro/reverse-engineered/` | Exact 396-file buildable OEM reconstruction snapshot from `ea887709e72c493456583114034cde4aad746099` |
 | `firmware/pico-s-pro/modified/` | Current v1.x firmware source, on-device website, installation packages, tools, tests and evidence |
+| `firmware/pico-s-pro/modified/recovery/` | Independent experimental image1 web recovery candidate, with its pinned source/package and separate build/test tooling |
 | Other machines' `reverse-engineered/` and `modified/` directories | Explicit placeholders for work that has not been implemented |
 | `server/` | Hub Go server, React/TypeScript website, catalogue, required assets and its own development/deployment tools |
 | Root `tools/` | General repository checks, including firmware import verification |
@@ -71,8 +72,28 @@ or that current modified files remain identical to those earlier snapshots.
 
 Tom Herold's Python Zymatic server remains an external research reference. Its
 application, dependencies and workflows are not part of this checkout.
-Reference repositories are read-only; this reorganization does not modify or
-remove their branches, pull requests, files or settings.
+Project development remains in the canonical repository. After verifying the
+canonical merge, the owner explicitly authorized closing the superseded fork
+drafts and removing the two work branches; the fork's `master` remained at
+`aa7531965c32d124643797937177431cf9dd1c8d`. Reference repositories otherwise
+remain read-only.
+
+## Preserved web recovery branch
+
+The branch audit identified three recovery commits that were not ancestors of
+the first consolidation merge. Their completed work is preserved in the isolated
+[recovery component](../firmware/pico-s-pro/modified/recovery/README.md), from
+`256751aa57741fd4e75ecba685c91ceea28d6794`.
+Its [manifest](../firmware/pico-s-pro/modified/recovery/import-provenance.json)
+accounts for all 27 unique added files and 18 original supporting files, including
+the exact recovery linker and SDK helper. The later brewing firmware has a
+different memory layout, so those dependencies stay with the candidate.
+
+The 42,984-byte candidate is a separate image1 recovery application. It remains
+experimental and uninstalled; the current main-firmware installer does not
+deploy it. Imported historical documents retain their original validation
+limits and do not establish a physical recovery result. No older brewing
+firmware or installation guide replaces the current 1.1.0 source.
 
 ## Verification boundary
 

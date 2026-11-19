@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 	"unicode"
+	"unicode/utf8"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
@@ -17,18 +18,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
-type adviceRecord struct {
-	ID          string          `json:"id"`
-	CreatedAt   time.Time       `json:"created_at"`
-	DeviceID    string          `json:"device_id,omitempty"`
-	BrewID      string          `json:"brew_id,omitempty"`
-	Mode        string          `json:"mode"`
-	Status      string          `json:"status"`
-	Text        string          `json:"text"`
-	Recipe      json.RawMessage `json:"recipe,omitempty"`
-	Limitations []string        `json:"limitations,omitempty"`
-	Error       string          `json:"error,omitempty"`
-}
+type adviceRecord = domain.AIAdvice
 
 func invalidProviderKey(key string) bool {
 	return len(key) > 1024 || strings.IndexFunc(key, func(r rune) bool {
@@ -117,6 +107,9 @@ func (s *Server) aiContext(input ai.Request) (map[string]any, error) {
 		if err != nil {
 			return nil, err
 		}
+		// Past model output remains in the journal/export, but is not fed back
+		// as if it were measured telemetry for another analysis.
+		v.AIAdvice = nil
 		if len(v.Samples) > 600 {
 			stride := (len(v.Samples) + 598) / 599
 			reduced := make([]domain.Sample, 0, 600)
@@ -129,7 +122,7 @@ func (s *Server) aiContext(input ai.Request) (map[string]any, error) {
 		}
 		data["brew"] = v
 	}
-	if input.DeviceID != "" {
+	if input.DeviceID != "" && input.Mode != "analysis" {
 		found := false
 		for _, v := range s.fleet() {
 			if v.ID == input.DeviceID {
@@ -164,6 +157,13 @@ func (s *Server) performAI(ctx context.Context, cfg ai.Config, key string, input
 
 func (s *Server) recordAdvice(input ai.Request, result ai.Result, err error) {
 	record := adviceRecord{ID: randomID(), CreatedAt: time.Now().UTC(), DeviceID: input.DeviceID, BrewID: input.BrewID, Mode: input.Mode, Status: "complete", Text: result.Text, Recipe: result.Recipe, Limitations: result.Limitations}
+	if len(record.Text) > 65536 {
+		record.Text = record.Text[:65536]
+		for !utf8.ValidString(record.Text) {
+			record.Text = record.Text[:len(record.Text)-1]
+		}
+		record.Limitations = append(append([]string(nil), record.Limitations...), "Stored advice was limited to 64 KiB.")
+	}
 	if err != nil {
 		record.Status = "error"
 		record.Error = safeMessage(err.Error())
@@ -172,22 +172,52 @@ func (s *Server) recordAdvice(input ai.Request, result ai.Result, err error) {
 		s.cfg.Logger.Error("Could not save AI advice", "error", e)
 		return
 	}
-	// Provider outputs can be large; retain a bounded recent advisory log.
+	// Keep bounded advice with each brew, independent of unrelated recipe
+	// generation. Repeated provider errors must not evict useful brew advice.
+	limit := 500
+	if record.BrewID != "" {
+		limit = 200
+		if record.Status == "error" {
+			limit = 20
+		}
+	}
 	rows, e := s.db.List("ai-advice")
-	if e != nil || len(rows) <= 500 {
+	if e != nil || len(rows) <= limit {
 		return
 	}
 	records := make([]adviceRecord, 0, len(rows))
 	for _, raw := range rows {
 		var v adviceRecord
-		if json.Unmarshal(raw, &v) == nil {
+		if json.Unmarshal(raw, &v) == nil && v.BrewID == record.BrewID && (record.BrewID == "" || v.Status == record.Status) {
 			records = append(records, v)
 		}
 	}
 	sort.Slice(records, func(i, j int) bool { return records[i].CreatedAt.After(records[j].CreatedAt) })
-	for _, v := range records[500:] {
+	if len(records) <= limit {
+		return
+	}
+	for _, v := range records[limit:] {
 		_ = s.db.Delete("ai-advice", v.ID)
 	}
+}
+
+func (s *Server) adviceForBrew(id string) ([]domain.AIAdvice, error) {
+	rows, err := s.db.List("ai-advice")
+	if err != nil {
+		return nil, err
+	}
+	out := []domain.AIAdvice{}
+	for _, raw := range rows {
+		var v domain.AIAdvice
+		if err := json.Unmarshal(raw, &v); err != nil {
+			return nil, err
+		}
+		if v.BrewID == id {
+			out = append(out, v)
+		}
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i].CreatedAt.After(out[j].CreatedAt) })
+	return out, nil
 }
 
 func (s *Server) aiAssist(w http.ResponseWriter, r *http.Request) {
@@ -199,8 +229,8 @@ func (s *Server) aiAssist(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 400, "mode", "Choose recipe, live, or analysis")
 		return
 	}
-	if input.Mode == "live" && input.DeviceID == "" {
-		s.fail(w, 400, "device", "Choose a machine for live advice")
+	if input.Mode == "live" && (input.DeviceID == "" || input.BrewID == "") {
+		s.fail(w, 400, "brew", "Choose the exact current machine and recording brew for live advice")
 		return
 	}
 	if input.Mode == "analysis" && input.BrewID == "" {
@@ -216,10 +246,35 @@ func (s *Server) aiAssist(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "ai_not_configured", err.Error())
 		return
 	}
+	var data map[string]any
 	if input.Mode == "live" {
-		input.BrewID = s.activeBrewID(r.Context(), input.DeviceID)
+		s.mu.RLock()
+		d := s.devices[input.DeviceID]
+		s.mu.RUnlock()
+		if d == nil {
+			s.fail(w, 404, "device", "Machine not found")
+			return
+		}
+		data, err = s.liveAIContext(r.Context(), d, input)
+		if err != nil {
+			s.deviceError(w, err)
+			return
+		}
+	} else {
+		if input.Mode == "analysis" {
+			var brew domain.Brew
+			if _, err = s.db.Get("brew", input.BrewID, &brew); err != nil {
+				s.storeError(w, err)
+				return
+			}
+			if input.DeviceID != "" && input.DeviceID != brew.DeviceID {
+				s.fail(w, 409, "brew_mismatch", "The selected brew belongs to a different machine")
+				return
+			}
+			input.DeviceID = brew.DeviceID
+		}
+		data, err = s.aiContext(input)
 	}
-	data, err := s.aiContext(input)
 	if err != nil {
 		s.storeError(w, err)
 		return
@@ -239,6 +294,11 @@ func (s *Server) aiAssist(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) aiAdvice(w http.ResponseWriter, r *http.Request) {
+	mode := r.URL.Query().Get("mode")
+	if mode != "" && mode != "recipe" && mode != "live" && mode != "analysis" {
+		s.fail(w, 400, "mode", "Choose recipe, live, or analysis")
+		return
+	}
 	rows, err := s.db.List("ai-advice")
 	if err != nil {
 		s.internal(w, err)
@@ -247,73 +307,91 @@ func (s *Server) aiAdvice(w http.ResponseWriter, r *http.Request) {
 	out := make([]adviceRecord, 0, len(rows))
 	for _, raw := range rows {
 		var v adviceRecord
-		if json.Unmarshal(raw, &v) == nil && (r.URL.Query().Get("device_id") == "" || r.URL.Query().Get("device_id") == v.DeviceID) {
+		if json.Unmarshal(raw, &v) == nil && (r.URL.Query().Get("device_id") == "" || r.URL.Query().Get("device_id") == v.DeviceID) && (r.URL.Query().Get("brew_id") == "" || r.URL.Query().Get("brew_id") == v.BrewID) && (mode == "" || mode == v.Mode) {
 			out = append(out, v)
 		}
 	}
 	sort.Slice(out, func(i, j int) bool { return out[i].CreatedAt.After(out[j].CreatedAt) })
+	if len(out) > 500 {
+		out = out[:500]
+	}
 	s.json(w, 200, out)
 }
 
 func (s *Server) monitorAI(ctx context.Context) {
 	ticker := time.NewTicker(30 * time.Second)
 	defer ticker.Stop()
-	last := map[string]time.Time{}
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			s.monitorTick(ctx, last)
+			s.monitorTick(ctx)
 		}
 	}
 }
 
-func (s *Server) monitorTick(ctx context.Context, last map[string]time.Time) {
+func (s *Server) monitorTick(ctx context.Context) {
 	cfg, key, err := s.aiConfiguration()
-	if err != nil || !cfg.MonitorEnabled {
+	if err != nil {
 		return
 	}
 	for _, v := range s.fleet() {
 		if ctx.Err() != nil {
 			return
 		}
-		if !v.Enabled || !v.Online || v.Status == nil || !v.Status.Busy || time.Since(last[v.ID]) < 5*time.Minute {
+		if !v.Enabled || !v.Online {
 			continue
 		}
-		if !s.aiMu.TryLock() {
-			return
-		}
-		last[v.ID] = time.Now()
-		input := ai.Request{Mode: "live", DeviceID: v.ID, Prompt: "Review the active brew's recent sensor readings and phases. Identify meaningful temperature deviations, telemetry gaps or stalled progress. Give concise observations and actions the brewer can review. If data is insufficient, say so. Do not issue or imply machine commands."}
-		input.BrewID = s.activeBrewID(ctx, v.ID)
-		data, e := s.aiContext(input)
-		var result ai.Result
-		if e == nil {
-			result, e = s.performAI(ctx, cfg, key, input, data)
-		}
-		s.recordAdvice(input, result, e)
-		s.aiMu.Unlock()
+		s.monitorDeviceAI(ctx, v.ID, cfg, key)
 	}
 }
 
-// Read the currently selected native history ID. A cached "recording" flag can
-// belong to a previous brew between imports and must not be used as live context.
-func (s *Server) activeBrewID(ctx context.Context, deviceID string) string {
+func (s *Server) monitorDeviceAI(ctx context.Context, deviceID string, cfg ai.Config, key string) {
 	s.mu.RLock()
-	runtime := s.devices[deviceID]
+	d := s.devices[deviceID]
 	s.mu.RUnlock()
-	if runtime == nil || runtime.adapter == nil {
-		return ""
+	if d == nil {
+		return
 	}
-	history, err := runtime.adapter.History(ctx)
-	if err != nil || !history.Available || history.State != "recording" {
-		return ""
+	d.commandMu.Lock()
+	record, err := s.loadAIMonitor(deviceID)
+	if err != nil || (record.State != "active" && record.State != "pending") {
+		d.commandMu.Unlock()
+		return
 	}
-	id := fmt.Sprintf("%s-%d", deviceID, history.ID)
-	var brew domain.Brew
-	if _, err = s.db.Get("brew", id, &brew); err != nil || brew.DeviceHistoryID != history.ID {
-		return ""
+	observed, err := s.observeAIBrew(ctx, d)
+	if err == nil {
+		record, err = s.reconcileAIMonitor(record, observed)
 	}
-	return id
+	if err != nil || record.State != "active" || time.Since(record.LastReviewAt) < 5*time.Minute {
+		d.commandMu.Unlock()
+		return
+	}
+	if !s.aiMu.TryLock() {
+		d.commandMu.Unlock()
+		return
+	}
+	defer s.aiMu.Unlock()
+	record.LastReviewAt = time.Now().UTC()
+	if err := s.saveAIMonitor(record); err != nil {
+		d.commandMu.Unlock()
+		return
+	}
+	input := ai.Request{Mode: "live", DeviceID: deviceID, BrewID: record.BrewID, Prompt: "Review this exact brew's recent sensor readings and phases. Identify meaningful temperature deviations, telemetry gaps or stalled progress. Give concise observations and actions the brewer can review. If data is insufficient, say so. Do not issue or imply machine commands."}
+	d.commandMu.Unlock()
+	data, err := s.liveAIContext(ctx, d, input)
+	// Opt-out or a new start may occur while samples are downloaded. Do not
+	// begin a provider request after that consent has been withdrawn/replaced.
+	d.commandMu.Lock()
+	current, consentErr := s.loadAIMonitor(deviceID)
+	d.commandMu.Unlock()
+	if consentErr != nil || current.State != "active" || current.BrewID != record.BrewID || current.DeviceUID != record.DeviceUID {
+		return
+	}
+	var result ai.Result
+	if err == nil {
+		result, err = s.performAI(ctx, cfg, key, input, data)
+	}
+	s.recordAdvice(input, result, err)
 }

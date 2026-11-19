@@ -1,0 +1,48 @@
+name: Web recovery candidate
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: firmware/pico-s-pro/modified/recovery
+
+jobs:
+  recovery:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test dependencies and browser
+        run: |
+          python -m pip install -r requirements-test.txt -r requirements-web-test.txt
+          python -m playwright install --with-deps chromium
+      - name: Bootstrap pinned compiler and SDK
+        run: make bootstrap PYTHON=python
+      - name: Verify imported sources, portable behavior and exact ARM package
+        run: make verify PYTHON=python
+      - name: Browser against the recovery API over real HTTP
+        run: make web-test PYTHON=python
+      - name: Confirm pinned candidate source remains unchanged
+        run: python verify_import.py
+      - name: Preserve recovery evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: recovery-candidate-and-previews
+          path: |
+            firmware/pico-s-pro/modified/recovery/build/recovery/pico-web-recovery.bin
+            firmware/pico-s-pro/modified/recovery/build/recovery/pico-web-recovery.elf
+            firmware/pico-s-pro/modified/recovery/build/recovery/pico-web-recovery.map
+            firmware/pico-s-pro/modified/recovery/build/recovery/recovery-report.json
+            firmware/pico-s-pro/modified/recovery/build/recovery-preview/*.png
+          if-no-files-found: ignore

@@ -225,6 +225,7 @@ export function Modal({
 export function Confirm({
   title,
   description,
+  children,
   onConfirm,
   onClose,
   busy = false,
@@ -233,6 +234,7 @@ export function Confirm({
 }: {
   title: string
   description: string
+  children?: ReactNode
   onConfirm: () => void
   onClose: () => void
   busy?: boolean
@@ -255,6 +257,7 @@ export function Confirm({
       }
     >
       <p>{description}</p>
+      {children}
     </Modal>
   )
 }

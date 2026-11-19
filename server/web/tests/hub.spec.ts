@@ -234,12 +234,11 @@ test('settings, API explorer and contextual assistant are functional', async ({ 
   await page.getByRole('button', { name: 'Send request', exact: true }).click()
   await expect(page.locator('.api-response pre')).toContainText('demo-pro')
   await page.goto('/#/assistant?brew=demo-history-demo-pro')
-  await expect(page.getByRole('heading', { name: 'The brew assistant.' })).toBeVisible()
-  await expect(page.getByRole('tab', { name: 'After the last pour' })).toHaveAttribute(
-    'aria-selected',
-    'true'
-  )
-  await expect(page.getByLabel('Brew to analyze')).toHaveValue('demo-history-demo-pro')
+  await expect(page).toHaveURL(/#\/history\/demo-history-demo-pro\?analysis=1$/)
+  await expect(page.getByRole('heading', { name: 'AI brew analysis' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'The complete temperature story' })).toBeVisible()
+  await expect(page.getByRole('tablist', { name: 'Assistant task' })).toHaveCount(0)
+  await expect(page.getByLabel('Brew to analyze')).toHaveCount(0)
 })
 
 test('mobile layouts contain wide recipe and history tables', async ({ page }) => {
@@ -269,7 +268,7 @@ test('mobile layouts contain wide recipe and history tables', async ({ page }) =
   await expect(page.locator('.sidebar')).toHaveClass(/open/)
   await page
     .getByRole('navigation', { name: 'Main navigation' })
-    .getByRole('link', { name: 'Recipe library' })
+    .getByRole('link', { name: /^Recipes/ })
     .click()
   await expect(page.getByRole('heading', { name: 'Your recipe library.' })).toBeVisible()
 })

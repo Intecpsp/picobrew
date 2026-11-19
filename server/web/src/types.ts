@@ -155,8 +155,10 @@ export interface Adapted {
   machine_recipe: MachineRecipe | null
   profile: Profile
   warnings: string[]
+  deployment_blockers?: string[]
   can_deploy: boolean
   source_revision: number
+  profile_fingerprint?: string
 }
 export interface Sample {
   elapsed_ms: number
@@ -196,6 +198,19 @@ export interface Brew {
 }
 export interface BrewDetail extends Brew {
   samples: Sample[]
+  ai_advice?: AIAdvice[]
+}
+export interface AIAdvice {
+  id: string
+  created_at: string
+  device_id?: string
+  brew_id?: string
+  mode: string
+  status: string
+  text: string
+  recipe?: Recipe
+  limitations?: string[]
+  error?: string
 }
 export interface DeviceSettings {
   temperature_unit: 'F' | 'C'

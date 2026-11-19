@@ -2,7 +2,7 @@ name: Standalone firmware and browser
 
 on:
   push:
-    branches: [master, feature/standalone-rest-api, feature/community-monorepo]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 
