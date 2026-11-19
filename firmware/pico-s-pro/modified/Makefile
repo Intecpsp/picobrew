@@ -7,12 +7,15 @@ PICOBREW_SDK ?= .deps/energia
 MODEL ?= pico-pro
 STANDALONE_DIR = build/standalone/$(MODEL)/firmware
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test tooling-test
+.PHONY: all bootstrap build test firmware firmware-package verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test tooling-test
 .NOTPARALLEL: verify
 all: standalone
 
 standalone:
 	"$(PYTHON)" tools/build_firmware.py --standalone --model "$(MODEL)"
+
+firmware-package: standalone
+	"$(PYTHON)" tools/package_hub_firmware.py --model "$(MODEL)" --firmware-directory "$(STANDALONE_DIR)"
 
 standalone-test:
 	"$(PYTHON)" tools/generate_starter_recipes.py --check
@@ -47,6 +50,7 @@ tooling-test:
 	"$(PYTHON)" tests/test_build_tools.py
 	"$(PYTHON)" tests/test_native_host.py
 	"$(PYTHON)" tests/test_provision_api_key.py
+	"$(PYTHON)" tests/test_hub_firmware_package.py
 
 bootstrap:
 	"$(PYTHON)" tools/bootstrap_dependencies.py

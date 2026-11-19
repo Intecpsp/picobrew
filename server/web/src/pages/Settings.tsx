@@ -1,12 +1,18 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Download } from 'lucide-react'
 import { useHub } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import type { Profile } from '../types'
 import { AISettingsForm } from '../components/AISettingsForm'
+import { FirmwareManager } from '../components/FirmwareManager'
 import { Button, ErrorBanner, Field, PageTitle } from '../components/ui'
 export default function Settings() {
   const hub = useHub()
+  const firmwareSection = useRef<HTMLElement>(null)
+  useEffect(() => {
+    if (location.hash === '#/settings/firmware')
+      firmwareSection.current?.scrollIntoView({ block: 'start' })
+  }, [])
   return (
     <>
       <PageTitle
@@ -58,9 +64,21 @@ export default function Settings() {
             <AISettingsForm />
           </div>
         </section>
-        <section className="settings-row">
+        <section className="settings-row" ref={firmwareSection} aria-label="Firmware">
           <div className="settings-description">
             <span className="section-index">04</span>
+            <h2>Firmware</h2>
+            <p>
+              Keep machine firmware packages in the Hub. Upload a package or fetch one from GitHub.
+            </p>
+          </div>
+          <div className="settings-fields">
+            <FirmwareManager />
+          </div>
+        </section>
+        <section className="settings-row">
+          <div className="settings-description">
+            <span className="section-index">05</span>
             <h2>Your data</h2>
             <p>A portable record of your recipes, equipment and brewing history.</p>
           </div>

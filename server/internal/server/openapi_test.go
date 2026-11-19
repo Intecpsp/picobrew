@@ -53,6 +53,52 @@ func TestOpenAPICatalogMatchesEveryRegisteredAPIRoute(t *testing.T) {
 	}
 }
 
+func TestOpenAPIFirmwarePackageTransportAndInstallationBoundary(t *testing.T) {
+	doc := openAPIDocument()
+	paths := doc["paths"].(map[string]any)
+	schemas := doc["components"].(schemaMap)["schemas"].(schemaMap)
+	upload := paths["/firmware/packages"].(map[string]any)["post"].(map[string]any)
+	request := upload["requestBody"].(schemaMap)
+	content := request["content"].(schemaMap)
+	if request["required"] != true || content["multipart/form-data"] == nil || content["application/json"] != nil {
+		t.Fatal("firmware upload is not documented as a required multipart file")
+	}
+	file := schemas["FirmwareUploadInput"].(schemaMap)["properties"].(schemaMap)["file"].(schemaMap)
+	if file["format"] != "binary" {
+		t.Fatal("firmware upload file is not binary")
+	}
+	security := upload["security"].([]any)[0].(map[string]any)
+	if _, ok := security["session"]; !ok {
+		t.Fatal("firmware upload lacks owner authentication")
+	}
+	if _, ok := security["csrf"]; !ok {
+		t.Fatal("firmware upload lacks CSRF protection")
+	}
+	for _, code := range []string{"200", "201", "400", "401", "403", "409", "413", "415"} {
+		if upload["responses"].(schemaMap)[code] == nil {
+			t.Fatalf("firmware upload lacks response %s", code)
+		}
+	}
+	download := paths["/firmware/packages/{packageID}/download"].(map[string]any)["get"].(map[string]any)
+	if download["responses"].(schemaMap)["200"].(schemaMap)["content"].(schemaMap)["application/zip"] == nil {
+		t.Fatal("firmware download is not documented as a ZIP")
+	}
+	if params := download["parameters"].([]any); len(params) != 1 || params[0].(schemaMap)["name"] != "packageID" {
+		t.Fatal("firmware package identity path parameter is missing")
+	}
+	importProps := schemas["FirmwareImportInput"].(schemaMap)["properties"].(schemaMap)
+	if importProps["repository"] == nil || importProps["commit"] == nil || importProps["model"] == nil || importProps["url"] != nil {
+		t.Fatal("GitHub import must use repository, pinned commit and model rather than arbitrary URLs")
+	}
+	if _, exists := schemas["FirmwareCandidate"].(schemaMap)["properties"].(schemaMap)["validation"]; exists {
+		t.Fatal("GitHub discovery claims package validation before download")
+	}
+	installed := schemas["MachineFirmware"].(schemaMap)["properties"].(schemaMap)["install_supported"].(schemaMap)
+	if !reflect.DeepEqual(installed["enum"], []bool{false}) {
+		t.Fatal("package management claims network installation support")
+	}
+}
+
 func TestOpenAPIResponseStatusesAndQueries(t *testing.T) {
 	paths := openAPIDocument()["paths"].(map[string]any)
 	for _, test := range []struct {

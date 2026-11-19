@@ -49,6 +49,16 @@ var endpoints = []endpoint{
 	{"GET", "/catalog/{id}", "Read an immutable source entry and conversion provenance", nil},
 	{"POST", "/catalog/{id}/copy", "Create an independent editable library copy", map[string]any{}},
 	{"GET", "/catalog/{id}/source", "Download the exact original source JSON", nil},
+	{"GET", "/firmware/settings", "Read the saved GitHub firmware source", nil},
+	{"PUT", "/firmware/settings", "Save the public GitHub repository and optional revision", map[string]any{"repository": "jeffreydwalter/picobrew-pico-pro-firmware", "ref": ""}},
+	{"GET", "/firmware/github", "Inspect available firmware packages at one resolved GitHub commit", nil},
+	{"POST", "/firmware/github/import", "Fetch and validate a model package from a pinned GitHub commit", map[string]any{"repository": "jeffreydwalter/picobrew-pico-pro-firmware", "commit": "2bab80ef8f88daf0c450fa1b6c4684a8c2d08669", "model": "pico-s"}},
+	{"GET", "/firmware/packages", "List validated firmware packages saved in the Hub", nil},
+	{"POST", "/firmware/packages", "Upload and validate a complete firmware ZIP", nil},
+	{"GET", "/firmware/packages/{packageID}", "Read saved package metadata and acquisition provenance", nil},
+	{"DELETE", "/firmware/packages/{packageID}", "Remove a firmware package from the Hub", nil},
+	{"GET", "/firmware/packages/{packageID}/download", "Download the package after verifying its cached archive hash", nil},
+	{"GET", "/devices/{id}/firmware", "Read model-scoped firmware packages and installation availability", nil},
 }
 
 func (s *Server) openapi(w http.ResponseWriter, r *http.Request) {
@@ -277,7 +287,55 @@ func buildSchemas() schemaMap {
 	r.properties("Request")["prompt"] = schemaMap{"type": "string", "maxLength": 16000}
 	r.properties("Result")["recipe"] = schemaRef("Recipe")
 	r.properties("AIAdvice")["recipe"] = schemaRef("Recipe")
+	addFirmwareSchemas(r.values)
 	return r.values
+}
+
+func addFirmwareSchemas(values schemaMap) {
+	hash := schemaMap{"type": "string", "pattern": "^[0-9a-f]{64}$"}
+	commit := schemaMap{"type": "string", "pattern": "^[0-9a-f]{40}$"}
+	model := schemaMap{"type": "string", "enum": []string{"pico-s", "pico-pro"}}
+	sourceProperties := schemaMap{
+		"repository": schemaMap{"type": "string", "maxLength": 300, "description": "Public GitHub owner/repository; an exact GitHub repository HTTPS URL is also accepted on save. Defaults to jeffreydwalter/picobrew-pico-pro-firmware."},
+		"ref":        schemaMap{"type": "string", "maxLength": 200, "default": "", "description": "Branch, tag, or commit; empty uses the repository's default branch."},
+	}
+	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
+	values["FirmwareSettingsInput"] = schemaObject(sourceProperties, "repository")
+	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model}, "repository", "commit", "model")
+	values["FirmwareUploadInput"] = schemaObject(schemaMap{"file": schemaMap{"type": "string", "format": "binary", "description": "Complete firmware ZIP, at most 2 MiB, with the report, model image, browser manifest and five matching gzip assets."}}, "file")
+	candidate := schemaMap{
+		"model":            model,
+		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro"}},
+		"firmware_version": stringSchema(),
+		"binary_sha256":    hash,
+		"binary_bytes":     schemaMap{"type": "integer", "minimum": 16, "maximum": 188416},
+	}
+	required := []string{"model", "model_family", "firmware_version", "binary_sha256", "binary_bytes"}
+	values["FirmwareCandidate"] = schemaObject(candidate, required...)
+	values["FirmwareProvenance"] = schemaObject(schemaMap{
+		"source":     schemaMap{"type": "string", "enum": []string{"upload", "github"}},
+		"repository": stringSchema(),
+		"commit":     commit,
+	}, "source")
+	properties := schemaMap{}
+	for key, value := range candidate {
+		properties[key] = value
+	}
+	properties["id"] = hash
+	properties["package_bytes"] = schemaMap{"type": "integer", "minimum": 1, "maximum": 2097152}
+	properties["created_at"] = schemaMap{"type": "string", "format": "date-time"}
+	properties["validation"] = schemaMap{"type": "string", "enum": []string{"passed"}, "description": "Package structure, sizes, hashes and image bounds passed. This is not a publisher signature, physical hardware identification, or installation result."}
+	properties["provenance"] = schemaRef("FirmwareProvenance")
+	values["FirmwarePackage"] = schemaObject(properties, append(required, "id", "package_bytes", "created_at", "validation", "provenance")...)
+	values["FirmwareCatalog"] = schemaObject(schemaMap{"repository": stringSchema(), "ref": stringSchema(), "commit": commit, "packages": schemaArray(schemaRef("FirmwareCandidate"))}, "repository", "ref", "commit", "packages")
+	values["MachineFirmware"] = schemaObject(schemaMap{
+		"device_id":         stringSchema(),
+		"model":             stringSchema(),
+		"current_version":   stringSchema(),
+		"install_supported": schemaMap{"type": "boolean", "enum": []bool{false}, "description": "Network installation is not implemented in this Hub version. Package acquisition never changes machine firmware."},
+		"reason":            stringSchema(),
+		"packages":          schemaArray(schemaRef("FirmwarePackage")),
+	}, "device_id", "model", "current_version", "install_supported", "reason", "packages")
 }
 
 var pathParameters = regexp.MustCompile(`\{([^}]+)\}`)
@@ -376,6 +434,10 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "AIModelsInput"
 	case "/ai/assist":
 		name = "Request"
+	case "/firmware/settings":
+		name = "FirmwareSettingsInput"
+	case "/firmware/github/import":
+		name = "FirmwareImportInput"
 	}
 	if name != "" {
 		return schemaRef(name), true
@@ -501,6 +563,26 @@ func successResponses(e endpoint) schemaMap {
 		schema = schemaArray(schemaRef("AIAdvice"))
 	case "/shopping-list":
 		schema = schemaArray(schemaRef("Ingredient"))
+	case "/firmware/settings":
+		schema = schemaRef("FirmwareSettings")
+	case "/firmware/github":
+		schema = schemaRef("FirmwareCatalog")
+	case "/firmware/packages":
+		if e.method == "GET" {
+			schema = schemaArray(schemaRef("FirmwarePackage"))
+		} else {
+			code, schema = "201", schemaRef("FirmwarePackage")
+		}
+	case "/firmware/github/import":
+		code, schema = "201", schemaRef("FirmwarePackage")
+	case "/firmware/packages/{packageID}":
+		if e.method == "DELETE" {
+			schema = schemaRef("Deleted")
+		} else {
+			schema = schemaRef("FirmwarePackage")
+		}
+	case "/devices/{id}/firmware":
+		schema = schemaRef("MachineFirmware")
 	}
 	content := schemaMap{"application/json": schemaMap{"schema": schema}}
 	switch e.path {
@@ -514,6 +596,9 @@ func successResponses(e endpoint) schemaMap {
 	case "/backup":
 		content = schemaMap{"application/zip": schemaMap{"schema": schemaMap{"type": "string", "format": "binary"}}}
 		description = "Data export ZIP. Credentials and master.key are excluded; this is not a full disaster-recovery backup."
+	case "/firmware/packages/{packageID}/download":
+		content = schemaMap{"application/zip": schemaMap{"schema": schemaMap{"type": "string", "format": "binary"}}}
+		description = "Complete validated package ZIP. Cached bytes are checked against the saved archive hash before being served."
 	case "/recipes/{id}/export":
 		content = schemaMap{"application/json": schemaMap{"schema": schemaRef("Recipe")}, "application/xml": schemaMap{"schema": stringSchema()}}
 	case "/brews/{id}/export":
@@ -526,6 +611,9 @@ func successResponses(e endpoint) schemaMap {
 	result := schemaMap{code: response}
 	if strings.HasSuffix(e.path, "/commands") {
 		result["200"] = schemaMap{"description": "Existing receipt for this Idempotency-Key; the command was not resent.", "content": content}
+	}
+	if e.method == "POST" && (e.path == "/firmware/packages" || e.path == "/firmware/github/import") {
+		result["200"] = schemaMap{"description": "This exact archive is already saved; its original acquisition provenance is retained.", "content": content}
 	}
 	return result
 }
@@ -593,6 +681,26 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 	if e.path == "/telemetry" {
 		statuses[403] = "Device UID has not been registered and discovered."
 	}
+	if strings.HasPrefix(e.path, "/firmware/") {
+		statuses[400] = "Invalid source, model, commit, archive, or package metadata."
+		statuses[409] = "The saved source changed, the cache is full, or saved package integrity failed."
+		statuses[422] = "Package structure, metadata, sizes, hashes or image bounds failed validation."
+		statuses[429] = "Another firmware acquisition is in progress; retry shortly."
+		statuses[499] = "The firmware request was cancelled."
+		statuses[504] = "The firmware request exceeded its time limit."
+		if strings.Contains(e.path, "{packageID}") {
+			statuses[404] = "The saved firmware package does not exist."
+		}
+		if strings.HasPrefix(e.path, "/firmware/github") {
+			statuses[404] = "The public repository, revision or firmware files were not found."
+			statuses[429] = "GitHub refused the public request, its rate limit was reached, or another firmware acquisition is in progress."
+			statuses[502] = "GitHub source lookup or download failed; saved packages remain unchanged."
+		}
+		if e.path == "/firmware/packages" && e.method == "POST" {
+			statuses[413] = "The archive or multipart body exceeds the bounded upload limit."
+			statuses[415] = "Use multipart/form-data with one file field containing the firmware ZIP."
+		}
+	}
 	for code, description := range statuses {
 		responses[strconv.Itoa(code)] = schemaMap{"description": description, "content": schemaMap{"application/json": schemaMap{"schema": schemaRef("Error")}}}
 	}
@@ -630,9 +738,12 @@ func openAPIDocument() schemaMap {
 			}
 			op["requestBody"] = map[string]any{"required": requiresJSON, "content": map[string]any{"application/json": map[string]any{"schema": request, "example": example}}}
 		}
+		if e.path == "/firmware/packages" && e.method == "POST" {
+			op["requestBody"] = schemaMap{"required": true, "content": schemaMap{"multipart/form-data": schemaMap{"schema": schemaRef("FirmwareUploadInput")}}}
+		}
 		path[strings.ToLower(e.method)] = op
 	}
-	return schemaMap{"openapi": "3.0.3", "info": map[string]any{"title": "PicoBrew Hub API", "version": Version, "description": "Same-origin owner API. Obtain the session cookie at login, then read /auth/session for X-CSRF-Token on protected writes. Status codes describe HTTP acceptance, not proof of physical execution. Controls follow discovered capabilities; no dedicated pause/resume or live recipe editing is implemented. AI is advisory and cannot issue commands. Body decoding accepts one JSON value, rejects unknown fields and limits requests to 2 MiB. Recipe files additionally have a 1 MiB import limit. Optional device forwarding is unsigned observation data, not control or authoritative status."}, "servers": []any{map[string]string{"url": "/api/v1"}}, "paths": paths, "components": map[string]any{"schemas": buildSchemas(), "securitySchemes": map[string]any{"session": map[string]string{"type": "apiKey", "in": "cookie", "name": "pico_hub_session"}, "csrf": map[string]string{"type": "apiKey", "in": "header", "name": "X-CSRF-Token"}}}}
+	return schemaMap{"openapi": "3.0.3", "info": map[string]any{"title": "PicoBrew Hub API", "version": Version, "description": "Same-origin owner API. Obtain the session cookie at login, then read /auth/session for X-CSRF-Token on protected writes. Status codes describe HTTP acceptance, not proof of physical execution. Controls follow discovered capabilities; no dedicated pause/resume or live recipe editing is implemented. AI is advisory and cannot issue commands. JSON decoding accepts one value, rejects unknown fields and limits bodies to 2 MiB. Firmware ZIP uploads use bounded multipart requests and do not install firmware. Recipe files additionally have a 1 MiB import limit. Optional device forwarding is unsigned observation data, not control or authoritative status."}, "servers": []any{map[string]string{"url": "/api/v1"}}, "paths": paths, "components": map[string]any{"schemas": buildSchemas(), "securitySchemes": map[string]any{"session": map[string]string{"type": "apiKey", "in": "cookie", "name": "pico_hub_session"}, "csrf": map[string]string{"type": "apiKey", "in": "header", "name": "X-CSRF-Token"}}}}
 }
 
 func recipeAPIExample(revision int64) schemaMap {

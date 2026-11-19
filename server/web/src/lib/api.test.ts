@@ -37,6 +37,36 @@ describe('hub API transport', () => {
     expect(keys[0]).toMatch(/^[\da-f-]{36}$/)
     expect(keys[0]).not.toBe(keys[1])
   })
+  it('sends firmware multipart uploads through the authenticated transport without changing their body or boundary', async () => {
+    const fetch = vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('{"id":"package"}'))
+    const body = new FormData()
+    body.append('file', new Blob(['package bytes'], { type: 'application/zip' }), 'firmware.zip')
+    setCSRF('upload-session')
+    await api('/firmware/packages', { method: 'POST', body })
+    const [path, request] = fetch.mock.calls[0]
+    expect(path).toBe('/api/v1/firmware/packages')
+    expect(request?.body).toBe(body)
+    expect(request?.credentials).toBe('same-origin')
+    expect(request?.headers).toEqual({
+      Accept: 'application/json',
+      'X-CSRF-Token': 'upload-session',
+    })
+  })
+  it('preserves structured firmware upload errors', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response(
+        '{"error":{"code":"invalid_firmware_package","message":"The package hash does not match."}}',
+        { status: 400 }
+      )
+    )
+    await expect(
+      api('/firmware/packages', { method: 'POST', body: new FormData() })
+    ).rejects.toMatchObject({
+      status: 400,
+      code: 'invalid_firmware_package',
+      message: 'The package hash does not match.',
+    })
+  })
   it('does not automatically retry an uncertain machine command', async () => {
     const fetch = vi
       .spyOn(globalThis, 'fetch')

@@ -49,6 +49,13 @@ Machine identity is tied to its registration and archived history. Use a new reg
 
 ## Recover a native installation
 
+Firmware source settings, package metadata, and downloaded ZIPs are retained
+inside the Hub data directory. The firmware manager can upload or fetch
+packages from its editable GitHub source and export individual ZIPs. This is
+separate from updating the Hub executable or installing firmware on a machine;
+see [Firmware packages](firmware-packages.md). The normal workspace export does
+not include the firmware cache or its source configuration.
+
 For a shell-managed process, stop it first. With the server stopped:
 
 ```sh
