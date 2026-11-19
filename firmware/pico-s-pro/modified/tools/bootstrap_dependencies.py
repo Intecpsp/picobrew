@@ -88,22 +88,11 @@ def apply_patches(destination, patches):
         path.write_bytes(patched)
 
 
-def install(entry, prefix):
-    destination = prefix / entry['directory']
-    marker = destination / '.picobrew-dependency.json'
-    if destination.exists():
-        if not marker.is_file():
-            raise RuntimeError('Refusing to overwrite an existing untracked directory: ' + str(destination))
-        previous = json.loads(marker.read_text(encoding='utf-8'))
-        if previous.get('archive_sha256') != entry['sha256']:
-            raise RuntimeError('Existing dependency has a different identity: ' + str(destination))
-        apply_patches(destination, entry.get('patches', []))
-        print('Using verified dependency identity: ' + str(destination), flush=True)
-        return destination
+def pinned_archive(entry, prefix):
     archives = prefix / 'archives'
     archives.mkdir(parents=True, exist_ok=True)
     archive = archives / entry['archive_filename']
-    if archive.exists() and digest(archive) != entry['sha256']:
+    if archive.exists() and (archive.stat().st_size != entry['bytes'] or digest(archive) != entry['sha256']):
         raise RuntimeError('Cached archive hash differs from the lock: ' + str(archive))
     if not archive.exists():
         partial = archive.with_name(archive.name + '.part')
@@ -116,6 +105,22 @@ def install(entry, prefix):
             partial.replace(archive)
         finally:
             partial.unlink(missing_ok=True)
+    return archive
+
+
+def install(entry, prefix):
+    destination = prefix / entry['directory']
+    marker = destination / '.picobrew-dependency.json'
+    if destination.exists():
+        if not marker.is_file():
+            raise RuntimeError('Refusing to overwrite an existing untracked directory: ' + str(destination))
+        previous = json.loads(marker.read_text(encoding='utf-8'))
+        if previous.get('archive_sha256') != entry['sha256']:
+            raise RuntimeError('Existing dependency has a different identity: ' + str(destination))
+        apply_patches(destination, entry.get('patches', []))
+        print('Using verified dependency identity: ' + str(destination), flush=True)
+        return destination
+    archive = pinned_archive(entry, prefix)
     with tempfile.TemporaryDirectory(prefix='extract-', dir=prefix) as temp:
         temporary = Path(temp)
         if archive.suffix.lower() == '.zip':
@@ -136,6 +141,75 @@ def install(entry, prefix):
         extracted.rename(destination)
     print('Installed ' + str(destination), flush=True)
     return destination
+
+
+def install_target_runtime(lock, host_lock, compiler_entry, prefix, compiler):
+    """Use one hash-locked ARM runtime with each native host compiler."""
+    runtime = host_lock['target_runtime']
+    canonical = lock['toolchain']
+    originals = compiler_entry.get('target_runtime_original_sha256', {})
+    pending = []
+    for item in runtime['files']:
+        relative = PurePosixPath(item['path'])
+        if (relative.is_absolute() or '..' in relative.parts
+                or relative.as_posix() != item['path'] or relative.suffix != '.a'
+                or not any(item['path'].startswith(base) for base in (
+                    'arm-none-eabi/lib/' + runtime['multilib'] + '/',
+                    'lib/gcc/arm-none-eabi/10.3.1/' + runtime['multilib'] + '/'))):
+            raise RuntimeError('Invalid target runtime archive path: ' + item['path'])
+        target = compiler / item['path']
+        if target.is_symlink() or not target.is_file():
+            raise RuntimeError('Missing or linked target runtime file: ' + str(target))
+        actual = digest(target)
+        if actual == item['sha256'] and target.stat().st_size == item['bytes']:
+            continue
+        if actual != originals.get(item['path']):
+            raise RuntimeError('Refusing to replace unexpected target runtime content: ' + str(target))
+        pending.append(item)
+    if pending:
+        archive = pinned_archive(canonical, prefix)
+        expected = {canonical['archive_root'] + '/' + item['path']: item for item in pending}
+        contents = {}
+        with tarfile.open(archive) as source:
+            for member in source:
+                if member.name not in expected:
+                    continue
+                item = expected[member.name]
+                # Arm's Linux tarball deduplicates identical multilib archives
+                # with tar hard links. Resolve those inside the pinned archive;
+                # never create filesystem links in the host compiler directory.
+                if member.name in contents or not (member.isfile() or member.islnk()):
+                    raise RuntimeError('Invalid canonical runtime archive member: ' + member.name)
+                data = source.extractfile(member).read()
+                if len(data) != item['bytes'] or hashlib.sha256(data).hexdigest() != item['sha256']:
+                    raise RuntimeError('Canonical runtime member hash differs from the host lock: ' + member.name)
+                contents[member.name] = data
+        if contents.keys() != expected.keys():
+            raise RuntimeError('Canonical runtime archive is missing required ARM libraries')
+        # Only verified ARM target archives are replaced. The native compiler,
+        # linker, LTO plugin and all other host executables remain untouched.
+        for name, data in contents.items():
+            target = compiler / expected[name]['path']
+            temporary = target.with_name(target.name + '.canonical-part')
+            try:
+                temporary.write_bytes(data)
+                temporary.replace(target)
+            finally:
+                temporary.unlink(missing_ok=True)
+        print('Installed canonical ' + runtime['multilib'] + ' ARM target runtime', flush=True)
+    receipt = {
+        'schema_version': 1,
+        'multilib': runtime['multilib'],
+        'host_compiler_archive_sha256': compiler_entry['sha256'],
+        'target_runtime_source_archive_sha256': canonical['sha256'] if originals else compiler_entry['sha256'],
+        'canonical_reference_archive_sha256': canonical['sha256'],
+        'canonical_reference_url': canonical['url'],
+        'reason': runtime['reason'],
+        'files': runtime['files'],
+    }
+    (compiler / '.picobrew-target-runtime.json').write_text(
+        json.dumps(receipt, indent=2) + '\n', encoding='utf-8', newline='\n')
+    return receipt
 
 
 def main():
@@ -159,12 +233,14 @@ def main():
     output = {'sdk': str(sdk)}
     if not args.sdk_only:
         compiler = install(compiler_entry, prefix)
+        runtime = install_target_runtime(lock, host_lock, compiler_entry, prefix, compiler)
         cc = compiler / 'bin/arm-none-eabi-gcc'
         if not cc.is_file():
             cc = cc.with_name(cc.name + '.exe')
         output['arm_prefix'] = str(compiler / 'bin/arm-none-eabi-')
         output['compiler_archive_sha256'] = compiler_entry['sha256']
         output['compiler_host'] = compiler_entry['host']
+        output['target_runtime'] = runtime
         try:
             output['compiler_version'] = subprocess.check_output([str(cc), '--version'], text=True).splitlines()[0]
         except (OSError, subprocess.CalledProcessError) as exc:

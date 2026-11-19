@@ -146,5 +146,41 @@ class IdentityTests(unittest.TestCase):
                     adapter.verify_result("recovery", output)
 
 
+class BinaryArchiveTests(unittest.TestCase):
+    def test_allocator_members_preserve_every_byte_without_using_stdout(self):
+        payload = b"\x7fELF\x00\n\r\n\x1a\xff" + bytes(range(256))
+        with tempfile.TemporaryDirectory(prefix="archive tools with spaces ") as folder:
+            root = Path(folder)
+            executable, library = root / "arm-none-eabi-ar.exe", root / "libc.a"
+            command = [str(executable), "p", str(library), "lib_a-malloc.o"]
+
+            def extract(arguments, **kwargs):
+                self.assertEqual(arguments, [str(executable.resolve()), "x",
+                                             str(library.resolve()), "lib_a-malloc.o"])
+                self.assertTrue(kwargs["check"])
+                (Path(kwargs["cwd"]) / "lib_a-malloc.o").write_bytes(payload)
+                return subprocess.CompletedProcess(arguments, 0, stdout=b"corrupted text output")
+
+            with patch.object(adapter.shutil, "which", return_value=str(executable)), \
+                    patch.object(subprocess, "run", side_effect=extract) as run, \
+                    patch.object(subprocess, "check_output") as original:
+                self.assertEqual(adapter.binary_safe_check_output(command), payload)
+                original.assert_not_called()
+                self.assertFalse(Path(run.call_args.kwargs["cwd"]).exists())
+
+    def test_other_output_calls_are_not_adapted(self):
+        calls = [(["arm-none-eabi-gcc", "--version"], {"text": True}),
+                 (["arm-none-eabi-ar", "t", "libc.a", "lib_a-malloc.o"], {}),
+                 (["arm-none-eabi-ar", "p", "other.a", "lib_a-malloc.o"], {}),
+                 (["arm-none-eabi-ar", "p", "libc.a", "../outside.o"], {})]
+        for command, kwargs in calls:
+            with self.subTest(command=command), \
+                    patch.object(subprocess, "check_output", return_value="unchanged") as original, \
+                    patch.object(subprocess, "run") as run:
+                self.assertEqual(adapter.binary_safe_check_output(command, **kwargs), "unchanged")
+                original.assert_called_once_with(command, **kwargs)
+                run.assert_not_called()
+
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)

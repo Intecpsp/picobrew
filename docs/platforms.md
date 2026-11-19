@@ -70,6 +70,15 @@ the same on all hosts. The vendor's pinned macOS compiler is an Intel binary;
 Apple Silicon Macs require Rosetta 2 for that compiler. The Hub itself runs
 natively and does not require Rosetta.
 
+The macOS package's ARM libraries contain different vendor build paths, which
+would otherwise change the firmware bytes. Bootstrap also downloads the pinned
+Linux archive once on macOS and installs only its five Cortex-M4 soft-float
+runtime libraries. The native macOS compiler and LTO plugin remain in use.
+Linux and Windows already have those exact target libraries. Separate dependency
+receipts record the host compiler archive, runtime source archive, and each
+target library's hash. Rerun `make firmware-bootstrap` to update an existing
+macOS compiler installation to this reproducible runtime.
+
 Firmware simulations also need a native C/C++ compiler: GCC/G++ on Linux,
 MinGW-w64 GCC/G++ on Windows, or Apple Clang on macOS. Put the compiler binaries
 on `PATH`. Python requirements are recorded in the component's pinned

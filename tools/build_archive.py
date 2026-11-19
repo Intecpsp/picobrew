@@ -15,9 +15,12 @@ import os
 import pathlib
 from pathlib import Path, PurePath, PurePosixPath
 import platform
+import re
 import runpy
+import shutil
 import subprocess
 import sys
+import tempfile
 from types import ModuleType
 
 
@@ -139,6 +142,32 @@ def prioritize_cpp_spi_header(command):
     return rewritten
 
 
+def binary_safe_check_output(command, *args, **kwargs):
+    """Extract the frozen builders' allocator objects without a Windows text pipe.
+
+    The pinned Windows ar writes member bytes through text-mode stdout for `p`.
+    `x` writes binary files instead; read those bytes before the private temporary
+    directory is removed. All other check_output calls retain their semantics.
+    """
+    if (args or kwargs or not isinstance(command, (list, tuple)) or len(command) != 4
+            or command[1] != "p"):
+        return subprocess.check_output(command, *args, **kwargs)
+    executable = str(command[0]).replace("\\", "/").rsplit("/", 1)[-1].lower()
+    library, member = Path(command[2]), str(command[3])
+    if (executable not in ("arm-none-eabi-ar", "arm-none-eabi-ar.exe")
+            or library.name != "libc.a" or not re.fullmatch(r"lib_a-[a-z0-9_]+\.o", member)):
+        return subprocess.check_output(command, *args, **kwargs)
+    ar = shutil.which(command[0])
+    if ar is None:
+        raise FileNotFoundError("Archive compiler tool not found: " + str(command[0]))
+    # Resolve before changing cwd, including caller-supplied relative prefixes.
+    ar, library = str(Path(ar).resolve()), str(library.resolve())
+    with tempfile.TemporaryDirectory(prefix="picobrew allocator extraction ") as folder:
+        subprocess.run([ar, "x", library, member], cwd=folder, check=True,
+                       stdout=subprocess.PIPE)
+        return (Path(folder) / member).read_bytes()
+
+
 def run_archived_script(profile, name, arguments):
     component = PROFILES[profile]["root"]
     if name not in PROFILES[profile]["scripts"]:
@@ -157,6 +186,7 @@ def run_archived_script(profile, name, arguments):
         return subprocess.run(prioritize_cpp_spi_header(command), *args, **kwargs)
 
     processes.run = run
+    processes.check_output = binary_safe_check_output
 
     def import_module(name, globals=None, locals=None, fromlist=(), level=0):
         if level == 0 and name == "pathlib":
@@ -301,6 +331,7 @@ def main(argv=None):
             "path_ordering": "Case-sensitive POSIX path components, matching the archived Linux builds",
             "path_rendering": "Forward slashes for native compiler arguments and report identities",
             "cpp_header_priority": "Energia libraries/SPI before system/driverlib for C++ only; C order unchanged",
+            "binary_archive_extraction": "Allocator members use ar x and binary file reads, avoiding Windows stdout text conversion",
             "text_io": "UTF-8 reports with LF newlines",
         },
         "archive_manifest": manifest.relative_to(ROOT).as_posix(),

@@ -108,14 +108,17 @@ jobs:
           make recovery PYTHON=python
           python tools/verify_firmware_import.py
       - name: Preserve firmware candidate and image evidence
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: standalone-firmware-candidate-${{ matrix.os }}
+          include-hidden-files: true
           path: |
             firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.bin
             firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.elf
             firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.map
             firmware/pico-s-pro/modified/build/standalone/firmware/firmware-report.json
             firmware/pico-s-pro/modified/firmware/web/
+            firmware/pico-s-pro/modified/.deps/toolchain/.picobrew-target-runtime.json
             build/archives/oem/portable-build.json
             build/archives/recovery/portable-build.json

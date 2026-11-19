@@ -8,6 +8,7 @@ has a restricted PATH without Node/npm; fixtures contain no web/ source tree.
 """
 import argparse
 import ctypes
+import errno
 import http.client
 import http.cookiejar
 import json
@@ -31,14 +32,75 @@ BASE = 'http://127.0.0.1:8080'
 WINDOWS = os.name == 'nt'
 
 
-def free_port():
-    if not listener_closed():
-        raise RuntimeError('Port 8080 is already in use; this test will not contact an existing server.')
+class WindowsTCP4Row(ctypes.Structure):
+    _fields_ = [(name, ctypes.c_uint32) for name in
+                ('state', 'local_address', 'local_port', 'remote_address', 'remote_port', 'pid')]
 
 
-def listener_closed():
+class WindowsTCP6Row(ctypes.Structure):
+    _fields_ = [('local_address', ctypes.c_ubyte * 16), ('local_scope', ctypes.c_uint32),
+                ('local_port', ctypes.c_uint32), ('remote_address', ctypes.c_ubyte * 16),
+                ('remote_scope', ctypes.c_uint32), ('remote_port', ctypes.c_uint32),
+                ('state', ctypes.c_uint32), ('pid', ctypes.c_uint32)]
+
+
+def windows_listener_ports():
+    """Read listening TCP sockets without connections or TIME_WAIT ambiguity."""
+    query = ctypes.WinDLL('iphlpapi', use_last_error=True).GetExtendedTcpTable
+    query.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_uint32), ctypes.c_int,
+                      ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
+    query.restype = ctypes.c_uint32
+    ports = set()
+    for family, row_type in ((socket.AF_INET, WindowsTCP4Row), (socket.AF_INET6, WindowsTCP6Row)):
+        size = ctypes.c_uint32()
+        buffer = None
+        # TCP_TABLE_OWNER_PID_LISTENER (3) supports both address families.
+        # A new listener can grow the table between sizing and retrieval.
+        for _ in range(4):
+            result = query(buffer, ctypes.byref(size), False, family, 3, 0)
+            if result == 122:  # ERROR_INSUFFICIENT_BUFFER
+                buffer = ctypes.create_string_buffer(size.value)
+                continue
+            if result:
+                raise ctypes.WinError(result)
+            if buffer is None or size.value < 4:
+                raise RuntimeError('Windows returned an incomplete TCP listener table.')
+            count = ctypes.c_uint32.from_buffer(buffer).value
+            row_bytes = ctypes.sizeof(row_type)
+            if 4 + count * row_bytes > min(size.value, ctypes.sizeof(buffer)):
+                raise RuntimeError('Windows returned a truncated TCP listener table.')
+            rows = (row_type * count).from_buffer(buffer, 4)
+            ports.update(socket.ntohs(row.local_port & 0xffff) for row in rows if row.state == 2)
+            break
+        else:
+            raise RuntimeError('Windows TCP listener table kept changing during inspection.')
+    return ports
+
+
+def free_port(port=8080):
+    message = f'Port {port} is already in use; this test will not contact an existing server.'
+    if WINDOWS and port in windows_listener_ports():
+        raise RuntimeError(message)
+    # Reserve locally instead of probing someone else's server. On Windows the
+    # listener table also catches wildcard/IPv6 listeners before a specific bind.
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        if not WINDOWS:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        try:
+            probe.bind(('127.0.0.1', port))
+        except OSError as error:
+            if error.errno in (errno.EADDRINUSE, errno.EACCES):
+                raise RuntimeError(message) from error
+            raise
+
+
+def listener_closed(port=8080):
+    if WINDOWS:
+        # Winsock can delay even a refused loopback connect beyond 200 ms.
+        # Inspect native LISTEN state instead; errors never count as closed.
+        return port not in windows_listener_ports()
     try:
-        with socket.create_connection(('127.0.0.1', 8080), timeout=.2):
+        with socket.create_connection(('127.0.0.1', port), timeout=.2):
             return False
     except ConnectionRefusedError:
         return True

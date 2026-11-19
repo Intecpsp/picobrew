@@ -12,6 +12,7 @@ import json
 import os
 import shutil
 import subprocess
+import tempfile
 
 from arm_toolchain import find_arm_prefix, sort_sources
 
@@ -26,17 +27,33 @@ ALLOCATION_MEMBERS = (
     'reallocarray', 'reallocf')
 
 
+def read_archive_members(archiver, library, members):
+    """Read native object bytes without a Windows text-mode stdout pipe."""
+    resolved = shutil.which(archiver)
+    if not resolved:
+        raise FileNotFoundError('Archive tool not found: ' + archiver)
+    archiver = str(Path(resolved).resolve())
+    library = Path(library).resolve(strict=True)
+    # GNU ar's Windows `p` command can translate binary bytes on stdout. The
+    # `x` command writes the original member bytes directly to binary files.
+    # A fresh directory also prevents a missing member reusing stale output.
+    with tempfile.TemporaryDirectory(prefix='pico allocator ') as temporary:
+        subprocess.run([archiver, 'x', str(library), *members], cwd=temporary, check=True)
+        return {member: (Path(temporary) / member).read_bytes() for member in members}
+
+
 def prepare_allocator(prefix, cc, target_flags, destination):
     """Extract native allocator objects from the same compiler's full libc."""
     library = Path(subprocess.check_output(
         [cc, *target_flags, '-print-file-name=libc.a'], text=True).strip()).resolve()
     if not library.is_file():
         raise ValueError('Selected compiler must provide full libc.a allocation objects')
+    members = ['lib_a-' + name + '.o' for name in ALLOCATION_MEMBERS]
+    contents = read_archive_members(prefix + 'ar', library, members)
     destination.mkdir(parents=True, exist_ok=True)
     objects = []
-    for name in ALLOCATION_MEMBERS:
-        member = 'lib_a-' + name + '.o'
-        data = subprocess.check_output([prefix + 'ar', 'p', str(library), member])
+    for member in members:
+        data = contents[member]
         if not data.startswith(b'\x7fELF'):
             raise ValueError('Missing native allocation object: ' + member)
         path = destination / member
