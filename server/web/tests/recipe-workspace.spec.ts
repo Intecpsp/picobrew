@@ -61,8 +61,8 @@ for (const width of [1440, 390]) {
         scroll: document.documentElement.scrollWidth,
         base: parseFloat(getComputedStyle(document.body).fontSize),
         smallText: [
-          ...document.querySelectorAll<HTMLElement>(
-            'main p, main small, main label, main th, main td, main button, main input, main select'
+          ...document.querySelectorAll<HTMLElement | SVGElement>(
+            'main p, main small, main label, main th, main td, main button, main input, main select, main svg text'
           ),
         ]
           .filter(

@@ -19,6 +19,11 @@ import {
   scrollToGuideAnchor,
 } from './ReferenceViewer'
 
+vi.mock('./PDFGuide', () => ({
+  default: ({ title, url }: { title: string; url: string }) =>
+    h('section', { 'aria-label': `${title} PDF reader`, 'data-source': url }, 'PDF page renderer'),
+}))
+
 const showModalDescriptor = Object.getOwnPropertyDescriptor(
   HTMLDialogElement.prototype,
   'showModal'
@@ -199,29 +204,18 @@ echo ready
     expect(fetchMock).not.toHaveBeenCalled()
   })
 
-  it('previews installed PDFs in a titled sandbox and revokes the blob on close', async () => {
-    const create = vi.fn((_blob: Blob) => 'blob:http://localhost/guide-pdf'),
-      revoke = vi.fn()
-    vi.stubGlobal(
-      'URL',
-      class extends URL {
-        static createObjectURL = create
-        static revokeObjectURL = revoke
-      }
-    )
-    vi.stubGlobal('fetch', vi.fn().mockResolvedValue(new Response('%PDF-1.4\n%%EOF')))
+  it('opens installed PDFs in the lazy page renderer without a native browser frame', async () => {
+    const fetchMock = vi.fn()
+    vi.stubGlobal('fetch', fetchMock)
     const document = { ...referenceDocument(pdfAsset, referenceFixtures), available: true }
     const view = render(
       h(ReferenceContent, { document, references: referenceFixtures, onNavigate: vi.fn() })
     )
-    const frame = await screen.findByTitle('Manual.pdf')
-    expect(frame.tagName).toBe('IFRAME')
-    expect(frame.getAttribute('sandbox')).toBe('allow-scripts allow-same-origin')
-    expect(frame.getAttribute('src')).toBe('blob:http://localhost/guide-pdf')
-    expect(create.mock.calls[0][0].type).toBe('application/pdf')
-    expect(screen.getByRole('link', { name: 'Open archived PDF' })).toBeTruthy()
-    view.unmount()
-    expect(revoke).toHaveBeenCalledWith('blob:http://localhost/guide-pdf')
+    const reader = await screen.findByRole('region', { name: 'Manual.pdf PDF reader' })
+    expect(reader.getAttribute('data-source')).toBe(pdfAsset.url)
+    expect(view.container.querySelector('iframe, object, embed')).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect(screen.getByRole('button', { name: 'Download original' })).toBeTruthy()
   })
 
   it('opens an image in the reader and keeps its attribution under one disclosure', () => {

@@ -1,4 +1,5 @@
 import { expect, test, type Locator } from '@playwright/test'
+import { samplePDF } from './pdf-fixture'
 
 test.beforeEach(async ({ request }) => {
   expect((await (await request.get('/api/v1/auth/session')).json()).demo).toBe(true)
@@ -18,6 +19,19 @@ test('bundled Markdown guides stay in one accessible reader and follow local ima
   const opener = page.getByRole('button', { name: 'Machine guides & artwork', exact: true })
   await opener.click()
   let dialog = page.getByRole('dialog')
+  const artwork = dialog.locator('.reference-artwork-button').first()
+  await expect(artwork).toHaveCSS('background-color', 'rgb(38, 60, 52)')
+  await artwork.click()
+  await expect(dialog.locator('.reference-artwork-preview')).toHaveCSS(
+    'background-color',
+    'rgb(38, 60, 52)'
+  )
+  await expect(dialog.locator('.reference-artwork-preview img')).toBeVisible()
+  await page.screenshot({
+    path: test.info().outputPath('guide-artwork-preview-desktop.png'),
+    fullPage: true,
+  })
+  await dialog.getByRole('button', { name: 'Back to guides', exact: true }).click()
   await guideRow(dialog, 'Zymatic: Firmware Installation')
     .getByRole('button', { name: 'Open guide' })
     .click()
@@ -65,6 +79,14 @@ test('bundled Markdown guides stay in one accessible reader and follow local ima
 test('optional PDFs show source options and installed PDFs have an inline preview with a download fallback', async ({
   page,
 }) => {
+  const browserErrors: string[] = []
+  const resourceRequests: string[] = []
+  page.on('pageerror', (error) => browserErrors.push(error.message))
+  page.on('console', (message) => {
+    if (message.type() === 'error' && /Content Security Policy|Refused to/i.test(message.text()))
+      browserErrors.push(message.text())
+  })
+  page.on('request', (request) => resourceRequests.push(request.url()))
   await page.setViewportSize({ width: 390, height: 844 })
   await page.goto('/#/catalog?model=zymatic')
   await page.getByRole('button', { name: 'Machine guides & artwork', exact: true }).click()
@@ -103,21 +125,53 @@ test('optional PDFs show source options and installed PDFs have an inline previe
   await guideRow(dialog, 'Zymatic: Zymatic Manual')
     .getByRole('button', { name: 'Open guide' })
     .click()
-  const frame = dialog.locator('iframe')
-  await expect(frame).toBeVisible()
-  await expect(frame).toHaveAttribute('title', 'Zymatic: Zymatic Manual')
-  await expect(frame).toHaveAttribute('src', /^blob:/)
-  await expect(frame).toHaveAttribute('sandbox', 'allow-scripts allow-same-origin')
+  const canvas = dialog.getByRole('img', { name: 'Zymatic: Zymatic Manual, page 1' })
+  await expect(canvas).toHaveAttribute('data-rendered-page', '1')
+  await expect.poll(() => countPDFInk(canvas)).toBeGreaterThan(50)
+  await expect(dialog.getByText('Page 1 of 2', { exact: true })).toBeVisible()
+  await dialog.getByText('Page text', { exact: true }).click()
+  await expect(dialog.getByText('Guide preview', { exact: true })).toBeVisible()
+  await dialog.getByText('Page text', { exact: true }).click()
+  await expect(dialog.locator('iframe, object, embed')).toHaveCount(0)
   await expect(
     dialog.getByRole('button', { name: 'Download original', exact: true }).first()
   ).toBeVisible()
-  await expect(dialog.getByText(/If your browser cannot display this PDF/)).toBeVisible()
+  await expect(dialog.getByRole('link', { name: 'Open archived PDF' })).toBeVisible()
+  expect(await dialog.evaluate((node) => node.scrollWidth <= node.clientWidth + 1)).toBe(true)
   await page.screenshot({
     path: test.info().outputPath('guide-installed-pdf-mobile.png'),
     fullPage: true,
   })
+  await dialog.getByRole('button', { name: 'Next', exact: true }).click()
+  const secondPage = dialog.getByRole('img', { name: 'Zymatic: Zymatic Manual, page 2' })
+  await expect(secondPage).toHaveAttribute('data-rendered-page', '2')
+  await expect.poll(() => countPDFInk(secondPage)).toBeGreaterThan(50)
+  await expect(dialog.getByRole('button', { name: 'Next', exact: true })).toBeDisabled()
+  await dialog.getByText('Page text', { exact: true }).click()
+  await expect(dialog.getByText('Second page instructions', { exact: true })).toBeVisible()
+  await dialog.getByRole('button', { name: 'Previous', exact: true }).click()
+  await expect(canvas).toHaveAttribute('data-rendered-page', '1')
+  expect(
+    resourceRequests.filter((url) =>
+      url.endsWith('/assets/support/legacy/zymatic/Zymatic_Manual.pdf')
+    )
+  ).toHaveLength(1)
+  expect(
+    resourceRequests.some((url) => url.includes('/vendor/pdfjs-6.5.438/standard_fonts/'))
+  ).toBe(true)
+  expect(browserErrors).toEqual([])
   await page.keyboard.press('Escape')
 })
+
+async function countPDFInk(canvas: Locator) {
+  return canvas.evaluate((element: HTMLCanvasElement) => {
+    const pixels = element.getContext('2d')!.getImageData(0, 0, element.width, element.height).data
+    let count = 0
+    for (let i = 0; i < pixels.length; i += 4)
+      if (pixels[i + 3] > 0 && pixels[i] + pixels[i + 1] + pixels[i + 2] < 700) count++
+    return count
+  })
+}
 
 test('recipe detail presents readable quantities and credits without losing catalogue filters', async ({
   page,
@@ -163,30 +217,3 @@ test('recipe detail presents readable quantities and credits without losing cata
   await expect(page.getByPlaceholder('Search community recipes and programs')).toHaveValue('Alpine')
   await expect(page.getByLabel('Catalogue type', { exact: true })).toHaveValue('recipe')
 })
-
-// A complete, deterministic one-page PDF for the installed-reference path. The
-// ordinary demo keeps optional vendor manuals uninstalled.
-function samplePDF(): Buffer {
-  const stream = 'BT /F1 12 Tf 20 150 Td (Guide preview) Tj ET'
-  const objects = [
-    '<< /Type /Catalog /Pages 2 0 R >>',
-    '<< /Type /Pages /Kids [3 0 R] /Count 1 >>',
-    '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 200 200] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>',
-    `<< /Length ${stream.length} >>\nstream\n${stream}\nendstream`,
-    '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>',
-  ]
-  let pdf = '%PDF-1.4\n'
-  const offsets = [0]
-  objects.forEach((object, i) => {
-    offsets.push(Buffer.byteLength(pdf))
-    pdf += `${i + 1} 0 obj\n${object}\nendobj\n`
-  })
-  const xref = Buffer.byteLength(pdf)
-  pdf += `xref\n0 ${objects.length + 1}\n0000000000 65535 f \n`
-  pdf += offsets
-    .slice(1)
-    .map((offset) => `${String(offset).padStart(10, '0')} 00000 n \n`)
-    .join('')
-  pdf += `trailer\n<< /Size ${objects.length + 1} /Root 1 0 R >>\nstartxref\n${xref}\n%%EOF\n`
-  return Buffer.from(pdf)
-}

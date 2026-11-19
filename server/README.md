@@ -14,7 +14,7 @@ ports and live Hub compatibility are not implemented. See
 
 ## Run it on your Mac
 
-Install Go **1.26 or newer** and Node.js **22.12 or newer**. Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the C compiler is unavailable (`xcode-select --install`).
+Install Go **1.26 or newer** and Node.js **22.13 or newer**. Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the C compiler is unavailable (`xcode-select --install`).
 
 The application is self-contained in `server/`: its Go module, frontend,
 catalogue, tests, Dockerfile and Compose configuration are all in that directory.

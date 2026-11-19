@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useEffect, useRef, useState } from 'react'
 import Markdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import rehypeRaw from 'rehype-raw'
@@ -20,6 +20,8 @@ import {
 import type { CatalogReferences } from '../types'
 import { Button, ErrorBanner, Loading, Modal } from './ui'
 import './ReferenceViewer.scss'
+
+const PDFGuide = lazy(() => import('./PDFGuide'))
 
 interface HeadingNode {
   type: string
@@ -248,33 +250,25 @@ export function ReferenceContent({
   const localURL = referenceLocalURL(document)
   const format = referenceFormat(document.asset)
   const [text, setText] = useState('')
-  const [pdfURL, setPDFURL] = useState('')
-  const [loading, setLoading] = useState(Boolean(localURL && format !== 'image'))
+  const [loading, setLoading] = useState(
+    Boolean(localURL && format !== 'image' && format !== 'pdf')
+  )
   const [error, setError] = useState('')
   const [attempt, setAttempt] = useState(0)
   const content = useRef<HTMLDivElement>(null)
   useEffect(() => {
     const controller = new AbortController()
-    let objectURL = ''
     setError('')
     setText('')
-    setPDFURL('')
-    if (!localURL || format === 'image') {
+    if (!localURL || format === 'image' || format === 'pdf') {
       setLoading(false)
       return () => controller.abort()
     }
     setLoading(true)
     void apiResponse(localURL, { signal: controller.signal, accept: document.asset.content_type })
       .then(async (response) => {
-        if (format === 'pdf') {
-          const bytes = await response.arrayBuffer()
-          if (controller.signal.aborted) return
-          objectURL = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }))
-          setPDFURL(objectURL)
-        } else {
-          const value = await response.text()
-          if (!controller.signal.aborted) setText(value)
-        }
+        const value = await response.text()
+        if (!controller.signal.aborted) setText(value)
       })
       .catch((error) => {
         if (!controller.signal.aborted) setError(errorMessage(error))
@@ -284,7 +278,6 @@ export function ReferenceContent({
       })
     return () => {
       controller.abort()
-      if (objectURL) URL.revokeObjectURL(objectURL)
     }
   }, [localURL, format, document.asset.content_type, attempt])
   useEffect(() => {
@@ -342,7 +335,14 @@ export function ReferenceContent({
             />
           </article>
         ) : format === 'image' ? (
-          <figure className="reference-image-preview">
+          <figure
+            className={
+              'reference-image-preview' +
+              (document.asset.kind.includes('machine') || document.asset.kind.includes('device')
+                ? ' reference-artwork-preview'
+                : '')
+            }
+          >
             <img
               src={localURL}
               alt={document.asset.title}
@@ -350,20 +350,16 @@ export function ReferenceContent({
               onError={() => setError('This image could not be loaded.')}
             />
           </figure>
-        ) : format === 'pdf' && pdfURL ? (
-          <div className="reference-pdf-preview">
-            <iframe
+        ) : format === 'pdf' ? (
+          <Suspense fallback={<Loading label="Opening PDF reader…" />}>
+            <PDFGuide
+              url={localURL}
               title={document.asset.title}
-              src={pdfURL + (fragment ? '#' + fragment : '')}
-              sandbox="allow-scripts allow-same-origin"
-              referrerPolicy="no-referrer"
+              size={document.asset.bytes}
+              fragment={fragment}
+              source={<ArchiveFallback document={document} />}
             />
-            <p>
-              If your browser cannot display this PDF, use{' '}
-              <button onClick={() => void downloadLocal()}>Download original</button> or{' '}
-              <ArchiveFallback document={document} />.
-            </p>
-          </div>
+          </Suspense>
         ) : (
           <pre className="reference-text">{text}</pre>
         )}

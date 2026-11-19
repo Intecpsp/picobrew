@@ -40,7 +40,7 @@ export function TemperatureChart({
       <ResponsiveContainer width="100%" height={height}>
         <LineChart
           data={data}
-          margin={{ top: 12, right: 16, bottom: 0, left: -18 }}
+          margin={{ top: 12, right: 20, bottom: 0, left: 0 }}
           onClick={(event: any) => {
             const value = event?.activeLabel
             if (value !== undefined && value !== null && Number.isFinite(Number(value)))
@@ -55,14 +55,15 @@ export function TemperatureChart({
             stroke="#8d8b81"
             tickLine={false}
             axisLine={false}
-            fontSize={11}
+            fontSize={14}
           />
           <YAxis
             domain={['auto', 'auto']}
             stroke="#8d8b81"
             tickLine={false}
             axisLine={false}
-            fontSize={11}
+            fontSize={14}
+            width={52}
             tickFormatter={(value) => `${value}°`}
           />
           <Tooltip
@@ -71,7 +72,7 @@ export function TemperatureChart({
               value == null ? '—' : `${Number(value).toFixed(1)}°${unit}`,
               name,
             ]}
-            contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 12 }}
+            contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
           />
           <Line
             name="Wort"
@@ -107,7 +108,7 @@ export function TemperatureChart({
               x={note.elapsed_ms}
               stroke="#565775"
               strokeDasharray="3 3"
-              label={{ value: note.label, position: 'insideTopLeft', fontSize: 10 }}
+              label={{ value: note.label, position: 'insideTopLeft', fontSize: 14 }}
             />
           ))}
         </LineChart>
@@ -133,11 +134,14 @@ export function TemperatureChart({
 export function StateChart({ samples }: { samples: Sample[] }) {
   return (
     <ResponsiveContainer width="100%" height={190}>
-      <LineChart data={samples} margin={{ top: 10, right: 16, bottom: 0, left: -20 }}>
+      <LineChart data={samples} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
         <CartesianGrid vertical={false} stroke="#e7e1d8" />
-        <XAxis dataKey="elapsed_ms" tickFormatter={clockTime} minTickGap={55} fontSize={11} />
-        <YAxis allowDecimals={false} fontSize={11} />
-        <Tooltip labelFormatter={(value) => clockTime(Number(value))} />
+        <XAxis dataKey="elapsed_ms" tickFormatter={clockTime} minTickGap={55} fontSize={14} />
+        <YAxis allowDecimals={false} fontSize={14} width={52} />
+        <Tooltip
+          labelFormatter={(value) => clockTime(Number(value))}
+          contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
+        />
         <Line
           name="Phase"
           type="stepAfter"
