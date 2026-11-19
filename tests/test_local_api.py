@@ -50,7 +50,10 @@ class LocalApi(unittest.TestCase):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
         self.assertEqual(data["api_version"], 1)
-        self.assertEqual(data["firmware_version"], "1.0.1")
+        self.assertTrue(data["zero_minute_steps"])
+        self.assertTrue(data["restore_default_recipes"])
+        self.assertEqual(data["starter_recipe_count"], 8)
+        self.assertEqual(data["firmware_version"], "1.1.0")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]
@@ -109,7 +112,7 @@ class LocalApi(unittest.TestCase):
         for path in ["../x", "a/b", "%2e%2e", "x?x", "x" * 21, ""]:
             self.assertEqual(request("PUT", "/api/v1/recipes/" + path, recipe())[0], 400)
         for field, value in [("location", 0), ("location", 7), ("target_f", 59), ("target_f", 213),
-                              ("minutes", 0), ("minutes", 600), ("minutes", 1.5), ("minutes", True),
+                              ("minutes", -1), ("minutes", 600), ("minutes", 1.5), ("minutes", True),
                               ("drain_minutes", -1), ("drain_minutes", 121), ("name", "x" * 22)]:
             document = recipe(); document["steps"][0][field] = value
             with self.subTest(field=field, value=value):
@@ -118,6 +121,140 @@ class LocalApi(unittest.TestCase):
                          dict(recipe(), id="another-id"), dict(recipe(), unknown=1)]:
             self.assertEqual(request("PUT", "/api/v1/recipes/x", document)[0], 400)
         self.assertEqual(LIB.test_file_count(), 0)
+
+    def test_native_picopak_zero_minute_heating_survives_reload(self):
+        document = recipe("Archived PicoPak", count=2)
+        document["steps"][0] = {"name": "Heating", "location": 1,
+                                "target_f": 110, "minutes": 0, "drain_minutes": 0}
+        self.assertEqual(request("PUT", "/api/v1/recipes/pak-8215", document)[0], 201)
+        LIB.test_reset(0)
+        self.assertEqual(request("GET", "/api/v1/recipes/pak-8215")[1]["steps"], document["steps"])
+        self.assertEqual(LIB.test_load_recipe(b"pak-8215"), 1)
+
+    def test_starters_seed_once_and_are_real_shared_slots(self):
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        expected = json.loads((ROOT / "data/starter-recipes.json").read_text())["recipes"]
+        self.assertEqual(LIB.test_recipe_list(), 8)
+        for entry in expected:
+            stored = request("GET", "/api/v1/recipes/" + entry["id"])[1]
+            self.assertEqual(stored, {key: entry[key] for key in ("id", "name", "steps")})
+            self.assertEqual(LIB.test_load_recipe(entry["id"].encode()), 1)
+        self.assertEqual(request("PUT", "/api/v1/recipes/pico-pak-64", recipe("My Pico Pale"))[0], 200)
+        self.assertEqual(request("DELETE", "/api/v1/recipes/pico-pak-17")[0], 204)
+        LIB.test_reset(0)
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(LIB.test_write_count(), 0)
+        self.assertEqual(request("GET", "/api/v1/recipes/pico-pak-64")[1]["name"], "My Pico Pale")
+        self.assertEqual(request("GET", "/api/v1/recipes/pico-pak-17")[0], 404)
+        for item in request("GET", "/api/v1/recipes")[1]["recipes"]:
+            self.assertEqual(request("DELETE", "/api/v1/recipes/" + item["id"])[0], 204)
+        LIB.test_reset(0)
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(LIB.test_recipe_list(), 0)
+        self.assertEqual(LIB.test_write_count(), 0)
+
+    def test_upgrade_migrates_empty_catalogue_but_preserves_occupied_catalogue(self):
+        self.assertEqual(request("PUT", "/api/v1/recipes/custom", recipe())[0], 201)
+        self.assertEqual(request("DELETE", "/api/v1/recipes/custom")[0], 204)
+        LIB.test_reset(0)
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(LIB.test_recipe_list(), 8)
+        LIB.test_reset(1)
+        self.assertEqual(request("PUT", "/api/v1/recipes/custom", recipe())[0], 201)
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(LIB.test_recipe_list(), 1)
+        self.assertEqual(request("DELETE", "/api/v1/recipes/custom")[0], 204)
+        LIB.test_reset(0)
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(LIB.test_recipe_list(), 0)
+
+    def test_restore_adds_missing_only_and_preflights_capacity(self):
+        self.assertEqual(LIB.test_initialize_recipes(), 0)
+        self.assertEqual(request("PUT", "/api/v1/recipes/pico-pak-64", recipe("Edited starter"))[0], 200)
+        self.assertEqual(request("DELETE", "/api/v1/recipes/pico-pak-17")[0], 204)
+        self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults"),
+                         (200, {"added": 1, "preserved": 7, "capacity": 16}))
+        self.assertEqual(request("GET", "/api/v1/recipes/pico-pak-64")[1]["name"], "Edited starter")
+        writes = LIB.test_write_count()
+        self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults")[1]["added"], 0)
+        self.assertEqual(LIB.test_write_count(), writes)
+        LIB.test_busy(1)
+        self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults")[0], 409)
+        LIB.test_busy(0)
+        self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults", {})[0], 400)
+        LIB.test_reset(1)
+        for index in range(9): request("PUT", f"/api/v1/recipes/custom-{index}", recipe())
+        before = request("GET", "/api/v1/recipes")
+        writes = LIB.test_write_count()
+        self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults")[0], 507)
+        self.assertEqual(request("GET", "/api/v1/recipes"), before)
+        self.assertEqual(LIB.test_write_count(), writes)
+
+    def test_restore_interrupted_records_never_publish_partial_starter_set(self):
+        failures = [(write, cut) for write in range(8) for cut in (0, 1, 15, 16, 64, 488)]
+        failures += [(8, cut) for cut in range(432)]
+        for write, cut in failures:
+            LIB.test_reset(1)
+            self.assertEqual(request("PUT", "/api/v1/recipes/custom", recipe())[0], 201)
+            LIB.test_write_failure(write, cut)
+            self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults")[0], 503)
+            LIB.test_reset(0)
+            saved = request("GET", "/api/v1/recipes")[1]["recipes"]
+            self.assertEqual([item["id"] for item in saved], ["custom"], (write, cut))
+            self.assertEqual(request("POST", "/api/v1/recipes/restore-defaults")[0], 200)
+            self.assertEqual(LIB.test_recipe_list(), 9)
+
+    def test_seed_read_errors_and_corruption_never_replace_catalogue(self):
+        request("PUT", "/api/v1/recipes/custom", recipe())
+        writes = LIB.test_write_count()
+        LIB.test_stat_failure(0)
+        self.assertEqual(LIB.test_initialize_recipes(), 4)
+        self.assertEqual(LIB.test_write_count(), writes)
+        LIB.test_stat_failure(-1)
+        self.assertEqual(LIB.test_corrupt(b"/local/index.a", 20), 1)
+        self.assertEqual(LIB.test_initialize_recipes(), 5)
+        self.assertEqual(LIB.test_write_count(), writes)
+
+    def test_pristine_seed_interruption_retries_after_verified_empty_baseline(self):
+        failures = [(write, cut) for write in range(1, 9) for cut in (0, 16, 488)]
+        failures += [(9, cut) for cut in range(432)]
+        for write, cut in failures:
+            LIB.test_reset(1)
+            LIB.test_write_failure(write, cut)
+            self.assertEqual(LIB.test_initialize_recipes(), 4)
+            LIB.test_reset(0)
+            self.assertEqual(LIB.test_recipe_list(), 0, (write, cut))
+            self.assertEqual(LIB.test_initialize_recipes(), 0, (write, cut))
+            self.assertEqual(LIB.test_recipe_list(), 8)
+        # The first-ever catalogue commit retains the pre-existing fail-closed
+        # boundary: a corrupt sole bank cannot be assumed to contain no user data.
+        for cut in (0, 16, 431):
+            LIB.test_reset(1)
+            LIB.test_write_failure(0, cut)
+            self.assertEqual(LIB.test_initialize_recipes(), 4)
+            LIB.test_reset(0)
+            self.assertEqual(LIB.test_initialize_recipes(), 5)
+            self.assertEqual(LIB.test_write_count(), 0)
+
+    def test_recovery_records_torn_writes_reboot_and_tombstone(self):
+        def checkpoint():
+            active, drain, phase = (ctypes.c_uint() for _ in range(3))
+            code = LIB.test_read_recovery(ctypes.byref(active), ctypes.byref(drain), ctypes.byref(phase))
+            return code, active.value, drain.value, phase.value
+        for cut in range(52):
+            LIB.test_reset(1)
+            request("PUT", "/api/v1/recipes/house", recipe())
+            LIB.test_load_recipe(b"house")
+            self.assertEqual(LIB.test_save_recovery(13, 2, 1), 1)
+            LIB.test_write_failure(0, cut)
+            self.assertEqual(LIB.test_save_recovery(0, 1, 3), 0)
+            LIB.test_reset(0)
+            self.assertEqual(checkpoint(), (0, 13, 2, 1))
+        self.assertEqual(LIB.test_clear_recovery(), 1)
+        LIB.test_reset(0)
+        self.assertEqual(checkpoint()[0], 1)
+        self.assertEqual(LIB.test_clear_recovery(), 1)
+        self.assertEqual(LIB.test_write_count(), 0)
 
     def test_every_truncated_write_preserves_committed_recipe(self):
         # Every truncation point in a recipe record and catalog commit, followed

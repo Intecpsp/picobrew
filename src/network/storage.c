@@ -226,6 +226,11 @@ bool pico_storage_read_restart(PicoNetwork *n, char buffer[101])
 
 void pico_storage_delete_restart(PicoNetwork *n)
 {
+#if PICO_STANDALONE
+    /* A committed tombstone prevents an older bank from reappearing after
+     * an interrupted clear. Already-clear/absent records do not wear flash. */
+    (void)pico_local_recovery_clear(n);
+#endif
     n->platform->file_remove(n->platform_context, "restart.txt");
 }
 
@@ -237,6 +242,19 @@ bool pico_storage_save_recovery(PicoNetwork *n, int active, int drain, int step,
         return false;
     if ((uint32_t)(net_now(n) - n->last_recovery_save_ms) < 60001u && !force)
         return false;
+#if PICO_STANDALONE
+    if (active < 0 || active > 599 || drain < 0 || drain > 200 || step < 0 ||
+        step >= n->app->recipe.step_count || resume < 0 || resume > 5 || resume == 4 ||
+        calibrated > 1 || !pico_local_recipe_id_valid(n->app->recipe.identifier))
+        return false;
+    PicoLocalRecovery record = {.session_type = (uint8_t)type, .step = (uint8_t)step,
+        .phase = (uint8_t)resume, .calibrated = calibrated,
+        .active_minutes = (uint16_t)active, .drain_minutes = (uint16_t)drain};
+    memcpy(record.recipe_id, n->app->recipe.identifier, sizeof record.recipe_id);
+    if (!pico_local_recovery_save(n, &record)) return false;
+    n->last_recovery_save_ms = net_now(n);
+    return true;
+#else
     n->last_recovery_save_ms = net_now(n);
     char text[101];
     int size =
@@ -245,6 +263,7 @@ bool pico_storage_save_recovery(PicoNetwork *n, int active, int drain, int step,
                  (int)n->app->recipe.ibu_adjustment, step, active, drain, resume, calibrated);
     return net_request_fits(size, sizeof(text)) &&
            pico_storage_write_text(n, "restart.txt", text, 100);
+#endif
 }
 
 bool pico_storage_recovery_image_exists(PicoNetwork *n)

@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 4123,
+      "length": 4199,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "7859d85111539de7eed042ceaf88ff96048acc59639ee70abb2ca0c3264fc35c",
-      "source_length": 13949,
-      "source_sha256": "caf4b84b5c85514afc9c08b9cb62d93b76880b4b9297ded3e89e592bb8f33391"
+      "sha256": "9b7d8aca21b380e0960131d25130443e6841c9436d30ae2142bbe25bd2b62693",
+      "source_length": 14138,
+      "source_sha256": "7de0661a627725b54e5dd15fb898a21efe948fec2169f3613cbe979272ebf208"
     },
     {
       "source": "app.js",
@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6836,
+      "length": 7022,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "8dc155cec7863f0829a8b2510983a59826324e7de4dc4a421e95f927fdd7569b",
-      "source_length": 21819,
-      "source_sha256": "0bdd323fb66619f51baffd1e5a8cc836c84cfaa56cd5f717041944a7f4a37b82"
+      "sha256": "59525b35c53c52ebe81cff0c09069d347eaaf70073c3589ad692e698ff3580ee",
+      "source_length": 22543,
+      "source_sha256": "1d1b7b14638b2d3d6bc3983bf562f3cedf9abf4cc5e9e3372c4942b88e48565c"
     },
     {
       "source": "api-explorer.js",
@@ -36,12 +36,12 @@
       "payload": "api-explorer.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 2728,
+      "length": 2792,
       "max_size": 3584,
       "allocation_blocks": 1,
-      "sha256": "04f58438f73f814cdbcc48170a70f368b0cff7aa2671ab5496295ba011ffd751",
-      "source_length": 7285,
-      "source_sha256": "c2db8b2c1be4eceb288f153d2607a5a5dcfc16d80137ee0b0a0c1f0afe8827cc"
+      "sha256": "ba5bb50bd3c1ef33124f306cc39b3ed71a7574801f8b3b31ce92084b61ceace8",
+      "source_length": 7421,
+      "source_sha256": "f2c5a3bcd2d29d5a54345dbaea5aed20dff293fa06e8d8030bfb5be75bdb12b9"
     },
     {
       "source": "history.js",

@@ -50,6 +50,28 @@ PicoLocalStoreResult pico_local_recipe_visit(PicoNetwork *network,
 bool pico_local_recipe_load(PicoNetwork *network, const char *id, PicoRecipe *recipe,
                             char name[PICO_LOCAL_RECIPE_NAME_SIZE]);
 bool pico_local_recipe_list(PicoNetwork *network, PicoRecipeListing *listing);
+/* Boot migration handles an existing catalogue exactly once. Empty catalogues
+ * receive defaults; occupied catalogues retain every user slot. Explicit
+ * restore adds missing defaults only, in one capacity-checked catalogue commit. */
+unsigned pico_local_starter_recipe_count(void);
+PicoLocalStoreResult pico_local_recipes_initialize(PicoNetwork *network);
+PicoLocalStoreResult pico_local_recipes_restore_defaults(PicoNetwork *network,
+                                                        unsigned *added, unsigned *preserved);
+
+/* Versioned, checksummed two-bank progress. Durations are the remaining
+ * controller minutes, including PicoPak pass-through drain compensation.
+ * Recovery always requires a matching recipe and an explicit user decision. */
+typedef struct PicoLocalRecovery {
+    char recipe_id[21];
+    uint32_t recipe_signature;
+    uint16_t active_minutes, drain_minutes;
+    uint8_t session_type, step, phase, calibrated;
+} PicoLocalRecovery;
+uint32_t pico_local_recovery_select(const PicoRecipe *recipe);
+PicoLocalStoreResult pico_local_recovery_get(PicoNetwork *network, PicoLocalRecovery *record);
+bool pico_local_recovery_save(PicoNetwork *network, const PicoLocalRecovery *record);
+bool pico_local_recovery_clear(PicoNetwork *network);
+
 bool pico_local_session_new(PicoNetwork *network, char *identifier, size_t capacity);
 bool pico_local_settings_load(PicoNetwork *network);
 bool pico_local_settings_save(PicoNetwork *network);

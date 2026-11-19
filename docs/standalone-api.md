@@ -69,11 +69,11 @@ stack/heap, and remaining RAM. These measurements must not be inferred from a
 previous legacy image. Link/layout success does not measure live stack usage
 or prove timing on the appliance.
 
-The current 1.0.0 native image is **164,600 bytes**. Its layout leaves **952 bytes**
+The current 1.1.0 native image is **165,656 bytes**. Its layout leaves **656 bytes**
 of unallocated RAM after the original **32 KiB stack and 32 KiB heap** reservations.
 The history tail and optional upload frame lazily allocate up to **4,704 bytes
 plus allocator overhead** from that reserved heap. Compressed browser assets
-total **21,618 bytes**, occupying **eight serial-flash blocks**.
+total **22,090 bytes**, occupying **eight serial-flash blocks**.
 
 The checked-in `analysis/standalone-validation.json` is an earlier development
 snapshot, including its historical source hashes and browser execution status.
@@ -201,6 +201,7 @@ unsupported.
 | `GET /api/v1/recipes/{id}` | Complete stored recipe |
 | `PUT /api/v1/recipes/{id}` | Create or replace a recipe while idle |
 | `DELETE /api/v1/recipes/{id}` | Remove a recipe while idle; no request body |
+| `POST /api/v1/recipes/restore-defaults` | Add missing starter PicoPak programs while idle; no body; preserve existing IDs |
 | `POST /api/v1/commands` | Queue a supported operation or operate the virtual encoder |
 | `GET /api/v1/settings` | Read supported nonsecret preferences |
 | `PATCH /api/v1/settings` | Persist a partial preference update while idle |
@@ -253,7 +254,7 @@ before running it.
 | Step `name` | 1–21 printable ASCII characters |
 | `location` | Integer 1–6 using the existing firmware's compartment numbering |
 | `target_f` | Integer 0 for unheated, or 60–212 °F |
-| `minutes` | Integer 1–599 active minutes |
+| `minutes` | Integer 0–599 active minutes; 0 waits for the target temperature without an additional hold, preserving native PicoPak heating steps. Check discovery's `zero_minute_steps` capability before sending 0 to older firmware. |
 | `drain_minutes` | Optional integer 0–120; defaults to 0 |
 
 Location numbers retain the recovered firmware semantics. This API does not
@@ -266,10 +267,22 @@ invalid IDs, control characters, and non-ASCII labels are rejected. The local
 font and stored labels use printable ASCII. A PUT replaces the entire recipe;
 a recipe GET result can be edited and sent back as a PUT.
 
-Recipes are selected by their stored IDs through both REST and the existing
-front-panel catalog. No cloud PicoPak creation is needed. The store begins
-empty on a device with no local catalog; it does not import a cloud account,
-vendor recipe database, or legacy RFID recipe service automatically.
+Recipes are selected by their stored IDs through both REST and **Brew PicoPak**
+on the front panel. Firmware 1.1.0 installs eight attributed archived PicoPak
+programs when migrating an empty catalogue. Existing nonempty collections are
+preserved. The migration is recorded in the catalogue, so later edits and
+deletions survive restarts and upgrades, including an intentionally empty list.
+See [starter recipes and recovery](recipe-catalogue.md) for IDs, provenance and
+the distinction between automatic PicoPak programs and Manual Brew.
+
+**Restore starter recipes** in the device web app calls
+`POST /api/v1/recipes/restore-defaults`. Send `Content-Type: application/json`
+and `Content-Length: 0`. A 200 response contains `added`, `preserved`, and
+`capacity`. Matching IDs are kept unchanged. If all missing starters cannot fit,
+507 is returned before writing. Discovery exposes `restore_default_recipes`,
+`starter_recipe_count`, and `zero_minute_steps` so clients can check support.
+These programs contain no ingredient bill or independently verified water
+setup; use the matching PicoPak or reviewed equivalent ingredients and setup.
 
 After you have finished using a recipe, delete it with:
 
@@ -286,8 +299,10 @@ the control layer busy and these requests return 409.
 The local store uses fixed SLFS filenames for catalog/data banks. Client IDs
 never become flash paths. Records have a version, generation, explicit byte
 layout, and CRC. A recipe update writes and reads back the inactive recipe bank
-before committing the alternate catalog bank. Settings and the session counter
-have their own bank pairs.
+before committing the alternate catalog bank. Settings, the session counter,
+and resumable-brew checkpoints have their own bank pairs. The 1.1.0 catalogue
+adds a checksummed migration flag. Older firmware cannot read all upgraded
+catalogues; retain an appropriate backup before a firmware downgrade.
 
 A successful write requires the expected byte count, close result, exact file
 length, and readback. Missing files are distinguished from I/O failures;
@@ -305,6 +320,18 @@ Host tests cover old-or-valid-new behavior across partial-write boundaries.
 They do not constitute a physical power-loss test. A first-ever torn catalog
 creation with no valid bank fails closed and requires recovery; there is no
 automatic format or destructive reset endpoint.
+
+Starter installation first establishes a verified empty catalogue. Each new
+recipe record is verified before one alternate-bank catalogue commit makes the
+complete starter set visible. A failure after the verified empty baseline can
+retry on boot; the first-ever torn baseline still follows the fail-closed rule.
+
+After an interrupted brew, a valid checkpoint can offer an explicit continue
+or abort choice. The offer does not start a session, energize outputs, consume
+the checkpoint, or create a brew-history entry. Continue uses the matching
+program and remaining phase durations; changed, missing or corrupt recipes
+are rejected. Abort commits a tombstone so an older checkpoint cannot return.
+Legacy `restart.txt` records are not automatically resumed by 1.1.0.
 
 ## Commands and the remote front panel
 

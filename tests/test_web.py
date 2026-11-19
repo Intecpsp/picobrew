@@ -183,6 +183,29 @@ class BrowserWorkflow(unittest.TestCase):
         self.page.locator("#runProgram").click()
         expect(self.page.locator("#modeBadge")).to_have_text("IN PROGRESS")
 
+    def test_restore_starters_edit_zero_minute_step_and_preserve_changes(self):
+        self.connect()
+        self.page.locator('[data-tab="recipes"]').click()
+        self.page.once("dialog", lambda dialog: dialog.accept())
+        with self.page.expect_request("**/api/v1/recipes/restore-defaults") as request:
+            self.page.locator("#restoreRecipes").click()
+        self.assertEqual(request.value.method, "POST")
+        self.assertEqual(request.value.headers["content-type"], "application/json")
+        expect(self.page.locator("#recipeCapacity")).to_have_text("9 / 16")
+        self.page.locator(".recipe-item").filter(has_text="Pico Pale").click()
+        expect(self.page.locator('#steps input[data-field="minutes"]').first).to_have_value("0")
+        self.page.locator("#recipeName").fill("My Pico Pale")
+        self.page.locator("#saveRecipe").click()
+        expect(self.page.locator("#notice")).to_have_text("Recipe saved on the Pico.")
+        self.page.once("dialog", lambda dialog: dialog.accept())
+        self.page.locator("#restoreRecipes").click()
+        expect(self.page.locator("#notice")).to_have_text("All starter recipes are already on the Pico.")
+        expect(self.page.locator("#recipeName")).to_have_value("My Pico Pale")
+        for width in (1440, 390):
+            self.page.set_viewport_size({"width": width, "height": 900})
+            self.assertFalse(self.page.evaluate("document.documentElement.scrollWidth > innerWidth"))
+        self.page.screenshot(path=str(self.output / "starter-recipes-mobile.png"), full_page=True)
+
     def test_settings_and_disconnect(self):
         self.connect()
         self.page.locator('[data-tab="settings"]').click()

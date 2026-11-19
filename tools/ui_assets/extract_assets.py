@@ -121,7 +121,12 @@ for name,(addr,value) in assets.items():
  source.append('const uint8_t %s[%d] = {\n%s\n};'%(name,len(value),'\n'.join('    '+', '.join('0x%02x'%x for x in value[i:i+16])+',' for i in range(0,len(value),16))))
 for name,(arr,w,h) in descriptors.items():source.append('const PicoBitmap pico_ui_asset_%s = {%s, %d, %d};'%(name,arr,w,h))
 source.append('const uint8_t *const pico_ui_digits[10] = {'+', '.join('pico_ui_digit_'+str(i) for i in range(10))+'};')
-source.append('const uint8_t *const pico_ui_setup_images[8] = {'+', '.join('pico_ui_setup_'+str(i) for i in range(8))+'};')
+# Preserve each extracted array for audit, but share identical setup pixels in
+# the live table so the production linker can discard two unreferenced copies.
+setup_indices=(0,1,2,3,4,5,5,1)
+for i,shared in enumerate(setup_indices):
+ assert assets['pico_ui_setup_'+str(i)][1]==assets['pico_ui_setup_'+str(shared)][1],(i,shared)
+source.append('const uint8_t *const pico_ui_setup_images[8] = {'+', '.join('pico_ui_setup_'+str(i) for i in setup_indices)+'};')
 for name,ls,cols in [('instruction_names',instruction_names,1),('brew_labels',brew_labels,3),('titles',titles,3)]:
  dims='[%d]'%len(ls) if cols==1 else '[%d][%d]'%(len(ls)//cols,cols)
  source.append('const char *const pico_ui_%s%s = {'%(name,dims))

@@ -9,13 +9,22 @@
  * On-disk records have explicit little-endian fields; no C pointers/padding. */
 enum { HEADER = 16, INDEX_ENTRY = 26, INDEX_BYTES = HEADER + 16 * INDEX_ENTRY,
        STEP_BYTES = 28, RECIPE_BYTES = HEADER + 21 + 32 + 15 * STEP_BYTES,
-       SETTINGS_BYTES = HEADER + 8, COUNTER_BYTES = HEADER + 4 };
+       SETTINGS_BYTES = HEADER + 8, COUNTER_BYTES = HEADER + 4,
+       RECOVERY_BYTES = HEADER + 36 };
 typedef struct Entry { char id[21]; uint8_t bank; uint32_t generation; } Entry;
-typedef struct Index { uint32_t generation; uint8_t bank; Entry entries[16]; } Index;
+enum { INDEX_STARTERS_HANDLED = 1 };
+typedef struct Index { uint32_t generation; uint8_t bank, flags; Entry entries[16]; } Index;
+typedef struct StarterRecipe {
+    const char *id, *name;
+    uint8_t step_count;
+    const uint8_t (*steps)[5];
+} StarterRecipe;
+#include "local_starter_recipes.inc"
 static PicoNetwork *bound_network;
 static PicoLocalFileStat file_stat;
 static PicoLocalReadFile file_read_block;
 static void *stat_context;
+static uint32_t selected_recipe_signature;
 
 void pico_local_store_bind(PicoNetwork *n, PicoLocalFileStat stat, void *context)
 {
@@ -23,6 +32,7 @@ void pico_local_store_bind(PicoNetwork *n, PicoLocalFileStat stat, void *context
     file_stat = stat;
     stat_context = context;
     file_read_block = NULL;
+    selected_recipe_signature = 0;
 }
 void pico_local_store_set_reader(PicoLocalReadFile reader) { file_read_block = reader; }
 static uint32_t get32(const uint8_t *p)
@@ -36,11 +46,11 @@ static void put32(uint8_t *p, uint32_t v)
 }
 static unsigned get16(const uint8_t *p) { return p[0] | (unsigned)p[1] << 8; }
 static void put16(uint8_t *p, unsigned v) { p[0] = (uint8_t)v; p[1] = (uint8_t)(v >> 8); }
-static uint32_t crc(const uint8_t *p, size_t length)
+static uint32_t crc(const uint8_t *p, size_t length, bool header)
 {
     uint32_t v = UINT32_MAX;
     for (size_t i = 0; i < length; ++i) {
-        if (i >= 12 && i < 16) continue;
+        if (header && i >= 12 && i < 16) continue;
         v ^= p[i];
         for (unsigned b = 0; b < 8; ++b)
             v = (v >> 1) ^ (0xedb88320u & (0u - (v & 1u)));
@@ -52,12 +62,12 @@ static void seal(uint8_t *data, size_t length, const char magic[4], uint32_t gen
     memcpy(data, magic, 4);
     data[4] = 1;
     put32(data + 8, generation);
-    put32(data + 12, crc(data, length));
+    put32(data + 12, crc(data, length, true));
 }
 static bool sealed(const uint8_t *data, size_t length, const char magic[4])
 {
     return !memcmp(data, magic, 4) && data[4] == 1 && data[6] == 0 && data[7] == 0 &&
-           get32(data + 8) != 0 && get32(data + 12) == crc(data, length);
+           get32(data + 8) != 0 && get32(data + 12) == crc(data, length, true);
 }
 static PicoLocalStoreResult read_record(PicoNetwork *n, const char *name,
                                        uint8_t *data, size_t length)
@@ -142,7 +152,7 @@ bool pico_local_recipe_valid(const PicoLocalRecipe *r)
         const PicoRecipeStep *s = &r->steps[i];
         if (!label(s->name, sizeof s->name) || s->location < 1 || s->location > 6 ||
             (s->target_fahrenheit && (s->target_fahrenheit < 60 || s->target_fahrenheit > 212)) ||
-            !s->active_minutes || s->active_minutes > 599 || s->drain_minutes > 120)
+            s->active_minutes > 599 || s->drain_minutes > 120)
             return false;
     }
     return true;
@@ -161,7 +171,7 @@ static void recipe_name(char *name, unsigned slot, unsigned bank)
 }
 static bool index_valid(const uint8_t *raw)
 {
-    if (!sealed(raw, INDEX_BYTES, "PLIX") || raw[5]) return false;
+    if (!sealed(raw, INDEX_BYTES, "PLIX") || (raw[5] & ~INDEX_STARTERS_HANDLED)) return false;
     for (unsigned i = 0; i < 16; ++i) {
         const uint8_t *e = raw + HEADER + i * INDEX_ENTRY;
         if (!e[0]) continue;
@@ -188,6 +198,7 @@ static PicoLocalStoreResult load_index(PicoNetwork *n, Index *index)
         if (generation <= index->generation) continue;
         index->generation = generation;
         index->bank = (uint8_t)bank;
+        index->flags = raw[5];
         for (unsigned i = 0; i < 16; ++i) {
             const uint8_t *e = raw + HEADER + i * INDEX_ENTRY;
             memcpy(index->entries[i].id, e, 21);
@@ -202,6 +213,7 @@ static bool save_index(PicoNetwork *n, Index *index)
 {
     if (index->generation == UINT32_MAX) return false;
     uint8_t raw[INDEX_BYTES] = {0};
+    raw[5] = index->flags;
     for (unsigned i = 0; i < 16; ++i) {
         uint8_t *e = raw + HEADER + i * INDEX_ENTRY;
         memcpy(e, index->entries[i].id, 21);
@@ -253,6 +265,95 @@ static PicoLocalStoreResult read_recipe(PicoNetwork *n, const Index *index, unsi
         PICO_LOCAL_STORE_CORRUPT : result;
     return decode_recipe(raw, &index->entries[slot], r) ? PICO_LOCAL_STORE_OK :
            PICO_LOCAL_STORE_CORRUPT;
+}
+unsigned pico_local_starter_recipe_count(void)
+{
+    return sizeof starter_recipes / sizeof starter_recipes[0];
+}
+static PicoLocalStoreResult install_starters(PicoNetwork *n, Index *index,
+                                             unsigned *added, unsigned *preserved)
+{
+    unsigned free_slots = 0, matching = 0;
+    bool missing[sizeof starter_recipes / sizeof starter_recipes[0]];
+    for (unsigned slot = 0; slot < PICO_LOCAL_RECIPE_CAPACITY; ++slot) {
+        if (!index->entries[slot].id[0]) { ++free_slots; continue; }
+        PicoLocalRecipe stored;
+        PicoLocalStoreResult result = read_recipe(n, index, slot, &stored);
+        if (result != PICO_LOCAL_STORE_OK) return result;
+    }
+    for (unsigned i = 0; i < pico_local_starter_recipe_count(); ++i) {
+        missing[i] = true;
+        for (unsigned slot = 0; slot < PICO_LOCAL_RECIPE_CAPACITY; ++slot)
+            if (!strcmp(index->entries[slot].id, starter_recipes[i].id)) {
+                missing[i] = false; ++matching; break;
+            }
+    }
+    unsigned needed = pico_local_starter_recipe_count() - matching;
+    if (needed > free_slots || (index->generation == UINT32_MAX &&
+        (needed || !(index->flags & INDEX_STARTERS_HANDLED)))) return PICO_LOCAL_STORE_FULL;
+    /* Establish a verified empty rollback before a first batch. Once this
+     * commit exists, an interrupted seed can always retry from empty. */
+    if (!index->generation) {
+        if (!save_index(n, index)) return PICO_LOCAL_STORE_IO;
+        index->generation = 1; index->bank = 0;
+    }
+    unsigned slot = 0;
+    for (unsigned i = 0; i < pico_local_starter_recipe_count(); ++i) {
+        if (!missing[i]) continue;
+        while (index->entries[slot].id[0]) ++slot;
+        PicoLocalRecipe recipe = {0};
+        const StarterRecipe *starter = &starter_recipes[i];
+        strcpy(recipe.id, starter->id); strcpy(recipe.name, starter->name);
+        recipe.step_count = starter->step_count;
+        for (unsigned step = 0; step < starter->step_count; ++step) {
+            const uint8_t *packed = starter->steps[step];
+            PicoRecipeStep *decoded = &recipe.steps[step];
+            strcpy(decoded->name, starter_step_names[packed[0]]);
+            decoded->location = packed[1]; decoded->target_fahrenheit = packed[2];
+            decoded->active_minutes = packed[3]; decoded->drain_minutes = packed[4];
+        }
+        if (!pico_local_recipe_valid(&recipe)) return PICO_LOCAL_STORE_INVALID;
+        Entry *entry = &index->entries[slot];
+        memset(entry, 0, sizeof *entry);
+        strcpy(entry->id, recipe.id); entry->generation = 1;
+        uint8_t raw[RECIPE_BYTES]; char name[24];
+        encode_recipe(raw, &recipe, 1); recipe_name(name, slot, 0);
+        if (!write_record(n, name, raw, sizeof raw)) return PICO_LOCAL_STORE_IO;
+    }
+    if (needed || !(index->flags & INDEX_STARTERS_HANDLED)) {
+        index->flags |= INDEX_STARTERS_HANDLED;
+        if (!save_index(n, index)) return PICO_LOCAL_STORE_IO;
+    }
+    if (added) *added = needed;
+    if (preserved) *preserved = matching;
+    return PICO_LOCAL_STORE_OK;
+}
+PicoLocalStoreResult pico_local_recipes_initialize(PicoNetwork *n)
+{
+    Index index; PicoLocalStoreResult result = load_index(n, &index);
+    if (result != PICO_LOCAL_STORE_OK || (index.flags & INDEX_STARTERS_HANDLED)) return result;
+    /* An older firmware's occupied catalogue belongs to the user. Mark the
+     * migration handled so deleting it later will not recreate defaults. */
+    bool occupied = false;
+    for (unsigned i = 0; i < PICO_LOCAL_RECIPE_CAPACITY; ++i) {
+        if (!index.entries[i].id[0]) continue;
+        occupied = true;
+        PicoLocalRecipe recipe;
+        result = read_recipe(n, &index, i, &recipe);
+        if (result != PICO_LOCAL_STORE_OK) return result;
+    }
+    if (occupied) {
+        index.flags |= INDEX_STARTERS_HANDLED;
+        return save_index(n, &index) ? PICO_LOCAL_STORE_OK : PICO_LOCAL_STORE_IO;
+    }
+    return install_starters(n, &index, NULL, NULL);
+}
+PicoLocalStoreResult pico_local_recipes_restore_defaults(PicoNetwork *n,
+                                                        unsigned *added, unsigned *preserved)
+{
+    Index index; PicoLocalStoreResult result = load_index(n, &index);
+    if (result != PICO_LOCAL_STORE_OK) return result;
+    return install_starters(n, &index, added, preserved);
 }
 PicoLocalStoreResult pico_local_recipe_get(PicoNetwork *n, const char *id, PicoLocalRecipe *r)
 {
@@ -334,6 +435,7 @@ bool pico_local_recipe_load(PicoNetwork *n, const char *id, PicoRecipe *r, char 
     memcpy(r->identifier, stored.id, sizeof r->identifier);
     r->step_count = stored.step_count;
     memcpy(r->steps, stored.steps, sizeof r->steps);
+    (void)pico_local_recovery_select(r);
     memcpy(name, stored.name, 32);
     return true;
 }
@@ -364,7 +466,7 @@ bool pico_local_recipe_list(PicoNetwork *n, PicoRecipeListing *list)
 static PicoLocalStoreResult load_pair(PicoNetwork *n, const char *stem, const char magic[4],
                                      uint8_t *selected, size_t size, unsigned *selected_bank)
 {
-    uint8_t raw[SETTINGS_BYTES]; uint32_t best = 0; unsigned absent = 0;
+    uint8_t raw[RECOVERY_BYTES]; uint32_t best = 0; unsigned absent = 0;
     if (size > sizeof raw) return PICO_LOCAL_STORE_INVALID;
     memset(selected, 0, size);
     for (unsigned bank = 0; bank < 2; ++bank) {
@@ -389,6 +491,66 @@ static bool save_pair(PicoNetwork *n, const char *stem, const char magic[4], uin
     char name[32]; snprintf(name, sizeof name, "/local/%s.%c", stem, 'a' + bank);
     return write_record(n, name, raw, size);
 }
+
+uint32_t pico_local_recovery_select(const PicoRecipe *r)
+{
+    /* Every field of a step is initialized by the local decoder/cleaning
+     * constructor. This fixed 32-byte target layout has no padding. Include
+     * names as well as every actuator parameter, but not mutable progress. */
+    _Static_assert(sizeof(PicoRecipeStep) == 32, "recovery step encoding");
+    selected_recipe_signature = crc((const uint8_t *)r->steps,
+                                    r->step_count * sizeof r->steps[0], false);
+    return selected_recipe_signature;
+}
+
+PicoLocalStoreResult pico_local_recovery_get(PicoNetwork *n, PicoLocalRecovery *record)
+{
+    uint8_t raw[RECOVERY_BYTES]; unsigned bank = 0;
+    PicoLocalStoreResult result = load_pair(n, "resume", "PLRS", raw, sizeof raw, &bank);
+    if (result != PICO_LOCAL_STORE_OK) return result;
+    const uint8_t *p = raw + HEADER;
+    if (p[0] == 0xff) return PICO_LOCAL_STORE_NOT_FOUND; /* committed tombstone */
+    if (p[0] > 1 || p[1] >= PICO_RECIPE_STEP_CAPACITY || p[2] > 5 || p[2] == 4 ||
+        p[3] > 1 || get16(p + 4) > 599 || get16(p + 6) > 200 ||
+        !memchr(p + 12, 0, 21) || !pico_local_recipe_id_valid((const char *)p + 12))
+        return PICO_LOCAL_STORE_CORRUPT;
+    memset(record, 0, sizeof *record);
+    record->session_type = p[0]; record->step = p[1];
+    record->phase = p[2]; record->calibrated = p[3];
+    record->active_minutes = (uint16_t)get16(p + 4);
+    record->drain_minutes = (uint16_t)get16(p + 6);
+    record->recipe_signature = get32(p + 8);
+    memcpy(record->recipe_id, p + 12, 21);
+    return PICO_LOCAL_STORE_OK;
+}
+
+bool pico_local_recovery_save(PicoNetwork *n, const PicoLocalRecovery *record)
+{
+    if (record && (record->session_type > 1 || record->step >= PICO_RECIPE_STEP_CAPACITY ||
+        record->phase > 5 || record->phase == 4 || record->calibrated > 1 ||
+        record->active_minutes > 599 || record->drain_minutes > 200 ||
+        !memchr(record->recipe_id, 0, sizeof record->recipe_id) ||
+        !pico_local_recipe_id_valid(record->recipe_id))) return false;
+    uint8_t raw[RECOVERY_BYTES]; unsigned bank = 0;
+    PicoLocalStoreResult result = load_pair(n, "resume", "PLRS", raw, sizeof raw, &bank);
+    if (result != PICO_LOCAL_STORE_OK && result != PICO_LOCAL_STORE_NOT_FOUND) return false;
+    if (!record && (result == PICO_LOCAL_STORE_NOT_FOUND || raw[HEADER] == 0xff)) return true;
+    uint32_t generation = get32(raw + 8);
+    memset(raw + HEADER, 0, sizeof raw - HEADER);
+    uint8_t *p = raw + HEADER;
+    p[0] = 0xff;
+    if (record) {
+        p[0] = record->session_type; p[1] = record->step;
+        p[2] = record->phase; p[3] = record->calibrated;
+        put16(p + 4, record->active_minutes); put16(p + 6, record->drain_minutes);
+        put32(p + 8, selected_recipe_signature);
+        memcpy(p + 12, record->recipe_id, 21);
+    }
+    return save_pair(n, "resume", "PLRS", raw, sizeof raw, generation, bank);
+}
+
+bool pico_local_recovery_clear(PicoNetwork *n) { return pico_local_recovery_save(n, NULL); }
+
 bool pico_local_session_new(PicoNetwork *n, char *identifier, size_t capacity)
 {
     if (!identifier || capacity < 24) return false;

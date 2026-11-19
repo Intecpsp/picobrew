@@ -1,0 +1,44 @@
+{
+  "schema_version": 2,
+  "purpose": "Pinned source identities for recovering the completed firmware and Hub work into the canonical firmware repository. Snapshot hashes precede destination path and documentation corrections.",
+  "destination_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+  "destination_branch": "feature/community-monorepo",
+  "firmware_base": {
+    "repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "branch": "feature/standalone-rest-api",
+    "commit": "63c49d01784fb502c56fa85b709472e02f923d78",
+    "tree": "33d86c6b3af76450cec616366bff0d0a847ef02c",
+    "component_path": ".",
+    "treatment": "Existing firmware repository ancestry and root source layout retained."
+  },
+  "recovered_firmware_updates": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-server",
+    "source_commit": "d097e68c1be023189fbf240016c2eb57740ff798",
+    "source_path": "firmware/",
+    "source_tree": "2b2abb70f42f44a98d11218e5527f5bd0245d43a",
+    "component_path": ".",
+    "treatment": "Firmware snapshot recovered at the repository root; repository integration paths and documentation then updated."
+  },
+  "hub_import": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-server",
+    "source_commit": "d097e68c1be023189fbf240016c2eb57740ff798",
+    "source_path": "hub/",
+    "source_tree": "1ff49c2966c0bed9455d2f76bd4e6fcacb647990",
+    "component_path": "hub/",
+    "treatment": "Hub application and bundled catalogue imported; repository integration paths and project-direction documentation then updated."
+  },
+  "preserved_firmware_reconstruction": {
+    "component_path": "legacy/",
+    "source_commit": "07359ac60c458efd59bfedc5e020344108cdf1d1",
+    "description": "Earlier Pico S/Pro C decompiler-export reconstruction, retained with its own analysis and checksums. This is not a Python Zymatic server."
+  },
+  "external_zymatic_server_reference": {
+    "upstream_repository": "https://github.com/hotzenklotz/picobrew-server",
+    "fork_repository": "https://github.com/jeffreydwalter/picobrew-server",
+    "original_source_commit": "aa7531965c32d124643797937177431cf9dd1c8d",
+    "imported_as_application": false,
+    "role": "Read-only reverse-engineering reference. Existing attributed catalogue artwork retains its source notices."
+  },
+  "reference_repository_policy": "Read-only. All implementation changes, branches and pull requests belong in the destination repository.",
+  "private_data": "No API keys, local machine backups, Hub databases or build/dependency caches are imported."
+}

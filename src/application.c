@@ -553,10 +553,17 @@ static void save_recovery(void *c, uint32_t active, uint32_t drain, int32_t inde
     pico_storage_save_recovery(&app(c)->network, (int)active, (int)drain, (int)index, (int)reserved,
                                force, calibrated);
 }
+#if PICO_STANDALONE
+static bool read_local_recovery(void *c, PicoLocalRecovery *record)
+{
+    return pico_local_recovery_get(&app(c)->network, record) == PICO_LOCAL_STORE_OK;
+}
+#else
 static bool read_recovery(void *c, char *record)
 {
     return pico_storage_read_restart(&app(c)->network, record);
 }
+#endif
 static void delete_recovery(void *c)
 {
     pico_storage_delete_restart(&app(c)->network);
@@ -867,7 +874,11 @@ static const PicoRecipeOps recipe_ops = {.log = log_message,
                                          .check_thermoblock_heating = check_heat,
                                          .move_home = move_home,
                                          .save_recovery = save_recovery,
+#if PICO_STANDALONE
+                                         .read_local_recovery = read_local_recovery,
+#else
                                          .read_recovery = read_recovery,
+#endif
                                          .delete_recovery = delete_recovery,
                                          .get_session_id = session_id,
                                          .report_state = report_state,
@@ -965,7 +976,11 @@ void pico_application_bind_services(PicoApplication *a, PicoControl *control,
                                     &recipe_pages,
                                     &recipe_ops,
                                     a,
-                                    NULL};
+                                    NULL
+#if PICO_STANDALONE
+                                    , 0
+#endif
+                                    };
     pico_ui_initialize(&a->ui, &a->state, &a->network, actuators, control, &ui_hardware, a,
                        &ui_services, a);
 }
@@ -1014,6 +1029,8 @@ void pico_application_setup(PicoApplication *a)
      * availability never gate startup. Local API adapters also work offline. */
     pico_network_ensure_connection(&a->network);
     a->settings.offline_mode = 0;
+    if (pico_local_recipes_initialize(&a->network) != PICO_LOCAL_STORE_OK)
+        log_message(a, "W", "LOCAL", "Could not initialize PicoPak catalogue; existing files preserved");
     pico_local_control_ready(true);
 #else
     if (!a->settings.offline_mode) {
@@ -1029,22 +1046,41 @@ void pico_application_setup(PicoApplication *a)
     pico_device_detect_stepper(&a->device);
     pico_rfid_application_initialize(&a->rfid);
     if (pico_recipe_session_restore(&a->recipe, &a->state.recipe)) {
+#if PICO_STANDALONE
+        /* Looking at the offer must neither consume the checkpoint nor start
+         * a history. Power can fail again while the user checks the machine. */
+        if (!pico_ui_confirm_continue_or_abort()) {
+            pico_storage_delete_restart(&a->network);
+            a->recipe.recovery_phase = 0;
+            goto final_startup;
+        }
+#else
         pico_storage_delete_restart(&a->network);
         if (!pico_ui_confirm_continue_or_abort())
             goto final_startup;
+#endif
         if (a->state.recipe.program->session_type == 1) {
             pico_screen_loading(0);
             pico_recipe_run_control_program(&a->recipe, 7);
-        } else
+        } else {
+#if PICO_STANDALONE
+            if (!pico_recipe_session_start(&a->recipe, true))
+                goto final_startup;
+            a->state.device_state = 3;
+#endif
             pico_recipe_run(&a->recipe, &a->state.recipe, true);
+        }
         pico_recipe_rinse(&a->recipe);
     }
+#if !PICO_STANDALONE
     pico_storage_delete_restart(&a->network);
+#endif
 final_startup:
 #if !PICO_STANDALONE
     pico_update_run(&a->network);
     pico_recipe_run_required_maintenance(&a->recipe);
 #else
+    a->recipe.recovery_phase = 0;
     /* Firmware updates are an explicit physical deployment operation. */
     (void)a;
 #endif

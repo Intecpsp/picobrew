@@ -243,7 +243,8 @@ static void test_boot_and_offline_adapters(void)
     assert(!strcmp(app.state.screen.recipe_name,"Test Ale"));
     assert(app.state.recipe.program==&app.state.session && app.state.recipe.steps[0].target_fahrenheit==152);
     PicoRecipeListing listing={0}; assert(pico_api_recipe_list(&app.network,&listing,false));
-    assert(listing.loaded_items==1 && !strcmp(listing.identifiers[0],"test-ale"));
+    assert(listing.loaded_items==9 && !strcmp(listing.identifiers[0],"pico-pak-64") &&
+           !strcmp(listing.identifiers[8],"test-ale"));
     assert(pico_api_fetch_recipe(&app.network,"missing",-1,-1)==14);
     assert(pico_api_required_actions(&app.network,NULL,0)==0);
     assert(pico_api_log_step(&app.network,"Mash") && pico_api_log_progress(&app.network,"Mash"));
@@ -257,6 +258,58 @@ static void test_boot_and_offline_adapters(void)
     pico_storage_load_preferences(&app.network);
     assert(app.settings.language==2 && app.settings.temperature_unit_celsius==1);
     puts("PASS: offline boot, recipes, sessions, reports, settings, no DNS/HTTP/update");
+}
+static void test_checkpoint_restore_is_explicit_and_recipe_bound(void)
+{
+    initialize(); ready();
+    PicoLocalRecipe stored={.id="checkpoint",.name="Checkpoint Ale",.step_count=1};
+    strcpy(stored.steps[0].name,"Mash"); stored.steps[0].location=1;
+    stored.steps[0].target_fahrenheit=152; stored.steps[0].active_minutes=60;
+    stored.steps[0].drain_minutes=3;
+    assert(pico_local_recipe_put(&app.network,&stored,NULL)==PICO_LOCAL_STORE_OK);
+    assert(pico_api_fetch_recipe(&app.network,"checkpoint",-1,-1)==0);
+    pico_recipe_program_initialize(&app.recipe,&app.state.session,1,0);
+    assert(pico_storage_save_recovery(&app.network,13,5,0,PICO_BREW_PHASE_HEATED_HOLD,true,1));
+    PicoLocalRecovery before,after;
+    assert(pico_local_recovery_get(&app.network,&before)==PICO_LOCAL_STORE_OK);
+    assert(pico_recipe_session_restore(&app.recipe,&app.state.recipe));
+    assert(app.state.recipe.steps[0].active_minutes==13 && app.state.recipe.steps[0].drain_minutes==5);
+    assert(app.state.recipe.steps[0].target_fahrenheit==152);
+    assert(app.recipe.recovery_phase==PICO_BREW_PHASE_HEATED_HOLD+1);
+    assert(!app.state.session.identifier[0] && outputs_off());
+    assert(pico_local_recovery_get(&app.network,&after)==PICO_LOCAL_STORE_OK);
+    assert(!memcmp(&before,&after,sizeof before));
+    /* Looking at the offer repeatedly still reads the original program. */
+    assert(pico_recipe_session_restore(&app.recipe,&app.state.recipe));
+    assert(app.state.recipe.steps[0].active_minutes==13 && outputs_off());
+    stored.steps[0].target_fahrenheit=155;
+    assert(pico_local_recipe_put(&app.network,&stored,NULL)==PICO_LOCAL_STORE_OK);
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe));
+    assert(!app.recipe.recovery_phase && outputs_off());
+    assert(pico_local_recipe_delete(&app.network,"checkpoint")==PICO_LOCAL_STORE_OK);
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe) && outputs_off());
+    int checkpoint_file=find_file("/local/resume.a");
+    assert(checkpoint_file>=0);
+    files[checkpoint_file].data[20]^=0x80;
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe) && outputs_off());
+    files[checkpoint_file].data[20]^=0x80;
+    /* This is the same discard boundary used after declining the boot offer. */
+    pico_storage_delete_restart(&app.network);
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe) && outputs_off());
+    assert(pico_local_recovery_clear(&app.network));
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe));
+    pico_recipe_initialize_cleaning(&app.recipe,&app.state.recipe,135);
+    assert(pico_storage_save_recovery(&app.network,0,2,5,PICO_BREW_PHASE_DRAINING,true,0));
+    assert(pico_recipe_session_restore(&app.recipe,&app.state.recipe));
+    assert(app.state.recipe.current_step==5 && app.state.recipe.steps[5].active_minutes==0);
+    assert(app.recipe.recovery_phase==PICO_BREW_PHASE_DRAINING+1 && outputs_off());
+    initialize(); ready();
+    assert(file_open(NULL,"restart.txt",0x3000));
+    const char *legacy="0:checkpoint:0:0:0:13:3:0:1:";
+    assert(file_write(NULL,(const uint8_t *)legacy,strlen(legacy))==(int)strlen(legacy));
+    assert(file_close(NULL));
+    assert(!pico_recipe_session_restore(&app.recipe,&app.state.recipe) && outputs_off());
+    puts("PASS: checkpoint offers preserve remaining time, require unchanged recipe, leave outputs and sessions off");
 }
 static void test_guards_and_queue(void)
 {
@@ -346,6 +399,7 @@ int main(void)
 {
     setvbuf(stdout,NULL,_IOLBF,0);
     test_boot_and_offline_adapters(); test_guards_and_queue();
+    test_checkpoint_restore_is_explicit_and_recipe_bound();
     test_stop_unwinds_workflows(); test_bounded_wifi(); test_network_status_failure();
     puts("Standalone control integration tests passed."); return 0;
 }

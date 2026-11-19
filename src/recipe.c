@@ -61,7 +61,12 @@ static int32_t trunc_i32(double value)
 static void save_recovery(PicoRecipeRuntime *r, uint32_t active, uint32_t drain, int32_t index,
                           bool force)
 {
-    r->ops->save_recovery(r->context, active, drain, index, 0, force,
+#if PICO_STANDALONE
+    uint32_t phase = r->state->controller.phase;
+#else
+    uint32_t phase = 0;
+#endif
+    r->ops->save_recovery(r->context, active, drain, index, phase, force,
                           r->state->controller.shuttle_calibration_complete);
 }
 static void normal_pages(PicoRecipeRuntime *r)
@@ -302,6 +307,12 @@ void pico_recipe_program_initialize(PicoRecipeRuntime *r, PicoProgramContext *p,
 
 void pico_recipe_initialize_cleaning(PicoRecipeRuntime *r, PicoRecipe *recipe, int32_t temperature)
 {
+#if PICO_STANDALONE
+    PicoProgramContext *program = recipe->program;
+    memset(recipe, 0, sizeof *recipe);
+    recipe->program = program;
+    snprintf(recipe->identifier, sizeof recipe->identifier, "clean-%d", (int)temperature);
+#endif
     pico_recipe_program_initialize(r, recipe->program, 2, *r->language);
     r->ops->set_recipe_name(r->context, recipe->program->title);
     recipe->step_count = 6;
@@ -314,6 +325,9 @@ void pico_recipe_initialize_cleaning(PicoRecipeRuntime *r, PicoRecipe *recipe, i
         r->ops->compartment_label(r->context, step->name, step->location);
     }
     recipe->steps[recipe->step_count - 1].drain_minutes = temperature == 0 ? 2 : 5;
+#if PICO_STANDALONE
+    (void)pico_local_recovery_select(recipe);
+#endif
 }
 
 void pico_recipe_prepare_temperature(PicoRecipeRuntime *r, int32_t target, const char *title)
@@ -438,7 +452,10 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
     uint32_t original_compartment = request->compartment;
     const char *title = request->program_title;
     const char *name = request->step_name;
-    uint32_t now = 0, resumed, selected, started, last_log = 0, last_still = 0;
+    uint32_t now = 0, resumed, selected, started, last_log = 0;
+#if !PICO_STANDALONE
+    uint32_t last_still = 0;
+#endif
     bool complete;
     char message[132];
     r->ops->populate_brew_menu(r->context);
@@ -448,7 +465,16 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
     snprintf(message, 128, "%s %dF %d min %d \"%s\"", "runstep", (int)target, (int)active,
              (int)original_compartment, name);
     log_message(r, "I", "BREW", message);
+#if PICO_STANDALONE
+    uint8_t recovered_phase = r->recovery_phase;
+    r->recovery_phase = 0;
+    if (recovered_phase == PICO_BREW_PHASE_DRAINING + 1) {
+        move_to(r, original_compartment);
+        pico_phase_set(r->phase, PICO_BREW_PHASE_DRAINING);
+    } else
+#else
     save_recovery(r, active, drain, request->step_index, true);
+#endif
     if (s->compartment == 0 || s->compartment == 7) {
         s->compartment = s->compartment == 0 ? 2 : 1;
         move_to(r, s->compartment);
@@ -461,11 +487,18 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
         move_to(r, original_compartment);
         pico_recipe_prepare_temperature(r, signed_bits(target), title);
     }
-    if (s->compartment == 1 && drain != 0 && session_type == 0) {
+    if (s->compartment == 1 && drain != 0 && session_type == 0
+#if PICO_STANDALONE
+        && !recovered_phase
+#endif
+        ) {
         float seconds = (float)signed_bits(drain * 60u);
         double extra = ceil(ceil((double)seconds / 45.0) * 0.5);
         drain = (uint32_t)trunc_i32((double)signed_bits(drain) + extra);
     }
+#if PICO_STANDALONE
+    save_recovery(r, active, drain, request->step_index, true);
+#endif
     advance(r);
     started = clock_ms(r);
     int32_t total = signed_bits(active + drain);
@@ -480,6 +513,7 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
                 r->ops->log_progress(r->context, name);
             last_log = clock_ms(r);
         }
+#if !PICO_STANDALONE
         if (session_type == 3 && clock_ms(r) - last_still > 2000u) {
             bool received = r->ops->still_read_status(r->context, &s->still);
             uint8_t status = s->status;
@@ -507,6 +541,7 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
         still_polled:
             last_still = clock_ms(r);
         }
+#endif
         if (s->thermoblock_target_fahrenheit != 300.0 && target > 179u)
             s->thermoblock_target_fahrenheit = 340.0;
         complete = false;
@@ -532,6 +567,9 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
                 r->ops->clear_row(r->context, 4, 9);
                 r->ops->clear_row(r->context, 5, 9);
                 started = clock_ms(r);
+#if PICO_STANDALONE
+                save_recovery(r, active, drain, request->step_index, true);
+#endif
             }
             if (s->step_seconds / 60 + 1 < total)
                 s->step_seconds = signed_bits((uint32_t)total * 60u);
@@ -548,7 +586,11 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
             }
             advance(r);
             now = clock_ms(r);
-            save_recovery(r, active - (now - started) / 60000u, drain, request->step_index, false);
+            save_recovery(r,
+#if PICO_STANDALONE
+                          (now - started) / 60000u >= active ? 0 :
+#endif
+                          active - (now - started) / 60000u, drain, request->step_index, false);
             now = clock_ms(r);
             if ((now - started) / 60000u >= active) {
                 if (signed_bits(drain) > 0) {
@@ -615,7 +657,11 @@ int pico_recipe_run_step(PicoRecipeRuntime *r, const PicoStepRequest *request)
             }
         drain_progress:
             now = clock_ms(r);
-            save_recovery(r, 0, drain - (now - started) / 60000u, request->step_index, false);
+            save_recovery(r, 0,
+#if PICO_STANDALONE
+                          (now - started) / 60000u >= drain ? 0 :
+#endif
+                          drain - (now - started) / 60000u, request->step_index, false);
             {
                 int32_t remaining = s->step_seconds;
                 now = clock_ms(r);
@@ -925,6 +971,9 @@ void pico_recipe_end_outputs(PicoRecipeRuntime *r, uint32_t duration, const char
 
 void pico_recipe_session_end(PicoRecipeRuntime *r, bool logging)
 {
+#if PICO_STANDALONE
+    r->recovery_phase = 0;
+#endif
     PicoBrewController *s = &r->state->controller;
     PicoActuators *a = r->phase->actuators;
     if (pico_local_cancelled())
@@ -1040,6 +1089,12 @@ bool pico_recipe_setup(PicoRecipeRuntime *r, bool logging, const char *title)
             r->ops->wait_for_filter(r->context);
         }
         show(r, PICO_RECIPE_CLEAR, 0, NULL);
+#if PICO_STANDALONE
+        /* Drain recovery still requires setup/filter confirmation, but steam
+         * priming would unnecessarily heat a batch that has finished its hold. */
+        if (r->recovery_phase == PICO_BREW_PHASE_DRAINING + 1)
+            return true;
+#endif
         if (pico_recipe_prime_steam(r, title))
             return true;
         if (logging)
@@ -1086,6 +1141,37 @@ bool pico_recipe_pause_instructions(PicoRecipeRuntime *r, uint32_t program)
 
 bool pico_recipe_session_restore(PicoRecipeRuntime *r, PicoRecipe *recipe)
 {
+#if PICO_STANDALONE
+    PicoLocalRecovery record;
+    r->recovery_phase = 0;
+    if (!r->ops->read_local_recovery || !r->ops->read_local_recovery(r->context, &record))
+        return false;
+    if (record.session_type == 0) {
+        if (r->ops->fetch_recipe(r->context, record.recipe_id, -1, -1)) return false;
+    } else if (record.session_type == 1 && !strcmp(record.recipe_id, "clean-135")) {
+        pico_recipe_initialize_cleaning(r, recipe, 135);
+    } else if (record.session_type == 1 && !strcmp(record.recipe_id, "clean-0")) {
+        pico_recipe_initialize_cleaning(r, recipe, 0);
+    } else return false;
+    /* A saved checkpoint must match the complete original program before any
+     * remaining durations are applied. Merely offering recovery starts no
+     * session, changes no checkpoint, and energizes no output. */
+    if (record.step >= recipe->step_count ||
+        pico_local_recovery_select(recipe) != record.recipe_signature) return false;
+    PicoRecipeStep *step = &recipe->steps[record.step];
+    uint32_t max_drain = step->drain_minutes;
+    if (step->location == 1 && record.session_type == 0)
+        max_drain += (uint32_t)ceil(ceil((double)(max_drain * 60u) / 45.0) * 0.5);
+    if (record.active_minutes > step->active_minutes || record.drain_minutes > max_drain ||
+        (record.phase == PICO_BREW_PHASE_DRAINING && record.active_minutes)) return false;
+    recipe->current_step = record.step;
+    step->active_minutes = record.active_minutes;
+    step->drain_minutes = record.drain_minutes;
+    r->state->controller.shuttle_calibration_complete = record.calibrated;
+    pico_recipe_program_initialize(r, recipe->program, record.session_type == 0 ? 1 : 2, *r->language);
+    r->recovery_phase = record.phase + 1;
+    return true;
+#else
     char record[101] = {0}, field[12];
     int32_t cursor = 0;
     log_message(r, "I", "RCTL", "parseWasBrewing");
@@ -1145,14 +1231,10 @@ bool pico_recipe_session_restore(PicoRecipeRuntime *r, PicoRecipe *recipe)
     if (atoi(field) != 0)
         r->state->controller.shuttle_calibration_complete = 1;
     pico_recipe_program_initialize(r, recipe->program, type == 0 ? 1 : 2, *r->language);
-#if PICO_STANDALONE
-    if (!pico_recipe_session_start(r, true))
-        return false;
-#else
     pico_text_copy(recipe->program->identifier, sizeof recipe->program->identifier,
                    recipe->identifier, r->ops->log, r->context);
-#endif
     return true;
+#endif
 }
 
 void pico_recipe_post_session(PicoRecipeRuntime *r)

@@ -3,7 +3,7 @@
 const $ = id => document.getElementById(id);
 const state = {key:'', connected:false, generation:0, status:null, recipes:[],
   settings:{temperature_unit:'F', language:'en', detailed_status:false}, capabilities:[],
-  editorId:null, dirty:false, tab:'overview', polling:false,
+  editorId:null, dirty:false, tab:'overview', polling:false, restoreDefaults:false,
   telemetry:null, telemetryDirty:false, telemetrySaving:false, telemetryAt:0};
 let requestQueue = Promise.resolve();
 let pollTimer;
@@ -29,7 +29,7 @@ function api(path, method='GET', body) {
     const timeout = setTimeout(() => controller.abort(), 6000);
     try {
       const headers = {Accept:'application/json', Authorization:'Bearer '+key};
-      if (body !== undefined) headers['Content-Type'] = 'application/json';
+      if (body !== undefined || ['POST','PUT','PATCH'].includes(method)) headers['Content-Type'] = 'application/json';
       const response = await fetch('/api/v1'+path, {method, headers,
         body:body === undefined ? undefined : JSON.stringify(body),
         signal:controller.signal, cache:'no-store', credentials:'omit', redirect:'error'});
@@ -76,6 +76,7 @@ function updateControls() {
   $('clearStop').hidden = !stopped;
   $('clearStop').disabled = !ready || busy;
   $('newRecipe').disabled = !ready || busy;
+  $('restoreRecipes').disabled = !ready || busy || !state.restoreDefaults;
   $('saveRecipe').disabled = !ready || busy;
   $('deleteRecipe').disabled = !ready || busy || !state.editorId;
   $('saveSettings').disabled = !ready || busy;
@@ -169,7 +170,7 @@ async function refreshRecipes() {
 function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
   if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
   const row=document.createElement('tr');
-  const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',1,599],['drain_minutes','number',0,120]];
+  const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',0,599],['drain_minutes','number',0,120]];
   for (const [field,type,min,max] of definitions) {
     const cell=document.createElement('td');let input;
     if(type==='select') {input=document.createElement('select');for(let i=1;i<=6;i++)input.add(new Option(String(i),String(i)));}
@@ -272,6 +273,7 @@ async function connect(key) {
   state.key=key;state.generation++;clearTimeout(pollTimer);
   state.telemetry=null;state.telemetryDirty=false;state.telemetrySaving=false;state.telemetryAt=0;
   const info=await api('');state.capabilities=info.commands || [];renderPrograms();
+  state.restoreDefaults=info.restore_default_recipes === true;
   $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
   renderSettings(await api('/settings'));renderStatus(await api('/status'));await refreshRecipes();
   try{sessionStorage.setItem('pico-api-key',key);}catch(_){}
@@ -302,6 +304,12 @@ $('connectForm').addEventListener('submit',async event=>{
   try{await connect($('apiKey').value.trim());}catch(error){connected(false);$('connectError').textContent=error.message;}finally{$('submitConnect').disabled=false;}
 });
 $('newRecipe').addEventListener('click',()=>{if(!state.dirty || confirm('Discard the unsaved recipe changes?')){editRecipe({});$('recipeName').focus();}});
+$('restoreRecipes').addEventListener('click',async()=>{
+  if(!confirm('Add missing starter recipes? Recipes already on the Pico, including your edits, will be preserved.'))return;
+  $('restoreRecipes').disabled=true;
+  try{const result=await api('/recipes/restore-defaults','POST');await refreshRecipes();notify(result.added ? result.added+' starter recipes added. Existing recipes preserved.' : 'All starter recipes are already on the Pico.');}
+  catch(error){notify(error.message,true);}finally{updateControls();}
+});
 $('addStep').addEventListener('click',()=>{addStep();state.dirty=true;});
 $('recipeForm').addEventListener('input',()=>{state.dirty=true;});
 $('recipeName').addEventListener('input',()=>{if($('recipeId').dataset.auto==='true')$('recipeId').value=$('recipeName').value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20);});

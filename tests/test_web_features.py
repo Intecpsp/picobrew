@@ -85,7 +85,7 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.0.1')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.1.0')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)
         for width in (1440, 1100):
             self.page.set_viewport_size({'width': width, 'height': 1000})

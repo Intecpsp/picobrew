@@ -170,7 +170,7 @@ run beginning at 09:36:07 on the same date (console timestamp as reported).
 The [upgrade record](../analysis/device-upgrade-1.0.0-20261118.json) records
 application/browser readback, key verification and protected-file postchecks.
 The installer did not start the application; the owner subsequently reported
-running 1.0.0. The commands below now install the **1.0.1 Settings layout patch**;
+running 1.0.0. The commands below now install the **1.1.0 catalogue and recovery update**;
 the installed 1.0.0 image is an approved upgrade source.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after
@@ -224,8 +224,8 @@ and write sequentially. Opening for write
 The existing application reserves 48 nonmirrored 4 KiB blocks. The writer
 additionally caps application payloads at 188,416 bytes, conservatively below
 the capacity derived from that allocation and the SDK's size-rounding rules.
-This is a derived guard, not a measured `AllocatedLen` value. The 164,600-byte
-1.0.1 image passes it; no application-file recreation or relocation is used.
+This is a derived guard, not a measured `AllocatedLen` value. The 165,656-byte
+1.1.0 image passes it; no application-file recreation or relocation is used.
 Every write requires an acknowledged command and successful loader status;
 the tool does not retry an ambiguous write chunk.
 
@@ -278,7 +278,7 @@ startup, network access and physical output behavior remain separate
 checks in [hardware validation](hardware-validation.md).
 
 The expected code path shows the Pico splash, attempts the saved Wi-Fi
-connection, and reaches the regular menu. Standalone 1.0.1 shows `v1.0.1`,
+connection, and reaches the regular menu. Standalone 1.1.0 shows `v1.1.0`,
 using the shared version in `include/picobrew/version.h`. The earlier
 standalone candidate retained the stock `v0.1.34` label. If an old-session
 resume prompt appears, choose Abort for this initial observation.
@@ -292,8 +292,8 @@ fallback access point. From a browser on the same network, open:
 http://<pico-ip>/api/v1/health
 ```
 
-After initialization, the 1.0.1 read-only public endpoint should include
-`"firmware_version":"1.0.1"`, `"api_version":1`, `"mode":"standalone"`,
+After initialization, the 1.1.0 read-only public endpoint should include
+`"firmware_version":"1.1.0"`, `"api_version":1`, `"mode":"standalone"`,
 `"ready":true`, and `"auth_configured":true`. The response's `uptime_ms`
 varies. This is the running-firmware identity check; it requires no API key.
 The browser console is at `http://<pico-ip>/`. Record the actual response
@@ -318,7 +318,7 @@ owner's Pico still needs physical verification with 1.0.0.
 
 After changing networks, wait for the connection attempt to complete,
 check **Settings > Network > Status**, and request `/api/v1/health` at the
-new address. Confirm `"firmware_version":"1.0.1"` after this upgrade and compare the address
+new address. Confirm `"firmware_version":"1.1.0"` after this upgrade and compare the address
 with the router's client information. The displayed saved SSID alone does
 not establish that the Pico joined that network or acquired a valid lease.
 

@@ -23,8 +23,15 @@ for name, descriptor in manifest['descriptors'].items():
 for array, prefix, count in [('pico_ui_digits', 'pico_ui_digit_', 10),
                              ('pico_ui_setup_images', 'pico_ui_setup_', 8)]:
     actual = words(firmware.read(firmware.address(array), 4 * count))
-    expected = tuple(firmware.address(prefix + str(i)) for i in range(count))
-    assert actual == expected, array
+    for index, pointer in enumerate(actual):
+        asset = next(item for item in manifest['assets'] if item['name'] == prefix + str(index))
+        offset = int(asset['source_address'], 16) - 0x20004000
+        expected = image[offset:offset + asset['size']]
+        assert firmware.read(pointer, asset['size']) == expected, (array, index)
+    if array == 'pico_ui_setup_images':
+        # Equal source pixels may share storage; callers use the bytes, not
+        # distinct array addresses. These two pairs save 960 application bytes.
+        assert actual[6] == actual[5] and actual[7] == actual[1], array
     results.append({'kind': 'pointer_table', 'name': array, 'count': count})
 report = {'image_sha256': manifest['image_sha256'],
           'elf_sha256': hashlib.sha256(ELF.read_bytes()).hexdigest(),

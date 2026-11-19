@@ -187,13 +187,15 @@ static int discovery(Writer *w)
 {
     text(w, "{\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
             "\",\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
+            "\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
             "\"descale\",\"circulate\",\"drain-reservoir\",\"drain-filter\",\"rack-beer\",\"utilities\","
             "\"settings\",\"stop\",\"clear-stop\",\"encoder\"],\"dedicated_pause_resume\":false,"
             "\"front_panel\":true,\"events_persistent\":false,\"history_persistent\":true,"
             "\"history_capacity_records\":4224,\"history_capacity_sessions\":8,"
             "\"telemetry_forwarding\":true,"
-            "\"recipe_labels\":\"printable ASCII\"}");
+            "\"recipe_labels\":\"printable ASCII\",");
+    format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
     return 200;
 }
 static int status(PicoLocalApi *api, Writer *w)
@@ -266,7 +268,7 @@ static bool parse_step(Json *j, PicoRecipeStep *step)
             bit = 4; if (!integer(j, 0, 212, &value) || (value && value < 60)) return false;
             step->target_fahrenheit = (uint8_t)value;
         } else if (!strcmp(field, "minutes")) {
-            bit = 8; if (!integer(j, 1, 599, &value)) return false; step->active_minutes = (uint32_t)value;
+            bit = 8; if (!integer(j, 0, 599, &value)) return false; step->active_minutes = (uint32_t)value;
         } else if (!strcmp(field, "drain_minutes")) {
             bit = 16; if (!integer(j, 0, 120, &value)) return false; step->drain_minutes = (uint32_t)value;
         } else return false;
@@ -356,6 +358,18 @@ static int recipes(PicoLocalApi *api, Writer *w, const char *method, const char 
     PicoLocalStoreResult result = pico_local_recipe_put(n, &recipe, &created);
     if (result != PICO_LOCAL_STORE_OK) return storage_error(w, result);
     pico_local_event(n, "recipe_saved", id); recipe_json(w, &recipe); return created ? 201 : 200;
+}
+static int restore_recipes(PicoLocalApi *api, Writer *w, size_t length)
+{
+    if (length) return error(w, 400, "unexpected_body", "Restoring starter recipes takes no body");
+    if (pico_local_control_busy()) return error(w, 409, "busy", "Edit recipes only while the appliance is idle");
+    unsigned added = 0, preserved = 0;
+    PicoLocalStoreResult result = pico_local_recipes_restore_defaults(&api->application->network,
+                                                                    &added, &preserved);
+    if (result != PICO_LOCAL_STORE_OK) return storage_error(w, result);
+    if (added) pico_local_event(&api->application->network, "recipes_restored", "Added missing starter recipes");
+    format(w, "{\"added\":%u,\"preserved\":%u,\"capacity\":16}", added, preserved);
+    return 200;
 }
 static int command(PicoLocalApi *api, Writer *w, const char *body, size_t length)
 {
@@ -633,6 +647,8 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
     else if (!strncmp(path, "/api/v1/history/samples/", 24)) result = get ? history_samples(&w, path + 24) :
         error(&w, 405, "method_not_allowed", "Use GET for recorded samples");
     else if (!strcmp(path, "/api/v1/recipes")) result = recipes(api, &w, method, NULL, body, length);
+    else if (!strcmp(path, "/api/v1/recipes/restore-defaults") && !strcmp(method, "POST"))
+        result = restore_recipes(api, &w, length);
     else if (!strncmp(path, "/api/v1/recipes/", 16)) result = recipes(api, &w, method, path + 16, body, length);
     else if (!strcmp(path, "/api/v1/commands"))
         result = !strcmp(method, "POST") ? command(api, &w, body, length) :

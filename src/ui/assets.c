@@ -656,7 +656,9 @@ const uint8_t *const pico_ui_digits[10] = {
     pico_ui_digit_5, pico_ui_digit_6, pico_ui_digit_7, pico_ui_digit_8, pico_ui_digit_9};
 const uint8_t *const pico_ui_setup_images[8] = {pico_ui_setup_0, pico_ui_setup_1, pico_ui_setup_2,
                                                 pico_ui_setup_3, pico_ui_setup_4, pico_ui_setup_5,
-                                                pico_ui_setup_6, pico_ui_setup_7};
+                                                /* Exact duplicate images share storage. The
+                                                 * original arrays remain for recovery audits. */
+                                                pico_ui_setup_5, pico_ui_setup_1};
 const char *const pico_ui_instruction_names[25] = {
     "InsertEmptyStepFilterAndLid",
     "InsertStepFilterAndLid",

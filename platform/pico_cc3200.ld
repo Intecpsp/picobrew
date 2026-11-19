@@ -35,6 +35,10 @@ SECTIONS
     } > SRAM
     .bss (NOLOAD) : {
         . = ALIGN(8); _bss = .;
+        /* The SDK DMA table requires 1024-byte alignment. Put it at the
+           already-aligned section start instead of padding after application
+           BSS; its size and address alignment remain unchanged. */
+        *(.bss.gpCtlTbl)
         /* SDK declares uint32_t[8192], whose C alignment is only four. AAPCS
            requires eight-byte alignment at the reset call boundary. */
         *(.bss.pui32Stack)

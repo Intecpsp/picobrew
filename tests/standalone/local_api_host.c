@@ -69,7 +69,7 @@ static int32_t write_file(void *context, const uint8_t *data, size_t length)
 {
     (void)context;
     if (opened < 0 || !writing || length > FILE_BYTES) return -1;
-    bool fail = fail_write_at >= 0 && (int)writes++ == fail_write_at;
+    bool fail = (int)writes++ == fail_write_at;
     size_t count = length;
     if (fail && (size_t)fail_write_after < count) count = (size_t)fail_write_after;
     memcpy(files[opened].data, data, count);
@@ -216,6 +216,23 @@ int test_file_count(void)
     int count = 0; for (unsigned i = 0; i < FILES; ++i) if (files[i].name[0]) ++count; return count;
 }
 unsigned test_control_calls(void) { return control_calls; }
+unsigned test_write_count(void) { return writes; }
+int test_initialize_recipes(void) { return pico_local_recipes_initialize(&appliance.network); }
+int test_save_recovery(unsigned active, unsigned drain, unsigned phase)
+{
+    PicoLocalRecovery record = {.step = 0, .active_minutes = (uint16_t)active,
+        .drain_minutes = (uint16_t)drain, .phase = (uint8_t)phase};
+    strcpy(record.recipe_id, appliance.state.recipe.identifier);
+    return pico_local_recovery_save(&appliance.network, &record);
+}
+int test_read_recovery(unsigned *active, unsigned *drain, unsigned *phase)
+{
+    PicoLocalRecovery record;
+    int result = pico_local_recovery_get(&appliance.network, &record);
+    if (!result) { *active = record.active_minutes; *drain = record.drain_minutes; *phase = record.phase; }
+    return result;
+}
+int test_clear_recovery(void) { return pico_local_recovery_clear(&appliance.network); }
 unsigned test_encoder_calls(void) { return encoder_calls; }
 int test_last_delta(void) { return last_delta; }
 int test_last_click(void) { return last_click; }

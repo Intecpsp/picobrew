@@ -51,7 +51,7 @@
         </div>
       </section>
       <section id="recipes" class="tab-panel" hidden>
-        <div class="page-heading"><div><p class="eyebrow">ON-DEVICE COLLECTION</p><h1>Your recipes.</h1><p class="muted">Recipes stay on the Pico and are available without a server.</p></div><button id="newRecipe" class="button primary" disabled>+ New recipe</button></div>
+        <div class="page-heading"><div><p class="eyebrow">ON-DEVICE COLLECTION</p><h1>Your recipes.</h1><p class="muted">Recipes stay on the Pico and are available without a server. Starter PicoPak programs supply brewing steps; use the matching ingredients and water setup.</p></div><div><button id="restoreRecipes" class="button" disabled>Restore starter recipes</button> <button id="newRecipe" class="button primary" disabled>+ New recipe</button></div></div>
         <div class="recipe-grid"><article class="card recipe-list-card"><div class="card-heading"><h2>Saved recipes</h2><span id="recipeCapacity" class="badge neutral">0 / 16</span></div><div id="recipeList" class="recipe-list"><p class="empty">Connect to load your collection.</p></div></article>
           <article class="card editor"><div class="card-heading"><h2 id="editorHeading">Recipe editor</h2><div class="button-group"><button id="importRecipe" class="button small">Import JSON</button><button id="exportRecipe" class="button small">Export</button></div></div>
             <form id="recipeForm"><div class="form-grid"><div><label for="recipeName">Recipe name</label><input id="recipeName" maxlength="31" required placeholder="My house pale ale"></div><div><label for="recipeId">Recipe ID</label><input id="recipeId" maxlength="20" pattern="[A-Za-z0-9_-]+" required placeholder="house-pale"></div></div>

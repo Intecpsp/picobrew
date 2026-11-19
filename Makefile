@@ -1,13 +1,28 @@
 PYTHON ?= python3
+GO ?= go
+NPM ?= npm
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test
+.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test hub hub-test hub-run hub-demo
 .NOTPARALLEL: verify
 all: standalone
+
+hub:
+	$(MAKE) -C hub build GO="$(GO)" NPM="$(NPM)"
+
+hub-test:
+	$(MAKE) -C hub test GO="$(GO)" NPM="$(NPM)"
+
+hub-run:
+	$(MAKE) -C hub run GO="$(GO)"
+
+hub-demo:
+	$(MAKE) -C hub demo GO="$(GO)"
 
 standalone:
 	$(PYTHON) tools/build_firmware.py --standalone
 
 standalone-test:
+	$(PYTHON) tools/generate_starter_recipes.py --check
 	$(PYTHON) tools/generate_api_explorer.py --check
 	$(PYTHON) tools/embed_web.py --check
 	$(PYTHON) tests/test_http_server.py

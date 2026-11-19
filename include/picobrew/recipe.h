@@ -2,6 +2,9 @@
 #define PICOBREW_RECIPE_H
 
 #include "picobrew/phase.h"
+#if PICO_STANDALONE
+#include "picobrew/local_store.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {
@@ -112,6 +115,9 @@ typedef struct PicoRecipeOps {
     void (*save_recovery)(void *context, uint32_t active_minutes, uint32_t drain_minutes,
                           int32_t step_index, uint32_t reserved, bool force, uint8_t calibrated);
     bool (*read_recovery)(void *context, char *record);
+#if PICO_STANDALONE
+    bool (*read_local_recovery)(void *context, PicoLocalRecovery *record);
+#endif
     void (*delete_recovery)(void *context);
     bool (*get_session_id)(void *context, char *identifier, uint32_t capacity);
     void (*report_state)(void *context);
@@ -165,6 +171,10 @@ typedef struct PicoRecipeRuntime {
     const PicoRecipeOps *ops;
     void *context;
     const char *active_title;
+#if PICO_STANDALONE
+    /* Zero means a new step; otherwise the saved phase plus one. */
+    uint8_t recovery_phase;
+#endif
 } PicoRecipeRuntime;
 
 typedef struct PicoStepRequest {

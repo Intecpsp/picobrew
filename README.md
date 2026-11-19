@@ -1,9 +1,51 @@
-# PicoBrew Pico S/Pro local control firmware
+# PicoBrew standalone firmware and Hub
 
-The `feature/standalone-rest-api` branch adds a **standalone firmware profile**
+This is the canonical repository for the firmware and the optional
+[PicoBrew Hub](hub/README.md). The project goal is to reverse engineer the
+firmware for **Pico C, Pico S/Pro, Z-series and Zymatic**, giving each machine
+the same standalone operating model, local REST API and browser experience as
+the custom S/Pro firmware. Each port retains the controls and limits required
+by its hardware. See the [project roadmap](docs/project-roadmap.md).
+
+**Current implementation:** standalone S/Pro firmware and its Hub integration.
+Pico C, Z-series and Zymatic have Hub recipe-planning profiles; their standalone
+firmware ports and live Hub operation are future work.
+
+| Location | Contents |
+| --- | --- |
+| Repository root: `src/`, `include/`, `platform/`, `web/`, `tools/` | Pico S/Pro firmware, on-device browser and build/installation tools |
+| `firmware/` | Packaged firmware and browser installation assets |
+| `hub/` | Optional Go server and React/TypeScript console, shared recipe catalogue and brew history |
+| `legacy/` | Earlier C reconstruction of the original Pico S/Pro firmware, retained for reverse-engineering reference |
+
+The old Python Zymatic server is an external reference project. Its application
+is not included in this checkout. The [consolidation record](docs/consolidation.md)
+and [source inventory](docs/community-projects.md) explain the component origins.
+
+## Run the Hub
+
+With Git and Docker Compose installed:
+
+```sh
+git clone --branch feature/community-monorepo https://github.com/jeffreydwalter/picobrew-pico-pro-firmware.git
+cd picobrew-pico-pro-firmware/hub
+docker compose up --build -d
+docker compose logs hub
+```
+
+Open [http://127.0.0.1:8080](http://127.0.0.1:8080) and use the setup token from
+the logs to create the owner account. The [Hub guide](hub/README.md) covers
+native development, machine registration, the simulator and persistent data.
+Firmware build and installation instructions remain below and in the
+[standalone guide](docs/standalone-api.md). A brewer's local interface and
+ongoing brew operate independently of the Hub.
+
+## Pico S/Pro firmware status
+
+The Pico S/Pro implementation provides a **standalone firmware profile**
 with an on-device REST API, browser console, recipe collection, settings,
 local session identifiers, retained brew histories, and optional telemetry
-forwarding. Firmware **1.0.1** keeps the REST contract at `/api/v1`.
+forwarding. Firmware **1.1.0** keeps the REST contract at `/api/v1`.
 It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
 are compressed files on the Pico's serial flash; no companion server or CDN is required.
@@ -17,8 +59,10 @@ subsequently reported that the Pico was running 1.0.0 and supplied Overview
 and Settings screenshots showing that version. The owner confirmed the OLED
 preview is fixed; arrow controls and Brew history/API navigation are visible.
 A new health response and functional feature checks remain pending.
-The current [1.0.1 patch](docs/release-1.0.1.md) replaces the Settings card grid
-with a continuous page and compact rows. It has not yet been installed on the Pico.
+The current [1.1.0 release](docs/release-1.1.0.md) seeds the local PicoPak catalogue,
+preserves zero-minute heating steps, adds non-destructive starter restoration,
+and provides explicit checkpoint recovery. It includes the earlier Settings
+layout patch and has not yet been installed on the Pico.
 The [release notes](docs/release-1.0.0.md)
 describe its changes. Physical output behavior, interlocks, recovery and a
 complete brew remain unverified. Build, host simulation and ARM instruction
@@ -135,12 +179,14 @@ The native image and its report are written under `build/standalone/firmware/`:
 `pico-s-pro-standalone.bin`, matching ELF/map, and `firmware-report.json`.
 The build checks vectors, the complete link, the physical RAM budget, absence
 of the discontinued cloud protocol strings, and separation from test fixtures.
-The current 1.0.1 image is **164,600 bytes**, with **952 bytes** of unallocated
-RAM beyond the original **32 KiB stack and 32 KiB heap** reservations. The history
-tail and optional upload frame use up to **4,704 bytes plus allocator overhead**
-through lazy allocation from that reserved heap. Browser assets total
-**21,618 compressed bytes** in **eight serial-flash blocks**. Use the report for
-the exact build; layout measurements do not establish live stack or heap usage.
+For historical comparison, the 1.0.1 image was **164,600 bytes**, with **952 bytes**
+of unallocated RAM beyond the original **32 KiB stack and 32 KiB heap**
+reservations. Its history tail and optional upload frame used up to
+**4,704 bytes plus allocator overhead** through lazy allocation from that
+reserved heap. Its browser assets totaled **21,618 compressed bytes** in
+**eight serial-flash blocks**. See the [1.1.0 release notes](docs/release-1.1.0.md)
+and use the report for the exact build; layout measurements do not establish
+live stack or heap usage.
 Application and SDK link-time optimization removes unused code; the legacy profile retains its
 original compilation and exhaustive symbol checks.
 The pinned standalone SDK patch omits Energia's unused eight-client TCP wrapper
@@ -387,3 +433,4 @@ The reference image and experimental replacement are kept separate.
 
 Upstream dependencies retain their own licenses and notices. This recovery
 does not assign a new license to PicoBrew's original binary or embedded assets.
+See [license boundaries](LICENSES.md) for the Hub and bundled catalogue.
