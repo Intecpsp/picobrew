@@ -82,12 +82,11 @@ type DeviceView struct {
 // TelemetryStatus describes receiver configuration, not the authority of an
 // observation. Authenticated polling remains the source of live machine state.
 type TelemetryStatus struct {
-	Mode        string     `json:"mode"`
 	Enabled     bool       `json:"enabled"`
 	State       string     `json:"state"`
 	Message     string     `json:"message"`
-	Host        string     `json:"host,omitempty"`
-	Port        int        `json:"port,omitempty"`
+	Host        string     `json:"host"`
+	Port        int        `json:"port"`
 	LastChecked *time.Time `json:"last_checked,omitempty"`
 }
 type Display struct {

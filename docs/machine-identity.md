@@ -65,13 +65,18 @@ Correcting a current machine label does not rewrite archived brew snapshots.
 
 ## Hub-managed reporting
 
-Connecting a machine also configures it to report readings to that Hub.
-Ordinary setup requires no receiver form on the firmware website. The Hub
-verifies the appliance identity and waits until it is idle before changing
-the saved reporting connection.
+The Hub keeps the machine's desired live-data receiver settings: host, port,
+and whether to send live readings. These fields are always visible under
+**Brewer preferences → Live readings**. New connections start with this Hub's
+verified reachable address; existing custom destinations and disabled sending
+settings are preserved.
 
-Advanced destination settings remain editable in the Hub for unusual network
-layouts. Explicit manual settings survive reconnects and Hub restarts; select
-automatic setup to return to the Hub-managed destination. Authenticated polling
-and history reads remain authoritative even when forwarded readings are
-unavailable. Forwarded readings do not authorize machine commands.
+The Hub sends its saved values when the machine connects or the settings are
+saved. Offline or busy machines receive pending changes once available and
+idle, after the Hub verifies their identity. Reconnects and Hub restarts keep
+the same saved values. Ordinary setup requires no receiver form on the firmware
+website and no automatic/manual mode selection.
+
+Authenticated polling and history reads remain authoritative even when
+forwarded readings are unavailable. Forwarded readings do not authorize
+machine commands.

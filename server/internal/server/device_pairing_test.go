@@ -27,13 +27,21 @@ type pairingAdapter struct {
 	target                               telemetryTarget
 	writes, reads, discoveries, commands int
 	writeErr                             error
+	statusErr                            error
+	statusCalls                          int
+	onStatus                             func()
 	applyWrite                           bool
 }
 
 func (a *pairingAdapter) Status(context.Context) (domain.Status, error) {
 	a.mu.Lock()
-	defer a.mu.Unlock()
-	return a.status, nil
+	a.statusCalls++
+	status, err, check := a.status, a.statusErr, a.onStatus
+	a.mu.Unlock()
+	if check != nil {
+		check()
+	}
+	return status, err
 }
 func (a *pairingAdapter) Discover(context.Context) (domain.Capabilities, error) {
 	a.mu.Lock()
@@ -253,7 +261,7 @@ func TestAutomaticPairingClaimsOnConnectAndDoesNotFightAnotherHub(t *testing.T) 
 	}
 	a.target = telemetryTarget{Enabled: true, Host: "192.0.2.40", Port: 8080}
 	pairedRefresh(t, s, d)
-	if a.writes != 1 || d.view.Telemetry.State != "conflict" {
+	if a.writes != 1 || d.view.Telemetry.State != "pending" {
 		t.Fatal("background refresh fought another Hub")
 	}
 	s.requestTelemetryPairing(d, pairingRequest())
@@ -331,12 +339,12 @@ func TestTelemetryKnownFailuresStopAfterThreeCheckedAttempts(t *testing.T) {
 	}
 }
 
-func TestManualReceiverPersistsAcrossReconnectRestartAndAutomaticReturn(t *testing.T) {
+func TestSavedReceiverPersistsAcrossReconnectRestartAndLegacyReseed(t *testing.T) {
 	s, d, a := pairingFixture(t, "")
 	pairedRefresh(t, s, d)
 	w := httptest.NewRecorder()
 	s.machineTelemetry(w, identityRequest("PUT", "/api/v1/devices/registered/telemetry", "{\"mode\":\"manual\",\"enabled\":true,\"host\":\"custom.example\",\"port\":9123}"))
-	if w.Code != 200 || a.target.Host != "custom.example" || d.view.Telemetry.Mode != "manual" {
+	if w.Code != 200 || a.target.Host != "custom.example" || d.view.Telemetry.Host != "custom.example" {
 		t.Fatalf("manual setting: %d %s", w.Code, w.Body.String())
 	}
 	writes := a.writes
@@ -356,40 +364,42 @@ func TestManualReceiverPersistsAcrossReconnectRestartAndAutomaticReturn(t *testi
 		t.Fatal(err)
 	}
 	s.db = reopened
+	a.target = telemetryTarget{Enabled: true, Host: "changed.example", Port: 8123}
 	next := &runtimeDevice{adapter: a, cancel: func() {}, identityMismatch: true, view: domain.DeviceView{Device: saved}}
 	s.devices[saved.ID] = next
 	s.initTelemetry(next)
 	pairedRefresh(t, s, next)
-	if next.view.Telemetry.Mode != "manual" || a.writes != writes || a.target.Host != "custom.example" {
+	if next.view.Telemetry.Host != "custom.example" || a.writes != writes+1 || a.target.Host != "custom.example" {
 		t.Fatal("restored registration lost persisted override")
 	}
 	w = httptest.NewRecorder()
 	s.machineTelemetry(w, identityRequest("GET", "/api/v1/devices/registered/telemetry", ""))
 	var got map[string]any
 	_ = json.Unmarshal(w.Body.Bytes(), &got)
-	if got["mode"] != "manual" || got["host"] != "custom.example" {
+	if _, present := got["mode"]; present || got["host"] != "custom.example" {
 		t.Fatal("saved override not visible")
 	}
 	w = httptest.NewRecorder()
 	s.machineTelemetry(w, identityRequest("PUT", "/api/v1/devices/registered/telemetry", "{\"mode\":\"automatic\"}"))
-	if w.Code != 200 || a.target.Host != "192.0.2.20" || next.view.Telemetry.Mode != "automatic" {
+	if w.Code != 200 || a.target.Host != "192.0.2.20" || next.view.Telemetry.Host != "192.0.2.20" {
 		t.Fatalf("automatic return: %d %s", w.Code, w.Body.String())
 	}
 }
 
 func TestTelemetryReleaseOnlyDisablesOwnedAutomaticTarget(t *testing.T) {
-	for _, mode := range []string{"owned", "other", "manual"} {
+	for _, mode := range []string{"owned", "other", "custom"} {
 		t.Run(mode, func(t *testing.T) {
 			s, d, a := pairingFixture(t, "")
 			pairedRefresh(t, s, d)
 			if mode == "other" {
 				a.target.Host = "192.0.2.99"
 			}
-			if mode == "manual" {
+			if mode == "custom" {
 				record, _ := s.readTelemetryRecord(d.view.ID)
 				before := record
-				record.Mode = "manual"
-				record.Manual = a.target
+				target := telemetryTarget{Enabled: true, Host: "custom.example", Port: 8123}
+				record.Desired, record.Owned = &target, target
+				a.target = target
 				_ = s.writeTelemetryRecord(d.view.ID, before, record)
 			}
 			writes := a.writes

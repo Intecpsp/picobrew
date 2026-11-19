@@ -5,14 +5,21 @@ for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
-  test(`automatic machine identity and advanced connection work on ${viewport.name}`, async ({
+  test(`automatic machine identity and simple receiver settings work on ${viewport.name}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport)
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))
     let device: Device | null = null
-    let receiver: Telemetry = { mode: 'automatic', enabled: true, host: 'hub.local', port: 8080 }
+    let receiver: Telemetry & { state: string } = {
+      enabled: true,
+      host: 'hub.local',
+      port: 8080,
+      state: 'configured',
+    }
+    let offline = false
+    let settingsRequests = 0
     const overrides: unknown[] = []
     let registrations = 0
     await page.route('**/api/v1/auth/session', async (route) => {
@@ -60,19 +67,27 @@ for (const viewport of [
             telemetry: { ...receiver, state: 'configured' },
           }
           result = device
-        } else result = device ? [device] : []
+        } else
+          result = device
+            ? [
+                {
+                  ...device,
+                  ...(offline ? { online: false, capabilities: null } : {}),
+                  telemetry: receiver,
+                },
+              ]
+            : []
       } else if (path.endsWith('/telemetry')) {
         if (request.method() === 'PUT') {
           const body = request.postDataJSON()
           overrides.push(body)
-          receiver =
-            body.mode === 'automatic'
-              ? { mode: 'automatic', enabled: true, host: 'hub.local', port: 8080 }
-              : body
-          if (device) device.telemetry = { ...receiver, state: 'configured' }
+          expect(Object.keys(body).sort()).toEqual(['enabled', 'host', 'port'])
+          receiver = { ...body, state: offline ? 'pending' : 'configured' }
+          if (device) device.telemetry = receiver
         }
         result = receiver
       } else if (path.endsWith('/settings')) {
+        settingsRequests++
         result = { temperature_unit: 'F', language: 'en', detailed_status: true }
       } else if (path.endsWith('/recipes')) result = []
       else if (path.endsWith('/ai-monitor'))
@@ -100,18 +115,18 @@ for (const viewport of [
     await card.getByRole('link', { name: 'Open Automatically connected Pico S controls' }).click()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
-    await expect(dialog.getByText('Live readings configured', { exact: true })).toBeVisible()
-    await expect(dialog.getByLabel('Receiver host')).toHaveCount(0)
-    await dialog.getByText('Advanced Hub connection', { exact: true }).click()
-    await expect(dialog.getByLabel('Connection management')).toHaveValue('automatic')
-    await dialog.getByLabel('Connection management').selectOption('manual')
+    await expect(dialog.getByLabel('Receiver host')).toHaveValue('hub.local')
+    await expect(dialog.getByLabel('Receiver port')).toHaveValue('8080')
+    const liveReadings = dialog.getByRole('region', { name: 'Live readings' })
+    await expect(liveReadings.getByRole('combobox')).toHaveCount(0)
+    await expect(dialog.getByText('Advanced Hub connection', { exact: true })).toHaveCount(0)
+    await expect(dialog.getByText('Return to automatic', { exact: true })).toHaveCount(0)
     await dialog.getByLabel('Receiver host').fill('brew-relay.local')
     await dialog.getByLabel('Receiver port').fill('49152')
-    await dialog.getByRole('button', { name: 'Save manual connection' }).click()
-    await expect(dialog.getByText('Manual receiver configured', { exact: true })).toBeVisible()
-    expect(overrides).toEqual([
-      { mode: 'manual', enabled: true, host: 'brew-relay.local', port: 49152 },
-    ])
+    await dialog.getByLabel('Send live readings').uncheck()
+    await dialog.getByRole('button', { name: 'Save connection' }).click()
+    await expect(liveReadings.getByRole('status')).toHaveText('Saved. Live readings are off.')
+    expect(overrides).toEqual([{ enabled: false, host: 'brew-relay.local', port: 49152 }])
     await page.screenshot({
       path: test.info().outputPath(`machine-connection-${viewport.name}.png`),
       fullPage: true,
@@ -123,14 +138,45 @@ for (const viewport of [
     await page.getByRole('button', { name: 'Test connection' }).click()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
-    await dialog.getByText('Advanced Hub connection', { exact: true }).click()
-    await expect(dialog.getByLabel('Connection management')).toHaveValue('manual')
     await expect(dialog.getByLabel('Receiver host')).toHaveValue('brew-relay.local')
+    await expect(dialog.getByLabel('Receiver port')).toHaveValue('49152')
+    await expect(dialog.getByLabel('Send live readings')).not.toBeChecked()
     expect(overrides).toHaveLength(1)
-    await dialog.getByLabel('Connection management').selectOption('automatic')
-    await dialog.getByRole('button', { name: 'Return to automatic' }).click()
-    await expect(dialog.getByText('Live readings configured', { exact: true })).toBeVisible()
-    expect(overrides[1]).toEqual({ mode: 'automatic' })
+
+    // A disconnected machine keeps its saved connection editable even without capabilities.
+    await dialog.getByRole('button', { name: 'Close dialog' }).click()
+    offline = true
+    receiver = { ...receiver, state: 'pending' }
+    const previousSettingsRequests = settingsRequests
+    await page.reload()
+    await expect(page.getByRole('button', { name: 'Brewer preferences' })).toBeEnabled()
+    await page.getByRole('button', { name: 'Brewer preferences' }).click()
+    dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
+    await expect(dialog.getByLabel('Receiver host')).toHaveValue('brew-relay.local')
+    await expect(dialog.getByLabel('Send live readings')).not.toBeChecked()
+    await expect(
+      dialog.getByText('Connect the machine to change its display preferences.')
+    ).toBeVisible()
+    expect(settingsRequests).toBe(previousSettingsRequests)
+    await dialog.getByLabel('Receiver host').fill('offline-saved.local')
+    await dialog.getByRole('button', { name: 'Save connection' }).click()
+    await expect(
+      dialog.getByRole('region', { name: 'Live readings' }).getByRole('status')
+    ).toHaveText('Saved. Will apply when the machine is available.')
+    expect(overrides[1]).toEqual({ enabled: false, host: 'offline-saved.local', port: 49152 })
+    await page.screenshot({
+      path: test.info().outputPath(`machine-connection-offline-${viewport.name}.png`),
+      fullPage: true,
+    })
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+      true
+    )
+    await dialog.getByRole('button', { name: 'Close dialog' }).click()
+    await page.reload()
+    await page.getByRole('button', { name: 'Brewer preferences' }).click()
+    dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
+    await expect(dialog.getByLabel('Receiver host')).toHaveValue('offline-saved.local')
+    await expect(dialog.getByLabel('Send live readings')).not.toBeChecked()
     expect(errors).toEqual([])
     expect(registrations).toBe(1)
   })

@@ -76,4 +76,4 @@ The browser workspace ZIP excludes authentication and provider/device credential
 
 Use HTTPS for browser traffic outside a trusted local environment. The proxy should forward the original Host header and stream SSE without buffering. A cloud host needs a private route to the brewer LAN. Do not forward a brewer's HTTP API directly to the public internet.
 
-The Hub does not send emails, SMS or webhooks to third parties. There is no external messaging configuration in this release. Optional AI context goes to the provider you configure. Machine reporting is configured automatically to this Hub; an advanced manual destination can be selected in the Hub and persists until returned to automatic mode.
+The Hub does not send emails, SMS or webhooks to third parties. There is no external messaging configuration in this release. Optional AI context goes to the provider you configure. Machine reporting starts with this Hub as its receiver. Host, port, and the live-data checkbox remain editable in Brewer preferences. Saved values persist across reconnects and restarts and are applied when the machine is available and idle.

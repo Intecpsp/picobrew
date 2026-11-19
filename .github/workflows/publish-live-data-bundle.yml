@@ -1,0 +1,45 @@
+name: Package verified live-data settings website
+on:
+  push:
+    branches: [feature/simple-hub-live-data]
+    paths: [.github/workflows/publish-live-data-bundle.yml]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - name: Require the triggering revision
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+          cache-dependency-path: server/web/package-lock.json
+      - name: Rebuild the reviewed website sources
+        run: |
+          npm --prefix server/web ci --engine-strict
+          npm --prefix server/web run build:bundle
+      - name: Verify exact bytes and publish the generated bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git hash-object server/internal/webui/bundle.zip)" = faf434f3454d9c48a3d85b15099bdd4f5b16f2cc
+          test "$(git hash-object server/internal/webui/manifest.json)" = e8e95811582817401fde4daef39495263db97088
+          git add server/internal/webui/bundle.zip server/internal/webui/manifest.json
+          git rm .github/workflows/publish-live-data-bundle.yml
+          test "$(git write-tree)" = 5942ab598e28525b6c8dd3a422dd1ce3c9305ad0
+          git restore --source=HEAD --staged --worktree .github/workflows/publish-live-data-bundle.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Package the simplified live-data settings website'
+          gh auth setup-git
+          git push origin HEAD:refs/heads/feature/simple-hub-live-data
