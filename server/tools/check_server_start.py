@@ -19,6 +19,7 @@ import secrets
 import shutil
 import signal
 import socket
+import sqlite3
 import subprocess
 import tempfile
 import threading
@@ -193,6 +194,65 @@ def stream(jar):
     return connection, response, reader, complete, state
 
 
+def begin_accepted_recipe_save(jar, csrf, template, label):
+    """Pause a real authenticated request after its handler starts reading."""
+    recipe = dict(template, id='', revision=0, name='Accepted during shutdown: ' + label)
+    body = json.dumps(recipe).encode('utf-8')
+    cookie = '; '.join(item.name + '=' + item.value for item in jar)
+    headers = '\r\n'.join([
+        'POST /api/v1/recipes HTTP/1.1', 'Host: 127.0.0.1:8080',
+        'Cookie: ' + cookie, 'X-CSRF-Token: ' + csrf, 'Content-Type: application/json',
+        'Content-Length: ' + str(len(body)), 'Expect: 100-continue', 'Connection: close', '', '',
+    ]).encode('ascii')
+    connection = socket.create_connection(('127.0.0.1', 8080), timeout=3)
+    try:
+        connection.sendall(headers)
+        # Go sends 100 Continue on the handler's first Body.Read. Withhold every
+        # body byte until the separate SSE stream confirms shutdown has begun.
+        with connection.makefile('rb') as response:
+            status = response.readline(8192)
+            assert status.startswith(b'HTTP/1.1 100 '), ('Request was not accepted', status)
+            for _ in range(20):
+                line = response.readline(8192)
+                if line == b'\r\n':
+                    break
+                assert line and len(line) < 8192, 'Incomplete interim response'
+            else:
+                raise AssertionError('Too many interim response headers')
+        return connection, body
+    except BaseException:
+        connection.close()
+        raise
+
+
+def finish_accepted_recipe_save(connection, body, deadline):
+    connection.settimeout(max(.01, deadline - time.monotonic()))
+    connection.sendall(body)
+    response = http.client.HTTPResponse(connection, method='POST')
+    try:
+        response.begin()
+        payload = response.read()
+        assert response.status == 201, ('Accepted write did not drain', response.status, payload)
+        recipe = json.loads(payload)
+        assert recipe['revision'] == 1
+        return recipe
+    finally:
+        response.close()
+
+
+def assert_recipe_persisted(server, recipe):
+    # Reopen only this disposable database, read-only, after the process exits.
+    # Every entry point must persist the last request, including the final run.
+    uri = (server / 'data/hub.sqlite').resolve().as_uri() + '?mode=ro'
+    connection = sqlite3.connect(uri, uri=True, timeout=1)
+    try:
+        row = connection.execute('SELECT payload FROM records WHERE kind=? AND id=?',
+                                 ('recipe', recipe['id'])).fetchone()
+        assert row is not None and json.loads(row[0]) == recipe, 'Drained recipe was not persisted'
+    finally:
+        connection.close()
+
+
 def copy_sources(destination, *, include_root=True):
     server = destination / 'server'
     server.mkdir(parents=True)
@@ -260,6 +320,7 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
     free_port()
     process = None
     event_stream = None
+    accepted_write = None
     log_path = server.parent / (label + '.log')
     try:
         with log_path.open('wb') as log:
@@ -316,11 +377,14 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
                 persistence = 'reopened_identical'
             event_stream = stream(jar)
             _, _, _, ended, state = event_stream
+            accepted_write, accepted_body = begin_accepted_recipe_save(jar, session['csrf_token'], saved, label)
             stop = time.monotonic()
             terminal_interrupt(process)
-            process.wait(timeout=3)
             assert ended.wait(max(.05, 3 - (time.monotonic() - stop))), 'SSE did not close promptly'
             assert state.get('clean_eof'), state
+            assert listener_closed(), 'Shutdown did not close the listener before draining'
+            drained = finish_accepted_recipe_save(accepted_write, accepted_body, stop + 3)
+            process.wait(timeout=max(.01, 3 - (time.monotonic() - stop)))
             assert listener_closed(), 'An orphan server is still listening'
             if not WINDOWS:
                 try:
@@ -338,16 +402,20 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
                 # the SSE/port/shutdown checks above have proved graceful cleanup.
                 expected_exit |= process.returncode & 0xffffffff == 0xc000013a
             assert expected_exit, process.returncode
+            assert_recipe_persisted(server, drained)
             print(json.dumps({'entry_directory': label, 'build_and_start_seconds': build_seconds,
                               'shutdown_seconds': stop_seconds, 'exit_code': process.returncode,
                               'sse_clean_eof': True, 'listener_closed': True,
+                              'accepted_write_drained': True, 'drained_write_persisted': True,
                               'recipe_persistence': persistence}), flush=True)
-            return saved
+            return drained
     except Exception:
         if log_path.exists():
             print(log_path.read_text(encoding='utf-8', errors='replace')[-18000:].replace(password, '[redacted]'), flush=True)
         raise
     finally:
+        if accepted_write:
+            accepted_write.close()
         if event_stream:
             connection, response, reader, _, _ = event_stream
             response.close()
