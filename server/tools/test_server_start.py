@@ -1,9 +1,13 @@
 """Native port checks used by the disposable server process smoke."""
 import ctypes
+from pathlib import Path
 import socket
+import subprocess
+import sys
+import time
 from types import SimpleNamespace
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 import check_server_start as smoke
 
@@ -105,6 +109,76 @@ class PortCheckTests(unittest.TestCase):
                 patch.object(smoke, 'windows_listener_ports', side_effect=OSError('native inspection failed')):
             with self.assertRaises(OSError):
                 smoke.listener_closed()
+
+
+class WindowsProcessTests(unittest.TestCase):
+    def test_pinned_handle_uses_remaining_budget_and_requires_process_exit(self):
+        executable = Path(sys.executable).resolve()
+        handle = 1 << 40
+        kernel = SimpleNamespace(**{name: Mock(return_value=1) for name in (
+            'OpenProcess', 'QueryFullProcessImageNameW', 'WaitForSingleObject',
+            'GetExitCodeProcess', 'TerminateProcess', 'CloseHandle')})
+        kernel.OpenProcess.return_value = handle
+
+        def image(process, flags, buffer, size):
+            buffer.value = str(executable)
+            return 1
+
+        def exit_code(process, output):
+            output._obj.value = 0
+            return 1
+
+        kernel.QueryFullProcessImageNameW.side_effect = image
+        kernel.GetExitCodeProcess.side_effect = exit_code
+        kernel.WaitForSingleObject.side_effect = [258, 0, 0]
+        with patch.object(smoke, 'windows_listener_owners', return_value={(8080, 123)}), \
+                patch.object(ctypes, 'WinDLL', return_value=kernel, create=True), \
+                patch.object(time, 'monotonic', return_value=100):
+            tracked = smoke.WindowsServerProcess(executable)
+            with self.assertRaises(TimeoutError):
+                tracked.wait_until(100.125)
+            kernel.WaitForSingleObject.assert_called_with(handle, 125)
+            self.assertEqual(tracked.wait_until(100.5), 0)
+            tracked.cleanup()
+        self.assertIs(kernel.OpenProcess.restype, ctypes.c_void_p)
+        kernel.OpenProcess.assert_called_once_with(0x00101001, False, 123)
+        kernel.TerminateProcess.assert_not_called()
+        kernel.CloseHandle.assert_called_once_with(handle)
+
+    @unittest.skipUnless(smoke.WINDOWS, 'Native Windows process handle')
+    def test_native_listener_closure_does_not_mean_its_process_exited(self):
+        script = (
+            "import socket, sys\n"
+            "s=socket.socket(); s.bind(('127.0.0.1',0)); s.listen()\n"
+            "print(s.getsockname()[1], flush=True)\n"
+            "sys.stdin.readline(); s.close(); print('closed', flush=True)\n"
+            "sys.stdin.readline()\n"
+        )
+        process = subprocess.Popen([sys.executable, '-u', '-c', script], stdin=subprocess.PIPE,
+                                   stdout=subprocess.PIPE, text=True)
+        tracked = None
+        try:
+            port = int(process.stdout.readline())
+            tracked = smoke.WindowsServerProcess(Path(sys.executable), port)
+            self.assertEqual(tracked.pid, process.pid)
+            process.stdin.write('close\n')
+            process.stdin.flush()
+            self.assertEqual(process.stdout.readline().strip(), 'closed')
+            self.assertTrue(smoke.listener_closed(port))
+            with self.assertRaises(TimeoutError):
+                tracked.wait_until(time.monotonic() + .05)
+            process.stdin.write('exit\n')
+            process.stdin.flush()
+            self.assertEqual(tracked.wait_until(time.monotonic() + 2), 0)
+            process.wait(timeout=2)
+        finally:
+            if process.poll() is None:
+                process.kill()
+                process.wait(timeout=2)
+            if tracked:
+                tracked.close()
+            process.stdin.close()
+            process.stdout.close()
 
 
 if __name__ == '__main__':

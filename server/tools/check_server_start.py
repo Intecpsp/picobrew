@@ -45,13 +45,13 @@ class WindowsTCP6Row(ctypes.Structure):
                 ('state', ctypes.c_uint32), ('pid', ctypes.c_uint32)]
 
 
-def windows_listener_ports():
+def windows_listener_owners():
     """Read listening TCP sockets without connections or TIME_WAIT ambiguity."""
     query = ctypes.WinDLL('iphlpapi', use_last_error=True).GetExtendedTcpTable
     query.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_uint32), ctypes.c_int,
                       ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32]
     query.restype = ctypes.c_uint32
-    ports = set()
+    owners = set()
     for family, row_type in ((socket.AF_INET, WindowsTCP4Row), (socket.AF_INET6, WindowsTCP6Row)):
         size = ctypes.c_uint32()
         buffer = None
@@ -71,11 +71,87 @@ def windows_listener_ports():
             if 4 + count * row_bytes > min(size.value, ctypes.sizeof(buffer)):
                 raise RuntimeError('Windows returned a truncated TCP listener table.')
             rows = (row_type * count).from_buffer(buffer, 4)
-            ports.update(socket.ntohs(row.local_port & 0xffff) for row in rows if row.state == 2)
+            owners.update((socket.ntohs(row.local_port & 0xffff), row.pid)
+                          for row in rows if row.state == 2)
             break
         else:
             raise RuntimeError('Windows TCP listener table kept changing during inspection.')
-    return ports
+    return owners
+
+
+def windows_listener_ports():
+    return {port for port, _ in windows_listener_owners()}
+
+
+class WindowsServerProcess:
+    """Pin the verified listener process, independently of a Make parent."""
+
+    def __init__(self, expected_image, port=8080):
+        owners = {pid for listener_port, pid in windows_listener_owners() if listener_port == port}
+        if len(owners) != 1:
+            raise RuntimeError('Expected exactly one owner for the fixture listener.')
+        self.pid = owners.pop()
+        self.kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+        signatures = {
+            'OpenProcess': ([ctypes.c_uint32, ctypes.c_int, ctypes.c_uint32], ctypes.c_void_p),
+            'QueryFullProcessImageNameW': ([ctypes.c_void_p, ctypes.c_uint32, ctypes.c_wchar_p,
+                                           ctypes.POINTER(ctypes.c_uint32)], ctypes.c_int),
+            'WaitForSingleObject': ([ctypes.c_void_p, ctypes.c_uint32], ctypes.c_uint32),
+            'GetExitCodeProcess': ([ctypes.c_void_p, ctypes.POINTER(ctypes.c_uint32)], ctypes.c_int),
+            'TerminateProcess': ([ctypes.c_void_p, ctypes.c_uint32], ctypes.c_int),
+            'CloseHandle': ([ctypes.c_void_p], ctypes.c_int),
+        }
+        for name, (arguments, result) in signatures.items():
+            function = getattr(self.kernel, name)
+            function.argtypes, function.restype = arguments, result
+        # SYNCHRONIZE | PROCESS_QUERY_LIMITED_INFORMATION | PROCESS_TERMINATE.
+        # Termination is reserved for cleanup of a failed test, never its proof.
+        self.handle = self.kernel.OpenProcess(0x00101001, False, self.pid)
+        if not self.handle:
+            raise ctypes.WinError(ctypes.get_last_error())
+        try:
+            image = ctypes.create_unicode_buffer(32768)
+            length = ctypes.c_uint32(len(image))
+            if not self.kernel.QueryFullProcessImageNameW(self.handle, 0, image, ctypes.byref(length)):
+                raise ctypes.WinError(ctypes.get_last_error())
+            if Path(image.value).resolve() != Path(expected_image).resolve():
+                raise RuntimeError('The listening process is not the fixture executable.')
+        except BaseException:
+            self.close()
+            raise
+
+    def wait_until(self, deadline):
+        milliseconds = max(0, int((deadline - time.monotonic()) * 1000))
+        result = self.kernel.WaitForSingleObject(self.handle, milliseconds)
+        if result == 258:  # WAIT_TIMEOUT
+            raise TimeoutError('The Hub process did not exit within the shutdown budget.')
+        if result == 0xffffffff:  # WAIT_FAILED
+            raise ctypes.WinError(ctypes.get_last_error())
+        if result != 0:  # WAIT_OBJECT_0
+            raise RuntimeError('Unexpected native process wait result: ' + str(result))
+        code = ctypes.c_uint32()
+        if not self.kernel.GetExitCodeProcess(self.handle, ctypes.byref(code)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        return code.value
+
+    def close(self):
+        if self.handle:
+            handle, self.handle = self.handle, None
+            if not self.kernel.CloseHandle(handle):
+                raise ctypes.WinError(ctypes.get_last_error())
+
+    def cleanup(self):
+        try:
+            try:
+                self.wait_until(time.monotonic() + 5)
+            except TimeoutError:
+                # The already-failed fixture owns this pinned, image-verified
+                # process; never use an unverified or potentially recycled PID.
+                if not self.kernel.TerminateProcess(self.handle, 1):
+                    raise ctypes.WinError(ctypes.get_last_error())
+                self.wait_until(time.monotonic() + 3)
+        finally:
+            self.close()
 
 
 def free_port(port=8080):
@@ -246,9 +322,13 @@ def assert_recipe_persisted(server, recipe):
     uri = (server / 'data/hub.sqlite').resolve().as_uri() + '?mode=ro'
     connection = sqlite3.connect(uri, uri=True, timeout=1)
     try:
-        row = connection.execute('SELECT payload FROM records WHERE kind=? AND id=?',
-                                 ('recipe', recipe['id'])).fetchone()
-        assert row is not None and json.loads(row[0]) == recipe, 'Drained recipe was not persisted'
+        cursor = connection.execute('SELECT payload FROM records WHERE kind=? AND id=?',
+                                    ('recipe', recipe['id']))
+        try:
+            row = cursor.fetchone()
+            assert row is not None and json.loads(row[0]) == recipe, 'Drained recipe was not persisted'
+        finally:
+            cursor.close()
     finally:
         connection.close()
 
@@ -319,6 +399,7 @@ def failed_build_does_not_start(server, env, make):
 def launch_case(label, directory, command, server, env, password, saved=None, build_command=None):
     free_port()
     process = None
+    native_server = None
     event_stream = None
     accepted_write = None
     log_path = server.parent / (label + '.log')
@@ -348,6 +429,8 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
             else:
                 raise TimeoutError('Build/start exceeded five minutes')
             build_seconds = round(time.monotonic() - began, 3)
+            if WINDOWS:
+                native_server = WindowsServerProcess(server / 'picobrew-hub.exe')
             with plain.open(BASE + '/', timeout=3) as response:
                 page = response.read()
                 assert response.status == 200 and b'<div id="root"></div>' in page
@@ -385,6 +468,8 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
             assert listener_closed(), 'Shutdown did not close the listener before draining'
             drained = finish_accepted_recipe_save(accepted_write, accepted_body, stop + 3)
             process.wait(timeout=max(.01, 3 - (time.monotonic() - stop)))
+            if native_server:
+                assert native_server.wait_until(stop + 3) == 0, 'Hub process did not exit cleanly'
             assert listener_closed(), 'An orphan server is still listening'
             if not WINDOWS:
                 try:
@@ -406,6 +491,7 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
             print(json.dumps({'entry_directory': label, 'build_and_start_seconds': build_seconds,
                               'shutdown_seconds': stop_seconds, 'exit_code': process.returncode,
                               'sse_clean_eof': True, 'listener_closed': True,
+                              'server_process_exited': True,
                               'accepted_write_drained': True, 'drained_write_persisted': True,
                               'recipe_persistence': persistence}), flush=True)
             return drained
@@ -421,7 +507,11 @@ def launch_case(label, directory, command, server, env, password, saved=None, bu
             response.close()
             connection.close()
             reader.join(timeout=1)
-        cleanup(process)
+        try:
+            cleanup(process)
+        finally:
+            if native_server:
+                native_server.cleanup()
 
 
 def main():
