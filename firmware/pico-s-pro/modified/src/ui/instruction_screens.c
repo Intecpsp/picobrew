@@ -1,4 +1,5 @@
 #include "ui_internal.h"
+#include "picobrew/config.h"
 
 void pico_screen_get_instruction_lines(PicoTextScreen *screen, uint32_t screen_id,
                                        uint32_t language)
@@ -83,6 +84,9 @@ void pico_screen_device_information(void)
     pico_display_logo();
     pico_copy_firmware_version(line);
     pico_display_center_text(3, line);
+#if PICO_STANDALONE
+    pico_display_center_text(4, PICO_MODEL_NAME);
+#endif
     snprintf(line, sizeof line, "ID:%s", pico_ui_active->app->device_uid);
     pico_display_text_at_cell(5, 0, line);
     line[0] = 0;

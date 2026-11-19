@@ -519,7 +519,16 @@ void pico_screen_splash(void)
     uint32_t version_length;
     char message_text[32];
 
+#if PICO_STANDALONE
+    /* Show the selected model on standalone images; the archived splash is
+     * a generic Pico logo, retained by the legacy reconstruction display. */
+    pico_display_clear();
+    pico_graphics_text_scale(&pico_ui_active->display, 2);
+    pico_display_center_text(3, PICO_MODEL_NAME);
+    pico_graphics_text_scale(&pico_ui_active->display, 1);
+#else
     pico_graphics_bitmap(&pico_ui_active->display, 0, 0x10, pico_ui_bitmap_splash, 0x80, 0x1e, 1);
+#endif
     pico_display_clear_row(7);
     pico_copy_firmware_version(message_text);
     version_length = strlen(message_text);

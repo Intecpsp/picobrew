@@ -991,7 +991,11 @@ void pico_application_setup(PicoApplication *a)
     a->hardware->serial_begin(a->hardware_context, 115200);
     serial_text(a, "", true);
     serial_text(a, "***************************************************************", true);
+#if PICO_STANDALONE
+    serial_text(a, "                        " PICO_MODEL_NAME, true);
+#else
     serial_text(a, "                        Pico PRO", true);
+#endif
     serial_text(a, "***************************************************************", true);
 #if PICO_STANDALONE
     log_message(a, "I", "MAIN", "PROFILE = standalone; local recipes and LAN control");

@@ -42,6 +42,7 @@ INTEGER_FIELDS = {
 STRING_FIELDS = {"device_uid", "command", "recipe_name", "step_name", "session_id", "stop_reason"}
 BOOLEAN_FIELDS = {"ready", "busy", "stopped"}
 TEMPERATURE_FIELDS = {"wort_f", "thermoblock_f", "target_f"}
+IDENTITY_FIELDS = {"model", "model_name", "model_family"}
 
 
 def _unique_object(pairs):
@@ -70,8 +71,14 @@ def validate_payload(raw):
         raise ValueError("invalid firmware version")
     status = payload["status"]
     required = set(INTEGER_FIELDS) | STRING_FIELDS | BOOLEAN_FIELDS | TEMPERATURE_FIELDS | {"filter_inserted", "encoder"}
-    if not isinstance(status, dict) or set(status) != required:
+    if not isinstance(status, dict) or set(status) not in (required, required | IDENTITY_FIELDS):
         raise ValueError("invalid status fields")
+    if IDENTITY_FIELDS <= set(status):
+        if any(not isinstance(status[field], str) for field in IDENTITY_FIELDS):
+            raise ValueError("invalid model identity")
+        names = {"pico-pro": "Pico Pro", "pico-s": "Pico S"}
+        if names.get(status["model"]) != status["model_name"] or status["model_family"] != "pico-s-pro":
+            raise ValueError("invalid model identity")
     for field, (minimum, maximum) in INTEGER_FIELDS.items():
         value = status[field]
         if type(value) is not int or not minimum <= value <= maximum:

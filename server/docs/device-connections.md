@@ -6,11 +6,13 @@
 
 Workspace Settings contains equipment planning, display preferences, Brew Assistant configuration, and workspace exports. Machine registrations live on Overview.
 
-Editing preserves the registration's model and connection type so its existing history keeps the same identity. The API-key field starts empty: leave it empty to keep the saved key. **Monitor this machine** enables or disables the Hub connection. The server rejects connection changes and removal while its last verified state reports an active operation.
+The Hub reads the product model from authenticated, model-aware firmware and associates it with the verified device UID. New physical registrations do not default to Pro. Older firmware can use a manual model selection if it does not report an identity. A corrected current model does not rewrite archived brew snapshots, and a changed UID never silently replaces the registered appliance. The connection type stays fixed. The API-key field starts empty: leave it empty to keep the saved key. **Monitor this machine** enables or disables the Hub connection. The server rejects connection changes and removal while its last verified state reports an active operation.
 
-**Brewer preferences** is a separate dialog for the online appliance's own display and telemetry-forwarding preferences. It does not edit the Hub's saved address or credentials.
+**Brewer preferences** is a separate dialog for the online appliance's display preferences and Hub connection status. Connecting the machine automatically sets its reporting destination to this Hub while the brewer is idle. No destination form is required on the firmware website.
 
-Removal requires confirmation and removes the Hub registration and saved credential. Archived brew records and their sensor samples remain available in Brew history. The action does not send a firmware erase, recipe deletion, or stop command to the appliance.
+The collapsed **Advanced Hub connection** section supports manual destination host, port, and enable settings for unusual networks. Manual mode is persistent: connection tests, ordinary edits, and restarts do not replace it with an automatically inferred destination. **Return to automatic** lets the Hub set up its destination again. These options do not change the Hub's saved machine address or API key.
+
+Removal requires confirmation and removes the Hub registration and saved credential. Archived brew records and their sensor samples remain available in Brew history. The Hub attempts to disable its own automatic reporting connection on a reachable idle appliance; it does not disable a manual destination or another Hub's connection. The action does not send a firmware erase, recipe deletion, or stop command to the appliance.
 
 Old `#/settings/new-device` links redirect to the Overview add-machine dialog.
 

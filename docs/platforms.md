@@ -88,10 +88,18 @@ From the repository root:
 
 ```sh
 make firmware-bootstrap
-make firmware
-make firmware-test
+make firmware MODEL=pico-pro
+make firmware MODEL=pico-s
+make firmware-test MODEL=pico-s
 make firmware-usb-test
 ```
+
+The two S/Pro products share their implementation but have separate build and
+package directories. `MODEL` controls the startup branding and the model
+reported by the API. A family-only build retains the Pico Pro default. Use
+`make firmware-models` to list product identifiers and implementation status;
+unimplemented families are rejected before compilation. See the
+[machine identity contract](machine-identity.md).
 
 The preserved reconstruction and web recovery images use the same installed
 compiler and SDK through an external compatibility adapter:

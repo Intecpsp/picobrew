@@ -1,4 +1,4 @@
-# Optional telemetry forwarding
+# Hub connection and telemetry forwarding
 
 The Pico can send live readings to an HTTP receiver on your network. Forwarding
 is **off by default** and saves its destination on the Pico when enabled.
@@ -42,21 +42,17 @@ permissions. SYSTEM and local Administrators remain trusted. Run from the
 complete checkout, or copy this component's `tools/pico_private_files.py` and
 the repository root's `tools/private_files.py` beside a copied receiver script.
 
-## Enable forwarding in the browser
+## Connect through PicoBrew Hub
 
-While the brewer is idle, open **Settings → Send live readings**:
+Add the brewer in PicoBrew Hub using its address and provisioned device key.
+The Hub configures the destination through the authenticated management API.
+On the brewer website, **Settings → Hub connection** shows the saved destination
+and current delivery status. There is no receiver address or port to enter on
+the brewer website. Existing saved destinations remain supported.
 
-1. Enter the receiver's host name or IPv4 address and its port, normally `8080`.
-2. Check **Send readings to a receiver**.
-3. Click **Save forwarding**.
-
-The host field accepts up to 127 ASCII characters. Enter a host only, without
-`http://`, a path, credentials, or a port suffix. The separate port field accepts
-`1` through `65535`. The receiver path is fixed at `/api/v1/telemetry`.
-
-The status below the form reports delivery progress and counters. To turn
-forwarding off, uncheck the option and save while idle. The destination is
-retained for later use.
+The standalone Python receiver above is an alternative integration for users
+who explicitly need a separate archive. Its destination is configured through
+the API below, rather than through the brewer website.
 
 ## Configure it through the Pico API
 
@@ -90,7 +86,8 @@ pico_api --request PUT --header 'Content-Type: application/json' \
 `PUT` requires all three fields: `enabled`, `host`, and `port`. An empty host is
 allowed only when disabled. Use `enabled:false` with the same host and port to
 disable forwarding. Configuration changes return `409` while a workflow is busy.
-The **API explorer** in the console exposes these same GET and PUT operations.
+The **API explorer** exposes the read-only GET operation. Destination writes
+remain available to the Hub and other explicit API integrations.
 
 ## Delivery and status
 

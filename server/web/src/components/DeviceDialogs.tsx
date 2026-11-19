@@ -1,7 +1,8 @@
-import { useState, type FormEvent } from 'react'
-import { KeyRound, Loader2, Plus, Save, Trash2 } from 'lucide-react'
+import { useEffect, useState, type FormEvent } from 'react'
+import { KeyRound, Loader2, Plus, RefreshCw, Save, Trash2 } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
+import { deviceModelLabel } from '../lib/utils'
 import type { Device } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
 
@@ -17,11 +18,72 @@ export function DeviceKeyNotice() {
   )
 }
 
+export function HubConnectionStatus({ device }: { device: Device }) {
+  const manual = device.telemetry?.mode === 'manual'
+  const state =
+    device.telemetry?.state ||
+    (device.adapter === 'simulator'
+      ? 'simulator'
+      : !device.enabled
+        ? 'disabled'
+        : device.capabilities && !device.capabilities.telemetry_forwarding
+          ? 'unsupported'
+          : 'pending')
+  const labels: Record<string, string> = {
+    pending: 'Connecting live readings',
+    configured: manual ? 'Manual receiver configured' : 'Live readings configured',
+    waiting_idle: 'Waiting for the machine to finish',
+    needs_hub_url: 'Hub address needed',
+    conflict: 'Connection needs attention',
+    unsupported: 'Readings collected by the Hub',
+    error: 'Live readings need attention',
+    outcome_unknown: 'Checking the live connection',
+    disabled: manual && device.enabled ? 'Live readings disabled' : 'Monitoring paused',
+    simulator: 'Virtual brewer connected',
+  }
+  const descriptions: Record<string, string> = {
+    pending: 'The Hub sets up live readings automatically when it connects to this machine.',
+    configured: manual
+      ? 'This machine uses your saved manual receiver. Reconnecting preserves these settings.'
+      : 'This machine is configured to send live readings to this Hub automatically.',
+    waiting_idle: 'The Hub will finish setting up live readings when the machine is idle.',
+    needs_hub_url:
+      'The Hub needs a network address that this machine can reach. Configure the Hub device URL on the server, then test the connection again.',
+    conflict:
+      'Live readings now point elsewhere. Test the connection to reconnect this machine to this Hub.',
+    unsupported:
+      'The Hub collects readings while connected. This firmware does not support automatic live updates.',
+    error: 'The Hub could not finish setting up live readings. Test the connection to try again.',
+    outcome_unknown:
+      'The Hub is checking whether the machine accepted its live connection settings.',
+    disabled:
+      manual && device.enabled
+        ? 'Sending to the manual receiver is disabled. Your saved connection remains available in Advanced Hub connection.'
+        : 'Enable monitoring to connect this machine and collect its readings.',
+    simulator: 'The Hub collects readings directly from this virtual brewer.',
+  }
+  return (
+    <section className="settings-row compact" aria-label="Hub connection">
+      <div>
+        <h3>Hub connection</h3>
+        <p>{device.telemetry?.message || descriptions[state] || descriptions.pending}</p>
+      </div>
+      <div className="settings-fields" role="status">
+        {labels[state] || 'Checking the Hub connection'}
+      </div>
+    </section>
+  )
+}
+
 export function DeviceDialog({ device, onClose }: { device?: Device; onClose: () => void }) {
   const hub = useHub()
+  const live = hub.devices.find((item) => item.id === device?.id) || device
+  const [observed, setObserved] = useState<Device | null>(null)
+  const current = observed || live
+  useEffect(() => setObserved(null), [live])
   const [form, setForm] = useState({
     name: device?.name || '',
-    model: device?.model || 'pico-pro',
+    model: device?.model || (hub.session.demo ? 'pico-pro' : ''),
     adapter: device?.adapter || (hub.session.demo ? 'simulator' : 'pico-standalone'),
     base_url: device?.base_url || '',
     api_key: '',
@@ -29,26 +91,61 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
     enabled: device?.enabled ?? true,
   })
   const [busy, setBusy] = useState(false)
+  const [identifying, setIdentifying] = useState(false)
   const [error, setError] = useState('')
+  const locked = busy || identifying
+  const physical = form.adapter === 'pico-standalone'
+  const invalidIdentity = ['invalid_model', 'unsupported_model'].includes(
+    current?.model_error_code || ''
+  )
+  const manualModel =
+    physical &&
+    !invalidIdentity &&
+    !!(current?.model_selection_required || current?.model_source === 'manual')
+  const connectionChanged = !!form.api_key || form.base_url !== device?.base_url
   async function submit(event: FormEvent) {
     event.preventDefault()
-    if (busy) return
+    if (locked) return
     setBusy(true)
     setError('')
     try {
       await api<Device>(device ? `/devices/${device.id}` : '/devices', {
         method: device ? 'PUT' : 'POST',
-        body: form,
+        body: { ...form, model: physical && !manualModel ? '' : form.model },
       })
       await hub.refresh()
       hub.notify(
-        device ? 'Machine connection updated.' : 'Machine added. The hub is connecting now.'
+        device
+          ? 'Machine connection updated.'
+          : physical
+            ? 'Machine added. The Hub is identifying it and setting up live readings.'
+            : 'Machine added. The hub is connecting now.'
       )
       onClose()
     } catch (error) {
       setError(errorMessage(error))
     } finally {
       setBusy(false)
+    }
+  }
+  async function identify() {
+    if (!device || locked || connectionChanged) return
+    setIdentifying(true)
+    setError('')
+    try {
+      setObserved(await api<Device>(`/devices/${device.id}/test`, { method: 'POST' }))
+      await hub.refresh()
+      hub.notify('Machine identity checked.')
+    } catch (error) {
+      setError(errorMessage(error))
+      try {
+        setObserved(await api<Device>(`/devices/${device.id}`))
+        await hub.refresh()
+      } catch {
+        // Keep the existing identity when the connection itself is unavailable.
+      }
+    } finally {
+      setIdentifying(false)
     }
   }
   const models =
@@ -68,14 +165,14 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
     <Modal
       title={device ? 'Edit machine connection' : 'Add machine'}
       onClose={() => {
-        if (!busy) onClose()
+        if (!locked) onClose()
       }}
       actions={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={busy}>
+          <Button variant="secondary" onClick={onClose} disabled={locked}>
             Cancel
           </Button>
-          <Button form="device-form" type="submit" disabled={busy}>
+          <Button form="device-form" type="submit" disabled={locked}>
             {busy ? (
               <Loader2 size={16} className="spin" />
             ) : device ? (
@@ -95,16 +192,16 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
               autoFocus
               required
               maxLength={100}
-              disabled={busy}
+              disabled={locked}
               value={form.name}
               onChange={(event) => setForm({ ...form, name: event.target.value })}
-              placeholder="Pico Pro · Brew studio"
+              placeholder="Brewer · Brew studio"
             />
           </Field>
           <Field label="Location">
             <input
               maxLength={160}
-              disabled={busy}
+              disabled={locked}
               value={form.location}
               onChange={(event) => setForm({ ...form, location: event.target.value })}
               placeholder="Brew studio"
@@ -115,13 +212,13 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
             hint={device ? 'Fixed for this machine record.' : undefined}
           >
             <select
-              disabled={!!device || busy}
+              disabled={!!device || locked}
               value={form.adapter}
               onChange={(event) =>
                 setForm({
                   ...form,
                   adapter: event.target.value,
-                  model: 'pico-pro',
+                  model: event.target.value === 'simulator' ? 'pico-pro' : '',
                   base_url: '',
                   api_key: '',
                 })
@@ -133,18 +230,38 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
               <option value="simulator">Virtual brewer / simulator</option>
             </select>
           </Field>
-          <Field label="Machine model">
-            <select
-              disabled={!!device || busy}
-              value={form.model}
-              onChange={(event) => setForm({ ...form, model: event.target.value })}
-            >
-              {models.map((model) => (
-                <option key={model.id} value={model.id}>
-                  {model.name}
-                </option>
-              ))}
-            </select>
+          <Field
+            label="Machine model"
+            hint={
+              physical
+                ? manualModel
+                  ? 'This firmware does not identify the model. Choose it once, or install the firmware for your machine to enable automatic identification.'
+                  : current?.model_source === 'firmware'
+                    ? 'Reported by the machine. The Hub checks it when connecting.'
+                    : 'The Hub reads the model from the machine when it connects.'
+                : undefined
+            }
+          >
+            {!physical || manualModel ? (
+              <select
+                required
+                disabled={(!physical && !!device) || locked}
+                value={form.model}
+                onChange={(event) => setForm({ ...form, model: event.target.value })}
+              >
+                {manualModel && <option value="">Choose the machine model</option>}
+                {models.map((model) => (
+                  <option key={model.id} value={model.id}>
+                    {model.name}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                readOnly
+                value={current ? deviceModelLabel(current) : 'Detect automatically'}
+              />
+            )}
           </Field>
         </div>
         {form.adapter === 'pico-standalone' && (
@@ -157,7 +274,7 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
                 type="url"
                 required
                 maxLength={1024}
-                disabled={busy}
+                disabled={locked}
                 value={form.base_url}
                 onChange={(event) => setForm({ ...form, base_url: event.target.value })}
                 placeholder="http://picobrew.local"
@@ -175,19 +292,41 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
                 type="password"
                 autoComplete="new-password"
                 maxLength={1024}
-                disabled={busy}
+                disabled={locked}
                 required={!device?.key_configured}
                 value={form.api_key}
                 onChange={(event) => setForm({ ...form, api_key: event.target.value })}
               />
             </Field>
             {device?.key_reused && <DeviceKeyNotice />}
+            {current?.model_error && (
+              <p className="help-text" role="status">
+                {current.model_error}
+              </p>
+            )}
+            {device && (
+              <>
+                <Button
+                  type="button"
+                  variant="secondary"
+                  disabled={locked || connectionChanged || !current?.enabled}
+                  onClick={() => void identify()}
+                >
+                  <RefreshCw size={16} className={identifying ? 'spin' : ''} />
+                  Identify machine
+                </Button>
+                {connectionChanged && (
+                  <p className="help-text">Save connection changes before checking the machine.</p>
+                )}
+                {current && <HubConnectionStatus device={current} />}
+              </>
+            )}
           </>
         )}
         <label className="check-field">
           <input
             type="checkbox"
-            disabled={busy}
+            disabled={locked}
             checked={form.enabled}
             onChange={(event) => setForm({ ...form, enabled: event.target.checked })}
           />

@@ -4,7 +4,8 @@
 
 | Setting | Default | Meaning |
 |---|---|---|
-| `--listen` | `127.0.0.1:8080` | Hub HTTP bind address |
+| `--listen` | `0.0.0.0:8080` (authenticated mode); `127.0.0.1:8080` (demo) | Hub HTTP bind address; network access permits machine reporting |
+| `--device-url` / `HUB_DEVICE_URL` | Automatically inferred | Optional HTTP origin advertised to machines for advanced network mappings |
 | `--data` | `data` | SQLite database and encryption key directory |
 | `--web` | unset | Optional directory overriding the embedded website for development |
 | `--secure-cookies` | false | Mark session cookies Secure; enable for an HTTPS reverse proxy |
@@ -75,4 +76,4 @@ The browser workspace ZIP excludes authentication and provider/device credential
 
 Use HTTPS for browser traffic outside a trusted local environment. The proxy should forward the original Host header and stream SSE without buffering. A cloud host needs a private route to the brewer LAN. Do not forward a brewer's HTTP API directly to the public internet.
 
-The hub does not send emails, SMS or webhooks to third parties. There is no external messaging configuration in this release. The only optional external data transfer built in is AI context sent to the provider you configure; the firmware's telemetry forwarding target is separately configured on the machine.
+The Hub does not send emails, SMS or webhooks to third parties. There is no external messaging configuration in this release. Optional AI context goes to the provider you configure. Machine reporting is configured automatically to this Hub; an advanced manual destination can be selected in the Hub and persists until returned to automatic mode.

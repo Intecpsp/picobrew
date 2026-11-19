@@ -85,7 +85,9 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.1.0')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.2.0')
+        expect(self.page.locator('#modelName')).to_have_text('Pico Pro brewing console')
+        expect(self.page).to_have_title('Pico Pro · Pico Local')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)
         for width in (1440, 1100):
             self.page.set_viewport_size({'width': width, 'height': 1000})
@@ -97,7 +99,19 @@ class WebFeatures(unittest.TestCase):
             }'''))
             self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
 
-    def test_optional_forwarding_uses_same_origin_and_preserves_unsaved_edits(self):
+    def test_pico_s_identity_is_shown_without_pro_branding(self):
+        with base.LOCK:
+            _, info = base.backend.request('GET', '/api/v1')
+            _, status = base.backend.request('GET', '/api/v1/status')
+        for data in (info, status):
+            data.update(model='pico-s', model_name='Pico S', model_family='pico-s-pro')
+        self.page.route('**/api/v1', lambda route: route.fulfill(json=info))
+        self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
+        self.connect()
+        expect(self.page.locator('#modelName')).to_have_text('Pico S brewing console')
+        expect(self.page).to_have_title('Pico S · Pico Local')
+
+    def test_hub_connection_is_read_only_and_updates_from_device(self):
         config = {'enabled': False, 'host': '', 'port': 8080,
                   'status': {'state': 'disabled', 'sent': 0, 'failed': 0, 'dropped': 0,
                              'last_http_status': 0, 'storage_error': False}}
@@ -116,30 +130,23 @@ class WebFeatures(unittest.TestCase):
         self.page.route('**/api/v1/telemetry', telemetry)
         self.connect()
         self.page.locator('[data-tab="settings"]').click()
-        expect(self.page.locator('#saveTelemetry')).to_be_enabled()
-        expect(self.page.locator('#telemetryEnabled')).not_to_be_checked()
-        expect(self.page.locator('#telemetryStatus')).to_contain_text('Forwarding is off.')
+        expect(self.page.locator('#forwardingHeading')).to_have_text('Hub connection')
+        expect(self.page.locator('#telemetryStatus')).to_contain_text('connect automatically')
+        expect(self.page.locator('#hubDestination')).to_have_text('No Hub destination configured.')
+        expect(self.page.locator('#telemetryForm, #telemetryHost, #telemetryPort, #saveTelemetry')).to_have_count(0)
         self.assertTrue(all(method == 'GET' for method, _ in requests))
         for name, width, height in [('desktop', 1440, 1000), ('wide', 1920, 1080),
                                     ('mobile', 390, 844)]:
             self.page.set_viewport_size({'width': width, 'height': height})
             self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
             self.page.screenshot(path=str(self.output / ('settings-' + name + '.png')), full_page=True)
-        self.page.locator('#telemetryEnabled').check()
-        self.page.locator('#telemetryHost').fill('brewbox.local')
-        self.page.locator('#telemetryPort').fill('8123')
+        # Simulate the Hub pairing through the retained management API.
+        config.update(enabled=True, host='brewbox.local', port=8123)
+        config['status']['state'] = 'ready'
         self.page.evaluate('refreshTelemetry()')
-        expect(self.page.locator('#telemetryHost')).to_have_value('brewbox.local')
-        expect(self.page.locator('#telemetryEnabled')).to_be_checked()
-        self.page.locator('#saveTelemetry').click()
-        expect(self.page.locator('#notice')).to_have_text('Forwarding settings saved on the Pico.')
-        self.assertEqual([body for method, body in requests if method == 'PUT'],
-                         [{'enabled': True, 'host': 'brewbox.local', 'port': 8123}])
+        expect(self.page.locator('#hubDestination')).to_have_text('Sending live readings to brewbox.local:8123.')
         expect(self.page.locator('#telemetryStatus')).to_contain_text('Ready to send readings.')
-        with base.LOCK:
-            base.backend.LIB.test_busy(1)
-        expect(self.page.locator('#saveTelemetry')).to_be_disabled(timeout=8000)
-        expect(self.page.locator('#telemetryHost')).to_be_disabled()
+        self.assertTrue(all(method == 'GET' for method, _ in requests))
 
     def test_complete_recording_pages_gaps_selection_and_exports(self):
         self.history()
@@ -243,6 +250,7 @@ class WebFeatures(unittest.TestCase):
         spec = json.loads((Path(__file__).resolve().parents[1] / 'docs/openapi.json').read_text())
         expected = {method.upper() + ' ' + path for path, item in spec['paths'].items()
                     for method in item if method in {'get', 'put', 'post', 'patch', 'delete', 'head', 'options'}}
+        expected.remove('PUT /api/v1/telemetry')  # Hub-managed, never edited by this website.
         actual = set(self.page.locator('#apiEndpoint option').evaluate_all('options=>options.map(option=>option.value)'))
         self.assertEqual(actual, expected)
         self.page.locator('#apiEndpoint').select_option('GET /api/v1/history/samples/{offset}')

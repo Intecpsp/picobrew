@@ -46,14 +46,14 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 5
+INSTALL_REVISION = 6
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 165656
-CANDIDATE_SHA256 = 'a5e7fc51841ad0444e6b3a731af48dcdac214cce65c04b54b373001b543f6df4'
+CANDIDATE_SIZE = 165344
+CANDIDATE_SHA256 = '8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8'
 # Previously installed standalone versions are approved upgrade sources,
 # never alternate payloads accepted by --firmware. Keep these identities fixed
 # when the target CANDIDATE_* values change.
@@ -63,6 +63,8 @@ RELEASED_1_0_1_SIZE = 164600
 RELEASED_1_0_1_SHA256 = "7f1ce21158b6f0f0297087e37c71cda23926e1a5c4902d938f4f0162929d36ce"
 RELEASED_1_0_0_SIZE = 164600
 RELEASED_1_0_0_SHA256 = "652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558"
+RELEASED_1_1_0_SIZE = 165656
+RELEASED_1_1_0_SHA256 = "a5e7fc51841ad0444e6b3a731af48dcdac214cce65c04b54b373001b543f6df4"
 BOOT_INFO = bytes.fromhex("01 3d 00 20 ba dc cd ab")
 BOOT_INFO_SHA256 = "59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e9435"
 APP_NAME = "/sys/mcuimg2.bin"
@@ -80,7 +82,7 @@ KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
 # Updated together with the final firmware candidate, after asset generation.
 # A placeholder deliberately prevents installation of an unreviewed bundle.
-WEB_MANIFEST_SHA256 = '29cccfb3fbf2c466e0c123b214c145272a00f91fbb1f867b3908eb32ad2a6bfa'
+WEB_MANIFEST_SHA256 = '89f1d18f7d7550c90dbb7142428602ce99cc65ce9f46ec242ec047216e11265f'
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
              ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
@@ -304,6 +306,7 @@ def _approved_current_applications(mode):
         identities.extend(((PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
                            (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
+                           (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
                            (CANDIDATE_SIZE, CANDIDATE_SHA256)))
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 

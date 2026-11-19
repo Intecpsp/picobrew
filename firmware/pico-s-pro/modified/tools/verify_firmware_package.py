@@ -3,7 +3,9 @@
 
 import hashlib
 import json
+import argparse
 from pathlib import Path
+from machine_model import add_model_argument, DEFAULT_MODEL
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,14 +15,14 @@ def digest(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def verify():
-    built_dir = ROOT / "build/standalone/firmware"
-    packaged_dir = ROOT / "firmware/standalone"
+def verify(model=DEFAULT_MODEL):
+    built_dir = ROOT / "build/standalone" / model / "firmware"
+    packaged_dir = ROOT / "firmware/standalone" / model
     built = json.loads((built_dir / "firmware-report.json").read_text(encoding="utf-8"))
     packaged = json.loads((packaged_dir / "firmware-report.json").read_text(encoding="utf-8"))
     for filename, key in (
-        ("pico-s-pro-standalone.bin", "binary_sha256"),
-        ("pico-s-pro-standalone.update.txt", "update_body_sha256"),
+        (model + "-standalone.bin", "binary_sha256"),
+        (model + "-standalone.update.txt", "update_body_sha256"),
     ):
         actual = digest(built_dir / filename)
         # The installation package contains the raw image and records the
@@ -32,7 +34,7 @@ def verify():
         if key == "binary_sha256" and not packaged_file.is_file():
             raise ValueError("The committed standalone image is missing")
     for key in (
-        "profile", "firmware_version", "image_layout", "app_sources_sha256",
+        "profile", "model", "model_family", "firmware_version", "image_layout", "app_sources_sha256",
         "compiled_sources", "web_sources_sha256", "browser_storage",
     ):
         if built[key] != packaged[key]:
@@ -46,4 +48,6 @@ def verify():
 
 
 if __name__ == "__main__":
-    verify()
+    parser = argparse.ArgumentParser(description=__doc__)
+    add_model_argument(parser)
+    verify(parser.parse_args().model)

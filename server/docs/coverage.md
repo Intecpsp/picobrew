@@ -24,7 +24,8 @@ model scope.
 | AI monitoring | Opt-in at start or during a live brew; exact-session consent, contextual questions, five-minute observations saved with that brew | Advisory; no low-level control or live recipe/temperature overrides; consent does not carry into the next brew |
 | AI analysis | Analysis in the selected journal entry, saved results and JSON export, downsampled bounded context | No invented measurements; raw archive/export remains available; a removed machine does not remove archived analysis |
 | Shopping list | Aggregate selected recipes by ingredient and unit | Inventory purchasing, supplier integrations and stock deduction are absent |
-| Telemetry forwarding | Configure machine receiver; ingest known-UID unsigned observations | Unsigned forwarding is not authoritative status or a control channel |
+| Machine identity | Read compile-time S/Pro model after authenticated UID verification; explicit fallback for older firmware | Reported identity describes the installed build, not independent hardware detection |
+| Telemetry forwarding | Automatic Hub connection on pairing; persistent advanced manual override in the Hub; ingest known-UID unsigned observations | Unsigned forwarding is not authoritative status or a control channel |
 | Data | SQLite persistence, encrypted credentials, portable nonsecret ZIP, full-directory recovery instructions | No browser upload/restore of a full encrypted data directory |
 | API | Authenticated REST endpoints, OpenAPI schemas/catalog, in-app explorer, SSE | Hub authentication differs from the appliance's bearer-key API |
 | Packaging | Source, pinned dependencies, Dockerfile, Compose, Go/frontend/browser CI | No managed hosting or app-store package |

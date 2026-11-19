@@ -20,9 +20,10 @@ type endpoint struct {
 }
 
 var endpoints = []endpoint{
+	{"GET", "/telemetry/receiver", "Prove that an inferred receiver reaches this Hub instance", nil},
 	{"GET", "/auth/session", "Read owner session and CSRF token", nil}, {"POST", "/auth/setup", "Create the first owner account", map[string]any{"token": "server-printed-setup-token", "password": "a-long-private-password"}}, {"POST", "/auth/login", "Sign in", map[string]any{"password": "your-password"}}, {"POST", "/auth/logout", "Sign out", map[string]any{}},
-	{"GET", "/devices", "List fleet status", nil}, {"POST", "/devices", "Register a machine", map[string]any{"name": "Pico Pro", "model": "pico-pro", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "api_key": "64-hex-character-device-key", "location": "Brew room"}},
-	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "Pico Pro", "model": "pico-pro", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer (rotate 180 degrees)", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read forwarding configuration", nil}, {"PUT", "/devices/{id}/telemetry", "Update forwarding configuration", map[string]any{"enabled": false, "host": "", "port": 8080}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
+	{"GET", "/devices", "List fleet status", nil}, {"POST", "/devices", "Register a machine", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "api_key": "64-hex-character-device-key", "location": "Brew room"}},
+	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer (rotate 180 degrees)", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read forwarding configuration", nil}, {"PUT", "/devices/{id}/telemetry", "Choose automatic pairing or a persistent manual receiver", map[string]any{"mode": "automatic"}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
 	{"GET", "/profiles", "List planning and control capabilities by model", nil}, {"GET", "/recipes", "List shared recipes", nil}, {"POST", "/recipes", "Create a recipe", map[string]any{"name": "New recipe", "batch_liters": 5, "efficiency": 55, "ingredients": []any{}, "steps": []any{map[string]any{"name": "Mash", "kind": "mash", "target_c": 67, "minutes": 60, "location": 0, "drain_minutes": 0}}}}, {"GET", "/recipes/{id}", "Read a recipe", nil}, {"PUT", "/recipes/{id}", "Save a recipe using its current revision", map[string]any{"revision": 1}}, {"DELETE", "/recipes/{id}", "Remove a recipe from the library", nil}, {"POST", "/recipes/import", "Import JSON or BeerXML", map[string]any{"format": "beerxml", "data": "<RECIPES>...</RECIPES>"}}, {"POST", "/recipes/{id}/adapt", "Preview a machine-specific recipe adaptation", map[string]any{"profile_id": "pico-pro", "batch_liters": 5}}, {"GET", "/recipes/{id}/export", "Export recipe as JSON or BeerXML (?format=)", nil}, {"GET", "/recipes/{id}/revisions", "Read saved recipe revisions", nil},
 	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
 	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional subscription or API-key access", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
@@ -196,7 +197,7 @@ func buildSchemas() schemaMap {
 	r.values["Telemetry"] = schemaMap{"type": "object", "properties": schemaMap{"enabled": boolSchema(), "host": stringSchema(), "port": schemaMap{"type": "integer", "minimum": 1, "maximum": 65535}, "state": stringSchema()}, "additionalProperties": true}
 	r.values["Login"] = schemaObject(schemaMap{"password": schemaMap{"type": "string", "maxLength": 256, "writeOnly": true}}, "password")
 	r.values["Setup"] = schemaObject(schemaMap{"password": schemaMap{"type": "string", "minLength": 12, "maxLength": 256, "writeOnly": true}, "token": schemaMap{"type": "string", "writeOnly": true}}, "password", "token")
-	r.values["DeviceInput"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 100}, "model": schemaMap{"type": "string", "enum": []string{"pico-pro", "pico-s", "pico-c", "z", "zymatic"}}, "adapter": schemaMap{"type": "string", "enum": []string{"pico-standalone", "simulator"}}, "base_url": schemaMap{"type": "string", "description": "Explicit appliance HTTP base URL; required for pico-standalone. Control is currently supported only for S/Pro standalone firmware."}, "api_key": schemaMap{"type": "string", "writeOnly": true, "description": "Standalone firmware key; omit/leave blank on update to preserve the stored key."}, "location": stringSchema(), "enabled": boolSchema()}, "name", "model", "adapter")
+	r.values["DeviceInput"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 100}, "model": schemaMap{"type": "string", "enum": []string{"", "auto", "pico-pro", "pico-s", "pico-c", "z", "zymatic"}, "description": "Omit/empty for automatic physical firmware identification. Simulator requires an explicit profile. Manual S/Pro selection supports older firmware that does not report a model."}, "adapter": schemaMap{"type": "string", "enum": []string{"pico-standalone", "simulator"}}, "base_url": schemaMap{"type": "string", "description": "Explicit appliance HTTP base URL; required for pico-standalone. Control is currently supported only for S/Pro standalone firmware."}, "api_key": schemaMap{"type": "string", "writeOnly": true, "description": "Standalone firmware key; omit/leave blank on update to preserve the stored key."}, "location": stringSchema(), "enabled": boolSchema()}, "name", "adapter")
 	recipeProps := schemaMap{}
 	for k, v := range r.properties("Recipe") {
 		recipeProps[k] = v
@@ -250,7 +251,7 @@ func buildSchemas() schemaMap {
 	r.values["ProfileInput"] = schemaObject(schemaMap{"batch_liters": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 50}, "efficiency": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 100}, "max_grain_kg": schemaMap{"type": "number", "minimum": 0, "maximum": 25, "description": "Zero means unverified, not unlimited proven capacity."}}, "batch_liters", "efficiency", "max_grain_kg")
 	r.values["ImportInput"] = schemaObject(schemaMap{"format": schemaMap{"type": "string", "enum": []string{"json", "beerxml"}}, "data": schemaMap{"type": "string", "maxLength": 1048576, "description": "Canonical recipe JSON object/array or supported BeerXML 1 text. DTDs and external entities are rejected."}}, "format", "data")
 	r.values["BrewNotes"] = schemaObject(schemaMap{"notes": schemaMap{"type": "string", "maxLength": 32000}, "rating": schemaMap{"type": "integer", "minimum": 0, "maximum": 5}}, "notes", "rating")
-	r.values["TelemetryInput"] = schemaObject(schemaMap{"enabled": boolSchema(), "host": schemaMap{"type": "string", "maxLength": 127, "description": "Hostname or IPv4 without scheme, port or path; empty only when disabled."}, "port": schemaMap{"type": "integer", "minimum": 1, "maximum": 65535}}, "enabled", "host", "port")
+	r.values["TelemetryInput"] = schemaObject(schemaMap{"mode": schemaMap{"type": "string", "enum": []string{"automatic", "manual"}, "description": "Automatic requires only mode. Manual requires enabled, host and port; omitting mode preserves the legacy manual API."}, "enabled": boolSchema(), "host": schemaMap{"type": "string", "maxLength": 127, "description": "Hostname or IPv4 without scheme, port or path; empty only when disabled."}, "port": schemaMap{"type": "integer", "minimum": 1, "maximum": 65535}})
 	settingsProps := r.values["Settings"].(schemaMap)["properties"].(schemaMap)
 	r.values["SettingsInput"] = schemaObject(settingsProps)
 	r.values["SettingsInput"].(schemaMap)["minProperties"] = 1
@@ -293,6 +294,9 @@ func operationParameters(e endpoint) []any {
 		params = append(params, schemaMap{"name": name, "in": "query", "description": description, "required": false, "schema": schema})
 	}
 	switch e.path {
+	case "/telemetry/receiver":
+		query("challenge", "A random 16-byte challenge encoded as 32 hexadecimal characters.", schemaMap{"type": "string", "pattern": "^[0-9a-fA-F]{32}$"})
+		params[len(params)-1].(schemaMap)["required"] = true
 	case "/catalog":
 		for _, name := range []string{"q", "source", "kind", "model", "style"} {
 			query(name, "Catalogue filter.", stringSchema())
@@ -425,6 +429,9 @@ func successResponses(e endpoint) schemaMap {
 		schema = schemaRef("Settings")
 	case "/devices/{id}/telemetry":
 		schema = schemaRef("Telemetry")
+		if e.method == "PUT" {
+			schema = schemaRef("TelemetryStatus")
+		}
 	case "/devices/{id}/ai-monitor":
 		schema = schemaRef("aiMonitorStatus")
 	case "/devices/{id}/sync-history":
@@ -476,6 +483,8 @@ func successResponses(e endpoint) schemaMap {
 		} else {
 			schema = schemaRef("BrewDetail")
 		}
+	case "/telemetry/receiver":
+		schema = schemaObject(schemaMap{"proof": stringSchema()}, "proof")
 	case "/telemetry":
 		code = "202"
 		schema = schemaRef("Accepted")
@@ -603,7 +612,7 @@ func openAPIDocument() schemaMap {
 		if e.method != "GET" {
 			security = []any{map[string]any{"session": []string{}, "csrf": []string{}}}
 		}
-		public := strings.HasPrefix(e.path, "/auth/") && e.path != "/auth/logout" || e.path == "/telemetry"
+		public := strings.HasPrefix(e.path, "/auth/") && e.path != "/auth/logout" || e.path == "/telemetry" || e.path == "/telemetry/receiver"
 		if public {
 			security = []any{}
 		}

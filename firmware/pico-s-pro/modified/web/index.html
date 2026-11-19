@@ -12,7 +12,7 @@
 </head>
 <body>
   <header class="topbar">
-    <a class="brand" href="/" aria-label="Pico Local home"><span class="brand-mark">P</span><span>Pico <strong>Local</strong><small>S / PRO BREWING CONSOLE</small></span></a>
+    <a class="brand" href="/" aria-label="Pico Local home"><span class="brand-mark">P</span><span>Pico <strong>Local</strong><small id="modelName">BREWING CONSOLE</small></span></a>
     <div class="connection"><span id="connectionDot" class="dot"></span><span id="connectionText">Disconnected</span><button id="connectButton" class="button small ghost">Connect</button></div>
   </header>
   <div class="shell">
@@ -89,21 +89,15 @@
             </form>
           </section>
           <section class="settings-section" aria-labelledby="forwardingHeading">
-            <div class="settings-section-heading"><h2 id="forwardingHeading">Optional forwarding</h2><p class="muted">Send live readings every 15 seconds to a receiver on your network. Brew history stays on the Pico.</p></div>
-            <form id="telemetryForm">
-              <div class="settings-row"><label class="checkbox"><input type="checkbox" id="telemetryEnabled" disabled> Send readings to a receiver</label></div>
-              <div class="settings-row"><label for="telemetryHost">Receiver</label><div>
-                <div class="settings-receiver"><input id="telemetryHost" maxlength="127" placeholder="brewbox.local" autocomplete="off" spellcheck="false" aria-describedby="telemetryHostHint" disabled><div class="settings-port"><label for="telemetryPort">Port</label><input id="telemetryPort" type="number" min="1" max="65535" step="1" value="8080" required disabled></div></div>
-                <p id="telemetryHostHint" class="hint">Host name or IPv4 address, without http:// or a path.</p>
-              </div></div>
-              <div class="settings-actions"><button id="saveTelemetry" class="button primary" type="submit" disabled>Save forwarding</button><p id="telemetryStatus" class="hint" role="status" aria-live="polite">Connect to load forwarding settings.</p></div>
-            </form>
+            <div class="settings-section-heading"><h2 id="forwardingHeading">Hub connection</h2><p class="muted">Add this brewer in PicoBrew Hub to connect automatically. The Hub manages where live readings are sent; brew history stays on the Pico.</p></div>
+            <p id="hubDestination" class="hint">No Hub connection loaded.</p>
+            <p id="telemetryStatus" class="hint" role="status" aria-live="polite">Connect to see Hub connection status.</p>
           </section>
           <section class="settings-section settings-access" aria-labelledby="accessHeading"><div class="settings-section-heading"><h2 id="accessHeading">Browser access</h2><p class="muted">Your key is kept in this browser tab’s session. Disconnect to remove it.</p></div><button id="disconnectButton" class="button">Disconnect</button></section>
         </div>
       </section>
       <section id="api" class="tab-panel" hidden>
-        <div class="page-heading"><div><p class="eyebrow">LOCAL REST API</p><h1>API explorer.</h1><p class="muted">Explore every endpoint using your connected device key.</p></div></div>
+        <div class="page-heading"><div><p class="eyebrow">LOCAL REST API</p><h1>API explorer.</h1><p class="muted">Explore the local API using your connected device key.</p></div></div>
         <div class="api-grid"><article class="card"><form id="apiForm">
           <label for="apiEndpoint">Endpoint</label><select id="apiEndpoint"></select><p id="apiDescription" class="hint"></p>
           <div id="apiParameterRow" hidden><label for="apiParameter">Recipe ID</label><input id="apiParameter" maxlength="20" placeholder="house-ale" autocomplete="off"></div>

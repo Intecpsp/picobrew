@@ -1,22 +1,15 @@
 # Observed Pico serial-flash layout
 
-The standalone budget below describes the earlier embedded-UI design. The
-current 1.0.0 budget uses the owner's actual backup and includes separate web
-files, retained history and optional forwarding; see [release 1.0.0](release-1.0.0.md#storage-budget).
+The storage budget below describes an earlier embedded-UI design and a
+separate example directory listing. Current firmware stores browser files and
+retained history separately; consult the current build/package report and
+inspect the target appliance before budgeting an installation.
 
 ## Evidence and limits
 
-The owner's actual verified backup has since been reviewed. See
-[device-firmware-review.md](device-firmware-review.md) for its confirmed
-v0.1.34 application, actual bootloader behavior, mirrored boot-record
-ambiguity, and 83 free blocks split into three extents. The figures below
-remain a transcription of the earlier third-party screenshot; they must
-not be used as the owner's current installation layout.
-
-On 2026-11-17 the owner supplied a screenshot of a third party's Pico
-filesystem listing. The sender did not know whether the appliance was a
-Pico Pro or Pico C. The screenshot is a directory/allocation listing, not a
-flash dump, and it is not a measurement of the owner's Pro.
+The example is a directory/allocation listing, not a flash dump. Its appliance
+model is unconfirmed, so it must not be treated as the layout of a particular
+Pico Pro, Pico S or Pico C.
 
 The table below transcribes the screenshot. Its output matches
 [ALLTERCO's cc3200tool](https://github.com/ALLTERCO/cc3200tool/blob/master/cc3200tool/cc.py).
@@ -161,19 +154,13 @@ The full local footprint is reached over use; a newly provisioned device
 does not allocate all recipe banks immediately.
 
 The pictured `mcuimg2.bin` allocation is 192 KiB. Compare the exact candidate
-length from a fresh `build/standalone/firmware/firmware-report.json` against
+length from a fresh `build/standalone/<model>/firmware/firmware-report.json` against
 the actual file's available content capacity before installation. A layout
 budget cannot establish boot-slot selection, binary compatibility, or a
 successful install. Do not use `mcuimg.bin` as a replacement target merely
 because a generic CC3200 flashing example uses that filename.
 
-## Original evidence request, now partly completed
-
-The owner has since supplied a verified full backup and the four files below.
-Their findings are in the [actual device review](device-firmware-review.md).
-The remaining immediate check is a live logical read of the mirrored boot
-record; the hardware identification and physical acceptance items remain
-separate. The original evidence request is retained here for other appliances.
+## Evidence required for another appliance
 
 Preserve a complete verified flash backup and obtain file-level, read-only
 copies of these four files with their exact lengths and SHA-256 hashes:

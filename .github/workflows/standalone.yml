@@ -93,10 +93,13 @@ jobs:
         run: python -m pip install -r requirements-test.txt
       - name: Bootstrap pinned compiler and Energia SDK
         run: make bootstrap PYTHON=python
-      - name: Link appliance image and verify native flash recovery
-        run: make standalone-storage-test PYTHON=python
-      - name: Verify the committed installation package matches the build
-        run: python tools/verify_firmware_package.py
+      - name: Build both product images and verify their packages and native storage
+        shell: bash
+        run: |
+          for model in pico-pro pico-s; do
+            make standalone-storage-test MODEL="$model" PYTHON=python
+            python tools/verify_firmware_package.py --model "$model"
+          done
       - name: Verify ARM interrupt and filter-trip guards
         run: make standalone-arm-test PYTHON=python
       - name: Verify SDK pin tables
@@ -114,10 +117,10 @@ jobs:
           name: standalone-firmware-candidate-${{ matrix.os }}
           include-hidden-files: true
           path: |
-            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.bin
-            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.elf
-            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.map
-            firmware/pico-s-pro/modified/build/standalone/firmware/firmware-report.json
+            firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.bin
+            firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.elf
+            firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.map
+            firmware/pico-s-pro/modified/build/standalone/*/firmware/firmware-report.json
             firmware/pico-s-pro/modified/firmware/web/
             firmware/pico-s-pro/modified/.deps/toolchain/.picobrew-target-runtime.json
             build/archives/oem/portable-build.json

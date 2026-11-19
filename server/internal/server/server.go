@@ -28,6 +28,7 @@ const Version = "0.1.0"
 
 type Config struct {
 	DataDir, WebDir, Password string
+	ListenAddress, DeviceURL  string
 	Demo, SecureCookies       bool
 	PollInterval              time.Duration
 	Logger                    *slog.Logger
@@ -44,6 +45,10 @@ type runtimeDevice struct {
 	identityMismatch  bool
 	keyFingerprint    [32]byte // Private, immutable, and never persisted or returned.
 	hasKeyFingerprint bool
+	telemetryNext     time.Time
+	telemetryAttempts int
+	telemetryClaim    bool
+	telemetryOrigin   string
 }
 type Server struct {
 	cfg                       Config
@@ -66,6 +71,8 @@ type Server struct {
 	chatGPTCallback           *http.Server
 	chatGPTCallbackTimer      *time.Timer
 	chatGPTCallbackGeneration uint64
+	telemetryProbeKey         string
+	telemetryClient           *http.Client
 }
 
 func New(cfg Config) (*Server, error) {
@@ -77,6 +84,11 @@ func New(cfg Config) (*Server, error) {
 	}
 	if cfg.PollInterval <= 0 {
 		cfg.PollInterval = 3 * time.Second
+	}
+	if cfg.DeviceURL != "" {
+		if _, err := parseReceiverURL(cfg.DeviceURL); err != nil {
+			return nil, fmt.Errorf("invalid Hub device URL: %w", err)
+		}
 	}
 	if cfg.WebDir == "" {
 		if _, err := webui.Files(); err != nil {
@@ -96,6 +108,8 @@ func New(cfg Config) (*Server, error) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New(), chatGPT: ai.NewChatGPT()}
+	s.telemetryProbeKey = secretToken()
+	s.telemetryClient = newReceiverClient()
 	if e = s.initAuth(); e != nil {
 		db.Close()
 		cancel()
@@ -212,6 +226,7 @@ func (s *Server) routes() http.Handler {
 		r.Post("/auth/setup", s.login)
 		r.Post("/auth/login", s.login)
 		r.Post("/telemetry", s.ingestTelemetry)
+		r.Get("/telemetry/receiver", s.telemetryReceiverProbe)
 		r.Group(func(r chi.Router) {
 			r.Use(s.authenticate)
 			r.Post("/auth/logout", s.logout)

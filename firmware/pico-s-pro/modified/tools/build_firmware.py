@@ -14,9 +14,9 @@ import shutil
 import struct
 import subprocess
 import sys
-from elftools.elf.elffile import ELFFile
 from package_update import encode_update, decode_update
 from arm_toolchain import sort_sources
+from machine_model import add_model_argument, verify_archive_model
 
 ROOT=Path(__file__).resolve().parents[1]
 ORIGIN,END=0x20004000,0x20040000
@@ -31,6 +31,7 @@ def firmware_version(standalone):
     return matches[0]
 
 def inspect_image(elf_path,bin_path):
+    from elftools.elf.elffile import ELFFile
     raw=bin_path.read_bytes()
     with elf_path.open('rb') as stream:
         elf=ELFFile(stream)
@@ -78,13 +79,16 @@ def main():
     p.add_argument('--sdk-root',type=Path,default=Path(os.environ.get('PICOBREW_SDK',str(ROOT/'.deps/energia'))))
     p.add_argument('--output-dir',type=Path)
     p.add_argument('--standalone',action='store_true',help='Build the cloud-independent local API image')
+    add_model_argument(p)
     p.add_argument('--skip-archive-build',action='store_true')
     a=p.parse_args()
-    out=(a.output_dir or ROOT/('build/standalone/firmware' if a.standalone else 'build/firmware')).resolve()
+    if not a.standalone and a.model != 'pico-pro':
+        p.error('Model selection is available only for --standalone; the legacy reconstruction is Pico Pro')
+    out=(a.output_dir or (ROOT/'build/standalone'/a.model/'firmware' if a.standalone else ROOT/'build/firmware')).resolve()
     out.mkdir(parents=True,exist_ok=True)
     core=out.parent/'core' if a.standalone else ROOT/'build'
-    name='pico-s-pro-standalone' if a.standalone else 'pico-pro-recovered'
-    common=['--sdk-root',str(a.sdk_root.resolve())]
+    name=a.model+'-standalone' if a.standalone else 'pico-pro-recovered'
+    common=['--sdk-root',str(a.sdk_root.resolve()),'--model',a.model]
     if a.arm_prefix:common+=['--arm-prefix',a.arm_prefix]
     if a.standalone:
         common+=['--standalone']
@@ -92,6 +96,7 @@ def main():
     if not a.skip_archive_build:
         subprocess.run([sys.executable,str(ROOT/'tools/build.py'),*common,
                         '--output-dir',str(core),'--archive-only'],check=True)
+    verify_archive_model(core,a.model,a.standalone)
     log=out/'build.log'
     command=[sys.executable,str(ROOT/'tools/build_sdk_validation.py'),*common,
         '--entry',str(ROOT/'platform/firmware_main.cpp'),
@@ -117,9 +122,10 @@ def main():
     update.write_bytes(body)
     native=json.loads((out/'native/validation.json').read_text(encoding='utf-8'))
     compiled=json.loads((out/'native/compile_report.json').read_text(encoding='utf-8'))
-    report={'artifact':('Pico S/Pro standalone local API firmware' if a.standalone else
+    report={'artifact':(('Pico S' if a.model=='pico-s' else 'Pico Pro')+' standalone local API firmware' if a.standalone else
                         'Complete recovered Pico Pro application with native Energia/TI startup and runtime'),
         'profile':'standalone' if a.standalone else 'legacy',
+        'model':a.model,'model_family':'pico-s-pro',
         'firmware_version':firmware_version(a.standalone),
         'reference_version':firmware_version(False),'source_reconstruction':True,'hardware_executed':False,
         'production_entry':'platform/firmware_main.cpp','application_composition':'src/application.c',
@@ -146,7 +152,7 @@ def main():
         report['web_sources_sha256']={f.relative_to(ROOT).as_posix():digest(f)
                                      for f in sort_sources((ROOT/'web').glob('*')) if f.is_file()}
     (out/'firmware-report.json').write_text(json.dumps(report,indent=2)+'\n', encoding='utf-8', newline='\n')
-    print(json.dumps({'image':str(raw),'firmware_version':report['firmware_version'],
+    print(json.dumps({'image':str(raw),'model':a.model,'firmware_version':report['firmware_version'],
                      'binary_bytes':layout['binary_bytes'],
                      'unallocated_ram_bytes':layout['unallocated_ram_bytes'],
                      'image_layout_passed':True,'hardware_executed':False},indent=2))

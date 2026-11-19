@@ -3,6 +3,7 @@
 #include "picobrew/local_history.h"
 #include "picobrew/local_telemetry.h"
 #include "picobrew/version.h"
+#include "picobrew/model.h"
 #include <limits.h>
 #include <stdarg.h>
 #include <stdio.h>
@@ -174,10 +175,16 @@ void pico_local_event(PicoNetwork *n, const char *kind, const char *detail)
     api->event_head = (uint8_t)((api->event_head + 1) % PICO_LOCAL_EVENT_CAPACITY);
     if (api->event_count < PICO_LOCAL_EVENT_CAPACITY) ++api->event_count;
 }
+static void identity(Writer *w)
+{
+    text(w, "\"model\":\"" PICO_MODEL_ID "\",\"model_name\":\"" PICO_MODEL_NAME
+            "\",\"model_family\":\"" PICO_MODEL_FAMILY "\"");
+}
 static int health(PicoLocalApi *api, Writer *w)
 {
     PicoNetwork *n = &api->application->network;
-    format(w, "{\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
+    text(w, "{"); identity(w);
+    format(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
               "\",\"mode\":\"standalone\",\"ready\":%s,\"auth_configured\":%s,\"uptime_ms\":%lu}",
            pico_local_control_is_ready() ? "true" : "false", api->auth_configured ? "true" : "false",
            (unsigned long)n->platform->millis(n->platform_context));
@@ -185,7 +192,8 @@ static int health(PicoLocalApi *api, Writer *w)
 }
 static int discovery(Writer *w)
 {
-    text(w, "{\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
+    text(w, "{"); identity(w);
+    text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
             "\",\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
             "\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
@@ -217,7 +225,8 @@ static int status(PicoLocalApi *api, Writer *w)
     if (a->hardware && a->hardware->interrupts_enable)
         a->hardware->interrupts_enable(a->hardware_context);
     bool ready = pico_local_control_is_ready();
-    format(w, "{\"uptime_ms\":%lu,\"ready\":%s,\"device_uid\":",
+    text(w, "{"); identity(w);
+    format(w, ",\"uptime_ms\":%lu,\"ready\":%s,\"device_uid\":",
            (unsigned long)n->platform->millis(n->platform_context), ready ? "true" : "false");
     quote(w, a->state.device_uid);
     format(w, ",\"busy\":%s,\"stopped\":%s,\"stop_reason\":", pico_local_control_busy() ? "true" : "false",

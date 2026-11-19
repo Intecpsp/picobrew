@@ -26,7 +26,7 @@ import {
 } from '../components/ui'
 import { DeviceDialog, RemoveDeviceDialog } from '../components/DeviceDialogs'
 import { Sparkline, TemperatureChart } from '../components/Charts'
-import { dateLabel, deviceState, duration, temperature } from '../lib/utils'
+import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 export default function Fleet({ addMachine = false }: { addMachine?: boolean }) {
   const hub = useHub()
   const { devices, brews, recipes, unit, navigate, loading } = hub
@@ -254,7 +254,7 @@ function MachineCard({
       <div className="machine-card-top">
         <div>
           <p className="eyebrow">
-            {device.model.replace(/-/g, ' ')}
+            {deviceModelLabel(device)}
             {device.adapter === 'simulator' ? ' · VIRTUAL' : ''}
           </p>
           <h3>{device.name}</h3>
@@ -285,6 +285,16 @@ function MachineCard({
           )}
         </div>
       </div>
+      {device.model_error && (
+        <p className="help-text" role="status">
+          {device.model_error}{' '}
+          {device.model_selection_required && (
+            <button className="text-button" onClick={onEdit}>
+              Choose machine model
+            </button>
+          )}
+        </p>
+      )}
       <div className="machine-card-body">
         <BrewerIllustration active={!!status?.busy} />
         <div className="machine-readings">

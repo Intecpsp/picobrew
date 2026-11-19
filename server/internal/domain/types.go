@@ -9,6 +9,7 @@ type Device struct {
 	ID            string    `json:"id"`
 	Name          string    `json:"name"`
 	Model         string    `json:"model"`
+	ModelSource   string    `json:"model_source"`
 	Adapter       string    `json:"adapter"`
 	BaseURL       string    `json:"base_url"`
 	Location      string    `json:"location"`
@@ -17,6 +18,9 @@ type Device struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 type Status struct {
+	Model            string   `json:"model,omitempty"`
+	ModelName        string   `json:"model_name,omitempty"`
+	ModelFamily      string   `json:"model_family,omitempty"`
 	UptimeMS         uint64   `json:"uptime_ms"`
 	Ready            bool     `json:"ready"`
 	DeviceUID        string   `json:"device_uid"`
@@ -47,6 +51,9 @@ type Status struct {
 type Capabilities struct {
 	APIVersion            int      `json:"api_version"`
 	FirmwareVersion       string   `json:"firmware_version"`
+	Model                 string   `json:"model,omitempty"`
+	ModelName             string   `json:"model_name,omitempty"`
+	ModelFamily           string   `json:"model_family,omitempty"`
 	Commands              []string `json:"commands"`
 	RecipeCapacity        int      `json:"recipe_capacity"`
 	StepCapacity          int      `json:"step_capacity"`
@@ -60,12 +67,28 @@ type Capabilities struct {
 }
 type DeviceView struct {
 	Device
-	Online       bool          `json:"online"`
-	KeyReused    bool          `json:"key_reused"`
-	LastSeen     *time.Time    `json:"last_seen"`
-	Error        string        `json:"error,omitempty"`
-	Status       *Status       `json:"status"`
-	Capabilities *Capabilities `json:"capabilities"`
+	Online                 bool            `json:"online"`
+	KeyReused              bool            `json:"key_reused"`
+	LastSeen               *time.Time      `json:"last_seen"`
+	Error                  string          `json:"error,omitempty"`
+	Status                 *Status         `json:"status"`
+	Capabilities           *Capabilities   `json:"capabilities"`
+	ModelError             string          `json:"model_error,omitempty"`
+	ModelErrorCode         string          `json:"model_error_code,omitempty"`
+	ModelSelectionRequired bool            `json:"model_selection_required"`
+	Telemetry              TelemetryStatus `json:"telemetry"`
+}
+
+// TelemetryStatus describes receiver configuration, not the authority of an
+// observation. Authenticated polling remains the source of live machine state.
+type TelemetryStatus struct {
+	Mode        string     `json:"mode"`
+	Enabled     bool       `json:"enabled"`
+	State       string     `json:"state"`
+	Message     string     `json:"message"`
+	Host        string     `json:"host,omitempty"`
+	Port        int        `json:"port,omitempty"`
+	LastChecked *time.Time `json:"last_checked,omitempty"`
 }
 type Display struct {
 	Width  int    `json:"width"`

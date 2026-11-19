@@ -2,13 +2,13 @@
 #include "picobrew/web_assets.h"
 
 const PicoHttpAsset pico_web_assets[] = {
-    /* gzip SHA-256: 9b7d8aca21b380e0960131d25130443e6841c9436d30ae2142bbe25bd2b62693 */
-    {"/", "text/html; charset=utf-8", "gzip", NULL, 4199, "/local/web/i.gz"},
-    {"/index.html", "text/html; charset=utf-8", "gzip", NULL, 4199, "/local/web/i.gz"},
-    /* gzip SHA-256: 59525b35c53c52ebe81cff0c09069d347eaaf70073c3589ad692e698ff3580ee */
-    {"/app.js", "application/javascript; charset=utf-8", "gzip", NULL, 7022, "/local/web/a.gz"},
-    /* gzip SHA-256: ba5bb50bd3c1ef33124f306cc39b3ed71a7574801f8b3b31ce92084b61ceace8 */
-    {"/api-explorer.js", "application/javascript; charset=utf-8", "gzip", NULL, 2792, "/local/web/e.gz"},
+    /* gzip SHA-256: cfff3573506363dbbda8b109b146a7d32afcf9f20c0a028031389fbccf036f86 */
+    {"/", "text/html; charset=utf-8", "gzip", NULL, 4032, "/local/web/i.gz"},
+    {"/index.html", "text/html; charset=utf-8", "gzip", NULL, 4032, "/local/web/i.gz"},
+    /* gzip SHA-256: 090e0a0bb5741926ae13fbb523ed674134e312a6a849074a4fbc3545c4e2837e */
+    {"/app.js", "application/javascript; charset=utf-8", "gzip", NULL, 6954, "/local/web/a.gz"},
+    /* gzip SHA-256: 06616531c1d869a7e4f69e77d6e32b26a0d0d494766f782cecee5c42665acdab */
+    {"/api-explorer.js", "application/javascript; charset=utf-8", "gzip", NULL, 2741, "/local/web/e.gz"},
     /* gzip SHA-256: 78f8900a3efcc8b8130a62aa9df2f1f7b36f344f49bf878ef2644a5cec87898f */
     {"/history.js", "application/javascript; charset=utf-8", "gzip", NULL, 4519, "/local/web/h.gz"},
     /* gzip SHA-256: bbf40ddc7967962123e660458c3109e219ab9d047fac72c22f14bf8a874899fa */

@@ -49,6 +49,10 @@ def catalog(spec):
         for method, operation in entry.items():
             if method not in METHODS:
                 continue
+            # Hub pairing owns this destination. Keep the authenticated API
+            # available to the Hub without offering a manual website editor.
+            if path == '/api/v1/telemetry' and method == 'put':
+                continue
             specs = []
             template = path
             for parameter in parameters + operation.get('parameters', []):

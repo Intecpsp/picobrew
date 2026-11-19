@@ -15,6 +15,7 @@ import subprocess
 import tempfile
 
 from arm_toolchain import find_arm_prefix, sort_sources
+from machine_model import add_model_argument, model_flag, verify_archive_model
 
 
 # The pinned newlib-nano allocator dereferences its empty free list after an
@@ -123,8 +124,7 @@ def main():
     parser.add_argument('--arm-prefix', default=os.environ.get('PICOBREW_ARM_PREFIX'),
                         help='Compiler tool prefix including final arm-none-eabi-')
     parser.add_argument('--toolchain', type=Path, help='Legacy alias for a compiler installation root')
-    parser.add_argument('--output-dir', '--output', dest='output_dir', type=Path,
-                        default=project / 'build/sdk-validation')
+    parser.add_argument('--output-dir', '--output', dest='output_dir', type=Path)
     parser.add_argument('--entry', type=Path, default=project / 'tests/sdk_validation.cpp')
     parser.add_argument('--runtime-compat', type=Path, default=project / 'platform/energia_runtime_compat.c')
     parser.add_argument('--lock', type=Path, default=project / 'dependencies/lock.json')
@@ -139,8 +139,11 @@ def main():
                         help='Use the complete recovered entry and Pico linker (called by build_firmware.py)')
     parser.add_argument('--standalone', action='store_true',
                         help='Local API profile; retain reachable production code, not every legacy export')
+    add_model_argument(parser)
     parser.add_argument('--jobs', type=int, default=min(8, os.cpu_count() or 1))
     args = parser.parse_args()
+    if not args.standalone and args.model != 'pico-pro':
+        parser.error('Model selection is available only for --standalone')
     if args.appliance_image and (args.entry.resolve() != project / 'platform/firmware_main.cpp' or
                                 not args.linker or args.linker.resolve() != project / 'platform/pico_cc3200.ld'):
         parser.error('--appliance-image requires the recovered appliance entry and Pico linker')
@@ -155,13 +158,17 @@ def main():
         prefix = find_arm_prefix(project)
         if not prefix:
             parser.error('ARM compiler missing; bootstrap dependencies or set --arm-prefix')
-    sdk, out = args.sdk_root.resolve(), args.output_dir.resolve()
+    sdk = args.sdk_root.resolve()
+    out = (args.output_dir or (project / 'build/standalone' / args.model / 'sdk-validation'
+                               if args.standalone else project / 'build/sdk-validation')).resolve()
     if not (sdk / 'cores/cc3200/Energia.h').is_file():
         parser.error('SDK missing; bootstrap dependencies or set --sdk-root')
     if not args.lock.is_file():
         parser.error('Dependency lock missing: ' + str(args.lock))
     lock = json.loads(args.lock.read_text(encoding='utf-8'))
     selected_archives = [p.resolve() for p in (args.application_lib, args.adapter_lib) if p]
+    if args.appliance_image and args.application_lib:
+        verify_archive_model(args.application_lib.resolve().parent, args.model, args.standalone)
     for path in [args.entry, args.runtime_compat, *args.source, *selected_archives]:
         if not path.is_file():
             parser.error('Build input missing: ' + str(path))
@@ -185,7 +192,7 @@ def main():
               '--specs=nano.specs', '-Os', '-g', '-ffunction-sections', '-fdata-sections', '-fcommon',
               '-fno-fast-math', '-ffp-contract=off', '-Wall', '-DF_CPU=80000000L',
               '-DARDUINO=10810', '-DENERGIA=10810', '-DENERGIA_CC3200_LAUNCHXL',
-              '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf']
+              '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf', model_flag(args.model)]
     if args.standalone:
         common.append('-DPICO_STANDALONE=1')
     includes = {cpp: ['-I' + str(p) for p in sdk_include_dirs(sdk, project, args.include, cxx=cpp)]
@@ -356,7 +363,7 @@ def main():
               'dependency_lock_sha256': hashlib.sha256(args.lock.read_bytes()).hexdigest(),
               'selected_archives': [{'path': str(p), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
                                     for p in selected_archives],
-              'profile': 'standalone' if args.standalone else 'legacy',
+              'profile': 'standalone' if args.standalone else 'legacy', 'model': args.model,
               'retained_application_symbols': sorted(exported_symbols & linked_definitions),
               'discarded_application_symbols': discarded_application_symbols,
               'missing_application_symbols': missing_application_symbols,

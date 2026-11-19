@@ -218,6 +218,10 @@ func (p *pico) discover(ctx context.Context) (domain.Capabilities, error) {
 		return domain.Capabilities{}, &Error{Code: "unsupported_firmware", Message: "Device does not expose the supported standalone API v1"}
 	}
 	capabilities := reply.Capabilities
+	if _, err := ReportedModel(capabilities); err != nil {
+		p.capabilities = nil
+		return domain.Capabilities{}, err
+	}
 	p.capabilities = &capabilities
 	result := capabilities
 	result.Commands = append([]string(nil), capabilities.Commands...)
