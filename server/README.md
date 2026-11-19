@@ -14,11 +14,27 @@ ports and live Hub compatibility are not implemented. See
 
 ## Run it on your Mac
 
-Install Go **1.26 or newer** and Node.js **22.13 or newer**. Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the C compiler is unavailable (`xcode-select --install`).
+Install Go **1.26 or newer** and Node.js **24.15.0 or newer in the 24.x line**
+(recommended). Node **22.22.2 or newer in 22.x**, or **26.0.0 and newer**, is also
+supported. These patch-level minimums include the frontend's test dependencies.
+Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the
+C compiler is unavailable (`xcode-select --install`).
 
 The application is self-contained in `server/`: its Go module, frontend,
 catalogue, tests, Dockerfile and Compose configuration are all in that directory.
-It builds and runs without the sibling firmware trees. From `server/`:
+It builds and runs without the sibling firmware trees. Run the commands below
+from the directory containing `go.mod`, `cmd/` and `web/`. In a full repository
+checkout, you can select that directory from anywhere inside the checkout with:
+
+```sh
+cd "$(git rev-parse --show-toplevel)/server"
+```
+
+If you already have `go.mod`, `cmd/` and `web/` in your current directory, you are
+in the right place; do not run another `cd server`. An isolated copy of the
+server also builds directly from its own root.
+
+Build the frontend and Go executable, then start the Hub:
 
 ```sh
 npm --prefix web ci

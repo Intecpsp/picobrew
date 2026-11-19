@@ -8,7 +8,10 @@ preference is stored in `localStorage`.
 
 ## Build and develop
 
-Use Node.js 22.13 or newer:
+Use Node.js **24.15.0 or newer in 24.x** (recommended), **22.22.2 or newer in
+22.x**, or **26.0.0 and newer**. The exact supported range is
+`^22.22.2 || ^24.15.0 || >=26.0.0`; older patch releases can build the frontend
+but do not satisfy all locked test dependencies. From `server/`:
 
 ```sh
 cd web
@@ -28,6 +31,11 @@ Vite proxies `/api` to `http://127.0.0.1:8080`. Set `HUB_API_URL` if your develo
 server uses another address. The frontend has no runtime Node server requirement.
 Pages are loaded separately; charting code is shared by fleet, machine and
 history views.
+
+The PDF reader and its worker are also loaded on demand when a manual is opened.
+Vite may warn that the reader exceeds its 500 kB chunk-size threshold; a build
+ending with `built in ...` has still succeeded. The warning does not prevent the
+Go server from running.
 
 ## Working features
 
