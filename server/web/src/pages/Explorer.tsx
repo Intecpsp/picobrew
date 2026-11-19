@@ -22,11 +22,13 @@ export default function Explorer() {
   const [selected, setSelected] = useState<Operation | null>(null)
   const [path, setPath] = useState('')
   const [body, setBody] = useState('{}')
+  const [file, setFile] = useState<File | null>(null)
   const [response, setResponse] = useState('')
   const [error, setError] = useState('')
   const [busy, setBusy] = useState(false)
   const [writes, setWrites] = useState(false)
   const [confirm, setConfirm] = useState(false)
+  const multipart = !!selected?.definition.requestBody?.content?.['multipart/form-data']
   const operations = useMemo(
     () =>
       Object.entries(resource.data?.paths || {}).flatMap(([path, entry]) =>
@@ -68,6 +70,7 @@ export default function Explorer() {
     )
     setResponse('')
     setError('')
+    setFile(null)
   }
   useEffect(() => {
     if (!selected && operations.length)
@@ -89,9 +92,16 @@ export default function Explorer() {
         : `/api/v1${path.startsWith('/') ? '' : '/'}${path}`
       if (!target.startsWith('/api/v1/') || target.includes('..') || target.includes('://'))
         throw new Error('Only hub API paths can be used here.')
+      let requestBody: unknown
+      if (multipart) {
+        if (!file) throw new Error('Choose a file to upload.')
+        const form = new FormData()
+        form.append('file', file)
+        requestBody = form
+      } else if (selected.method !== 'GET') requestBody = body.trim() ? JSON.parse(body) : undefined
       const result = await inspectAPI(target, {
         method: selected.method,
-        ...(selected.method !== 'GET' ? { body: body.trim() ? JSON.parse(body) : undefined } : {}),
+        ...(selected.method !== 'GET' ? { body: requestBody } : {}),
         command: target.includes('/commands'),
       })
       setResponse(`${Math.round(performance.now() - started)} ms\n\n${result.text}`)
@@ -184,14 +194,33 @@ export default function Explorer() {
                 )}
                 {selected.method !== 'GET' && (
                   <>
-                    <Field label="JSON request body">
-                      <textarea
-                        className="code-input"
-                        rows={8}
-                        value={body}
-                        onChange={(event) => setBody(event.target.value)}
-                      />
-                    </Field>
+                    {multipart ? (
+                      <Field
+                        label="File to upload"
+                        hint="This request sends a file as multipart form data."
+                      >
+                        <input
+                          key={`${selected.method} ${selected.path}`}
+                          type="file"
+                          disabled={busy}
+                          accept={
+                            selected.path.endsWith('/firmware/packages')
+                              ? '.zip,application/zip'
+                              : undefined
+                          }
+                          onChange={(event) => setFile(event.target.files?.[0] || null)}
+                        />
+                      </Field>
+                    ) : (
+                      <Field label="JSON request body">
+                        <textarea
+                          className="code-input"
+                          rows={8}
+                          value={body}
+                          onChange={(event) => setBody(event.target.value)}
+                        />
+                      </Field>
+                    )}
                     <label className="check-field">
                       <input
                         type="checkbox"
@@ -204,7 +233,12 @@ export default function Explorer() {
                 )}
                 <div className="inline-actions">
                   <Button
-                    disabled={busy || (selected.method !== 'GET' && !writes) || path.includes('{')}
+                    disabled={
+                      busy ||
+                      (selected.method !== 'GET' && !writes) ||
+                      path.includes('{') ||
+                      (multipart && !file)
+                    }
                     onClick={() => (selected.method === 'GET' ? void execute() : setConfirm(true))}
                   >
                     <Play size={15} />
@@ -242,7 +276,7 @@ export default function Explorer() {
       {confirm && (
         <Confirm
           title="Send this API request?"
-          description={`${selected?.method} ${path} may change workspace data or operate a machine. Review the path and body before continuing.`}
+          description={`${selected?.method} ${path} may change workspace data or operate a machine. Review the path and ${multipart ? 'selected file' : 'body'} before continuing.`}
           label="Send request"
           onClose={() => setConfirm(false)}
           onConfirm={() => void execute()}

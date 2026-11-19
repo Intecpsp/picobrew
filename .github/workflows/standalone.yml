@@ -99,6 +99,7 @@ jobs:
           for model in pico-pro pico-s; do
             make standalone-storage-test MODEL="$model" PYTHON=python
             python tools/verify_firmware_package.py --model "$model"
+            python tools/package_hub_firmware.py --model "$model" --firmware-directory "build/standalone/$model/firmware"
           done
       - name: Verify ARM interrupt and filter-trip guards
         run: make standalone-arm-test PYTHON=python
@@ -120,6 +121,7 @@ jobs:
             firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.bin
             firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.elf
             firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone.map
+            firmware/pico-s-pro/modified/build/standalone/*/firmware/*-standalone-*.zip
             firmware/pico-s-pro/modified/build/standalone/*/firmware/firmware-report.json
             firmware/pico-s-pro/modified/firmware/web/
             firmware/pico-s-pro/modified/.deps/toolchain/.picobrew-target-runtime.json

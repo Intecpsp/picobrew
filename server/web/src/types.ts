@@ -240,6 +240,40 @@ export interface Telemetry {
   last_checked?: string
   status?: { state: string; sent: number; failed: number; dropped: number }
 }
+export interface FirmwareSettings {
+  repository: string
+  ref: string
+}
+export interface FirmwareCandidate {
+  model: string
+  model_family: string
+  firmware_version: string
+  binary_sha256: string
+  binary_bytes: number
+}
+export interface FirmwareCatalog extends FirmwareSettings {
+  commit: string
+  packages: FirmwareCandidate[]
+}
+export interface FirmwarePackage extends FirmwareCandidate {
+  id: string
+  package_bytes: number
+  created_at: string
+  validation: 'passed'
+  provenance: {
+    source: 'upload' | 'github'
+    repository?: string
+    commit?: string
+  }
+}
+export interface MachineFirmware {
+  device_id: string
+  model: string
+  current_version: string
+  install_supported: false
+  reason: string
+  packages: FirmwarePackage[]
+}
 export type AIAuthMode = 'api_key' | 'subscription'
 export interface AISettings {
   provider: string

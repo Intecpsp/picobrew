@@ -19,6 +19,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/webui"
@@ -72,6 +73,9 @@ type Server struct {
 	chatGPTCallbackGeneration uint64
 	telemetryProbeKey         string
 	telemetryClient           *http.Client
+	firmwareGitHub            *firmware.GitHub
+	firmwareMu                sync.Mutex
+	firmwareWorkMu            sync.Mutex
 }
 
 func New(cfg Config) (*Server, error) {
@@ -109,6 +113,7 @@ func New(cfg Config) (*Server, error) {
 	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New(), chatGPT: ai.NewChatGPT()}
 	s.telemetryProbeKey = secretToken()
 	s.telemetryClient = newReceiverClient()
+	s.firmwareGitHub = firmware.NewGitHub()
 	if e = s.initAuth(); e != nil {
 		db.Close()
 		cancel()
@@ -178,6 +183,7 @@ func (s *Server) Close() error {
 	}
 	s.mu.Unlock()
 	s.wg.Wait()
+	s.firmwareGitHub.Close()
 	return s.db.Close()
 }
 func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) { s.router.ServeHTTP(w, r) }
@@ -244,6 +250,7 @@ func (s *Server) routes() http.Handler {
 			r.Patch("/devices/{id}/settings", s.machineSettings)
 			r.Get("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Put("/devices/{id}/telemetry", s.machineTelemetry)
+			r.Get("/devices/{id}/firmware", s.machineFirmware)
 			r.Post("/devices/{id}/sync-history", s.syncHistory)
 			r.Post("/devices/{id}/deploy", s.deploy)
 			r.Post("/devices/{id}/deployments", s.planDeployment)
@@ -278,6 +285,15 @@ func (s *Server) routes() http.Handler {
 			r.Post("/ai/subscription/callback", s.aiSubscriptionCallback)
 			r.Get("/ai/settings", s.aiSettings)
 			r.Put("/ai/settings", s.aiSettings)
+			r.Get("/firmware/settings", s.firmwareSettings)
+			r.Put("/firmware/settings", s.firmwareSettings)
+			r.Get("/firmware/github", s.firmwareGitHubCatalog)
+			r.Post("/firmware/github/import", s.firmwareGitHubImport)
+			r.Get("/firmware/packages", s.firmwarePackages)
+			r.Post("/firmware/packages", s.firmwarePackages)
+			r.Get("/firmware/packages/{packageID}", s.firmwarePackage)
+			r.Delete("/firmware/packages/{packageID}", s.firmwarePackage)
+			r.Get("/firmware/packages/{packageID}/download", s.downloadFirmwarePackage)
 			r.Get("/ai/models", s.aiModels)
 			r.Post("/ai/models", s.aiModels)
 			r.Post("/ai/assist", s.aiAssist)

@@ -38,6 +38,7 @@ import { InstalledProgramDialog } from '../components/InstalledProgramDialog'
 import { BrewAIMonitor, type AIMonitorState } from '../components/BrewAIMonitor'
 import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components/DeviceDialogs'
 import { HubConnectionSettings } from '../components/HubConnectionSettings'
+import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
 import { deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 const programNames: Record<string, string> = {
@@ -72,6 +73,7 @@ export default function Machine({ id }: { id: string }) {
     label: string
   } | null>(null)
   const [settings, setSettings] = useState(false)
+  const [firmware, setFirmware] = useState(false)
   const [editing, setEditing] = useState(false)
   const [removing, setRemoving] = useState(false)
   const [testingConnection, setTestingConnection] = useState(false)
@@ -467,7 +469,13 @@ export default function Machine({ id }: { id: string }) {
         reload={monitor.reload}
       />
       <div className="machine-footnotes">
-        <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
+        {device.adapter === 'pico-standalone' ? (
+          <button className="firmware-link" onClick={() => setFirmware(true)}>
+            Firmware {device.capabilities?.firmware_version || '—'}
+          </button>
+        ) : (
+          <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
+        )}
         <span>API v{device.capabilities?.api_version || '—'}</span>
         <span>UID {status?.device_uid || 'Not reported'}</span>
         <span>Uptime {duration(status?.uptime_ms || 0)}</span>
@@ -553,6 +561,7 @@ export default function Machine({ id }: { id: string }) {
         />
       )}{' '}
       {settings && <MachineSettings id={id} onClose={() => setSettings(false)} />}
+      {firmware && <MachineFirmwareDialog deviceID={id} onClose={() => setFirmware(false)} />}
       {transferRecipes && (
         <TransferDialog
           recipes={hub.recipes}

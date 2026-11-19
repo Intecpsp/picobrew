@@ -12,7 +12,7 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 TARGETS = {
     "build": "standalone", "test": "standalone-test", "bootstrap": "bootstrap",
-    "usb-test": "usb-test", "browser-test": "web-test",
+    "usb-test": "usb-test", "browser-test": "web-test", "package": "firmware-package",
 }
 
 

@@ -24,6 +24,13 @@ class FirmwareModelRoutingTests(unittest.TestCase):
         self.assertEqual(models.resolve_model()["id"], "pico-pro")
         self.assertEqual(models.resolve_model(machine="pico-s-pro")["id"], "pico-pro")
 
+    def test_package_routes_each_product_to_its_component_build_and_package_target(self):
+        for model in ("pico-pro", "pico-s"):
+            with self.subTest(model=model):
+                command = models.make_command("package", models.resolve_model(model))
+                self.assertIn("firmware-package", command)
+                self.assertIn(f"MODEL={model}", command)
+
     def test_contradictory_product_and_family_are_rejected(self):
         for model, machine in (("pico-s", "pico-pro"), ("pico-pro", "pico-c"),
                                ("pico-s", "../outside")):
@@ -31,12 +38,13 @@ class FirmwareModelRoutingTests(unittest.TestCase):
                 models.resolve_model(model, machine)
 
     def test_planned_models_never_dispatch_a_relabelled_s_pro_image(self):
-        for model in ("pico-c", "z", "zymatic"):
-            with self.subTest(model=model), patch.object(models.subprocess, "run") as run, \
-                    contextlib.redirect_stderr(io.StringIO()) as errors:
-                self.assertEqual(models.main(["build", "--model", model]), 2)
-                self.assertIn("no implemented custom firmware", errors.getvalue())
-                run.assert_not_called()
+        for action in ("build", "package"):
+            for model in ("pico-c", "z", "zymatic"):
+                with self.subTest(action=action, model=model), patch.object(models.subprocess, "run") as run, \
+                        contextlib.redirect_stderr(io.StringIO()) as errors:
+                    self.assertEqual(models.main([action, "--model", model]), 2)
+                    self.assertIn("no implemented custom firmware", errors.getvalue())
+                    run.assert_not_called()
 
     def test_unknown_ids_are_rejected_before_dispatch(self):
         with patch.object(models.subprocess, "run") as run, \

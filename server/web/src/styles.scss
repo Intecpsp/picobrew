@@ -3407,6 +3407,106 @@ hr,
   min-height: 28px;
   padding: 4px;
 }
+.firmware-manager {
+  display: grid;
+  gap: 24px;
+  min-width: 0;
+}
+.firmware-manager form > .field + .field {
+  margin-top: 16px;
+}
+.firmware-manager .inline-actions,
+.firmware-upload > .button {
+  margin-top: 16px;
+}
+.firmware-manager input[type='file'] {
+  max-width: 100%;
+  min-width: 0;
+  white-space: normal;
+}
+.firmware-upload,
+.firmware-manager > section {
+  border-top: 1px solid $line;
+  padding-top: 24px;
+}
+.firmware-manager h3,
+.machine-firmware h3 {
+  margin: 0 0 14px;
+}
+.firmware-package-list,
+.machine-firmware {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+.firmware-package {
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid $line;
+  border-radius: 10px;
+}
+.firmware-catalog .firmware-package + .firmware-package {
+  margin-top: 12px;
+}
+.firmware-package-heading {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+.firmware-package h4 {
+  margin: 0;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+.firmware-package h4 span {
+  font-weight: 400;
+  margin-left: 6px;
+}
+.firmware-source,
+.firmware-catalog > .help-text {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+.firmware-details {
+  margin: 12px 0 16px;
+  font-size: 13px;
+}
+.firmware-details summary {
+  cursor: pointer;
+}
+.firmware-details dl {
+  display: grid;
+  gap: 5px;
+  margin: 12px 0 0;
+}
+.firmware-details dt {
+  font-weight: 600;
+  margin-top: 5px;
+}
+.firmware-details dd {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+.firmware-details code {
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.firmware-current {
+  display: grid;
+  gap: 6px;
+}
+.firmware-link {
+  padding: 0;
+  background: none;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  cursor: pointer;
+}
 .profile-notes {
   margin: 15px 0;
   color: #9aa783;

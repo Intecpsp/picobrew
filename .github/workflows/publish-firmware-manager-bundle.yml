@@ -1,0 +1,96 @@
+name: Package verified firmware manager website
+on:
+  push:
+    branches: [feature/hub-firmware-packages]
+    paths: [.github/workflows/publish-firmware-manager-bundle.yml]
+permissions:
+  contents: write
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref_name }}
+          persist-credentials: false
+      - name: Require the triggering revision
+        env:
+          EXPECTED_HEAD: ${{ github.sha }}
+        run: test "$(git rev-parse HEAD)" = "$EXPECTED_HEAD"
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Validate real packages and fetch from the default public GitHub source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 firmware/pico-s-pro/modified/tools/package_hub_firmware.py --model pico-s
+          python3 firmware/pico-s-pro/modified/tools/package_hub_firmware.py --model pico-pro
+          mkdir -p server/build/firmware-probe
+          cat > server/build/firmware-probe/main.go <<'GO'
+          package main
+          
+          import (
+              "context"
+              "encoding/json"
+              "fmt"
+              "os"
+              "time"
+              "github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
+          )
+          
+          func main() {
+              for _, model := range []string{"pico-s", "pico-pro"} {
+                  path := "../firmware/pico-s-pro/modified/build/standalone/" + model + "/firmware/" + model + "-standalone-1.2.0.zip"
+                  data, err := os.ReadFile(path)
+                  if err != nil { panic(err) }
+                  candidate, err := firmware.ValidateArchive(data)
+                  if err != nil { panic(err) }
+                  fmt.Printf("Python package accepted: %s version=%s bytes=%d sha256=%s\n", model, candidate.FirmwareVersion, len(data), firmware.Digest(data))
+              }
+              client := firmware.NewGitHub()
+              defer client.Close()
+              ctx, cancel := context.WithTimeout(context.Background(), 55*time.Second)
+              defer cancel()
+              settings := firmware.Settings{Repository: firmware.DefaultRepository, Ref: ""}
+              catalog, err := client.Catalog(ctx, settings)
+              if err != nil { panic(err) }
+              data, candidate, err := client.Import(ctx, catalog.Repository, catalog.Commit, "pico-s")
+              if err != nil { panic(err) }
+              if _, err = firmware.ValidateArchive(data); err != nil { panic(err) }
+              matching := false
+              for _, item := range catalog.Packages { if item == candidate { matching = true } }
+              if !matching { panic("Imported package differs from its pinned catalog entry") }
+              result := map[string]any{"repository":catalog.Repository,"commit":catalog.Commit,"models":len(catalog.Packages),"imported":candidate,"package_bytes":len(data),"archive_sha256":firmware.Digest(data)}
+              if err = json.NewEncoder(os.Stdout).Encode(result); err != nil { panic(err) }
+          }
+          GO
+          cd server
+          go run ./build/firmware-probe
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+          cache: npm
+          cache-dependency-path: server/web/package-lock.json
+      - name: Rebuild the reviewed website sources
+        run: |
+          npm --prefix server/web ci --engine-strict
+          npm --prefix server/web run build:bundle
+      - name: Verify exact bytes and publish the generated bundle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git hash-object server/internal/webui/bundle.zip)" = 271c444eec85fa23f90dec012c9b261f1d482d4e
+          test "$(git hash-object server/internal/webui/manifest.json)" = fdc355a8d7be1997993d6ded25a23a1ae618ac47
+          git add server/internal/webui/bundle.zip server/internal/webui/manifest.json
+          git rm .github/workflows/publish-firmware-manager-bundle.yml
+          test "$(git write-tree)" = 2672fec8ada464436f030ada567def0be0697b6a
+          git restore --source=HEAD --staged --worktree .github/workflows/publish-firmware-manager-bundle.yml
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Package the Hub firmware manager website'
+          gh auth setup-git
+          git push origin HEAD:refs/heads/feature/hub-firmware-packages

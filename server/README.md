@@ -142,6 +142,22 @@ brew.example.com {
 
 A cloud host needs a private route to the machines, such as a site VPN. This release does not contain an outbound site agent or NAT traversal service. Keep the brewer's HTTP API on that private route; only the authenticated hub needs to be browser-accessible. The on-device UI works independently when the hub is unavailable.
 
+## Firmware packages
+
+**Workspace settings → Firmware** accepts a complete firmware ZIP or fetches
+the model-specific image and matching website from GitHub. The default source
+is `jeffreydwalter/picobrew-pico-pro-firmware`; both repository and optional
+branch/tag are editable. GitHub fetches use one immutable commit, and uploaded
+and fetched packages pass the same validation before being saved. Packages can
+be downloaded or removed, and each physical machine's Firmware view shows its
+current version and packages declared for its model.
+
+Package management requires no compiler, Git checkout, or Node runtime on the
+Hub. Network installation still requires qualified recovery support and the
+initial USB setup; saving a package does not flash a machine. See
+[Firmware packages](docs/firmware-packages.md) for the package format, build
+command, source configuration, storage, and API.
+
 ## Live readings and receiver settings
 
 **Brewer preferences → Live readings** always shows **Receiver host**, **Receiver port**, and **Send live readings**. The Hub saves those three values and applies them to the machine when it connects or the settings are saved. New connections start with a verified address for this Hub; existing custom destinations and disabled sending settings are preserved. There is no automatic/manual mode selector.

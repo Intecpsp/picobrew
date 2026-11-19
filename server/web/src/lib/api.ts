@@ -31,7 +31,8 @@ export interface RequestOptions {
 export async function apiResponse(path: string, options: RequestOptions = {}): Promise<Response> {
   const method = options.method || 'GET'
   const headers: Record<string, string> = { Accept: options.accept || 'application/json' }
-  if (options.body !== undefined) headers['Content-Type'] = 'application/json'
+  const multipart = typeof FormData !== 'undefined' && options.body instanceof FormData
+  if (options.body !== undefined && !multipart) headers['Content-Type'] = 'application/json'
   if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) headers['X-CSRF-Token'] = csrfToken
   if (options.command) headers['Idempotency-Key'] = commandID()
   const response = await fetch(
@@ -40,7 +41,12 @@ export async function apiResponse(path: string, options: RequestOptions = {}): P
       method,
       headers,
       credentials: 'same-origin',
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      body:
+        options.body === undefined
+          ? undefined
+          : multipart
+            ? (options.body as FormData)
+            : JSON.stringify(options.body),
       signal: options.signal,
     }
   )

@@ -12,17 +12,21 @@ ARCHIVE_MACHINE := $(if $(strip $(MACHINE)),$(MACHINE),pico-s-pro)
 MODEL_ARGS = --machine "$(MACHINE)" --model "$(MODEL)" --make "$(MAKE)" --python "$(PYTHON)"
 
 .DEFAULT_GOAL := help
-.PHONY: help firmware firmware-models firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem recovery server server-start server-test server-run server-demo verify-imports
+.PHONY: help firmware firmware-package firmware-models firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem recovery server server-start server-test server-run server-demo verify-imports
 
 help:
 	@echo make server-start - build and run the Hub
 	@echo make firmware / firmware-test MODEL=pico-pro or MODEL=pico-s
+	@echo make firmware-package MODEL=pico-s - build and package a Hub upload ZIP
 	@echo make firmware-models / oem / recovery MACHINE=pico-s-pro
 	@echo make server / server-test / server-run / server-demo
 	@echo make verify-imports
 
 firmware:
 	"$(PYTHON)" tools/firmware_models.py build $(MODEL_ARGS)
+
+firmware-package:
+	"$(PYTHON)" tools/firmware_models.py package $(MODEL_ARGS)
 
 firmware-models:
 	"$(PYTHON)" tools/firmware_models.py list
