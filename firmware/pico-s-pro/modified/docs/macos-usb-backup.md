@@ -77,6 +77,13 @@ CC3200 handshake. `tools/pico_flash_backup_v2.py` imports that module, loads
 the audited SRAM helper, detects flash geometry, and reads the complete flash
 twice. Keep the two files in the same directory.
 
+The backup, preflight and offline-inspection scripts also use
+`tools/pico_private_files.py` from this firmware component and the repository's
+root `tools/private_files.py`. They are found automatically in a complete
+checkout. If copying the scripts into another directory, copy both privacy
+helpers alongside them. Existing output files are never replaced; publication
+retains the verified file's native permissions and ownership.
+
 The first backup implementation used synchronous 32-byte USB reads. It read
 hundreds of kilobytes successfully but then received only 59 of 256 payload
 bytes. Version 2 posts eight asynchronous 4 KiB receive transfers before any
@@ -165,7 +172,8 @@ records the supplied terminal output. The command below remains useful for
 repeating the read-only check before any installation.
 
 Keep `pico_flash_preflight.py`, `pico_flash_backup_v2.py`, and
-`pico_uart_probe.py` together. Use the same existing environment and power-on
+`pico_uart_probe.py` together, with the two privacy helpers above when copied
+outside the checkout. Use the same existing environment and power-on
 sequence as the successful backup. From `firmware/pico-s-pro/modified/`:
 
 ```sh

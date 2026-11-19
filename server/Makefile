@@ -1,17 +1,27 @@
 GO ?= go
+GO_TEST_FLAGS ?=
 NPM ?= npm
+ifeq ($(OS),Windows_NT)
+PYTHON ?= python
+HUB_BINARY := picobrew-hub.exe
+HUB_COMMAND := .\picobrew-hub.exe
+else
 PYTHON ?= python3
-.PHONY: build test run demo web
-build: web
-	$(GO) build -trimpath -o picobrew-hub ./cmd/picobrew-hub
+HUB_BINARY := picobrew-hub
+HUB_COMMAND := ./picobrew-hub
+endif
+.PHONY: build server-start test run demo web
+build:
+	"$(GO)" build -trimpath -o "$(HUB_BINARY)" ./cmd/picobrew-hub
+server-start: build
+	"$(HUB_COMMAND)" --data ./data
 web:
-	$(NPM) --prefix web ci
-	$(NPM) --prefix web run build
+	"$(NPM)" --prefix web ci
+	"$(NPM)" --prefix web run build:bundle
 test:
-	$(GO) test -race ./...
-	$(PYTHON) -m unittest discover -s tools -p 'test_*.py'
-	$(NPM) --prefix web test
-run:
-	$(GO) run ./cmd/picobrew-hub
-demo:
-	$(GO) run ./cmd/picobrew-hub --demo --data demo-data
+	"$(GO)" test $(GO_TEST_FLAGS) ./...
+	"$(PYTHON)" -m unittest discover -s tools -p 'test_*.py'
+	"$(NPM)" --prefix web test
+run: server-start
+demo: build
+	"$(HUB_COMMAND)" --demo --data demo-data

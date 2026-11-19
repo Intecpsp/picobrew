@@ -31,6 +31,7 @@ import gzip
 import hmac
 import json
 import os
+import pico_private_files as private_files
 from pathlib import Path
 import re
 import stat
@@ -189,23 +190,10 @@ def _safe_error(exc):
 
 def _read_regular(path, limit, private=False, owner=None):
     """Read a bounded regular file through one descriptor; reject symlinks."""
-    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     try:
-        fd = os.open(path, flags)
-        with os.fdopen(fd, "rb") as handle:
-            info = os.fstat(handle.fileno())
-            if not stat.S_ISREG(info.st_mode) or info.st_size > limit:
-                raise InstallError("Local input is not a regular file of the permitted size")
-            if private:
-                expected_uid = owner[0] if owner is not None else os.geteuid()
-                if stat.S_IMODE(info.st_mode) & 0o077 or info.st_uid != expected_uid:
-                    raise InstallError("The host key must be owned by the invoking user with mode 0600")
-            data = handle.read(limit + 1)
-            if len(data) > limit:
-                raise InstallError("Local input grew beyond its permitted size")
-            return data
-    except InstallError:
-        raise
+        return private_files.read_regular(path, limit, private=private, owner=owner)
+    except private_files.PrivateFileError as exc:
+        raise InstallError(str(exc)) from None
     except Exception:
         raise InstallError("Could not safely read the required local input file") from None
 
@@ -1124,9 +1112,8 @@ class InstallFiles:
             raise InstallError("Short report write")
         self.handle.flush()
         os.fsync(self.handle.fileno())
-        os.link(self.partial, self.output)
+        private_files.publish(self.handle, self.partial, self.output)
         self.published = True
-        self.partial.unlink()
 
     def __exit__(self, exc_type, exc, traceback):
         for handle in (self.handle, self.journal_handle):

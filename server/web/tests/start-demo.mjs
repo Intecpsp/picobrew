@@ -69,8 +69,6 @@ export async function startDemo({ port = process.env.HUB_TEST_PORT || '18080', s
         `127.0.0.1:${port}`,
         '--data',
         path.join(temporary, 'data'),
-        '--web',
-        path.join(root, 'web/dist'),
       ],
       { cwd: root, stdio: 'inherit' }
     )

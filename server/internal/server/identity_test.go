@@ -86,7 +86,7 @@ func identityRequest(method, path, body string) *http.Request {
 }
 
 func TestPhysicalIdentityPersistsAcrossRestartAndAddressChange(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "identity.sqlite")
+	path := filepath.Join(newTestDataDir(t), "identity.sqlite")
 	uid := strings.Repeat("a", 32)
 	s, d, _ := identityFixture(t, path, uid)
 	s.refresh(context.Background(), d)

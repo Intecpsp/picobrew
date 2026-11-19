@@ -256,7 +256,7 @@ int main(void)
     setup("", 0, true); wire.receive_result = PICO_HTTP_IO_ERROR; poll(0);
     assert(wire.closed == 1 && !dispatched); ++cases;
 
-    /* Deterministic malformed-byte corpus, run under ASan/UBSan by the runner. */
+    /* Deterministic malformed-byte corpus; Linux/macOS also use ASan/UBSan. */
     unsigned random = 0x104a83bdu;
     for (unsigned n = 0; n < 1000; ++n) {
         size_t length = n % 600 + 1;

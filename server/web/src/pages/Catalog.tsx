@@ -3,7 +3,6 @@ import {
   ArrowDownToLine,
   ArrowLeft,
   ArrowRight,
-  BookOpen,
   Copy,
   Library,
   Search,
@@ -90,12 +89,6 @@ function CatalogBrowse() {
         eyebrow="FROM THE COMMUNITY ARCHIVES"
         title="A whole library to explore."
         description="Browse recipes, original PicoPak programs and cleaning routines. Copy a favorite into your library to edit it and prepare a transfer."
-        actions={
-          <Button variant="secondary" onClick={() => hub.navigate('/recipes')}>
-            <BookOpen size={16} />
-            Your library
-          </Button>
-        }
       />
       <div className="catalog-intro panel">
         <div>

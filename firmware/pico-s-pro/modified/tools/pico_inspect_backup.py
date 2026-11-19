@@ -18,6 +18,7 @@ import hashlib
 import json
 import logging
 import os
+import pico_private_files as private_files
 from pathlib import Path
 import struct
 import sys
@@ -254,8 +255,7 @@ def text_report(report):
 
 
 def private_file(path):
-    fd = os.open(path, os.O_RDWR | os.O_CREAT | os.O_EXCL | getattr(os, "O_NOFOLLOW", 0), 0o600)
-    return os.fdopen(fd, "w+b")
+    return private_files.new_private_file(path)
 
 
 def save_outputs(directory, report, outputs):
@@ -265,7 +265,7 @@ def save_outputs(directory, report, outputs):
         raise InspectionError(f"Output directory already exists; choose a new path: {directory}")
     if not directory.parent.is_dir():
         raise InspectionError(f"Parent directory does not exist: {directory.parent}")
-    directory.mkdir(mode=0o700)
+    private_files.ensure_private_directory(directory)
     rendered = text_report(report)
     files = dict(outputs)
     files["inspection.json"] = (json.dumps(report, indent=2, sort_keys=True) + "\n").encode()
@@ -278,7 +278,7 @@ def save_outputs(directory, report, outputs):
             pending.append(parent)
             parent = parent.parent
         for parent in reversed(pending):
-            parent.mkdir(mode=0o700)
+            private_files.ensure_private_directory(parent)
         with private_file(path) as file:
             file.write(contents)
     archive = directory / "firmware-review.zip"
@@ -296,7 +296,7 @@ def main(argv=None):
     parser.add_argument("--expected-sha256", help="Require this complete-backup SHA256 before creating outputs")
     args = parser.parse_args(argv)
     try:
-        image = args.image.read_bytes()
+        image = private_files.read_regular(args.image, 16 * 1024 * 1024)
         digest = hashlib.sha256(image).hexdigest()
         if args.expected_sha256 is not None:
             expected = args.expected_sha256.lower()

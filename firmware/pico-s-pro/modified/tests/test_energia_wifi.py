@@ -9,7 +9,12 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
+
+ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from native_host import compiler, executable_name, gc_sections_flags, runtime_environment, sanitizer_flags
 
 SIMPLELINK = r'''
 #pragma once
@@ -125,32 +130,32 @@ void PRCMMCUReset(bool);
 
 def main():
     root = Path(__file__).resolve().parents[1]
-    patches = json.loads((root / 'dependencies/lock.json').read_text())['energia']['standalone_patches']
+    patches = json.loads((root / 'dependencies/lock.json').read_text(encoding='utf-8'))['energia']['standalone_patches']
     callback_patch = next(p for p in patches if p['file'] == 'libraries/WiFi/utility/SimpleLinkCallbacks.cpp')
     with tempfile.TemporaryDirectory(prefix='pico-energia-wifi-test-') as directory:
         temp = Path(directory)
         for folder in ('driverlib', 'inc'):
             (temp / folder).mkdir()
-        (temp / 'simplelink.h').write_text(SIMPLELINK)
-        (temp / 'WiFi.h').write_text(WIFI)
-        (temp / 'Energia.h').write_text('#include "WiFi.h"\n')
-        (temp / 'WiFiClient.h').write_text('#include "WiFi.h"\nclass WiFiClient { public: virtual int connect(IPAddress,uint16_t); };\n')
-        (temp / 'SLFS.h').write_text(SLFS)
+        (temp / 'simplelink.h').write_text(SIMPLELINK, encoding='utf-8', newline='\n')
+        (temp / 'WiFi.h').write_text(WIFI, encoding='utf-8', newline='\n')
+        (temp / 'Energia.h').write_text('#include "WiFi.h"\n', encoding='utf-8', newline='\n')
+        (temp / 'WiFiClient.h').write_text('#include "WiFi.h"\nclass WiFiClient { public: virtual int connect(IPAddress,uint16_t); };\n', encoding='utf-8', newline='\n')
+        (temp / 'SLFS.h').write_text(SLFS, encoding='utf-8', newline='\n')
         for path in ('driverlib/prcm.h', 'driverlib/shamd5.h', 'inc/hw_memmap.h'):
-            (temp / path).write_text(DRIVER)
+            (temp / path).write_text(DRIVER, encoding='utf-8', newline='\n')
         callbacks = temp / 'callbacks.cpp'
-        callbacks.write_text('#include "WiFi.h"\n#include <string.h>\n#if defined(sl_WlanEvtHdlr)\n' + callback_patch['after'])
+        callbacks.write_text('#include "WiFi.h"\n#include <string.h>\n#if defined(sl_WlanEvtHdlr)\n' + callback_patch['after'], encoding='utf-8', newline='\n')
         flags = ['-Wall', '-Wextra', '-Werror', '-g', '-O1', '-DPICO_STANDALONE=1',
-                 '-ffunction-sections', '-fdata-sections', '-fsanitize=address,undefined',
-                 '-fno-omit-frame-pointer', '-I' + str(temp), '-I' + str(root), '-I' + str(root / 'include')]
+                 '-ffunction-sections', '-fdata-sections', *sanitizer_flags(),
+                 '-I' + str(temp), '-I' + str(root), '-I' + str(root / 'include')]
         network = temp / 'network.o'
-        subprocess.run(['gcc', '-std=c11', *flags, '-c', str(root / 'src/network/network.c'), '-o', str(network)], check=True)
+        subprocess.run([compiler(), '-std=c11', *flags, '-c', str(root / 'src/network/network.c'), '-o', str(network)], check=True)
         control = temp / 'control.o'
-        subprocess.run(['gcc', '-std=c11', *flags, '-c', str(root / 'src/local_control.c'), '-o', str(control)], check=True)
-        executable = temp / 'wifi-tests'
-        subprocess.run(['g++', '-std=c++11', *flags, str(root / 'tests/energia_wifi_fixture.cpp'),
-                        str(callbacks), str(network), str(control), '-Wl,--gc-sections', '-lm', '-o', str(executable)], check=True)
-        env = dict(os.environ)
+        subprocess.run([compiler(), '-std=c11', *flags, '-c', str(root / 'src/local_control.c'), '-o', str(control)], check=True)
+        executable = temp / executable_name('wifi-tests')
+        subprocess.run([compiler(cxx=True), '-std=c++11', *flags, str(root / 'tests/energia_wifi_fixture.cpp'),
+                        str(callbacks), str(network), str(control), *gc_sections_flags(), '-lm', '-o', str(executable)], check=True)
+        env = runtime_environment()
         env.setdefault('ASAN_OPTIONS', 'detect_leaks=0')
         subprocess.run([str(executable)], check=True, env=env, timeout=30)
 

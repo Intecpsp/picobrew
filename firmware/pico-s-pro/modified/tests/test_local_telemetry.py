@@ -2,13 +2,15 @@
 """Test portable optional telemetry, persistent config and bounded transport."""
 import ctypes as C
 import json
-import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from native_host import compiler, library_name, pic_flags, shared_flags, load_library, close_library
 
 
 class Config(C.Structure):
@@ -25,16 +27,16 @@ class TelemetryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
-        library = Path(cls.temp.name) / "telemetry.so"
-        compiler = os.environ.get("CC", "cc")
-        flags = ["-fPIC", "-std=c11", "-O1", "-Wall", "-Wextra", "-Werror",
+        library = Path(cls.temp.name) / library_name("telemetry")
+        cc = compiler()
+        flags = [*pic_flags(), "-std=c11", "-O1", "-Wall", "-Wextra", "-Werror",
                  "-DPICO_STANDALONE=1", "-I" + str(ROOT / "include")]
         core = Path(cls.temp.name) / "telemetry.o"
-        subprocess.run([compiler, *flags, "-Dmalloc=tf_test_malloc", "-Dfree=tf_test_free",
+        subprocess.run([cc, *flags, "-Dmalloc=tf_test_malloc", "-Dfree=tf_test_free",
                         "-c", str(ROOT / "src/local_telemetry.c"), "-o", str(core)], check=True)
-        subprocess.run([compiler, "-shared", *flags, str(core), str(ROOT / "tests/local_telemetry_host.c"),
+        subprocess.run([cc, *shared_flags(), *flags, str(core), str(ROOT / "tests/local_telemetry_host.c"),
                         "-o", str(library)], check=True)
-        cls.lib = C.CDLL(str(library))
+        cls.lib = load_library(library)
         cls.lib.tf_config.argtypes = [C.c_char_p, C.c_int, C.c_int]
         cls.lib.tf_tick.argtypes = cls.lib.tf_clock.argtypes = [C.c_uint32]
         cls.lib.tf_response.argtypes = cls.lib.tf_snapshot.argtypes = [C.c_char_p]
@@ -43,6 +45,7 @@ class TelemetryTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        close_library(cls.lib)
         cls.temp.cleanup()
 
     def setUp(self):
@@ -273,10 +276,10 @@ class NativeTelemetryTests(unittest.TestCase):
         folder = Path(cls.temp.name)
         (folder / "utility").mkdir()
         (folder / "WiFi.h").write_text("#define WL_CONNECTED 3\n#define WL_AP_MODE 8\n"
-            "class WiFiClass { public: static bool _initialized; int status(); }; extern WiFiClass WiFi;\n")
+            "class WiFiClass { public: static bool _initialized; int status(); }; extern WiFiClass WiFi;\n", encoding='utf-8', newline='\n')
         (folder / "utility/simplelink.h").write_text("#pragma once\n#include <stdint.h>\n"
             "typedef uint8_t _u8; typedef int8_t _i8; typedef uint16_t _u16; typedef int16_t _i16; "
-            "typedef uint32_t _u32; typedef int32_t _i32;\n")
+            "typedef uint32_t _u32; typedef int32_t _i32;\n", encoding='utf-8', newline='\n')
         (folder / "utility/fs.h").write_text('''#pragma once
 #include "simplelink.h"
 #define SL_FS_ERR_FILE_NOT_EXISTS (-11)
@@ -289,9 +292,9 @@ _i32 sl_FsOpen(const _u8 *, _u32, _u32 *, _i32 *);
 _i32 sl_FsRead(_i32, _u32, _u8 *, _u32);
 _i32 sl_FsWrite(_i32, _u32, _u8 *, _u32);
 _i32 sl_FsClose(_i32, const _u8 *, const _u8 *, _u32);
-''')
+''', encoding='utf-8', newline='\n')
         (folder / "utility/netapp.h").write_text('#pragma once\n#include "simplelink.h"\n'
-            '_i16 sl_NetAppDnsGetHostByName(_i8 *, _u16, _u32 *, _u8);\n')
+            '_i16 sl_NetAppDnsGetHostByName(_i8 *, _u16, _u32 *, _u8);\n', encoding='utf-8', newline='\n')
         (folder / "utility/socket.h").write_text('''#pragma once
 #include "simplelink.h"
 #define SL_AF_INET 2
@@ -312,19 +315,20 @@ _i16 sl_Connect(_i16, const SlSockAddr_t *, _i16);
 _i16 sl_Send(_i16, const void *, _i16, _i16);
 _i16 sl_Recv(_i16, void *, _i16, _i16);
 _i16 sl_Close(_i16);
-''')
-        library = folder / "native-telemetry.so"
-        subprocess.run([os.environ.get("CXX", "c++"), "-shared", "-fPIC", "-std=c++11", "-O1",
+''', encoding='utf-8', newline='\n')
+        library = folder / library_name("native-telemetry")
+        subprocess.run([compiler(cxx=True), *shared_flags(), *pic_flags(), "-std=c++11", "-O1",
                         "-Wall", "-Wextra", "-Werror", "-I" + str(folder), "-I" + str(ROOT / "include"),
                         str(ROOT / "platform/energia_telemetry.cpp"), str(ROOT / "tests/energia_telemetry_fixture.cpp"),
                         "-o", str(library)], check=True)
-        cls.lib = C.CDLL(str(library))
+        cls.lib = load_library(library)
         cls.lib.nt_write.argtypes = [C.c_char_p, C.c_size_t]
         for name in ("nt_mode", "nt_port", "nt_address"):
             getattr(cls.lib, name).restype = C.c_uint
 
     @classmethod
     def tearDownClass(cls):
+        close_library(cls.lib)
         cls.temp.cleanup()
 
     def setUp(self):

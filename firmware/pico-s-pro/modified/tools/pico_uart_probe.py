@@ -13,10 +13,12 @@ Sources:
   https://github.com/torvalds/linux/blob/master/drivers/usb/serial/ch341.c
   https://github.com/libusb/libusb/blob/master/libusb/os/darwin_usb.c
 
-Optional --transport usb uses PyUSB/libusb instead of a macOS serial driver.
+Optional --transport usb uses PyUSB/libusb instead of a serial port driver.
 Install its dependencies in the venv: python -m pip install pyusb libusb-package
 USB capture requires sudo on macOS; it is limited to one 1a86:7523 adapter.
-It releases the interface and permits ordinary driver reattachment on exit.
+Windows requires WinUSB already installed on that adapter, instead of its COM
+port driver. No driver is installed or changed. On macOS/Linux, a driver detached
+by this process is reattached on exit; Windows keeps its existing WinUSB driver.
 Keep Pico mains off while opening/configuring either transport.
 """
 
@@ -124,6 +126,111 @@ class CH340USBError(RuntimeError):
     """Failure of the USB transport, distinct from a missing Pico response."""
 
 
+def _windows_driver_service(vid, pid):
+    """Read the present adapter's driver service without opening/changing it.
+
+    WinUSB provides exclusive application ownership. libusbK/libusb0 do not
+    provide the same guarantee, and the ordinary CH340 COM driver cannot serve
+    libusb requests. Use documented SetupAPI properties, not private libusb
+    structures, to fail before any UART control request if the binding is wrong.
+    https://github.com/libusb/libusb/wiki/Windows#known-restrictions
+    https://learn.microsoft.com/windows/win32/api/setupapi/nf-setupapi-setupdigetdeviceregistrypropertyw
+    """
+    class GUID(ctypes.Structure):
+        _fields_ = [("Data1", ctypes.c_uint32), ("Data2", ctypes.c_uint16),
+                    ("Data3", ctypes.c_uint16), ("Data4", ctypes.c_ubyte * 8)]
+
+    class DeviceInfo(ctypes.Structure):
+        _fields_ = [("cbSize", ctypes.c_uint32), ("ClassGuid", GUID),
+                    ("DevInst", ctypes.c_uint32), ("Reserved", ctypes.c_size_t)]
+
+    api = ctypes.WinDLL("setupapi", use_last_error=True)
+    api.SetupDiGetClassDevsW.argtypes = [ctypes.c_void_p, ctypes.c_wchar_p,
+                                       ctypes.c_void_p, ctypes.c_uint32]
+    api.SetupDiGetClassDevsW.restype = ctypes.c_void_p
+    api.SetupDiEnumDeviceInfo.argtypes = [ctypes.c_void_p, ctypes.c_uint32,
+                                        ctypes.POINTER(DeviceInfo)]
+    api.SetupDiEnumDeviceInfo.restype = ctypes.c_int
+    api.SetupDiGetDeviceRegistryPropertyW.argtypes = [
+        ctypes.c_void_p, ctypes.POINTER(DeviceInfo), ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint32), ctypes.c_void_p, ctypes.c_uint32,
+        ctypes.POINTER(ctypes.c_uint32),
+    ]
+    api.SetupDiGetDeviceRegistryPropertyW.restype = ctypes.c_int
+    api.SetupDiDestroyDeviceInfoList.argtypes = [ctypes.c_void_p]
+    api.SetupDiDestroyDeviceInfoList.restype = ctypes.c_int
+    # DIGCF_PRESENT | DIGCF_ALLCLASSES, restricted to the USB enumerator.
+    handle = api.SetupDiGetClassDevsW(None, "USB", None, 0x02 | 0x04)
+    if handle == ctypes.c_void_p(-1).value:
+        raise CH340USBError(
+            f"Cannot inspect Windows USB drivers (error {ctypes.get_last_error()})."
+        )
+
+    def property_text(info, property_id, expected_type):
+        size = ctypes.c_uint32()
+        kind = ctypes.c_uint32()
+        ok = api.SetupDiGetDeviceRegistryPropertyW(
+            handle, ctypes.byref(info), property_id, ctypes.byref(kind),
+            None, 0, ctypes.byref(size),
+        )
+        error = ctypes.get_last_error() if not ok else 0
+        if error == 13:  # ERROR_INVALID_DATA: property is absent.
+            return ""
+        if (error not in (0, 122) or not 0 < size.value <= 16384
+                or size.value % 2):  # ERROR_INSUFFICIENT_BUFFER expected.
+            raise CH340USBError(f"Cannot read Windows USB driver property (error {error}).")
+        buffer = (ctypes.c_ubyte * size.value)()
+        if not api.SetupDiGetDeviceRegistryPropertyW(
+                handle, ctypes.byref(info), property_id, ctypes.byref(kind),
+                buffer, len(buffer), ctypes.byref(size)):
+            raise CH340USBError(
+                f"Cannot read Windows USB driver property (error {ctypes.get_last_error()})."
+            )
+        if kind.value != expected_type or size.value > len(buffer) or size.value % 2:
+            raise CH340USBError("Windows returned an invalid USB driver property.")
+        try:
+            return bytes(buffer[:size.value]).decode("utf-16-le").rstrip("\0")
+        except UnicodeDecodeError as exc:
+            raise CH340USBError("Windows returned an invalid USB driver property.") from exc
+
+    services = []
+    prefix = f"usb\\vid_{vid:04x}&pid_{pid:04x}"
+    try:
+        index = 0
+        while True:
+            info = DeviceInfo()
+            info.cbSize = ctypes.sizeof(info)
+            if not api.SetupDiEnumDeviceInfo(handle, index, ctypes.byref(info)):
+                error = ctypes.get_last_error()
+                if error == 259:  # ERROR_NO_MORE_ITEMS
+                    break
+                raise CH340USBError(f"Cannot enumerate Windows USB drivers (error {error}).")
+            index += 1
+            hardware_ids = property_text(info, 1, 7).lower().split("\0")  # REG_MULTI_SZ
+            if any(value == prefix or value.startswith(prefix + "&") for value in hardware_ids):
+                services.append(property_text(info, 4, 1))  # SPDRP_SERVICE, REG_SZ
+    finally:
+        if not api.SetupDiDestroyDeviceInfoList(handle):
+            raise CH340USBError(
+                f"Cannot close Windows USB driver inspection (error {ctypes.get_last_error()})."
+            )
+    if len(services) != 1:
+        raise CH340USBError(
+            f"Found {len(services)} present Windows adapters with VID:PID {vid:04x}:{pid:04x}; "
+            "leave only the intended adapter connected before using direct USB."
+        )
+    service = services[0]
+    if service.casefold() != "winusb":
+        raise CH340USBError(
+            f"Direct USB on Windows requires the WinUSB driver on the {vid:04x}:{pid:04x} "
+            f"adapter; its current driver service is {service or 'unavailable'}. "
+            "The ordinary CH340 COM driver and libusbK/libusb0 are not supported by this "
+            "exclusive transport. Configure WinUSB for the intended adapter first; "
+            "this tool never installs, replaces, or restores Windows drivers."
+        )
+    return service
+
+
 class CH340USBTransport:
     VID = 0x1A86
     PID = 0x7523
@@ -166,8 +273,8 @@ class CH340USBTransport:
     def __enter__(self):
         if self._device is not None or self._open:
             raise CH340USBError("This transport is already open.")
-        if sys.platform not in ("darwin", "linux"):
-            raise CH340USBError("This diagnostic supports macOS and Linux only.")
+        if sys.platform not in ("darwin", "linux", "win32"):
+            raise CH340USBError("This diagnostic supports Windows, macOS and Linux only.")
         if sys.platform == "darwin" and os.geteuid() != 0:
             raise CH340USBError(
                 "Direct USB capture on macOS requires root. Run this reviewed "
@@ -216,6 +323,9 @@ class CH340USBTransport:
         self._check_libusb_version()
 
         try:
+            if sys.platform == "win32":
+                self.details["stage"] = "inspect Windows USB driver"
+                self.details["windows_driver_service"] = _windows_driver_service(self.VID, self.PID)
             self.details["stage"] = "enumerate adapter"
             devices = list(self._core.find(
                 find_all=True, idVendor=self.VID, idProduct=self.PID,
@@ -240,6 +350,12 @@ class CH340USBTransport:
             try:
                 config = self._device.get_active_configuration()
             except self._core.USBError as exc:
+                if sys.platform == "win32":
+                    raise CH340USBError(
+                        "Cannot open the WinUSB adapter. Close other programs using it and "
+                        "check the adapter's WinUSB permissions. No Pico commands were sent; "
+                        "this tool does not reset USB configurations or change drivers."
+                    ) from exc
                 raise CH340USBError(
                     "Cannot read an active USB configuration. Reconnect the "
                     "adapter and try again; this probe does not set/reset USB "
@@ -281,28 +397,40 @@ class CH340USBTransport:
                 "bulk_in_packet_size": self._packet_size,
             })
 
-            try:
-                self.details["stage"] = "inspect current USB driver"
-                active = self._device.is_kernel_driver_active(self._interface)
-            except (NotImplementedError, self._core.USBError) as exc:
-                raise CH340USBError(
-                    "Cannot determine whether the macOS/Linux driver owns the "
-                    "USB interface; refusing to assume it is free."
-                ) from exc
-            self.details["kernel_driver_was_active"] = bool(active)
-            if active:
+            if sys.platform == "win32":
+                # Windows cannot detach kernel drivers through libusb. The
+                # already verified WinUSB binding enforces exclusive access.
+                self.details["kernel_driver_was_active"] = None
+            else:
                 try:
-                    self.details["stage"] = "capture USB device"
-                    self._device.detach_kernel_driver(self._interface)
-                    self._detached = True
+                    self.details["stage"] = "inspect current USB driver"
+                    active = self._device.is_kernel_driver_active(self._interface)
                 except (NotImplementedError, self._core.USBError) as exc:
                     raise CH340USBError(
-                        "Exclusive USB capture failed before any Pico commands. "
-                        "On macOS use current libusb and run as root. No driver "
-                        "uninstallation or SIP change is required by this probe."
+                        "Cannot determine whether the macOS/Linux driver owns the "
+                        "USB interface; refusing to assume it is free."
                     ) from exc
+                self.details["kernel_driver_was_active"] = bool(active)
+                if active:
+                    try:
+                        self.details["stage"] = "capture USB device"
+                        self._device.detach_kernel_driver(self._interface)
+                        self._detached = True
+                    except (NotImplementedError, self._core.USBError) as exc:
+                        raise CH340USBError(
+                            "Exclusive USB capture failed before any Pico commands. "
+                            "On macOS use current libusb and run as root. No driver "
+                            "uninstallation or SIP change is required by this probe."
+                        ) from exc
             self.details["stage"] = "claim USB interface"
-            self._util.claim_interface(self._device, self._interface)
+            try:
+                self._util.claim_interface(self._device, self._interface)
+            except (NotImplementedError, self._core.USBError) as exc:
+                raise CH340USBError(
+                    "Cannot claim exclusive access to the USB interface. Close other "
+                    "programs using the adapter and check USB access permissions. "
+                    "No Pico commands were sent."
+                ) from exc
             self._claimed = True
             self._configure()
             self._open = True
@@ -335,7 +463,8 @@ class CH340USBTransport:
             # ctypes symbol would default to a 32-bit int return and could
             # truncate the pointer on a 64-bit Mac.  Do not change PyUSB's
             # shared function signature either.
-            get_version = ctypes.CFUNCTYPE(ctypes.POINTER(Version))(
+            function_type = ctypes.WINFUNCTYPE if sys.platform == "win32" else ctypes.CFUNCTYPE
+            get_version = function_type(ctypes.POINTER(Version))(
                 ("libusb_get_version", library)
             )
             pointer = get_version()
@@ -346,10 +475,10 @@ class CH340USBTransport:
             self.details["libusb_version"] = ".".join(map(str, parts))
         except (AttributeError, TypeError, ValueError, OSError) as exc:
             self.details["libusb_version"] = "unavailable"
-            self.details["warnings"].append(
-                f"Could not query libusb version: {type(exc).__name__}. "
-                "macOS capture requires libusb 1.0.25 or newer."
-            )
+            message = f"Could not query libusb version: {type(exc).__name__}."
+            if sys.platform == "darwin":
+                message += " macOS capture requires libusb 1.0.25 or newer."
+            self.details["warnings"].append(message)
             return
         if sys.platform == "darwin" and parts < (1, 0, 25):
             raise CH340USBError(
@@ -569,8 +698,8 @@ class CH340USBTransport:
             raise CH340USBError(
                 "USB cleanup was incomplete: "
                 + "; ".join(self.details["cleanup_errors"])
-                + ". Disconnect and reconnect the adapter to restore its "
-                  "ordinary macOS serial port."
+                + ". Disconnect and reconnect the adapter before retrying. "
+                  "Windows retains its existing WinUSB driver."
             )
         return False
 
@@ -661,7 +790,7 @@ def probe(port, power_wait=60, report=print, clock=time.monotonic):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--transport", choices=("serial", "usb"), default="serial",
-                        help="Use macOS serial driver or direct CH340 USB (default: serial)")
+                        help="Use the serial port driver or direct CH340 USB (default: serial)")
     parser.add_argument("--port", help="Serial port; otherwise locate the sole CH340 adapter")
     parser.add_argument("--baud", type=int, default=921600,
                         help="Host-requested baud (default: 921600)")

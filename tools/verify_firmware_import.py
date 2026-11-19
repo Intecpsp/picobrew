@@ -6,8 +6,10 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path, PurePosixPath
 import stat
+import subprocess
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -39,8 +41,41 @@ def tree_hash(node: dict) -> str:
     return git_hash("tree", b"".join(entry for _, entry in sorted(entries)))
 
 
-def verify_manifest(path: Path) -> dict:
-    manifest = json.loads(path.read_text())
+def git_index_modes(root: Path) -> dict[str, str]:
+    """Read executable-bit evidence that Windows filesystems cannot represent."""
+    try:
+        top = subprocess.check_output(
+            ["git", "-C", str(root), "rev-parse", "--show-toplevel"],
+            stderr=subprocess.PIPE,
+        ).decode("utf-8").strip()
+        if Path(top).resolve() != root.resolve():
+            raise ValueError("not the repository root")
+        entries = subprocess.check_output(
+            ["git", "-C", str(root), "ls-files", "--stage", "-z"],
+            stderr=subprocess.PIPE,
+        )
+    except (OSError, subprocess.CalledProcessError, UnicodeError, ValueError):
+        raise ValueError(
+            "Windows import verification requires Git on PATH and a full Git "
+            "checkout so preserved executable modes can be checked in its index."
+        ) from None
+    modes = {}
+    for entry in entries.split(b"\0"):
+        if not entry:
+            continue
+        metadata, name = entry.split(b"\t", 1)
+        mode, _blob, stage = metadata.split()
+        key = name.decode("utf-8")
+        if stage != b"0":
+            raise ValueError(f"Resolve unmerged Git index entry before verification: {key}")
+        modes[key] = mode.decode("ascii")
+    return modes
+
+
+def verify_manifest(path: Path, *, index_modes: dict[str, str] | None = None) -> dict:
+    if os.name == "nt" and index_modes is None:
+        index_modes = git_index_modes(ROOT)
+    manifest = json.loads(path.read_text(encoding="utf-8"))
     prefix = manifest["source_root"].strip("/")
     prefix = prefix + "/" if prefix else ""
     tree = {}
@@ -59,7 +94,12 @@ def verify_manifest(path: Path) -> dict:
         if target.is_symlink() or not target.is_file() or not target.resolve().is_relative_to(ROOT):
             raise ValueError(f"Expected regular in-repository file: {destination}")
         data = target.read_bytes()
-        actual_mode = "100755" if target.stat().st_mode & stat.S_IXUSR else "100644"
+        if index_modes is None:
+            actual_mode = "100755" if target.stat().st_mode & stat.S_IXUSR else "100644"
+        else:
+            actual_mode = index_modes.get(destination.as_posix())
+            if actual_mode is None:
+                raise ValueError(f"Imported file is missing from the Git index: {destination}")
         expected = (item["size"], item["sha256"], item["git_blob_sha"], item["mode"])
         actual = (len(data), hashlib.sha256(data).hexdigest(), git_hash("blob", data), actual_mode)
         if actual != expected:
@@ -76,8 +116,9 @@ def verify_manifest(path: Path) -> dict:
     actual_tree = tree_hash(tree)
     if actual_tree != manifest["source_tree"]:
         raise ValueError(f"Incomplete or changed source tree in {path}: {actual_tree}")
-    return {"manifest": str(path.relative_to(ROOT)), "files": len(destinations),
-            "bytes": total, "source_tree": actual_tree, "verified": True}
+    return {"manifest": path.relative_to(ROOT).as_posix(), "files": len(destinations),
+            "bytes": total, "source_tree": actual_tree, "verified": True,
+            "mode_evidence": "git-index" if index_modes is not None else "filesystem"}
 
 
 def main() -> None:
@@ -86,17 +127,18 @@ def main() -> None:
     args = parser.parse_args()
     manifests = args.manifests or [ROOT / "firmware/upstream-manifest.json",
                                  *sorted((ROOT / "firmware").glob("*/source-manifest.json"))]
+    index_modes = git_index_modes(ROOT) if os.name == "nt" else None
     for path in manifests:
-        print(json.dumps(verify_manifest(path.resolve()), sort_keys=True))
+        print(json.dumps(verify_manifest(path.resolve(), index_modes=index_modes), sort_keys=True))
     for path in sorted((ROOT / "firmware").glob("*/provenance.json")):
-        device = json.loads(path.read_text()).get("oem_application")
+        device = json.loads(path.read_text(encoding="utf-8")).get("oem_application")
         if not device:
             continue
         image = path.parent.joinpath(*safe_path(device["path"]).parts)
         data = image.read_bytes()
         if len(data) != device["size"] or hashlib.sha256(data).hexdigest() != device["sha256"]:
             raise ValueError(f"Verified device image changed: {image}")
-        print(json.dumps({"device_image": str(image.relative_to(ROOT)), "verified": True}))
+        print(json.dumps({"device_image": image.relative_to(ROOT).as_posix(), "verified": True}))
 
 
 if __name__ == "__main__":

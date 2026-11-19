@@ -37,6 +37,25 @@ contains no Zymatic image, so that OEM location is a placeholder.
 
 ## Run the server
 
+The Hub runs natively on Windows, macOS and Linux. Install Go **1.26 or newer**
+and GNU Make. The compiled website is included in the Go binary; Node and npm
+are not required to build or run the server.
+From either the repository root or `server/`, build and start the Hub with:
+
+```sh
+make server-start
+```
+
+This builds the Go executable with its bundled website and runs the Hub in the foreground at
+[http://127.0.0.1:8080](http://127.0.0.1:8080). Both entry points use the same
+`server/data` directory. Press **Ctrl-C** to stop.
+
+The [server guide](server/README.md) also has direct Go commands if Make is not
+installed. See [platform setup](docs/platforms.md) for firmware compiler, USB
+and development prerequisites on each operating system.
+
+### Docker
+
 ```sh
 git clone https://github.com/jeffreydwalter/picobrew-pico-pro-firmware.git
 cd picobrew-pico-pro-firmware/server
@@ -52,25 +71,63 @@ so the directory rename retains the previous default data volume. See the
 
 ## Build and verify firmware
 
-Run these commands from the repository root:
+Activate a Python environment and install the dependencies described in the
+[platform setup guide](docs/platforms.md). Run these commands from the repository
+root to fetch the pinned compiler/SDK and build the active firmware:
 
 ```sh
 make verify-imports
+make firmware-bootstrap
 make firmware MACHINE=pico-s-pro
 make firmware-test MACHINE=pico-s-pro
-make oem MACHINE=pico-s-pro
 ```
 
-Bootstrap the selected source component before its first ARM build. The modified
-firmware uses `make firmware-bootstrap`; the preserved OEM reconstruction uses
-`make -C firmware/pico-s-pro/reverse-engineered bootstrap`. Each component's
-guide describes its Python dependencies and existing-toolchain options.
-
-The root Makefile delegates to the selected machine's source directory. Only
-S/Pro currently has implemented source builds. Its modified package and local
-browser assets are in `firmware/pico-s-pro/modified/firmware/`. Start with the
+Only S/Pro currently has implemented source builds. Its modified package and
+local browser assets are in `firmware/pico-s-pro/modified/firmware/`. Start with the
 [S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
 entry points. No build or test target flashes a brewer.
+
+### Preserved OEM reconstruction and recovery candidate
+
+Use the root adapter to build either preserved component on Windows, macOS or
+Linux. Both reuse the compiler and SDK installed by `make firmware-bootstrap`:
+
+```sh
+make oem MACHINE=pico-s-pro
+make recovery MACHINE=pico-s-pro
+```
+
+Without GNU Make, the same operations are available from the repository root:
+
+```sh
+python firmware/pico-s-pro/modified/tools/bootstrap_dependencies.py
+python tools/build_archive.py oem
+python tools/build_archive.py recovery
+```
+
+The Python environment needs `firmware/pico-s-pro/modified/requirements-test.txt`.
+The adapter also accepts `--arm-prefix`, `--sdk-root` and `--output-dir`; use
+`python3` where that is the name of your Python installation. On Windows, build
+these archives from an ordinary local drive path; the pinned compiler adapter
+rejects UNC and extended namespace paths explicitly.
+
+| Build | Default output |
+| --- | --- |
+| OEM reconstruction | `build/archives/oem/pico-pro-recovered.bin` |
+| Experimental recovery | `build/archives/recovery/pico-web-recovery.bin` |
+
+The adapter executes the archived build scripts without rewriting their bytes.
+It gives those scripts consistent path ordering and separators, then checks the
+rebuilt binary, layout and source identities against the preserved package.
+Each output directory includes the original builder's report and a separate
+`portable-build.json` recording the adapter, host and verification results.
+All 396 OEM reconstruction files and 45 pinned recovery files are checked before
+and after the build. Generated OEM application archives also use the component's
+ignored `build/` directory.
+
+Matching the preserved reconstruction does not establish a byte-identical vendor
+firmware rebuild. The recovery image remains an experimental candidate without
+supported installation or physical recovery validation.
 
 ## Direction and current support
 

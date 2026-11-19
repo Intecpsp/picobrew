@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compare actuator ordering and filter interlocks with the original ARM code."""
 import argparse
+from contextlib import ExitStack
 import ctypes
 import hashlib
 import json
@@ -12,6 +13,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from original_arm import ArmFirmware, IMAGE_SHA256
+from native_host import compiler, library_name, pic_flags, shared_flags, native_library
 
 NAMES = [
     'pico_actuators_initialize', 'pico_step_filter_is_inserted',
@@ -34,9 +36,9 @@ def main():
     if options.elf:
         from rebuilt_arm import RebuiltArm
         rebuilt = RebuiltArm(options.elf)
-    records = json.loads((ROOT / 'reference/function_map.json').read_text())
+    records = json.loads((ROOT / 'reference/function_map.json').read_text(encoding='utf-8'))
     addresses = {x['name']: int(x['address'], 16) for x in records}
-    globals_ = json.loads((ROOT / 'reference/global_map.json').read_text())
+    globals_ = json.loads((ROOT / 'reference/global_map.json').read_text(encoding='utf-8'))
     phase_address = int(next(x['address'] for x in globals_ if x['name'] == 'g_controller_brew_phase'), 16)
     events, readings = [], [0, 0]
     read_index, restored = [0], [False]
@@ -68,12 +70,12 @@ def main():
         cases.extend((operation, phase, first, second, mask)
                      for phase in phases for first, second in patterns for mask in masks)
     results = []
-    with tempfile.TemporaryDirectory(prefix='pico-actuators-') as temporary:
-        library = Path(temporary) / 'actuators.so'
-        subprocess.run(['gcc', '-std=c11', '-shared', '-fPIC', '-O2', '-Wall', '-Wextra',
+    with tempfile.TemporaryDirectory(prefix='pico-actuators-') as temporary, ExitStack() as libraries:
+        library = Path(temporary) / library_name('actuators')
+        subprocess.run([compiler(), '-std=c11', *shared_flags(), *pic_flags(), '-O2', '-Wall', '-Wextra',
                         '-Werror', '-I' + str(ROOT / 'include'), str(ROOT / 'src/actuators.c'),
                         str(ROOT / 'tests/actuator_fixture.c'), '-o', str(library)], check=True)
-        native = ctypes.CDLL(str(library))
+        native = libraries.enter_context(native_library(library))
         native.pico_test_actuator_configure.argtypes = [ctypes.c_uint32] * 3
         native.pico_test_actuator_configure.restype = None
         native.pico_test_actuator_run.argtypes = [ctypes.c_uint32] * 2
@@ -116,7 +118,7 @@ def main():
               'limits': 'No electrical behavior, interrupts during waits, or complete UI implementation.',
               'results': results}
     options.output.parent.mkdir(parents=True, exist_ok=True)
-    options.output.write_text(json.dumps(report, indent=2) + '\n')
+    options.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(f'Actuators: {len(results)} scenarios match original ARM; rebuilt ARM compared={rebuilt is not None}')
 
 

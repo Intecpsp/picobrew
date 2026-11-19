@@ -97,7 +97,7 @@ func TestHistorySyncPreservesEditsDuringNetworkRead(t *testing.T) {
 }
 
 func TestCompletedHistoryFingerprintSurvivesRestartAndInvalidatesChanges(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "hub.db")
+	path := filepath.Join(newTestDataDir(t), "hub.db")
 	s, d, a := historyFixture(t, path)
 	h := historyDescription(1, 1)
 	calls := 0
@@ -428,7 +428,7 @@ func (w failedExportWriter) Write([]byte) (int, error) { return 0, w.err }
 
 func TestBackupChecksArchiveAndExcludesCredentials(t *testing.T) {
 	s, _, _ := historyFixture(t, ":memory:")
-	s.cfg.DataDir = t.TempDir()
+	s.cfg.DataDir = newTestDataDir(t)
 	s.cfg.Logger = slog.New(slog.NewTextHandler(io.Discard, nil))
 	b := domain.Brew{ID: "machine-1", SampleCount: 0}
 	for kind, value := range map[string]any{"brew": b, "profile": map[string]any{"efficiency": 63}, "ai-advice": map[string]string{"text": "Review the temperature"}, "config": map[string]string{"password": "excluded-password"}} {
@@ -491,7 +491,7 @@ func TestBackupFailureNeverPublishesPartialZIP(t *testing.T) {
 	for _, failure := range []string{"database", "corrupt-brew"} {
 		t.Run(failure, func(t *testing.T) {
 			s, _, _ := historyFixture(t, ":memory:")
-			s.cfg.DataDir = t.TempDir()
+			s.cfg.DataDir = newTestDataDir(t)
 			s.cfg.Logger = slog.New(slog.NewTextHandler(io.Discard, nil))
 			if failure == "database" {
 				_ = s.db.Close()

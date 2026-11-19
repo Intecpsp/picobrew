@@ -609,7 +609,7 @@ class PreflightWireTests(unittest.TestCase):
             self.assertEqual(len(fake.uploaded), 49588)
             self.assertEqual(fake.break_count, 2)
             self.assertTrue(fake.closed)
-            self.assertEqual(output.stat().st_mode & 0o777, 0o600)
+            backup.private_files.assert_private(output)
             self.assertFalse(Path(str(output) + ".partial").exists())
             self.assertIn("QUALIFIED: live firmware hashes", transcript)
 

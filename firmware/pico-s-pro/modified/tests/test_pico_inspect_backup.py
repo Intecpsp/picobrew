@@ -103,7 +103,7 @@ class InspectorTests(unittest.TestCase):
         image, payloads = self.base_fixture()
         result, transcript, out = self.run_main(image, expected=hashlib.sha256(image).hexdigest())
         self.assertEqual(result, 0, transcript)
-        self.assertEqual(stat.S_IMODE(out.stat().st_mode), 0o700)
+        inspect.private_files.assert_private(out, directory=True)
         with zipfile.ZipFile(out/"firmware-review.zip") as archive:
             names = set(archive.namelist())
             expected = {"fat0-rev10" + name for name in payloads} | {"inspection.json", "inspection.txt"}
@@ -112,7 +112,7 @@ class InspectorTests(unittest.TestCase):
                 relative = "fat0-rev10" + name
                 self.assertEqual(archive.read(relative), payload)
                 self.assertEqual((out/relative).read_bytes(), payload)
-                self.assertEqual(stat.S_IMODE((out/relative).stat().st_mode), 0o600)
+                inspect.private_files.assert_private(out / relative)
             combined = b"".join(archive.read(name) for name in names)
             self.assertNotIn(SECRET, combined)
             self.assertNotIn(SECRET.hex().encode(), combined)

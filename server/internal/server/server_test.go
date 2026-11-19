@@ -19,14 +19,24 @@ import (
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
 const ownerPassword = "an-example-test-password-only"
 
+func newTestDataDir(t *testing.T) string {
+	t.Helper()
+	dir := filepath.Join(t.TempDir(), "private")
+	if err := privatefs.EnsureDir(dir); err != nil {
+		t.Fatal(err)
+	}
+	return dir
+}
+
 func newTestServer(t *testing.T) (*Server, *httptest.Server, *http.Client) {
 	t.Helper()
-	s, err := New(Config{DataDir: t.TempDir(), Password: ownerPassword, PollInterval: time.Hour, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))})
+	s, err := New(Config{DataDir: newTestDataDir(t), Password: ownerPassword, PollInterval: time.Hour, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))})
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -159,7 +169,7 @@ func TestOwnerSessionCSRFRevisionAndSecretStorage(t *testing.T) {
 }
 
 func TestSetupAndPasswordSurviveRestart(t *testing.T) {
-	dir := t.TempDir()
+	dir := newTestDataDir(t)
 	cfg := Config{DataDir: dir, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))}
 	s, err := New(cfg)
 	if err != nil {
@@ -212,7 +222,7 @@ func TestRateLimitUsesHostNotEphemeralSourcePort(t *testing.T) {
 }
 
 func TestDemoRefusesExistingHardwareRecords(t *testing.T) {
-	dir := t.TempDir()
+	dir := newTestDataDir(t)
 	db, err := store.Open(filepath.Join(dir, "hub.sqlite"))
 	if err != nil {
 		t.Fatal(err)

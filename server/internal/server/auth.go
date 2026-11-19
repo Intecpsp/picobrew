@@ -20,6 +20,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
@@ -27,18 +28,21 @@ type vault struct{ aead cipher.AEAD }
 
 func openVault(dir string) (*vault, error) {
 	path := filepath.Join(dir, "master.key")
-	key, err := os.ReadFile(path)
+	key, err := privatefs.ReadFile(path, 32)
 	if errors.Is(err, os.ErrNotExist) {
 		key = make([]byte, 32)
 		if _, err = rand.Read(key); err != nil {
 			return nil, err
 		}
 		var f *os.File
-		f, err = os.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY, 0600)
+		f, err = privatefs.OpenFile(path, os.O_CREATE|os.O_EXCL|os.O_WRONLY)
 		if err != nil {
 			return nil, err
 		}
 		_, err = f.Write(key)
+		if err == nil {
+			err = f.Sync()
+		}
 		ce := f.Close()
 		if err == nil {
 			err = ce
@@ -49,9 +53,6 @@ func openVault(dir string) (*vault, error) {
 	}
 	if len(key) != 32 {
 		return nil, errors.New("master.key must contain exactly 32 bytes")
-	}
-	if err = os.Chmod(path, 0600); err != nil {
-		return nil, err
 	}
 	block, err := aes.NewCipher(key)
 	if err != nil {

@@ -194,7 +194,7 @@ func TestBulkTransferStopsOnUnknownWriteWithoutReplay(t *testing.T) {
 }
 
 func TestBulkReceiptRecoversAfterRestartWithoutWriting(t *testing.T) {
-	cfg := Config{DataDir: t.TempDir(), Password: ownerPassword, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))}
+	cfg := Config{DataDir: newTestDataDir(t), Password: ownerPassword, Logger: slog.New(slog.NewTextHandler(io.Discard, nil))}
 	s, err := New(cfg)
 	if err != nil {
 		t.Fatal(err)

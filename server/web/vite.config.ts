@@ -8,5 +8,10 @@ export default defineConfig({
       '/openapi.json': { target: process.env.HUB_API_URL || 'http://127.0.0.1:8080' },
     },
   },
-  build: { outDir: 'dist', sourcemap: false },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    // Ship the complete upstream notices with the embedded browser client.
+    license: { fileName: 'third-party-licenses.md' },
+  },
 })

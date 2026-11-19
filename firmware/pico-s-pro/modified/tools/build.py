@@ -10,9 +10,10 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
 import subprocess
 import sys
+
+from arm_toolchain import find_arm_prefix, sort_sources
 
 ROOT = Path(__file__).resolve().parents[1]
 
@@ -31,11 +32,9 @@ def main():
     options = parser.parse_args()
     prefix = options.arm_prefix
     if not prefix:
-        candidate = ROOT / '.deps/toolchain/bin/arm-none-eabi-gcc'
-        compiler = str(candidate) if candidate.is_file() else shutil.which('arm-none-eabi-gcc')
-        if not compiler:
+        prefix = find_arm_prefix(ROOT)
+        if not prefix:
             parser.error('ARM compiler missing. Run the dependency bootstrap or set PICOBREW_ARM_PREFIX to the arm-none-eabi- tool prefix.')
-        prefix = compiler[:-3]
     gcc, ar, nm, readelf = (prefix + suffix for suffix in ['gcc', 'ar', 'nm', 'readelf'])
     if options.standalone:
         ar, nm = prefix + 'gcc-ar', prefix + 'gcc-nm'
@@ -49,7 +48,7 @@ def main():
              '-Wall', '-Wextra', '-Werror', '-I' + str(ROOT / 'include')]
     if options.standalone:
         flags += ['-DPICO_STANDALONE=1', '-flto']
-    sources = sorted((ROOT / 'src').rglob('*.c'))
+    sources = sort_sources((ROOT / 'src').rglob('*.c'))
     if not options.standalone:
         sources = [p for p in sources if not (p.name.startswith('local_') or p.name == 'http_server.c')]
     objects = []
@@ -59,7 +58,7 @@ def main():
         object_path.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run([gcc, *flags, '-c', str(source), '-o', str(object_path)], check=True)
         objects.append(object_path)
-        source_hashes[str(source.relative_to(ROOT))] = hashlib.sha256(source.read_bytes()).hexdigest()
+        source_hashes[source.relative_to(ROOT).as_posix()] = hashlib.sha256(source.read_bytes()).hexdigest()
     archive = output / 'libpicobrew.a'
     # Recreate it so deleted modules cannot linger from an earlier build.
     archive.unlink(missing_ok=True)
@@ -72,8 +71,8 @@ def main():
               'full_firmware': False, 'validation_elf': None,
               'profile': 'standalone' if options.standalone else 'legacy'}
     report['header_sha256'] = {
-        str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
-        for path in sorted((ROOT / 'include').rglob('*.h'))}
+        path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
+        for path in sort_sources((ROOT / 'include').rglob('*.h'))}
     if not options.core_only:
         sdk = options.sdk_root.resolve()
         if not (sdk / 'cores/cc3200/Energia.h').is_file():
@@ -92,7 +91,7 @@ def main():
                           'libraries/WiFi/utility/middleware/driver/hal']:
             cpp_flags += ['-isystem', str(sdk / directory)]
         adapter_source = ROOT / 'platform/energia_cc3200.cpp'
-        adapter_sources = sorted(p for p in (ROOT / 'platform').glob('*.cpp')
+        adapter_sources = sort_sources(p for p in (ROOT / 'platform').glob('*.cpp')
                                  if p.name != 'firmware_main.cpp')
         if not options.standalone:
             adapter_sources = [p for p in adapter_sources if p.name not in ('energia_http_server.cpp', 'energia_history.cpp', 'energia_telemetry.cpp')]
@@ -106,13 +105,13 @@ def main():
         subprocess.run([ar, 'rcs', str(adapter_archive), *map(str, adapter_objects)], check=True)
         report.update({'energia_adapter_archive': adapter_archive.name,
                        'energia_adapter_source_sha256': hashlib.sha256(adapter_source.read_bytes()).hexdigest(),
-                       'platform_source_sha256': {str(p.relative_to(ROOT)): hashlib.sha256(p.read_bytes()).hexdigest() for p in adapter_sources},
+                       'platform_source_sha256': {p.relative_to(ROOT).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in adapter_sources},
                        'energia_adapter_sha256': hashlib.sha256(adapter_archive.read_bytes()).hexdigest(),
                        'sdk_dependency_lock_sha256': hashlib.sha256((ROOT / 'dependencies/lock.json').read_bytes()).hexdigest(),
                        'sdk_interface_check': 'Real pinned Energia/TI headers; C++11 Cortex-M4 soft-float compilation with warnings as errors'})
     if not options.archive_only:
         fixture_objects = []
-        fixtures = [ROOT / 'tests/validation_entry.c', *sorted(
+        fixtures = [ROOT / 'tests/validation_entry.c', *sort_sources(
             p for p in (ROOT / 'tests').glob('*_fixture.c')
             if not p.name.startswith(('http_', 'local_', 'energia_http')))]
         for source in fixtures:
@@ -134,16 +133,16 @@ def main():
         attributes = subprocess.check_output([readelf, '-h', '-A', str(elf)], text=True)
         if 'soft-float ABI' not in attributes or 'Machine:                           ARM' not in attributes:
             raise RuntimeError('Unexpected ELF machine/float ABI:\n' + attributes)
-        (output / 'elf_attributes.txt').write_text(attributes)
+        (output / 'elf_attributes.txt').write_text(attributes, encoding='utf-8', newline='\n')
         report.update({'validation_elf': elf.name,
                        'test_fixture_sha256': {
-                           str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest()
+                           path.relative_to(ROOT).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest()
                            for path in fixtures},
                        'validation_elf_sha256': hashlib.sha256(elf.read_bytes()).hexdigest(),
                        'undefined_symbols': [],
                        'runtime': 'Compiler-provided libgcc, libc, libm; no decompiled runtime bodies',
                        'validation_scope': 'Function-level image with test I/O fixtures, not an appliance boot image'})
-    (output / 'build-report.json').write_text(json.dumps(report, indent=2) + '\n')
+    (output / 'build-report.json').write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({key: report[key] for key in ['source_files', 'compiler', 'application_archive',
                                                   'validation_elf', 'full_firmware']}, indent=2))
     return 0

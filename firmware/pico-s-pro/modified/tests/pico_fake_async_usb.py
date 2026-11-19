@@ -7,6 +7,7 @@ every pending transfer on the endpoint.
 """
 import ctypes
 from collections import deque
+import sys
 import threading
 import time
 from types import SimpleNamespace
@@ -25,7 +26,7 @@ class Function:
 
 
 class FakeAsyncLib:
-    def __init__(self, fail_submit_at=None, cancel_delivers=True):
+    def __init__(self, fail_submit_at=None, cancel_delivers=True, cancel_endpoint=True):
         self.lock = threading.Condition(threading.RLock())
         self.allocations = {}
         self.pending = {}
@@ -36,6 +37,7 @@ class FakeAsyncLib:
         self.callback_count = 0
         self.fail_submit_at = fail_submit_at
         self.cancel_delivers = cancel_delivers
+        self.cancel_endpoint = cancel_endpoint
         self.hold_callbacks = False
         self.dropped = bytearray()
         self.violations = []
@@ -129,10 +131,11 @@ class FakeAsyncLib:
                 return -5
             if not self.cancel_delivers:
                 return 0
-            # macOS AbortPipe behavior: cancellation covers the whole endpoint.
-            for pending in list(self.pending.values()):
+            # macOS AbortPipe cancels the endpoint; Windows cancels one request.
+            cancelled = list(self.pending) if self.cancel_endpoint else [addr]
+            for key in cancelled:
+                pending = self.pending.pop(key)
                 self.events.append((pending, 3, 0))
-            self.pending.clear()
             self.lock.notify_all()
             return 0
 
@@ -152,7 +155,11 @@ class FakeAsyncLib:
             self.trace.append(("callback", addr, status, count))
         # Invoke genuine ctypes callback outside native-state lock; this may
         # immediately resubmit the transfer, just like libusb callbacks do.
-        ptr.contents.callback(ptr)
+        if sys.platform == "win32":
+            callback_type = ctypes.WINFUNCTYPE(None, ctypes.POINTER(abi._libusb_transfer))
+            ctypes.cast(ptr.contents.callback, callback_type)(ptr)
+        else:
+            ptr.contents.callback(ptr)
         with self.lock:
             self.callback_count += 1
             self.lock.notify_all()

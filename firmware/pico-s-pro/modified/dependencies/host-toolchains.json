@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "note": "Additional host packages of the same GNU Arm Embedded Toolchain 10.3-2021.10. The Linux baseline remains unchanged in lock.json. Each archive was downloaded from Arm and its size and SHA-256 measured before inclusion.",
+  "toolchains": {
+    "windows-x86": {
+      "name": "GNU Arm Embedded Toolchain 10.3-2021.10 for Windows",
+      "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-win32.zip",
+      "archive_filename": "gcc-arm-none-eabi-10.3-2021.10-win32.zip",
+      "archive_root": "gcc-arm-none-eabi-10.3-2021.10",
+      "directory": "toolchain",
+      "bytes": 200578763,
+      "sha256": "d287439b3090843f3f4e29c7c41f81d958a5323aecefcf705c203bfd8ae3f2e7",
+      "host": "Windows x86/x86-64",
+      "target": "arm-none-eabi"
+    },
+    "darwin-x86_64": {
+      "name": "GNU Arm Embedded Toolchain 10.3-2021.10 for macOS",
+      "url": "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10.3-2021.10/gcc-arm-none-eabi-10.3-2021.10-mac.tar.bz2",
+      "archive_filename": "gcc-arm-none-eabi-10.3-2021.10-mac.tar.bz2",
+      "archive_root": "gcc-arm-none-eabi-10.3-2021.10",
+      "directory": "toolchain",
+      "bytes": 158961466,
+      "sha256": "fb613dacb25149f140f73fe9ff6c380bb43328e6bf813473986e9127e2bc283b",
+      "host": "macOS x86-64",
+      "target": "arm-none-eabi",
+      "compatibility_note": "Apple Silicon requires Rosetta 2 to run this pinned Intel compiler. The Hub runs natively and does not require Rosetta."
+    }
+  }
+}

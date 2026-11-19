@@ -4,21 +4,27 @@
 This exercises JSON with the same shared request/response arena as the native
 HTTP server. Hardware and flash transport are simulated; no device is flashed.
 """
+import atexit
 import ctypes
 import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from native_host import (compiler, library_name, pic_flags, shared_flags, load_library,
+                         close_library, executable_name, sanitizer_flags, runtime_environment)
 TEMP = tempfile.TemporaryDirectory(prefix="picobrew-local-api-")
-LIBRARY = Path(TEMP.name) / "api.so"
+LIBRARY = Path(TEMP.name) / library_name("api")
 SOURCES = [ROOT / "tests/standalone/local_api_host.c", ROOT / "src/local_api.c", ROOT / "src/local_store.c", ROOT / "src/local_history.c", ROOT / "src/local_telemetry.c"]
-subprocess.run(["gcc", "-std=c11", "-Wall", "-Wextra", "-Werror", "-fPIC", "-shared", "-O1", "-g",
+subprocess.run([compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror", *pic_flags(), *shared_flags(), "-O1", "-g",
                 "-I" + str(ROOT / "include"), *map(str, SOURCES), "-o", str(LIBRARY)], check=True)
-LIB = ctypes.CDLL(str(LIBRARY))
+LIB = load_library(LIBRARY)
+atexit.register(close_library, LIB)
 LIB.test_request.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_size_t,
                              ctypes.c_void_p, ctypes.c_size_t]
 LIB.test_session.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
@@ -133,7 +139,7 @@ class LocalApi(unittest.TestCase):
 
     def test_starters_seed_once_and_are_real_shared_slots(self):
         self.assertEqual(LIB.test_initialize_recipes(), 0)
-        expected = json.loads((ROOT / "data/starter-recipes.json").read_text())["recipes"]
+        expected = json.loads((ROOT / "data/starter-recipes.json").read_text(encoding='utf-8'))["recipes"]
         self.assertEqual(LIB.test_recipe_list(), 8)
         for entry in expected:
             stored = request("GET", "/api/v1/recipes/" + entry["id"])[1]
@@ -429,11 +435,11 @@ if __name__ == "__main__":
     suite = unittest.defaultTestLoader.loadTestsFromTestCase(LocalApi)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful(): raise SystemExit(1)
-    executable = Path(TEMP.name) / "api-sanitized"
-    subprocess.run(["gcc", "-std=c11", "-Wall", "-Wextra", "-Werror", "-O1", "-g",
-                    "-fsanitize=address,undefined", "-fno-omit-frame-pointer", "-DLOCAL_API_SELFTEST_MAIN",
+    executable = Path(TEMP.name) / executable_name("api-selftest")
+    subprocess.run([compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror", "-O1", "-g",
+                    *sanitizer_flags(), "-DLOCAL_API_SELFTEST_MAIN",
                     "-I" + str(ROOT / "include"), *map(str, SOURCES), "-o", str(executable)], check=True)
     # This target does not allocate. LeakSanitizer cannot inspect processes in
     # ptrace-based execution environments; ASan and UBSan remain fully enabled.
-    environment = dict(os.environ, ASAN_OPTIONS="detect_leaks=0:halt_on_error=1", UBSAN_OPTIONS="halt_on_error=1")
+    environment = runtime_environment(dict(os.environ, ASAN_OPTIONS="detect_leaks=0:halt_on_error=1", UBSAN_OPTIONS="halt_on_error=1"))
     subprocess.run([str(executable)], check=True, env=environment)

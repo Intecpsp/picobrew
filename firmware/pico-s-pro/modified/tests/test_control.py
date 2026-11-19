@@ -6,6 +6,7 @@ and the entry to the non-returning heater-fault handler are mocked.
 """
 from pathlib import Path
 import argparse
+from contextlib import ExitStack
 import ctypes as ct
 import hashlib
 import json
@@ -22,6 +23,7 @@ PROJECT=HERE.parent if (HERE.parent/'tools/original_arm.py').exists() else ROOT/
 sys.path.insert(0,str(PROJECT/'tools'))
 from original_arm import ArmFirmware, IMAGE_SHA256
 from rebuilt_arm import RebuiltArm
+from native_host import compiler, library_name, pic_flags, shared_flags, native_library
 
 CONTROLLER=0x2002d2f8
 SIGNAL_ADDRESSES=(0x2002dabe,0x2002bc54,0x2002bf10,0x2002bf11,0x2002bf12,0x2002bf13,0x2002bf20)
@@ -115,15 +117,15 @@ def main():
     else:
         include=HERE/'include';control_source=HERE/'control.c';pid_source=HERE.parent/'state_init/pid.c'
     fixture=HERE/'control_fixture.c' if (HERE/'control_fixture.c').exists() else HERE/'fixture.c'
-    with tempfile.TemporaryDirectory(prefix='pico-control-') as temporary:
-        so=Path(temporary)/'control.so'
-        command=['gcc','-std=c11','-Wall','-Wextra','-Werror','-O2','-fPIC','-shared',
+    with tempfile.TemporaryDirectory(prefix='pico-control-') as temporary, ExitStack() as libraries:
+        so=Path(temporary)/library_name('control')
+        command=[compiler(),'-std=c11','-Wall','-Wextra','-Werror','-O2',*pic_flags(),*shared_flags(),
                  '-fno-fast-math','-ffp-contract=off','-I'+str(include),str(control_source),
                  str(pid_source),str(fixture),'-o',str(so)]
         rebuilt=RebuiltArm(opts.elf) if opts.elf else None
         if not rebuilt:
             subprocess.run(command,check=True)
-            lib=ct.CDLL(str(so))
+            lib=libraries.enter_context(native_library(so))
             lib.control_fixture_reset.argtypes=[ct.POINTER(U8),ct.POINTER(U8),ct.POINTER(U32),U32,U32,U32,U32]
             lib.control_fixture_run.argtypes=[ct.c_int,ct.c_double];lib.control_fixture_run.restype=ct.c_int
             lib.control_fixture_result.argtypes=[ct.POINTER(U8),ct.POINTER(U8)]
@@ -180,7 +182,7 @@ def main():
             if c_events!=a_events:differences['events']={'c':c_events,'arm':a_events}
             if differences:
                 report={'case':description,'operation':operation,'differences':differences}
-                (HERE/'failure.json').write_text(json.dumps(report,indent=2)+'\n')
+                (HERE/'failure.json').write_text(json.dumps(report,indent=2)+'\n', encoding='utf-8', newline='\n')
                 raise AssertionError(json.dumps(report,indent=2))
             records.append({'case':description,'operation':operation,'original_instructions':instructions,
                             'events':count,'fatal_boundary':a_ret==-777,
@@ -254,7 +256,7 @@ def main():
                 'scope':'Compiled relocatable C including real C PID versus original ARM ISR/control/PID instructions. State bytes, signal values, meaningful return values, and ordered I/O events compared.',
                 'limitations':'Hardware/UI boundary hooks; no interrupt concurrency. Native-host mode permits counted arithmetic NaN representation differences; rebuilt-ARM mode requires exact state bytes including NaNs. Fatal cases compare behavior up to entry into original non-returning fault handler. Shuttle-on boundary includes original filter interlock contract. Corrupted negative history indices excluded.',
                 'cases':records}
-        opts.output.parent.mkdir(parents=True,exist_ok=True);opts.output.write_text(json.dumps(report,indent=2)+'\n')
+        opts.output.parent.mkdir(parents=True,exist_ok=True);opts.output.write_text(json.dumps(report,indent=2)+'\n', encoding='utf-8', newline='\n')
         print(json.dumps({k:v for k,v in report.items() if k!='cases'},indent=2))
 
 if __name__=='__main__': main()

@@ -17,6 +17,7 @@ import struct
 import sys
 import tempfile
 import unittest
+from private_file_test_support import make_public
 from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -337,8 +338,8 @@ class InstallWireTests(unittest.TestCase):
             (self.web_path / (source + ".gz")).write_bytes(self.web_payloads[destination])
         for path, data in ((self.backup_path, self.raw_backup), (self.key_path, KEY),
                            (self.candidate_path, self.candidate)):
-            path.write_bytes(data)
-            path.chmod(0o600)
+            with installer.private_files.new_private_file(path) as handle:
+                handle.write(data)
         self.addCleanup(mock.patch.stopall)
         mock.patch.dict(preflight.EXPECTED_FILES, self.profile, clear=True).start()
         mock.patch.object(installer, "BACKUP_SHA256", hashlib.sha256(self.raw_backup).hexdigest()).start()
@@ -489,7 +490,12 @@ class InstallWireTests(unittest.TestCase):
                 if fault == "missing": payload_path.unlink()
                 if fault == "symlink":
                     payload_path.unlink()
-                    payload_path.symlink_to(self.web_path / "index.html.gz")
+                    try:
+                        payload_path.symlink_to(self.web_path / "index.html.gz")
+                    except OSError as exc:
+                        if os.name == "nt" and exc.winerror == 1314:
+                            self.skipTest("Windows symlink privilege unavailable; mandatory junction tests cover reparse paths")
+                        raise
                 fake = FakeInstallUSB({**self.files, KEY_NAME: KEY})
                 result, _, transcript, factory = self.run_main(fake, "install")
                 self.assertNotEqual(result, 0, transcript)
@@ -667,12 +673,13 @@ class InstallWireTests(unittest.TestCase):
         for name, content in self.web_payloads.items(): self.assertEqual(fake.files[name], content)
 
     def test_invalid_key_format_and_permissions_prevent_usb_access(self):
-        for value, permissions in ((KEY[:-1], 0o600), (KEY.upper(), 0o600),
-                                   (KEY[:-1] + b"\r\n", 0o600), (b"\xff" * 65, 0o600),
-                                   (KEY, 0o644)):
+        cases = [(KEY[:-1], 0o600), (KEY.upper(), 0o600),
+                 (KEY[:-1] + b"\r\n", 0o600), (b"\xff" * 65, 0o600), (KEY, 0o644)]
+        for value, permissions in cases:
             with self.subTest(length=len(value), permissions=oct(permissions)):
                 self.key_path.write_bytes(value)
-                self.key_path.chmod(permissions)
+                if permissions == 0o644:
+                    make_public(self.key_path, installer.private_files)
                 fake = FakeInstallUSB(self.files)
                 result, _, transcript, factory = self.run_main(fake)
                 self.assertNotEqual(result, 0, transcript)

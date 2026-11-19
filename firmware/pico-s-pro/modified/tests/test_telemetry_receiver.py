@@ -9,12 +9,14 @@ import os
 from pathlib import Path
 import sqlite3
 import stat
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "tools"))
 SPEC = importlib.util.spec_from_file_location("pico_telemetry_receiver", ROOT / "tools/pico_telemetry_receiver.py")
 receiver = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(receiver)
@@ -225,7 +227,11 @@ class ReceiverTests(unittest.TestCase):
                 self.assertEqual(receiver.main(["--database", str(self.database), *options]), 0)
                 server.assert_called_once_with(address, receiver.TelemetryHandler)
 
-    @unittest.skipUnless(os.name == "posix", "POSIX file permissions")
+    def test_database_and_parent_have_native_private_permissions(self):
+        receiver.private_files.assert_private(self.database)
+        receiver.private_files.assert_private(self.database.parent, directory=True)
+
+    @unittest.skipUnless(os.name == "posix", "POSIX permission tightening and O_NOFOLLOW")
     def test_database_is_private_and_symlink_target_is_not_followed(self):
         self.assertEqual(stat.S_IMODE(self.database.stat().st_mode), 0o600)
         self.assertEqual(stat.S_IMODE(self.database.parent.stat().st_mode), 0o700)

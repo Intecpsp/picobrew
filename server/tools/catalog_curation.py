@@ -18,7 +18,7 @@ POLICY_PATH = Path(__file__).with_name("catalog-curation.json")
 
 
 def load_policy(path: Path = POLICY_PATH):
-    policy = json.loads(path.read_text())
+    policy = json.loads(path.read_text(encoding="utf-8"))
     if policy.get("schema_version") != 1:
         raise ValueError("unsupported catalogue curation schema")
     if not isinstance(policy.get("removed_entries"), list):

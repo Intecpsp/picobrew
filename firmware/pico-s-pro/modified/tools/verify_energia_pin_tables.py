@@ -12,6 +12,7 @@ from pathlib import Path
 import struct
 import subprocess
 import tempfile
+from native_host import compiler, executable_name, runtime_environment
 
 IMAGE_SHA256 = 'e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702'
 TABLES = ('port_to_base', 'digital_pin_to_pin_num', 'digital_pin_to_port',
@@ -30,7 +31,9 @@ def main():
     image = args.image.read_bytes()
     if hashlib.sha256(image).hexdigest() != IMAGE_SHA256:
         raise ValueError('The input is not the analyzed original firmware')
-    source = '#define ARDUINO_MAIN\n#include <Energia.h>\n#include <stdio.h>\nint main(void) {\n'
+    source = ('#define ARDUINO_MAIN\n#include <Energia.h>\n#include <stdio.h>\n'
+              '#ifdef _WIN32\n#include <io.h>\n#include <fcntl.h>\n#endif\n'
+              'int main(void) {\n#ifdef _WIN32\n_setmode(_fileno(stdout), _O_BINARY);\n#endif\n')
     for table in TABLES:
         source += ('unsigned n_' + table + '=sizeof(' + table + '); fwrite(&n_' + table +
                    ',4,1,stdout);fwrite(' + table + ',1,sizeof(' + table + '),stdout);\n')
@@ -38,15 +41,16 @@ def main():
     records = []
     with tempfile.TemporaryDirectory(prefix='pico-pin-tables-') as temp:
         root = Path(temp)
-        (root / 'probe.c').write_text(source)
+        (root / 'probe.c').write_text(source, encoding='utf-8', newline='\n')
         for variant in sorted((sdk / 'variants').iterdir()):
             if not (variant / 'pins_energia.h').is_file():
                 continue
-            command = ['gcc', '-std=gnu11', '-DF_CPU=80000000L',
+            executable = root / executable_name('probe')
+            command = [compiler(), '-std=gnu11', '-DF_CPU=80000000L',
                        '-I' + str(sdk / 'cores/cc3200'), '-I' + str(sdk / 'system'),
-                       '-I' + str(variant), str(root / 'probe.c'), '-o', str(root / 'probe')]
+                       '-I' + str(variant), str(root / 'probe.c'), '-o', str(executable)]
             subprocess.run(command, check=True, capture_output=True)
-            raw = subprocess.check_output([str(root / 'probe')])
+            raw = subprocess.check_output([str(executable)], env=runtime_environment())
             position = 0
             record = {'variant': variant.name, 'tables': {}}
             for table in TABLES:
@@ -67,7 +71,7 @@ def main():
               'scope': 'Exact full pin-number/port/bit-mask/port-base array matches; both LaunchPad-named variants have these same arrays.',
               'limitation': 'Timer/PWM table is not found in this image; matching these tables does not prove the complete board configuration or all SDK behavior.'}
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2) + '\n')
+    args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print(json.dumps({'passed': passed, 'matched_arrays': len(EXPECTED), 'variant': launchpad['variant']}))
     return 0 if passed else 1
 

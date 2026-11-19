@@ -2,13 +2,15 @@
 """Exercise actual C history storage with destructive file rewrites and resets."""
 import ctypes as C
 import math
-import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / 'tools'))
+from native_host import compiler, library_name, pic_flags, shared_flags, load_library, close_library
 
 
 class Metadata(C.Structure):
@@ -29,18 +31,18 @@ class HistoryTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.temp = tempfile.TemporaryDirectory()
-        library = Path(cls.temp.name) / "history.so"
-        compiler = os.environ.get("CC", "cc")
-        flags = ["-fPIC", "-std=c11", "-O1", "-Wall", "-Wextra", "-Werror",
+        library = Path(cls.temp.name) / library_name("history")
+        cc = compiler()
+        flags = [*pic_flags(), "-std=c11", "-O1", "-Wall", "-Wextra", "-Werror",
                  "-DPICO_STANDALONE=1", "-I" + str(ROOT / "include")]
         core = Path(cls.temp.name) / "history.o"
         # Rename allocation calls only inside the module under test; fixture
         # wrappers still call the real allocator, never affecting Python.
-        subprocess.run([compiler, *flags, "-Dmalloc=hf_test_malloc", "-Dfree=hf_test_free",
+        subprocess.run([cc, *flags, "-Dmalloc=hf_test_malloc", "-Dfree=hf_test_free",
                         "-c", str(ROOT / "src/local_history.c"), "-o", str(core)], check=True)
-        subprocess.run([compiler, "-shared", *flags, str(core), str(ROOT / "tests/local_history_host.c"),
+        subprocess.run([cc, *shared_flags(), *flags, str(core), str(ROOT / "tests/local_history_host.c"),
                         "-o", str(library)], check=True)
-        cls.lib = C.CDLL(str(library))
+        cls.lib = load_library(library)
         cls.lib.hf_start.argtypes = [C.c_char_p]
         cls.lib.hf_tick.argtypes = [C.c_uint32]
         cls.lib.hf_clock.argtypes = [C.c_uint32]
@@ -55,6 +57,7 @@ class HistoryTests(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        close_library(cls.lib)
         cls.temp.cleanup()
 
     def setUp(self):
@@ -334,9 +337,9 @@ class NativeHistoryTests(unittest.TestCase):
         cls.temp = tempfile.TemporaryDirectory()
         folder = Path(cls.temp.name)
         (folder / "utility").mkdir()
-        (folder / "WiFi.h").write_text("class WiFiClass { public: static bool _initialized; };\n")
+        (folder / "WiFi.h").write_text("class WiFiClass { public: static bool _initialized; };\n", encoding='utf-8', newline='\n')
         (folder / "utility/simplelink.h").write_text(
-            "#pragma once\n#include <stdint.h>\ntypedef uint8_t _u8; typedef uint32_t _u32; typedef int32_t _i32;\n")
+            "#pragma once\n#include <stdint.h>\ntypedef uint8_t _u8; typedef uint32_t _u32; typedef int32_t _i32;\n", encoding='utf-8', newline='\n')
         (folder / "utility/fs.h").write_text('''#pragma once
 #include "simplelink.h"
 #define SL_FS_ERR_FILE_NOT_EXISTS (-11)
@@ -349,18 +352,19 @@ _i32 sl_FsOpen(const _u8 *, _u32, _u32 *, _i32 *);
 _i32 sl_FsRead(_i32, _u32, _u8 *, _u32);
 _i32 sl_FsWrite(_i32, _u32, _u8 *, _u32);
 _i32 sl_FsClose(_i32, const _u8 *, const _u8 *, _u32);
-''')
-        library = folder / "native-history.so"
-        subprocess.run([os.environ.get("CXX", "c++"), "-shared", "-fPIC", "-std=c++11", "-O1",
+''', encoding='utf-8', newline='\n')
+        library = folder / library_name("native-history")
+        subprocess.run([compiler(cxx=True), *shared_flags(), *pic_flags(), "-std=c++11", "-O1",
                         "-Wall", "-Wextra", "-Werror", "-I" + str(folder), "-I" + str(ROOT / "include"),
                         str(ROOT / "platform/energia_history.cpp"), str(ROOT / "tests/energia_history_fixture.cpp"),
                         "-o", str(library)], check=True)
-        cls.lib = C.CDLL(str(library))
+        cls.lib = load_library(library)
         cls.lib.hb_write.argtypes = cls.lib.hb_read.argtypes = [C.c_char_p, C.c_size_t]
         cls.lib.hb_mode.restype = C.c_uint
 
     @classmethod
     def tearDownClass(cls):
+        close_library(cls.lib)
         cls.temp.cleanup()
 
     def setUp(self):

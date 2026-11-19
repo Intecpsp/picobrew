@@ -4,10 +4,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"os"
 	"path/filepath"
 	"reflect"
+	"runtime"
+	"syscall"
 	"testing"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/catalog"
@@ -169,10 +172,17 @@ func TestOptionalReferenceRequiresManifestBytesAndContainedPath(t *testing.T) {
 	if err := os.WriteFile(out, data, 0600); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink(out, file); err != nil {
-		t.Fatal(err)
-	}
-	if _, err := s.optionalCatalogAsset(asset); err == nil {
-		t.Fatal("symlink escaped reference root")
-	}
+	t.Run("symlink cannot escape the reference root", func(t *testing.T) {
+		if err := os.Symlink(out, file); err != nil {
+			// Windows allows this only with Developer Mode or symlink privilege.
+			const privilegeNotHeld = syscall.Errno(1314) // ERROR_PRIVILEGE_NOT_HELD
+			if runtime.GOOS == "windows" && (errors.Is(err, os.ErrPermission) || errors.Is(err, privilegeNotHeld)) {
+				t.Skipf("Windows symlink privilege is unavailable: %v", err)
+			}
+			t.Fatal(err)
+		}
+		if _, err := s.optionalCatalogAsset(asset); err == nil {
+			t.Fatal("symlink escaped reference root")
+		}
+	})
 }

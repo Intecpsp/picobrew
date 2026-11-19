@@ -391,21 +391,21 @@ def _main() -> None:
     parser.add_argument("archive", type=Path, help="local picobrew-recipes checkout")
     parser.add_argument("--output-jsonl", type=Path, help="optional converted records for local validation")
     args = parser.parse_args()
-    metadata = json.loads((args.archive / "data/recipe-list-community.json").read_text())["PublicRecipesList"]
+    metadata = json.loads((args.archive / "data/recipe-list-community.json").read_text(encoding="utf-8"))["PublicRecipesList"]
     by_guid = {item["GUID"]: item for item in metadata}
     counts: Counter[str] = Counter()
     failures = []
     output = []
     for path in sorted((args.archive / "data/recipes").glob("*.json")):
         try:
-            recipe, warnings = convert_public(json.loads(path.read_text()), by_guid.get(path.stem))
+            recipe, warnings = convert_public(json.loads(path.read_text(encoding="utf-8")), by_guid.get(path.stem))
         except (ValueError, TypeError, KeyError) as exc:
             failures.append({"path": path.name, "error": str(exc)})
             continue
-        output.append({"source_path": str(path.relative_to(args.archive)), "recipe": recipe, "warnings": warnings})
+        output.append({"source_path": path.relative_to(args.archive).as_posix(), "recipe": recipe, "warnings": warnings})
         counts.update(warnings)
     if args.output_jsonl:
-        with args.output_jsonl.open("w") as file:
+        with args.output_jsonl.open("w", encoding="utf-8", newline="\n") as file:
             for item in output:
                 file.write(json.dumps(item, ensure_ascii=False, sort_keys=True, allow_nan=False) + "\n")
     print(json.dumps({"converted": len(output), "failed": failures, "warnings": dict(counts)}, ensure_ascii=False, indent=2))

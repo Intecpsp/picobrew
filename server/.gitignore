@@ -1,6 +1,7 @@
 /data/
 /demo-data/
 /picobrew-hub
+/picobrew-hub.exe
 /bin/
 /web/node_modules/
 /web/dist/

@@ -9,6 +9,7 @@ check, not a proposed calibration change for a physical machine.
 import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import shutil
 import struct
@@ -19,6 +20,7 @@ import tempfile
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'tools'))
 from rebuilt_arm import RebuiltArm
+from arm_toolchain import find_arm_prefix
 
 
 def as_float(bits):
@@ -39,16 +41,15 @@ def main():
             shutil.copytree(ROOT / name, candidate / name,
                             ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
         source = candidate / 'src/sensors.c'
-        original = source.read_text()
+        original = source.read_text(encoding='utf-8')
         old, new = 'fahrenheit -= 2.0f;', 'fahrenheit -= 2.5f;'
         if original.count(old) != 1:
             raise ValueError('Expected exactly one original session calibration constant')
-        source.write_text(original.replace(old, new))
+        source.write_text(original.replace(old, new), encoding='utf-8', newline='\n')
         command = [sys.executable, str(candidate / 'tools/build.py'), '--core-only']
-        if args.arm_prefix:
-            command += ['--arm-prefix', args.arm_prefix]
-        elif (ROOT / '.deps/toolchain/bin/arm-none-eabi-gcc').is_file():
-            command += ['--arm-prefix', str(ROOT / '.deps/toolchain/bin/arm-none-eabi-')]
+        prefix = args.arm_prefix or os.environ.get('PICOBREW_ARM_PREFIX') or find_arm_prefix(ROOT)
+        if prefix:
+            command += ['--arm-prefix', prefix]
         subprocess.run(command, check=True, capture_output=True, text=True)
         modified_elf = candidate / 'build/application-validation.elf'
         rebuilt = RebuiltArm(modified_elf)
@@ -77,7 +78,7 @@ def main():
             'scope': 'Isolated source edit, real ARM recompile/link, and observed changed ARM behavior; not a physical calibration recommendation.'
         }
     args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(report, indent=2) + '\n')
+    args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8', newline='\n')
     print('Edit/rebuild: 10 intended changes and 10 unchanged controls passed in ARM execution.')
 
 
