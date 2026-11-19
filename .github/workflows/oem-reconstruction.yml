@@ -1,0 +1,54 @@
+name: OEM S/Pro reconstruction
+
+on:
+  push:
+    branches: [master, feature/community-monorepo]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: firmware/pico-s-pro/reverse-engineered
+
+jobs:
+  arm-reconstruction:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned build dependencies
+        run: python -m pip install -r requirements-test.txt
+      - name: Bootstrap pinned compiler and Energia SDK
+        run: make bootstrap PYTHON=python
+      - name: Rebuild the unchanged pre-v1 source
+        run: python tools/build_firmware.py
+      - name: Verify reconstructed firmware and source identities
+        run: |
+          cmp build/firmware/pico-pro-recovered.bin firmware/pico-pro-recovered.bin
+          cmp build/firmware/pico-pro-recovered.update.txt firmware/pico-pro-recovered.update.txt
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          built = json.loads(Path('build/firmware/firmware-report.json').read_text())
+          packaged = json.loads(Path('firmware/firmware-report.json').read_text())
+          digest = hashlib.sha256(Path('build/firmware/pico-pro-recovered.bin').read_bytes()).hexdigest()
+          assert built['binary_sha256'] == packaged['binary_sha256'] == digest
+          assert built['app_sources_sha256'] == packaged['app_sources_sha256']
+          assert built['image_layout']['passed'] and built['sdk_link_passed']
+          print('Reconstructed firmware, update envelope and source identities match the pinned package.')
+          PY
+      - name: Confirm the archived source and evidence remain unchanged
+        run: git diff --exit-code -- .
+      - name: Preserve reconstructed firmware build evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: oem-s-pro-reconstruction
+          path: |
+            firmware/pico-s-pro/reverse-engineered/build/firmware/pico-pro-recovered.bin
+            firmware/pico-s-pro/reverse-engineered/build/firmware/firmware-report.json

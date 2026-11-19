@@ -1,0 +1,17 @@
+/data/
+/demo-data/
+/picobrew-hub
+/bin/
+/web/node_modules/
+/web/dist/
+/web/test-results/
+/web/playwright-report/
+__pycache__/
+*.py[cod]
+*.sqlite*
+*.key
+.env
+
+# Keep frontend library source tracked.
+!/web/src/lib/
+!/web/src/lib/**

@@ -1,26 +1,32 @@
 # License boundaries
 
-This repository contains code and data with different provenance. Combining
-the firmware and Hub does not apply one new license to all components.
+This repository contains code and data with different provenance. Organizing
+firmware by machine and packaging the Hub server does not apply one new license
+to every component.
 
 | Scope | License or notice |
 | --- | --- |
-| Firmware source and the preserved `legacy/` C reconstruction | Retained [LGPL-2.1](LICENSES/LGPL-2.1.txt), [TI notice](LICENSES/TI-BSD-notice.txt), per-file notices and [dependency provenance](dependencies/lock.json). These are component notices, not a blanket license for every firmware file. |
-| Hub application code | [MIT license](hub/LICENSE), copyright 2026 PicoBrew Hub contributors. Dependencies retain their own licenses. |
-| `hub/internal/catalog/data/catalog.zip` and `data/starter-recipes.json` | Pinned community recipes, machine programs, illustrations and original notices. Per-source attribution and license metadata remain in the catalogue manifest and recipe provenance. The Hub's MIT license does not relicense these records or assets. |
-| New project-level consolidation documentation and integration files | MIT terms in [the Hub license](hub/LICENSE), without overriding the component boundaries above. |
+| Exact S/Pro OEM reconstruction in `firmware/pico-s-pro/reverse-engineered/` | Original [LGPL-2.1 notice](firmware/pico-s-pro/reverse-engineered/LICENSES/LGPL-2.1.txt), [TI notice](firmware/pico-s-pro/reverse-engineered/LICENSES/TI-BSD-notice.txt), per-file notices and [dependency provenance](firmware/pico-s-pro/reverse-engineered/dependencies/lock.json) are preserved with the exact snapshot. |
+| Modified S/Pro firmware in `firmware/pico-s-pro/modified/` | Retained [LGPL-2.1 notice](firmware/pico-s-pro/modified/LICENSES/LGPL-2.1.txt), [TI notice](firmware/pico-s-pro/modified/LICENSES/TI-BSD-notice.txt), per-file notices and [dependency provenance](firmware/pico-s-pro/modified/dependencies/lock.json). These component notices are not a blanket license for every file. |
+| Original device image and upstream files under `firmware/*/oem/` | Original PicoBrew firmware and embedded assets retain their existing rights. This import assigns no new license. The [upstream manifest](firmware/upstream-manifest.json) records source attribution and exact file identities. |
+| Hub application code in `server/` | [MIT license](server/LICENSE), copyright 2026 PicoBrew Hub contributors. Dependencies retain their own licenses. |
+| `server/internal/catalog/data/catalog.zip` and `firmware/pico-s-pro/modified/data/starter-recipes.json` | Pinned recipes, machine programs, illustrations and original notices. Attribution and license metadata remain in the catalogue manifest and recipe provenance. The server's MIT license does not relicense these records or assets. |
+| New project-level documentation and integration tools | MIT terms in [the server license](server/LICENSE), without overriding the component boundaries above. |
 
-As recorded in the [firmware README](README.md), the recovery does not assign
-a new license to PicoBrew's original binary or embedded assets.
+The earlier C decompiler exports under the S/Pro source trees' `legacy/`
+directories retain their own notices. As recorded in the
+[firmware README](firmware/pico-s-pro/modified/README.md), the reconstruction
+does not assign a new license to PicoBrew's original binaries or embedded
+assets. Copying the complete Chiefwigms firmware archive does not change that.
 
 Repository-wide content licenses for the support/manual mirror, PicoPak
 catalogue and recipe/site archive were not established during the catalogue
 work. Source attribution, original license files and applicable per-file
 notices remain with the material. Chiefwigms MIT notices and existing icon
 attribution are retained in the bundled catalogue; the historical Python
-Zymatic server itself is not included as an application.
+Zymatic server is not included as an application.
 
 See [community sources](docs/community-projects.md) and the
-[catalogue guide](hub/docs/community-catalog.md) for source identities and
+[catalogue guide](server/docs/community-catalog.md) for source identities and
 content boundaries. Public availability alone does not establish a license
 grant.

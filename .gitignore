@@ -1,7 +1,10 @@
 /build/
 /.deps/
 /.venv/
+**/build/
+**/.deps/
+**/.venv/
+**/private/
+**/backups/
 __pycache__/
 *.pyc
-/private/
-/firmware/backups/

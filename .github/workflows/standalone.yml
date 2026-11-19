@@ -9,6 +9,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: firmware/pico-s-pro/modified
+
 jobs:
   usb-tools:
     runs-on: ubuntu-latest
@@ -44,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: browser-previews
-          path: build/web-preview/*.png
+          path: firmware/pico-s-pro/modified/build/web-preview/*.png
           if-no-files-found: ignore
 
   arm-firmware:
@@ -82,8 +86,8 @@ jobs:
         with:
           name: standalone-firmware-candidate
           path: |
-            build/standalone/firmware/pico-s-pro-standalone.bin
-            build/standalone/firmware/pico-s-pro-standalone.elf
-            build/standalone/firmware/pico-s-pro-standalone.map
-            build/standalone/firmware/firmware-report.json
-            firmware/web/
+            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.bin
+            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.elf
+            firmware/pico-s-pro/modified/build/standalone/firmware/pico-s-pro-standalone.map
+            firmware/pico-s-pro/modified/build/standalone/firmware/firmware-report.json
+            firmware/pico-s-pro/modified/firmware/web/

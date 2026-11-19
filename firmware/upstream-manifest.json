@@ -1,0 +1,306 @@
+{
+  "schema_version": 1,
+  "purpose": "Complete, unchanged copy of every file in the pinned upstream app/firmware directory, organized by machine family.",
+  "source_repository": "https://github.com/chiefwigms/picobrew_pico",
+  "source_ref_at_capture": "master",
+  "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+  "source_tree_complete": true,
+  "file_count": 27,
+  "total_size_bytes": 13583860,
+  "directory_mapping": {
+    "app/firmware/pico/": "firmware/pico-s-pro/oem/upstream/",
+    "app/firmware/pico_c/": "firmware/pico-c/oem/upstream/",
+    "app/firmware/picoferm/": "firmware/picoferm/oem/upstream/",
+    "app/firmware/picostill/": "firmware/picostill/oem/upstream/",
+    "app/firmware/zseries/": "firmware/z-series/oem/upstream/"
+  },
+  "preservation": "Original filenames, nesting, file bytes and Git modes are preserved. No upstream file is decoded, normalized or patched in the imported copy.",
+  "format_notes": {
+    "oem_http_update_envelope": "The Pico S/Pro and both Pico C .bin files contain a #size,digest|hex_payload# OEM HTTP update envelope. These copied files are not direct raw-flash dumps. Header digest text is retained unchanged; this import verifies Git blob SHA and file SHA-256, not the device update checksum algorithm.",
+    "upstream_binary_image": "PicoFerm, PicoStill and Z-series files are preserved binary images. This import does not establish flash offsets, device compatibility or a complete flash-dump layout."
+  },
+  "model_notes": {
+    "pico-s-pro": "Maps the upstream pico directory to the Pico S/Pro family used by this project.",
+    "pico-c": "Both upstream 0.1.34 variants are retained separately, including the alternate image.",
+    "z-series": "Preserves upstream zseries grouping. Compatibility with individual Z-series models is not inferred by the directory name.",
+    "zymatic": "No Zymatic firmware file or directory exists in the pinned upstream app/firmware tree; none is fabricated or assigned from another family."
+  },
+  "license_note": "Source attribution is preserved. This copy does not assign a new license to PicoBrew firmware binaries or embedded assets.",
+  "files": [
+    {
+      "source_path": "app/firmware/pico/pico_0_1_34.bin",
+      "destination_path": "firmware/pico-s-pro/oem/upstream/pico_0_1_34.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "cee71c24a80abf9a188ddb5c889c832ed63fdbe6",
+      "sha256": "c35734f3097df1931866eb4676d7823d6264bd38a9e707234cc7f99cc403ddca",
+      "format": "oem_http_update_envelope",
+      "declared_payload_size_bytes": 162792,
+      "size": 325628,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/pico_c/pico_c_0_1_34.bin",
+      "destination_path": "firmware/pico-c/oem/upstream/pico_c_0_1_34.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "ef53e3a521fc5bdecb4049c775452812a99e984c",
+      "sha256": "10d508bd1f45aece1b016907478d9dd222809835af533c9577aeb337232d36e8",
+      "format": "oem_http_update_envelope",
+      "declared_payload_size_bytes": 156536,
+      "size": 313116,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/pico_c/pico_c_0_1_34_alt.bin",
+      "destination_path": "firmware/pico-c/oem/upstream/pico_c_0_1_34_alt.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "faac5bfb4adce9b1ae6d2334df4aa56b6e695f98",
+      "sha256": "004bd841e2b8919acbad45d9837c3547d218a3dcbd0767d24df3c6827f323225",
+      "format": "oem_http_update_envelope",
+      "declared_payload_size_bytes": 155864,
+      "size": 311772,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_0.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_0.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "592bf668737dbcc37fd2f757e257eb06cbdff68f",
+      "sha256": "75c40b34ea1271801ec130ee57bfa9cd59693c7703bea76a89ba373fe8a3ea8e",
+      "format": "upstream_binary_image",
+      "size": 268912,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_2.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_2.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "682d0de7349bc9367b4233d04975e1ea12451856",
+      "sha256": "bc281a37873648516b7f6bc760590813d87c2b28ffc78938497680766e5eb0fd",
+      "format": "upstream_binary_image",
+      "size": 268928,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_3.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_3.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "ffcb2b784faad9d5c3e4c614e144f87cf873be80",
+      "sha256": "cb74106bb13e63441c903dbcdef7acc0fff1ac9c356ca3eb9244d811fbb7a880",
+      "format": "upstream_binary_image",
+      "size": 268928,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_4.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_4.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "652aeb16d94a8fe01d3d686c8fb365ed3bae3a4c",
+      "sha256": "81129072ddde1ffcd5a7193cbe90738cf8443636213198fcf700dd85899e8fbe",
+      "format": "upstream_binary_image",
+      "size": 268928,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_5.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_5.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "28b59420915dd90771cc488c5139e008f3aee2f0",
+      "sha256": "41a358d5e7505e0ed28a25d2df5fc24ee92fbfdabe1e460c328f22b8f2888fac",
+      "format": "upstream_binary_image",
+      "size": 274880,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_6.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_6.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "0dae04f7c9e0bffb4e433527456726c57fff02a9",
+      "sha256": "a18a234ccd7c95c0f0c036dc764fc08c7ae47b9124dccd327e7b18cbfc0cba01",
+      "format": "upstream_binary_image",
+      "size": 275008,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_7.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_7.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "d73ea95e1ed8f88c4ca71244b3ac211f227e967b",
+      "sha256": "7a9b8160f3bf2dd225a926844a4c75a4178d1334d3b1053cd390443c1784d352",
+      "format": "upstream_binary_image",
+      "size": 275600,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_1_8.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_1_8.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "8ea24db11520f26b2a6c90bdea7532d6f6eb6cf3",
+      "sha256": "433f6e0eb15da277ea0dd4ea43c8d177260d7c0b9c00eaa639a8ad512fb6b4c3",
+      "format": "upstream_binary_image",
+      "size": 275728,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_0.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_0.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "cd130d0b5a82138abf909944e4ca9db79ad7d670",
+      "sha256": "4afb45eb11ef6ecb162290a47e0579bd6d0a947d66e2d7b93123b506909a7163",
+      "format": "upstream_binary_image",
+      "size": 327776,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_1.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_1.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "a5d29f721b847ba46f59e64a1b68a33d1ccd7bf3",
+      "sha256": "5bd6a47e504ef0810a1b62265240503508ee0bed09b71561f014f43fc9adce2d",
+      "format": "upstream_binary_image",
+      "size": 327792,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_2.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_2.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "527d86a07648b4dbbd40f9e1316201b2d88e9d7b",
+      "sha256": "bed448b7703878fbe3e7dfd372f3cbe25116f2a702e39a6e33754863958a8b2c",
+      "format": "upstream_binary_image",
+      "size": 327888,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_3.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_3.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "f33d560e9620613a63daf2e501c340afe5276a18",
+      "sha256": "638d8c2538754f710838c126e8a58eff2a5785f0022a1f100ecc25069f815013",
+      "format": "upstream_binary_image",
+      "size": 321840,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_4.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_4.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "3070b842b4bce374a73f631e6a20d8a52104c1b2",
+      "sha256": "386a4cdba586214915a1adb9fa7857ad18944cbe81d8c57f0ea9478eba8d14dc",
+      "format": "upstream_binary_image",
+      "size": 322480,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_5.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_5.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "f65e702a097c503e60bd19eba09f701e5e27b388",
+      "sha256": "fa1309553b558e61967552e75f8abf639cdcd98ea70e487df7bd53d719706406",
+      "format": "upstream_binary_image",
+      "size": 322464,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_6.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_6.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "55c429023d4cd0b448e5aa7bb08a125ac65aa1b7",
+      "sha256": "97edfd30390728db30f711a49c0b058fafb1fff654ef7584047dd82827493ec4",
+      "format": "upstream_binary_image",
+      "size": 322496,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picoferm/picoferm_0_2_7.bin",
+      "destination_path": "firmware/picoferm/oem/upstream/picoferm_0_2_7.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "512867e79f845f874a0d7f5d4752a12131103a79",
+      "sha256": "08c34af891036494ae81d6f29e7495a475f67be977aa4effd3adde6fee4e9532",
+      "format": "upstream_binary_image",
+      "size": 322544,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_30.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_30.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "955917b90ee6beea0d16aee8d3635e13e6effbf5",
+      "sha256": "f68f6d9082ca3d60568221d4badc8d3e4cf762fadb3e9b9425c5dbb8efaf635f",
+      "format": "upstream_binary_image",
+      "size": 709472,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_31.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_31.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "0ead4e45e2b8327883b9aab6fb64b7fa26fd6490",
+      "sha256": "be0c132d3182764db205123f479eef72486f68efaddd95e36cdac6d22cdf8b26",
+      "format": "upstream_binary_image",
+      "size": 709616,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_32.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_32.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "5770ad54ef64ae4fe52ff367babcd6a0cc317c5a",
+      "sha256": "8c9c2c430a1ca3d11a7c6def809ae7a960239e6564a588211a15777fe22ca492",
+      "format": "upstream_binary_image",
+      "size": 709616,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_33.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_33.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "14e39f2502f2a686e4d744f339f7211216ae0390",
+      "sha256": "3dedd43140b13535f8fd5b2c407759df2fbebcb052184f19e5ba924608d6512c",
+      "format": "upstream_binary_image",
+      "size": 829920,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_34.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_34.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "6dafda3501c83d50d2a177180e3ae362f737703a",
+      "sha256": "69448a4290ea617623f2b888df065566b3f3baf22ff8d19d5360649592755377",
+      "format": "upstream_binary_image",
+      "size": 834080,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/picostill/picostill_0_0_35.bin",
+      "destination_path": "firmware/picostill/oem/upstream/picostill_0_0_35.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "39821950e3b7a8e69562092ddf15b4cdec0e3b34",
+      "sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+      "format": "upstream_binary_image",
+      "size": 837440,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/zseries/zseries_0_0_116.bin",
+      "destination_path": "firmware/z-series/oem/upstream/zseries_0_0_116.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "2f2cc9874583f65e7743eb2be0eedef7b28717f0",
+      "sha256": "27d9e792f6d7e589b41f29d1e3bd42828d3d1a9f315adc100b03fd53d8256097",
+      "format": "upstream_binary_image",
+      "size": 1596368,
+      "mode": "100644"
+    },
+    {
+      "source_path": "app/firmware/zseries/zseries_0_0_119.bin",
+      "destination_path": "firmware/z-series/oem/upstream/zseries_0_0_119.bin",
+      "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+      "git_blob_sha": "0c6b60c8c6169ef33213b149ebbba11cf98abc72",
+      "sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+      "format": "upstream_binary_image",
+      "size": 1634640,
+      "mode": "100644"
+    }
+  ],
+  "source_root": "app/firmware",
+  "source_tree": "8ec8a87c582aa818d19ff67ddaf9999f9b0850d6"
+}

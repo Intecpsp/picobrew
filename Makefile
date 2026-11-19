@@ -1,102 +1,45 @@
 PYTHON ?= python3
 GO ?= go
 NPM ?= npm
+MACHINE ?= pico-s-pro
+MODIFIED := firmware/$(MACHINE)/modified
+OEM_SOURCE := firmware/$(MACHINE)/reverse-engineered
 
-.PHONY: all bootstrap build test firmware verify edit-check sdk-check pin-check clean standalone standalone-test standalone-arm-test standalone-storage-test standalone-verify web-test usb-test hub hub-test hub-run hub-demo
-.NOTPARALLEL: verify
-all: standalone
+.DEFAULT_GOAL := help
+.PHONY: help firmware firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem server server-test server-run server-demo verify-imports
 
-hub:
-	$(MAKE) -C hub build GO="$(GO)" NPM="$(NPM)"
+help:
+	@printf '%s\n' 'make firmware / firmware-test / oem MACHINE=pico-s-pro' 'make server / server-test / server-run / server-demo' 'make verify-imports'
 
-hub-test:
-	$(MAKE) -C hub test GO="$(GO)" NPM="$(NPM)"
+firmware:
+	$(MAKE) -C $(MODIFIED) standalone PYTHON="$(PYTHON)"
 
-hub-run:
-	$(MAKE) -C hub run GO="$(GO)"
+firmware-test:
+	$(MAKE) -C $(MODIFIED) standalone-test PYTHON="$(PYTHON)"
 
-hub-demo:
-	$(MAKE) -C hub demo GO="$(GO)"
+firmware-usb-test:
+	$(MAKE) -C $(MODIFIED) usb-test PYTHON="$(PYTHON)"
 
-standalone:
-	$(PYTHON) tools/build_firmware.py --standalone
+firmware-browser-test:
+	$(MAKE) -C $(MODIFIED) web-test PYTHON="$(PYTHON)"
 
-standalone-test:
-	$(PYTHON) tools/generate_starter_recipes.py --check
-	$(PYTHON) tools/generate_api_explorer.py --check
-	$(PYTHON) tools/embed_web.py --check
-	$(PYTHON) tests/test_http_server.py
-	$(PYTHON) tests/test_energia_http_server.py
-	$(PYTHON) tests/test_energia_wifi.py
-	$(PYTHON) tests/test_local_api.py
-	$(PYTHON) tests/test_local_history.py
-	$(PYTHON) tests/test_local_telemetry.py
-	$(PYTHON) tests/test_telemetry_receiver.py
-	$(PYTHON) tests/test_standalone_control.py
+firmware-bootstrap:
+	$(MAKE) -C $(MODIFIED) bootstrap PYTHON="$(PYTHON)"
 
-standalone-arm-test:
-	$(PYTHON) tests/test_standalone_control_arm.py
+oem:
+	$(PYTHON) $(OEM_SOURCE)/tools/build_firmware.py
 
-standalone-storage-test: standalone
-	$(PYTHON) tests/test_native_storage.py --elf build/standalone/firmware/pico-s-pro-standalone.elf
+server:
+	$(MAKE) -C server build GO="$(GO)" NPM="$(NPM)"
 
-standalone-verify: standalone standalone-test standalone-arm-test standalone-storage-test
+server-test:
+	$(MAKE) -C server test GO="$(GO)" NPM="$(NPM)" PYTHON="$(PYTHON)"
 
-web-test:
-	$(PYTHON) tests/test_web.py
-	$(PYTHON) tests/test_web_features.py
+server-run:
+	$(MAKE) -C server run GO="$(GO)"
 
-usb-test:
-	$(PYTHON) -m unittest discover -s tests -p 'test_pico_*.py'
+server-demo:
+	$(MAKE) -C server demo GO="$(GO)"
 
-bootstrap:
-	$(PYTHON) tools/bootstrap_dependencies.py
-
-build:
-	$(PYTHON) tools/build.py
-
-test: build
-	$(PYTHON) tests/test_sensors.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_actuators.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_state_pid.py --elf build/application-validation.elf --output analysis/state-pid-tests.json
-	$(PYTHON) tests/test_control.py --elf build/application-validation.elf --output analysis/control-tests.json
-	$(PYTHON) tests/test_phase.py --elf build/application-validation.elf --output analysis/phase-tests.json
-	$(PYTHON) tests/test_device.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_rfid.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_rfid_application.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_application.py --elf build/application-validation.elf
-	$(PYTHON) tests/test_network.py --elf build/application-validation.elf --output analysis/network-tests.json
-	$(PYTHON) tests/test_network_direct.py --elf build/application-validation.elf --output analysis/network-direct-tests.json
-	$(PYTHON) tests/test_network_direct_still.py --elf build/application-validation.elf --output analysis/network-direct-still-tests.json
-	$(PYTHON) tests/test_recipe.py --elf build/application-validation.elf --output analysis/recipe-tests.json
-	$(PYTHON) tests/test_ui.py --elf build/application-validation.elf --output analysis/ui-tests.json
-	$(PYTHON) tests/test_ui_interactions.py --elf build/application-validation.elf --output analysis/ui-interactions-tests.json
-	$(PYTHON) tests/test_ui_workflows.py --elf build/application-validation.elf --output analysis/ui-workflows-tests.json
-	$(PYTHON) tests/test_ui_direct_display.py --elf build/application-validation.elf --output analysis/ui-direct-display-tests.json
-	$(PYTHON) tests/test_ui_direct_menus.py --elf build/application-validation.elf --output analysis/ui-direct-menus-tests.json
-	$(PYTHON) tests/test_ui_direct_workflows.py --elf build/application-validation.elf --output analysis/ui-direct-workflows-tests.json
-	$(PYTHON) tests/test_ui_assets.py --elf build/application-validation.elf --output analysis/ui-assets-tests.json
-
-firmware: build
-	$(PYTHON) tools/build_firmware.py --skip-archive-build
-	$(PYTHON) tests/test_native_network.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-network-tests.json
-	$(PYTHON) tests/test_native_network_direct.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-network-direct-tests.json
-	$(PYTHON) tests/test_native_startup.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-startup-tests.json
-	$(PYTHON) tests/test_native_allocator.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-allocator-tests.json
-	$(PYTHON) tests/test_native_serial.py --elf build/firmware/pico-pro-recovered.elf --output analysis/native-serial-tests.json
-	$(PYTHON) tests/test_update_package.py
-
-verify: test firmware pin-check edit-check
-	$(PYTHON) tools/audit_completion.py
-	$(PYTHON) tools/summarize_validation.py
-
-edit-check: build
-	$(PYTHON) tests/test_edit_rebuild.py --elf build/application-validation.elf
-
-sdk-check: firmware
-
-pin-check:
-	$(PYTHON) tools/verify_energia_pin_tables.py --sdk "$${PICOBREW_SDK:-.deps/energia}" --image reference/original-0.1.34.bin --output analysis/board-pin-validation.json
-
-clean:
-	rm -rf build
+verify-imports:
+	$(PYTHON) tools/verify_firmware_import.py
