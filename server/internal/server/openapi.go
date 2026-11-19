@@ -25,11 +25,15 @@ var endpoints = []endpoint{
 	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "Pico Pro", "model": "pico-pro", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer (rotate 180 degrees)", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read forwarding configuration", nil}, {"PUT", "/devices/{id}/telemetry", "Update forwarding configuration", map[string]any{"enabled": false, "host": "", "port": 8080}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
 	{"GET", "/profiles", "List planning and control capabilities by model", nil}, {"GET", "/recipes", "List shared recipes", nil}, {"POST", "/recipes", "Create a recipe", map[string]any{"name": "New recipe", "batch_liters": 5, "efficiency": 55, "ingredients": []any{}, "steps": []any{map[string]any{"name": "Mash", "kind": "mash", "target_c": 67, "minutes": 60, "location": 0, "drain_minutes": 0}}}}, {"GET", "/recipes/{id}", "Read a recipe", nil}, {"PUT", "/recipes/{id}", "Save a recipe using its current revision", map[string]any{"revision": 1}}, {"DELETE", "/recipes/{id}", "Remove a recipe from the library", nil}, {"POST", "/recipes/import", "Import JSON or BeerXML", map[string]any{"format": "beerxml", "data": "<RECIPES>...</RECIPES>"}}, {"POST", "/recipes/{id}/adapt", "Preview a machine-specific recipe adaptation", map[string]any{"profile_id": "pico-pro", "batch_liters": 5}}, {"GET", "/recipes/{id}/export", "Export recipe as JSON or BeerXML (?format=)", nil}, {"GET", "/recipes/{id}/revisions", "Read saved recipe revisions", nil},
 	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
-	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional provider API credentials", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
+	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional subscription or API-key access", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
 	{"GET", "/ai/advice", "Read up to 500 retained AI advice records, filtered by machine, brew and mode", nil},
 	{"GET", "/devices/{id}/ai-monitor", "Read session-specific AI monitoring and current verified brew", nil},
 	{"PUT", "/devices/{id}/ai-monitor", "Enable or disable AI monitoring for the exact current brew", map[string]any{"enabled": true, "brew_id": "device-native-history-id"}},
-	{"GET", "/ai/models", "List provider models using its saved API key", nil},
+	{"GET", "/ai/subscription", "Read subscription connection status without credentials", nil},
+	{"DELETE", "/ai/subscription", "Disconnect the local ChatGPT subscription while preserving its app registration", nil},
+	{"POST", "/ai/subscription/login", "Start ChatGPT browser sign-in", map[string]any{"provider": "openai", "redirect_uri": chatGPTCallbackURL}},
+	{"POST", "/ai/subscription/callback", "Complete ChatGPT sign-in using its full callback address", map[string]any{"provider": "openai", "callback_url": chatGPTCallbackURL + "?code=authorization-code&state=state&client_id=issued-client-id"}},
+	{"GET", "/ai/models", "List models for the selected subscription or API key", nil},
 	{"POST", "/ai/models", "Connect and list models without saving credentials or enabling AI", map[string]any{"provider": "openai", "api_key": "your-api-key"}},
 	{"PUT", "/profiles/{id}", "Save measured batch, efficiency and grain limits", map[string]any{"batch_liters": 5, "efficiency": 70, "max_grain_kg": 0}},
 	{"DELETE", "/profiles/{id}", "Restore the model's default planning profile", nil},
@@ -172,7 +176,7 @@ func (r *schemaRegistry) properties(name string) schemaMap {
 
 func buildSchemas() schemaMap {
 	r := &schemaRegistry{values: schemaMap{}}
-	for _, value := range []any{domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
+	for _, value := range []any{domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, ai.SubscriptionStatus{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
 		r.describe(reflect.TypeOf(value))
 	}
 	// Preserve the previously published schema name while sharing this record
@@ -256,13 +260,18 @@ func buildSchemas() schemaMap {
 		aiConfig[k] = v
 	}
 	aiConfig["api_key"] = schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "Provider API key, not a ChatGPT/Claude consumer account password. Blank preserves the stored key."}
+	aiConfig["auth_mode"] = schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}, "default": "api_key", "description": "Explicit billing mode. Subscription failures never fall back to an API key."}
 	aiConfig["model"] = schemaMap{"type": "string", "maxLength": 512, "description": "Provider model ID. Model discovery is available before choosing a model or enabling AI."}
 	r.values["AISettingsInput"] = schemaObject(aiConfig, "provider")
 	r.values["AIModelsInput"] = schemaObject(schemaMap{
-		"provider": schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}},
-		"api_key":  schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "Optional unsaved key, used only for model discovery. Omit to use this provider's saved key. This operation does not change settings or credentials."},
+		"provider":  schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}},
+		"auth_mode": schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}, "default": "api_key"},
+		"api_key":   schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "API-key mode only. Optional unsaved key, used only for model discovery. Omit to use this provider's saved key. This operation does not change settings or credentials."},
 	}, "provider")
-	r.properties("aiModelList")["models"] = schemaMap{"type": "array", "items": schemaRef("Model"), "description": "Account-visible model IDs and display names. Availability does not establish compatibility with the provider's chat API."}
+	r.values["AISubscriptionLoginInput"] = schemaObject(schemaMap{"provider": schemaMap{"type": "string", "enum": []string{"openai"}}, "redirect_uri": schemaMap{"type": "string", "enum": []string{chatGPTCallbackURL}}}, "provider")
+	r.values["AISubscriptionCallbackInput"] = schemaObject(schemaMap{"provider": schemaMap{"type": "string", "enum": []string{"openai"}}, "callback_url": schemaMap{"type": "string", "maxLength": 16384, "writeOnly": true, "description": "Full loopback callback address containing a single-use authorization code. Never logged or exported."}}, "provider", "callback_url")
+	r.properties("aiModelList")["source"] = schemaMap{"type": "string", "enum": []string{"api", "subscription", "subscription-aliases"}, "description": "Claude Code exposes stable native model aliases; these are labelled distinctly from a live account catalogue."}
+	r.properties("aiModelList")["models"] = schemaMap{"type": "array", "items": schemaRef("Model"), "description": "Provider model IDs or documented Claude Code model aliases, as indicated by source. Availability does not establish plan eligibility or inference compatibility."}
 	r.properties("Request")["mode"] = schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}}
 	r.properties("Request")["prompt"] = schemaMap{"type": "string", "maxLength": 16000}
 	r.properties("Result")["recipe"] = schemaRef("Recipe")
@@ -308,8 +317,12 @@ func operationParameters(e endpoint) []any {
 		query("mode", "Limit advice to one stage of the brewing workflow.", schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}})
 	case "/ai/models":
 		if e.method == "GET" {
-			query("provider", "Provider whose saved key should be used. Defaults to the selected provider.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}})
+			query("provider", "Provider to query. Defaults to the selected provider.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}})
+			query("auth_mode", "Choose subscription or API-key access. An omitted mode uses saved settings only when provider is also omitted; otherwise API-key mode applies.", schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}})
 		}
+	case "/ai/subscription":
+		query("provider", "Subscription provider; disconnect is supported for OpenAI. Claude is managed by its native CLI.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}})
+		params[len(params)-1].(schemaMap)["required"] = true
 	}
 	return params
 }
@@ -349,6 +362,10 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "BrewNotes"
 	case "/telemetry":
 		name = "ForwardingEnvelope"
+	case "/ai/subscription/login":
+		name = "AISubscriptionLoginInput"
+	case "/ai/subscription/callback":
+		name = "AISubscriptionCallbackInput"
 	case "/ai/settings":
 		name = "AISettingsInput"
 	case "/ai/models":
@@ -463,6 +480,8 @@ func successResponses(e endpoint) schemaMap {
 		code = "202"
 		schema = schemaRef("Accepted")
 		description = "Unsigned observation stored; it cannot command a device or override authoritative live state."
+	case "/ai/subscription", "/ai/subscription/login", "/ai/subscription/callback":
+		schema = schemaRef("SubscriptionStatus")
 	case "/ai/settings":
 		schema = schemaRef("Config")
 	case "/ai/models":
@@ -553,9 +572,14 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[502] = "Provider failed or returned an invalid recipe."
 	}
 	if e.path == "/ai/models" {
-		statuses[400] = "Unsupported provider or invalid provider API key."
+		statuses[400] = "Unsupported provider, authentication mode or invalid provider API key."
 		statuses[409] = "No API key is saved or supplied for this provider."
 		statuses[502] = "Provider model discovery failed; saved credentials and model selection remain unchanged."
+	}
+	if strings.HasPrefix(e.path, "/ai/subscription") {
+		statuses[400] = "Invalid provider, callback or expired authorization."
+		statuses[409] = "Start a new browser sign-in before submitting its callback."
+		statuses[502] = "Subscription provider failed; API-key billing is never selected automatically."
 	}
 	if e.path == "/telemetry" {
 		statuses[403] = "Device UID has not been registered and discovered."

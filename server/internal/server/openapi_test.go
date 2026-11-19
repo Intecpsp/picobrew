@@ -196,12 +196,16 @@ func TestOpenAPIModelDiscoveryDescribesSavedAndUnsavedCredentials(t *testing.T) 
 		t.Fatal("GET model discovery asks for a request body")
 	}
 	params := get["parameters"].([]any)
-	if len(params) != 1 {
+	if len(params) != 2 {
 		t.Fatalf("GET discovery query parameters: %v", params)
 	}
 	provider := params[0].(map[string]any)
 	if provider["name"] != "provider" || provider["in"] != "query" || provider["required"] != false || !reflect.DeepEqual(provider["schema"].(map[string]any)["enum"], []any{"openai", "anthropic"}) {
 		t.Fatalf("provider query does not match routing: %v", provider)
+	}
+	authMode := params[1].(map[string]any)
+	if authMode["name"] != "auth_mode" || !reflect.DeepEqual(authMode["schema"].(map[string]any)["enum"], []any{"api_key", "subscription"}) {
+		t.Fatalf("authentication-mode query does not match routing: %v", authMode)
 	}
 	post := item["post"].(map[string]any)
 	if params, ok := post["parameters"].([]any); ok && len(params) != 0 {

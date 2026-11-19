@@ -46,21 +46,26 @@ type runtimeDevice struct {
 	hasKeyFingerprint bool
 }
 type Server struct {
-	cfg      Config
-	db       *store.Store
-	vault    *vault
-	auth     authState
-	mu       sync.RWMutex
-	devices  map[string]*runtimeDevice
-	ctx      context.Context
-	cancel   context.CancelFunc
-	wg       sync.WaitGroup
-	router   http.Handler
-	recipeMu sync.Mutex
-	aiMu     sync.Mutex
-	configMu sync.Mutex
-	deviceMu sync.Mutex
-	aiClient *ai.Client
+	cfg                       Config
+	db                        *store.Store
+	vault                     *vault
+	auth                      authState
+	mu                        sync.RWMutex
+	devices                   map[string]*runtimeDevice
+	ctx                       context.Context
+	cancel                    context.CancelFunc
+	wg                        sync.WaitGroup
+	router                    http.Handler
+	recipeMu                  sync.Mutex
+	aiMu                      sync.Mutex
+	configMu                  sync.Mutex
+	deviceMu                  sync.Mutex
+	aiClient                  *ai.Client
+	subscriptionMu            sync.Mutex
+	chatGPT                   *ai.ChatGPTClient
+	chatGPTCallback           *http.Server
+	chatGPTCallbackTimer      *time.Timer
+	chatGPTCallbackGeneration uint64
 }
 
 func New(cfg Config) (*Server, error) {
@@ -90,7 +95,7 @@ func New(cfg Config) (*Server, error) {
 		return nil, e
 	}
 	ctx, cancel := context.WithCancel(context.Background())
-	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New()}
+	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New(), chatGPT: ai.NewChatGPT()}
 	if e = s.initAuth(); e != nil {
 		db.Close()
 		cancel()
@@ -139,6 +144,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	s.wg.Add(1)
 	go func() { defer s.wg.Done(); s.monitorAI(ctx) }()
+	s.resumeChatGPTCallback()
 	s.router = s.routes()
 	return s, nil
 }
@@ -152,6 +158,7 @@ func (s *Server) BeginShutdown() {
 
 func (s *Server) Close() error {
 	s.BeginShutdown()
+	s.stopChatGPTCallback()
 	s.mu.Lock()
 	for _, d := range s.devices {
 		d.cancel()
@@ -251,6 +258,10 @@ func (s *Server) routes() http.Handler {
 			r.Patch("/brews/{id}", s.updateBrew)
 			r.Get("/brews/{id}/export", s.exportBrew)
 			r.Get("/events", s.events)
+			r.Get("/ai/subscription", s.aiSubscription)
+			r.Delete("/ai/subscription", s.aiSubscription)
+			r.Post("/ai/subscription/login", s.aiSubscriptionLogin)
+			r.Post("/ai/subscription/callback", s.aiSubscriptionCallback)
 			r.Get("/ai/settings", s.aiSettings)
 			r.Put("/ai/settings", s.aiSettings)
 			r.Get("/ai/models", s.aiModels)

@@ -10,11 +10,14 @@ import (
 
 type aiModelsInput struct {
 	Provider string `json:"provider"`
+	AuthMode string `json:"auth_mode"`
 	APIKey   string `json:"api_key,omitempty"`
 }
 
 type aiModelList struct {
 	Provider string     `json:"provider"`
+	AuthMode string     `json:"auth_mode"`
+	Source   string     `json:"source"`
 	Models   []ai.Model `json:"models"`
 }
 
@@ -22,7 +25,7 @@ type aiModelList struct {
 // model. A supplied key is used for this request only; saving settings remains
 // an explicit, separate action so a failed connection cannot replace it.
 func (s *Server) aiModels(w http.ResponseWriter, r *http.Request) {
-	in := aiModelsInput{Provider: r.URL.Query().Get("provider")}
+	in := aiModelsInput{Provider: r.URL.Query().Get("provider"), AuthMode: r.URL.Query().Get("auth_mode")}
 	if r.Method == http.MethodPost {
 		in = aiModelsInput{}
 		if !s.decode(w, r, &in) {
@@ -38,9 +41,34 @@ func (s *Server) aiModels(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		in.Provider = cfg.Provider
+		if in.AuthMode == "" {
+			in.AuthMode = cfg.AuthMode
+		}
 	}
-	if in.Provider != "openai" && in.Provider != "anthropic" {
+	if !validAIProvider(in.Provider) {
 		s.fail(w, http.StatusBadRequest, "provider", "Choose OpenAI or Anthropic")
+		return
+	}
+	in.AuthMode = ai.NormalizeAuthMode(in.AuthMode)
+	if !validAIAuthMode(in.AuthMode) {
+		s.fail(w, 400, "auth_mode", "Choose subscription or API key")
+		return
+	}
+	if in.AuthMode == ai.AuthSubscription {
+		if in.APIKey != "" {
+			s.fail(w, 400, "auth_mode", "API keys cannot be supplied in subscription mode")
+			return
+		}
+		models, err := s.subscriptionModels(r.Context(), in.Provider)
+		if err != nil {
+			s.fail(w, http.StatusBadGateway, "ai_subscription", err.Error())
+			return
+		}
+		source := "subscription"
+		if in.Provider == "anthropic" {
+			source = "subscription-aliases"
+		}
+		s.json(w, http.StatusOK, aiModelList{Provider: in.Provider, AuthMode: in.AuthMode, Source: source, Models: models})
 		return
 	}
 	if invalidProviderKey(in.APIKey) {
@@ -69,5 +97,5 @@ func (s *Server) aiModels(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, http.StatusBadGateway, "ai_provider", err.Error())
 		return
 	}
-	s.json(w, http.StatusOK, aiModelList{Provider: in.Provider, Models: models})
+	s.json(w, http.StatusOK, aiModelList{Provider: in.Provider, AuthMode: in.AuthMode, Source: "api", Models: models})
 }

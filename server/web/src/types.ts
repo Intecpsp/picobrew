@@ -225,8 +225,10 @@ export interface Telemetry {
   path?: string
   status?: { state: string; sent: number; failed: number; dropped: number }
 }
+export type AIAuthMode = 'api_key' | 'subscription'
 export interface AISettings {
   provider: string
+  auth_mode?: AIAuthMode
   model: string
   key_configured: boolean
   enabled: boolean
@@ -238,7 +240,19 @@ export interface AIModel {
 }
 export interface AIModels {
   provider: string
+  auth_mode?: AIAuthMode
   models: AIModel[]
+}
+export interface AISubscription {
+  provider: string
+  installed: boolean
+  authenticated: boolean
+  message: string
+  login_command: string
+  pending?: boolean
+  callback_url?: string
+  authorization_url?: string
+  account?: string
 }
 export interface AIResult {
   text: string
