@@ -1,7 +1,7 @@
 name: Verify PicoBrew Hub
 on:
   push:
-    branches: [master, feature/community-monorepo, feature/standalone-rest-api]
+    branches: [master]
   pull_request:
   workflow_dispatch:
 defaults:

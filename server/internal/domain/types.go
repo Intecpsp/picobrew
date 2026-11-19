@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"encoding/json"
+	"time"
+)
 
 type Device struct {
 	ID            string    `json:"id"`
@@ -181,12 +184,14 @@ type ProfileSource struct {
 	Description string `json:"description"`
 }
 type Adapted struct {
-	Recipe         Recipe         `json:"recipe"`
-	MachineRecipe  *MachineRecipe `json:"machine_recipe"`
-	Profile        Profile        `json:"profile"`
-	Warnings       []string       `json:"warnings"`
-	CanDeploy      bool           `json:"can_deploy"`
-	SourceRevision int64          `json:"source_revision"`
+	Recipe             Recipe         `json:"recipe"`
+	MachineRecipe      *MachineRecipe `json:"machine_recipe"`
+	Profile            Profile        `json:"profile"`
+	Warnings           []string       `json:"warnings"`
+	DeploymentBlockers []string       `json:"deployment_blockers"`
+	CanDeploy          bool           `json:"can_deploy"`
+	SourceRevision     int64          `json:"source_revision"`
+	ProfileFingerprint string         `json:"profile_fingerprint,omitempty"`
 }
 type Sample struct {
 	ElapsedMS        int64      `json:"elapsed_ms"`
@@ -246,5 +251,19 @@ type Brew struct {
 }
 type BrewDetail struct {
 	Brew
-	Samples []Sample `json:"samples"`
+	Samples  []Sample   `json:"samples"`
+	AIAdvice []AIAdvice `json:"ai_advice,omitempty"`
+}
+
+type AIAdvice struct {
+	ID          string          `json:"id"`
+	CreatedAt   time.Time       `json:"created_at"`
+	DeviceID    string          `json:"device_id,omitempty"`
+	BrewID      string          `json:"brew_id,omitempty"`
+	Mode        string          `json:"mode"`
+	Status      string          `json:"status"`
+	Text        string          `json:"text"`
+	Recipe      json.RawMessage `json:"recipe,omitempty"`
+	Limitations []string        `json:"limitations,omitempty"`
+	Error       string          `json:"error,omitempty"`
 }

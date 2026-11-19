@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"reflect"
 	"sort"
+	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
@@ -211,6 +212,9 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				item.Reason = safeMessage(err.Error())
 			} else if !adapted.CanDeploy || adapted.MachineRecipe == nil {
 				item.Reason = "This recipe and model combination supports planning only"
+				if len(adapted.DeploymentBlockers) > 0 {
+					item.Reason = safeMessage(strings.Join(adapted.DeploymentBlockers, "; "))
+				}
 				item.Warnings = adapted.Warnings
 			} else {
 				native := *adapted.MachineRecipe

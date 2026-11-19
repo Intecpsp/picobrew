@@ -35,6 +35,11 @@ establish live support. See the [S/Pro firmware status](../firmware/pico-s-pro/m
 [OEM source manifest](../firmware/pico-s-pro/source-manifest.json) and
 [complete upstream manifest](../firmware/upstream-manifest.json).
 
+The independent [S/Pro web recovery candidate](../firmware/pico-s-pro/modified/recovery/README.md)
+is preserved alongside the modified brewing firmware. Its image1 source/package
+and host/build verification are available, but its installation, entry path,
+trial confirmation and physical recovery remain unimplemented or unvalidated.
+
 ## Shared behavior
 
 The [S/Pro API guide](../firmware/pico-s-pro/modified/docs/standalone-api.md)

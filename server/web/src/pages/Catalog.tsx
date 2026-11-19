@@ -12,6 +12,8 @@ import {
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { catalogAssetURL, externalURL, kindLabel } from '../lib/programs'
+import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
+import { referenceDocument, referenceSourceURL } from '../lib/referenceLinks'
 import type { CatalogDetail, CatalogPage, CatalogReferences, CatalogSource, Recipe } from '../types'
 import {
   Badge,
@@ -25,7 +27,9 @@ import {
   SearchBox,
   SectionHeading,
 } from '../components/ui'
-import { ProgramTable, Provenance } from '../components/Program'
+import { ProgramTable } from '../components/Program'
+import { ReferenceLibrary } from '../components/ReferenceViewer'
+import './Catalog.scss'
 
 const modelNames: Record<string, string> = {
   pico: 'Pico',
@@ -36,6 +40,10 @@ const modelNames: Record<string, string> = {
   zymatic: 'Zymatic',
 }
 const displayModel = (value: string) => modelNames[value] || value
+const catalogQuery = () => {
+  const query = location.hash.split('?')[1]
+  return query ? `?${query}` : ''
+}
 
 export default function Catalog({ id }: { id?: string }) {
   return id ? <CatalogEntry id={id} /> : <CatalogBrowse />
@@ -200,7 +208,11 @@ function CatalogBrowse() {
                       </Badge>
                       <h3>
                         <button
-                          onClick={() => hub.navigate(`/catalog/${encodeURIComponent(entry.id)}`)}
+                          onClick={() =>
+                            hub.navigate(
+                              `/catalog/${encodeURIComponent(entry.id)}${catalogQuery()}`
+                            )
+                          }
                         >
                           {entry.name}
                         </button>
@@ -214,8 +226,8 @@ function CatalogBrowse() {
                               : 'An archived recipe ready to copy and review.')}
                       </p>
                       <div className="recipe-meta">
-                        {entry.abv != null && <span>{entry.abv}% ABV</span>}
-                        {entry.ibu != null && <span>{entry.ibu} IBU</span>}
+                        {entry.abv != null && <span>{formatNumber(entry.abv, 1)}% ABV</span>}
+                        {entry.ibu != null && <span>{formatNumber(entry.ibu, 1)} IBU</span>}
                         <span>{(entry.models || []).map(displayModel).join(' · ')}</span>
                       </div>
                       <footer>
@@ -223,7 +235,11 @@ function CatalogBrowse() {
                           {entry.can_deploy ? 'Review before transfer' : 'Reference & planning'}
                         </small>
                         <button
-                          onClick={() => hub.navigate(`/catalog/${encodeURIComponent(entry.id)}`)}
+                          onClick={() =>
+                            hub.navigate(
+                              `/catalog/${encodeURIComponent(entry.id)}${catalogQuery()}`
+                            )
+                          }
                         >
                           View details
                           <ArrowRight size={15} />
@@ -286,7 +302,9 @@ function CatalogBrowse() {
       {sourcesOpen && (
         <Sources sources={page?.sources || []} onClose={() => setSourcesOpen(false)} />
       )}
-      {referencesOpen && <References model={model} onClose={() => setReferencesOpen(false)} />}
+      {referencesOpen && (
+        <ReferenceLibrary model={model} onClose={() => setReferencesOpen(false)} />
+      )}
     </>
   )
 }
@@ -319,7 +337,7 @@ function CatalogEntry({ id }: { id: string }) {
   return (
     <>
       <PageTitle
-        back={() => hub.navigate('/catalog')}
+        back={() => hub.navigate(`/catalog${catalogQuery()}`)}
         eyebrow={kindLabel(entry.kind).toUpperCase()}
         title={entry.name}
         description={
@@ -353,11 +371,12 @@ function CatalogEntry({ id }: { id: string }) {
               entry.recipe && (
                 <>
                   <p className="catalog-recipe-meta">
-                    {entry.recipe.batch_liters} L · {entry.recipe.efficiency}% efficiency ·{' '}
+                    {formatVolume(entry.recipe.batch_liters)} ·{' '}
+                    {formatNumber(entry.recipe.efficiency, 1)}% efficiency ·{' '}
                     {entry.recipe.ingredients?.length || 0} ingredients
                   </p>
-                  <div className="table-scroll">
-                    <table>
+                  <div className="catalog-ingredients-scroll">
+                    <table className="catalog-ingredients" aria-label="Recipe ingredients">
                       <thead>
                         <tr>
                           <th>Ingredient</th>
@@ -368,11 +387,11 @@ function CatalogEntry({ id }: { id: string }) {
                       <tbody>
                         {entry.recipe.ingredients?.map((ingredient, index) => (
                           <tr key={index}>
-                            <td>{ingredient.name}</td>
-                            <td>
-                              {ingredient.amount} {ingredient.unit}
+                            <td data-label="Ingredient">{ingredient.name}</td>
+                            <td data-label="Amount" className="catalog-quantity">
+                              {formatQuantity(ingredient.amount, ingredient.unit)}
                             </td>
-                            <td>{ingredient.use}</td>
+                            <td data-label="Use">{ingredient.use}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -383,8 +402,10 @@ function CatalogEntry({ id }: { id: string }) {
                       <li key={index}>
                         <strong>{step.name}</strong>
                         <span>
-                          {step.target_c} °C · {step.minutes} min
-                          {step.drain_minutes ? ` · drain ${step.drain_minutes} min` : ''}
+                          {formatTemperature(step.target_c)} · {formatNumber(step.minutes)} min
+                          {step.drain_minutes
+                            ? ` · drain ${formatNumber(step.drain_minutes)} min`
+                            : ''}
                         </span>
                       </li>
                     ))}
@@ -412,34 +433,7 @@ function CatalogEntry({ id }: { id: string }) {
               )}
             </section>
           )}
-          <section className="panel">
-            <SectionHeading
-              title="Original records"
-              description={`${entry.source_record_count} source record${entry.source_record_count === 1 ? '' : 's'} retained. Exact duplicate program variants are grouped in the catalogue.`}
-            />
-            <div className="catalog-originals">
-              {entry.source_records.map((record) => (
-                <Button
-                  key={record.id}
-                  variant="secondary"
-                  onClick={async () => {
-                    try {
-                      await download(
-                        `/catalog/${encodeURIComponent(id)}/source?record=${encodeURIComponent(record.id)}`,
-                        `${id}-${record.id}.json`
-                      )
-                    } catch (error) {
-                      setError(errorMessage(error))
-                    }
-                  }}
-                >
-                  <ArrowDownToLine size={14} />
-                  Record {record.id}
-                </Button>
-              ))}
-            </div>
-            <Provenance value={entry.provenance} />
-          </section>
+          <CatalogCredits entry={entry} onError={setError} />
         </div>
         <aside className="editor-aside">
           <div className="recipe-summary">
@@ -454,33 +448,21 @@ function CatalogEntry({ id }: { id: string }) {
             )}
             <Badge tone="copper">{kindLabel(entry.kind)}</Badge>
             <h3>{entry.style || entry.name}</h3>
-            {entry.image_url && (
-              <p>
-                Archive illustration
-                {entry.image_kind ? ` · ${entry.image_kind.replaceAll('-', ' ')}` : ''}
-              </p>
-            )}
             <dl>
               <div>
                 <dt>Source machine</dt>
                 <dd>{displayModel(entry.source_model)}</dd>
               </div>
-              {entry.author && (
-                <div>
-                  <dt>Author</dt>
-                  <dd>{entry.author}</dd>
-                </div>
-              )}
               {entry.abv != null && (
                 <div>
                   <dt>ABV</dt>
-                  <dd>{entry.abv}%</dd>
+                  <dd>{formatNumber(entry.abv, 1)}%</dd>
                 </div>
               )}
               {entry.ibu != null && (
                 <div>
                   <dt>IBU</dt>
-                  <dd>{entry.ibu}</dd>
+                  <dd>{formatNumber(entry.ibu, 1)}</dd>
                 </div>
               )}
             </dl>
@@ -543,61 +525,126 @@ function Sources({ sources, onClose }: { sources: CatalogSource[]; onClose: () =
     </Modal>
   )
 }
-function References({ model, onClose }: { model: string; onClose: () => void }) {
-  const resource = useResource<CatalogReferences>(
-    `/catalog/references?model=${encodeURIComponent(model)}`
+function CatalogCredits({
+  entry,
+  onError,
+}: {
+  entry: CatalogDetail
+  onError: (message: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const references = useResource<CatalogReferences>(
+    open && entry.image_url ? '/catalog/references' : null
   )
-  const images =
-    resource.data?.assets.filter(
-      (asset) =>
-        asset.bundled &&
-        asset.content_type.startsWith('image/') &&
-        (asset.kind.includes('machine') || asset.kind.includes('device'))
-    ) || []
+  const asset = references.data?.assets.find((asset) => asset.url === entry.image_url)
+  const imageSource =
+    asset && references.data
+      ? referenceSourceURL(referenceDocument(asset, references.data))
+      : undefined
+  const source = externalURL(entry.provenance.source_url || entry.source_url)
   return (
-    <Modal title="Machine guides & artwork" onClose={onClose} wide>
-      <p>
-        Bundled and installed guides open from this Hub. Guides marked “External archive” open their
-        archived source.
-      </p>
-      <ErrorBanner message={resource.error} retry={resource.reload} />
-      {resource.loading ? (
-        <Loading />
-      ) : (
-        <>
-          <div className="machine-artwork">
-            {images.map((asset) => (
-              <figure key={asset.path}>
-                <img src={catalogAssetURL(asset.url)} alt={asset.title} />
-                <figcaption>{asset.title}</figcaption>
-              </figure>
-            ))}
+    <details
+      className="panel catalog-credits"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+    >
+      <summary>Sources & credits</summary>
+      <dl>
+        {entry.author && (
+          <div>
+            <dt>Recipe creator</dt>
+            <dd>{entry.author}</dd>
           </div>
-          <div className="reference-list">
-            {resource.data?.items.map((item) => {
-              const localURL = item.available ? catalogAssetURL(item.url) : undefined
-              const url = localURL || externalURL(item.download_url || item.source_url)
-              return (
-                <article key={item.id}>
-                  <div>
-                    <strong>{item.title}</strong>
-                    <p>{item.description}</p>
-                    <small>{item.models.map(displayModel).join(' · ')}</small>
-                  </div>
-                  {url ? (
-                    <a href={url} target="_blank" rel="noreferrer">
-                      {localURL ? 'Open guide' : 'External archive'}
-                      <ArrowRight size={14} />
-                    </a>
-                  ) : (
-                    <span className="muted">Unavailable</span>
-                  )}
-                </article>
-              )
-            })}
-          </div>
-        </>
+        )}
+        <div>
+          <dt>Recipe archive</dt>
+          <dd>{entry.provenance.source_id}</dd>
+        </div>
+        <div>
+          <dt>Recipe license</dt>
+          <dd>{entry.provenance.license}</dd>
+        </div>
+        <div>
+          <dt>Source revision</dt>
+          <dd>
+            <code>{entry.provenance.commit}</code>
+          </dd>
+        </div>
+        <div>
+          <dt>Original file</dt>
+          <dd>
+            {source ? (
+              <a href={source} target="_blank" rel="noopener noreferrer">
+                {entry.provenance.path}
+              </a>
+            ) : (
+              entry.provenance.path
+            )}
+          </dd>
+        </div>
+        <div>
+          <dt>Source SHA-256</dt>
+          <dd>
+            <code>{entry.provenance.sha256}</code>
+          </dd>
+        </div>
+        {asset && (
+          <>
+            <div>
+              <dt>Illustration credit</dt>
+              <dd>{asset.attribution}</dd>
+            </div>
+            <div>
+              <dt>Illustration license</dt>
+              <dd>{asset.license}</dd>
+            </div>
+            {imageSource && (
+              <div>
+                <dt>Illustration source</dt>
+                <dd>
+                  <a href={imageSource} target="_blank" rel="noopener noreferrer">
+                    View original artwork
+                  </a>
+                </dd>
+              </div>
+            )}
+          </>
+        )}
+      </dl>
+      <ErrorBanner message={references.error} retry={references.reload} />
+      {entry.provenance.warnings?.length > 0 && (
+        <ul className="warning-list">
+          {entry.provenance.warnings.map((warning, index) => (
+            <li key={index}>{warning}</li>
+          ))}
+        </ul>
       )}
-    </Modal>
+      <h3>Original records</h3>
+      <p>
+        {entry.source_record_count.toLocaleString()} source record
+        {entry.source_record_count === 1 ? '' : 's'} retained. Downloads preserve the original
+        precision and source data.
+      </p>
+      <div className="catalog-originals">
+        {entry.source_records.map((record) => (
+          <Button
+            key={record.id}
+            variant="secondary"
+            onClick={async () => {
+              try {
+                await download(
+                  `/catalog/${encodeURIComponent(entry.id)}/source?record=${encodeURIComponent(record.id)}`,
+                  `${entry.id}-${record.id}.json`
+                )
+              } catch (error) {
+                onError(errorMessage(error))
+              }
+            }}
+          >
+            <ArrowDownToLine size={16} />
+            Record {record.id}
+          </Button>
+        ))}
+      </div>
+    </details>
   )
 }

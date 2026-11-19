@@ -300,7 +300,11 @@ func (s *Server) brewDetail(id string) (domain.BrewDetail, error) {
 	if e == nil {
 		b.SampleCount = len(samples)
 	}
-	return domain.BrewDetail{Brew: b, Samples: samples}, e
+	if e != nil {
+		return domain.BrewDetail{}, e
+	}
+	advice, e := s.adviceForBrew(id)
+	return domain.BrewDetail{Brew: b, Samples: samples, AIAdvice: advice}, e
 }
 func (s *Server) getBrew(w http.ResponseWriter, r *http.Request) {
 	v, e := s.brewDetail(chi.URLParam(r, "id"))

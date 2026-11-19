@@ -1,0 +1,74 @@
+{
+  "profile": "recovery",
+  "firmware_version": "0.1.0",
+  "hardware_executed": false,
+  "installation_supported": false,
+  "stable_standalone_commit": "adc2fc19617ccebc06fbcb6fd68cb33aa8d5f2b9",
+  "binary": {
+    "path": "firmware/recovery/pico-web-recovery.bin",
+    "size_bytes": 42984,
+    "sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593"
+  },
+  "local_checks": [
+    {
+      "command": "python tests/test_recovery_core.py",
+      "result": "passed",
+      "tests": 42
+    },
+    {
+      "command": "python tests/test_recovery_http.py",
+      "result": "passed",
+      "tests": 10,
+      "memory_safety": "ASan/UBSan truncations, all byte substitutions and 5000 arbitrary bodies"
+    },
+    {
+      "command": "python tests/test_recovery_native.py",
+      "result": "passed",
+      "memory_safety": "ASan/UBSan native GPIO/network/filesystem/response/timeout fixture"
+    },
+    {
+      "command": "python tests/test_http_server.py",
+      "result": "passed",
+      "transport_cases": 1111,
+      "asset_cases": 16
+    },
+    {
+      "command": "python tools/build_recovery.py",
+      "result": "passed",
+      "image_limit_bytes": 57344,
+      "heap_bytes": 32768,
+      "stack_bytes": 32768
+    }
+  ],
+  "browser_validation": {
+    "command": "make recovery-web-test",
+    "workflow": ".github/workflows/recovery.yml",
+    "test_count": 7,
+    "result_source": "Use CI for the exact published commit; local Chromium is unavailable in this environment.",
+    "validated_commit": "350418bacf1d163bef8eb11388b24788c68c886a",
+    "result": "passed",
+    "workflow_run": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/actions/runs/44273364532",
+    "fixture": "Real loopback HTTP and gzip responses, backed by the portable C API/core and simulated files",
+    "visual_review": "Desktop and 390-pixel mobile CI screenshots inspected; no page overflow"
+  },
+  "safety_boundaries": [
+    "No physical writes performed",
+    "No replacement installer provided",
+    "Existing application allocations only",
+    "Fixed browser paths and capacities",
+    "Recovery selected before writes",
+    "Entire plan verified before boot commit",
+    "Reserved boot metadata bytes retained",
+    "No automatic boot after upload",
+    "No self-update, delete, format, relocation or raw flash endpoint"
+  ],
+  "remaining_physical_acceptance": [
+    "Guarded recovery-image installation and original-image restoration",
+    "Output pin levels before network startup",
+    "Station and protected AP behavior",
+    "Real file upload/readback and interrupted upload",
+    "Boot metadata commit and one-shot trial",
+    "Power interruption during boot-record changes"
+  ],
+  "layout_source": "analysis/device-flash-layout.json"
+}

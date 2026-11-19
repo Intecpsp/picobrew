@@ -8,7 +8,7 @@ preference is stored in `localStorage`.
 
 ## Build and develop
 
-Use Node.js 22.12 or newer:
+Use Node.js 22.13 or newer:
 
 ```sh
 cd web
@@ -34,12 +34,17 @@ history views.
 - Live fleet updates over server-sent events; machine state and temperatures.
 - OLED decoding with the physical Pico's 180-degree orientation, remote dial,
   discovered programs, immediate stop, preferences and optional forwarding.
-- Shared recipe editing, ingredients and schedule, JSON/BeerXML import/export,
-  shopping lists, revision history, adaptation preview and targeted deployment.
+- One Recipes workspace for saved recipes, curated archive browsing and AI
+  recipe creation; ingredients and schedules, JSON/BeerXML import/export,
+  shopping lists, revision history, profile-sized adaptation and deployment.
+- Rendered Markdown guides, images and locally installed PDF manuals in a reader
+  dialog, with sources and credits available in an expandable section.
 - Retained/live brew history, temperature and controller charts, full sample
   tables, timestamp annotations in notes, ratings, and CSV/JSON exports.
-- Optional provider-backed recipe drafts, live advice and brew analysis. Periodic
-  advice is shown in the assistant feed. All machine actions remain user-driven.
+- Optional provider-backed recipe drafts, per-brew monitoring consent at start
+  or during a live session, and historical analysis inside the brew journal.
+  Saved observations remain attached to their exact session. All machine actions
+  remain user-driven.
 - Machine onboarding, connection checks, credential setup and data export.
 - Authenticated interactive OpenAPI explorer with explicit opt-in for mutations.
 

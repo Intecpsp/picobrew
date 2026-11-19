@@ -2,9 +2,7 @@ import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent } from
 import {
   LayoutDashboard,
   BookOpen,
-  Library,
   History,
-  Sparkles,
   Settings2,
   Code2,
   Wheat,
@@ -21,6 +19,7 @@ import { api, errorMessage, setCSRF } from './lib/api'
 import type { Session, Device, Recipe, Brew, Profile, Unit } from './types'
 import { HubContext } from './context'
 import { Button, Field, ErrorBanner, Loading, IconButton } from './components/ui'
+import { RecipeWorkspaceTabs, recipeViewForRoute } from './components/RecipeWorkspaceTabs'
 const Fleet = lazy(() => import('./pages/Fleet'))
 const Machine = lazy(() => import('./pages/Machine'))
 const Recipes = lazy(() => import('./pages/Recipes'))
@@ -31,10 +30,8 @@ const Assistant = lazy(() => import('./pages/Assistant'))
 const Explorer = lazy(() => import('./pages/Explorer'))
 const navigation = [
   { path: '/overview', label: 'Overview', icon: LayoutDashboard },
-  { path: '/recipes', label: 'Recipe library', icon: BookOpen },
-  { path: '/catalog', label: 'Community catalogue', icon: Library },
+  { path: '/recipes', label: 'Recipes', icon: BookOpen },
   { path: '/history', label: 'Brew journal', icon: History },
-  { path: '/assistant', label: 'Brew assistant', icon: Sparkles },
   { path: '/settings', label: 'Settings', icon: Settings2 },
   { path: '/api', label: 'API explorer', icon: Code2 },
 ]
@@ -105,6 +102,16 @@ export default function App() {
       history.replaceState(null, '', '#/overview/new-device')
       setRoute('/overview/new-device')
     }
+    if (route.split('?')[0] === '/assistant') {
+      const query = new URLSearchParams(route.split('?')[1] || '')
+      const brew = query.get('brew')
+      const recipe = query.get('recipe')
+      const destination = brew
+        ? `/history/${encodeURIComponent(brew)}?analysis=1`
+        : `/recipes/create-with-ai${recipe ? '?recipe=' + encodeURIComponent(recipe) : ''}`
+      history.replaceState(null, '', '#' + destination)
+      setRoute(destination)
+    }
   }, [route])
   useEffect(() => {
     if (!session?.authenticated) return
@@ -148,7 +155,9 @@ export default function App() {
   if (!session.authenticated) return <AuthPage session={session} onComplete={loadSession} />
   const parts = route.split('?')[0].split('/').filter(Boolean)
   const section = parts[0] || 'overview'
-  const selected = navigation.find((item) => item.path === `/${section}`) || navigation[0]
+  const recipeView = recipeViewForRoute(route)
+  const navigationSection = recipeView ? 'recipes' : section === 'devices' ? 'overview' : section
+  const selected = navigation.find((item) => item.path === `/${navigationSection}`) || navigation[0]
   return (
     <HubContext.Provider
       value={{
@@ -186,12 +195,8 @@ export default function App() {
               <a
                 key={item.path}
                 href={`#${item.path}`}
-                className={
-                  section === item.path.slice(1) ||
-                  (section === 'devices' && item.path === '/overview')
-                    ? 'active'
-                    : ''
-                }
+                className={navigationSection === item.path.slice(1) ? 'active' : ''}
+                aria-current={navigationSection === item.path.slice(1) ? 'page' : undefined}
               >
                 <item.icon size={19} />
                 <span>{item.label}</span>
@@ -235,7 +240,8 @@ export default function App() {
                 <Menu size={21} />
               </IconButton>
               <span className="breadcrumb">
-                Brewery <span>/</span>{' '}
+                <span className="breadcrumb-parent">Brewery</span>
+                <span className="breadcrumb-separator">/</span>
                 <strong>{section === 'devices' ? 'Machine' : selected.label}</strong>
               </span>
             </div>
@@ -273,15 +279,24 @@ export default function App() {
                 </span>
               </div>
             )}
+            {recipeView && <RecipeWorkspaceTabs route={route} />}
             <Suspense fallback={<Loading />}>
               {section === 'devices' ? (
                 <Machine key={parts[1]} id={parts[1]} />
               ) : section === 'recipes' ? (
-                <Recipes key={parts[1] || 'list'} id={parts[1]} />
+                parts[1] === 'create-with-ai' ? (
+                  <Assistant key={route} />
+                ) : (
+                  <Recipes key={parts[1] || 'list'} id={parts[1]} />
+                )
               ) : section === 'catalog' ? (
                 <Catalog key={parts[1] || 'list'} id={parts[1]} />
               ) : section === 'history' ? (
-                <HistoryPage key={parts[1] || 'list'} id={parts[1]} />
+                <HistoryPage
+                  key={parts[1] || 'list'}
+                  id={parts[1]}
+                  analyze={new URLSearchParams(route.split('?')[1] || '').get('analysis') === '1'}
+                />
               ) : section === 'settings' ? (
                 <Settings />
               ) : section === 'assistant' ? (

@@ -87,8 +87,13 @@ func TestNativeLimitsCannotBeRelaxedByProfile(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			r := source()
 			test.change(&r)
-			if _, err := recipe.Adapt(r, profile, 5); err == nil {
-				t.Fatal("invalid program accepted")
+			plan, err := recipe.Adapt(r, profile, 5)
+			if test.name == "unknown step" {
+				if err == nil {
+					t.Fatal("invalid canonical recipe accepted")
+				}
+			} else if err != nil || plan.CanDeploy || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 {
+				t.Fatalf("invalid native program did not remain a blocked ingredient plan: %+v %v", plan, err)
 			}
 		})
 	}
@@ -98,6 +103,65 @@ func TestNativeLimitsCannotBeRelaxedByProfile(t *testing.T) {
 	profile.MaxGrainKG = 0.1
 	if _, err := recipe.Adapt(source(), profile, 5); err == nil {
 		t.Fatal("grain limit ignored")
+	}
+}
+
+func TestUnmappedLargeRecipePlansAtProfileVolumeWithoutInventingRouting(t *testing.T) {
+	r := source()
+	r.BatchLiters = 14.0060236008
+	r.BoilLiters = 16
+	r.Steps[0].Location = 0
+	r.Steps[1].Location = 0
+	r.Steps[0].InfuseLiters = 6
+	before, _ := json.Marshal(r)
+	profile := recipe.Profiles()[0]
+	plan, err := recipe.Adapt(r, profile, 0)
+	if err != nil || plan.Recipe.BatchLiters != 5 || plan.CanDeploy || plan.MachineRecipe != nil {
+		t.Fatalf("large imported recipe did not produce a usable 5 L plan: %+v %v", plan, err)
+	}
+	ratio := 5 / r.BatchLiters
+	if math.Abs(plan.Recipe.Ingredients[0].Amount-2*ratio*75/50) > 1e-12 || math.Abs(plan.Recipe.Ingredients[1].Amount-20*ratio) > 1e-12 || plan.Recipe.BoilLiters != 16*ratio || plan.Recipe.Steps[0].InfuseLiters != 6*ratio {
+		t.Fatalf("ingredient or infusion scaling changed: %+v", plan.Recipe)
+	}
+	for i, step := range plan.Recipe.Steps {
+		if step.Location != 0 || step.Minutes != r.Steps[i].Minutes || step.TargetC != r.Steps[i].TargetC {
+			t.Fatal("planning invented routing or changed schedule")
+		}
+	}
+	blockers := strings.Join(plan.DeploymentBlockers, " ")
+	if !strings.Contains(blockers, "Step 1 requires") || !strings.Contains(blockers, "Step 2 requires") || !strings.Contains(blockers, "infusion") {
+		t.Fatalf("deployment blockers omitted: %s", blockers)
+	}
+	after, _ := json.Marshal(r)
+	if string(before) != string(after) {
+		t.Fatal("planning modified the imported recipe")
+	}
+	profile.BatchLiters, profile.Efficiency = 4.8, 55
+	calibrated, err := recipe.Adapt(r, profile, 0)
+	if err != nil || calibrated.Recipe.BatchLiters != 4.8 || calibrated.Recipe.Efficiency != 55 {
+		t.Fatalf("calibrated profile default not applied: %+v %v", calibrated, err)
+	}
+}
+
+func TestPlanningStillRejectsInvalidVolumesAndConfiguredCapacities(t *testing.T) {
+	r := source()
+	r.Steps[0].Location = 0
+	for _, batch := range []float64{-1, 5.01, math.NaN(), math.Inf(1)} {
+		if _, err := recipe.Adapt(r, recipe.Profiles()[0], batch); err == nil {
+			t.Fatalf("invalid target batch accepted: %v", batch)
+		}
+	}
+	for _, configure := range []func(*domain.Profile){
+		func(p *domain.Profile) { p.MaxGrainKG = .1 },
+		func(p *domain.Profile) { p.MaxSteps = 1 },
+		func(p *domain.Profile) { p.MaxTargetC = 64 },
+		func(p *domain.Profile) { p.Efficiency = 0 },
+	} {
+		profile := recipe.Profiles()[0]
+		configure(&profile)
+		if _, err := recipe.Adapt(r, profile, 5); err == nil {
+			t.Fatalf("planning ignored configured limits: %+v", profile)
+		}
 	}
 }
 

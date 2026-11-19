@@ -30,8 +30,9 @@ import {
   SectionHeading,
 } from '../components/ui'
 import { TemperatureChart, StateChart } from '../components/Charts'
-export default function HistoryPage({ id }: { id?: string }) {
-  return id ? <BrewPage id={id} /> : <BrewList />
+import { AIWorkbench } from './Assistant'
+export default function HistoryPage({ id, analyze = false }: { id?: string; analyze?: boolean }) {
+  return id ? <BrewPage id={id} analyze={analyze} /> : <BrewList />
 }
 function BrewList() {
   const hub = useHub()
@@ -182,7 +183,7 @@ function BrewList() {
     </>
   )
 }
-function BrewPage({ id }: { id: string }) {
+function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
   const hub = useHub()
   const resource = useResource<BrewDetail>(`/brews/${id}`, 10000)
   const brew = resource.data
@@ -194,6 +195,10 @@ function BrewPage({ id }: { id: string }) {
   const [marker, setMarker] = useState<number | null>(null)
   const [showSamples, setShowSamples] = useState(false)
   const [samplePage, setSamplePage] = useState(0)
+  const [analysisOpen, setAnalysisOpen] = useState(analyze)
+  useEffect(() => {
+    if (analyze) setAnalysisOpen(true)
+  }, [analyze])
   useEffect(() => {
     if (brew && !dirty) {
       setNotes(brew.notes || '')
@@ -386,10 +391,9 @@ function BrewPage({ id }: { id: string }) {
               placeholder="Aroma, clarity, flavor, process changes…"
             />
           </Field>
-          <Button variant="ghost" onClick={() => hub.navigate(`/assistant?brew=${id}`)}>
+          <Button variant="ghost" onClick={() => setAnalysisOpen(!analysisOpen)}>
             <Sparkles size={15} />
-            Analyze this brew with AI
-            <ArrowUpRight size={15} />
+            {analysisOpen ? 'Hide AI analysis' : 'Analyze this brew with AI'}
           </Button>
         </section>
         <section className="panel">
@@ -424,6 +428,16 @@ function BrewPage({ id }: { id: string }) {
           </div>
         </section>
       </div>
+      {analysisOpen && (
+        <AIWorkbench
+          key={id}
+          mode="analysis"
+          brewID={id}
+          initialAdvice={brew.ai_advice}
+          contextName={brew.recipe_name || brew.command || 'this brew'}
+          embedded
+        />
+      )}
       <section className="panel">
         <SectionHeading
           title="Every recorded reading"

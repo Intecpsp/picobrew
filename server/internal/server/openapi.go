@@ -26,7 +26,9 @@ var endpoints = []endpoint{
 	{"GET", "/profiles", "List planning and control capabilities by model", nil}, {"GET", "/recipes", "List shared recipes", nil}, {"POST", "/recipes", "Create a recipe", map[string]any{"name": "New recipe", "batch_liters": 5, "efficiency": 55, "ingredients": []any{}, "steps": []any{map[string]any{"name": "Mash", "kind": "mash", "target_c": 67, "minutes": 60, "location": 0, "drain_minutes": 0}}}}, {"GET", "/recipes/{id}", "Read a recipe", nil}, {"PUT", "/recipes/{id}", "Save a recipe using its current revision", map[string]any{"revision": 1}}, {"DELETE", "/recipes/{id}", "Remove a recipe from the library", nil}, {"POST", "/recipes/import", "Import JSON or BeerXML", map[string]any{"format": "beerxml", "data": "<RECIPES>...</RECIPES>"}}, {"POST", "/recipes/{id}/adapt", "Preview a machine-specific recipe adaptation", map[string]any{"profile_id": "pico-pro", "batch_liters": 5}}, {"GET", "/recipes/{id}/export", "Export recipe as JSON or BeerXML (?format=)", nil}, {"GET", "/recipes/{id}/revisions", "Read saved recipe revisions", nil},
 	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
 	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional provider API credentials", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
-	{"GET", "/ai/advice", "Read retained AI advice, optionally filtered by machine", nil},
+	{"GET", "/ai/advice", "Read up to 500 retained AI advice records, filtered by machine, brew and mode", nil},
+	{"GET", "/devices/{id}/ai-monitor", "Read session-specific AI monitoring and current verified brew", nil},
+	{"PUT", "/devices/{id}/ai-monitor", "Enable or disable AI monitoring for the exact current brew", map[string]any{"enabled": true, "brew_id": "device-native-history-id"}},
 	{"GET", "/ai/models", "List provider models using its saved API key", nil},
 	{"POST", "/ai/models", "Connect and list models without saving credentials or enabling AI", map[string]any{"provider": "openai", "api_key": "your-api-key"}},
 	{"PUT", "/profiles/{id}", "Save measured batch, efficiency and grain limits", map[string]any{"batch_liters": 5, "efficiency": 70, "max_grain_kg": 0}},
@@ -170,9 +172,12 @@ func (r *schemaRegistry) properties(name string) schemaMap {
 
 func buildSchemas() schemaMap {
 	r := &schemaRegistry{values: schemaMap{}}
-	for _, value := range []any{domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiModelList{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
+	for _, value := range []any{domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
 		r.describe(reflect.TypeOf(value))
 	}
+	// Preserve the previously published schema name while sharing this record
+	// with individual brew details and exports.
+	r.values["adviceRecord"] = schemaRef("AIAdvice")
 	r.properties("DeviceView")["key_reused"] = schemaMap{"type": "boolean", "readOnly": true, "description": "Advisory: another registered physical machine has the same recorded hexadecimal API key, including disabled machines. Derived in memory; no key or fingerprint is returned. Use a separately provisioned key for each brewer. Saving a connection does not change its firmware key."}
 	r.values["Error"] = schemaObject(schemaMap{"error": schemaObject(schemaMap{"code": stringSchema(), "message": stringSchema()}, "code", "message")}, "error")
 	r.values["AuthSession"] = schemaObject(schemaMap{"authenticated": boolSchema(), "setup_required": boolSchema(), "version": stringSchema(), "demo": boolSchema(), "csrf_token": stringSchema()}, "authenticated", "setup_required", "version", "demo")
@@ -203,6 +208,8 @@ func buildSchemas() schemaMap {
 		recipeProps[name] = r.properties("Recipe")[name]
 	}
 	r.properties("RecipeStep")["location"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 6, "description": "Zero is unmapped. Deployment needs an explicitly verified 1–6; the hub never infers plumbing."}
+	r.properties("Adapted")["deployment_blockers"] = schemaMap{"type": "array", "items": stringSchema(), "description": "Reasons the valid planning recipe cannot be compiled or deployed. Missing chambers and unsupported native instructions preserve the scaled recipe and schedule; machine_recipe remains null and can_deploy is false."}
+	r.properties("Adapted")["profile_fingerprint"] = schemaMap{"type": "string", "readOnly": true, "description": "Identity of the profile used for this preview. Send it with deployment to reject a preview whose equipment calibration has changed."}
 	r.properties("RecipeStep")["target_c"] = schemaMap{"type": "number", "minimum": 0, "maximum": 100, "description": "Canonical Celsius; zero is the unheated program sentinel."}
 	r.properties("RecipeStep")["minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 43200, "description": "Zero is allowed only for explicit heat/cool targets. Native S/Pro deployment limits holds to 599 minutes and does not map cooling steps."}
 	r.properties("RecipeStep")["drain_minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 1440, "description": "Native S/Pro deployment limits this to 120 minutes."}
@@ -227,10 +234,15 @@ func buildSchemas() schemaMap {
 		command[k] = v
 	}
 	command["confirm"] = boolSchema()
+	command["ai_monitor"] = schemaMap{"type": "boolean", "default": false, "description": "Explicit opt-in for this confirmed brew/manual start only. An accepted command creates a 15-minute pending consent bound to the appliance and next matching native history session. No AI request or machine command is performed by the monitor until that session is verified."}
 	command["command"] = schemaMap{"type": "string", "description": "Must appear in this device's capabilities.commands. The API has no dedicated pause/resume or live recipe editing."}
 	r.values["CommandInput"] = schemaObject(command, "command")
+	r.values["AIMonitorInput"] = schemaObject(schemaMap{"enabled": boolSchema(), "brew_id": schemaMap{"type": "string", "description": "Required when enabling; must exactly match current_brew_id returned by the live monitor endpoint."}}, "enabled")
+	r.properties("aiMonitorStatus")["state"] = schemaMap{"type": "string", "enum": []string{"off", "pending", "active", "finished"}}
+	r.properties("Config")["monitor_enabled"] = schemaMap{"type": "boolean", "deprecated": true, "description": "Retained for older saved configurations; this flag alone never enables monitoring. Consent is explicit for each verified brew."}
+	r.properties("Request")["brew_id"] = schemaMap{"type": "string", "description": "Required for live and analysis modes. Live mode also requires device_id and verifies that this exact native history session is currently recording."}
 	r.values["AdaptInput"] = schemaObject(schemaMap{"profile_id": stringSchema(), "batch_liters": numberSchema()}, "profile_id")
-	r.values["DeployInput"] = schemaObject(schemaMap{"recipe_id": stringSchema(), "profile_id": stringSchema(), "batch_liters": numberSchema(), "source_revision": schemaMap{"type": "integer", "minimum": 1}}, "recipe_id", "source_revision")
+	r.values["DeployInput"] = schemaObject(schemaMap{"recipe_id": stringSchema(), "profile_id": stringSchema(), "batch_liters": numberSchema(), "source_revision": schemaMap{"type": "integer", "minimum": 1}, "profile_fingerprint": schemaMap{"type": "string", "description": "Copy from the reviewed adaptation. A changed profile returns 409 before any machine write. Optional for compatibility with existing direct API clients."}}, "recipe_id", "source_revision")
 	r.values["ProfileInput"] = schemaObject(schemaMap{"batch_liters": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 50}, "efficiency": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 100}, "max_grain_kg": schemaMap{"type": "number", "minimum": 0, "maximum": 25, "description": "Zero means unverified, not unlimited proven capacity."}}, "batch_liters", "efficiency", "max_grain_kg")
 	r.values["ImportInput"] = schemaObject(schemaMap{"format": schemaMap{"type": "string", "enum": []string{"json", "beerxml"}}, "data": schemaMap{"type": "string", "maxLength": 1048576, "description": "Canonical recipe JSON object/array or supported BeerXML 1 text. DTDs and external entities are rejected."}}, "format", "data")
 	r.values["BrewNotes"] = schemaObject(schemaMap{"notes": schemaMap{"type": "string", "maxLength": 32000}, "rating": schemaMap{"type": "integer", "minimum": 0, "maximum": 5}}, "notes", "rating")
@@ -254,7 +266,7 @@ func buildSchemas() schemaMap {
 	r.properties("Request")["mode"] = schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}}
 	r.properties("Request")["prompt"] = schemaMap{"type": "string", "maxLength": 16000}
 	r.properties("Result")["recipe"] = schemaRef("Recipe")
-	r.properties("adviceRecord")["recipe"] = schemaRef("Recipe")
+	r.properties("AIAdvice")["recipe"] = schemaRef("Recipe")
 	return r.values
 }
 
@@ -292,6 +304,8 @@ func operationParameters(e endpoint) []any {
 		query("recipes", "Comma-separated canonical recipe IDs, for example id1,id2. Empty yields an empty list.", stringSchema())
 	case "/ai/advice":
 		query("device_id", "Limit advice to one registered machine.", stringSchema())
+		query("brew_id", "Limit advice to this exact saved brew. All supplied filters are applied together.", stringSchema())
+		query("mode", "Limit advice to one stage of the brewing workflow.", schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}})
 	case "/ai/models":
 		if e.method == "GET" {
 			query("provider", "Provider whose saved key should be used. Defaults to the selected provider.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}})
@@ -311,6 +325,8 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "DeviceInput"
 	case "/devices/{id}/commands":
 		name = "CommandInput"
+	case "/devices/{id}/ai-monitor":
+		name = "AIMonitorInput"
 	case "/devices/{id}/settings":
 		name = "SettingsInput"
 	case "/devices/{id}/telemetry":
@@ -392,6 +408,8 @@ func successResponses(e endpoint) schemaMap {
 		schema = schemaRef("Settings")
 	case "/devices/{id}/telemetry":
 		schema = schemaRef("Telemetry")
+	case "/devices/{id}/ai-monitor":
+		schema = schemaRef("aiMonitorStatus")
 	case "/devices/{id}/sync-history":
 		schema = schemaRef("Synced")
 	case "/devices/{id}/deploy":
@@ -452,7 +470,7 @@ func successResponses(e endpoint) schemaMap {
 	case "/ai/assist":
 		schema = schemaRef("Result")
 	case "/ai/advice":
-		schema = schemaArray(schemaRef("adviceRecord"))
+		schema = schemaArray(schemaRef("AIAdvice"))
 	case "/shopping-list":
 		schema = schemaArray(schemaRef("Ingredient"))
 	}
@@ -514,7 +532,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[409] = "Record revision or current state conflicts with this request."
 	}
 	if e.path == "/recipes/{id}/adapt" {
-		statuses[422] = "Recipe cannot be mapped to the selected profile without violating its limits."
+		statuses[422] = "Recipe, volume or configured capacity is invalid. Valid planning recipes with unsupported native conversion return 200 with deployment_blockers."
 	}
 	if e.path == "/profiles/{id}" && e.method == "PUT" {
 		statuses[422] = "Batch volume, efficiency or grain capacity is outside the calibration bounds."
@@ -530,7 +548,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		}
 	}
 	if e.path == "/ai/assist" {
-		statuses[409] = "AI provider/key/model is not enabled."
+		statuses[409] = "AI provider/key/model is not enabled, or the requested brew/device session changed."
 		statuses[429] = "Another AI request is in progress."
 		statuses[502] = "Provider failed or returned an invalid recipe."
 	}

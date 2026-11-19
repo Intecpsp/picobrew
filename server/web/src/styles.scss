@@ -5,6 +5,9 @@ $copper: #ad633b;
 $green: #426b57;
 $paper: #f6f4ee;
 $line: #e4e1d7;
+// Readable supporting text on desktop and mobile, without scaling charts or icons.
+$text-small: 0.875rem;
+$text-body: 0.9375rem;
 :root {
   font-family:
     Inter,
@@ -16,7 +19,7 @@ $line: #e4e1d7;
   background: $paper;
   font-synthesis: none;
   font-weight: 400;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   font-optical-sizing: auto;
@@ -98,14 +101,14 @@ h3 {
   margin-bottom: 8px;
 }
 h4 {
-  font-size: 0.85rem;
+  font-size: 1rem;
   margin-bottom: 7px;
 }
 p {
   margin-bottom: 1rem;
 }
 small {
-  font-size: 0.78rem;
+  font-size: $text-body;
 }
 svg {
   flex-shrink: 0;
@@ -117,7 +120,7 @@ code,
 pre,
 .code-input {
   font-family: 'SFMono-Regular', Consolas, 'Liberation Mono', monospace;
-  font-size: 0.82rem;
+  font-size: $text-body;
 }
 pre {
   white-space: pre-wrap;
@@ -177,11 +180,12 @@ hr,
   justify-content: center;
   gap: 8px;
   padding: 10px 15px;
-  font-size: 0.82rem;
+  font-size: $text-body;
   font-weight: 600;
-  line-height: 1.35;
-  white-space: nowrap;
-  min-height: 39px;
+  line-height: 1.4;
+  white-space: normal;
+  text-align: center;
+  min-height: 44px;
   border: 1px solid transparent;
   transition:
     background 0.16s,
@@ -241,7 +245,7 @@ hr,
   align-items: center;
   gap: 7px;
   color: $green;
-  font-size: 0.82rem;
+  font-size: $text-body;
   font-weight: 600;
   padding: 0;
   line-height: 1.5;
@@ -263,7 +267,7 @@ hr,
 }
 .muted {
   color: $muted;
-  font-size: 0.83rem;
+  font-size: $text-body;
 }
 .app-shell {
   min-height: 100vh;
@@ -279,6 +283,7 @@ hr,
   display: flex;
   flex-direction: column;
   z-index: 30;
+  overflow-y: auto;
 }
 .brand {
   display: flex;
@@ -296,9 +301,10 @@ hr,
 }
 .brand small {
   display: block;
-  font-size: 0.49rem;
+  font-size: $text-small;
   font-weight: 650;
-  letter-spacing: 0.23em;
+  letter-spacing: 0.05em;
+  white-space: normal;
   color: #7d8073;
   margin-top: 4px;
 }
@@ -314,7 +320,7 @@ hr,
   flex-shrink: 0;
 }
 .sidebar-label {
-  font-size: 0.6rem;
+  font-size: $text-small;
   color: #858777;
   letter-spacing: 0.17em;
   font-weight: 750;
@@ -336,7 +342,7 @@ hr,
   text-decoration: none;
   color: #777c6e;
   font-weight: 550;
-  font-size: 0.84rem;
+  font-size: $text-body;
   transition: background 0.2s;
 }
 .sidebar nav a:hover {
@@ -348,7 +354,7 @@ hr,
 }
 .sidebar nav a small {
   margin-left: auto;
-  font-size: 0.68rem;
+  font-size: $text-small;
   padding: 0 5px;
   background: #f3f5ed;
   border-radius: 4px;
@@ -363,7 +369,7 @@ hr,
   padding: 9px 11px;
   text-decoration: none;
   color: #777b6d;
-  font-size: 0.76rem;
+  font-size: $text-body;
   min-width: 0;
 }
 .sidebar-machines a span {
@@ -392,21 +398,21 @@ hr,
   margin-top: auto;
   padding: 24px 11px 0;
   color: #8a8e7e;
-  font-size: 0.71rem;
+  font-size: $text-body;
 }
 .sidebar-bottom p {
   margin: 8px 0 10px;
   line-height: 1.65;
 }
 .sidebar-bottom small {
-  font-size: 0.64rem;
+  font-size: $text-small;
 }
 .local-status {
   display: flex;
   align-items: center;
   gap: 7px;
   color: #61735d;
-  font-size: 0.68rem;
+  font-size: $text-small;
 }
 .main-shell {
   min-width: 0;
@@ -432,10 +438,10 @@ hr,
   gap: 15px;
 }
 .breadcrumb {
-  font-size: 0.75rem;
+  font-size: $text-body;
   color: #94978a;
 }
-.breadcrumb > span {
+.breadcrumb .breadcrumb-separator {
   margin: 0 10px;
   color: #c1c4b7;
 }
@@ -444,7 +450,7 @@ hr,
   font-weight: 500;
 }
 .topbar-right {
-  font-size: 0.69rem;
+  font-size: $text-small;
 }
 .connection-label {
   display: flex;
@@ -465,7 +471,7 @@ hr,
   }
 }
 .simulation-badge {
-  font-size: 0.55rem;
+  font-size: $text-small;
   font-weight: 750;
   letter-spacing: 0.13em;
   background: #eee4d5;
@@ -479,7 +485,7 @@ hr,
   border: 1px solid $line;
   padding: 4px 7px;
   border-radius: 5px;
-  font-size: 0.72rem;
+  font-size: $text-body;
 }
 .mobile-nav-button {
   display: none;
@@ -497,8 +503,9 @@ hr,
   padding: 18px 0 22px;
   border-top: 1px solid $line;
   color: #919586;
-  font-size: 0.65rem;
+  font-size: $text-small;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   gap: 10px;
 }
@@ -506,7 +513,7 @@ hr,
   margin: 0 7px;
 }
 .demo-notice {
-  font-size: 0.67rem;
+  font-size: $text-small;
   display: flex;
   align-items: center;
   gap: 7px;
@@ -527,7 +534,7 @@ hr,
 }
 .eyebrow {
   color: #8d8f7d;
-  font-size: 0.61rem;
+  font-size: $text-small;
   font-weight: 700;
   letter-spacing: 0.17em;
   line-height: 1.5;
@@ -536,7 +543,7 @@ hr,
 }
 .page-description {
   color: #8b8e81;
-  font-size: 0.87rem;
+  font-size: 1rem;
   line-height: 1.7;
   margin-bottom: 0;
 }
@@ -562,7 +569,7 @@ hr,
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  font-size: 0.74rem;
+  font-size: $text-body;
   color: #7c8873;
   padding: 0;
   margin-bottom: 18px;
@@ -578,7 +585,7 @@ hr,
   margin-bottom: 21px;
 }
 .section-heading p {
-  font-size: 0.75rem;
+  font-size: $text-body;
   color: $muted;
   margin: 5px 0 0;
   line-height: 1.65;
@@ -600,7 +607,7 @@ hr,
   border-radius: 5px;
   background: #edeee8;
   color: #838778;
-  font-size: 0.62rem;
+  font-size: $text-small;
   font-weight: 650;
   letter-spacing: 0.03em;
 }
@@ -631,7 +638,7 @@ hr,
   align-items: center;
   gap: 6px;
   color: #98a28e;
-  font-size: 0.55rem;
+  font-size: $text-small;
   font-weight: 700;
   letter-spacing: 0.12em;
   white-space: nowrap;
@@ -661,7 +668,7 @@ hr,
 }
 .metric > span {
   display: block;
-  font-size: 0.72rem;
+  font-size: $text-body;
   color: #8b8e80;
   margin-bottom: 8px;
 }
@@ -674,7 +681,7 @@ hr,
   white-space: nowrap;
 }
 .metric > strong small {
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: #a9ab9e;
   font-weight: 400;
   letter-spacing: -0.02em;
@@ -682,7 +689,7 @@ hr,
 .metric > small {
   display: block;
   color: #a0a393;
-  font-size: 0.64rem;
+  font-size: $text-small;
   margin-top: 9px;
 }
 .metric.accent > strong {
@@ -713,6 +720,7 @@ hr,
 }
 .machine-card-top {
   display: flex;
+  flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
   gap: 10px;
@@ -733,7 +741,7 @@ hr,
   align-items: center;
   gap: 4px;
   color: #936b35;
-  font-size: 0.62rem;
+  font-size: $text-small;
 }
 .connection-advisory {
   display: flex;
@@ -745,7 +753,7 @@ hr,
   color: #81623b;
   padding: 12px 15px;
   margin-bottom: 20px;
-  font-size: 0.78rem;
+  font-size: $text-body;
 }
 .connection-advisory > svg {
   flex-shrink: 0;
@@ -755,7 +763,7 @@ hr,
   margin-bottom: 0;
 }
 .machine-card .eyebrow {
-  font-size: 0.49rem;
+  font-size: $text-small;
   letter-spacing: 0.13em;
   margin-bottom: 7px;
 }
@@ -766,7 +774,7 @@ hr,
   overflow-wrap: anywhere;
 }
 .machine-location {
-  font-size: 0.67rem;
+  font-size: $text-small;
   color: #959888;
   margin-bottom: 0;
   overflow-wrap: anywhere;
@@ -788,7 +796,7 @@ hr,
   min-width: 0;
 }
 .machine-readings > span {
-  font-size: 0.48rem;
+  font-size: $text-small;
   letter-spacing: 0.12em;
   color: #939888;
   display: block;
@@ -803,13 +811,13 @@ hr,
   line-height: 1.2;
 }
 .machine-readings > small {
-  font-size: 0.65rem;
+  font-size: $text-small;
   color: #a0a394;
   display: block;
   margin-bottom: 8px;
 }
 .trace-wait {
-  font-size: 0.55rem;
+  font-size: $text-small;
   color: #b0b3a4;
   height: 40px;
   display: flex;
@@ -820,10 +828,11 @@ hr,
 }
 .machine-phase > div:first-child {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 7px;
-  font-size: 0.65rem;
+  font-size: $text-small;
   margin-bottom: 9px;
   color: #7d866f;
 }
@@ -835,7 +844,7 @@ hr,
 }
 .machine-phase small {
   color: #9a9e8e;
-  font-size: 0.58rem;
+  font-size: $text-small;
 }
 .progress-track {
   height: 3px;
@@ -857,7 +866,7 @@ hr,
   gap: 8px;
   align-items: center;
   flex-wrap: wrap;
-  font-size: 0.61rem;
+  font-size: $text-small;
   color: #969c8a;
 }
 .machine-card footer > span {
@@ -873,7 +882,7 @@ hr,
   gap: 5px;
   white-space: nowrap;
   color: #657b56;
-  font-size: 0.65rem;
+  font-size: $text-small;
   font-weight: 650;
   padding: 0;
   text-decoration: none;
@@ -930,14 +939,14 @@ hr,
   flex: 1;
 }
 .recent-list strong {
-  font-size: 0.79rem;
+  font-size: $text-body;
   display: block;
   margin-bottom: 5px;
   font-weight: 600;
   overflow-wrap: anywhere;
 }
 .recent-list small {
-  font-size: 0.63rem;
+  font-size: $text-small;
   color: #969b8b;
   display: block;
   line-height: 1.6;
@@ -965,7 +974,7 @@ hr,
   gap: 20px;
   align-items: center;
   flex-wrap: wrap;
-  font-size: 0.65rem;
+  font-size: $text-small;
   color: #969b8c;
   margin-top: 11px;
   padding: 0 5px;
@@ -989,7 +998,7 @@ hr,
 }
 .chart-legend small {
   margin-left: auto;
-  font-size: 0.57rem;
+  font-size: $text-small;
 }
 .recharts-tooltip-wrapper {
   z-index: 2;
@@ -1011,7 +1020,7 @@ hr,
   gap: 12px;
   color: #8d947f;
   padding: 60px 20px;
-  font-size: 0.84rem;
+  font-size: $text-body;
 }
 .spin {
   animation: spin 1s linear infinite;
@@ -1027,7 +1036,7 @@ hr,
   color: #9e503d;
   padding: 12px 14px;
   border-radius: 7px;
-  font-size: 0.82rem;
+  font-size: $text-body;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -1041,7 +1050,7 @@ hr,
   border-left: 3px solid #c4a05c;
   background: #f9f2e2;
   color: #8f794d;
-  font-size: 0.79rem;
+  font-size: $text-body;
   padding: 12px 15px;
   border-radius: 0 6px 6px 0;
   margin: 15px 0;
@@ -1075,7 +1084,7 @@ hr,
 .empty-state p {
   max-width: 380px;
   color: #9ba18e;
-  font-size: 0.77rem;
+  font-size: $text-body;
   line-height: 1.8;
   margin-bottom: 20px;
 }
@@ -1083,7 +1092,7 @@ hr,
   margin: 0;
 }
 .help-text {
-  font-size: 0.72rem;
+  font-size: $text-body;
   color: #939b87;
   line-height: 1.8;
   margin: 12px 0 0;
@@ -1095,12 +1104,12 @@ hr,
   gap: 7px;
   margin-bottom: 19px;
   min-width: 0;
-  font-size: 0.77rem;
+  font-size: $text-body;
   font-weight: 550;
   color: #67705c;
 }
 .field > small {
-  font-size: 0.67rem;
+  font-size: $text-small;
   font-weight: 400;
   color: #9b9e8e;
   line-height: 1.7;
@@ -1111,7 +1120,7 @@ hr,
 .field input,
 .field select,
 .field textarea {
-  font-size: 0.81rem;
+  font-size: 1rem;
   font-weight: 400;
 }
 .form-grid {
@@ -1130,7 +1139,7 @@ hr,
   display: flex;
   align-items: center;
   gap: 10px;
-  font-size: 0.8rem;
+  font-size: $text-body;
   color: #6e765e;
   margin: 4px 0 20px;
   line-height: 1.6;
@@ -1178,7 +1187,7 @@ hr,
   min-width: 0;
 }
 .modal-content > p {
-  font-size: 0.82rem;
+  font-size: $text-body;
   line-height: 1.8;
   color: #8a907c;
 }
@@ -1201,7 +1210,7 @@ hr,
   padding: 25px 0 0;
 }
 .modal .settings-row.compact p {
-  font-size: 0.75rem;
+  font-size: $text-body;
 }
 .toasts {
   position: fixed;
@@ -1224,7 +1233,7 @@ hr,
   background: #fafef5;
   color: #4b6e3f;
   box-shadow: 0 8px 35px #252f171a;
-  font-size: 0.78rem;
+  font-size: $text-body;
   line-height: 1.6;
 }
 .toast > span {
@@ -1275,7 +1284,7 @@ hr,
   object-fit: contain;
 }
 .oled > span {
-  font-size: 0.49rem;
+  font-size: $text-small;
   color: #88a080;
   letter-spacing: 0.07em;
   margin-top: 18px;
@@ -1283,7 +1292,7 @@ hr,
 .oled-placeholder {
   color: #a9bea0;
   font-family: monospace;
-  font-size: 0.83rem;
+  font-size: $text-body;
   padding: 50px 10px;
   text-align: center;
 }
@@ -1303,7 +1312,7 @@ hr,
 }
 .front-panel .help-text {
   text-align: center;
-  font-size: 0.66rem;
+  font-size: $text-small;
   padding: 0 10px;
 }
 .program-panel {
@@ -1315,7 +1324,7 @@ hr,
 }
 .program-panel .recipe-link {
   margin: 14px 0 0;
-  font-size: 0.69rem;
+  font-size: $text-small;
   justify-content: center;
 }
 .program-panel .divider {
@@ -1331,12 +1340,12 @@ hr,
   padding-top: 21px;
 }
 .stop-row strong {
-  font-size: 0.77rem;
+  font-size: $text-body;
   display: block;
   margin-bottom: 4px;
 }
 .stop-row small {
-  font-size: 0.67rem;
+  font-size: $text-small;
   color: #9a9d8a;
   display: block;
   line-height: 1.6;
@@ -1348,7 +1357,7 @@ hr,
   display: flex;
   flex-wrap: wrap;
   gap: 10px 20px;
-  font-size: 0.65rem;
+  font-size: $text-small;
   color: #9ba38d;
   overflow-wrap: anywhere;
 }
@@ -1377,7 +1386,7 @@ hr,
   border: 0;
   box-shadow: none;
   padding: 10px 0;
-  font-size: 0.78rem;
+  font-size: 1rem;
   outline: 0;
 }
 .filter-controls {
@@ -1385,7 +1394,7 @@ hr,
   gap: 10px;
 }
 .filter-controls select {
-  font-size: 0.75rem;
+  font-size: $text-body;
   max-width: 210px;
 }
 .recipe-grid {
@@ -1448,7 +1457,7 @@ hr,
   position: absolute;
   left: 22px;
   bottom: 15px;
-  font-size: 0.52rem;
+  font-size: $text-small;
   font-weight: 750;
   letter-spacing: 0.11em;
   text-transform: uppercase;
@@ -1476,7 +1485,7 @@ hr,
   text-align: left;
 }
 .recipe-card-content > p {
-  font-size: 0.77rem;
+  font-size: $text-body;
   line-height: 1.7;
   color: #9b9c8c;
   min-height: 41px;
@@ -1488,7 +1497,7 @@ hr,
   gap: 13px;
   flex-wrap: wrap;
   color: #8e9681;
-  font-size: 0.62rem;
+  font-size: $text-small;
 }
 .recipe-meta span {
   display: flex;
@@ -1507,7 +1516,7 @@ hr,
   color: #8f967e;
   padding: 3px 6px;
   border-radius: 4px;
-  font-size: 0.56rem;
+  font-size: $text-small;
 }
 .recipe-card footer {
   display: flex;
@@ -1519,14 +1528,14 @@ hr,
   gap: 10px;
 }
 .recipe-card footer small {
-  font-size: 0.62rem;
+  font-size: $text-small;
   color: #a0a58f;
 }
 .recipe-card footer button {
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.68rem;
+  font-size: $text-small;
   font-weight: 600;
   color: #698158;
   padding: 0;
@@ -1566,7 +1575,7 @@ hr,
 .recipe-summary dl > div {
   display: flex;
   justify-content: space-between;
-  font-size: 0.73rem;
+  font-size: $text-body;
   margin-bottom: 13px;
   gap: 8px;
 }
@@ -1579,7 +1588,7 @@ hr,
   font-weight: 600;
 }
 .recipe-summary > p:last-child {
-  font-size: 0.69rem;
+  font-size: $text-small;
   line-height: 1.8;
   color: #a2987e;
   border-top: 1px solid #ded7c5;
@@ -1591,15 +1600,15 @@ hr,
   margin-top: 20px;
 }
 .small-panel p {
-  font-size: 0.72rem;
+  font-size: $text-body;
   color: #9aa18c;
   line-height: 1.8;
 }
 .small-panel h3 {
-  font-size: 0.9rem;
+  font-size: 1rem;
 }
 .small-panel .button {
-  font-size: 0.67rem;
+  font-size: $text-small;
   padding: 9px;
 }
 .editor-tools {
@@ -1610,7 +1619,7 @@ hr,
 .editor-tools > .button {
   justify-content: flex-start;
   margin-bottom: 3px;
-  font-size: 0.72rem;
+  font-size: $text-body;
 }
 .table-scroll {
   overflow: auto;
@@ -1624,7 +1633,7 @@ hr,
   min-width: 720px;
 }
 .editor-table th {
-  font-size: 0.63rem;
+  font-size: $text-small;
   font-weight: 600;
   color: #8d967f;
   text-align: left;
@@ -1637,7 +1646,7 @@ hr,
 .editor-table input,
 .editor-table select {
   padding: 7px;
-  font-size: 0.71rem;
+  font-size: $text-body;
   border-color: #e2e5d6;
   border-radius: 5px;
   min-width: 60px;
@@ -1679,7 +1688,7 @@ hr,
   background: #edf0e3;
   color: #93a07e;
   border-radius: 6px;
-  font-size: 0.67rem;
+  font-size: $text-small;
   font-weight: 650;
   margin-top: 27px;
   flex-shrink: 0;
@@ -1695,14 +1704,14 @@ hr,
   padding-top: 20px;
 }
 .recipe-step .field {
-  font-size: 0.67rem;
+  font-size: $text-small;
   margin-bottom: 12px;
   gap: 5px;
 }
 .recipe-step input,
 .recipe-step select {
   padding: 8px;
-  font-size: 0.73rem;
+  font-size: $text-body;
 }
 .recipe-step .form-grid {
   gap: 0 10px;
@@ -1718,7 +1727,7 @@ hr,
   margin: 16px 0 22px;
 }
 .adapt-summary strong {
-  font-size: 0.8rem;
+  font-size: $text-body;
 }
 .revision-list > div {
   display: flex;
@@ -1732,19 +1741,19 @@ hr,
   display: block;
   color: #969c85;
   margin-top: 4px;
-  font-size: 0.69rem;
+  font-size: $text-small;
 }
 .revision-list strong {
-  font-size: 0.83rem;
+  font-size: $text-body;
 }
 .data-table {
   width: 100%;
   border-collapse: collapse;
   text-align: left;
-  font-size: 0.77rem;
+  font-size: $text-body;
 }
 .data-table th {
-  font-size: 0.65rem;
+  font-size: $text-small;
   font-weight: 600;
   color: #959c88;
   white-space: nowrap;
@@ -1770,7 +1779,7 @@ hr,
   gap: 11px;
   align-items: center;
   text-align: left;
-  font-size: 0.8rem;
+  font-size: $text-body;
   padding: 0;
   min-width: 190px;
 }
@@ -1804,7 +1813,7 @@ hr,
   align-items: center;
   gap: 8px;
   margin: 0 0 22px;
-  font-size: 0.76rem;
+  font-size: $text-body;
   color: #8b947b;
 }
 .rating-control > span {
@@ -1851,7 +1860,7 @@ hr,
   z-index: 1;
 }
 .timeline time {
-  font-size: 0.62rem;
+  font-size: $text-small;
   color: #9ba68a;
   width: 40px;
   flex-shrink: 0;
@@ -1859,13 +1868,13 @@ hr,
 }
 .timeline strong {
   display: block;
-  font-size: 0.76rem;
+  font-size: $text-body;
   font-weight: 600;
   color: #74825f;
 }
 .timeline small {
   display: block;
-  font-size: 0.63rem;
+  font-size: $text-small;
   color: #a0a88e;
   margin-top: 4px;
   line-height: 1.6;
@@ -1892,7 +1901,7 @@ hr,
 .sample-table th,
 .sample-table td {
   padding: 8px 10px;
-  font-size: 0.66rem;
+  font-size: $text-small;
   white-space: nowrap;
 }
 .pagination {
@@ -1900,7 +1909,7 @@ hr,
   justify-content: space-between;
   align-items: center;
   margin-top: 18px;
-  font-size: 0.72rem;
+  font-size: $text-body;
   color: #8f997c;
 }
 .settings-sheet {
@@ -1920,7 +1929,7 @@ hr,
   border-bottom: 0;
 }
 .section-index {
-  font-size: 0.6rem;
+  font-size: $text-small;
   letter-spacing: 0.08em;
   color: #b5bba5;
   display: block;
@@ -1931,7 +1940,7 @@ hr,
   margin-bottom: 11px;
 }
 .settings-description p {
-  font-size: 0.74rem;
+  font-size: $text-body;
   color: #98a089;
   line-height: 1.9;
   margin-bottom: 0;
@@ -1941,15 +1950,15 @@ hr,
   min-width: 0;
 }
 .settings-fields > p {
-  font-size: 0.78rem;
+  font-size: $text-body;
   color: #8f987e;
   line-height: 1.8;
 }
 .settings-fields .help-text {
-  font-size: 0.69rem;
+  font-size: $text-small;
 }
 .settings-fields > h3 {
-  font-size: 0.86rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #6d7b5d;
 }
@@ -1985,7 +1994,7 @@ hr,
   flex-wrap: wrap;
 }
 .connection-item-name strong {
-  font-size: 0.83rem;
+  font-size: $text-body;
   color: #637455;
   font-weight: 600;
 }
@@ -1993,7 +2002,7 @@ hr,
   display: flex;
   align-items: center;
   gap: 5px;
-  font-size: 0.66rem;
+  font-size: $text-small;
   color: #9ca58a;
   margin-top: 4px;
   overflow-wrap: anywhere;
@@ -2012,7 +2021,7 @@ hr,
   margin-bottom: 20px;
 }
 .connection-summary code {
-  font-size: 0.8rem;
+  font-size: $text-body;
   color: #738461;
 }
 .assistant-setup {
@@ -2045,7 +2054,7 @@ hr,
   margin: 0 0 6px;
 }
 .assistant-setup p {
-  font-size: 0.74rem;
+  font-size: $text-body;
   color: #a0946c;
   line-height: 1.8;
   margin: 0;
@@ -2066,7 +2075,7 @@ hr,
   display: flex;
   align-items: center;
   gap: 7px;
-  font-size: 0.76rem;
+  font-size: $text-body;
   color: #a0a58d;
   padding: 0 0 16px;
   border-bottom: 2px solid transparent;
@@ -2087,7 +2096,7 @@ hr,
 }
 .assistant-compose-footer small {
   color: #a2aa91;
-  font-size: 0.64rem;
+  font-size: $text-small;
   max-width: 220px;
   line-height: 1.7;
 }
@@ -2099,7 +2108,7 @@ hr,
   color: #919b73;
 }
 .assistant-note h3 {
-  font-size: 0.95rem;
+  font-size: 1rem;
   margin: 17px 0 15px;
   color: #7b8960;
 }
@@ -2113,7 +2122,7 @@ hr,
   display: flex;
   justify-content: space-between;
   gap: 8px;
-  font-size: 0.72rem;
+  font-size: $text-body;
   padding: 15px 0;
   color: #98a17e;
   line-height: 1.7;
@@ -2126,12 +2135,12 @@ hr,
 }
 .assistant-boundaries {
   padding: 25px 8px;
-  font-size: 0.73rem;
+  font-size: $text-body;
   color: #a0aa8b;
   line-height: 1.9;
 }
 .assistant-boundaries h3 {
-  font-size: 0.88rem;
+  font-size: 1rem;
   color: #7e8d66;
 }
 .assistant-boundaries p {
@@ -2143,7 +2152,7 @@ hr,
   gap: 8px;
 }
 .assistant-response-body {
-  font-size: 0.87rem;
+  font-size: 1rem;
   line-height: 1.9;
   color: #738161;
   white-space: pre-wrap;
@@ -2163,13 +2172,13 @@ hr,
   gap: 18px;
 }
 .ai-recipe-draft .eyebrow {
-  font-size: 0.55rem;
+  font-size: $text-small;
 }
 .ai-recipe-draft h3 {
   font-size: 1rem;
 }
 .ai-recipe-draft p:last-child {
-  font-size: 0.7rem;
+  font-size: $text-body;
   color: #99a083;
   margin: 0;
 }
@@ -2178,7 +2187,7 @@ hr,
   margin-top: 25px;
   padding-top: 18px;
   color: #a6ab92;
-  font-size: 0.71rem;
+  font-size: $text-body;
   line-height: 1.8;
 }
 .ai-limitations ul {
@@ -2189,7 +2198,7 @@ hr,
   display: flex;
   align-items: center;
   gap: 9px;
-  font-size: 0.72rem;
+  font-size: $text-body;
   color: #929f7d;
   margin-bottom: 23px;
 }
@@ -2208,7 +2217,7 @@ hr,
 }
 .endpoint-sidebar .search-box {
   width: 100%;
-  font-size: 0.68rem;
+  font-size: $text-small;
 }
 .endpoint-list {
   max-height: 70vh;
@@ -2231,14 +2240,14 @@ hr,
   background: #eef2e4;
 }
 .endpoint-list code {
-  font-size: 0.61rem;
+  font-size: $text-small;
   color: #8a9876;
   overflow-wrap: anywhere;
   min-width: 0;
 }
 .http-method {
   font-family: monospace;
-  font-size: 0.57rem;
+  font-size: $text-small;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
@@ -2275,16 +2284,16 @@ hr,
   overflow-wrap: anywhere;
 }
 .endpoint-detail .code-input {
-  font-size: 0.72rem;
+  font-size: $text-body;
 }
 .api-parameters {
   margin-bottom: 20px;
 }
 .api-parameters h3 {
-  font-size: 0.82rem;
+  font-size: $text-body;
 }
 .api-parameters p {
-  font-size: 0.69rem;
+  font-size: $text-small;
   color: #939e7d;
 }
 .api-parameters small {
@@ -2302,7 +2311,7 @@ hr,
   background: #f5f6ed;
   padding: 18px;
   border-radius: 7px;
-  font-size: 0.71rem;
+  font-size: $text-body;
   color: #6f825a;
   line-height: 1.8;
 }
@@ -2345,17 +2354,17 @@ hr,
 }
 .auth-story .eyebrow {
   color: #8f9b7d;
-  font-size: 0.61rem;
+  font-size: $text-small;
 }
 .auth-story > div:nth-child(2) > p {
   color: #939e81;
   max-width: 370px;
   line-height: 1.9;
-  font-size: 0.94rem;
+  font-size: 1rem;
 }
 .auth-story > small {
   color: #747f64;
-  font-size: 0.7rem;
+  font-size: $text-body;
 }
 .auth-lines {
   display: flex;
@@ -2393,7 +2402,7 @@ hr,
   margin-bottom: 15px;
 }
 .auth-form > p:not(.eyebrow) {
-  font-size: 0.85rem;
+  font-size: 1rem;
   color: #939c83;
   line-height: 1.85;
   margin-bottom: 30px;
@@ -2461,7 +2470,7 @@ hr,
     gap: 15px;
   }
   .page-heading .button {
-    font-size: 0.72rem;
+    font-size: $text-body;
     padding: 9px 11px;
   }
   .machine-card-top {
@@ -2469,7 +2478,7 @@ hr,
     gap: 7px;
   }
   .machine-card h3 {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .machine-card-body {
     padding-inline: 12px;
@@ -2484,11 +2493,11 @@ hr,
     padding-inline: 16px;
   }
   .machine-card-top .badge {
-    font-size: 0.54rem;
+    font-size: $text-small;
     padding: 3px 5px;
   }
   .machine-card .eyebrow {
-    font-size: 0.44rem;
+    font-size: $text-small;
   }
   .metric {
     padding-inline: 17px;
@@ -2497,10 +2506,10 @@ hr,
     font-size: 1.8rem;
   }
   .metric > span {
-    font-size: 0.64rem;
+    font-size: $text-small;
   }
   .metric > small {
-    font-size: 0.59rem;
+    font-size: $text-small;
   }
   .overview-bottom {
     grid-template-columns: 1.5fr 1fr;
@@ -2533,7 +2542,7 @@ hr,
     gap: 15px;
   }
   .assistant-modes button {
-    font-size: 0.66rem;
+    font-size: $text-small;
   }
   .assistant-modes button svg {
     width: 16px;
@@ -2565,10 +2574,10 @@ hr,
     height: 38px;
   }
   .brand small {
-    font-size: 0.4rem;
+    font-size: $text-small;
   }
   .sidebar nav a {
-    font-size: 0.77rem;
+    font-size: $text-body;
     gap: 8px;
     padding: 11px 10px;
   }
@@ -2593,7 +2602,7 @@ hr,
     gap: 9px;
   }
   .page-actions .button {
-    font-size: 0.75rem;
+    font-size: $text-body;
     padding: 9px 13px;
   }
   .fleet-grid {
@@ -2618,10 +2627,10 @@ hr,
     padding-inline: 25px;
   }
   .machine-card .eyebrow {
-    font-size: 0.5rem;
+    font-size: $text-small;
   }
   .machine-card-top .badge {
-    font-size: 0.59rem;
+    font-size: $text-small;
   }
   .recipe-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2682,7 +2691,7 @@ hr,
     gap: 16px;
   }
   .endpoint-list code {
-    font-size: 0.55rem;
+    font-size: $text-small;
   }
   .connection-item {
     flex-wrap: wrap;
@@ -2743,7 +2752,7 @@ hr,
     gap: 11px !important;
   }
   .connection-label {
-    font-size: 0.61rem;
+    font-size: $text-small;
   }
   .brand {
     font-size: 1.16rem;
@@ -2753,10 +2762,10 @@ hr,
     height: 44px;
   }
   .brand small {
-    font-size: 0.49rem;
+    font-size: $text-small;
   }
   .sidebar nav a {
-    font-size: 0.84rem;
+    font-size: $text-body;
     gap: 11px;
     padding: 11px 13px;
   }
@@ -2770,7 +2779,7 @@ hr,
     margin-bottom: 24px;
   }
   .page-description {
-    font-size: 0.8rem;
+    font-size: $text-body;
   }
   .overview-stats {
     margin: 0 0 28px;
@@ -2823,7 +2832,7 @@ hr,
     padding: 14px 20px;
   }
   .assistant-modes button {
-    font-size: 0.75rem;
+    font-size: $text-body;
   }
   .assistant-modes {
     gap: 24px;
@@ -2831,17 +2840,21 @@ hr,
 }
 @media (max-width: 580px) {
   :root {
-    font-size: 14px;
+    font-size: 16px;
   }
   .topbar {
     padding: 0 16px;
     height: 59px;
   }
   .breadcrumb {
-    font-size: 0.66rem;
+    font-size: $text-small;
   }
-  .breadcrumb > span {
+  .breadcrumb .breadcrumb-separator {
     margin: 0 6px;
+  }
+  .breadcrumb-parent,
+  .breadcrumb-separator {
+    display: none;
   }
   .topbar-right {
     gap: 8px !important;
@@ -2855,14 +2868,13 @@ hr,
     width: 7px;
   }
   .simulation-badge {
-    font-size: 0.46rem;
-    padding: 3px 5px;
+    display: none;
   }
   .main-content {
     padding: 20px 16px 30px;
   }
   .demo-notice {
-    font-size: 0.6rem;
+    font-size: $text-small;
     align-items: flex-start;
     margin-bottom: 23px;
   }
@@ -2879,7 +2891,7 @@ hr,
     margin-bottom: 12px;
   }
   .page-heading .eyebrow {
-    font-size: 0.55rem;
+    font-size: $text-small;
     margin-bottom: 10px;
   }
   .page-actions {
@@ -2888,7 +2900,7 @@ hr,
   }
   .page-actions > .button {
     flex: 1;
-    font-size: 0.73rem;
+    font-size: $text-body;
   }
   .page-heading .badge {
     margin-right: 3px;
@@ -2910,10 +2922,10 @@ hr,
     font-size: 1.85rem;
   }
   .metric > span {
-    font-size: 0.64rem;
+    font-size: $text-small;
   }
   .metric > small {
-    font-size: 0.58rem;
+    font-size: $text-small;
   }
   .fleet-grid {
     grid-template-columns: 1fr;
@@ -2933,10 +2945,10 @@ hr,
     font-size: 2.3rem;
   }
   .machine-readings > span {
-    font-size: 0.55rem;
+    font-size: $text-small;
   }
   .machine-readings > small {
-    font-size: 0.73rem;
+    font-size: $text-body;
   }
   .brewer-illustration {
     height: 170px;
@@ -2947,16 +2959,16 @@ hr,
   }
   .machine-card footer {
     padding: 14px 23px;
-    font-size: 0.67rem;
+    font-size: $text-small;
   }
   .machine-card-link {
-    font-size: 0.71rem;
+    font-size: $text-body;
   }
   .machine-phase > div:first-child {
-    font-size: 0.7rem;
+    font-size: $text-body;
   }
   .machine-phase small {
-    font-size: 0.65rem;
+    font-size: $text-small;
   }
   .overview-bottom {
     gap: 0;
@@ -2974,10 +2986,10 @@ hr,
     font-size: 1.09rem;
   }
   .section-heading p {
-    font-size: 0.7rem;
+    font-size: $text-body;
   }
   .section-heading .button {
-    font-size: 0.65rem;
+    font-size: $text-small;
     padding: 7px 8px;
     min-height: 32px;
   }
@@ -2991,7 +3003,7 @@ hr,
   }
   .app-footer {
     margin: 0 16px;
-    font-size: 0.57rem;
+    font-size: $text-small;
     align-items: flex-start;
     gap: 20px;
   }
@@ -3000,7 +3012,7 @@ hr,
     max-width: 140px;
   }
   .live-label {
-    font-size: 0.49rem;
+    font-size: $text-small;
     margin-top: 5px;
   }
   .machine-metrics {
@@ -3016,7 +3028,7 @@ hr,
     font-size: 1.8rem;
   }
   .machine-metrics .metric > span {
-    font-size: 0.67rem;
+    font-size: $text-small;
   }
   .oled {
     padding: 24px 15px 14px;
@@ -3035,7 +3047,7 @@ hr,
     gap: 0;
   }
   .machine-footnotes {
-    font-size: 0.58rem;
+    font-size: $text-small;
     gap: 8px 13px;
   }
   .machine-metrics + .machine-main {
@@ -3054,7 +3066,7 @@ hr,
   }
   .filter-controls select {
     max-width: none;
-    font-size: 0.71rem;
+    font-size: $text-body;
   }
   .recipe-grid {
     grid-template-columns: 1fr;
@@ -3070,20 +3082,20 @@ hr,
   }
   .recipe-card-content > p {
     min-height: 0;
-    font-size: 0.8rem;
+    font-size: $text-body;
   }
   .recipe-meta {
-    font-size: 0.67rem;
+    font-size: $text-small;
     gap: 18px;
   }
   .recipe-tags span {
-    font-size: 0.6rem;
+    font-size: $text-small;
   }
   .recipe-card footer small {
-    font-size: 0.65rem;
+    font-size: $text-small;
   }
   .recipe-card footer button {
-    font-size: 0.73rem;
+    font-size: $text-body;
   }
   .form-grid,
   .form-grid.thirds {
@@ -3098,7 +3110,7 @@ hr,
   .step-number {
     width: 24px;
     height: 24px;
-    font-size: 0.6rem;
+    font-size: $text-small;
   }
   .step-actions .icon-button {
     width: 25px;
@@ -3123,7 +3135,7 @@ hr,
   }
   .editor-tools > .button {
     padding-inline: 20px;
-    font-size: 0.78rem;
+    font-size: $text-body;
   }
   .modal .settings-row.compact {
     grid-template-columns: 1fr;
@@ -3133,7 +3145,7 @@ hr,
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .modal-content .data-table {
-    font-size: 0.69rem;
+    font-size: $text-small;
   }
   .modal-content .data-table th,
   .modal-content .data-table td {
@@ -3144,7 +3156,7 @@ hr,
     gap: 12px;
   }
   .adapt-summary strong {
-    font-size: 0.73rem;
+    font-size: $text-body;
   }
   .settings-sheet {
     padding: 0 20px;
@@ -3156,7 +3168,7 @@ hr,
   }
   .settings-description p {
     max-width: none;
-    font-size: 0.74rem;
+    font-size: $text-body;
   }
   .section-index {
     margin-bottom: 8px;
@@ -3169,10 +3181,10 @@ hr,
     margin-bottom: 24px;
   }
   .connection-item-name strong {
-    font-size: 0.82rem;
+    font-size: $text-body;
   }
   .connection-item small {
-    font-size: 0.67rem;
+    font-size: $text-small;
   }
   .settings-fields .form-grid {
     grid-template-columns: 1fr;
@@ -3182,7 +3194,7 @@ hr,
     justify-content: space-between;
   }
   .assistant-modes button {
-    font-size: 0.62rem;
+    font-size: $text-small;
     gap: 6px;
     flex-direction: column;
     align-items: center;
@@ -3208,7 +3220,7 @@ hr,
     min-width: 200px;
   }
   .assistant-setup h3 {
-    font-size: 0.94rem;
+    font-size: 1rem;
   }
   .assistant-compose-footer {
     flex-direction: column;
@@ -3240,14 +3252,14 @@ hr,
     max-height: 245px;
   }
   .endpoint-list code {
-    font-size: 0.65rem;
+    font-size: $text-small;
   }
   .endpoint-list > button {
     padding: 10px;
   }
   .api-auth-note {
     align-items: flex-start;
-    font-size: 0.66rem;
+    font-size: $text-small;
     line-height: 1.8;
   }
   .api-auth-note svg {
@@ -3257,10 +3269,10 @@ hr,
     align-items: flex-start;
   }
   .endpoint-heading h2 {
-    font-size: 0.95rem;
+    font-size: 1rem;
   }
   .http-method {
-    font-size: 0.56rem;
+    font-size: $text-small;
   }
   .journal-bottom {
     gap: 0;
@@ -3269,15 +3281,15 @@ hr,
     gap: 6px;
   }
   .rating-control > span {
-    font-size: 0.7rem;
+    font-size: $text-body;
     margin-right: 7px;
   }
   .chart-legend {
     gap: 12px;
-    font-size: 0.59rem;
+    font-size: $text-small;
   }
   .chart-legend small {
-    font-size: 0.53rem;
+    font-size: $text-small;
   }
   .data-table td {
     padding: 12px 10px;
@@ -3286,13 +3298,13 @@ hr,
     padding: 5px 8px;
   }
   .pagination {
-    font-size: 0.66rem;
+    font-size: $text-small;
   }
   .pagination .button {
-    font-size: 0.7rem;
+    font-size: $text-body;
   }
   .toast {
-    font-size: 0.73rem;
+    font-size: $text-body;
   }
   .toasts {
     bottom: 16px;
@@ -3306,10 +3318,10 @@ hr,
     padding: 30px 10px;
   }
   .empty-state h3 {
-    font-size: 0.97rem;
+    font-size: 1rem;
   }
   .empty-state p {
-    font-size: 0.75rem;
+    font-size: $text-body;
   }
 }
 @media (prefers-reduced-motion: reduce) {
@@ -3338,17 +3350,17 @@ hr,
 }
 .advice-feed summary strong {
   display: block;
-  font-size: 0.8rem;
+  font-size: $text-body;
   color: #6b7e56;
 }
 .advice-feed summary small {
   display: block;
-  font-size: 0.64rem;
+  font-size: $text-small;
   color: #a0aa8b;
   margin-top: 4px;
 }
 .advice-feed details > p {
-  font-size: 0.78rem;
+  font-size: $text-body;
   line-height: 1.85;
   color: #929d80;
   white-space: pre-wrap;
@@ -3360,7 +3372,7 @@ hr,
   padding-top: 15px;
 }
 .ingredient-details summary {
-  font-size: 0.78rem;
+  font-size: $text-body;
   color: #8d9978;
   cursor: pointer;
   margin-bottom: 18px;
@@ -3370,10 +3382,10 @@ hr,
 }
 .ingredient-details h4 {
   color: #809268;
-  font-size: 0.74rem;
+  font-size: $text-body;
 }
 .ingredient-details .field {
-  font-size: 0.65rem;
+  font-size: $text-small;
 }
 .native-library {
   display: flex;
@@ -3383,18 +3395,18 @@ hr,
   margin-top: 12px;
 }
 .native-library small {
-  font-size: 0.6rem;
+  font-size: $text-small;
   color: #a0a88d;
 }
 .native-library .button {
-  font-size: 0.61rem;
+  font-size: $text-small;
   min-height: 28px;
   padding: 4px;
 }
 .profile-notes {
   margin: 15px 0;
   color: #9aa783;
-  font-size: 0.69rem;
+  font-size: $text-small;
   line-height: 1.8;
 }
 .profile-notes summary {
@@ -3436,7 +3448,7 @@ hr,
   p {
     margin: 3px 0 0;
     color: $muted;
-    font-size: 0.82rem;
+    font-size: $text-body;
   }
 }
 .catalog-filters {
@@ -3479,7 +3491,7 @@ hr,
   border-radius: 20px;
   background: #fffdf4e8;
   color: #6f704f;
-  font-size: 0.65rem;
+  font-size: $text-small;
   font-weight: 600;
 }
 .catalog-pagination {
@@ -3490,7 +3502,7 @@ hr,
   gap: 24px;
   margin: 28px 0 14px;
   color: $muted;
-  font-size: 0.82rem;
+  font-size: $text-body;
 }
 .catalog-detail-image {
   width: 100%;
@@ -3513,7 +3525,7 @@ hr,
   span {
     display: block;
     color: $muted;
-    font-size: 0.8rem;
+    font-size: $text-body;
   }
 }
 .catalog-originals {
@@ -3529,10 +3541,10 @@ hr,
   width: 100%;
   min-width: 480px;
   border-collapse: collapse;
-  font-size: 0.8rem;
+  font-size: $text-body;
   th {
     color: $muted;
-    font-size: 0.7rem;
+    font-size: $text-body;
     text-transform: uppercase;
     letter-spacing: 0.04em;
     text-align: left;
@@ -3550,7 +3562,7 @@ hr,
   border-top: 1px solid $line;
   padding-top: 16px;
   margin-top: 20px;
-  font-size: 0.8rem;
+  font-size: $text-body;
   summary {
     cursor: pointer;
     font-weight: 600;
@@ -3587,7 +3599,7 @@ hr,
 }
 .warning-list {
   padding-left: 19px;
-  font-size: 0.79rem;
+  font-size: $text-body;
   color: #887552;
   li {
     margin-bottom: 7px;
@@ -3607,7 +3619,7 @@ hr,
     border: 0;
   }
   p {
-    font-size: 0.82rem;
+    font-size: $text-body;
     color: $muted;
   }
   dl > div {
@@ -3615,7 +3627,7 @@ hr,
     grid-template-columns: 140px minmax(0, 1fr);
     gap: 12px;
     margin-bottom: 8px;
-    font-size: 0.8rem;
+    font-size: $text-body;
   }
   dt {
     color: $muted;
@@ -3645,7 +3657,7 @@ hr,
     object-fit: contain;
   }
   figcaption {
-    font-size: 0.75rem;
+    font-size: $text-body;
     color: $muted;
     margin-top: 10px;
   }
@@ -3658,7 +3670,7 @@ hr,
   border-top: 1px solid $line;
   padding: 16px 0;
   p {
-    font-size: 0.8rem;
+    font-size: $text-body;
     color: $muted;
     margin: 5px 0;
   }
@@ -3667,7 +3679,7 @@ hr,
     align-items: center;
     gap: 8px;
     color: $green;
-    font-size: 0.75rem;
+    font-size: $text-body;
     flex-shrink: 0;
   }
 }
@@ -3682,7 +3694,7 @@ hr,
   align-items: flex-start;
   gap: 10px;
   padding: 14px 0;
-  font-size: 0.85rem;
+  font-size: 1rem;
   input {
     margin-top: 3px;
   }
@@ -3742,7 +3754,7 @@ hr,
     max-width: 130px;
   }
   .field-label {
-    font-size: 0.65rem;
+    font-size: $text-small;
   }
 }
 .receipt-link {
@@ -3759,7 +3771,7 @@ hr,
   border-radius: 8px;
   span {
     display: block;
-    font-size: 0.68rem;
+    font-size: $text-small;
     color: $muted;
     margin-bottom: 6px;
   }
@@ -3787,12 +3799,12 @@ hr,
   small {
     display: block;
     color: $muted;
-    font-size: 0.7rem;
+    font-size: $text-body;
     overflow-wrap: anywhere;
   }
   > p {
     margin: 12px 0 0;
-    font-size: 0.82rem;
+    font-size: $text-body;
     color: $muted;
   }
   details {
@@ -3802,7 +3814,7 @@ hr,
   summary {
     cursor: pointer;
     color: $green;
-    font-size: 0.8rem;
+    font-size: $text-body;
   }
 }
 .transfer-complete {
@@ -3811,7 +3823,7 @@ hr,
   gap: 9px;
   align-items: center;
   margin-top: 20px;
-  font-size: 0.85rem;
+  font-size: 1rem;
 }
 .native-library {
   flex-wrap: wrap;

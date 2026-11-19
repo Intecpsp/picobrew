@@ -13,7 +13,6 @@ export function AISettingsForm() {
     model: '',
     enabled: false,
     key_configured: false,
-    monitor_enabled: false,
   })
   const [key, setKey] = useState('')
   const [busy, setBusy] = useState(false)
@@ -132,7 +131,6 @@ export function AISettingsForm() {
           provider: form.provider,
           model: form.model.trim(),
           enabled: form.enabled,
-          monitor_enabled: form.monitor_enabled,
           ...(key ? { api_key: key } : {}),
         },
       })
@@ -254,15 +252,11 @@ export function AISettingsForm() {
         />
         Enter model ID manually
       </label>
-      <label className="check-field">
-        <input
-          type="checkbox"
-          checked={form.monitor_enabled || false}
-          disabled={busy}
-          onChange={(event) => setForm({ ...form, monitor_enabled: event.target.checked })}
-        />
-        Check active brews every 5 minutes
-      </label>
+      <p className="help-text">
+        Enable AI monitoring separately when you start a brew or from that machine’s live controls.
+        Observations stay with that session in the brew journal.{' '}
+        <a href="#/overview">Open your machines</a> to choose a brew to monitor.
+      </p>
       <p className="help-text">
         Selected recipes and readings are sent to your chosen provider. Suggestions are advisory;
         the assistant cannot start a machine or change its outputs. You review recipe drafts and

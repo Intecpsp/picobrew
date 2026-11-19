@@ -2,7 +2,7 @@
   "schema_version": 3,
   "purpose": "Source identities for the canonical machine-oriented firmware repository, its exact OEM snapshots, modified firmware and self-contained server. Historical import identities are retained as provenance rather than current paths.",
   "destination_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
-  "destination_branch": "feature/community-monorepo",
+  "destination_branch": "master",
   "reorganization_parent": {
     "repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
     "commit": "97dd48f905e95ce9122ed3af786ea8ef49b5fd29",
@@ -108,5 +108,23 @@
     "role": "Read-only reverse-engineering reference. Existing attributed catalogue artwork retains its source notices."
   },
   "reference_repository_policy": "Read-only. All implementation changes, branches and pull requests belong in the destination repository.",
-  "private_data": "No API keys, private full-flash backups, Hub databases or build/dependency caches are imported."
+  "private_data": "No API keys, private full-flash backups, Hub databases or build/dependency caches are imported.",
+  "web_recovery_candidate": {
+    "source_repository": "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware",
+    "source_branch_at_import": "feature/web-recovery",
+    "source_commit": "256751aa57741fd4e75ecba685c91ceea28d6794",
+    "unique_commits": [
+      "e84199f6e0a529719ae7a12c70dc944705bd1b97",
+      "350418bacf1d163bef8eb11388b24788c68c886a",
+      "256751aa57741fd4e75ecba685c91ceea28d6794"
+    ],
+    "component_path": "firmware/pico-s-pro/modified/recovery/",
+    "manifest": "firmware/pico-s-pro/modified/recovery/import-provenance.json",
+    "version": "0.1.0",
+    "candidate_size_bytes": 42984,
+    "candidate_sha256": "55b63c1c15c829ac131ab57a44310604d136fb285935be1e98527061cea20593",
+    "source_files_preserved": 45,
+    "physical_status": "Experimental image1 candidate; not installed or physically validated. Current guarded installer and main firmware cannot install or enter it.",
+    "main_firmware_unchanged": true
+  }
 }

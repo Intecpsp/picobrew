@@ -24,9 +24,11 @@ import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { dateLabel, ingredientUnits, newRecipe, slug } from '../lib/utils'
 import { isNative, kindLabel, programTiming } from '../lib/programs'
+import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
 import NativeRecipeEditor from './NativeRecipeEditor'
 import { TransferDialog } from '../components/TransferDialog'
-import type { Recipe, Ingredient, RecipeStep, Adapted } from '../types'
+import { AdaptDialog } from '../components/AdaptDialog'
+import type { Recipe, Ingredient, RecipeStep } from '../types'
 import {
   Badge,
   Button,
@@ -147,7 +149,7 @@ function RecipeLibrary() {
                     <>
                       <span>
                         <FlaskConical size={14} />
-                        {recipe.batch_liters} L
+                        {formatVolume(recipe.batch_liters)}
                       </span>
                       <span>
                         <Clock3 size={14} />
@@ -878,7 +880,7 @@ function RecipeEditor({ id }: { id: string }) {
             <dl>
               <div>
                 <dt>Batch</dt>
-                <dd>{recipe.batch_liters} liters</dd>
+                <dd>{formatVolume(recipe.batch_liters)}</dd>
               </div>
               <div>
                 <dt>Ingredients</dt>
@@ -909,7 +911,9 @@ function RecipeEditor({ id }: { id: string }) {
             <Button
               variant="secondary"
               className="full-width"
-              onClick={() => hub.navigate('/assistant')}
+              onClick={() =>
+                hub.navigate(`/recipes/create-with-ai?recipe=${encodeURIComponent(recipe.id)}`)
+              }
             >
               <Sparkles size={15} />
               Ask the brew assistant
@@ -1065,237 +1069,6 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
     </Modal>
   )
 }
-function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
-  const hub = useHub()
-  const first = hub.devices.find((device) => device.online)
-  const [deviceID, setDeviceID] = useState(first?.id || '')
-  const [profileID, setProfileID] = useState(first?.model || hub.profiles[0]?.id || '')
-  const [batch, setBatch] = useState(recipe.batch_liters)
-  const [adapted, setAdapted] = useState<Adapted | null>(null)
-  const [busy, setBusy] = useState('')
-  const [error, setError] = useState('')
-  const target = hub.devices.find((device) => device.id === deviceID)
-  const needsReady = target?.status?.busy || target?.status?.stopped || !target?.status?.ready
-  async function preview() {
-    setBusy('preview')
-    setError('')
-    try {
-      setAdapted(
-        await api<Adapted>(`/recipes/${recipe.id}/adapt`, {
-          method: 'POST',
-          body: { profile_id: profileID, batch_liters: batch },
-        })
-      )
-    } catch (error) {
-      setError(errorMessage(error))
-    } finally {
-      setBusy('')
-    }
-  }
-  async function deploy() {
-    if (!adapted) return
-    setBusy('deploy')
-    try {
-      await api(`/devices/${deviceID}/deploy`, {
-        method: 'POST',
-        body: {
-          recipe_id: recipe.id,
-          profile_id: profileID,
-          batch_liters: batch,
-          source_revision: adapted.source_revision,
-        },
-      })
-      hub.notify(`Recipe sent to ${target?.name}. It has not been started.`)
-      onClose()
-      hub.navigate(`/devices/${deviceID}`)
-    } catch (error) {
-      setError(errorMessage(error))
-    } finally {
-      setBusy('')
-    }
-  }
-  return (
-    <Modal
-      title="Adapt the recipe. Choose its brewer."
-      onClose={onClose}
-      wide
-      actions={
-        <>
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          {adapted ? (
-            <Button
-              disabled={
-                !adapted.can_deploy ||
-                !target?.online ||
-                !!needsReady ||
-                target.model !== profileID ||
-                !!busy
-              }
-              onClick={() => void deploy()}
-            >
-              <Send size={16} />
-              {busy === 'deploy' ? 'Sending…' : 'Send to machine'}
-            </Button>
-          ) : (
-            <Button disabled={!profileID || !!busy} onClick={() => void preview()}>
-              {busy ? 'Adapting…' : 'Preview adaptation'}
-              <ArrowUpRight size={16} />
-            </Button>
-          )}
-        </>
-      }
-    >
-      <p>
-        Ingredient amounts are scaled for the selected batch and equipment profile. Sending a recipe
-        never starts the brewer.
-      </p>
-      <div className="form-grid">
-        <Field label="Target machine">
-          <select
-            value={deviceID}
-            onChange={(event) => {
-              const machine = hub.devices.find((device) => device.id === event.target.value)
-              setDeviceID(event.target.value)
-              if (machine) setProfileID(machine.model)
-              setAdapted(null)
-            }}
-          >
-            <option value="">Planning only</option>
-            {hub.devices.map((device) => (
-              <option key={device.id} value={device.id}>
-                {device.name}
-                {device.online ? '' : ' (offline)'}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Equipment profile">
-          <select
-            value={profileID}
-            onChange={(event) => {
-              setProfileID(event.target.value)
-              setAdapted(null)
-            }}
-          >
-            {hub.profiles.map((profile) => (
-              <option key={profile.id} value={profile.id}>
-                {profile.name}
-                {profile.control_supported ? '' : ' · planning & export'}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Target batch size (L)">
-          <input
-            type="number"
-            min="0.1"
-            step="0.1"
-            value={batch}
-            onChange={(event) => {
-              setBatch(Number(event.target.value))
-              setAdapted(null)
-            }}
-          />
-        </Field>
-      </div>
-      <ErrorBanner message={error} />
-      {adapted && (
-        <>
-          <div className="adapt-summary">
-            <Badge tone={adapted.can_deploy ? 'green' : 'amber'}>
-              {adapted.can_deploy ? 'Machine recipe ready' : 'Planning profile'}
-            </Badge>
-            <strong>
-              {adapted.recipe.batch_liters} L · {adapted.recipe.efficiency}% efficiency
-            </strong>
-          </div>
-          {(adapted.warnings || []).map((warning, index) => (
-            <p className="notice" key={index}>
-              {warning}
-            </p>
-          ))}
-          {needsReady && target && (
-            <p className="notice">
-              {target.name} must be idle and ready at its main menu before deployment.
-            </p>
-          )}
-          <h3>Scaled ingredients</h3>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>Ingredient</th>
-                <th>Original</th>
-                <th>Adapted</th>
-              </tr>
-            </thead>
-            <tbody>
-              {adapted.recipe.ingredients.map((item, index) => (
-                <tr key={index}>
-                  <td>{item.name}</td>
-                  <td>
-                    {recipe.ingredients[index]?.amount} {recipe.ingredients[index]?.unit}
-                  </td>
-                  <td>
-                    <strong>
-                      {Number(item.amount.toFixed(3))} {item.unit}
-                    </strong>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <h3>Machine schedule</h3>
-          {adapted.machine_recipe ? (
-            <div className="table-scroll">
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Step</th>
-                    <th>Target</th>
-                    <th>Time</th>
-                    <th>Drain</th>
-                    <th>Compartment</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {adapted.machine_recipe.steps.map((step, index) => (
-                    <tr key={index}>
-                      <td>{step.name}</td>
-                      <td>{step.target_f}°F</td>
-                      <td>{step.minutes} min</td>
-                      <td>{step.drain_minutes} min</td>
-                      <td>{step.location}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p>{adapted.profile.notes}</p>
-          )}
-          <button
-            className="text-button"
-            onClick={() => {
-              hub.setDraft({
-                ...adapted.recipe,
-                id: '',
-                revision: 0,
-                name: `${recipe.name} · ${adapted.profile.name}`,
-              })
-              onClose()
-              hub.navigate('/recipes/new')
-            }}
-          >
-            Save this adaptation as a separate recipe
-            <ArrowUpRight size={14} />
-          </button>
-        </>
-      )}
-    </Modal>
-  )
-}
 function ShoppingList({ ids, onClose }: { ids: string[]; onClose: () => void }) {
   const resource = useResource<Ingredient[]>(
     `/shopping-list?recipes=${encodeURIComponent(ids.join(','))}`
@@ -1323,9 +1096,7 @@ function ShoppingList({ ids, onClose }: { ids: string[]; onClose: () => void }) 
               <tr key={index}>
                 <td>{item.name}</td>
                 <td>{item.kind}</td>
-                <td>
-                  {Number(item.amount.toFixed(3))} {item.unit}
-                </td>
+                <td>{formatQuantity(item.amount, item.unit)}</td>
               </tr>
             ))}
           </tbody>

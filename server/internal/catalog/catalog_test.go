@@ -15,7 +15,7 @@ func TestPinnedArchiveIntegrityAndCopyCoverage(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if len(a.entries) != 5282 {
+	if len(a.entries) != 5216 {
 		t.Fatalf("unexpected catalogue size: %d", len(a.entries))
 	}
 	kinds := map[string]int{}
@@ -67,10 +67,10 @@ func TestPinnedArchiveIntegrityAndCopyCoverage(t *testing.T) {
 			}
 		}
 	}
-	if copyable != 5272 || deployable != 3755 || originalRecords != 11164 {
+	if copyable != 5206 || deployable != 3694 || originalRecords != 10666 {
 		t.Fatalf("coverage changed: %d copyable, %d deployable, %d originals", copyable, deployable, originalRecords)
 	}
-	if !reflect.DeepEqual(kinds, map[string]int{"recipe": 1320, "native-program": 3959, "maintenance": 3}) {
+	if !reflect.DeepEqual(kinds, map[string]int{"recipe": 1316, "native-program": 3897, "maintenance": 3}) {
 		t.Fatalf("kinds: %v", kinds)
 	}
 	for _, asset := range a.meta.Assets {
@@ -90,7 +90,7 @@ func TestPinnedArchiveIntegrityAndCopyCoverage(t *testing.T) {
 	if err := a.decode("excluded.json", &excluded); err != nil {
 		t.Fatal(err)
 	}
-	if len(excluded) != 354 {
+	if len(excluded) != 852 {
 		t.Fatalf("excluded count %d", len(excluded))
 	}
 	for _, record := range excluded {
@@ -98,6 +98,51 @@ func TestPinnedArchiveIntegrityAndCopyCoverage(t *testing.T) {
 		if err != nil || Verify(data, record.Bytes, record.SHA256) != nil {
 			t.Fatalf("excluded original lost: %s", record.Path)
 		}
+	}
+}
+
+func TestReviewedJunkIsUnavailableButOriginalsRemain(t *testing.T) {
+	a, err := Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	var review struct {
+		Removed []struct {
+			ID            string         `json:"id"`
+			SourceID      string         `json:"source_id"`
+			Evidence      string         `json:"evidence"`
+			SourceRecords []SourceRecord `json:"source_records"`
+		} `json:"removed_entries"`
+	}
+	if err := a.decode("curation.json", &review); err != nil {
+		t.Fatal(err)
+	}
+	if len(review.Removed) != 66 {
+		t.Fatalf("reviewed removal count: %d", len(review.Removed))
+	}
+	count := 0
+	for _, entry := range review.Removed {
+		if entry.Evidence == "" {
+			t.Fatalf("missing review evidence: %s", entry.ID)
+		}
+		if _, err := a.Detail(entry.ID); !errors.Is(err, ErrNotFound) {
+			t.Fatalf("removed entry is still accessible: %s (%v)", entry.ID, err)
+		}
+		for _, summary := range a.entries {
+			if summary.ID == entry.ID {
+				t.Fatalf("removed entry is still browsable: %s", entry.ID)
+			}
+		}
+		for _, record := range entry.SourceRecords {
+			data, err := a.read("originals/" + entry.SourceID + "/" + record.Path)
+			if err != nil || Verify(data, record.Bytes, record.SHA256) != nil {
+				t.Fatalf("curated original lost: %s/%s", entry.ID, record.ID)
+			}
+			count++
+		}
+	}
+	if count != 498 {
+		t.Fatalf("curated source record count: %d", count)
 	}
 }
 
@@ -148,7 +193,7 @@ func TestSearchPaginationAndIndependentResults(t *testing.T) {
 	}
 	first := a.List(Query{Limit: 2})
 	next := a.List(Query{Offset: 2, Limit: 2})
-	if first.Total != 5282 || len(first.Items) != 2 || first.Items[0].ID == next.Items[0].ID || !first.Items[0].Featured {
+	if first.Total != 5216 || len(first.Items) != 2 || first.Items[0].ID == next.Items[0].ID || !first.Items[0].Featured {
 		t.Fatalf("bad pages: %+v %+v", first, next)
 	}
 	for _, query := range []Query{{Query: "DEAD GUY"}, {Source: "public-recipes", Kind: "recipe", Model: "zymatic"}, {Kind: "maintenance", Model: "zymatic"}} {

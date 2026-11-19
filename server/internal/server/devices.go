@@ -530,12 +530,13 @@ func (s *Server) machineTelemetry(w http.ResponseWriter, r *http.Request) {
 }
 
 type commandReceipt struct {
-	ID       string         `json:"id"`
-	DeviceID string         `json:"device_id"`
-	Command  domain.Command `json:"command"`
-	State    string         `json:"state"`
-	At       time.Time      `json:"at"`
-	Message  string         `json:"message,omitempty"`
+	ID        string         `json:"id"`
+	DeviceID  string         `json:"device_id"`
+	Command   domain.Command `json:"command"`
+	State     string         `json:"state"`
+	At        time.Time      `json:"at"`
+	Message   string         `json:"message,omitempty"`
+	AIMonitor bool           `json:"ai_monitor,omitempty"`
 }
 
 func (s *Server) command(w http.ResponseWriter, r *http.Request) {
@@ -545,7 +546,8 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	}
 	var in struct {
 		domain.Command
-		Confirm bool `json:"confirm"`
+		Confirm   bool `json:"confirm"`
+		AIMonitor bool `json:"ai_monitor"`
 	}
 	if !s.decode(w, r, &in) {
 		return
@@ -567,7 +569,7 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	receiptID := view.ID + ":" + key
 	var prior commandReceipt
 	if _, e := s.db.Get("command", receiptID, &prior); e == nil {
-		if prior.Command != in.Command {
+		if prior.Command != in.Command || prior.AIMonitor != in.AIMonitor {
 			s.fail(w, 409, "idempotency_conflict", "This key belongs to a different command")
 			return
 		}
@@ -601,7 +603,24 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	receipt := commandReceipt{ID: receiptID, DeviceID: view.ID, Command: in.Command, State: "pending", At: time.Now().UTC()}
+	var monitor aiMonitorRecord
+	if in.AIMonitor {
+		var err error
+		monitor, err = s.prepareAIMonitor(r.Context(), d, in.Command, receiptID)
+		if err != nil {
+			s.deviceError(w, err)
+			return
+		}
+	}
+	// A new program or an explicit stop cancels any previous pending intent.
+	// Dial input is retained because it acknowledges the same preparation flow.
+	if in.Command.Command != "encoder" {
+		if err := s.clearAIMonitor(view.ID, true); err != nil {
+			s.internal(w, err)
+			return
+		}
+	}
+	receipt := commandReceipt{ID: receiptID, DeviceID: view.ID, Command: in.Command, State: "pending", At: time.Now().UTC(), AIMonitor: in.AIMonitor}
 	if _, e := s.db.Put("command", receiptID, receipt, 0); e != nil {
 		s.storeError(w, e)
 		return
@@ -627,6 +646,17 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	if _, e = s.db.Put("command", receiptID, receipt, -1); e != nil {
 		s.fail(w, 500, "receipt_error", "The machine accepted the command, but its receipt could not be saved. Do not retry.")
 		return
+	}
+	if in.AIMonitor {
+		if err := s.saveAIMonitor(monitor); err != nil {
+			s.fail(w, 500, "ai_monitor_receipt_error", "The machine accepted the command, but AI monitoring was not saved. Do not repeat the start command; enable AI from the live brew once its session appears.")
+			return
+		}
+	} else if in.Command.Command != "encoder" {
+		if err := s.clearAIMonitor(view.ID, false); err != nil {
+			s.fail(w, 500, "ai_monitor_receipt_error", "The machine accepted the command, but AI monitoring state could not be saved. Do not repeat the command; review the live brew's monitoring setting.")
+			return
+		}
 	}
 	s.json(w, 202, receipt)
 }

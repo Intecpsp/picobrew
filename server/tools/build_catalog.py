@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 
 from catalog_public import convert_public
+from catalog_curation import apply_reviewed_exclusions, load_policy
 
 
 SOURCES = {
@@ -496,6 +497,12 @@ class Builder:
             self.add_asset(source, path, name.capitalize(), "ingredient-illustration", license="Creative Commons, version unspecified in original notice", attribution="The Crew at Fusionary, Noun Project; see original static/img/LICENSE.txt")
 
     def finish(self):
+        policy = load_policy()
+        self.entries, self.sources, self.excluded = apply_reviewed_exclusions(
+            self.entries, self.sources, self.excluded, policy,
+        )
+        self.counts = {source["id"]: source for source in self.sources}
+        self.files["curation.json"] = dump(policy)
         for source in self.counts:
             self.counts[source]["entry_count"] = sum(e["source_id"] == source for e in self.entries)
         details = {"recipe", "native_program", "warnings", "provenance", "source_records", "source_url", "notes", "source_parameters"}

@@ -1,50 +1,10 @@
-import { useEffect, useState } from 'react'
-import {
-  Sparkles,
-  WandSparkles,
-  Activity,
-  BookOpen,
-  ArrowRight,
-  ArrowUpRight,
-  Send,
-  Loader2,
-  Lightbulb,
-  Radio,
-} from 'lucide-react'
+import { useState } from 'react'
+import { Sparkles, ArrowRight, ArrowUpRight, Loader2, Lightbulb } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, errorMessage } from '../lib/api'
 import { dateLabel } from '../lib/utils'
-import type { AISettings, AIResult } from '../types'
-import {
-  Badge,
-  Button,
-  Empty,
-  ErrorBanner,
-  Field,
-  Loading,
-  PageTitle,
-  SectionHeading,
-} from '../components/ui'
-const modes = [
-  {
-    id: 'recipe',
-    label: 'Create a recipe',
-    icon: WandSparkles,
-    description: 'Start with an idea and shape it into a brewable recipe.',
-  },
-  {
-    id: 'live',
-    label: 'During the brew',
-    icon: Activity,
-    description: 'Ask about the readings and progression of a connected machine.',
-  },
-  {
-    id: 'analysis',
-    label: 'After the last pour',
-    icon: BookOpen,
-    description: 'Reflect on a recorded brew and plan what to improve.',
-  },
-]
+import type { AIAdvice, AISettings, AIResult } from '../types'
+import { Badge, Button, ErrorBanner, Field, PageTitle, SectionHeading } from '../components/ui'
 const prompts: Record<string, string[]> = {
   recipe: [
     'A balanced citrus pale ale for a 5-liter batch.',
@@ -63,30 +23,55 @@ const prompts: Record<string, string[]> = {
   ],
 }
 export default function Assistant() {
+  const recipeID = new URLSearchParams(location.hash.split('?')[1] || '').get('recipe') || ''
+  return <AIWorkbench mode="recipe" recipeID={recipeID} />
+}
+
+export function AIWorkbench({
+  mode,
+  deviceID,
+  brewID,
+  recipeID: initialRecipeID = '',
+  contextName,
+  embedded = false,
+  liveVerified = true,
+  initialAdvice,
+}: {
+  mode: 'recipe' | 'live' | 'analysis'
+  deviceID?: string
+  brewID?: string
+  recipeID?: string
+  contextName?: string
+  embedded?: boolean
+  liveVerified?: boolean
+  initialAdvice?: AIAdvice[]
+}) {
   const hub = useHub()
-  const initialBrew = new URLSearchParams(location.hash.split('?')[1] || '').get('brew') || ''
-  const [mode, setMode] = useState(initialBrew ? 'analysis' : 'recipe')
   const [prompt, setPrompt] = useState('')
-  const [recipeID, setRecipeID] = useState('')
-  const [deviceID, setDeviceID] = useState(hub.devices.find((device) => device.online)?.id || '')
-  const [brewID, setBrewID] = useState(initialBrew || hub.brews[0]?.id || '')
+  const [recipeID, setRecipeID] = useState(initialRecipeID)
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<AIResult | null>(null)
   const [error, setError] = useState('')
+  const [adviceLimit, setAdviceLimit] = useState(8)
   const settings = useResource<AISettings>('/ai/settings')
-  const advice = useResource<
-    {
-      id: string
-      created_at: string
-      device_id?: string
-      mode: string
-      status: string
-      text: string
-      error?: string
-      limitations?: string[]
-    }[]
-  >('/ai/advice', 30000)
+  const adviceQuery = new URLSearchParams()
+  if (mode === 'recipe') adviceQuery.set('mode', 'recipe')
+  if (brewID) adviceQuery.set('brew_id', brewID)
+  if (deviceID) adviceQuery.set('device_id', deviceID)
+  if (mode === 'live') adviceQuery.set('mode', 'live')
+  const advice = useResource<AIAdvice[]>(
+    mode === 'recipe' || brewID ? `/ai/advice?${adviceQuery}` : null,
+    30000
+  )
+  const contextAdvice = (advice.data ?? initialAdvice ?? []).filter((item) =>
+    mode === 'recipe'
+      ? item.mode === 'recipe'
+      : item.brew_id === brewID &&
+        (!deviceID || item.device_id === deviceID) &&
+        (item.mode === 'live' || (mode === 'analysis' && item.mode === 'analysis'))
+  )
   async function submit() {
+    if (mode === 'live' && !liveVerified) return
     setBusy(true)
     setError('')
     try {
@@ -96,12 +81,13 @@ export default function Assistant() {
           body: {
             mode,
             prompt,
-            ...(recipeID ? { recipe_id: recipeID } : {}),
+            ...(mode === 'recipe' && recipeID ? { recipe_id: recipeID } : {}),
             ...(mode === 'live' ? { device_id: deviceID } : {}),
-            ...(mode === 'analysis' ? { brew_id: brewID } : {}),
+            ...(mode !== 'recipe' && brewID ? { brew_id: brewID } : {}),
           },
         })
       )
+      advice.reload()
     } catch (error) {
       setError(errorMessage(error))
     } finally {
@@ -109,20 +95,37 @@ export default function Assistant() {
     }
   }
   const enabled = settings.data?.enabled && settings.data?.key_configured
+  const title =
+    mode === 'recipe'
+      ? 'Create a recipe with AI.'
+      : mode === 'live'
+        ? 'AI help during this brew'
+        : 'AI brew analysis'
+  const description =
+    mode === 'recipe'
+      ? 'Describe your idea, then review the draft in your recipe library.'
+      : mode === 'live'
+        ? liveVerified
+          ? `Ask about ${contextName || 'this brew'} using its current machine readings and recorded session.`
+          : 'Saved observations for the last verified brew remain available. Live questions are paused until the current session can be verified.'
+        : `Review ${contextName || 'this brew'} using its recorded temperatures, phase changes and saved notes.`
+  const provider = settings.data && (
+    <Badge tone={enabled ? 'green' : 'neutral'}>
+      {enabled ? `${settings.data.provider} · ${settings.data.model}` : 'Not configured'}
+    </Badge>
+  )
   return (
-    <>
-      <PageTitle
-        eyebrow="A SECOND PERSPECTIVE ON YOUR CRAFT"
-        title="The brew assistant."
-        description="Explore ideas, understand your readings and learn from each batch."
-        actions={
-          settings.data && (
-            <Badge tone={enabled ? 'green' : 'neutral'}>
-              {enabled ? `${settings.data.provider} · ${settings.data.model}` : 'Not configured'}
-            </Badge>
-          )
-        }
-      />
+    <section className="contextual-ai" aria-label={title}>
+      {embedded ? (
+        <SectionHeading title={title} description={description} actions={provider} />
+      ) : (
+        <PageTitle
+          eyebrow="A SECOND PERSPECTIVE ON YOUR CRAFT"
+          title={title}
+          description={description}
+          actions={provider}
+        />
+      )}
       {!settings.loading && !enabled && (
         <div className="assistant-setup">
           <span className="assistant-symbol">
@@ -143,62 +146,12 @@ export default function Assistant() {
       )}
       <div className="assistant-layout">
         <div>
-          <div className="assistant-modes" role="tablist" aria-label="Assistant task">
-            {modes.map((item) => (
-              <button
-                role="tab"
-                aria-selected={mode === item.id}
-                key={item.id}
-                className={mode === item.id ? 'active' : ''}
-                onClick={() => {
-                  setMode(item.id)
-                  setResult(null)
-                  setError('')
-                }}
-              >
-                <item.icon size={19} />
-                <strong>{item.label}</strong>
-              </button>
-            ))}
-          </div>
           <section className="panel assistant-compose">
             <SectionHeading
-              title={modes.find((item) => item.id === mode)?.label || ''}
-              description={modes.find((item) => item.id === mode)?.description}
+              title={mode === 'recipe' ? 'Shape your recipe' : 'Ask about this session'}
             />
-            <div className="form-grid">
-              {mode === 'live' && (
-                <Field label="Connected machine">
-                  <select value={deviceID} onChange={(event) => setDeviceID(event.target.value)}>
-                    <option value="">Choose a machine</option>
-                    {hub.devices.map((device) => (
-                      <option key={device.id} value={device.id}>
-                        {device.name}
-                        {device.online ? '' : ' (offline)'}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              )}
-              {mode === 'analysis' && (
-                <Field label="Brew to analyze">
-                  <select value={brewID} onChange={(event) => setBrewID(event.target.value)}>
-                    <option value="">Choose a brew session</option>
-                    {hub.brews.map((brew) => (
-                      <option key={brew.id} value={brew.id}>
-                        {brew.recipe_name || brew.command} · {brew.device_name}
-                      </option>
-                    ))}
-                  </select>
-                </Field>
-              )}
-              <Field
-                label={
-                  mode === 'recipe'
-                    ? 'Existing recipe to build on (optional)'
-                    : 'Recipe context (optional)'
-                }
-              >
+            {mode === 'recipe' && (
+              <Field label="Existing recipe to build on (optional)">
                 <select value={recipeID} onChange={(event) => setRecipeID(event.target.value)}>
                   <option value="">No recipe selected</option>
                   {hub.recipes.map((recipe) => (
@@ -208,7 +161,7 @@ export default function Assistant() {
                   ))}
                 </select>
               </Field>
-            </div>
+            )}
             <Field label="What would you like to explore?">
               <textarea
                 rows={6}
@@ -231,7 +184,8 @@ export default function Assistant() {
                   !enabled ||
                   !prompt.trim() ||
                   busy ||
-                  (mode === 'live' && !deviceID) ||
+                  (mode === 'live' && !liveVerified) ||
+                  (mode === 'live' && (!deviceID || !brewID)) ||
                   (mode === 'analysis' && !brewID)
                 }
                 onClick={() => void submit()}
@@ -252,7 +206,7 @@ export default function Assistant() {
                   <p key={index}>{paragraph.replace(/^#{1,6}\s+/, '')}</p>
                 ))}
               </div>
-              {result.recipe && (
+              {mode === 'recipe' && result.recipe && (
                 <div className="ai-recipe-draft">
                   <div>
                     <p className="eyebrow">RECIPE DRAFT</p>
@@ -286,20 +240,24 @@ export default function Assistant() {
               )}
             </section>
           )}
-          {!!advice.data?.length && (
+          <ErrorBanner message={advice.error} retry={advice.reload} />
+          {!!contextAdvice.length && (
             <section className="panel advice-feed">
               <SectionHeading
-                title="From your brew watch"
-                description="Recent advice and analysis retained by the hub."
+                title={mode === 'recipe' ? 'Previous recipe ideas' : 'Advice saved with this brew'}
+                description={
+                  mode === 'recipe'
+                    ? 'Recent recipe ideas retained by the Hub.'
+                    : 'Observations and analysis for this session only.'
+                }
               />
-              {advice.data.slice(0, 8).map((item) => (
-                <details key={item.id}>
+              {contextAdvice.slice(0, adviceLimit).map((item, index) => (
+                <details key={item.id} open={mode !== 'recipe' && index === 0}>
                   <summary>
                     <span>
                       <strong>
-                        {item.device_id
-                          ? hub.devices.find((device) => device.id === item.device_id)?.name ||
-                            'Machine observation'
+                        {item.mode === 'live'
+                          ? 'Live brew observation'
                           : item.mode === 'recipe'
                             ? 'Recipe exploration'
                             : 'Brew analysis'}
@@ -311,8 +269,24 @@ export default function Assistant() {
                     </Badge>
                   </summary>
                   <p>{item.status === 'error' ? item.error : item.text}</p>
+                  {!!item.limitations?.length && (
+                    <div className="ai-limitations">
+                      <h4>Saved qualifications</h4>
+                      <ul>
+                        {item.limitations.map((limitation, index) => (
+                          <li key={index}>{limitation}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </details>
               ))}
+              {contextAdvice.length > adviceLimit && (
+                <Button variant="secondary" onClick={() => setAdviceLimit(contextAdvice.length)}>
+                  Show all {contextAdvice.length} saved{' '}
+                  {mode === 'recipe' ? 'ideas' : 'observations and analyses'}
+                </Button>
+              )}
             </section>
           )}
         </div>
@@ -335,19 +309,15 @@ export default function Assistant() {
               The assistant can suggest recipes and observations. It cannot start programs, move the
               dial or change heating and pumping.
             </p>
-            <p>
-              Review a draft in the recipe editor, save it, and preview its machine adaptation
-              before sending it.
-            </p>
-            {settings.data?.monitor_enabled && (
-              <p className="monitor-note">
-                <Radio size={15} />
-                Periodic brew advice is enabled in settings.
+            {mode === 'recipe' && (
+              <p>
+                Review the draft in the recipe editor, save it, and preview its machine adaptation
+                before sending it.
               </p>
             )}
           </div>
         </aside>
       </div>
-    </>
+    </section>
   )
 }

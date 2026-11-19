@@ -60,6 +60,8 @@ describe('AI provider model discovery', () => {
     const user = userEvent.setup()
     mount()
     await screen.findByRole('option', { name: 'Text model (text-model)' })
+    expect(screen.queryByLabelText('Check active brews every 5 minutes')).toBeNull()
+    expect(screen.getByText(/Enable AI monitoring separately when you start a brew/)).toBeTruthy()
     expect(modelCalls()).toHaveLength(1)
     expect(modelCalls()[0][0]).toBe('/api/v1/ai/models?provider=openai')
     expect((screen.getByLabelText('Model') as HTMLSelectElement).value).toBe('private-model')

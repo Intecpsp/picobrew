@@ -14,7 +14,7 @@ ports and live Hub compatibility are not implemented. See
 
 ## Run it on your Mac
 
-Install Go **1.26 or newer** and Node.js **22.12 or newer**. Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the C compiler is unavailable (`xcode-select --install`).
+Install Go **1.26 or newer** and Node.js **22.13 or newer**. Go's SQLite driver uses CGO; on macOS install the Xcode Command Line Tools if the C compiler is unavailable (`xcode-select --install`).
 
 The application is self-contained in `server/`: its Go module, frontend,
 catalogue, tests, Dockerfile and Compose configuration are all in that directory.
@@ -55,11 +55,12 @@ This seeds three simulated brewers, two example recipes and three historical bre
 - **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
 - **Operate an S/Pro.** Mirror its OLED, turn or press its dial, select an installed recipe, open its advertised maintenance programs, stop outputs, and update its display/forwarding preferences. The console exposes the capabilities reported by that device.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
-- **Browse the community catalogue.** Search 5,282 bundled recipe/program entries, view attributed beer illustrations and source records, and copy entries to your editable library. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalogue contents and provenance](docs/community-catalog.md).
+- **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalogue contents and provenance](docs/community-catalog.md).
 - **Adapt and deploy.** Save measured model defaults in Settings, preview batch and efficiency scaling for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
 - **Transfer several programs.** Select library entries and preview what fits on a brewer. Existing recipes are preserved by default; matching updates require an explicit choice. Confirm the reviewed batch to write and verify each program. Receipts identify verified, skipped and unconfirmed entries, including after a Hub restart. The machine page can also edit the installed slots used by the brewer's own interface.
 - **Keep the brew record.** Import retained sessions automatically, preserve their available sensor samples beyond the device's ring buffer, chart temperatures and phase/controller state, add notes and ratings, and export JSON or CSV. Disconnections, truncated data and unknown start times remain visible.
-- **Use optional AI.** Supply an OpenAI or Anthropic API key and a model available to your account. Generate a structured recipe draft, ask about an active brew, or analyze recorded history. An opt-in monitor reviews online active brews at most once every five minutes per machine, with advice saved in the console. Drafts require review and saving. The AI has no machine command tools.
+- **Create recipes with AI.** Use **Recipes → Create with AI** to generate a structured draft, optionally using a saved recipe as a starting point. Review the draft in the recipe editor before saving, adapting or deploying it.
+- **Get help with a brew.** Opt into AI monitoring in the Start confirmation or on the active machine page. Monitoring follows that one brew and saves observations at most once every five minutes. Ask follow-up questions beside the live readings, then open the brew's journal entry for analysis of its recorded results. Provider setup is optional; machine commands still require your explicit action.
 - **Build other clients.** Browse the authenticated API explorer or download `/api/v1/openapi.json`. The same API serves the UI, with session authentication, CSRF protection and idempotent command receipts.
 
 ### Connect the brew assistant
@@ -68,6 +69,14 @@ In **Settings → Brew assistant**, choose OpenAI or Anthropic, enter a provider
 
 The model list comes from the provider's API, including all Anthropic result pages. Choose a model that supports the provider's chat API; a listing alone does not establish that compatibility or inference permission. Manual model entry remains available for private models or restricted keys that cannot list models. Changing providers clears the previous catalogue and uses only the selected provider's key.
 
+Enabling a provider does not start monitoring. Choose monitoring separately for
+each brew. An opted-in Start waits for the new, matching machine session; this
+pending choice expires after 15 minutes and is cancelled if the Hub restarts.
+Once bound, monitoring stays with that exact session and ends when it finishes
+or another program starts. Saved advice appears with that brew and is included
+in its JSON export. The AI can interpret available readings and suggest actions;
+it cannot operate heaters, pumps, or machine controls.
+
 ### Equipment starting points
 
 The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Brew Companion's documented recipe-scaling guidance, with source links visible in Settings. The Pro's nominal 5 L batch is also supported by PicoBrew's published specifications. Efficiency is a planning estimate, and S/Pro grain capacity remains unknown until supplied for the actual grain container. Saved calibration values override these starting points. See [equipment profiles and sources](docs/equipment-profiles.md).
@@ -75,11 +84,11 @@ The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Bre
 ## Brewing workflow
 
 1. Create or import a recipe in the shared library.
-2. Select a target machine and batch volume. Review the adapted ingredients and generated native program.
+2. Select a target machine or equipment profile. Adaptation starts with that profile's configured batch size; choose another valid volume if needed. Review the scaled ingredients and any deployment blockers. A planning preview remains available before all machine routing is assigned.
 3. Assign the actual physical compartment for every machine step. An imported recipe does not establish plumbing; unknown mappings block deployment. Infusions, decoction and timed ramps that the native protocol cannot represent also block deployment.
 4. Deploy while the machine is ready at its main menu. The server verifies the stored program; it does not start it.
-5. Open that machine's page, select the installed recipe and confirm Start. Follow the machine's preparation prompts through its physical or mirrored front panel.
-6. Watch progress on the fleet or machine page. The journal imports available retained samples. Finish with notes, a rating, exports and optional analysis.
+5. Open that machine's page, select the installed recipe and confirm Start. Optionally enable AI monitoring for this brew in that confirmation. Follow the machine's preparation prompts through its physical or mirrored front panel.
+6. Watch progress on the fleet or machine page, where you can also enable or disable monitoring for the current brew. The journal imports available retained samples. Open that brew's journal entry for notes, a rating, exports and optional AI result analysis.
 
 A successful HTTP command response means the firmware queued the request. It is not evidence that heating or pumping has begun. An uncertain command delivery is recorded and never automatically retried. Current standalone firmware has no dedicated pause/resume or live recipe/temperature override; the hub and AI do not fabricate those operations.
 

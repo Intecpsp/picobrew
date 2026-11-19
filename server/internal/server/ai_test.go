@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
@@ -39,8 +38,7 @@ func TestAIMonitorIsOptInBoundedAndStoresAdvice(t *testing.T) {
 	defer provider.Close()
 	s.aiClient = ai.New()
 	s.aiClient.OpenAIURL = provider.URL
-	last := map[string]time.Time{}
-	s.monitorTick(context.Background(), last)
+	s.monitorTick(context.Background())
 	if calls != 0 {
 		t.Fatal("monitor called provider before configuration")
 	}
@@ -48,7 +46,7 @@ func TestAIMonitorIsOptInBoundedAndStoresAdvice(t *testing.T) {
 	if status != 200 {
 		t.Fatalf("settings %d %s", status, p)
 	}
-	s.monitorTick(context.Background(), last)
+	s.monitorTick(context.Background())
 	if calls != 0 {
 		t.Fatal("monitor ran without opt-in")
 	}
@@ -56,8 +54,21 @@ func TestAIMonitorIsOptInBoundedAndStoresAdvice(t *testing.T) {
 	if status != 200 {
 		t.Fatalf("settings %d %s", status, p)
 	}
-	s.monitorTick(context.Background(), last)
-	s.monitorTick(context.Background(), last)
+	s.monitorTick(context.Background())
+	if calls != 0 {
+		t.Fatal("legacy global flag enabled monitoring without consent for this brew")
+	}
+	status, p = request(t, c, "GET", h.URL+"/api/v1/devices/busy/ai-monitor", csrf, nil, nil)
+	var current aiMonitorStatus
+	if status != 200 || json.Unmarshal(p, &current) != nil || current.CurrentBrewID == "" || !current.Configured || current.Enabled {
+		t.Fatalf("current brew: %d %s", status, p)
+	}
+	status, p = request(t, c, "PUT", h.URL+"/api/v1/devices/busy/ai-monitor", csrf, map[string]any{"enabled": true, "brew_id": current.CurrentBrewID}, nil)
+	if status != 200 {
+		t.Fatalf("explicit brew consent: %d %s", status, p)
+	}
+	s.monitorTick(context.Background())
+	s.monitorTick(context.Background())
 	if calls != 1 {
 		t.Fatalf("five minute monitor limit did not hold: %d calls", calls)
 	}
@@ -66,7 +77,7 @@ func TestAIMonitorIsOptInBoundedAndStoresAdvice(t *testing.T) {
 		t.Fatalf("advice %d %s", status, p)
 	}
 	var out []adviceRecord
-	if err := json.Unmarshal(p, &out); err != nil || len(out) != 1 || out[0].Status != "complete" || out[0].Text == "" {
+	if err := json.Unmarshal(p, &out); err != nil || len(out) != 1 || out[0].Status != "complete" || out[0].Text == "" || out[0].BrewID != current.CurrentBrewID {
 		t.Fatalf("missing visible advice: %s (%v)", p, err)
 	}
 	// A monitor tick does not issue stop/encoder/temperature commands.
