@@ -50,9 +50,9 @@ choose where that launch stores its database.
 
 Open **http://127.0.0.1:8080**. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart.
 
-On **Overview**, click **Add machine**, choose **Pico standalone firmware**, select S or Pro, and enter the brewer's current URL and the API key provisioned with its firmware. The server must be able to reach that URL. For the existing Pico project, the provisioned key is in `~/Code/pico-pro-source/private/api.key`; enter it in the local browser form, not in a chat or a recipe. The hub encrypts it at rest and does not send it back to the browser.
+On **Overview**, click **Add machine**, choose **Pico standalone firmware**, select S or Pro, and enter the brewer's current URL and the API key provisioned with its firmware. The server must be able to reach that URL. Use the key file saved when that brewer was provisioned; see the [API key provisioning guide](../firmware/pico-s-pro/modified/docs/standalone-provisioning.md). Enter it in the local browser form. The hub encrypts it at rest and does not send it back to the browser.
 
-The address `http://picobrew.s.local` can be used when your Mac resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
+The address `http://picobrew.s.local` can be used when the server host resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
 
 Edit or remove a connection from its Overview card or its individual machine page, including while it is offline. **Edit connection** manages the Hub registration; **Brewer preferences** changes settings on an online brewer. Removing a registration retains its archived Hub brew history. Active-operation restrictions still apply. See [machine connections and API keys](docs/device-connections.md).
 
