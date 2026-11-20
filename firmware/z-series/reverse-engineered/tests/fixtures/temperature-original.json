@@ -1,0 +1,370 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "function": "0x400d6ac0",
+  "full_execution_cases": 16384,
+  "execution_csv_sha256": "ff435af77081b29b8fcc408abdfd3a5d5bcfa0089f25ad37a413366c996bff06",
+  "scope": "Original Xtensa instruction body; explicit SDK arithmetic/log/diagnostic boundaries; register-window prologue and return excluded",
+  "cases": [
+    {
+      "sensor_type": 0,
+      "raw_adc": 0,
+      "kelvin": 189.9626068982205
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 1,
+      "kelvin": 189.9626068982205
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 14,
+      "kelvin": 189.9626068982205
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 15,
+      "kelvin": 189.9626068982205
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 16,
+      "kelvin": 190.8700786731011
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 100,
+      "kelvin": 219.53089334458534
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 250,
+      "kelvin": 236.66411838132294
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 512,
+      "kelvin": 252.28069517902708
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 1024,
+      "kelvin": 270.84136434503216
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 1536,
+      "kelvin": 284.954918270796
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 2048,
+      "kelvin": 298.1630782740449
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 2560,
+      "kelvin": 312.3582179663092
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 3072,
+      "kelvin": 330.0766560004978
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 3584,
+      "kelvin": 358.6870536027745
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 4000,
+      "kelvin": 435.10669944699856
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 4093,
+      "kelvin": 766.7426442558176
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 4094,
+      "kelvin": 883.320635694677
+    },
+    {
+      "sensor_type": 0,
+      "raw_adc": 4095,
+      "kelvin": 883.320635694677
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 0,
+      "kelvin": 205.61791395178602
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 1,
+      "kelvin": 205.61791395178602
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 14,
+      "kelvin": 205.61791395178602
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 15,
+      "kelvin": 205.61791395178602
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 16,
+      "kelvin": 206.40421149439618
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 100,
+      "kelvin": 231.1321930754475
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 250,
+      "kelvin": 245.8333115979632
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 512,
+      "kelvin": 259.18870533389503
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 1024,
+      "kelvin": 275.01006862665207
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 1536,
+      "kelvin": 287.0031326007125
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 2048,
+      "kelvin": 298.19664273641445
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 2560,
+      "kelvin": 310.19263778639197
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 3072,
+      "kelvin": 325.11395780165265
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 3584,
+      "kelvin": 349.07573872449916
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 4000,
+      "kelvin": 412.1587453913415
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 4093,
+      "kelvin": 666.3826795428524
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 4094,
+      "kelvin": 747.7537230283228
+    },
+    {
+      "sensor_type": 1,
+      "raw_adc": 4095,
+      "kelvin": 747.7537230283228
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 0,
+      "kelvin": 190.3201385384312
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 1,
+      "kelvin": 190.3201385384312
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 14,
+      "kelvin": 190.3201385384312
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 15,
+      "kelvin": 190.3201385384312
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 16,
+      "kelvin": 191.22287719976637
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 100,
+      "kelvin": 219.74616908355873
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 250,
+      "kelvin": 236.81053613812122
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 512,
+      "kelvin": 252.37445767970945
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 1024,
+      "kelvin": 270.88597269006436
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 1536,
+      "kelvin": 284.9722923544046
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 2048,
+      "kelvin": 298.16306493617776
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 2560,
+      "kelvin": 312.3483213389168
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 3072,
+      "kelvin": 330.06723613855524
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 3584,
+      "kelvin": 358.70822470139814
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 4000,
+      "kelvin": 435.38450300062027
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 4093,
+      "kelvin": 770.7353732874718
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 4094,
+      "kelvin": 889.5265340879648
+    },
+    {
+      "sensor_type": 2,
+      "raw_adc": 4095,
+      "kelvin": 889.5265340879648
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 0,
+      "kelvin": 236.40174848085096
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 1,
+      "kelvin": 236.40174848085096
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 14,
+      "kelvin": 236.40174848085096
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 15,
+      "kelvin": 236.40174848085096
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 16,
+      "kelvin": 237.40077486650193
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 100,
+      "kelvin": 269.2611760636234
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 250,
+      "kelvin": 288.6179997427764
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 512,
+      "kelvin": 306.4791409841015
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 1024,
+      "kelvin": 327.98659109883994
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 1536,
+      "kelvin": 344.54727617051816
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 2048,
+      "kelvin": 360.2084335750415
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 2560,
+      "kelvin": 377.21585320307884
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 3072,
+      "kelvin": 398.7001875851247
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 3584,
+      "kelvin": 433.9877294665711
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 4000,
+      "kelvin": 531.8006761621214
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 4093,
+      "kelvin": 1015.4959188256846
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 4094,
+      "kelvin": 1209.7118436472847
+    },
+    {
+      "sensor_type": 3,
+      "raw_adc": 4095,
+      "kelvin": 1209.7118436472847
+    }
+  ]
+}

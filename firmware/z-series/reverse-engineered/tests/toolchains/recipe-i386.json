@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "purpose": "Optional 32-bit host acceptance of the actual selected JSON library; not an ESP32 toolchain",
+  "packages": [
+    {
+      "name": "lib32gcc-14-dev",
+      "version": "14.2.0-19",
+      "url": "https://deb.debian.org/debian/pool/main/g/gcc-14/lib32gcc-14-dev_14.2.0-19_amd64.deb",
+      "bytes": 2418848,
+      "sha256": "d43f9b0990676e3ef534267fe018285daa2127d1ffa05a344886af6777950d2f"
+    },
+    {
+      "name": "lib32gcc-s1",
+      "version": "14.2.0-19",
+      "url": "https://deb.debian.org/debian/pool/main/g/gcc-14/lib32gcc-s1_14.2.0-19_amd64.deb",
+      "bytes": 88400,
+      "sha256": "aa7674a786d58a1efaacb3ce377c06a2d3153c1fa7360b08375c7dd67c90c3fe"
+    },
+    {
+      "name": "lib32stdc++-14-dev",
+      "version": "14.2.0-19",
+      "url": "https://deb.debian.org/debian/pool/main/g/gcc-14/lib32stdc++-14-dev_14.2.0-19_amd64.deb",
+      "bytes": 1068908,
+      "sha256": "31fce620e4869f09b7c10c64dcd59d904bf94d7ef62f458599e768853534d692"
+    },
+    {
+      "name": "lib32stdc++6",
+      "version": "14.2.0-19",
+      "url": "https://deb.debian.org/debian/pool/main/g/gcc-14/lib32stdc++6_14.2.0-19_amd64.deb",
+      "bytes": 745160,
+      "sha256": "326011247094e9a5e5b7dd431b67ccf6dddfd9c4ee5078a8d1a15661883791c2"
+    },
+    {
+      "name": "libc6-dev-i386",
+      "version": "2.41-12+deb13u4",
+      "url": "https://deb.debian.org/debian/pool/main/g/glibc/libc6-dev-i386_2.41-12+deb13u4_amd64.deb",
+      "bytes": 1429124,
+      "sha256": "703dfda170c766dd82986f12b6494fb4c8f51f2ab93bb214d0be02c69e4e7869"
+    },
+    {
+      "name": "libc6-i386",
+      "version": "2.41-12+deb13u4",
+      "url": "https://deb.debian.org/debian/pool/main/g/glibc/libc6-i386_2.41-12+deb13u4_amd64.deb",
+      "bytes": 2539076,
+      "sha256": "50c1653ce29519e1fcd8742f2c67f5edad8d4c3aed3d1ffbea2b7c3497a809d2"
+    }
+  ],
+  "qemu": {
+    "url": "https://deb.debian.org/debian/pool/main/q/qemu/qemu-user_10.0.13+ds-0+deb13u1_amd64.deb",
+    "bytes": 71089852,
+    "sha256": "ca6ede739327a20ae5a3498230c8a3a9a072c586e131bc6bcc1201eb1725e336",
+    "member": "./usr/bin/qemu-i386",
+    "binary_sha256": "3378bb95493e33dc6cb215a8d89c4aeb58d12201b817413a4c0449ffa5abb443"
+  },
+  "compiler_major": 14
+}

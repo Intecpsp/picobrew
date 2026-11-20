@@ -1,0 +1,36 @@
+﻿.options {
+  max-width: 800px;
+  display: flex;
+  flex-flow: row wrap;
+  align-items: baseline;
+  justify-content: center;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid #ddd;
+  margin: 1rem auto;
+}
+.space-out {
+  margin: .5rem 1rem;
+  height: 25px;
+  display: flex;
+  align-items: center;
+}
+
+button {
+  display: block
+}
+
+input {
+  height: 20px;
+}
+
+input[type=checkbox] {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  margin: 0 .5rem;
+}
+
+#z-state-json {
+  overflow-wrap: break-word;
+  font-size: 13px;
+}

@@ -1,0 +1,66 @@
+{
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "sources": [
+    {
+      "source": "src/display.cpp",
+      "source_sha256": "0f92a8cccaee3fa0195ee983faf3f111fb128490f7b95e4f1b417cafc088c888",
+      "object_sha256": "41b77dc9dc34e94f5e8efd6cb659e965b0fb75c49f643e8d519cf70a263229f5",
+      "object_bytes": 14540
+    },
+    {
+      "source": "src/display_fonts.cpp",
+      "source_sha256": "7b93fe8aebea9be365631da0ae120fc00b29eaf6ca296e6cec612e02f1d9114b",
+      "object_sha256": "a391dad4e0694653cd78ee20ed6506355f435c757a4f7c39026155eb8e841788",
+      "object_bytes": 98572
+    },
+    {
+      "source": "src/display_text.cpp",
+      "source_sha256": "1bbf504231346f3cdddd3725bcf7cad272cf7affa091feeb813acf7d849072d7",
+      "object_sha256": "d78a359eef681737f21e53407704e1e6a4294a8b317b50cd0b5d38540e83bef1",
+      "object_bytes": 11628
+    },
+    {
+      "source": "platform/esp32/display_platform.cpp",
+      "source_sha256": "cab1c7422a752e4cd231e310bb9ec4e5325766474fae70831711af3546d73164",
+      "object_sha256": "b6d6d9724c06f407119186a6aa3601b41d9df78ede91e0b6a0d9363c578323e9",
+      "object_bytes": 5484
+    },
+    {
+      "source": "src/display_effects.cpp",
+      "source_sha256": "f88fa5aebc708678f27c768bdaf1b3caf9dbc54fe3bfbf0a846de87a58af543e",
+      "object_sha256": "912d48ba8589566e1036181d4ec2319f5d29715d68b435e989f6e773fa32b96c",
+      "object_bytes": 11816
+    }
+  ],
+  "flags": [
+    "-std=gnu++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "owned_header_sha256": {
+    "include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
+    "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
+    "include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
+    "include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3"
+  }
+}

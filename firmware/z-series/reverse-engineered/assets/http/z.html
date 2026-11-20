@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z Program Maker</title>
+    <link rel="stylesheet" href="z.css">
+  </head>
+  <body>
+    <div class="navbar">
+      Z Program Maker
+      <a href="help.html">Help</a>
+    </div>
+    
+    <div class="z" id="z-contain">
+      <h1>Z Program Maker</h1>
+
+      <div class="z-head">
+        <input id="z-json" name="z-json" type="file" onchange="handleInputFileEvent(event)" />
+        <label id="drop-area" for="z-json">IMPORT</label>
+        <button class="btn" onclick="download()">EXPORT</button>
+        <button class="btn" onclick="setDefault()">SAMPLE</button>
+        <button class="btn" onclick="pushToZ()">PUSH TO Z</button>
+
+        <div>
+          <div id="z-error" class="alert">An Error Occurred</div>
+          <div id="z-conf"  class="alert">Success</div>
+        </div>
+
+      </div>
+      
+      <div class="z-head">
+        <div class="flex">
+          <span>Recipe Name:</span>
+          <input id="z-rec" type="text" placeholder="Recipe Name" maxlength="20">
+        </div>
+        <div class="flex">
+          <span>Units:</span>
+          <select id="z-unit" onchange="updateUnits(this.selectedIndex)"><option value="0">Metric</option><option value="1">Imperial</option></select>
+        </div>
+        <div class="flex">
+          <span>Use PicoPak Adjunct Locations: </span>
+          <input id="z-pak" type="checkbox">
+        </div>
+      </div>
+
+      <div class="ct" id="step-contain">
+      </div>
+      
+      <div>
+        <button class="btn" onclick="add()">Add Step</button>
+        <button class="btn" onclick="remove()">Remove Step</button>
+      </div>
+      
+    </div>
+
+    <script src="lib.js"></script>
+    <script src="z.js"></script>
+  </body>
+</html>

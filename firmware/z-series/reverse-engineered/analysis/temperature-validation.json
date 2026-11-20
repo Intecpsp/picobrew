@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "function": "0x400d6ac0",
+  "scope": "Original Xtensa instruction body; explicit SDK arithmetic/log/diagnostic boundaries; register-window prologue and return excluded",
+  "sdk_boundary_implementation": "Java binary64 arithmetic and Math.log; diagnostic calls modeled separately",
+  "instruction_count": 114,
+  "hardware_loop_instructions": 0,
+  "cases": 16384,
+  "sensor_type_domain": [
+    0,
+    3
+  ],
+  "adc_domain": [
+    0,
+    4095
+  ],
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-shared"
+  ],
+  "maximum_absolute_kelvin_error": 0.0,
+  "bit_identical_to_hooked_execution_cases": 16384,
+  "tolerance_kelvin": 2e-12,
+  "execution_csv_sha256": "ff435af77081b29b8fcc408abdfd3a5d5bcfa0089f25ad37a413366c996bff06",
+  "execution_report_sha256": "72c2c574c27aa43c0375c2101ef68f02a5fe204256e67e1394ede6514816043f",
+  "instruction_export_sha256": "1fa49e487a5282be9c0d622ef7fcc99c92b0c603318bfb8b58ca59084d017601",
+  "source_sha256": {
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "src/temperature.cpp": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8",
+    "tools/ghidra/EmulateTemperature.java": "2bf6ffad990e2faa3fb6a655bdbb4296962441f711ebdbdc6902b53bb4907ca8",
+    "tools/validate_temperature.py": "d1870de91f1bd263c6a0ac2666f7f3fcb247b728c5c03d0449fdd0f4edff2c0c"
+  },
+  "sdk_hook_calls": {
+    "__adddf3": 32768,
+    "__divdf3": 32768,
+    "__divsf3": 64,
+    "__extendsfdf2": 64,
+    "__floatsidf": 16384,
+    "__muldf3": 81920,
+    "__subdf3": 16384,
+    "basename": 64,
+    "clock": 64,
+    "diagnostic_log": 64,
+    "log": 16384
+  },
+  "full_cpu_or_hardware_emulation": false,
+  "exact_original_libm_execution": false,
+  "hardware_tested": false
+}

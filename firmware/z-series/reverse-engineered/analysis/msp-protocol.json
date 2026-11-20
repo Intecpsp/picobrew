@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "image_crc_range": {
+    "start_inclusive": "0xc002",
+    "end_exclusive": "0xfc00",
+    "unmapped_byte": 255,
+    "initial_crc": 65535,
+    "polynomial": "0x1021",
+    "reflection": false,
+    "final_xor": 0,
+    "first_matching_segment_wins": true
+  },
+  "embedded_controller_images": [
+    {
+      "role": "production",
+      "descriptor_address": "0x3f425ddc",
+      "expected_application_version": [
+        1,
+        0
+      ],
+      "version_evidence": "0x400dcdc0",
+      "segments": [
+        {
+          "msp_address": "0xc002",
+          "size_bytes": 2812,
+          "esp32_data_address": "0x3f425e4c",
+          "file_offset": 155212,
+          "sha256": "e4f1d8ed65712605c752a22d7ca57cdf44674da9c03c55d7c3ce32feadf99516"
+        },
+        {
+          "msp_address": "0xfbc2",
+          "size_bytes": 52,
+          "esp32_data_address": "0x3f425e18",
+          "file_offset": 155160,
+          "sha256": "6fe4b1fe7a0f047c34c4738a9839fb1702359578133e14ba9993c00f79933844"
+        },
+        {
+          "msp_address": "0xfbfe",
+          "size_bytes": 2,
+          "esp32_data_address": "0x3f425e16",
+          "file_offset": 155158,
+          "sha256": "8ee79c2d2c44c20ec67bad3bf46e78ba3694fc5fa711ebf60d199d16245ddf73"
+        },
+        {
+          "msp_address": "0xc000",
+          "size_bytes": 2,
+          "esp32_data_address": "0x3f425e14",
+          "file_offset": 155156,
+          "sha256": "a3e102ee83ca30627ca2ca5366a60518880baeeff75df970ba4b9fe0d1c1b503"
+        }
+      ],
+      "original_instruction_crc16": "0x5fdb",
+      "stored_crc_bytes_hex": "5fdb",
+      "stored_crc_be16": "0x5fdb"
+    },
+    {
+      "role": "unit-test",
+      "descriptor_address": "0x3f425578",
+      "expected_application_version": [
+        255,
+        255
+      ],
+      "version_evidence": "0x400dd158",
+      "segments": [
+        {
+          "msp_address": "0xc002",
+          "size_bytes": 2013,
+          "esp32_data_address": "0x3f4255fe",
+          "file_offset": 153086,
+          "sha256": "e12e3ebfdb961624e39060688b7779c7595b399bc512d76d19b1428fc7f76d99"
+        },
+        {
+          "msp_address": "0xc7e0",
+          "size_bytes": 10,
+          "esp32_data_address": "0x3f4255f4",
+          "file_offset": 153076,
+          "sha256": "5ae2a5807bafbb031da0643902dceb26202a348be08eda9f00628ff522ede854"
+        },
+        {
+          "msp_address": "0xfbc2",
+          "size_bytes": 52,
+          "esp32_data_address": "0x3f4255c0",
+          "file_offset": 153024,
+          "sha256": "ae81f233b1ad2ecbfb809300740f0b90a1f4226a2a02df810012f4575772216a"
+        },
+        {
+          "msp_address": "0xfbfe",
+          "size_bytes": 2,
+          "esp32_data_address": "0x3f4255be",
+          "file_offset": 153022,
+          "sha256": "6b1dc023a8192c33e1fc4657dc22088542802e97b8d00515dd9da0d41780e67b"
+        },
+        {
+          "msp_address": "0xc000",
+          "size_bytes": 2,
+          "esp32_data_address": "0x3f4255bc",
+          "file_offset": 153020,
+          "sha256": "80f43fce045c843c2a8ad545310f933a3d352a80363b8d2f5a23f567d0cd1e5b"
+        }
+      ],
+      "original_instruction_crc16": "0xc60a",
+      "stored_crc_bytes_hex": "c60a",
+      "stored_crc_be16": "0xc60a"
+    }
+  ],
+  "fixture_case_counts": {
+    "crc_bytes": 2048,
+    "guards": 2050,
+    "responses": 512,
+    "app_packets": 768,
+    "bsl_simple": 10,
+    "program_segments": 96,
+    "erase": 4,
+    "valve": 24,
+    "poll": 28,
+    "image_crc": 2,
+    "setup": 11
+  },
+  "executed_original_functions": 24,
+  "complete_controller_source_reconstructed": false,
+  "hardware_tested": false
+}

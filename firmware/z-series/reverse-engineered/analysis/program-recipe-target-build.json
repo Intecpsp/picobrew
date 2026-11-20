@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "compiler_version": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "flags": [
+    "-std=c++11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-mlongcalls",
+    "-I${COMPONENT}/include",
+    "-I${COMPONENT}/build/dependencies/ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b/src"
+  ],
+  "objects": [
+    {
+      "source": "src/program_recipe.cpp",
+      "source_sha256": "58e41bf1d62e0320b277f68ba99830814b4b8ebe92e95683d23deabc0ad90bf9",
+      "object_name": "program_recipe.o",
+      "object_sha256": "a7b3d0020cb1a3c5c33e697507373a6f08a453f80e08edf8b24c188783a9b145",
+      "object_bytes": 16116
+    },
+    {
+      "source": "adapters/arduinojson/program_recipe_json.cpp",
+      "source_sha256": "9e3a6a2a4d124297ef66dfba569881f1d7180233a55f6749e057afd40dc6c6d3",
+      "object_name": "program_recipe_json.o",
+      "object_sha256": "87e0dbc4fa3264dd779954575ba224ecaa6ecab45a9cf276828b8035201d41ee",
+      "object_bytes": 142852
+    }
+  ],
+  "dependency_pin_sha256": "08d434f5bac5a02c4789761e6e24163d8dfc3246ba2ba78ec96dc0847fbc364e",
+  "hardware_tested": false,
+  "complete_esp32_firmware_rebuild": false
+}

@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "name": "ArduinoJson",
+  "version": "6.21.6",
+  "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+  "repository": "https://github.com/bblanchon/ArduinoJson",
+  "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+  "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+  "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+  "archive_bytes": 295192,
+  "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+  "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+  "license": "MIT",
+  "source_file_count": 135,
+  "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+}
