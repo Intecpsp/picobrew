@@ -5,7 +5,7 @@ for (const viewport of [
   { name: 'desktop', width: 1280, height: 900 },
   { name: 'mobile', width: 390, height: 844 },
 ]) {
-  test(`firmware upload, GitHub source, and machine readiness work on ${viewport.name}`, async ({
+  test(`firmware source, version selection, and on-demand downloads work on ${viewport.name}`, async ({
     page,
   }) => {
     await page.setViewportSize(viewport)
@@ -68,13 +68,16 @@ for (const viewport of [
       if (path.endsWith('/settings')) {
         if (request.method() === 'PUT') source = request.postDataJSON()
         result = source
-      } else if (path.endsWith('/github/import')) {
-        imports.push(request.postDataJSON())
+      } else if (path.endsWith('/updates')) {
+        if (request.method() === 'POST') githubChecks++
+        result = {
+          releases: [{ ...candidate, archive_sha256: githubPackage.id, kind: 'standalone' }],
+          notices: [],
+        }
+      } else if (path.endsWith('/stage')) {
+        imports.push(path)
         packages = [githubPackage]
         result = githubPackage
-      } else if (path.endsWith('/github')) {
-        githubChecks++
-        result = { ...source, commit, packages: [candidate] }
       } else if (path.endsWith('/download')) {
         await route.fulfill({
           contentType: 'application/zip',
@@ -122,64 +125,12 @@ for (const viewport of [
 
     await page.goto('/#/settings/firmware')
     const firmware = page.getByRole('region', { name: 'Firmware', exact: true })
-    await expect(firmware.getByRole('button', { name: 'Check GitHub' })).toBeEnabled()
-    expect(githubChecks).toBe(0)
     await expect(firmware.getByLabel('GitHub repository')).toHaveValue(source.repository)
     await firmware.getByLabel('GitHub repository').fill('brew-owner/machine-firmware')
     await firmware.getByLabel('Branch or tag').fill('stable')
     await firmware.getByRole('button', { name: 'Save source' }).click()
-    await expect(firmware.getByRole('button', { name: 'Check GitHub' })).toBeEnabled()
-    expect(source).toEqual({ repository: 'brew-owner/machine-firmware', ref: 'stable' })
-    expect(githubChecks).toBe(0)
-    await firmware.getByRole('button', { name: 'Check GitHub' }).click()
-    const github = firmware.getByRole('region', { name: 'Packages on GitHub' })
-    await expect(github.getByText(/Pico S/)).toBeVisible()
-    await github.getByRole('button', { name: 'Fetch to Hub' }).click()
-    const stored = firmware.getByRole('region', { name: 'Packages in this Hub' })
-    await expect(stored.getByRole('article', { name: 'Pico S 1.1.0' })).toBeVisible()
-    expect(imports).toEqual([
-      { repository: 'brew-owner/machine-firmware', commit, model: 'pico-s' },
-    ])
-    await firmware.getByLabel('Upload firmware package (.zip)').setInputFiles({
-      name: 'pico-pro.zip',
-      mimeType: 'application/zip',
-      buffer: Buffer.from('complete fixture ZIP'),
-    })
-    await firmware.getByRole('button', { name: 'Upload package', exact: true }).click()
-    const uploaded = stored.getByRole('article', { name: 'Pico Pro 1.1.0' })
-    await expect(uploaded.getByText('Uploaded package')).toBeVisible()
-    expect(uploads).toBe(1)
-    const fetched = stored.getByRole('article', { name: 'Pico S 1.1.0' })
-    await fetched.getByText('Package details', { exact: true }).click()
-    await expect(fetched.getByText(candidate.binary_sha256, { exact: true })).toBeVisible()
-    // Success notifications dismiss after six seconds; keep the package details unobstructed.
-    await expect(
-      page.getByRole('status').filter({
-        has: page.getByRole('button', { name: 'Dismiss notification', exact: true }),
-      })
-    ).toHaveCount(0, { timeout: 10000 })
-    await firmware.screenshot({
-      path: test.info().outputPath(`firmware-settings-${viewport.name}.png`),
-    })
-    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
-      true
-    )
-    const downloaded = page.waitForEvent('download')
-    await fetched.getByRole('button', { name: 'Download package' }).click()
-    expect((await downloaded).suggestedFilename()).toBe('pico-s-1.1.0.zip')
-    await uploaded.getByRole('button', { name: 'Remove', exact: true }).click()
-    await page
-      .getByRole('dialog', { name: 'Remove Pico Pro 1.1.0?' })
-      .getByRole('button', { name: 'Remove package' })
-      .click()
-    await expect(uploaded).toHaveCount(0)
-    await page.reload()
-    await expect(firmware.getByLabel('GitHub repository')).toHaveValue(
-      'brew-owner/machine-firmware'
-    )
-    await expect(firmware.getByLabel('Branch or tag')).toHaveValue('stable')
-    expect(githubChecks).toBe(1)
-
+    await expect.poll(() => source.ref).toBe('stable')
+    await expect(firmware.getByText('Packages on GitHub')).toHaveCount(0)
     await page.goto(`/#/devices/${machine.id}`)
     await page.getByRole('button', { name: /^Firmware / }).click()
     const dialog = page.getByRole('dialog', { name: 'Machine firmware' })
@@ -187,17 +138,21 @@ for (const viewport of [
     await expect(dialog.getByRole('status')).toHaveText(
       'Network installation is not available yet. It requires an initial USB recovery setup that is still being developed.'
     )
-    await expect(dialog.getByRole('article', { name: 'Pico S 1.1.0' })).toBeVisible()
-    await expect(dialog.getByRole('article', { name: 'Pico Pro 1.1.0' })).toHaveCount(0)
-    await expect(dialog.getByRole('button', { name: /^Install/ })).toHaveCount(0)
+    await expect(dialog.getByLabel('Firmware version')).toHaveValue(githubPackage.id)
+    await dialog.getByRole('button', { name: 'Check for Updates' }).click()
+    await expect.poll(() => githubChecks).toBe(1)
+    expect(imports).toHaveLength(0)
+    const download = page.waitForEvent('download')
+    await dialog.getByRole('button', { name: 'Download', exact: true }).click()
+    expect((await download).suggestedFilename()).toBe('pico-s-1.1.0.zip')
+    expect(imports).toHaveLength(1)
+    await expect(dialog.getByRole('button', { name: 'Install' })).toHaveCount(0)
     await dialog.screenshot({
       path: test.info().outputPath(`firmware-machine-${viewport.name}.png`),
     })
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
       true
     )
-    await dialog.getByRole('button', { name: 'Manage firmware packages' }).click()
-    await expect(page).toHaveURL(/#\/settings\/firmware$/)
     expect(errors).toEqual([])
   })
 }

@@ -49,6 +49,9 @@ var endpoints = []endpoint{
 	{"GET", "/catalog/{id}", "Read an immutable source entry and conversion provenance", nil},
 	{"POST", "/catalog/{id}/copy", "Create an independent editable library copy", map[string]any{}},
 	{"GET", "/catalog/{id}/source", "Download the exact original source JSON", nil},
+	{"GET", "/firmware/updates", "Read the daily version check and registered machine update notices", nil},
+	{"POST", "/firmware/updates", "Refresh firmware version metadata now", nil},
+	{"POST", "/firmware/releases/{packageID}/stage", "Download and verify a selected release or reuse its cached archive", nil},
 	{"GET", "/firmware/settings", "Read the saved GitHub firmware source", nil},
 	{"PUT", "/firmware/settings", "Save the public GitHub repository and optional revision", map[string]any{"repository": "jeffreydwalter/picobrew-pico-pro-firmware", "ref": ""}},
 	{"GET", "/firmware/github", "Inspect available firmware packages at one resolved GitHub commit", nil},
@@ -305,7 +308,7 @@ func addFirmwareSchemas(values schemaMap) {
 	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
 	values["FirmwareSettingsInput"] = schemaObject(sourceProperties, "repository")
 	values["FirmwareInstallInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "package_id": hash, "confirm": schemaMap{"type": "boolean", "enum": []bool{true}}}, "device_uid", "package_id", "confirm")
-	values["FirmwareInstallReceipt"] = schemaObject(schemaMap{"device_uid": stringSchema(), "model": stringSchema(), "package_id": hash, "started": stringSchema(), "state": stringSchema(), "message": stringSchema()}, "device_uid", "model", "package_id", "started", "state", "message")
+	values["FirmwareInstallReceipt"] = schemaObject(schemaMap{"device_uid": stringSchema(), "model": stringSchema(), "package_id": hash, "started": stringSchema(), "stage": stringSchema(), "state": stringSchema(), "message": stringSchema()}, "device_uid", "model", "package_id", "started", "state", "message")
 	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model, "display_variant": displayVariant}, "repository", "commit", "model")
 	values["FirmwareHardwareInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant}, "device_uid", "display_variant")
 	values["FirmwareHardware"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant, "verified_at": schemaMap{"type": "string", "format": "date-time"}}, "device_uid", "display_variant", "verified_at")
@@ -322,7 +325,7 @@ func addFirmwareSchemas(values schemaMap) {
 	required := []string{"model", "model_family", "firmware_version", "binary_sha256", "binary_bytes"}
 	values["FirmwareCandidate"] = schemaObject(candidate, required...)
 	values["FirmwareProvenance"] = schemaObject(schemaMap{
-		"source":     schemaMap{"type": "string", "enum": []string{"upload", "github"}},
+		"source":     schemaMap{"type": "string", "enum": []string{"upload", "github", "library"}},
 		"repository": stringSchema(),
 		"commit":     commit,
 	}, "source")
@@ -336,6 +339,17 @@ func addFirmwareSchemas(values schemaMap) {
 	properties["validation"] = schemaMap{"type": "string", "enum": []string{"passed"}, "description": "Package structure, sizes, hashes and image bounds passed. This is not a publisher signature, physical hardware identification, or installation result."}
 	properties["provenance"] = schemaRef("FirmwareProvenance")
 	values["FirmwarePackage"] = schemaObject(properties, append(required, "id", "package_bytes", "created_at", "validation", "provenance")...)
+	releaseProps := schemaMap{}
+	for k, v := range candidate {
+		releaseProps[k] = v
+	}
+	releaseProps["model"] = stringSchema()
+	releaseProps["model_family"] = stringSchema()
+	releaseProps["kind"] = stringSchema()
+	releaseProps["source_commit"] = commit
+	releaseProps["archive_sha256"] = hash
+	values["FirmwareRelease"] = schemaObject(releaseProps, append(append([]string{}, required...), "kind", "source_commit", "archive_sha256")...)
+	values["FirmwareUpdates"] = schemaObject(schemaMap{"checked": schemaMap{"type": "string", "format": "date-time"}, "releases": schemaArray(schemaRef("FirmwareRelease")), "notices": schemaArray(schemaObject(schemaMap{"name": stringSchema(), "version": stringSchema(), "device_id": stringSchema()}, "name", "version", "device_id"))}, "releases", "notices")
 	values["FirmwareCatalog"] = schemaObject(schemaMap{"repository": stringSchema(), "ref": stringSchema(), "commit": commit, "packages": schemaArray(schemaRef("FirmwareCandidate"))}, "repository", "ref", "commit", "packages")
 	values["MachineFirmware"] = schemaObject(schemaMap{
 		"device_id":                      stringSchema(),
@@ -584,6 +598,10 @@ func successResponses(e endpoint) schemaMap {
 		schema = schemaArray(schemaRef("Ingredient"))
 	case "/firmware/settings":
 		schema = schemaRef("FirmwareSettings")
+	case "/firmware/updates":
+		schema = schemaRef("FirmwareUpdates")
+	case "/firmware/releases/{packageID}/stage":
+		schema = schemaRef("FirmwarePackage")
 	case "/firmware/github":
 		schema = schemaRef("FirmwareCatalog")
 	case "/firmware/packages":

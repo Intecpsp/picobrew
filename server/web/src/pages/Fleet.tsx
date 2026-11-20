@@ -13,7 +13,7 @@ import {
   KeyRound,
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
-import type { BrewDetail, Device } from '../types'
+import type { BrewDetail, Device, FirmwareUpdates } from '../types'
 import {
   Badge,
   Button,
@@ -25,6 +25,7 @@ import {
   SectionHeading,
 } from '../components/ui'
 import { DeviceDialog, RemoveDeviceDialog } from '../components/DeviceDialogs'
+import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { SensorHistory } from '../components/SensorHistory'
 import { isAccessory } from '../lib/capabilities'
 import { Sparkline, TemperatureChart } from '../components/Charts'
@@ -33,6 +34,11 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
   const hub = useHub()
   const { devices, brews, recipes, unit, navigate, loading } = hub
   const [editing, setEditing] = useState<Device | 'new' | null>(addMachine ? 'new' : null)
+  const updates = useResource<FirmwareUpdates>(
+    devices.some((d) => d.adapter === 'pico-standalone') ? '/firmware/updates' : null,
+    60000
+  )
+  const [firmwareID, setFirmwareID] = useState('')
   const [removing, setRemoving] = useState<Device | null>(null)
   useEffect(() => {
     if (addMachine) setEditing('new')
@@ -84,6 +90,17 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
           </>
         }
       />
+      {updates.data?.notices?.map((n) => (
+        <p key={n.device_id} role="status">
+          {n.name} has firmware {n.version} available.{' '}
+          <Button variant="secondary" onClick={() => setFirmwareID(n.device_id)}>
+            View firmware
+          </Button>
+        </p>
+      ))}
+      {firmwareID && (
+        <MachineFirmwareDialog deviceID={firmwareID} onClose={() => setFirmwareID('')} />
+      )}
       <div className="overview-stats">
         <Metric
           label="Machines connected"

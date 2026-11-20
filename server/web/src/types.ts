@@ -315,6 +315,15 @@ export interface FirmwareCandidate {
   binary_sha256: string
   binary_bytes: number
 }
+export interface FirmwareRelease extends FirmwareCandidate {
+  archive_sha256: string
+  kind: 'historical' | 'standalone' | 'reference'
+}
+export interface FirmwareUpdates {
+  checked?: string
+  releases: FirmwareRelease[]
+  notices: { device_id: string; name: string; version: string }[]
+}
 export interface FirmwareCatalog extends FirmwareSettings {
   commit: string
   packages: FirmwareCandidate[]
@@ -325,7 +334,7 @@ export interface FirmwarePackage extends FirmwareCandidate {
   created_at: string
   validation: 'passed'
   provenance: {
-    source: 'upload' | 'github'
+    source: 'upload' | 'github' | 'library'
     repository?: string
     commit?: string
   }

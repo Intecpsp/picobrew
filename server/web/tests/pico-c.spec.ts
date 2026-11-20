@@ -140,25 +140,17 @@ for (const viewport of [
         const path = new URL(request.url()).pathname
         if (path.endsWith('/settings')) {
           await route.fulfill({ json: { repository, ref: '' } })
-        } else if (path.endsWith('/github/import')) {
-          const selection = request.postDataJSON()
-          expect(request.method()).toBe('POST')
-          expect(request.headers()['x-csrf-token']).toBeTruthy()
-          expect(selection).toEqual({
-            repository,
-            commit,
-            model: 'pico-c',
-            display_variant: selection.display_variant,
+        } else if (path.endsWith('/updates')) {
+          await route.fulfill({
+            json: {
+              releases: choices.map((p) => ({ ...p, archive_sha256: p.id, kind: 'standalone' })),
+              notices: [],
+            },
           })
-          const selected = choices.find(
-            (item) => item.display_variant === selection.display_variant
-          )
-          expect(selected).toBeDefined()
-          imports.push(selection)
-          packages.push(selected!)
-          await route.fulfill({ json: selected })
-        } else if (path.endsWith('/github')) {
-          await route.fulfill({ json: { repository, ref: '', commit, packages: choices } })
+        } else if (path.endsWith('/stage')) {
+          const picked = choices.find((p) => path.includes(p.id))!
+          packages.push(picked)
+          await route.fulfill({ json: picked })
         } else if (path.endsWith('/packages')) {
           await route.fulfill({ json: packages })
         } else if (path.endsWith('/download')) {
@@ -206,39 +198,6 @@ for (const viewport of [
         } else throw new Error(`Unexpected machine request: ${request.method()} ${path}`)
         await route.fulfill({ json: result })
       })
-
-      await page.goto('/#/settings/firmware')
-      const manager = page.getByRole('region', { name: 'Firmware', exact: true })
-      await manager.getByRole('button', { name: 'Check GitHub' }).click()
-      const catalog = manager.getByRole('region', { name: 'Packages on GitHub' })
-      for (const variant of [other, controller]) {
-        const name = `Pico C · ${variant.toUpperCase()} 1.2.0`
-        await catalog
-          .getByRole('article', { name })
-          .getByRole('button', { name: 'Fetch to Hub' })
-          .click()
-        await expect(
-          manager
-            .getByRole('region', { name: 'Packages in this Hub' })
-            .getByRole('article', { name })
-        ).toBeVisible()
-      }
-      expect(imports).toEqual(
-        [other, controller].map((display_variant) => ({
-          repository,
-          commit,
-          model: 'pico-c',
-          display_variant,
-        }))
-      )
-      while (await page.getByRole('button', { name: 'Dismiss notification' }).count())
-        await page.getByRole('button', { name: 'Dismiss notification' }).first().click()
-      await manager.screenshot({
-        path: test.info().outputPath(`c-packages-${controller}-${viewport.name}.png`),
-      })
-      expect(
-        await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
-      ).toBe(true)
 
       await page.goto(`/#/devices/${machine.id}`)
       await expect(page.getByRole('heading', { name: machine.name, exact: true })).toBeVisible()
@@ -308,14 +267,14 @@ for (const viewport of [
       await expect(select).toHaveValue('')
       await expect(check).toBeDisabled()
       await expect(save).toBeDisabled()
-      await expect(dialog.getByRole('article')).toHaveCount(0)
+      await expect(dialog.getByLabel('Firmware version')).toBeDisabled()
       await select.selectOption(other)
       await expect(save).toBeDisabled()
       await check.check()
       await save.click()
       await expect(dialog.getByRole('alert')).toContainText(changed)
       await expect(select).toHaveValue(other)
-      await expect(dialog.getByRole('article')).toHaveCount(0)
+      await expect(dialog.getByLabel('Firmware version')).toBeDisabled()
       expect(verified).toBe('')
 
       // A recorded controller that contradicts the running build is also blocked.
@@ -324,18 +283,15 @@ for (const viewport of [
       await expect(
         dialog.getByText(`Verified hardware: ${other.toUpperCase()}`, { exact: true })
       ).toBeVisible()
-      await expect(dialog.getByRole('article')).toHaveCount(0)
+      await expect(dialog.getByLabel('Firmware version')).toBeDisabled()
       await expect(select).toHaveValue('')
       await expect(check).not.toBeChecked()
       await expect(save).toBeDisabled()
       await select.selectOption(controller)
       await check.check()
       await save.click()
-      const matching = dialog.getByRole('article', {
-        name: `Pico C · ${controller.toUpperCase()} 1.2.0`,
-      })
-      await expect(matching).toBeVisible()
-      await expect(dialog.getByRole('article')).toHaveCount(1)
+      const matching = dialog.getByLabel('Firmware version')
+      await expect(matching).toHaveValue(choices.find((p) => p.display_variant === controller)!.id)
       await expect(dialog.getByRole('button', { name: /^Install/ })).toHaveCount(0)
       expect(observations).toEqual(
         [other, other, controller].map((display_variant) => ({ device_uid: uid, display_variant }))
@@ -345,7 +301,7 @@ for (const viewport of [
         path: test.info().outputPath(`c-verified-${controller}-${viewport.name}.png`),
       })
       const downloaded = page.waitForEvent('download')
-      await matching.getByRole('button', { name: 'Download package' }).click()
+      await dialog.getByRole('button', { name: 'Download', exact: true }).click()
       expect((await downloaded).suggestedFilename()).toBe(`pico-c-${controller}-1.2.0.zip`)
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
@@ -354,7 +310,7 @@ for (const viewport of [
       await page.reload()
       await page.getByRole('button', { name: 'Firmware 1.2.0', exact: true }).click()
       await expect(matching).toBeVisible()
-      await expect(dialog.getByRole('article')).toHaveCount(1)
+      await expect(matching.locator('option')).toHaveCount(1)
       await expect(select).not.toBeVisible()
       expect(observations).toHaveLength(3)
       expect(commands).toHaveLength(1)

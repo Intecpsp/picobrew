@@ -68,9 +68,7 @@ export default function Settings() {
           <div className="settings-description">
             <span className="section-index">04</span>
             <h2>Firmware</h2>
-            <p>
-              Keep machine firmware packages in the Hub. Upload a package or fetch one from GitHub.
-            </p>
+            <p>Choose where the Hub checks for firmware versions.</p>
           </div>
           <div className="settings-fields">
             <FirmwareManager />

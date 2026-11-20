@@ -147,18 +147,7 @@ A cloud host needs a private route to the machines, such as a site VPN. This rel
 
 ## Firmware packages
 
-**Workspace settings → Firmware** accepts a complete firmware ZIP or fetches
-the model-specific image and matching website from GitHub. The default source
-is `jeffreydwalter/picobrew-pico-pro-firmware`; both repository and optional
-branch/tag are editable. GitHub fetches use one immutable commit, and uploaded
-and fetched packages pass the same validation before being saved. Packages can
-be downloaded or removed, and each physical machine's Firmware view shows its
-current version and packages declared for its model.
-
-Package management requires no compiler, Git checkout, or Node runtime on the
-Hub. On an idle Pico S or Pro with OTA-capable firmware and provisioned recovery, choose **Update firmware** in the machine’s Firmware view. See
-[Firmware packages](docs/firmware-packages.md) for the package format, build
-command, source configuration, storage, and API.
+Set the GitHub repository and optional branch in **Workspace settings → Firmware**. The Hub checks for newer versions daily and shows notices on Overview. Open a machine's **Firmware** view to **Check for Updates**, select any available version, and choose **Download** or **Install**. The Hub stages the selected package on demand. Installation requires an idle, eligible Pico S or Pro with provisioned recovery. See the [firmware version and package guide](docs/firmware-packages.md).
 
 ## Live readings and receiver settings
 
