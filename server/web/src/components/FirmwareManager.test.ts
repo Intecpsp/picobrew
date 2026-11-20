@@ -342,3 +342,92 @@ describe('Hub firmware packages', () => {
     expect(screen.queryByRole('button', { name: 'Download package' })).toBeNull()
   })
 })
+
+describe('Pico C firmware variants', () => {
+  it('keeps both controller packages distinct and imports the selected variant', async () => {
+    const user = userEvent.setup()
+    const choices = ['ssd1325', 'ssd1309'].map((display_variant) => ({
+      ...candidate,
+      model: 'pico-c',
+      model_family: 'pico-c',
+      firmware_version: '1.2.0',
+      display_variant,
+    }))
+    fetchMock.mockImplementation(async (url, options) => {
+      if (String(url).endsWith('/firmware/github')) return json({ ...catalog(), packages: choices })
+      if (String(url).endsWith('/firmware/github/import')) {
+        const selected = JSON.parse(String(options?.body))
+        return json({
+          ...uploaded,
+          ...choices.find((item) => item.display_variant === selected.display_variant),
+        })
+      }
+      return response(url, options)
+    })
+    show()
+    await ready()
+    await user.click(screen.getByRole('button', { name: 'Check GitHub' }))
+    const region = await screen.findByRole('region', { name: 'Packages on GitHub' })
+    expect(within(region).getByRole('article', { name: 'Pico C · SSD1325 1.2.0' })).toBeTruthy()
+    const alternate = within(region).getByRole('article', { name: 'Pico C · SSD1309 1.2.0' })
+    await user.click(within(alternate).getByRole('button', { name: 'Fetch to Hub' }))
+    await waitFor(() => expect(calls('/firmware/github/import', 'POST')).toHaveLength(1))
+    expect(JSON.parse(String(calls('/firmware/github/import', 'POST')[0][1]?.body))).toEqual({
+      repository: defaultRepository,
+      commit,
+      model: 'pico-c',
+      display_variant: 'ssd1309',
+    })
+  })
+
+  it('requires an independent controller selection once and never installs firmware', async () => {
+    const user = userEvent.setup()
+    let verified = false
+    fetchMock.mockImplementation(async (url, options) => {
+      if (String(url).endsWith('/devices/c/firmware/hardware')) {
+        verified = true
+        return json({
+          device_uid: 'pinned-c',
+          display_variant: 'ssd1309',
+          verified_at: '2026-11-20T00:00:00Z',
+        })
+      }
+      if (String(url).endsWith('/devices/c/firmware'))
+        return json({
+          device_id: 'c',
+          device_uid: 'pinned-c',
+          model: 'pico-c',
+          current_version: '1.2.0',
+          display_variant: 'ssd1309',
+          verified_display_variant: verified ? 'ssd1309' : '',
+          hardware_verification_required: !verified,
+          install_supported: false,
+          reason: 'Network installation is not available yet.',
+          packages: [],
+        })
+      return response(url, options)
+    })
+    show(createElement(MachineFirmwareDialog, { deviceID: 'c', onClose: close }))
+    const select = await screen.findByLabelText('Verified display controller')
+    expect((select as HTMLSelectElement).value).toBe('')
+    const save = screen.getByRole('button', { name: 'Save verified controller' })
+    expect((save as HTMLButtonElement).disabled).toBe(true)
+    await user.selectOptions(select, 'ssd1309')
+    expect((save as HTMLButtonElement).disabled).toBe(true)
+    await user.click(
+      screen.getByRole('checkbox', {
+        name: /I checked this machine's display controller independently/,
+      })
+    )
+    await user.click(save)
+    await waitFor(() => expect(notify).toHaveBeenCalledWith('Verified display controller saved.'))
+    expect(JSON.parse(String(calls('/devices/c/firmware/hardware', 'PUT')[0][1]?.body))).toEqual({
+      device_uid: 'pinned-c',
+      display_variant: 'ssd1309',
+    })
+    expect(
+      fetchMock.mock.calls.filter(([url]) => /install|commands/.test(String(url)))
+    ).toHaveLength(0)
+    expect(screen.queryByRole('button', { name: /install firmware/i })).toBeNull()
+  })
+})

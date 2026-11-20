@@ -174,7 +174,7 @@ func TestFirmwareModelMissingUnsupportedAndInvalidNeverDefaultToPro(t *testing.T
 	}{
 		{"old unselected", "", "", "", "not_reported", false, true},
 		{"old selected", "pico-s", "", "", "", true, false},
-		{"unsupported", "pico-pro", "pico-c", "pico-c", "unsupported_model", false, false},
+		{"unsupported", "pico-pro", "z", "z-series", "unsupported_model", false, false},
 		{"invalid family", "pico-pro", "pico-s", "z", "invalid_model", false, false},
 		{"incomplete", "", "", "pico-s-pro", "invalid_model", false, false},
 	} {

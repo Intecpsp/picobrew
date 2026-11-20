@@ -9,18 +9,18 @@ import (
 )
 
 func modelControlReady(v domain.DeviceView) bool {
-	return v.Adapter != "pico-standalone" || (v.Model == "pico-s" || v.Model == "pico-pro") && v.ModelError == ""
+	return v.Adapter != "pico-standalone" || device.SupportedModel(v.Model) && v.ModelError == ""
 }
 
 func validateStatusModel(status domain.Status, caps domain.Capabilities) error {
-	model, err := device.ReportedModel(domain.Capabilities{Model: status.Model, ModelName: status.ModelName, ModelFamily: status.ModelFamily})
+	model, err := device.ReportedModel(domain.Capabilities{Model: status.Model, ModelName: status.ModelName, ModelFamily: status.ModelFamily, DisplayVariant: status.DisplayVariant})
 	if err != nil {
 		return err
 	}
-	if model == "" {
+	if model == "" && caps.Model != "pico-c" {
 		return nil
 	} // Older status snapshots omitted identity fields.
-	if model != caps.Model || status.ModelFamily != "" && caps.ModelFamily != "" && status.ModelFamily != caps.ModelFamily || status.ModelName != "" && caps.ModelName != "" && status.ModelName != caps.ModelName {
+	if model != caps.Model || status.ModelFamily != "" && caps.ModelFamily != "" && status.ModelFamily != caps.ModelFamily || status.ModelName != "" && caps.ModelName != "" && status.ModelName != caps.ModelName || model == "pico-c" && status.DisplayVariant != caps.DisplayVariant {
 		return &device.Error{StatusCode: 409, Code: "invalid_model", Message: "The authenticated status and discovery report inconsistent firmware model identities"}
 	}
 	return nil

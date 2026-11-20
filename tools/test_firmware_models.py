@@ -39,12 +39,26 @@ class FirmwareModelRoutingTests(unittest.TestCase):
 
     def test_planned_models_never_dispatch_a_relabelled_s_pro_image(self):
         for action in ("build", "package"):
-            for model in ("pico-c", "z", "zymatic"):
+            for model in ("z", "zymatic"):
                 with self.subTest(action=action, model=model), patch.object(models.subprocess, "run") as run, \
                         contextlib.redirect_stderr(io.StringIO()) as errors:
                     self.assertEqual(models.main([action, "--model", model]), 2)
                     self.assertIn("no implemented custom firmware", errors.getvalue())
                     run.assert_not_called()
+
+    def test_c_uses_recovered_c_source_and_requires_explicit_display(self):
+        selected=models.resolve_model('pico-c')
+        self.assertEqual(selected['family'],'pico-c')
+        for action in ('build','package'):
+            with self.assertRaisesRegex(ValueError,'DISPLAY_VARIANT='):
+                models.make_command(action,selected)
+            for display in ('ssd1325','ssd1309'):
+                command=models.make_command(action,selected,display=display)
+                self.assertIn('MODEL=pico-c',command)
+                self.assertIn('DISPLAY_VARIANT='+display,command)
+                self.assertIn(str(models.ROOT/'firmware/pico-c/modified'),command)
+        with self.assertRaises(ValueError):
+            models.make_command('build',models.resolve_model('pico-s'),display='ssd1309')
 
     def test_unknown_ids_are_rejected_before_dispatch(self):
         with patch.object(models.subprocess, "run") as run, \

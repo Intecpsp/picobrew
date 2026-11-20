@@ -1,0 +1,1213 @@
+{
+  "schema_version": 1,
+  "oem_snapshot_sha256": "e1d747afcb2efa75c7d4656e8d4efef7a1b5d99f10f03bd09ad08fcd86cdbbef",
+  "reused_files": [
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/actuators.c",
+      "source_sha256": "a57463d287d12e6d569436d221ec1fb19376c0b11fa9d08997aae0e2498114f5",
+      "target": "src/actuators.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/application.c",
+      "source_sha256": "a0dccb1c1f770147fffb62a749627d60163dabdd9cbc3914b287de7bf4dba6a8",
+      "target": "src/application.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/control.c",
+      "source_sha256": "a523a11fdf7fa161321cebbd999f3446141de84c534183c430e14c3256ea39ef",
+      "target": "src/control.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/device.c",
+      "source_sha256": "fb6d06c22cfd8fbc40f7b0806dc439d6aa793d3f23f63c240ba31c302bc312e8",
+      "target": "src/device.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/encoder.c",
+      "source_sha256": "63511492b2c214bcddc0c449ab3c9684362fc6346778cf54594d408cb9145cae",
+      "target": "src/encoder.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/api.c",
+      "source_sha256": "149ff9b3789d610e70547b8be97f895481948031a7ec49927b0c88128101a757",
+      "target": "src/network/api.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/network.c",
+      "source_sha256": "772b7bf868f28a4fed55052fc5d2e7f6db4eca4271fb34c2ee53c455dcdb5da1",
+      "target": "src/network/network.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/network_internal.h",
+      "source_sha256": "e20f107a5c7b8f039d42baf7f52ba6e9ad816501ee30f9eb459bfd713f9d7993",
+      "target": "src/network/network_internal.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/still_network.c",
+      "source_sha256": "10bcfdd78f7508c13df06ccdc97e11552ce9240c2ed83710c4ea087cea2cd13f",
+      "target": "src/network/still_network.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/storage.c",
+      "source_sha256": "261281d1226538cc82785559b4d31f226278e157779e41f78bdedf7150f9278d",
+      "target": "src/network/storage.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/text.c",
+      "source_sha256": "4124d72c7d42e84cd9fdceb076b2b3ccc2b51725d83ea4547422c75fde8f0a6b",
+      "target": "src/network/text.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network/update.c",
+      "source_sha256": "5813c93bbddd5a526d972d151b8d0ae216c6761756fc470c09f7480eff8e4844",
+      "target": "src/network/update.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/network_parse.c",
+      "source_sha256": "6bdff53f716413aaf05796413c7647085db5f842ac909d26cb939b312768aeca",
+      "target": "src/network_parse.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/phase.c",
+      "source_sha256": "c2d8f6a70e8588984b41a16c9d031d531448b9679a0669ae740fd59fd8eb79c5",
+      "target": "src/phase.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/pid.c",
+      "source_sha256": "561225e44bf6e9943e4e2f1c8ae6847a847d6739585120e2f0bf24b13e3d36fc",
+      "target": "src/pid.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/recipe.c",
+      "source_sha256": "b1287387a738d8e7127c93e3675163ed9dbae064ff30fd43729d7ab2ad069567",
+      "target": "src/recipe.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/recipe_data.inc",
+      "source_sha256": "139df167c4d11f4d5775b744cfdda56bcd3ed72fcab5b7e9b24c10b3fa522be0",
+      "target": "src/recipe_data.inc",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/recipe_programs.c",
+      "source_sha256": "16781e34326ddede25975c204932925621d6225dfae559893fe14834e80de333",
+      "target": "src/recipe_programs.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/recipe_utilities.c",
+      "source_sha256": "10eea604f8ef6df35320aecfe092739bc3298aad3bcebbd182ae0db9ecbfaac9",
+      "target": "src/recipe_utilities.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/rfid.c",
+      "source_sha256": "f1eb85c0dc73e5b5e264e87728246882b476fe81e9e1d0ac53afd32d68e1237c",
+      "target": "src/rfid.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/sensors.c",
+      "source_sha256": "9c5904ecdb1293862bb2414cc93b3ca1c023a5a92f26b84c4e1105ffa716b414",
+      "target": "src/sensors.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/state.c",
+      "source_sha256": "6c3664bf8e692e43eb453c84d4456f453d2f66efef438b14e7e0acb98c2faf0b",
+      "target": "src/state.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/action_tables.c",
+      "source_sha256": "4bc63c018e36d8dc20727b5551dd3c3733fd52f9e4e39305a168c18736fe522f",
+      "target": "src/ui/action_tables.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/actions.c",
+      "source_sha256": "c455a9b9e7ca79dc7f16c3080ada59dfbe2440f8f4aa8f393b181bfcf5129fec",
+      "target": "src/ui/actions.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/assets.c",
+      "source_sha256": "5cc85b58d3e1b9fe73490dd24eb0dbc522d2926368df4179533f88fe3f32848a",
+      "target": "src/ui/assets.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/context.c",
+      "source_sha256": "a056460b361e6905a81ee88d6fd3cedd1945dadfdb35177c51c0e3c4ee7f1424",
+      "target": "src/ui/context.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/diagnostics.c",
+      "source_sha256": "27801a7bb8564f24ddfed7083f50fefc8ab0c04f3ee50248de3edccfdb194c5a",
+      "target": "src/ui/diagnostics.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/display_driver.c",
+      "source_sha256": "855ae32cdb1ac64180c1284715e88fa00b7a5a1ca680c6679f0a32b57a98a916",
+      "target": "src/ui/display_driver.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/display_helpers.c",
+      "source_sha256": "bebf491db5a71585c11925bfebad2b1a74951ffad8c84415dbddd8448c43a335",
+      "target": "src/ui/display_helpers.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/display_values.c",
+      "source_sha256": "6bca72ae84a83428a299480d6afc2f6f4ed2fd38fb57fddbbf299714305d8425",
+      "target": "src/ui/display_values.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/encoder.c",
+      "source_sha256": "70cba61960ad265cd358c7c9e9a804b383dce2b94b28a8ef3ef5b5f087356c95",
+      "target": "src/ui/encoder.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/encoder_editor.c",
+      "source_sha256": "d0c4310f4e55038d642564419d85e90c6348947d9e523586b6f09d43a0f1a3b4",
+      "target": "src/ui/encoder_editor.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/error_text.inc",
+      "source_sha256": "54b8ffbc444951352a940347e41e311446d822d3464e33dd1d2f80f71c03d3f4",
+      "target": "src/ui/error_text.inc",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/first_rinse_prompt.c",
+      "source_sha256": "b2f6d352c3582eec4c814ac7f499481df783859f4207f233f920dc91d51ebd80",
+      "target": "src/ui/first_rinse_prompt.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/graphics.c",
+      "source_sha256": "fd440f85a6afaf536029b9189f89be0a3bc76c21a6c6b0a14ca6ac1c0675d45a",
+      "target": "src/ui/graphics.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/instruction_screens.c",
+      "source_sha256": "b7a2c4878ff16a504f2c91e527087df41968635ab7e70d42bd995587f075752a",
+      "target": "src/ui/instruction_screens.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/menu_control.c",
+      "source_sha256": "bc9405634da3e33c4386abceb5fbcb92b19c28ed3841be71052ad0bdd51ea4a0",
+      "target": "src/ui/menu_control.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/menu_render.c",
+      "source_sha256": "061d1f7acf72ae7ada63c8da09672d0301b96bda40c243d355f2c516abcfe2df",
+      "target": "src/ui/menu_render.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/menus.c",
+      "source_sha256": "2150d515695e6ced054fa20781e4307fcecc090f32881e01d2c42d1caf2fd2e8",
+      "target": "src/ui/menus.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/pages.c",
+      "source_sha256": "6fc863f9c6300c48a4f3b9f9fbbcc1419a612ce0ee27fbf97709741c8eff457f",
+      "target": "src/ui/pages.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/screens.c",
+      "source_sha256": "2da0498833720b3eef5e750e3500150001dbfe7414440c7f0bcf9f5c0286c7b7",
+      "target": "src/ui/screens.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/scrolling.c",
+      "source_sha256": "538e64954467e5ecdcb76552c6af6c50c2052a379f1e42230ec8aa5d62da12f9",
+      "target": "src/ui/scrolling.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/scrolling_prompt.c",
+      "source_sha256": "caea180cb5c4198cb2d849a458392f05f8e95f72efda86c69d84cad78215e6f6",
+      "target": "src/ui/scrolling_prompt.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/still_ui.c",
+      "source_sha256": "2b01cbf944edaa1176cdc37b26ee7b81385d496de6139c46a31268d03a09af92",
+      "target": "src/ui/still_ui.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/strings.c",
+      "source_sha256": "ee08106442160da26b0f721e73e6c75b2417205947fc31abb21826d3f5f114cf",
+      "target": "src/ui/strings.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/translations.c",
+      "source_sha256": "8323783bc88831791c36be2d233d48dcded340041a7e376773287f8760987a97",
+      "target": "src/ui/translations.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/ui_assets.h",
+      "source_sha256": "83ad984993c72a0c3783acffbf96dc79895b347eabefc3b986af72ca43a8b1c7",
+      "target": "src/ui/ui_assets.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/ui_internal.h",
+      "source_sha256": "018ca154d27c67cbd7f3a8753b455f37c98e422fad62f0b04e8c4f0d16d7b5e8",
+      "target": "src/ui/ui_internal.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/ui_program_menus.c",
+      "source_sha256": "db6d7e1d398ef985df1005f74485efd8275ae1d5b66730ef5f2ccdda35db526b",
+      "target": "src/ui/ui_program_menus.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/ui_screens.c",
+      "source_sha256": "3f8144b248abe541dc07caff8d259c4a58f1bc93e0fdb04a45a46549f40ae66d",
+      "target": "src/ui/ui_screens.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/ui_workflows.c",
+      "source_sha256": "289224957a8f440ca674c8f99b4f1d3cd3b55e439571b3c7c5b92dbad3fc4b16",
+      "target": "src/ui/ui_workflows.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/workflow_adapters.c",
+      "source_sha256": "b7788ff187c9f65b9e5cf06300dc4bfefbaa59f2126000a0f074fa8949f8c838",
+      "target": "src/ui/workflow_adapters.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/src/ui/workflow_text.inc",
+      "source_sha256": "781ed3fc0e9dbfc7c07639fe69027038c10a17890ee1713791bd299890448d85",
+      "target": "src/ui/workflow_text.inc",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/actuators.h",
+      "source_sha256": "8b0dfcbd02891730efc575a8f0791865b114bce6b4a6e46ef49e44d6088c7b41",
+      "target": "include/pico_c/actuators.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/application.h",
+      "source_sha256": "5f230cf0d9d957a0738469de7b016c8ebe2bbf6b850fd5cdfa0f92ea091eac96",
+      "target": "include/pico_c/application.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/config.h",
+      "source_sha256": "3b70193ff24d96c763591cfe888cff3c25efcf159b8ca76e1a0e7d497bd7cf12",
+      "target": "include/pico_c/config.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/control.h",
+      "source_sha256": "58392ea454c4111faee7c5889fc131248ebefe3f8eabaff41cde785e2296be63",
+      "target": "include/pico_c/control.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/device.h",
+      "source_sha256": "5b01330383926d39019022c3515c19af8fd21537637b7af2b2c5eeab7494c7e7",
+      "target": "include/pico_c/device.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/energia_cc3200.h",
+      "source_sha256": "57b039506a09b55796a4dc5711b3cec2ae95af089baa1207bab0045f8fe11a22",
+      "target": "include/pico_c/energia_cc3200.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/energia_network.h",
+      "source_sha256": "ccb9d74cbda92d41e21c113f05ce73898ee3ec4835430578a18ec00cd98f42a9",
+      "target": "include/pico_c/energia_network.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/network.h",
+      "source_sha256": "b38f42df3911d5babbd6ecfd18ef11fb32d6033521cda2a571ebebeb5ece6196",
+      "target": "include/pico_c/network.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/phase.h",
+      "source_sha256": "66d7b528cce1dc7c854fd7e6507a6c3f79d424a8e64f4822c18a5f1e94efe789",
+      "target": "include/pico_c/phase.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/pico_http_client.h",
+      "source_sha256": "72565dcac21f83955eb3fa1bf45b768bb6cc988c0e25d343b9506ccf833d3eca",
+      "target": "include/pico_c/pico_http_client.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/pid.h",
+      "source_sha256": "362aa8a4125b081e6279fdc6ef685263185460a8d34023aa61a1ba3bc0b5d6d0",
+      "target": "include/pico_c/pid.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/recipe.h",
+      "source_sha256": "8688e81d84c8a1152ca35d6d75c83ab80aa517168d34419696ab0fe5880e92c0",
+      "target": "include/pico_c/recipe.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/recovered.h",
+      "source_sha256": "4f35c050b19d1aa1fe440e33e2d1b735a5d0020922256c7b04dab66da67ac3f4",
+      "target": "include/pico_c/recovered.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/rfid.h",
+      "source_sha256": "7d8722d6be946e60d87bb0e7ad40b5ad768de5048ccea15cc71d92d205b42ef6",
+      "target": "include/pico_c/rfid.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/sensors.h",
+      "source_sha256": "099474230091572d23aa5cc4e54a924662a19c9fdc44deb44d4f837f8c2030c7",
+      "target": "include/pico_c/sensors.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/state.h",
+      "source_sha256": "b01d913717e85d0a0b01d22851e42b6b853fc63eaf074184e203ff93a60e6727",
+      "target": "include/pico_c/state.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/text.h",
+      "source_sha256": "4591094fac916ae38d1a4687693af60cda838f8bdba280fd4f0e9eb7581051fd",
+      "target": "include/pico_c/text.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/include/pico_c/ui.h",
+      "source_sha256": "9afd10202740a62431e78cdfdaa6166b885217bed29de7e76ff2969d59a1821b",
+      "target": "include/pico_c/ui.h",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/energia_cc3200.cpp",
+      "source_sha256": "a3ff5b0da47801864339a19bc4fe4443d76b3d7bcba083cbaf1ba049612288bc",
+      "target": "platform/energia_cc3200.cpp",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/energia_network.cpp",
+      "source_sha256": "afa667dc62416d282591dadc89fe2762282dd0f97fc4268bd8cd7f2e881c9c30",
+      "target": "platform/energia_network.cpp",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/energia_runtime_compat.c",
+      "source_sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+      "target": "platform/energia_runtime_compat.c",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/firmware_main.cpp",
+      "source_sha256": "62e00fe63a1fd3de10b2b00243d430cdce25cb3f46dc3469c1efd8654e0932b1",
+      "target": "platform/firmware_main.cpp",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/pico_cc3200.ld",
+      "source_sha256": "e2ff7656a1c64265806530bab8b95ec62052a3ced7fadb8bc03be00af42fa0d7",
+      "target": "platform/pico_cc3200.ld",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/platform/pico_http_client.cpp",
+      "source_sha256": "fa04603a4b1e696a5c6e0778c041b9d7e5de896299acaae6447b35e263e03533",
+      "target": "platform/pico_http_client.cpp",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/dependencies/lock.json",
+      "source_sha256": "78a9e598dfc069066ad63b1a9a5ea68c7f499818397c1022a3f8795aae222604",
+      "target": "dependencies/lock.json",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/actuators.c",
+      "source_sha256": "98969de4dad2007d0b42586a188a26621bf2067467b96614d0024a754b7f0cb7",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/actuators.c",
+      "ancestor_sha256": "ac3f87c6444cb410b350c6435dfa4c5da2c4cf63802bedd1a9857ef30647807c",
+      "target": "src/actuators.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/application.c",
+      "source_sha256": "d269b596fb2185d9c3474b9b6818328b6083454bb7d399cf25de52a75455704b",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/application.c",
+      "ancestor_sha256": "c40c90eb59710e4436e37cadc514bc38dad2b1326689c689bc80c48fede0ffad",
+      "target": "src/application.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/control.c",
+      "source_sha256": "bb1f9edebda074d4425d9db401aec30eb1b18fd364bbe9661c9ae0daca3da4fc",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/control.c",
+      "ancestor_sha256": "927e8104a1ac5d6d33c0e3a1539b13aa2eb3771978ac98827fbc6bd2d2780dec",
+      "target": "src/control.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/device.c",
+      "source_sha256": "20d8032ca6dc9b5def2a69df8cf0beb3709362d28c89ace98552a22ca46f34d4",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/device.c",
+      "ancestor_sha256": "1021304e106cc16e9aefd4b2859a44dceaaf5343f54d29f102215b81c1708c7f",
+      "target": "src/device.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/http_server.c",
+      "source_sha256": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+      "target": "src/http_server.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_api.c",
+      "source_sha256": "1cd1735588ded2a88a94fcb0b0a165eaf8ade54487929cd3ad9e5a46db23c244",
+      "target": "src/local_api.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_control.c",
+      "source_sha256": "1e4874e2c0c88e20b4b4f52c4bb4c9b68a6b99a5bde7b36fe943bd4bb6a0d248",
+      "target": "src/local_control.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_history.c",
+      "source_sha256": "d7b952a39461e154efdfd81111d3eab203f65181d43e541acd99748f0a75ceb7",
+      "target": "src/local_history.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_starter_recipes.inc",
+      "source_sha256": "5de924b9763ceb0dc9a260a9582b703596ed7ffe9652616462926377070bd36e",
+      "target": "src/local_starter_recipes.inc",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_store.c",
+      "source_sha256": "f0dc8e6ff4231b40c511194507c8f2c04d9515dbde916fa775599dfcad32cf88",
+      "target": "src/local_store.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_telemetry.c",
+      "source_sha256": "be339dc0bd12d19518de22eebe3f2aa554401dfc5deed9e23326e9069016d21b",
+      "target": "src/local_telemetry.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/local_web_assets.c",
+      "source_sha256": "a2b4229a1c2711f9a0e4c38d9fc6e466fca4d7e9659a4deb8b78f7991acd7fcc",
+      "target": "src/local_web_assets.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/network/api.c",
+      "source_sha256": "a982d84fc498d5527bb3ffba63ed7abbf2bb6419437a40df529ed677d6a03c8c",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/network/api.c",
+      "ancestor_sha256": "464895b76775534342b8c84f1e9fd90f9a8c51c9873a5bb8aa69e7a0c225b576",
+      "target": "src/network/api.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/network/network.c",
+      "source_sha256": "e02e3a3ea8580fa7323985e2760ae26ad0eaa4dd9fb8303ee34c42549d32c42d",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/network/network.c",
+      "ancestor_sha256": "f177eadeedde3e5161f92adbc625dd6ec34b9a07ec93311e21c8fed0f1043b86",
+      "target": "src/network/network.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/network/storage.c",
+      "source_sha256": "34cd6ffb35276472962f85167ad88460a75cddab421cf0bbb5493048d7d99adf",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/network/storage.c",
+      "ancestor_sha256": "1bfc83cbb0e8be78ec028ba0629a7619a95d8a95dad74f43d28f00b299cb0bf0",
+      "target": "src/network/storage.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/network/update.c",
+      "source_sha256": "2f76ba1f9210d9b6958978a248f67267d35ea618f6bc0f11657b9903032efbf9",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/network/update.c",
+      "ancestor_sha256": "440fa2fc20ff99676b294094d6ff7a1459d5c371b0cc568046ff680a6eb7da36",
+      "target": "src/network/update.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/phase.c",
+      "source_sha256": "09ce444d08cae7f6a5b6b860f713b5184062573a924ece57cb6a28d3c3a4c6e8",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/phase.c",
+      "ancestor_sha256": "31bf3239edceaefbbcaaa4ca390fa3343cc44698bbc463dc6860de9404190f41",
+      "target": "src/phase.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/recipe.c",
+      "source_sha256": "cf5bc96ffa3ba16e1a7f0393edfa31f03557282cd3b83f04f247e18b36935aac",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/recipe.c",
+      "ancestor_sha256": "1fefacfea722931d3a4a7b82b710df61f22513410ebc10971703db5cd0f1c24c",
+      "target": "src/recipe.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/recipe_programs.c",
+      "source_sha256": "894d47a72e2538f82c39030362d90e6db6978f6456625d9682119fd3d7d7a5bc",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/recipe_programs.c",
+      "ancestor_sha256": "091fc17523a43e7beb5b317c7f81e00087ec76f29865938fdf8aa2c0673c04ad",
+      "target": "src/recipe_programs.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/recipe_utilities.c",
+      "source_sha256": "ef667d47e998d4e327ef269fbb6c0f99cf2082c9c7eab49ff779084b4df99ef8",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/recipe_utilities.c",
+      "ancestor_sha256": "46d11ef966be041c9a95fa2d248371cd49985b41e2103d95d06e97c5cfe80077",
+      "target": "src/recipe_utilities.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/assets.c",
+      "source_sha256": "5645f08c26d2595cb05b6e8fe0d46a9bbfaec1a6bfdd9aff7cf1547234f31ac1",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/assets.c",
+      "ancestor_sha256": "f7a64b90435f253304bead5b4dcb302f8ce6ec11565d8a3855c6605d355b2a14",
+      "target": "src/ui/assets.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/diagnostics.c",
+      "source_sha256": "230c658854e63836cc8a7a7eb5de51dd51ada6857e60bb1139cb49f96e094f13",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/diagnostics.c",
+      "ancestor_sha256": "bec38d05eaac3d01bc391b39a1543b3f393ec97404362780a9abc608817d9e8e",
+      "target": "src/ui/diagnostics.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/encoder.c",
+      "source_sha256": "3ef68e1226597265ff14100845df38bf672a8eb32dbabdc6eec77ff538abc99d",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/encoder.c",
+      "ancestor_sha256": "6b7b1a0e32acc3c5ab438d2d14a20cdb73d452da5ccca3ec25f2df709e76287d",
+      "target": "src/ui/encoder.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/encoder_editor.c",
+      "source_sha256": "27f1884ef3011d27edf049c8e610437bffbb72cfc26efa93663d691da97bc1df",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/encoder_editor.c",
+      "ancestor_sha256": "a1b59ede9f6c7d568c7f0409e188c3d72d3e02c170add524cd897c67ac9a34cd",
+      "target": "src/ui/encoder_editor.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/instruction_screens.c",
+      "source_sha256": "6662170fe2e380f3b0b2acacf1945fa294090882e03b9edd6763c0b0872f7202",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/instruction_screens.c",
+      "ancestor_sha256": "c8038ee407e0e228f6cc1ccd5cb33dbe38abec9aa5636fe8a4d665b3be19204f",
+      "target": "src/ui/instruction_screens.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/menus.c",
+      "source_sha256": "7fa0539f90b9a6b5284ab0ebd571a1fe24f33e950ad2c541cdd02fdefe4a3432",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/menus.c",
+      "ancestor_sha256": "a39921ace7a273c47aa414bfabd15e620e52421660b8763de0a71f2eb9c4d61e",
+      "target": "src/ui/menus.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/pages.c",
+      "source_sha256": "ab7b4627701ccfd572eb59f148203d0df69f6115ba093b3f08b85c0805805140",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/pages.c",
+      "ancestor_sha256": "b8a950f53b9818bc38bc50a233344e13420f64d077e056f5aea7c280e0a307e9",
+      "target": "src/ui/pages.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/screens.c",
+      "source_sha256": "61a5ab73604cf8d2d13735357d78436f9045c9faf414fa9c12a3c27304ea4d3d",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/screens.c",
+      "ancestor_sha256": "74f64560b3a330fa7e8ec71676eb3ff1daae2d0ab1349bbe575c6640bb53e967",
+      "target": "src/ui/screens.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/strings.c",
+      "source_sha256": "31257c60f4237c353da32866f671524f77dbbb600cf8b8650f4218a8bf2eef82",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/strings.c",
+      "ancestor_sha256": "c6ddda204dae55e2734a92af9ed42a92fa2475ae74f6d509977d76208b1d862b",
+      "target": "src/ui/strings.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/ui_screens.c",
+      "source_sha256": "0430f6faddf986c8cc65c5baea835c45359adbe1ae13e5ac4796bf3f223696f8",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_screens.c",
+      "ancestor_sha256": "583ab2071461bd1b8b368fd5796a682878d20698eaa88944537a3c6ef60b2ca4",
+      "target": "src/ui/ui_screens.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/ui_workflows.c",
+      "source_sha256": "453110ff56f6f0a2ea83716cbac0dc8617c92f791716fc0b07e6033382b7eadc",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_workflows.c",
+      "ancestor_sha256": "98e83cc6b70b0bea96e7b88a0c9e4c752c165e700bb8d19d4bb0cfdd423d8d4b",
+      "target": "src/ui/ui_workflows.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/src/ui/workflow_adapters.c",
+      "source_sha256": "dee096c673d12800d25425f78872af7cf77201f728ffdc47a19521b78af82fff",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/src/ui/workflow_adapters.c",
+      "ancestor_sha256": "a1c13904e074f08e192cc08c4044092c0715cb17f4e55d9a905f899fa3d38530",
+      "target": "src/ui/workflow_adapters.c",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/config.h",
+      "source_sha256": "3e333b52b91b6f3b3ef27f4d3f16a71099b3670da8af295cf1fa75ed94266c6e",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/include/picobrew/config.h",
+      "ancestor_sha256": "547c141286b3ccaae77520901697168c9e7468e787d8bf0dcc3a20f398259bbc",
+      "target": "include/pico_c/config.h",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/energia_history.h",
+      "source_sha256": "858b5f4a4296ef1ef476649e24a36d6a45a2166f3fc466604fe5169189f1a0db",
+      "target": "include/pico_c/energia_history.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/energia_http_server.h",
+      "source_sha256": "8c34bb91290059d17fc6fe882466057baa783e1821b96a9c64aea7ac203b6278",
+      "target": "include/pico_c/energia_http_server.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/energia_telemetry.h",
+      "source_sha256": "49a567c3d6231ab19554b8d628327e5023a5995728729006e8ca90f1c2aa43c4",
+      "target": "include/pico_c/energia_telemetry.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/http_server.h",
+      "source_sha256": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+      "target": "include/pico_c/http_server.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/local_api.h",
+      "source_sha256": "e31f6dfacb33c6dc4b3616460598914a301268bd7edc361d38f5cf77d67d082a",
+      "target": "include/pico_c/local_api.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/local_control.h",
+      "source_sha256": "674eb5d8a62a007b5582113290faf3e853149deb164aea35c8354368cd7ed22a",
+      "target": "include/pico_c/local_control.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/local_history.h",
+      "source_sha256": "dc9b4b8401a77e3c251c35260f2e9be293730fc9d2fd9ad9d7c2ea81f5c2daae",
+      "target": "include/pico_c/local_history.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/local_store.h",
+      "source_sha256": "378816d0a7b7b4d93ab4b6c3bb5de11a452b4c6c3ac6146e8a85b6b967c89735",
+      "target": "include/pico_c/local_store.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/local_telemetry.h",
+      "source_sha256": "71d89a54302a72f32933685d15ab0299f97ebfc38fb9681754db410720b18b5e",
+      "target": "include/pico_c/local_telemetry.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/model.h",
+      "source_sha256": "16aea756bbba23411a257146b22b6308abbc6fa77cdb542c8186353c94e16320",
+      "target": "include/pico_c/model.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/network.h",
+      "source_sha256": "c4debb42a55fa843bc22b7da4cf6851ecbad31cf4949afc18883523adc6f6ce4",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/include/picobrew/network.h",
+      "ancestor_sha256": "ce032e5a2bda66918527268eecaa076637731b70b79c7737e7121fdf769038e9",
+      "target": "include/pico_c/network.h",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/recipe.h",
+      "source_sha256": "1394e8579846c4fb5a36ff99be927186c6ae5c318e41cbe3c973115e0b943a21",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/include/picobrew/recipe.h",
+      "ancestor_sha256": "ee69ae004b7511570244e404a412ee6593b52a0805b5c8a2c2141c0f430f1e97",
+      "target": "include/pico_c/recipe.h",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/version.h",
+      "source_sha256": "0e537b9fa04a15f1284b2a84a6093388d5a60ec15217e656ac1a0c58bb9c39ed",
+      "target": "include/pico_c/version.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/include/picobrew/web_assets.h",
+      "source_sha256": "daaeab47d46d46803e89a9e7069981a4cfb9486fd99b0fcc669cb1dce75c938b",
+      "target": "include/pico_c/web_assets.h",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/energia_cc3200.cpp",
+      "source_sha256": "b15be4d644c8157bc635c985a8fced7db40f83a7d6ddb0aea85cb587a98a6410",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/platform/energia_cc3200.cpp",
+      "ancestor_sha256": "7d562c490af20b701809465243f350fb53c119957faa52cb1a0646548718d71b",
+      "target": "platform/energia_cc3200.cpp",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/energia_history.cpp",
+      "source_sha256": "2df266c0d60321b6075d91894c79c3238eadba03fc9857c51f24ced8de7ec952",
+      "target": "platform/energia_history.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/energia_http_server.cpp",
+      "source_sha256": "b0d9d29d3a644a2e114afda8ec5279b6e4ec53b953a100c47d37a2bdfdea7e99",
+      "target": "platform/energia_http_server.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/energia_network.cpp",
+      "source_sha256": "277b9a51f7f568a59708adda95c970adfba0f6f4d69820d095d56ffa57590746",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/platform/energia_network.cpp",
+      "ancestor_sha256": "03314d6b11d11b6f3ed7db80eb64c6eb80119cf803f009d71dde6c8607d9d757",
+      "target": "platform/energia_network.cpp",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/energia_telemetry.cpp",
+      "source_sha256": "7b20ab2fb9ba0e438248643c33cce80f52d2764e0b5436f8295db7352478919d",
+      "target": "platform/energia_telemetry.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/firmware_main.cpp",
+      "source_sha256": "8ee8f09d9e62fc6244ca3698114a387539f9557335f9103bc058670f27eb2ed8",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/platform/firmware_main.cpp",
+      "ancestor_sha256": "2df895a6134b0debb536a5e2b205be5ac038ffabd84680979d21d10a21f26149",
+      "target": "platform/firmware_main.cpp",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/platform/pico_cc3200.ld",
+      "source_sha256": "94ad00e7e536c650c61599211e2026e75de9e8728736e3a0c8a47f4b19be0206",
+      "ancestor": "firmware/pico-s-pro/reverse-engineered/platform/pico_cc3200.ld",
+      "ancestor_sha256": "3f01e3473781da93be166f2ccb5bb2bd16acb5e508901d453ddd9e8a62ab7bc1",
+      "target": "platform/pico_cc3200.ld",
+      "operation": "three-way standalone delta; C base preserved and conflicts manually reviewed"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/tools/build.py",
+      "source_sha256": "eae92f98fced4a1362c60fa6006baf1e5490a55f51cc5d5022cb580b385335e2",
+      "target": "tools/build.py",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/tools/build_firmware.py",
+      "source_sha256": "01b54ac36ddf3fa2d89959fb9dcf495dd445637e2f11495fc6b804380c0c4717",
+      "target": "tools/build_firmware.py",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/tools/build_sdk_validation.py",
+      "source_sha256": "bd59c47a2d67f3f6e5cfe4430787933cb22e7a8ca6936c2efd96626d4dcf0581",
+      "target": "tools/build_sdk_validation.py",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/tools/bootstrap_dependencies.py",
+      "source_sha256": "fd213448a9c3aab4168efd8d093184444e04d2d929ac49f067f6df22531ed728",
+      "target": "tools/bootstrap_dependencies.py",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-c/reverse-engineered/tools/package_update.py",
+      "source_sha256": "5e1573222564989b3292217604bea51e1e991989d3237f7a2d9b36e53b65ca53",
+      "target": "tools/package_update.py",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/arm_toolchain.py",
+      "source_sha256": "6a6f1e8d0fc86e40d829bd497d20f22e1c87f550c69304652df8dac3d2ef3021",
+      "target": "tools/arm_toolchain.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/native_host.py",
+      "source_sha256": "df7d385fff5b815566b2d50f2c5aa05cc1a08f2a940eec0a189752d89a2d692a",
+      "target": "tools/native_host.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/generate_starter_recipes.py",
+      "source_sha256": "bab1ea88dddcecd8142fe690ade7e8a1921a19ce8d6b7d6b48ce5573ac7959f0",
+      "target": "tools/generate_starter_recipes.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/generate_api_explorer.py",
+      "source_sha256": "707c833eab71de4d8eecb214868723700d81a08f97f6e683f0820881cec62a9f",
+      "target": "tools/generate_api_explorer.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/embed_web.py",
+      "source_sha256": "f4a47020a1589112062e51fc98948be92c016990ec3bbb5540af2acf8cf47ffe",
+      "target": "tools/embed_web.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/package_hub_firmware.py",
+      "source_sha256": "d2b50dbbb61a19517cbc1c05c52cdd9f6a54f70896adf57e957713713d3c1639",
+      "target": "tools/package_hub_firmware.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/verify_firmware_package.py",
+      "source_sha256": "36f1e3db5e2047d6e9b727d5f8152b8b111cb2d5dbd83156162781dacf9cbaab",
+      "target": "tools/verify_firmware_package.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/provision_api_key.py",
+      "source_sha256": "bc81dc840e02d10e47d1019ec223aadc7134c051887960d1dd5416db1de17572",
+      "target": "tools/provision_api_key.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/pico_private_files.py",
+      "source_sha256": "cbe02d67d4ea5f9f7b8100d6d0498f0884414daf9cca9b29b337a85a996ae0fe",
+      "target": "tools/pico_private_files.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/pico_telemetry_receiver.py",
+      "source_sha256": "2522f7f26b2a348c7a687ea551cab33bf8d5f5a963a3699bd1f80c7238f6631f",
+      "target": "tools/pico_telemetry_receiver.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/web/api-explorer.js",
+      "source_sha256": "305dfe63b82c2a7b841c4796f5c5a3554255987f3ec1f1b47f4d820c7c2452a1",
+      "target": "web/api-explorer.js",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/web/app.js",
+      "source_sha256": "090d5fbed3d6bdda7d981bdccdfa3e757b5b35fd2dc91711f0e90d6b70bf17d0",
+      "target": "web/app.js",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/web/history.js",
+      "source_sha256": "50663f987f4c9e90707e537b602ca4fa88b688017d86587892609a7073db5b85",
+      "target": "web/history.js",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/web/index.html",
+      "source_sha256": "b069d8ae8d5fca97bab714849218553032a2f688f175c3e2db92bbb70b655e4c",
+      "target": "web/index.html",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/web/style.css",
+      "source_sha256": "30e16035763fa283a654775eeb02eedf4345ba7bf802cf9f3e84f0119dfb3d6e",
+      "target": "web/style.css",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/data/starter-recipes.json",
+      "source_sha256": "6b0976fddfdec3809164f72bd960d241e3ca87627878be1dcedb3988e7f25212",
+      "target": "data/starter-recipes.json",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/docs/openapi.json",
+      "source_sha256": "a4b6fbc0528a75277af9a6d61ad8dde43228d5af3c8475e0b2aebfd6cbfcc9cd",
+      "target": "docs/openapi.json",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/docs/standalone-api.md",
+      "source_sha256": "1cd64ed5231e3243614d648c43e7f73ffaf5d66235c1a58755fddff25363ab38",
+      "target": "docs/standalone-api.md",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/docs/standalone-provisioning.md",
+      "source_sha256": "9f58b74303c45470b6ee40f43dec9865400b271b926d98f6fedeab8098d00026",
+      "target": "docs/standalone-provisioning.md",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/docs/telemetry.md",
+      "source_sha256": "f6a4037ef1ffb8e442af9c4d4388e5dd07074427389989dd424b82621cd5ce67",
+      "target": "docs/telemetry.md",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/requirements-test.txt",
+      "source_sha256": "ce5d9382edbf8ec68df5b5c0e65f49a19a5f5e888123d6be3df2a44d572108d8",
+      "target": "requirements-test.txt",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/requirements-web-test.txt",
+      "source_sha256": "1eaea11b84372239a20647db61de397267a844f072bb9e13bf01f5b0714e838e",
+      "target": "requirements-web-test.txt",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_http_server.py",
+      "source_sha256": "39cc93679b96f4d8e289ce78e355df6cadf6d39d505773dc57862019d796c942",
+      "target": "tests/test_http_server.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_energia_http_server.py",
+      "source_sha256": "ca2534d9d7c847167511917c5c25110b3f615af41f5fb5b7198cf5f8a62b55e1",
+      "target": "tests/test_energia_http_server.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_energia_wifi.py",
+      "source_sha256": "40d2c10f2b89da5c9e3d34fe073dd898e90bc8f7ef8e11974616e1b079d3af7c",
+      "target": "tests/test_energia_wifi.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_local_api.py",
+      "source_sha256": "c98a0fd93613bfb844a05ec0d4906af495c6c6476c50d788313aee5cefba8169",
+      "target": "tests/test_local_api.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_local_history.py",
+      "source_sha256": "3c4f454efd2ebf7ed696aac165bc3c4419d111bef00e76e331d442753e988a32",
+      "target": "tests/test_local_history.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_local_telemetry.py",
+      "source_sha256": "7934986945240ea82d5038eb285369ea6c3862a57a3bcb2301b254ea3c471fbd",
+      "target": "tests/test_local_telemetry.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_standalone_control.py",
+      "source_sha256": "91970d3421d3998c4c9e8aab0db3b71a5509e56959df5e7cb9e3320f31bcf16a",
+      "target": "tests/test_standalone_control.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_standalone_control_arm.py",
+      "source_sha256": "21f86a64d0fedb49e9e7e6a7673bf4eafea580c3c5ce1f3e7eb7c89eacff9adb",
+      "target": "tests/test_standalone_control_arm.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_native_storage.py",
+      "source_sha256": "8497a4ffbb063694e3cf3b4eb50ac3455b98b9ad80f729d24161a953e25a004f",
+      "target": "tests/test_native_storage.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_web.py",
+      "source_sha256": "1faf1555cd4ce082257ae1b26698627db4f0258bc1e313d4d52e7cccc65e96ab",
+      "target": "tests/test_web.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_web_features.py",
+      "source_sha256": "365482850934c6eacfde93da41dd782a069311960b98f41da2f35a29e2a71260",
+      "target": "tests/test_web_features.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_machine_identity.py",
+      "source_sha256": "8458aca82403c59ada57db74ffa427746ce402a44fd3c124e694c12ac7e7e7a9",
+      "target": "tests/test_machine_identity.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_hub_firmware_package.py",
+      "source_sha256": "a98fae7cf15efe0801742e3586e560cf132449d2a9e46d1aa5529b370f808a3c",
+      "target": "tests/test_hub_firmware_package.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/test_telemetry_receiver.py",
+      "source_sha256": "2975383718831784207f52b55cfec81ed793e508f19578229263bf7ec625570d",
+      "target": "tests/test_telemetry_receiver.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/http_server_fixture.c",
+      "source_sha256": "135c63531aaa8eb7a84b32c15ee852d0f7cc746a00f47ce65afd4ebc77bc3028",
+      "target": "tests/http_server_fixture.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/http_asset_fixture.c",
+      "source_sha256": "bd040f7cee95ad355804fb9221a7355fbf8580795a7760025b1ee0efa8839325",
+      "target": "tests/http_asset_fixture.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/energia_http_fixture.cpp",
+      "source_sha256": "958f180b6b5b27cb7e57afbf046f08bcbf1999f8ed084232aa9fb054a3285c8b",
+      "target": "tests/energia_http_fixture.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/energia_wifi_fixture.cpp",
+      "source_sha256": "e3ce3b917580a3b5e300d780ed8c44d615efaf21ab562c97e678ff3065d7c8d8",
+      "target": "tests/energia_wifi_fixture.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/energia_history_fixture.cpp",
+      "source_sha256": "d50209d075b2aeefb072dabf06b6828e51c298d2807bed1d65745cda7f8976e6",
+      "target": "tests/energia_history_fixture.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/energia_telemetry_fixture.cpp",
+      "source_sha256": "162c432dd166c182aad3931a7d71c6ec2931dab3b1c1fbc18102234512b16681",
+      "target": "tests/energia_telemetry_fixture.cpp",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/local_history_host.c",
+      "source_sha256": "61de9eb39f84a4049be9c83ddb0009a46d4a960abf9093e7eb89a14c1884fe14",
+      "target": "tests/local_history_host.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/local_telemetry_host.c",
+      "source_sha256": "8320eb12b7448924b17cb18963b78932c86a31d2f23a467b59eaa6e9a4f1fa7b",
+      "target": "tests/local_telemetry_host.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/standalone_control_host.c",
+      "source_sha256": "a14600878cdcf93fbb9715f1758975e94e848da9b65f43d822426715e9d2e1fa",
+      "target": "tests/standalone_control_host.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/standalone_control_arm.c",
+      "source_sha256": "859a375fd726cf618e0e8f6af2f296175f493fc67d5c7cba4c512e5300d4206b",
+      "target": "tests/standalone_control_arm.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/factory_reset_host.c",
+      "source_sha256": "79ff5dfa49707fcf38a3e4aef7a1c0aeac8414baf9feabe1078f88add9a49e0f",
+      "target": "tests/factory_reset_host.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/standalone/local_api_host.c",
+      "source_sha256": "31056b20be3d7549f104c04f4fa55d940bd3e7c3f3bda07306c1233ae6ccba72",
+      "target": "tests/standalone/local_api_host.c",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/validation.ld",
+      "source_sha256": "48df1267a0cbeb048252e536ebaedc0ff0d3e92c8952b03b38de03e632419d79",
+      "target": "tests/validation.ld",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tests/fast_arm.py",
+      "source_sha256": "99d1d019889042234438811cb8880816f060db90de70dfec2405c06b57feeb12",
+      "target": "tests/fast_arm.py",
+      "operation": "namespace adaptation"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/dependencies/lock.json",
+      "source_sha256": "538be7bc1129a21924984299c7b96a2d540f3f687ba53a909ec4406852cd6865",
+      "target": "dependencies/lock.json",
+      "operation": "preserved base"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/build_sdk_validation.py",
+      "source_sha256": "63774b9f9f1a126207dc205d800a43c95356ad62d27585396c8b69bae1dee5d1",
+      "target": "tools/build_sdk_validation.py",
+      "operation": "SDK standalone LTO/native allocator/patch workflow adapted to C model and display identity"
+    },
+    {
+      "source": "firmware/pico-s-pro/modified/tools/machine_model.py",
+      "source_sha256": "f08545357450c4d18f01bf8270e0a519762d6f146df390d18bb2eba3a4def8b9",
+      "target": "tools/machine_model.py",
+      "operation": "Model-guard structure adapted for C-only identity, required controller selection and exact current source inventories"
+    }
+  ],
+  "limits": "Input provenance only; native builds and software tests are reported independently in standalone-validation.json. C physical flashing, recovery, OLED, heating/pump/RFID and brewing acceptance are unperformed. No safe in-place installer or qualified C USB installation flow exists in this revision; firmware_update is false.",
+  "oem_base_commit": "faf70ae",
+  "ui_adaptation": "All C UI source/layouts were preserved. Standalone service/cancellation/local-store changes were then adapted per function; no S/Pro UI layout replacement.",
+  "operation_scope": "Each operation records the initial input or adaptation stage. Preserved base describes the input copy, not a claim that the final modified file is byte-identical. Current application hashes are in the per-variant firmware reports.",
+  "standalone_adaptation": "The frozen C controller, RFID, plumbing, display assets and layouts remain the hardware/application base. Shared local HTTP/API, recipes, history, telemetry and standalone SDK deltas were adapted from the current S/Pro implementation. C menu wake-up, scrolling, cancellation and display geometry use explicit C contracts."
+}

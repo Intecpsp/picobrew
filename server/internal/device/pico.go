@@ -250,9 +250,22 @@ func (p *pico) Display(ctx context.Context) (domain.Display, error) {
 	}
 	defer p.unlock()
 	err := p.request(ctx, http.MethodGet, "/api/v1/display", nil, &result, 200)
-	_, hexErr := hex.DecodeString(result.Data)
-	if err == nil && (result.Width != 128 || result.Height != 64 || result.Format != "page-lsb-hex" || len(result.Data) != 2048 || hexErr != nil) {
-		err = &Error{Code: "invalid_response", Message: "Device display format is unsupported"}
+	if err == nil {
+		// Older S/Pro responses omit geometry metadata and expose exactly the
+		// visible pages. C SSD1309 retains a larger buffer than its 32-row view.
+		logicalBytes := result.Width * ((result.Height + 7) / 8)
+		storageBytes := result.StorageBytes
+		if storageBytes == 0 {
+			storageBytes = logicalBytes
+		}
+		_, hexErr := hex.DecodeString(result.Data)
+		rotationOK := result.Rotation == nil || *result.Rotation == 0 || *result.Rotation == 2
+		transferOK := result.TransferBytes == 0 || (result.TransferBytes >= logicalBytes && result.TransferBytes <= storageBytes)
+		if result.Width != 128 || (result.Height != 32 && result.Height != 64) ||
+			result.Format != "page-lsb-hex" || !rotationOK || !transferOK ||
+			storageBytes < logicalBytes || storageBytes > 1024 || len(result.Data) != storageBytes*2 || hexErr != nil {
+			err = &Error{Code: "invalid_response", Message: "Device display format is unsupported"}
+		}
 	}
 	return result, err
 }

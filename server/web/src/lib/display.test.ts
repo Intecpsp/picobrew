@@ -10,6 +10,49 @@ describe('Pico OLED decoder', () => {
     expect(pixels[7]).toBe(1)
     expect(pixels.reduce((sum, pixel) => sum + pixel, 0)).toBe(1)
   })
+  it('renders the C SSD1309 viewport without rotation or hidden buffer pages', () => {
+    const pixels = decodeDisplay({
+      width: 128,
+      height: 32,
+      rotation: 0,
+      display_variant: 'ssd1309',
+      storage_bytes: 1024,
+      transfer_bytes: 1024,
+      format: 'page-lsb-hex',
+      data: '01' + '00'.repeat(511) + 'ff'.repeat(512),
+    })
+    expect(pixels).toHaveLength(128 * 32)
+    expect(pixels[0]).toBe(1)
+    expect(pixels.reduce((sum, pixel) => sum + pixel, 0)).toBe(1)
+  })
+  it('honors explicit C SSD1325 rotation', () => {
+    const pixels = decodeDisplay({
+      width: 128,
+      height: 64,
+      rotation: 2,
+      display_variant: 'ssd1325',
+      storage_bytes: 1024,
+      transfer_bytes: 1024,
+      format: 'page-lsb-hex',
+      data: '01' + '00'.repeat(1023),
+    })
+    expect(pixels[128 * 64 - 1]).toBe(1)
+    expect(pixels.reduce((sum, pixel) => sum + pixel, 0)).toBe(1)
+  })
+  it('rejects inconsistent storage, transfer and rotation metadata', () => {
+    const frame = { width: 128, height: 32, format: 'page-lsb-hex', data: '00'.repeat(512) }
+    for (const invalid of [
+      { storage_bytes: 511 },
+      { storage_bytes: 1024 },
+      { storage_bytes: 32769 },
+      { storage_bytes: 512.5 },
+      { transfer_bytes: 511 },
+      { transfer_bytes: 1024 },
+      { rotation: 1 },
+      { rotation: -1 },
+    ])
+      expect(() => decodeDisplay({ ...frame, ...invalid })).toThrow()
+  })
   it('rejects truncated, malformed or oversized frames', () => {
     for (const data of ['', 'zz', '001122'])
       expect(() => decodeDisplay({ width: 1, height: 8, format: 'page-lsb-hex', data })).toThrow()

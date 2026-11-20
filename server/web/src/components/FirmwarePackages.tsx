@@ -1,16 +1,25 @@
-import { useState } from 'react'
+import { useState, type FormEvent } from 'react'
 import { Download, Trash2 } from 'lucide-react'
 import { useHub, useResource } from '../context'
-import { download, errorMessage } from '../lib/api'
+import { api, download, errorMessage } from '../lib/api'
 import type { FirmwareCandidate, FirmwarePackage, MachineFirmware } from '../types'
-import { Button, ErrorBanner, Loading, Modal } from './ui'
+import { Button, ErrorBanner, Field, Loading, Modal } from './ui'
 
 export function firmwareModelName(model: string) {
   return model === 'pico-s'
     ? 'Pico S'
     : model === 'pico-pro'
       ? 'Pico Pro'
-      : model || 'Not identified'
+      : model === 'pico-c'
+        ? 'Pico C'
+        : model || 'Not identified'
+}
+
+export function firmwareCandidateName(item: FirmwareCandidate) {
+  return (
+    firmwareModelName(item.model) +
+    (item.display_variant ? ` · ${item.display_variant.toUpperCase()}` : '')
+  )
 }
 
 export function firmwareSize(bytes: number) {
@@ -26,6 +35,12 @@ export function FirmwareDetails({ item }: { item: FirmwareCandidate }) {
       <dl>
         <dt>Machine family</dt>
         <dd>{item.model_family}</dd>
+        {item.display_variant && (
+          <>
+            <dt>Display controller</dt>
+            <dd>{item.display_variant.toUpperCase()}</dd>
+          </>
+        )}
         <dt>Machine image</dt>
         <dd>{firmwareSize(item.binary_bytes)}</dd>
         <dt>Image SHA-256</dt>
@@ -54,7 +69,7 @@ export function FirmwarePackageCard({
     try {
       await download(
         `/firmware/packages/${encodeURIComponent(item.id)}/download`,
-        `${item.model}-${item.firmware_version}.zip`
+        `${item.model}${item.display_variant ? '-' + item.display_variant : ''}-${item.firmware_version}.zip`
       )
     } catch (error) {
       setError(errorMessage(error))
@@ -65,11 +80,11 @@ export function FirmwarePackageCard({
   return (
     <article
       className="firmware-package"
-      aria-label={`${firmwareModelName(item.model)} ${item.firmware_version}`}
+      aria-label={`${firmwareCandidateName(item)} ${item.firmware_version}`}
     >
       <div className="firmware-package-heading">
         <h4>
-          {firmwareModelName(item.model)} <span>{item.firmware_version}</span>
+          {firmwareCandidateName(item)} <span>{item.firmware_version}</span>
         </h4>
         <span className="help-text">{firmwareSize(item.package_bytes)}</span>
       </div>
@@ -120,6 +135,30 @@ export function MachineFirmwareDialog({
 }) {
   const hub = useHub()
   const firmware = useResource<MachineFirmware>(`/devices/${encodeURIComponent(deviceID)}/firmware`)
+  const [display, setDisplay] = useState('')
+  const [checked, setChecked] = useState(false)
+  const [saving, setSaving] = useState(false)
+  const [verificationError, setVerificationError] = useState('')
+  async function verifyController(event: FormEvent) {
+    event.preventDefault()
+    if (!checked || !display || saving || !firmware.data?.device_uid) return
+    setSaving(true)
+    setVerificationError('')
+    try {
+      await api(`/devices/${encodeURIComponent(deviceID)}/firmware/hardware`, {
+        method: 'PUT',
+        body: { device_uid: firmware.data.device_uid, display_variant: display },
+      })
+      setChecked(false)
+      setDisplay('')
+      firmware.reload()
+      hub.notify('Verified display controller saved.')
+    } catch (error) {
+      setVerificationError(errorMessage(error))
+    } finally {
+      setSaving(false)
+    }
+  }
   return (
     <Modal title="Machine firmware" onClose={onClose} wide>
       <ErrorBanner message={firmware.error} retry={firmware.reload} />
@@ -133,6 +172,55 @@ export function MachineFirmwareDialog({
               <span>Current version: {firmware.data.current_version || 'Not reported'}</span>
             </div>
             <p role="status">{firmware.data.reason}</p>
+            {firmware.data.model === 'pico-c' && (
+              <details open={firmware.data.hardware_verification_required}>
+                <summary>Display controller verification</summary>
+                <p className="help-text">
+                  Firmware reports{' '}
+                  {firmware.data.display_variant?.toUpperCase() || 'an unknown controller'}. This is
+                  a build setting, not hardware detection. Check the physical controller or a
+                  documented hardware identification before marking its firmware packages as
+                  matching. This check is saved for this machine; it is not required to connect or
+                  download packages.
+                </p>
+                {firmware.data.verified_display_variant && (
+                  <p>Verified hardware: {firmware.data.verified_display_variant.toUpperCase()}</p>
+                )}
+                <form onSubmit={verifyController}>
+                  <Field label="Verified display controller">
+                    <select
+                      value={display}
+                      disabled={saving}
+                      onChange={(event) => {
+                        setDisplay(event.target.value)
+                        setChecked(false)
+                      }}
+                    >
+                      <option value="">Choose the controller you checked</option>
+                      <option value="ssd1325">SSD1325</option>
+                      <option value="ssd1309">SSD1309</option>
+                    </select>
+                  </Field>
+                  <label className="check-label">
+                    <input
+                      type="checkbox"
+                      checked={checked}
+                      disabled={saving || !display}
+                      onChange={(event) => setChecked(event.target.checked)}
+                    />{' '}
+                    I checked this machine's display controller independently of its firmware
+                    report.
+                  </label>
+                  <Button
+                    type="submit"
+                    disabled={saving || !checked || !display || !firmware.data.device_uid}
+                  >
+                    {saving ? 'Saving…' : 'Save verified controller'}
+                  </Button>
+                  <ErrorBanner message={verificationError} />
+                </form>
+              </details>
+            )}
             <h3>Matching packages in this Hub</h3>
             {firmware.data.packages.length ? (
               <div className="firmware-package-list">

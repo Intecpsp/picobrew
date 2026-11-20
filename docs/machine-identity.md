@@ -10,7 +10,7 @@ The canonical identifiers are recorded in [`firmware/models.json`](../firmware/m
 | --- | --- | --- | --- |
 | `pico-pro` | Pico Pro | `pico-s-pro` | Implemented |
 | `pico-s` | Pico S | `pico-s-pro` | Implemented |
-| `pico-c` | Pico C | `pico-c` | Planned |
+| `pico-c` | Pico C | `pico-c` | Implemented; explicit SSD1325/SSD1309 target; physical qualification outstanding |
 | `z` | PicoBrew Z | `z-series` | Planned; archived Z packages are not yet mapped to individual variants |
 | `zymatic` | PicoBrew Zymatic | `zymatic` | Planned |
 
@@ -19,6 +19,8 @@ The root build router accepts a model through `MODEL` or `MACHINE`:
 ```sh
 make firmware MODEL=pico-s
 make firmware MODEL=pico-pro
+make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325
+make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1309
 make firmware MACHINE=pico-s
 make firmware-test MODEL=pico-s
 make firmware-models
@@ -36,6 +38,12 @@ isolated under `build/standalone/pico-s/firmware/` and
 `build/standalone/pico-pro/firmware/`, with matching `<model>-standalone`
 filenames. Committed installation packages use the same per-model layout under
 `firmware/standalone/`. The device website assets are shared.
+
+Pico C uses its recovered C source in `firmware/pico-c/modified/`, with outputs
+under `build/standalone/pico-c/<display>/firmware/`. The explicit display selection
+is required for builds/packages; dimensions or model names never choose it
+implicitly. Both native images and their API identity are software-tested; a
+physical installation and brewing acceptance remain outstanding.
 
 ## API contract
 
@@ -62,6 +70,30 @@ selects its equipment profile. Reported unsupported models cannot enable a
 different machine's control adapter. Firmware that predates model reporting
 can still use an explicit profile selection; it is not guessed to be a Pro.
 Correcting a current machine label does not rewrite archived brew snapshots.
+
+## Pico C display identity and package applicability
+
+C discovery, health and status also report `display_variant` (`ssd1325` or
+`ssd1309`). The Hub requires C discovery/status to agree. Display frames carry
+logical width/height, rotation and separate storage/transfer sizes. SSD1309 is
+128 × 32 with rotation 0 and 1,024 retained/transferred bytes; SSD1325 is
+128 × 64 with rotation 2 and 1,024 bytes. Existing S/Pro frame defaults remain
+unchanged when metadata is omitted.
+
+Automatic C connection and live-data setup do not require a hardware-confirmation
+step. In the machine's firmware view, an owner can separately record a physically
+verified controller. This observation is tied to the pinned appliance UID and
+never populated from a software model, display dimensions or running-image
+string. C packages are listed as matching only when that observation, the
+current authenticated variant and the package variant agree. Package upload,
+catalog browsing and download remain available without this observation.
+
+The Hub supports C package paths under
+`firmware/pico-c/modified/firmware/standalone/pico-c/<display>/`, with shared C
+website assets under its `firmware/web/` directory. GitHub import requires the
+explicit variant and a pinned commit. These checks do not install firmware;
+`install_supported` and C `firmware_update` remain false. Software identity and
+package hashes alone cannot prevent a wrong initial physical flash.
 
 ## Hub-managed reporting
 

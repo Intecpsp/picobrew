@@ -21,6 +21,7 @@ type Status struct {
 	Model            string   `json:"model,omitempty"`
 	ModelName        string   `json:"model_name,omitempty"`
 	ModelFamily      string   `json:"model_family,omitempty"`
+	DisplayVariant   string   `json:"display_variant,omitempty"`
 	UptimeMS         uint64   `json:"uptime_ms"`
 	Ready            bool     `json:"ready"`
 	DeviceUID        string   `json:"device_uid"`
@@ -54,6 +55,7 @@ type Capabilities struct {
 	Model                 string   `json:"model,omitempty"`
 	ModelName             string   `json:"model_name,omitempty"`
 	ModelFamily           string   `json:"model_family,omitempty"`
+	DisplayVariant        string   `json:"display_variant,omitempty"`
 	Commands              []string `json:"commands"`
 	RecipeCapacity        int      `json:"recipe_capacity"`
 	StepCapacity          int      `json:"step_capacity"`
@@ -90,10 +92,14 @@ type TelemetryStatus struct {
 	LastChecked *time.Time `json:"last_checked,omitempty"`
 }
 type Display struct {
-	Width  int    `json:"width"`
-	Height int    `json:"height"`
-	Format string `json:"format"`
-	Data   string `json:"data"`
+	Width          int    `json:"width"`
+	Height         int    `json:"height"`
+	Rotation       *int   `json:"rotation,omitempty"`
+	DisplayVariant string `json:"display_variant,omitempty"`
+	StorageBytes   int    `json:"storage_bytes,omitempty"`
+	TransferBytes  int    `json:"transfer_bytes,omitempty"`
+	Format         string `json:"format"`
+	Data           string `json:"data"`
 }
 type Command struct {
 	Command  string `json:"command"`

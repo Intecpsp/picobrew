@@ -251,6 +251,7 @@ func (s *Server) routes() http.Handler {
 			r.Get("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Put("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Get("/devices/{id}/firmware", s.machineFirmware)
+			r.Put("/devices/{id}/firmware/hardware", s.verifyFirmwareHardware)
 			r.Post("/devices/{id}/sync-history", s.syncHistory)
 			r.Post("/devices/{id}/deploy", s.deploy)
 			r.Post("/devices/{id}/deployments", s.planDeployment)

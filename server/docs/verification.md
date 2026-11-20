@@ -95,4 +95,4 @@ No real PicoBrew was contacted, no firmware was flashed, and no actual heating/p
 
 No live paid AI API request was made. Provider request formats and errors were exercised with local HTTP test servers. Model availability and account billing depend on the user's configured provider.
 
-Z, Zymatic and Pico C planning profiles and simulators are not evidence of stock-hardware protocol compatibility. The feature coverage document states this boundary explicitly.
+Z and Zymatic planning profiles and simulators are not evidence of stock-hardware protocol compatibility. Pico C now has native reconstructed standalone builds and focused API/Hub tests, but physical installation and brewing remain unverified. The feature coverage document states this boundary explicitly.

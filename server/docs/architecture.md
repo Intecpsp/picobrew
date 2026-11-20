@@ -10,9 +10,11 @@ S/Pro. Hardware-specific drivers, brewing routes and physical limits belong in
 the corresponding firmware port and its advertised capabilities. The Hub then
 uses that common contract for fleet management.
 
-S/Pro is the current live implementation. The other model profiles support
-planning and simulation until their firmware ports and Hub compatibility are
-implemented and verified. Older cloud-replacement servers are reference
+S/Pro and C now implement this standalone contract. C preserves its recovered
+controller/UI and reports explicit SSD1325/SSD1309 geometry; its builds and
+software tests do not establish physical qualification. Other model profiles
+support planning and simulation until their firmware ports and Hub compatibility
+are implemented and verified. Older cloud-replacement servers are reference
 material, not a required component of this architecture. See the
 [project roadmap](../../docs/project-roadmap.md).
 

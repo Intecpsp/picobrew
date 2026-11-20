@@ -10,9 +10,14 @@ display variants. Its documentation separates original-instruction verification,
 bounded-memory repairs, and hardware qualification. No physical installation or
 brewing validation is claimed.
 
-`modified/` is reserved for the standalone custom firmware. Its implementation
-and model-router enablement are tracked separately from the OEM reconstruction.
+[`modified/`](modified/README.md) implements standalone firmware 1.2.0 with the
+local API, browser, recipes, history, Hub-managed live readings and cancellation
+interlocks on the recovered C application. Both SSD1325 and SSD1309 native
+images build; software validation does not establish physical installation or
+brewing. Firmware package management is implemented; in-place installation is not.
 
-The reserved build/API identity is `pico-c` / **Pico C**, in family `pico-c`.
-Future firmware will follow the shared [model identity contract](../../docs/machine-identity.md).
-The root build router rejects this model until its hardware implementation exists.
+The build/API identity is `pico-c` / **Pico C**, in family `pico-c`.
+Firmware follows the shared [model identity contract](../../docs/machine-identity.md).
+Build through the root router with `MODEL=pico-c` and an explicit
+`DISPLAY_VARIANT=ssd1325` or `DISPLAY_VARIANT=ssd1309`. The compiled model/display
+identity does not detect hardware or qualify the wrong initial flash.

@@ -7,9 +7,10 @@ A shared brewing workspace: a Go server and React/TypeScript console for a fleet
 The project is reverse engineering Pico C, S/Pro, Z-family and Zymatic firmware
 to provide the same standalone REST contract and local browser experience as
 the custom S/Pro firmware. See the [project roadmap](../docs/project-roadmap.md).
-Current live support targets S/Pro running that firmware. C, Z and Zymatic
-currently have recipe planning profiles and simulated operation; their firmware
-ports and live Hub compatibility are not implemented. See
+S/Pro and the reconstructed C standalone firmware now have Hub adapters. C
+includes explicit SSD1325/SSD1309 display geometry and firmware package matching;
+its source builds/software tests do not establish physical installation or
+brewing. Z and Zymatic remain planning/simulation profiles. See
 [support and feature coverage](docs/coverage.md).
 
 ## Run locally on Windows, macOS or Linux
@@ -73,7 +74,7 @@ This seeds three simulated brewers, two example recipes and three historical bre
 ## What you can do
 
 - **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
-- **Operate an S/Pro.** Mirror its OLED, turn or press its dial, select an installed recipe, open its advertised maintenance programs, stop outputs, and update its display/forwarding preferences. The console exposes the capabilities reported by that device.
+- **Operate C/S/Pro standalone firmware.** Mirror its OLED, turn or press its dial, select an installed recipe, open its advertised maintenance programs, stop outputs, and update its display/forwarding preferences. The console exposes the capabilities reported by that device.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
 - **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalogue contents and provenance](docs/community-catalog.md).
 - **Adapt and deploy.** Save measured model defaults in Settings, preview batch and efficiency scaling for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
@@ -245,7 +246,7 @@ by that variable.
 |---|---|
 | `cmd/picobrew-hub` | Process configuration and graceful shutdown |
 | `internal/server` | HTTP API, owner sessions, encrypted credentials, fleet orchestration, history import, optional AI monitor |
-| `internal/device` | Exact S/Pro REST adapter and deterministic, stateful simulator |
+| `internal/device` | C/S/Pro standalone REST adapter and deterministic, stateful simulator |
 | `internal/recipe` | Canonical recipe validation, adaptation, native compilation, JSON/BeerXML exchange |
 | `internal/catalog` | Pinned offline recipes, native programs, original records, illustrations and source provenance |
 | `internal/store` | SQLite migrations, record versions, encrypted blobs, deduplicated telemetry |
