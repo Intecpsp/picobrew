@@ -85,7 +85,7 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.3.1')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.3.2')
         expect(self.page.locator('#modelName')).to_have_text('Pico Pro brewing console')
         expect(self.page).to_have_title('Pico Pro · Pico Local')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)

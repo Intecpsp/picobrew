@@ -93,35 +93,38 @@ uint32_t pico_ui_scan_and_connect_wifi(void)
         if (count > 20)
             count = 20;
 #if PICO_STANDALONE
-        pico_label_back(pico_ui_active->menu_labels[0]);
         for (int i = 0; i < count; ++i)
-            ui_copy(pico_ui_active->menu_labels[i + 1], sizeof pico_ui_active->menu_labels[0],
+            ui_copy(pico_ui_active->menu_labels[i], sizeof pico_ui_active->menu_labels[0],
                     networks[i].name);
-        ++count;
 #else
         for (int i = 0; i < count; ++i)
             ui_copy(pico_ui_active->menu_labels[i], 22,
                     n->platform->scan_ssid(n->platform_context, (unsigned)i));
 #endif
         pico_menu_append_wifi_search_actions(&count);
+#if PICO_STANDALONE
+        pico_label_back(pico_ui_active->menu_labels[count]);
+#endif
         pico_display_clear();
         pico_ui_draw_choose_network();
-        uint32_t selected = pico_menu_choose(3, (unsigned)count & 255, 0);
-        if (pico_local_cancelled() || selected >= (uint32_t)count)
+        uint32_t selected = pico_menu_choose(3, (unsigned)count + PICO_STANDALONE, 0);
+        if (pico_local_cancelled())
             return 0;
 #if PICO_STANDALONE
-        if (selected == 0)
+        if (selected == (unsigned)count)
             return PICO_WIFI_BACK;
 #endif
-        if (selected == (uint32_t)count - 1) {
+        if (selected >= (unsigned)count)
+            return 0;
+        if (selected == (unsigned)count - 1) {
             pico_display_clear();
             continue;
         }
-        if (selected == (uint32_t)count - 2)
+        if (selected == (unsigned)count - 2)
             pico_ui_enter_manual_network();
         else
 #if PICO_STANDALONE
-            select_network(&networks[selected - 1]);
+            select_network(&networks[selected]);
 #else
             pico_ui_select_scanned_network(selected);
 #endif

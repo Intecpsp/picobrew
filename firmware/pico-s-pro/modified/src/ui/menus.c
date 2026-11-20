@@ -96,38 +96,16 @@ uint32_t pico_menu_populate_hardware_tests(void)
 
 void pico_menu_append_wifi_search_actions(int *option_count)
 {
-    int row_index;
-    char *destination;
-    char *search_again_label;
-    bool is_french;
-
-    row_index = *option_count;
-    if (pico_ui_active->network->settings->language == '\x01') {
-        *option_count = row_index + 1;
-        strcpy(pico_ui_active->menu_labels[row_index], "Ingresar info WiFi");
-        row_index = *option_count;
-        search_again_label = ">Busque nuevamente<";
-        *option_count = row_index + 1;
-        destination = pico_ui_active->menu_labels[row_index];
-    } else {
-        is_french = pico_ui_active->network->settings->language == '\x02';
-        *option_count = row_index + 1;
-        if (is_french) {
-            strcpy(pico_ui_active->menu_labels[row_index], "Entrez les info WiFi");
-            row_index = *option_count;
-            search_again_label = ">Chercher de nouveau<";
-            *option_count = row_index + 1;
-            destination = pico_ui_active->menu_labels[row_index];
-        } else {
-            strcpy(pico_ui_active->menu_labels[row_index], "> Enter WiFi Info <");
-            row_index = *option_count;
-            search_again_label = "> Search again <";
-            *option_count = row_index + 1;
-            destination = pico_ui_active->menu_labels[row_index];
-        }
-    }
-    strcpy(destination, search_again_label);
-    return;
+    static const char *const labels[][2] = {
+        {"> Enter WiFi Info <", "> Search again <"},
+        {"Ingresar info WiFi", ">Busque nuevamente<"},
+        {"Entrez les info WiFi", ">Chercher de nouveau<"},
+    };
+    unsigned language = pico_ui_active->network->settings->language;
+    if (language > 2)
+        language = 0;
+    strcpy(pico_ui_active->menu_labels[(*option_count)++], labels[language][0]);
+    strcpy(pico_ui_active->menu_labels[(*option_count)++], labels[language][1]);
 }
 
 uint32_t pico_menu_populate_service(void)
