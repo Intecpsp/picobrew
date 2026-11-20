@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "scope": "Original Safeties tick and nested monitor start/stop/update bodies; explicit GPIO read, clock, arithmetic and diagnostic boundaries; register windows adapted at ENTRY/RETW",
+  "cases": 660,
+  "ticks": 1435,
+  "all_results_match": true,
+  "binary64_comparisons": 10045,
+  "exact_binary64_matches": 10045,
+  "maximum_absolute_error": 0.0,
+  "original_functions_executed": {
+    "0x400d69c8": 1140,
+    "0x400d7f7c": 555,
+    "0x400d7fd8": 2265,
+    "0x400d9510": 1435
+  },
+  "modeled_boundaries": {
+    "__adddf3": 217,
+    "__divsf3": 2152,
+    "__extendsfdf2": 2152,
+    "__subdf3": 1510,
+    "basename": 2152,
+    "clock_millis": 2152,
+    "diagnostic_log": 2152,
+    "digitalRead_36": 755,
+    "ordered_comparison_4012d29c": 2002,
+    "ordered_comparison_4012d350": 755
+  },
+  "original_execution_jsonl_sha256": "5b353a27738d61d991ec05aa3494bb7e34a8f62860fc41becbebc9352747d09a",
+  "original_execution_report_sha256": "2e58169ec1e4eabc340d4b1c5fa679ca3501d330a741ece08d3e8e6e9cd5d8fc",
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-fPIC",
+    "-shared",
+    "-fno-fast-math",
+    "-ffp-contract=off"
+  ],
+  "portable_golden_cases": 292,
+  "full_cpu_or_hardware_emulation": false,
+  "hardware_tested": false,
+  "instruction_export_sha256": {
+    "0x400d69c8": "1f90b0d1e3026b7c551946f43433c46168f3e3c3c9940ec8eee2836e0053460c",
+    "0x400d7f7c": "1f0e2615f95ffa98cd6014433a32a9921430a119514a47b9bb647552f5bd2732",
+    "0x400d7fd8": "5bb91f09871ee7125bc43c8ba1e9cac5031f4cfb7ce826115d8241722bd8907a",
+    "0x400d9510": "9c3f0c4e656a581a07edebf681740fbf7a6643a13217100acd059bc23bfcdd47"
+  },
+  "source_sha256": {
+    "include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
+    "src/safeties.cpp": "c8c32484861c8175ee080402b50bb0c02a28e3e1898b6b26a3d7d5167da11df4",
+    "tests/safeties_bridge.cpp": "985fc5c6b3b56c43e0b55a7a4e7181d9dc49bb6ef070410f243bc9841d6d5a93",
+    "tools/validate_safeties.py": "3186df2be96a9ce53c94df886d008faf951aaa9004bb570a6b89458729c28e85",
+    "tools/ghidra/EmulateSafeties.java": "35de8b2849b8b0ff99665e1385a2d0515c6bfe814b975b042087740dbba554bc",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  },
+  "portable_golden_sha256": "9bbdb42df5f6f4fe272863be8e57622e4c2b638c1d84ce0258db0f17e45c6667"
+}

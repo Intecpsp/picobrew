@@ -1,0 +1,1318 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "function": "0x400dd9f4",
+  "scope": "Original decision instructions; explicit calibrated-temperature, SDK arithmetic and diagnostic boundaries; ENTRY/RETW window transitions excluded",
+  "full_execution_cases": 8439,
+  "cases": [
+    {
+      "temperatures": [
+        -10.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        -10.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        0.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        0.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        4.101000000000001,
+        4.583,
+        32.234,
+        21.467,
+        5.343999999999999
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        4.102,
+        4.6690000000000005,
+        20.081,
+        26.014,
+        5.122999999999999
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        4.295999999999999,
+        4.5600000000000005,
+        33.84,
+        22.878,
+        30.797
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        4.313000000000001,
+        6.541,
+        27.799,
+        30.234,
+        18.18
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        4.964,
+        24.636,
+        35.534,
+        11.79,
+        25.904
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        5.612,
+        10.136,
+        7.209,
+        18.974,
+        21.737000000000002
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        5.773999999999999,
+        4.327,
+        4.773,
+        22.698,
+        14.521
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        5.904999999999999,
+        4.337,
+        4.688000000000001,
+        18.503,
+        21.505
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        6.244,
+        11.904,
+        12.777999999999999,
+        29.714,
+        7.631
+      ],
+      "error": 6,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        7.442,
+        11.672,
+        8.124,
+        34.792,
+        21.141
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        7.4559999999999995,
+        10.589,
+        13.958,
+        18.935,
+        12.445
+      ],
+      "error": 6,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        7.4559999999999995,
+        10.69,
+        15.049,
+        30.875,
+        20.811
+      ],
+      "error": 6,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        7.629,
+        12.445,
+        13.202,
+        29.975,
+        14.926
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        7.678000000000001,
+        13.298,
+        10.744,
+        16.339,
+        14.742
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        7.747,
+        35.728,
+        33.144999999999996,
+        20.988,
+        33.615
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        8.441,
+        11.193,
+        6.7170000000000005,
+        9.977,
+        24.97
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        8.55,
+        14.132,
+        13.415,
+        16.927,
+        26.172
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        8.684,
+        10.988,
+        9.437,
+        25.333,
+        9.608
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        9.606,
+        16.738,
+        35.244,
+        18.591,
+        14.139
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        9.971,
+        14.128,
+        35.355000000000004,
+        19.688,
+        23.035
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.126,
+        35.048,
+        12.116,
+        7.923,
+        34.388
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.167,
+        24.02,
+        35.699,
+        17.412,
+        14.038
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.314,
+        14.233,
+        15.615,
+        18.56,
+        12.125
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.822,
+        6.161,
+        8.826,
+        8.174,
+        7.839
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.916,
+        35.607,
+        11.577,
+        33.251,
+        13.521
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        10.955,
+        35.302,
+        30.992,
+        23.597,
+        21.37
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        11.14,
+        14.632,
+        19.771,
+        9.468,
+        27.941
+      ],
+      "error": 6,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        13.323,
+        15.247,
+        10.977,
+        12.838000000000001,
+        15.870000000000001
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        13.579,
+        16.353,
+        16.83,
+        19.213,
+        25.941
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        13.940000000000001,
+        17.836,
+        17.043,
+        18.03,
+        24.235
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        14.732,
+        13.24,
+        16.565,
+        34.905,
+        9.514
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        14.999,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        14.999,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        15.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        15.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        14.999,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        14.999,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        15.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        15.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        14.999,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        14.999,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        15.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        15.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        14.999,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        14.999,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        15.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        15.0,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        14.999
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        15.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        24.999
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        25.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        25.999
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        26.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        35.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        20.0,
+        35.001
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        24.999,
+        20.0
+      ],
+      "error": 8,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        24.999,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        25.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        25.0,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        25.999,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        25.999,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        26.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        26.0,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        35.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        35.0,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        35.001,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        35.001,
+        70.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        14.999
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        15.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        24.999
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        25.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        25.999
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        26.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        35.0
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        20.0,
+        70.0,
+        35.001
+      ],
+      "error": 7,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        24.999,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        24.999,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        25.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        25.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        25.999,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        25.999,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        26.0,
+        20.0,
+        70.0
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        26.0,
+        70.0,
+        20.0
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        35.0,
+        20.0,
+        70.0
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        35.0,
+        70.0,
+        20.0
+      ],
+      "error": 5,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        35.001,
+        20.0,
+        70.0
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        20.0,
+        35.001,
+        70.0,
+        20.0
+      ],
+      "error": 3,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        24.999,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        24.999,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        25.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        25.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        25.999,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        20.0,
+        25.999,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        20.0,
+        26.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        26.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        35.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        35.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        35.001,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        20.0,
+        35.001,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 2,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        24.999,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        24.999,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        25.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        25.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        25.999,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 0,
+      "sensor_type": 0
+    },
+    {
+      "temperatures": [
+        25.999,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 0,
+      "sensor_type": 3
+    },
+    {
+      "temperatures": [
+        26.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        26.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.0,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.0,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 4,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        15.0,
+        15.0
+      ],
+      "error": 1,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        15.0,
+        20.0
+      ],
+      "error": 1,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        15.0,
+        24.999
+      ],
+      "error": 1,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        15.0,
+        25.0
+      ],
+      "error": 1,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        20.0,
+        70.0
+      ],
+      "error": 1,
+      "sensor_type": 4
+    },
+    {
+      "temperatures": [
+        35.001,
+        20.0,
+        20.0,
+        70.0,
+        20.0
+      ],
+      "error": 1,
+      "sensor_type": 4
+    }
+  ]
+}

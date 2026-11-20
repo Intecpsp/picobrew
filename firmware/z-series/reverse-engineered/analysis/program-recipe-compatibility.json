@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "dependency": "ArduinoJson 6.21.6, explicitly selected; OEM minor version unknown",
+  "scope": "These differences are isolated malformed-token diagnostics, plus one host-only integer-width observation. Reconstructed recipe instruction and metadata comparisons require exact agreement.",
+  "differences": [
+    {
+      "json": "1x",
+      "reason": "Both parsers return InvalidInput. The selected parser retains a partial scalar in its internal document; applications discard the failed document.",
+      "selected_override": {"tree": {"kind": "integer", "value": 1}}
+    },
+    {
+      "json": "truex",
+      "reason": "The selected parser reads the valid true prefix of this malformed root token; the OEM lexer includes the trailing x and returns IncompleteInput.",
+      "selected_override": {"error_code": 0, "error": "Ok"}
+    },
+    {
+      "json": "trux",
+      "reason": "The OEM lexer accepts a four-byte token starting with t. The selected library rejects the invalid literal.",
+      "selected_override": {"error_code": 2, "error": "InvalidInput"}
+    },
+    {
+      "json": "falsx",
+      "reason": "The OEM lexer accepts a five-byte token starting with f. The selected library rejects the invalid literal.",
+      "selected_override": {"error_code": 2, "error": "InvalidInput"}
+    },
+    {
+      "json": "nulx",
+      "reason": "The OEM lexer accepts a four-byte token starting with n. The selected library rejects the invalid literal.",
+      "selected_override": {"error_code": 2, "error": "InvalidInput"}
+    }
+  ],
+  "host_only": [
+    {
+      "json": "4294967296",
+      "reason": "With USE_LONG_LONG=0 ArduinoJson uses unsigned long: 64 bits on the ordinary host, 32 bits on ESP32/i386. The pinned 32-bit replay reproduces the OEM parser's original overflow path exactly.",
+      "selected_override": {"tree": {"kind": "double", "bits": "41f0000000000000"}}
+    }
+  ]
+}

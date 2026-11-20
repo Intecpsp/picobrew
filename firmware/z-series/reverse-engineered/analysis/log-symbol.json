@@ -1,0 +1,115 @@
+{
+  "schema_version": 1,
+  "method": "Xtensa instruction structure with call/density relaxation; exact literals and repeated external bindings",
+  "symbol": "log",
+  "image_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "object_sha256": "243633f89c8a0c9fdeaa436d40ab78114d1a835f4c18895d192e99fa6ec3fee3",
+  "reference_export_sha256": "81e99834410d253166733d6f1cb8da0035e377e2292a13b03dd16025592de3ca",
+  "original_export_sha256": "56b901704271174e8c4a591effaec5e2a8d1f942eb8ae4841dc8706a0f316019",
+  "reference_address": "0x00010050",
+  "original_address": "0x4013b288",
+  "reference_instruction_count": 114,
+  "original_instruction_count": 106,
+  "normalized_instruction_count": 103,
+  "instruction_structure_matches": true,
+  "literal_checks": [
+    {
+      "reference": "__fdlib_version",
+      "value": "0x3ffbf32c"
+    },
+    {
+      "constant": "0x00000000"
+    },
+    {
+      "constant": "0x00000000"
+    },
+    {
+      "reference": ".rodata.str1.1",
+      "value": "0x3f40d732",
+      "string_hex": "6c6f6700"
+    },
+    {
+      "constant": "0xe0000000"
+    },
+    {
+      "constant": "0xc7efffff"
+    },
+    {
+      "constant": "0x00000000"
+    },
+    {
+      "constant": "0xfff00000"
+    },
+    {
+      "reference": ".rodata.str1.1+0x4",
+      "value": "0x3f4499ba",
+      "string_hex": "00"
+    }
+  ],
+  "call_bindings": [
+    {
+      "symbol": "__ieee754_log",
+      "address": "0x4013b72c"
+    },
+    {
+      "symbol": "__fpclassifyd",
+      "address": "0x40093698"
+    },
+    {
+      "symbol": "__gtdf2",
+      "address": "0x4012d29c"
+    },
+    {
+      "symbol": "__eqdf2",
+      "address": "0x4012d268"
+    },
+    {
+      "symbol": "__eqdf2",
+      "address": "0x4012d268"
+    },
+    {
+      "symbol": "matherr",
+      "address": "0x401c0938"
+    },
+    {
+      "symbol": "__errno",
+      "address": "0x40132054"
+    },
+    {
+      "symbol": "matherr",
+      "address": "0x401c0938"
+    },
+    {
+      "symbol": "__errno",
+      "address": "0x40132054"
+    },
+    {
+      "symbol": "nan",
+      "address": "0x4013c54c"
+    },
+    {
+      "symbol": "__errno",
+      "address": "0x40132054"
+    }
+  ],
+  "external_bindings": {
+    ".rodata.str1.1": "0x3f40d732",
+    ".rodata.str1.1+0x4": "0x3f4499ba",
+    "__eqdf2": "0x4012d268",
+    "__errno": "0x40132054",
+    "__fdlib_version": "0x3ffbf32c",
+    "__fpclassifyd": "0x40093698",
+    "__gtdf2": "0x4012d29c",
+    "__ieee754_log": "0x4013b72c",
+    "matherr": "0x401c0938",
+    "nan": "0x4013c54c"
+  },
+  "external_callee_equivalence_proven": false,
+  "behaviorally_verified": false,
+  "hardware_tested": false,
+  "limitations": [
+    "Relocated external pointers are inferred correspondences, not independent proof of their targets.",
+    "Ghidra instruction coverage and function boundaries remain analysis inputs.",
+    "No emulation, whole-library equivalence, source provenance or hardware compatibility is claimed."
+  ]
+}

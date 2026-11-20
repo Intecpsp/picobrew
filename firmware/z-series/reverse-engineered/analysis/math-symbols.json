@@ -1,0 +1,881 @@
+{
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "sdk_archive": "libgcc.a",
+  "sdk_archive_sha256": "9e2bc47fdec6efebfed8f915c8b033183f02c7dc4b19c1d1240cbeb68b4d38d1",
+  "compiler": "xtensa-esp32-elf GCC5.2.0 crosstool-ng1.22.0-80-g6c4433a",
+  "method": "Unique exact matching of 128-byte symbol windows with ELF relocation instruction bytes masked; not complete binary equivalence.",
+  "symbols": [
+    {
+      "symbol": "__divsf3",
+      "address": 1075577012,
+      "archive_member": "_divsf3.o",
+      "member_sha256": "6a2d701f586a7b2d5f1395ece597de3a44393a81c467fd115ed499b48f0712cf",
+      "symbol_section_offset": 0,
+      "compared_bytes": 89,
+      "unrelocated_bytes_matched": 89,
+      "masked_relocations": []
+    },
+    {
+      "symbol": "__adddf3",
+      "address": 1074973572,
+      "archive_member": "_addsubdf3.o",
+      "member_sha256": "97f9dcdff402f8bd4c1fa05694590ca21436c8414e9376c31749a1ca82ecea1d",
+      "symbol_section_offset": 32,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 83,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          77,
+          20
+        ],
+        [
+          91,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          15,
+          20
+        ],
+        [
+          24,
+          20
+        ],
+        [
+          27,
+          20
+        ],
+        [
+          42,
+          20
+        ],
+        [
+          64,
+          20
+        ],
+        [
+          72,
+          20
+        ],
+        [
+          86,
+          20
+        ],
+        [
+          98,
+          20
+        ],
+        [
+          108,
+          20
+        ],
+        [
+          125,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__subdf3",
+      "address": 1074973912,
+      "archive_member": "_addsubdf3.o",
+      "member_sha256": "97f9dcdff402f8bd4c1fa05694590ca21436c8414e9376c31749a1ca82ecea1d",
+      "symbol_section_offset": 372,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 77,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          91,
+          20
+        ],
+        [
+          119,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          15,
+          20
+        ],
+        [
+          24,
+          20
+        ],
+        [
+          27,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          45,
+          20
+        ],
+        [
+          65,
+          20
+        ],
+        [
+          76,
+          20
+        ],
+        [
+          88,
+          20
+        ],
+        [
+          96,
+          20
+        ],
+        [
+          99,
+          20
+        ],
+        [
+          114,
+          20
+        ],
+        [
+          124,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__muldf3",
+      "address": 1074974528,
+      "archive_member": "_muldf3.o",
+      "member_sha256": "c252015193c520eb10046e28562b507219e5c44a3b5d64082396acfa2cbf8f76",
+      "symbol_section_offset": 224,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 92,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          29,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          21,
+          20
+        ],
+        [
+          24,
+          20
+        ],
+        [
+          55,
+          20
+        ],
+        [
+          66,
+          20
+        ],
+        [
+          75,
+          20
+        ],
+        [
+          90,
+          20
+        ],
+        [
+          102,
+          20
+        ],
+        [
+          114,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__divdf3",
+      "address": 1074975044,
+      "archive_member": "_divdf3.o",
+      "member_sha256": "635a0f68d6db9e270f8fc704f2e392740c862c53eeead61b51725d4963212a4b",
+      "symbol_section_offset": 232,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 88,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          21,
+          20
+        ],
+        [
+          24,
+          20
+        ],
+        [
+          48,
+          20
+        ],
+        [
+          51,
+          20
+        ],
+        [
+          65,
+          20
+        ],
+        [
+          85,
+          20
+        ],
+        [
+          94,
+          20
+        ],
+        [
+          97,
+          20
+        ],
+        [
+          105,
+          20
+        ],
+        [
+          127,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__eqdf2",
+      "address": 1074975336,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 0,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 83,
+      "masked_relocations": [
+        [
+          9,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          55,
+          20
+        ],
+        [
+          95,
+          20
+        ],
+        [
+          3,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          58,
+          20
+        ],
+        [
+          61,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          82,
+          20
+        ],
+        [
+          98,
+          20
+        ],
+        [
+          101,
+          20
+        ],
+        [
+          110,
+          20
+        ],
+        [
+          122,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__nedf2",
+      "address": 1074975336,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 0,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 83,
+      "masked_relocations": [
+        [
+          9,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          55,
+          20
+        ],
+        [
+          95,
+          20
+        ],
+        [
+          3,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          58,
+          20
+        ],
+        [
+          61,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          82,
+          20
+        ],
+        [
+          98,
+          20
+        ],
+        [
+          101,
+          20
+        ],
+        [
+          110,
+          20
+        ],
+        [
+          122,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__gtdf2",
+      "address": 1074975388,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 52,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 71,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          43,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          46,
+          20
+        ],
+        [
+          49,
+          20
+        ],
+        [
+          58,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          80,
+          20
+        ],
+        [
+          83,
+          20
+        ],
+        [
+          86,
+          20
+        ],
+        [
+          89,
+          20
+        ],
+        [
+          92,
+          20
+        ],
+        [
+          100,
+          20
+        ],
+        [
+          103,
+          20
+        ],
+        [
+          106,
+          20
+        ],
+        [
+          113,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__ledf2",
+      "address": 1074975428,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 92,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 74,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          103,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          43,
+          20
+        ],
+        [
+          46,
+          20
+        ],
+        [
+          49,
+          20
+        ],
+        [
+          52,
+          20
+        ],
+        [
+          60,
+          20
+        ],
+        [
+          63,
+          20
+        ],
+        [
+          66,
+          20
+        ],
+        [
+          73,
+          20
+        ],
+        [
+          106,
+          20
+        ],
+        [
+          109,
+          20
+        ],
+        [
+          118,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__gedf2",
+      "address": 1074975528,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 192,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 71,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          43,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          46,
+          20
+        ],
+        [
+          49,
+          20
+        ],
+        [
+          58,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          80,
+          20
+        ],
+        [
+          83,
+          20
+        ],
+        [
+          86,
+          20
+        ],
+        [
+          89,
+          20
+        ],
+        [
+          92,
+          20
+        ],
+        [
+          100,
+          20
+        ],
+        [
+          103,
+          20
+        ],
+        [
+          106,
+          20
+        ],
+        [
+          113,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__ltdf2",
+      "address": 1074975568,
+      "archive_member": "_cmpdf2.o",
+      "member_sha256": "e22257078ba01c88209994a48ac1b2e9b21ec55e58bf3e9d371eaea0932f9356",
+      "symbol_section_offset": 232,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 74,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          103,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          9,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          30,
+          20
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          43,
+          20
+        ],
+        [
+          46,
+          20
+        ],
+        [
+          49,
+          20
+        ],
+        [
+          52,
+          20
+        ],
+        [
+          60,
+          20
+        ],
+        [
+          63,
+          20
+        ],
+        [
+          66,
+          20
+        ],
+        [
+          73,
+          20
+        ],
+        [
+          106,
+          20
+        ],
+        [
+          109,
+          20
+        ],
+        [
+          122,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__fixdfsi",
+      "address": 1074975712,
+      "archive_member": "_fixdfsi.o",
+      "member_sha256": "8c0f82468df3539f06fbe1ddec478f2fe2d6e016a47254e6f9e15633a2b0872a",
+      "symbol_section_offset": 0,
+      "compared_bytes": 76,
+      "unrelocated_bytes_matched": 61,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          18,
+          20
+        ],
+        [
+          21,
+          20
+        ],
+        [
+          54,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__floatunsidf",
+      "address": 1075577240,
+      "archive_member": "_floatsidf.o",
+      "member_sha256": "570fff85323cb33aecc406fff5ec55e81f996ab0a3fe8e4f837f3f78749eab82",
+      "symbol_section_offset": 0,
+      "compared_bytes": 61,
+      "unrelocated_bytes_matched": 52,
+      "masked_relocations": [
+        [
+          7,
+          20
+        ],
+        [
+          3,
+          20
+        ],
+        [
+          15,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__floatsidf",
+      "address": 1075577252,
+      "archive_member": "_floatsidf.o",
+      "member_sha256": "570fff85323cb33aecc406fff5ec55e81f996ab0a3fe8e4f837f3f78749eab82",
+      "symbol_section_offset": 12,
+      "compared_bytes": 49,
+      "unrelocated_bytes_matched": 46,
+      "masked_relocations": [
+        [
+          3,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__extendsfdf2",
+      "address": 1074976048,
+      "archive_member": "_extendsfdf2.o",
+      "member_sha256": "f82057e9762a0a15814dd1e1950dd6be6c4da52f9211ef2d76314cce3d8d6ece",
+      "symbol_section_offset": 0,
+      "compared_bytes": 98,
+      "unrelocated_bytes_matched": 80,
+      "masked_relocations": [
+        [
+          28,
+          20
+        ],
+        [
+          40,
+          20
+        ],
+        [
+          15,
+          20
+        ],
+        [
+          19,
+          20
+        ],
+        [
+          46,
+          20
+        ],
+        [
+          61,
+          20
+        ]
+      ]
+    }
+  ]
+}

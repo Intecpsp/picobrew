@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "build_script_sha256": "017a14ce55ea71dcecafc446246a888898b79bc7be759dfc98c3a65583a633a3",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "sources": [
+    {
+      "source": "src/http_assets.cpp",
+      "source_sha256": "9339a03c9cda948730072c3b29a4ba549a2a30f1d2cbdcc83292e0c2dec69d03",
+      "object_sha256": "3a51ebe430aed43f55bfac7b0077b1dd963b9aab8550ac2fff427be4842ada0f",
+      "object_bytes": 26312
+    },
+    {
+      "source": "src/local_http.cpp",
+      "source_sha256": "9d765b9957b7240a29a8d14d6a41c73b73f39c236977a7a8de0554094b2be53d",
+      "object_sha256": "ea99741b49cf39156a2c28640d1e93ef1ef4941431e9154d394170c8b9e6ab27",
+      "object_bytes": 8160
+    }
+  ],
+  "owned_header_sha256": {
+    "include/zseries/local_http.hpp": "3b7ecb1b8be47079b0dfe2cc7a904420e2e46156c6c01f58c4fb12c2267fc0d5",
+    "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8"
+  },
+  "scope": "Target compilation of incoming HTTP parser/static-router and exact embedded resource source. No transport integration, complete application link or firmware image."
+}

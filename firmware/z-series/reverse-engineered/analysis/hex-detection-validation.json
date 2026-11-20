@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "function": "0x400dd9f4",
+  "scope": "Original decision instructions; explicit calibrated-temperature, SDK arithmetic and diagnostic boundaries; ENTRY/RETW window transitions excluded",
+  "cases": 8439,
+  "matching_cases": 8439,
+  "original_error_counts": {
+    "0": 882,
+    "1": 1319,
+    "2": 1106,
+    "3": 920,
+    "4": 2115,
+    "5": 979,
+    "6": 161,
+    "7": 411,
+    "8": 546
+  },
+  "instruction_count": 470,
+  "hardware_loop_instructions": 0,
+  "golden_cases": 119,
+  "original_execution_csv_sha256": "2eac3d3309c9570d7c431b8638bbb7004eeae73d8b20a5559cd8e847e0549916",
+  "original_execution_report_sha256": "2bb1862d2c4f40c0b4d7981e991bb593a72069774a42a9df2e585491ca62f6d8",
+  "instruction_export_sha256": "2c94838a218cb1ad4035bd86a822ee7d74073fb99020d2c65a9c0b24703b6377",
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-shared"
+  ],
+  "source_sha256": {
+    "include/zseries/hex_detection.hpp": "18415d26c54cb898bcdea1ce63233f6642171c958de70ac3387c0c54ba9487d5",
+    "src/hex_detection.cpp": "fc7bacd53991a8cae60dc1ac4019815404d2fb44884edc2d8afaabcb7a5d6d65",
+    "tools/ghidra/EmulateHexDetection.java": "025f1750845f199e31b42b461a0c8ac76552d8eea994b2f80b80c60a6e3d445d",
+    "tools/validate_hex_detection.py": "5ae07e7b603ae4e42e82b1d3570a76a9a559761861665600fb22e809ad783c08"
+  },
+  "full_cpu_or_hardware_emulation": false,
+  "hardware_tested": false
+}

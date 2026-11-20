@@ -1,0 +1,988 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "scope": "Original bytes, static initialization table, instruction export identities, and manually traced application bindings; not a complete linked application",
+  "literals": [
+    {
+      "name": "last_static_initializer_pointer",
+      "address": "0x4012b464",
+      "file_offset": 963684,
+      "value": 1061705932,
+      "bytes": "cc58483f"
+    },
+    {
+      "name": "first_static_initializer_pointer",
+      "address": "0x4012b470",
+      "file_offset": 963696,
+      "value": 1061705756,
+      "bytes": "1c58483f"
+    },
+    {
+      "name": "core_allocation_bytes",
+      "address": "0x40121860",
+      "file_offset": 923744,
+      "value": 88760,
+      "bytes": "b85a0100"
+    },
+    {
+      "name": "core_global_pointer",
+      "address": "0x40121864",
+      "file_offset": 923748,
+      "value": 1073491592,
+      "bytes": "882efc3f"
+    },
+    {
+      "name": "yield_callback",
+      "address": "0x401218d0",
+      "file_offset": 923856,
+      "value": 1074271092,
+      "bytes": "74130840"
+    },
+    {
+      "name": "millis_callback",
+      "address": "0x400f3d34",
+      "file_offset": 736564,
+      "value": 1074271112,
+      "bytes": "88130840"
+    },
+    {
+      "name": "serial_configuration",
+      "address": "0x40121858",
+      "file_offset": 923736,
+      "value": 134217756,
+      "bytes": "1c000008"
+    },
+    {
+      "name": "serial_baud",
+      "address": "0x4012185c",
+      "file_offset": 923740,
+      "value": 115200,
+      "bytes": "00c20100"
+    },
+    {
+      "name": "serial_timeout_ms_and_fast_timer_us",
+      "address": "0x40113068",
+      "file_offset": 864360,
+      "value": 20000,
+      "bytes": "204e0000"
+    },
+    {
+      "name": "serial_object",
+      "address": "0x40113020",
+      "file_offset": 864288,
+      "value": 1073493520,
+      "bytes": "1036fc3f"
+    },
+    {
+      "name": "spi_frequency_hz",
+      "address": "0x40112f80",
+      "file_offset": 864128,
+      "value": 4000000,
+      "bytes": "00093d00"
+    },
+    {
+      "name": "i2c_frequency_hz",
+      "address": "0x40112f84",
+      "file_offset": 864132,
+      "value": 400000,
+      "bytes": "801a0600"
+    },
+    {
+      "name": "buzzer_timer_callback",
+      "address": "0x40113054",
+      "file_offset": 864340,
+      "value": 1074267504,
+      "bytes": "70050840"
+    },
+    {
+      "name": "slow_heater_timer_callback",
+      "address": "0x4011305c",
+      "file_offset": 864348,
+      "value": 1074267612,
+      "bytes": "dc050840"
+    },
+    {
+      "name": "fast_heater_timer_callback",
+      "address": "0x40113060",
+      "file_offset": 864352,
+      "value": 1074267456,
+      "bytes": "40050840"
+    },
+    {
+      "name": "slow_heater_timer_us",
+      "address": "0x40113064",
+      "file_offset": 864356,
+      "value": 1000000,
+      "bytes": "40420f00"
+    }
+  ],
+  "functions": [
+    {
+      "address": "0x400ee978",
+      "recovered_role": "application_entry",
+      "instruction_count": 11,
+      "instruction_export_sha256": "f32ca93ad8b1e253727a3e5610a0bbd117259e692aaa22ae576ac502dc143dfc",
+      "original_instruction_bytes_sha256": "ba2f5ebfc6097c115a43f6ad61864d6a8b78ccc4b7664c0940a0c5be4c7be5cc",
+      "direct_call_targets": [
+        "0x40091254",
+        "0x401289d4"
+      ]
+    },
+    {
+      "address": "0x4012186c",
+      "recovered_role": "core_bootstrap",
+      "instruction_count": 32,
+      "instruction_export_sha256": "810015793393e710e822f4c948a17fa90994912060d476dfc64214504dcd1a95",
+      "original_instruction_bytes_sha256": "2063eee4146133a803724d31e9d176530548fea4fdaeaeb9770471eafc42f8e7",
+      "direct_call_targets": [
+        "0x400ee950",
+        "0x40120a04",
+        "0x40121840",
+        "0x4012a43c"
+      ]
+    },
+    {
+      "address": "0x401218d4",
+      "recovered_role": "core_task_loop",
+      "instruction_count": 14,
+      "instruction_export_sha256": "a5916d1f0b99d7c7e6d4ee93f5fcd116a36d34e735e8a576035e1c6a02d272db",
+      "original_instruction_bytes_sha256": "2e923b1c3e069a7418e0ed2de12d4e0476af33f743d16722e825bf4bad909f21",
+      "direct_call_targets": [
+        "0x4012186c"
+      ]
+    },
+    {
+      "address": "0x40120a04",
+      "recovered_role": "core_constructor",
+      "instruction_count": 1017,
+      "instruction_export_sha256": "01432e7c2fb352e76eb26369e1a186bde03e71d9de720f8ac4bebbeb0e2dcfc0",
+      "original_instruction_bytes_sha256": "138d6c2182c0cd3206d05a5a09bc4b7050095cd7f63833e330b9a734c5459d6a",
+      "direct_call_targets": [
+        "0x400d001c",
+        "0x400d0f80",
+        "0x400d106c",
+        "0x400d1a2c",
+        "0x400d2084",
+        "0x400db014",
+        "0x400e17d0",
+        "0x400e6a2c",
+        "0x400ee998",
+        "0x400eed28",
+        "0x400eef6c",
+        "0x400ef01c",
+        "0x400ef038",
+        "0x400ef118",
+        "0x400ef160",
+        "0x400ef180",
+        "0x400ef1a0",
+        "0x400ef214",
+        "0x400ef230",
+        "0x400ef598",
+        "0x400efa1c",
+        "0x400efe1c",
+        "0x400efe50",
+        "0x400eff2c",
+        "0x400eff84",
+        "0x400f005c",
+        "0x400f01cc",
+        "0x400f073c",
+        "0x400f4374",
+        "0x400f43b0",
+        "0x400f43e8",
+        "0x400f50d0",
+        "0x400f6504",
+        "0x400ff018",
+        "0x4010e01c",
+        "0x40110aa8",
+        "0x40111b10",
+        "0x40121ec8",
+        "0x40125c7c"
+      ]
+    },
+    {
+      "address": "0x40113078",
+      "recovered_role": "core_setup",
+      "instruction_count": 236,
+      "instruction_export_sha256": "428c158e6c18dd86aa207b30b7d995f093115e7633779a85338b90716e7bf81b",
+      "original_instruction_bytes_sha256": "a68489152684701f386708ddae8528d6f0b0841f6dded4cb0d6e0373a45e4813",
+      "direct_call_targets": [
+        "0x400d02cc",
+        "0x400d0364",
+        "0x400d0b50",
+        "0x400d2160",
+        "0x400d5a44",
+        "0x400d5a68",
+        "0x400d5b24",
+        "0x400db014",
+        "0x400de078",
+        "0x400de10c",
+        "0x400de248",
+        "0x400de27c",
+        "0x400efc24",
+        "0x400f6ae8",
+        "0x400f6e78",
+        "0x400f7028",
+        "0x400f71b0",
+        "0x400f7e98",
+        "0x400fad30",
+        "0x400fae40",
+        "0x400fb46c",
+        "0x400fb8a4",
+        "0x400fbc1c",
+        "0x400fc3e4",
+        "0x400ff63c",
+        "0x401007dc",
+        "0x4010c0a0",
+        "0x4010dd9c",
+        "0x4011038c",
+        "0x401122a0",
+        "0x40112378",
+        "0x40112f88",
+        "0x40129450",
+        "0x401294dc",
+        "0x40129640",
+        "0x4012a798"
+      ]
+    },
+    {
+      "address": "0x40120120",
+      "recovered_role": "core_tick",
+      "instruction_count": 648,
+      "instruction_export_sha256": "0bddfc5d64cf4e193a93aa46b63521c1717e72229de2aef001edc953b1eb57c8",
+      "original_instruction_bytes_sha256": "4377084a1838801199a1a0d1c5accd0224119c4ec2d9dd8efb6bb3fa62aab92f",
+      "direct_call_targets": [
+        "0x400d1184",
+        "0x400d1720",
+        "0x400d21cc",
+        "0x400d6010",
+        "0x400d91ac",
+        "0x400d9510",
+        "0x400db014",
+        "0x400dc1c4",
+        "0x400dd738",
+        "0x400dd7c8",
+        "0x400dd908",
+        "0x400e5e2c",
+        "0x400e69f4",
+        "0x400eda88",
+        "0x400edaec",
+        "0x400edb34",
+        "0x400ee3b4",
+        "0x400ee8dc",
+        "0x400efcfc",
+        "0x400f02e4",
+        "0x400f0430",
+        "0x400f06a4",
+        "0x400f077c",
+        "0x400f0804",
+        "0x400f202c",
+        "0x400f27e0",
+        "0x400f33d4",
+        "0x400f3eb8",
+        "0x400f400c",
+        "0x400f41ec",
+        "0x400f4424",
+        "0x400f45b4",
+        "0x400f4bf4",
+        "0x400f4ccc",
+        "0x400fa21c",
+        "0x400fb100",
+        "0x40100954",
+        "0x40101bc4",
+        "0x40102120",
+        "0x40109958",
+        "0x4010b200",
+        "0x4010ca58",
+        "0x40110990",
+        "0x4011c30c",
+        "0x4011c928",
+        "0x4011cadc",
+        "0x4011cbf4",
+        "0x4011ce5c",
+        "0x4011d010",
+        "0x4011d32c",
+        "0x4011fc58",
+        "0x40124414",
+        "0x4012d530"
+      ]
+    },
+    {
+      "address": "0x40134560",
+      "recovered_role": "run_static_initializers",
+      "instruction_count": 12,
+      "instruction_export_sha256": "e3b9fd587a8193206ad30ade60810596071ae8d88179d99a3cda9d772a4a3be2",
+      "original_instruction_bytes_sha256": "5f3141264245e64c522f5117cc4e73246cdabe3791c008c7b1f8496ff941c7a8",
+      "direct_call_targets": [
+        "0x4012e8a8"
+      ]
+    },
+    {
+      "address": "0x40110aa8",
+      "recovered_role": "system_constructor",
+      "instruction_count": 193,
+      "instruction_export_sha256": "5a259a661a0c21706071a7738a660cdb2ecbcc5acf5fba8ae003560e6a6b68a2",
+      "original_instruction_bytes_sha256": "ce9868e421c991c99fd43643c21b7aacb8146f840a9f109fa892510407efdf22",
+      "direct_call_targets": [
+        "0x400db824",
+        "0x400f8170",
+        "0x400f82e8",
+        "0x40110a74",
+        "0x40125658",
+        "0x4012a2f0",
+        "0x401367a0",
+        "0x4013cd98"
+      ]
+    },
+    {
+      "address": "0x40112f88",
+      "recovered_role": "system_setup",
+      "instruction_count": 58,
+      "instruction_export_sha256": "0b5aeefe9fa8da02fb4810525c58cdf3f40e0bf885adcd555db066d1d7b1a869",
+      "original_instruction_bytes_sha256": "c2dbc13436f1fed34f20d11c16783641e110cd4fc4654c0681842cbcae216f68",
+      "direct_call_targets": [
+        "0x400db014",
+        "0x400f7f48",
+        "0x40112f04",
+        "0x40125680",
+        "0x40125738",
+        "0x40125764",
+        "0x401258c0",
+        "0x40133fdc",
+        "0x40136b78",
+        "0x40136db4",
+        "0x40137360",
+        "0x4013742c"
+      ]
+    },
+    {
+      "address": "0x40125ae0",
+      "recovered_role": "wire_static_initializer",
+      "instruction_count": 14,
+      "instruction_export_sha256": "7175a1cfeb158eee8e339124c39902b766d29b5047fa4236ecb2a70a24637f97",
+      "original_instruction_bytes_sha256": "e5f4c88c0f106a155754cc7c344aeef96903d8b7f05db51a6ff9561a60ea97fc",
+      "direct_call_targets": [
+        "0x40125868",
+        "0x4012a5d8"
+      ]
+    },
+    {
+      "address": "0x400d2160",
+      "recovered_role": "enable_heater_timers",
+      "instruction_count": 17,
+      "instruction_export_sha256": "22978e4d703ad27bdeac90adc4ff73f2d9f4924e14ad3f6cbf054eb7db2f9da5",
+      "original_instruction_bytes_sha256": "704dd1cb9d6f608be182860de7c03f17c88931b5d4b02ac505214b3aa3d14313",
+      "direct_call_targets": []
+    },
+    {
+      "address": "0x400d5b24",
+      "recovered_role": "screen_power",
+      "instruction_count": 27,
+      "instruction_export_sha256": "587a0ff1d6a0ceec8f65835392de8e3790c7fd46668727063d20360ae8522f11",
+      "original_instruction_bytes_sha256": "617792efdb3a9cdf5d3b05346a19ab29369eef51a47aeffefe25c89a51b4b627",
+      "direct_call_targets": [
+        "0x40080a9c",
+        "0x40081388",
+        "0x4008c2b4",
+        "0x400d21cc",
+        "0x4012d530"
+      ]
+    }
+  ],
+  "static_initializers": {
+    "first": "0x3f48581c",
+    "last": "0x3f4858cc",
+    "count": 45,
+    "call_order": "descending pointer address",
+    "runner": "0x40134560",
+    "entries": [
+      {
+        "pointer_address": "0x3f48581c",
+        "file_offset": 546844,
+        "target": "0x400d030c",
+        "discovered_function_name": "candidate_400d030c"
+      },
+      {
+        "pointer_address": "0x3f485820",
+        "file_offset": 546848,
+        "target": "0x4011fc08",
+        "discovered_function_name": "candidate_4011fc08"
+      },
+      {
+        "pointer_address": "0x3f485824",
+        "file_offset": 546852,
+        "target": "0x40121914",
+        "discovered_function_name": "candidate_40121914"
+      },
+      {
+        "pointer_address": "0x3f485828",
+        "file_offset": 546856,
+        "target": "0x40121940",
+        "discovered_function_name": "candidate_40121940"
+      },
+      {
+        "pointer_address": "0x3f48582c",
+        "file_offset": 546860,
+        "target": "0x40121b4c",
+        "discovered_function_name": "candidate_40121b4c"
+      },
+      {
+        "pointer_address": "0x3f485830",
+        "file_offset": 546864,
+        "target": "0x40122458",
+        "discovered_function_name": "candidate_40122458"
+      },
+      {
+        "pointer_address": "0x3f485834",
+        "file_offset": 546868,
+        "target": "0x40122dbc",
+        "discovered_function_name": "candidate_40122dbc"
+      },
+      {
+        "pointer_address": "0x3f485838",
+        "file_offset": 546872,
+        "target": "0x40122e00",
+        "discovered_function_name": "candidate_40122e00"
+      },
+      {
+        "pointer_address": "0x3f48583c",
+        "file_offset": 546876,
+        "target": "0x4012339c",
+        "discovered_function_name": "candidate_4012339c"
+      },
+      {
+        "pointer_address": "0x3f485840",
+        "file_offset": 546880,
+        "target": "0x401235e4",
+        "discovered_function_name": "candidate_401235e4"
+      },
+      {
+        "pointer_address": "0x3f485844",
+        "file_offset": 546884,
+        "target": "0x40123758",
+        "discovered_function_name": "candidate_40123758"
+      },
+      {
+        "pointer_address": "0x3f485848",
+        "file_offset": 546888,
+        "target": "0x40123774",
+        "discovered_function_name": "candidate_40123774"
+      },
+      {
+        "pointer_address": "0x3f48584c",
+        "file_offset": 546892,
+        "target": "0x401237e4",
+        "discovered_function_name": "candidate_401237e4"
+      },
+      {
+        "pointer_address": "0x3f485850",
+        "file_offset": 546896,
+        "target": "0x40123ec8",
+        "discovered_function_name": "candidate_40123ec8"
+      },
+      {
+        "pointer_address": "0x3f485854",
+        "file_offset": 546900,
+        "target": "0x40124458",
+        "discovered_function_name": "candidate_40124458"
+      },
+      {
+        "pointer_address": "0x3f485858",
+        "file_offset": 546904,
+        "target": "0x40124c6c",
+        "discovered_function_name": "candidate_40124c6c"
+      },
+      {
+        "pointer_address": "0x3f48585c",
+        "file_offset": 546908,
+        "target": "0x40124c88",
+        "discovered_function_name": "candidate_40124c88"
+      },
+      {
+        "pointer_address": "0x3f485860",
+        "file_offset": 546912,
+        "target": "0x40124f0c",
+        "discovered_function_name": "candidate_40124f0c"
+      },
+      {
+        "pointer_address": "0x3f485864",
+        "file_offset": 546916,
+        "target": "0x40124f28",
+        "discovered_function_name": "candidate_40124f28"
+      },
+      {
+        "pointer_address": "0x3f485868",
+        "file_offset": 546920,
+        "target": "0x40125298",
+        "discovered_function_name": "candidate_40125298"
+      },
+      {
+        "pointer_address": "0x3f48586c",
+        "file_offset": 546924,
+        "target": "0x40125628",
+        "discovered_function_name": "candidate_40125628"
+      },
+      {
+        "pointer_address": "0x3f485870",
+        "file_offset": 546928,
+        "target": "0x40125808",
+        "discovered_function_name": "candidate_40125808"
+      },
+      {
+        "pointer_address": "0x3f485874",
+        "file_offset": 546932,
+        "target": "0x40125ae0",
+        "discovered_function_name": "candidate_40125ae0"
+      },
+      {
+        "pointer_address": "0x3f485878",
+        "file_offset": 546936,
+        "target": "0x40125e7c",
+        "discovered_function_name": "candidate_40125e7c"
+      },
+      {
+        "pointer_address": "0x3f48587c",
+        "file_offset": 546940,
+        "target": "0x401264fc",
+        "discovered_function_name": "candidate_401264fc"
+      },
+      {
+        "pointer_address": "0x3f485880",
+        "file_offset": 546944,
+        "target": "0x40126628",
+        "discovered_function_name": "candidate_40126628"
+      },
+      {
+        "pointer_address": "0x3f485884",
+        "file_offset": 546948,
+        "target": "0x40126ad8",
+        "discovered_function_name": "candidate_40126ad8"
+      },
+      {
+        "pointer_address": "0x3f485888",
+        "file_offset": 546952,
+        "target": "0x40127214",
+        "discovered_function_name": "candidate_40127214"
+      },
+      {
+        "pointer_address": "0x3f48588c",
+        "file_offset": 546956,
+        "target": "0x4012a310",
+        "discovered_function_name": "candidate_4012a310"
+      },
+      {
+        "pointer_address": "0x3f485890",
+        "file_offset": 546960,
+        "target": "0x4012a344",
+        "discovered_function_name": "candidate_4012a344"
+      },
+      {
+        "pointer_address": "0x3f485894",
+        "file_offset": 546964,
+        "target": "0x4012a560",
+        "discovered_function_name": "candidate_4012a560"
+      },
+      {
+        "pointer_address": "0x3f485898",
+        "file_offset": 546968,
+        "target": "0x4012a668",
+        "discovered_function_name": "candidate_4012a668"
+      },
+      {
+        "pointer_address": "0x3f48589c",
+        "file_offset": 546972,
+        "target": "0x4012a71c",
+        "discovered_function_name": "candidate_4012a71c"
+      },
+      {
+        "pointer_address": "0x3f4858a0",
+        "file_offset": 546976,
+        "target": "0x4012a8e0",
+        "discovered_function_name": "candidate_4012a8e0"
+      },
+      {
+        "pointer_address": "0x3f4858a4",
+        "file_offset": 546980,
+        "target": "0x4012a950",
+        "discovered_function_name": "candidate_4012a950"
+      },
+      {
+        "pointer_address": "0x3f4858a8",
+        "file_offset": 546984,
+        "target": "0x40135be0",
+        "discovered_function_name": "FUN_40135be0"
+      },
+      {
+        "pointer_address": "0x3f4858ac",
+        "file_offset": 546988,
+        "target": "0x40136768",
+        "discovered_function_name": "FUN_40136768"
+      },
+      {
+        "pointer_address": "0x3f4858b0",
+        "file_offset": 546992,
+        "target": "0x40136790",
+        "discovered_function_name": "FUN_40136790"
+      },
+      {
+        "pointer_address": "0x3f4858b4",
+        "file_offset": 546996,
+        "target": "0x40136efc",
+        "discovered_function_name": "FUN_40136efc"
+      },
+      {
+        "pointer_address": "0x3f4858b8",
+        "file_offset": 547000,
+        "target": "0x4019d018",
+        "discovered_function_name": "candidate_4019d018"
+      },
+      {
+        "pointer_address": "0x3f4858bc",
+        "file_offset": 547004,
+        "target": "0x4019d490",
+        "discovered_function_name": "FUN_4019d490"
+      },
+      {
+        "pointer_address": "0x3f4858c0",
+        "file_offset": 547008,
+        "target": "0x4019db1c",
+        "discovered_function_name": "candidate_4019db1c"
+      },
+      {
+        "pointer_address": "0x3f4858c4",
+        "file_offset": 547012,
+        "target": "0x4019dc2c",
+        "discovered_function_name": "FUN_4019dc2c"
+      },
+      {
+        "pointer_address": "0x3f4858c8",
+        "file_offset": 547016,
+        "target": "0x4019dd3c",
+        "discovered_function_name": "FUN_4019dd3c"
+      },
+      {
+        "pointer_address": "0x3f4858cc",
+        "file_offset": 547020,
+        "target": "0x4019ddf4",
+        "discovered_function_name": "FUN_4019ddf4"
+      }
+    ]
+  },
+  "core_vtable": {
+    "address": "0x3f41feb4",
+    "entries": [
+      {
+        "offset": 0,
+        "target": "0x400edc08"
+      },
+      {
+        "offset": 4,
+        "target": "0x400edb1c"
+      },
+      {
+        "offset": 8,
+        "target": "0x400d2144"
+      },
+      {
+        "offset": 12,
+        "target": "0x40113078"
+      },
+      {
+        "offset": 16,
+        "target": "0x40120120"
+      },
+      {
+        "offset": 20,
+        "target": "0x400e5da4"
+      },
+      {
+        "offset": 24,
+        "target": "0x40101428"
+      }
+    ],
+    "setup_offset": 12,
+    "tick_offset": 16
+  },
+  "task": {
+    "entry": "0x401218d4",
+    "name": "coreLoopTask",
+    "stack_bytes": 16384,
+    "priority": 1,
+    "core_id": 1,
+    "created_by": "0x400ee978",
+    "task_creation_function": "0x40091254"
+  },
+  "hardware_bindings": {
+    "spi": {
+      "bus": 2,
+      "sck": 17,
+      "miso": 5,
+      "mosi": 16,
+      "ss": -1,
+      "frequency_hz": 4000000,
+      "data_mode": 0
+    },
+    "i2c": [
+      {
+        "bus": 0,
+        "sdk_object": "0x3ffc3158",
+        "sda": 22,
+        "scl": 23,
+        "frequency_hz": 400000,
+        "expected_device_addresses": [
+          118,
+          25,
+          52
+        ]
+      },
+      {
+        "bus": 1,
+        "sdk_object": "0x3ffc3028",
+        "sda": 25,
+        "scl": 26,
+        "frequency_hz": 400000,
+        "expected_device_addresses": [
+          64
+        ]
+      }
+    ],
+    "screen_power_pin": 33,
+    "heater_output_pin": 12,
+    "heater_enable_pin": 19,
+    "hardware_timers": [
+      {
+        "id": 0,
+        "divider": 80,
+        "count_up": true,
+        "edge": true,
+        "period_us": 1000000,
+        "callback": "0x400805dc",
+        "auto_reload": true
+      },
+      {
+        "id": 1,
+        "divider": 80,
+        "count_up": true,
+        "edge": true,
+        "period_us": 20000,
+        "callback": "0x40080540",
+        "auto_reload": true
+      }
+    ],
+    "task_watchdog": {
+      "timeout_seconds": 45,
+      "panic": true,
+      "register_current_task": true
+    },
+    "claim": "Observed 0.0.119 application configuration, not independent physical board identification"
+  },
+  "discovery": {
+    "baseline_recognized_functions": 5274,
+    "aligned_entry_candidates": 5810,
+    "new_entry_candidates": 542,
+    "new_address_taken_candidates": 441,
+    "new_unreferenced_candidates": 101
+  },
+  "discovery_definition_counts": {
+    "new_functions_defined": 436,
+    "overlapping_candidates": 2,
+    "rejected_candidates": 3
+  },
+  "expanded_export_summary": {
+    "schema_version": 1,
+    "language_id": "Xtensa:LE:32:default",
+    "compiler_spec": "default",
+    "analysis_timed_out": false,
+    "functions_recognized": 5710,
+    "decompilation_completed": 5709,
+    "decompilation_failed": 1,
+    "unresolved_names": 5274,
+    "function_inventory_exhaustive": false,
+    "buildable_source": false,
+    "behaviorally_verified": false,
+    "hardware_tested": false,
+    "segments": [
+      {
+        "name": "segment_0_drom",
+        "address": "0x3f400020",
+        "size": 547096,
+        "read": true,
+        "write": false,
+        "execute": false
+      },
+      {
+        "name": "segment_3_dram",
+        "address": "0x3ffbdb60",
+        "size": 13092,
+        "read": true,
+        "write": true,
+        "execute": false
+      },
+      {
+        "name": "segment_5_iram",
+        "address": "0x40080000",
+        "size": 1024,
+        "read": true,
+        "write": false,
+        "execute": true
+      },
+      {
+        "name": "segment_6_iram",
+        "address": "0x40080400",
+        "size": 28548,
+        "read": true,
+        "write": false,
+        "execute": true
+      },
+      {
+        "name": "segment_8_iram",
+        "address": "0x40087384",
+        "size": 50024,
+        "read": true,
+        "write": false,
+        "execute": true
+      },
+      {
+        "name": "segment_7_irom",
+        "address": "0x400d0018",
+        "size": 994696,
+        "read": true,
+        "write": false,
+        "execute": true
+      }
+    ],
+    "analysis_settings": {
+      "ASCII Strings": "true",
+      "ASCII Strings.Create Strings Containing Existing Strings": "true",
+      "ASCII Strings.Create Strings Containing References": "true",
+      "ASCII Strings.Force Model Reload": "false",
+      "ASCII Strings.Minimum String Length": "LEN_5",
+      "ASCII Strings.Model File": "StringModel.sng",
+      "ASCII Strings.Require Null Termination for String": "true",
+      "ASCII Strings.Search Only in Accessible Memory Blocks": "true",
+      "ASCII Strings.String Start Alignment": "ALIGN_1",
+      "ASCII Strings.String end alignment": "4",
+      "Aggressive Instruction Finder": "false",
+      "Aggressive Instruction Finder.Create Analysis Bookmarks": "true",
+      "Apply Data Archives": "true",
+      "Apply Data Archives.Archive Chooser": "[Auto-Detect]",
+      "Apply Data Archives.Create Analysis Bookmarks": "true",
+      "Basic Constant Reference Analyzer": "true",
+      "Basic Constant Reference Analyzer.Create Data from pointer": "false",
+      "Basic Constant Reference Analyzer.Function parameter/return Pointer analysis": "true",
+      "Basic Constant Reference Analyzer.Max Threads": "2",
+      "Basic Constant Reference Analyzer.Min absolute reference": "4",
+      "Basic Constant Reference Analyzer.Require pointer param data type": "false",
+      "Basic Constant Reference Analyzer.Speculative reference max": "256",
+      "Basic Constant Reference Analyzer.Speculative reference min": "512",
+      "Basic Constant Reference Analyzer.Stored Value Pointer analysis": "true",
+      "Basic Constant Reference Analyzer.Trust values read from writable memory": "true",
+      "Call Convention ID": "true",
+      "Call Convention ID.Analysis Decompiler Timeout (sec)": "60",
+      "Call-Fixup Installer": "true",
+      "Condense Filler Bytes": "false",
+      "Condense Filler Bytes.Filler Value": "Auto",
+      "Condense Filler Bytes.Minimum number of sequential bytes": "1",
+      "Create Address Tables": "true",
+      "Create Address Tables.Allow Offcut References": "false",
+      "Create Address Tables.Auto Label Table": "false",
+      "Create Address Tables.Create Analysis Bookmarks": "true",
+      "Create Address Tables.Maxmimum Pointer Distance": "16777215",
+      "Create Address Tables.Minimum Pointer Address": "4132",
+      "Create Address Tables.Minimum Table Size": "3",
+      "Create Address Tables.Pointer Alignment": "1",
+      "Create Address Tables.Relocation Table Guide": "true",
+      "Create Address Tables.Table Alignment": "4",
+      "Data Reference": "true",
+      "Data Reference.Address Table Alignment": "1",
+      "Data Reference.Address Table Minimum Size": "3",
+      "Data Reference.Align End of Strings": "false",
+      "Data Reference.Ascii String References": "true",
+      "Data Reference.Create Address Tables": "false",
+      "Data Reference.Minimum String Length": "5",
+      "Data Reference.References to Pointers": "true",
+      "Data Reference.Relocation Table Guide": "true",
+      "Data Reference.Respect Execute Flag": "true",
+      "Data Reference.Subroutine References": "true",
+      "Data Reference.Switch Table References": "false",
+      "Data Reference.Unicode String References": "true",
+      "Decompiler Parameter ID": "false",
+      "Decompiler Parameter ID.Analysis Clear Level": "ANALYSIS",
+      "Decompiler Parameter ID.Analysis Decompiler Timeout (sec)": "60",
+      "Decompiler Parameter ID.Commit Data Types": "true",
+      "Decompiler Parameter ID.Commit Void Return Values": "false",
+      "Decompiler Parameter ID.Prototype Evaluation": "__stdcall",
+      "Decompiler Switch Analysis": "true",
+      "Decompiler Switch Analysis.Analysis Decompiler Timeout (sec)": "60",
+      "Demangler GNU": "true",
+      "Demangler GNU.Apply Function Calling Conventions": "true",
+      "Demangler GNU.Apply Function Signatures": "true",
+      "Demangler GNU.Demangle Only Known Mangled Symbols": "false",
+      "Demangler GNU.Demangler Format": "AUTO",
+      "Demangler GNU.Timeout (seconds)": "3",
+      "Demangler GNU.Use Deprecated Demangler": "false",
+      "Demangler GNU.Use Standard Text Replacements": "true",
+      "Disassemble Entry Points": "true",
+      "Disassemble Entry Points.Respect Execute Flag": "true",
+      "Embedded Media": "true",
+      "Embedded Media.Create Analysis Bookmarks": "true",
+      "External Entry References": "true",
+      "Function ID": "true",
+      "Function ID.Always Apply FID Labels": "false",
+      "Function ID.Create Analysis Bookmarks": "true",
+      "Function ID.Ignore Database Filters": "false",
+      "Function ID.Instruction Count Threshold": "14.6",
+      "Function ID.Multiple Match Threshold": "30.0",
+      "Function Start Search": "true",
+      "Function Start Search After Code": "true",
+      "Function Start Search After Code.Bookmark Functions": "false",
+      "Function Start Search After Code.Search Data Blocks": "false",
+      "Function Start Search After Data": "true",
+      "Function Start Search After Data.Bookmark Functions": "false",
+      "Function Start Search After Data.Search Data Blocks": "false",
+      "Function Start Search.Bookmark Functions": "false",
+      "Function Start Search.Search Data Blocks": "false",
+      "Non-Returning Functions - Discovered": "true",
+      "Non-Returning Functions - Discovered.Create Analysis Bookmarks": "true",
+      "Non-Returning Functions - Discovered.Function Non-return Threshold": "3",
+      "Non-Returning Functions - Discovered.Repair Flow Damage": "true",
+      "Reference": "true",
+      "Reference.Address Table Alignment": "1",
+      "Reference.Address Table Minimum Size": "3",
+      "Reference.Align End of Strings": "false",
+      "Reference.Ascii String References": "true",
+      "Reference.Create Address Tables": "false",
+      "Reference.Minimum String Length": "5",
+      "Reference.References to Pointers": "true",
+      "Reference.Relocation Table Guide": "true",
+      "Reference.Respect Execute Flag": "true",
+      "Reference.Subroutine References": "true",
+      "Reference.Switch Table References": "false",
+      "Reference.Unicode String References": "true",
+      "Scalar Operand References": "true",
+      "Scalar Operand References.Relocation Table Guide": "true",
+      "Shared Return Calls": "true",
+      "Shared Return Calls.Allow Conditional Jumps": "false",
+      "Shared Return Calls.Assume Contiguous Functions Only": "true",
+      "Source Language Support": "true",
+      "Source Language Support.Add specification extensions": "true",
+      "Stack": "true",
+      "Stack.Create Local Variables": "true",
+      "Stack.Create Param Variables": "false",
+      "Stack.Max Threads": "2",
+      "Subroutine References": "true",
+      "Subroutine References.Create Thunks Early": "true",
+      "Variadic Function Signature Override": "true",
+      "Variadic Function Signature Override.Create Analysis Bookmarks": "false"
+    }
+  },
+  "source_sha256": {
+    "tools/recover_startup.py": "304fb41e225fd76bd80851350f38282770894ec38ed17a7f8bd78d1c6350ab23",
+    "tools/discover_function_entries.py": "4423dee217290d3bc0908ec152c0f74a91e09b44d8a63761e7283f7b2fbb46c4",
+    "tools/ghidra/DiscoverZCallbacks.java": "7083811bf2d49e631c62cac3a029b217909d3b2ce6f91e14af42a9c4ebc0adfd",
+    "analysis/callback-entry-candidates.json": "ed468ffd76a2e1f71c90e1340fa5dde426819e42fe0659098310ad5e9294e88e",
+    "analysis/callback-discovery.json": "4b71a84211ee8eda87722f69e85e1ac928ea79c94eadd241eeed6546abdfa0aa"
+  },
+  "expanded_function_inventory_sha256": "fa61c900a58393baafccfe063c35603e46c0e1bcf10b460f2bdb111d37fb11d2",
+  "function_inventory_exhaustive": false,
+  "hardware_tested": false
+}
