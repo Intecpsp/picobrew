@@ -201,6 +201,10 @@ function BrewerMachine({ id }: { id: string }) {
   const hasRecipes = supports(device.capabilities, 'recipes')
   const showRecipes = hasRecipes && (task === 'recipes' || !programs.length)
   const live = device.online ? status : undefined
+  const stepNumber =
+    live?.busy && live.current_step >= 0 && live.current_step < live.step_count
+      ? `Step ${live.current_step + 1} of ${live.step_count}`
+      : ''
   const allowed = (name: string) => device.online && commands.includes(name)
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
@@ -243,8 +247,9 @@ function BrewerMachine({ id }: { id: string }) {
                 disabled={!allowed('stop') || pending === 'stop' || !!live?.stopped}
                 onClick={() => void command('stop')}
                 aria-label="Stop machine outputs"
+                title="Immediately latch heating and pumping off"
               >
-                <Square size={14} fill="currentColor" /> Stop
+                <Square size={14} fill="currentColor" /> Stop outputs
               </Button>
             )}
           </>
@@ -377,7 +382,9 @@ function BrewerMachine({ id }: { id: string }) {
                   ? 'Outputs stopped'
                   : live?.busy
                     ? 'Current session'
-                    : 'Run a program'
+                    : live
+                      ? 'Run a program'
+                      : 'Waiting for machine status'
             }
             description={
               !device.online
@@ -396,11 +403,7 @@ function BrewerMachine({ id }: { id: string }) {
           )}
           {live?.busy && (
             <div className="session-step">
-              <span>
-                {live.step_count
-                  ? `Step ${live.current_step + 1} of ${live.step_count}`
-                  : 'Current step'}
-              </span>
+              <span>{stepNumber || 'Current step'}</span>
               <strong>{live.step_name || 'Follow the front panel'}</strong>
               {live.step_seconds > 0 && (
                 <span>{duration(live.step_seconds * 1000)} remaining in this step</span>
@@ -433,7 +436,7 @@ function BrewerMachine({ id }: { id: string }) {
                 ))}
             </div>
           )}
-          {device.online && !live?.busy && !live?.stopped && (
+          {live && !live.busy && !live.stopped && (
             <>
               {hasRecipes && programs.length > 0 && (
                 <div className="program-switch" role="group" aria-label="Program type">
@@ -589,30 +592,27 @@ function BrewerMachine({ id }: { id: string }) {
               <div className="machine-metrics">
                 <Metric
                   label="Wort temperature"
-                  value={temperature(live?.wort_f, hub.unit)}
-
+                  value={temperature(live.wort_f, hub.unit)}
                   accent
                 />
-                <Metric label="Thermoblock" value={temperature(live?.thermoblock_f, hub.unit)} />
+                <Metric label="Thermoblock" value={temperature(live.thermoblock_f, hub.unit)} />
                 <Metric
                   label="Target"
                   value={
-                    live?.target_f == null
+                    live.target_f == null
                       ? '—'
                       : live.target_f
                         ? temperature(live.target_f, hub.unit)
                         : 'Unheated'
                   }
-                  note={live?.step_name || ''}
+                  note={live.step_name || ''}
                 />
                 <Metric
                   label="Step time"
                   value={
-                    live?.busy && live.step_seconds > 0 ? duration(live.step_seconds * 1000) : '—'
+                    live.busy && live.step_seconds > 0 ? duration(live.step_seconds * 1000) : '—'
                   }
-                  note={
-                    live?.step_count ? `Step ${live.current_step + 1} of ${live.step_count}` : ''
-                  }
+                  note={stepNumber}
                 />
               </div>
             </section>

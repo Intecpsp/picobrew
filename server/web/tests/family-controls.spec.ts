@@ -340,6 +340,13 @@ for (const width of [1280, 390]) {
         await expect(page.getByRole('button', { name: 'Resume session' })).toBeEnabled()
         await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
         await expect(page.getByRole('button', { name: 'Stop machine outputs' })).toBeEnabled()
+        Object.assign(device, { status: null })
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(
+          page.getByRole('heading', { name: 'Waiting for machine status' })
+        ).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
+        Object.assign(device, { status })
         Object.assign(device, { online: false })
         await page.getByRole('button', { name: 'Test connection', exact: true }).click()
         await expect(page.getByRole('heading', { name: 'Machine offline' })).toBeVisible()
