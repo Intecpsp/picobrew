@@ -6,13 +6,16 @@ The feature is enabled in a normally started Hub. An online Pico running standal
 
 ## One-time USB setup
 
-A stock or 1.2.0 brewer cannot install its first OTA-capable system over Wi-Fi. The guarded USB installer currently has a verified backup and allocation profile for one Pico Pro. On that profile, follow the [USB installation guide](macos-usb-installation.md) to provision the key and install the 1.3.0 main application and website. In a fresh programming session, use the same original backup and key with:
+A brewer running stock or standalone 1.0–1.2 needs a one-time USB upgrade. The guarded installer targets one appliance with a pinned original backup and allocation layout. The owner identified the brewer previously recorded under the Pico Pro backup filename as a Pico S. Both first-install commands accept an explicit model. The backup filename is historical and does not determine model selection.
+
+Follow the [USB guide](macos-usb-installation.md) for power-on timing, the backup, a new private report path per session and the existing API key. For that Pico S, use the following commands from this component, one programming session at a time:
 
 ```sh
-python tools/pico_flash_install.py install-recovery --backup "$BACKUP" --key-file "$KEY_FILE" --output "$RECOVERY_REPORT"
+sudo "$PYTHON" tools/pico_flash_install.py install --model pico-s --backup "$BACKUP" --key-file "$KEY_FILE" --firmware firmware/standalone/pico-s/pico-s-standalone.bin --output "$MAIN_REPORT"
+sudo "$PYTHON" tools/pico_flash_install.py install-recovery --model pico-s --backup "$BACKUP" --key-file "$KEY_FILE" --output "$RECOVERY_REPORT"
 ```
 
-Use a new absolute report path. This operation verifies and writes the packaged Hub recovery to the existing image 1 allocation, reads it back, and checks that the normal application remains selected. Reboot the brewer into the regular menu and reconnect from the Hub. For a Pico S or any other flash layout, initial provisioning still requires its own verified backup and reviewed installation profile. The Pro USB command is specific to its pinned appliance.
+The application and recovery files passed full readback on this appliance during its direct USB upgrade from 1.0.0. The recovery operation retained the active application, boot selection and device key. The Pro target retains the existing CLI default. Other appliances require their own reviewed backup and layout. Once the two writes verify, power off, disconnect USB, boot normally and check the reported model, version and OTA capability.
 
 ## Transfer and recovery
 

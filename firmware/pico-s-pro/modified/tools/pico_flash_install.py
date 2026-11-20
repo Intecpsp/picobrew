@@ -46,7 +46,7 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 7
+INSTALL_REVISION = 8
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
@@ -237,10 +237,19 @@ def _validate_application_size(size):
         raise InstallError("Application payload exceeds the conservative existing-allocation capacity limit")
 
 
-def load_candidate(path):
-    _validate_application_size(CANDIDATE_SIZE)
-    data = _read_regular(path, CANDIDATE_SIZE)
-    if len(data) != CANDIDATE_SIZE or hashlib.sha256(data).hexdigest() != CANDIDATE_SHA256:
+def candidate_identity(model):
+    if model == "pico-pro":
+        return CANDIDATE_SIZE, CANDIDATE_SHA256
+    if model == "pico-s":
+        return 166280, "903873fbaa2c6338956c22689afc911c64635dafbc52c0b913e0613d5eff230b"
+    raise InstallError("Unknown target model")
+
+
+def load_candidate(path, model="pico-pro"):
+    size, digest = candidate_identity(model)
+    _validate_application_size(size)
+    data = _read_regular(path, size)
+    if len(data) != size or hashlib.sha256(data).hexdigest() != digest:
         raise InstallError("The firmware does not match the pinned standalone image")
     return data
 
@@ -305,7 +314,7 @@ def _image_metadata(data):
     return {"size_bytes": len(data), "sha256": hashlib.sha256(data).hexdigest()}
 
 
-def _approved_current_applications(mode):
+def _approved_current_applications(mode, model="pico-pro"):
     """Exact live images allowed before mutation; install payload stays pinned."""
     identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
     if mode == "install":
@@ -314,9 +323,9 @@ def _approved_current_applications(mode):
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
                            (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
-                           (CANDIDATE_SIZE, CANDIDATE_SHA256)))
+                           candidate_identity(model)))
     if mode == "install-recovery":
-        identities = [(CANDIDATE_SIZE, CANDIDATE_SHA256)]
+        identities = [candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
@@ -330,7 +339,7 @@ def _protected_matches(name, observed):
     return observed == _expected_public(name) or (name == RECOVERY_NAME and observed == RECOVERY_IMAGE)
 
 
-def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None):
+def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None, model="pico-pro"):
     """Create a session whose complete write bytes and destinations are pinned.
 
     The inherited guard still owns the exact SRAM-helper upload. Only this
@@ -356,7 +365,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
     if APP_NAME in immutable:
         _validate_application_size(len(immutable[APP_NAME]))
         expected = ((ORIGINAL_SIZE, ORIGINAL_SHA256) if mode == "restore"
-                    else (CANDIDATE_SIZE, CANDIDATE_SHA256))
+                    else candidate_identity(model))
         if (len(immutable[APP_NAME]), hashlib.sha256(immutable[APP_NAME]).hexdigest()) != expected:
             raise InstallError("Registered application payload is not the pinned image")
     for name, entry in web_assets.items():
@@ -369,6 +378,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
         def __init__(self):
             super().__init__()
             self.operation = mode
+            self.target_model = model
             self.protocol_module = cc
             self.journal = journal
             self.file_infos = {}
@@ -467,7 +477,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
                 raise InstallError("The additional image slot is not confirmed absent")
             if self.operation != "restore":
                 app = self.observed.get(APP_NAME)
-                if app not in _approved_current_applications(self.operation):
+                if app not in _approved_current_applications(self.operation, self.target_model):
                     raise InstallError("Current application is not an approved stock/standalone image; use restore")
 
         def arm_write(self, name, flags):
@@ -1029,7 +1039,7 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
         data = read_file_bytes(connection, APP_NAME)
         observed = _image_metadata(data)
         before["application"] = observed
-        if observed not in _approved_current_applications(mode):
+        if observed not in _approved_current_applications(mode, connection.target_model):
             raise InstallError("Current application is not an approved stock/standalone image; use restore")
         progress(f"VERIFIED: {APP_NAME}: {len(data):,} bytes; SHA256 {observed['sha256']}")
     connection._live_state_ok()
@@ -1077,7 +1087,7 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
 
     if mode == "install":
         _install_web_bundle(connection, details, progress, web_plans)
-        already = before["application"] == {"size_bytes": CANDIDATE_SIZE, "sha256": CANDIDATE_SHA256}
+        already = before["application"] == _image_metadata(connection.payloads[APP_NAME])
         details["application_already_installed"] = already
         if not already:
             progress("APPLICATION: rewriting the existing image2 allocation with the pinned standalone image")
@@ -1196,6 +1206,9 @@ def main(argv=None):
         command.add_argument("--power-wait", type=float, default=60)
         if name != "restore":
             command.add_argument("--key-file", required=True, type=Path, help="Existing private host key file")
+        if name in ("install", "install-recovery"):
+            command.add_argument("--model", choices=("pico-pro", "pico-s"), default="pico-pro",
+                                 help="Exact application target on the pinned appliance (default: pico-pro)")
         if name == "install":
             command.add_argument("--firmware", required=True, type=Path, help="Pinned standalone binary")
             command.add_argument("--web-directory", type=Path, default=WEB_DIRECTORY,
@@ -1217,7 +1230,10 @@ def main(argv=None):
         owner = backup.sudo_owner()
         original, details["backup"] = verify_backup(args.backup)
         key = load_key(args.key_file, owner) if args.mode != "restore" else None
-        candidate = load_candidate(args.firmware) if args.mode == "install" else None
+        model = getattr(args, "model", "pico-pro")
+        if args.mode in ("install", "install-recovery"):
+            details["target_model"] = model
+        candidate = load_candidate(args.firmware, model) if args.mode == "install" else None
         web_manifest, web_payloads = (load_web_bundle(args.web_directory)
                                       if args.mode == "install" else (None, {}))
         if candidate is not None:
@@ -1261,7 +1277,7 @@ def main(argv=None):
                             port = backup.USBSerialPort(raw)
                             connection = build_connection(cc, probe_module, port, helper,
                                                           args.mode, payloads, files,
-                                                          web_manifest=web_manifest)
+                                                          web_manifest=web_manifest, model=model)
                             connection.vinfo = cc.CC3x00VersionInfo.from_packet(payload)
                             if (not connection.vinfo.is_cc3200
                                     or connection.vinfo.bootloader[1] != 4):

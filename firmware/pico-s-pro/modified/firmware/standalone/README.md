@@ -21,8 +21,7 @@ files are generated in the model-specific build output. The main firmware hands 
 Zymatic cannot use these images merely by changing a label.
 
 The [guarded USB installer](../../docs/macos-usb-installation.md) remains tied to
-a pinned Pro backup and allocation layout. A separately named S image does not
-qualify another appliance for that installer. Preserve and verify each appliance's own backup and installation
+one pinned backup and allocation layout. Use `--model pico-s` for both USB stages on the confirmed Pico S. Preserve and verify each appliance's own backup and installation
 requirements. Physical brew and interlock validation remain in the
 [hardware acceptance record](../../docs/hardware-validation.md).
 
