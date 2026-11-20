@@ -123,13 +123,12 @@ export function AIWorkbench({
   return (
     <section className="contextual-ai" aria-label={title}>
       {embedded ? (
-        <SectionHeading title={title} description={description} actions={provider} />
+        <SectionHeading title={title} description={description} />
       ) : (
         <PageTitle
           eyebrow="A SECOND PERSPECTIVE ON YOUR CRAFT"
           title={title}
           description={description}
-          actions={provider}
         />
       )}
       {!settings.loading && !enabled && (
@@ -185,7 +184,10 @@ export function AIWorkbench({
             </Field>
             <ErrorBanner message={error || settings.error} />
             <div className="assistant-compose-footer">
-              <small>Uses your configured provider. Responses may take a moment.</small>
+              <div className="assistant-compose-context">
+                {provider}
+                <small>Responses may take a moment.</small>
+              </div>
               <Button
                 disabled={
                   !enabled ||

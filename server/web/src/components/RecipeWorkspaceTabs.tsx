@@ -38,14 +38,12 @@ export function RecipeWorkspaceTabs({ route }: { route: string }) {
           </a>
         ))}
       </nav>
-      <a
-        className="button secondary recipe-create-ai"
-        href="#/recipes/create-with-ai"
-        aria-current={route.split('?')[0] === '/recipes/create-with-ai' ? 'page' : undefined}
-      >
-        <Sparkles size={17} aria-hidden="true" />
-        Create with AI
-      </a>
+      {route.split('?')[0] !== '/recipes/create-with-ai' && (
+        <a className="button secondary recipe-create-ai" href="#/recipes/create-with-ai">
+          <Sparkles size={17} aria-hidden="true" />
+          Create with AI
+        </a>
+      )}
     </div>
   )
 }
