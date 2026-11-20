@@ -1,0 +1,37 @@
+{
+  "variant": "ssd1325",
+  "cases": 126,
+  "functions": [
+    "pico_alarm_until_press_or_timeout",
+    "pico_diagnostic_buzzer",
+    "pico_diagnostic_drain_pump",
+    "pico_diagnostic_heater",
+    "pico_diagnostic_rfid",
+    "pico_diagnostic_run_all",
+    "pico_diagnostic_sensors",
+    "pico_diagnostic_shuttle_pump",
+    "pico_diagnostic_steam_pump",
+    "pico_diagnostic_stepper",
+    "pico_diagnostic_wifi",
+    "pico_diagnostics_menu",
+    "pico_report_error",
+    "pico_ui_choose_compartment",
+    "pico_ui_confirm_still_cleaned",
+    "pico_ui_show_network_addresses",
+    "pico_ui_show_still_communication_failure",
+    "pico_ui_show_still_completion",
+    "pico_ui_show_still_temperature_warning",
+    "pico_ui_still_fan_menu",
+    "pico_ui_toggle_stepper_torque"
+  ],
+  "trace_sha256": "f63fbce7c1307119402a4bbb65b7a76123722584fe2dd2ceccaa30560e27e4b0",
+  "elf_sha256": "3d39e6c8407536496528e4cf526050902ea4a41fa9b07a17e98877e984e195d6",
+  "complete_linked_elf": true,
+  "original_code_executed": true,
+  "rebuilt_arm_code_executed": true,
+  "hardware_tested": false,
+  "limits": [
+    "Explicit drawing/input/timing/network/actuator boundaries",
+    "No physical timing, interrupt interleaving or peripheral qualification"
+  ]
+}

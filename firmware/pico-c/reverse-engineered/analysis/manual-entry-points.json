@@ -1,0 +1,352 @@
+{
+  "schema_version": 1,
+  "method": "Manual instruction and caller/literal inspection supplements the normalized candidate map; behavioral tests independently check reconstructed functions.",
+  "functions": [
+    {
+      "name": "pico_display_clear",
+      "s_pro": "0x20004488",
+      "ssd1325": "0x20004488",
+      "ssd1309": "0x20004488",
+      "evidence": "Wrapper loads the C OLED object and branches to its buffer clear; called by C setup and application screens."
+    },
+    {
+      "name": "millis",
+      "s_pro": "0x20018efc",
+      "ssd1325": "0x20017d40",
+      "ssd1309": "0x20017c9c",
+      "evidence": "Three-instruction global tick read; called by C PID, actuator timing, phase finish and application loops."
+    },
+    {
+      "name": "pico_screen_ending_step",
+      "s_pro": "0x20007494",
+      "ssd1325": "0x200078f0",
+      "ssd1309": "0x200078d8",
+      "evidence": "Three-language ending-step heading and supplied program title, invoked by phase finish."
+    },
+    {
+      "name": "pico_finish_brew_step",
+      "s_pro": "0x2000d314",
+      "ssd1325": "0x2000c57c",
+      "ssd1309": "0x2000c564",
+      "evidence": "C stops control, displays ending step, turns both pumps off, waits, moves compartment 3 to 6, clears phase/status/drain subphase. Differs from S/Pro drain rule."
+    },
+    {
+      "name": "pico_control_timers_initialize",
+      "s_pro": "0x20005080",
+      "ssd1325": "0x200051c4",
+      "ssd1309": "0x200051c8",
+      "evidence": "Timer peripheral bases, prescalers and three Thumb handler literals in C setup."
+    },
+    {
+      "name": "pico_temperature_control_timer_isr",
+      "s_pro": "0x2000e088",
+      "ssd1325": "0x2000d0c0",
+      "ssd1309": "0x2000d0a8",
+      "evidence": "Address-taken handler at C timer literal; supplemental Ghidra seed and ARM oracle test."
+    },
+    {
+      "name": "pico_heater_pump_timer_isr",
+      "s_pro": "0x2000d1c0",
+      "ssd1325": "0x2000c42c",
+      "ssd1309": "0x2000c414",
+      "evidence": "Address-taken output handler at C timer literal; supplemental Ghidra seed and ARM oracle test."
+    },
+    {
+      "name": "pico_display_text_at_cell",
+      "s_pro": "0x20005284",
+      "ssd1325": "0x20005474",
+      "ssd1309": "0x20005460",
+      "evidence": "Multiplies row and column by dynamic C font metrics before GFX cursor and Print text."
+    },
+    {
+      "name": "TimerIntClear",
+      "s_pro": "0x2001a59a",
+      "ssd1325": "0x200193de",
+      "ssd1309": "0x2001933a",
+      "evidence": "MMIO write of interrupt mask at timer base +0x24; called by C ISR."
+    },
+    {
+      "name": "pico_initialize_application_globals",
+      "s_pro": "0x200090f8",
+      "ssd1325": "0x20009600",
+      "ssd1309": "0x200095e8",
+      "evidence": "C static initializer; sets controller/PID/session and extra still connection state."
+    },
+    {
+      "name": "pico_select_builtin_font",
+      "ssd1325": "0x200053f0",
+      "ssd1309": "0x200053f4",
+      "evidence": "Null font pointer passed to GFX font selector; C display layout changes row metrics."
+    },
+    {
+      "name": "pico_select_custom_font",
+      "ssd1325": "0x200053fc",
+      "ssd1309": "0x20005400",
+      "evidence": "Verified custom font descriptor literal and GFX font-selector tail call."
+    },
+    {
+      "name": "pico_ui_draw_header",
+      "ssd1325": "0x20006d84",
+      "ssd1309": "0x20006d6c",
+      "evidence": "Row-zero centered text wrapper, called by rotary-valve diagnostics."
+    },
+    {
+      "name": "pico_ui_draw_stop_footer_text",
+      "ssd1325": "0x20006de0",
+      "ssd1309": "0x20006dc8",
+      "evidence": "Row-three footer wrapper with localized stop label."
+    },
+    {
+      "name": "pico_ui_draw_continue_footer",
+      "ssd1325": "0x2000b270",
+      "ssd1309": "0x2000b258",
+      "evidence": "C heated-drain countdown footer call."
+    },
+    {
+      "name": "pico_ui_vacuum_screen",
+      "ssd1325": "0x2000dee4",
+      "ssd1309": "0x2000decc",
+      "evidence": "Localized vacuum prompts selected by argument 0, 1 or 2; used by both C rinse procedures."
+    },
+    {
+      "name": "pico_recipe_c_drain_sequence",
+      "ssd1325": "0x2000dfb8",
+      "ssd1309": "0x2000dfa0",
+      "evidence": "C-specific shuttle sweep, heat check, heated sweep and timed final vacuum; direct ARM branch and literal inspection."
+    },
+    {
+      "name": "pico_recipe_vacuum",
+      "ssd1325": "0x2000e200",
+      "ssd1309": "0x2000e1e8",
+      "evidence": "C steam-only vacuum, click/filter-pause loop and unconditional drain-off cleanup."
+    },
+    {
+      "name": "pico_recipe_heat_flush_compartments",
+      "ssd1325": "0x2000ccc0",
+      "ssd1309": "0x2000cca8",
+      "evidence": "Six-compartment diagnostic with thermoblock heat checks and font selection; both variant entries verified."
+    },
+    {
+      "name": "pico_display_temperature_columns",
+      "ssd1325": "0x2000a358",
+      "ssd1309": "0x2000a340",
+      "evidence": "Temperature-column formatter called by C pressure-test and descale routines."
+    },
+    {
+      "name": "pico_recipe_setup_step",
+      "ssd1325": "0x200102bc",
+      "ssd1309": "0x200102a4",
+      "evidence": "C setup and inline prime procedure, verified program globals, title literals and controller offsets."
+    },
+    {
+      "name": "pico_recipe_reprime_steam",
+      "ssd1325": "0x200103a8",
+      "ssd1309": "0x20010390",
+      "evidence": "C priming-pump screen, heat check, shuttle cooling, optional logging/circulation and calibration fallback."
+    },
+    {
+      "name": "pico_recipe_rinse",
+      "ssd1325": "0x2000e270",
+      "ssd1309": "0x2000e258",
+      "evidence": "C rinse calls both C-specific drain stages; verified 120-second steam loop and 1200-second display countdown."
+    },
+    {
+      "name": "pico_recipe_manual_program",
+      "ssd1325": "0x200110e8",
+      "ssd1309": "0x200110d0",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_post_session_instructions",
+      "ssd1325": "0x20011358",
+      "ssd1309": "0x20011340",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_run_control_program",
+      "ssd1325": "0x20011414",
+      "ssd1309": "0x200113fc",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_still_program",
+      "ssd1325": "0x20011638",
+      "ssd1309": "0x20011620",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_run_control_program_default",
+      "ssd1325": "0x20011698",
+      "ssd1309": "0x20011680",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_deep_clean_body",
+      "ssd1325": "0x200116a0",
+      "ssd1309": "0x20011688",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_deep_clean_confirmation",
+      "ssd1325": "0x200116d0",
+      "ssd1309": "0x200116b8",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_required_maintenance",
+      "ssd1325": "0x20011704",
+      "ssd1309": "0x200116ec",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_utilities_menu",
+      "ssd1325": "0x20011758",
+      "ssd1309": "0x20011740",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_run_cooking_program",
+      "ssd1325": "0x20011818",
+      "ssd1309": "0x20011800",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_application_loop_body",
+      "ssd1325": "0x20011ef0",
+      "ssd1309": "0x20011ed8",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "loop",
+      "ssd1325": "0x20011f7c",
+      "ssd1309": "0x20011f64",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "setup",
+      "ssd1325": "0x20012290",
+      "ssd1309": "0x20012278",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_settings_menu",
+      "ssd1325": "0x2000f17c",
+      "ssd1309": "0x2000f164",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_first_rinse",
+      "ssd1325": "0x2000e6e8",
+      "ssd1309": "0x2000e6d0",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_recipe_descale",
+      "ssd1325": "0x20010488",
+      "ssd1309": "0x20010470",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_api_register",
+      "ssd1325": "0x2000f5e0",
+      "ssd1309": "0x2000f5c8",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_storage_first_rinse_required",
+      "ssd1325": "0x2000b448",
+      "ssd1309": "0x2000b430",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_storage_save_first_rinse_complete",
+      "ssd1325": "0x200059d0",
+      "ssd1309": "0x200059b8",
+      "evidence": "Manually identified application entry from raw Thumb direct calls/branches and corresponding C-variant prologue. Supplemental export seeds separate Ghidra-merged tails; source reconstruction still requires behavioral checks."
+    },
+    {
+      "name": "pico_screen_brew_name_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x200098bc. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000a6d0",
+      "ssd1309": "0x2000a6b8"
+    },
+    {
+      "name": "pico_screen_current_step_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x200098c0. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000a728",
+      "ssd1309": "0x2000a710"
+    },
+    {
+      "name": "pico_screen_recipe_metrics_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x200098c4. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000a7c8",
+      "ssd1309": "0x2000a7b0"
+    },
+    {
+      "name": "pico_screen_step_progress_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x200098c8. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000479c",
+      "ssd1309": "0x200047a0"
+    },
+    {
+      "name": "pico_screen_temperature_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x200098cc. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20008ed0",
+      "ssd1309": "0x20008eb8"
+    },
+    {
+      "name": "pico_screen_manual_overview_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011328. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20004774",
+      "ssd1309": "0x20004778"
+    },
+    {
+      "name": "pico_screen_current_target_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x2001132c. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20008208",
+      "ssd1309": "0x200081f0"
+    },
+    {
+      "name": "pico_screen_program_status_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011330. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000a790",
+      "ssd1309": "0x2000a778"
+    },
+    {
+      "name": "pico_screen_basic_brew_status",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011810. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20005508",
+      "ssd1309": "0x200054f0"
+    },
+    {
+      "name": "pico_screen_detailed_brew_status",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011814. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20008d78",
+      "ssd1309": "0x20008d60"
+    },
+    {
+      "name": "pico_ui_draw_hold_status",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011404. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000af28",
+      "ssd1309": "0x2000af10"
+    },
+    {
+      "name": "pico_screen_still_readings",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x20011510. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x20005d70",
+      "ssd1309": "0x20005d58"
+    },
+    {
+      "name": "pico_recipe_logo_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x2000fbd0. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x2000a724",
+      "ssd1309": "0x2000a70c"
+    },
+    {
+      "name": "pico_recipe_image_page",
+      "evidence": "Address-taken C page callback read from the original caller/global-initializer literal at main 0x2000fbd4. Variant entry independently read from its corresponding literal.",
+      "ssd1325": "0x200047d0",
+      "ssd1309": "0x200047d4"
+    }
+  ]
+}

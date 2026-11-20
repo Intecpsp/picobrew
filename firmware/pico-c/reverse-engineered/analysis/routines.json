@@ -1,0 +1,215 @@
+{
+  "schema_version": 1,
+  "status": "Partial typed reconstruction; not a full firmware image or model port.",
+  "validation": "Native source is compared with original ARM instructions for return values, object bytes, and observed GPIO/interrupt call order.",
+  "variants": {
+    "ssd1325": {
+      "routines": [
+        {
+          "name": "pico_c_encoder_construct",
+          "source": "src/encoder.c",
+          "address": "0x20004574",
+          "span_bytes": 18,
+          "span_sha256": "c3ed589588c7de3d888a8990e45a70e3aa8136a66befe78cc464156f2fafae03"
+        },
+        {
+          "name": "pico_c_encoder_set_step",
+          "source": "src/encoder.c",
+          "address": "0x20004586",
+          "span_bytes": 4,
+          "span_sha256": "1106ec869f99bde9941255e6af951b5056cd987376fb07ef944404932ffdc3e2"
+        },
+        {
+          "name": "pico_c_encoder_set_range",
+          "source": "src/encoder.c",
+          "address": "0x2000458a",
+          "span_bytes": 12,
+          "span_sha256": "7378df903a28213360f598e72e50a8376b266b33ed3cf3b8c654833d74eed9ef"
+        },
+        {
+          "name": "pico_c_encoder_enable_wrap",
+          "source": "src/encoder.c",
+          "address": "0x20004596",
+          "span_bytes": 8,
+          "span_sha256": "446b9e0d41fb7cfaa9f2d60a1b959c2fbf75baf2761d9f086bf95d38f177d4ca"
+        },
+        {
+          "name": "pico_c_encoder_disable_wrap",
+          "source": "src/encoder.c",
+          "address": "0x2000459e",
+          "span_bytes": 8,
+          "span_sha256": "0c75a2826e7335e29f3d6411261ebce121f5aa336c8cf90dc34757acd736b96e"
+        },
+        {
+          "name": "pico_c_encoder_set_position",
+          "source": "src/encoder.c",
+          "address": "0x200045a6",
+          "span_bytes": 8,
+          "span_sha256": "aa66875c9f5faf041e9272ca0d150ab94d155af7dfb69737ad44136f728484e0"
+        },
+        {
+          "name": "pico_c_encoder_get_position",
+          "source": "src/encoder.c",
+          "address": "0x200045ae",
+          "span_bytes": 52,
+          "span_sha256": "446ef920de7b12a80e642d54e784e2e8475b5c102be9eb7e4786ac35bc27350b"
+        },
+        {
+          "name": "pico_c_encoder_take_click",
+          "source": "src/encoder.c",
+          "address": "0x200045e2",
+          "span_bytes": 16,
+          "span_sha256": "917bc881a284dcd2845025c40813aa27240899d92f1bd894338e6046917fec74"
+        },
+        {
+          "name": "pico_c_encoder_clear_click",
+          "source": "src/encoder.c",
+          "address": "0x200045f2",
+          "span_bytes": 6,
+          "span_sha256": "7197d341332d43a7b4da29e23d0449620637bba4077836000c6046dc9f6a8110"
+        },
+        {
+          "name": "pico_c_encoder_attach",
+          "source": "src/encoder.c",
+          "address": "0x200045f8",
+          "span_bytes": 64,
+          "span_sha256": "d4797ac7bc2c57249bd0647397dad4e19d5b9d2623c5eb4bccc7215966a60062"
+        },
+        {
+          "name": "pico_c_encoder_initialize",
+          "source": "src/encoder.c",
+          "address": "0x20004638",
+          "span_bytes": 120,
+          "span_sha256": "e3997060f9132e7d363fc741e1f6baf50b8e7349520b15514a08feee6e2b05bf"
+        },
+        {
+          "name": "pico_c_encoder_handle_rotation",
+          "source": "src/encoder.c",
+          "address": "0x200046b0",
+          "span_bytes": 90,
+          "span_sha256": "37f2a3c0cc5a4b1c5d02e2b974427fd6cc868b9a6796020e94f2665a92b7a4f7"
+        },
+        {
+          "name": "pico_c_parse_ipv4_address",
+          "source": "src/network_parse.c",
+          "address": "0x200069e0",
+          "span_bytes": 74,
+          "span_sha256": "94837b5fede58d4c942c17987c68be4eb6476661a8f6659b4856b381dc1b076c"
+        }
+      ],
+      "hooked_hardware_boundaries": {
+        "digital_read": "0x20017f10",
+        "pin_mode": "0x20017e98",
+        "interrupts_disable": "0x20018922",
+        "interrupts_enable": "0x20018918",
+        "attach_interrupt": "0x20017c40",
+        "rotation_handler": "0x2000470d",
+        "button_handler": "0x20004739"
+      }
+    },
+    "ssd1309": {
+      "routines": [
+        {
+          "name": "pico_c_encoder_construct",
+          "source": "src/encoder.c",
+          "address": "0x20004578",
+          "span_bytes": 18,
+          "span_sha256": "c3ed589588c7de3d888a8990e45a70e3aa8136a66befe78cc464156f2fafae03"
+        },
+        {
+          "name": "pico_c_encoder_set_step",
+          "source": "src/encoder.c",
+          "address": "0x2000458a",
+          "span_bytes": 4,
+          "span_sha256": "1106ec869f99bde9941255e6af951b5056cd987376fb07ef944404932ffdc3e2"
+        },
+        {
+          "name": "pico_c_encoder_set_range",
+          "source": "src/encoder.c",
+          "address": "0x2000458e",
+          "span_bytes": 12,
+          "span_sha256": "7378df903a28213360f598e72e50a8376b266b33ed3cf3b8c654833d74eed9ef"
+        },
+        {
+          "name": "pico_c_encoder_enable_wrap",
+          "source": "src/encoder.c",
+          "address": "0x2000459a",
+          "span_bytes": 8,
+          "span_sha256": "446b9e0d41fb7cfaa9f2d60a1b959c2fbf75baf2761d9f086bf95d38f177d4ca"
+        },
+        {
+          "name": "pico_c_encoder_disable_wrap",
+          "source": "src/encoder.c",
+          "address": "0x200045a2",
+          "span_bytes": 8,
+          "span_sha256": "0c75a2826e7335e29f3d6411261ebce121f5aa336c8cf90dc34757acd736b96e"
+        },
+        {
+          "name": "pico_c_encoder_set_position",
+          "source": "src/encoder.c",
+          "address": "0x200045aa",
+          "span_bytes": 8,
+          "span_sha256": "aa66875c9f5faf041e9272ca0d150ab94d155af7dfb69737ad44136f728484e0"
+        },
+        {
+          "name": "pico_c_encoder_get_position",
+          "source": "src/encoder.c",
+          "address": "0x200045b2",
+          "span_bytes": 52,
+          "span_sha256": "446ef920de7b12a80e642d54e784e2e8475b5c102be9eb7e4786ac35bc27350b"
+        },
+        {
+          "name": "pico_c_encoder_take_click",
+          "source": "src/encoder.c",
+          "address": "0x200045e6",
+          "span_bytes": 16,
+          "span_sha256": "917bc881a284dcd2845025c40813aa27240899d92f1bd894338e6046917fec74"
+        },
+        {
+          "name": "pico_c_encoder_clear_click",
+          "source": "src/encoder.c",
+          "address": "0x200045f6",
+          "span_bytes": 6,
+          "span_sha256": "7197d341332d43a7b4da29e23d0449620637bba4077836000c6046dc9f6a8110"
+        },
+        {
+          "name": "pico_c_encoder_attach",
+          "source": "src/encoder.c",
+          "address": "0x200045fc",
+          "span_bytes": 64,
+          "span_sha256": "22f9480ed0c23a1f7ac560c6d3139732109b58b0fe281ba875904c825fa92f7d"
+        },
+        {
+          "name": "pico_c_encoder_initialize",
+          "source": "src/encoder.c",
+          "address": "0x2000463c",
+          "span_bytes": 120,
+          "span_sha256": "d674e2a85f9e05448fc606880a29bb5e84359d9e9d5d2da6b12195c84c642d66"
+        },
+        {
+          "name": "pico_c_encoder_handle_rotation",
+          "source": "src/encoder.c",
+          "address": "0x200046b4",
+          "span_bytes": 90,
+          "span_sha256": "55afe2cd4f7e39e1f469a84fe681762b374b8fababd9426e3bf1622af1bc3373"
+        },
+        {
+          "name": "pico_c_parse_ipv4_address",
+          "source": "src/network_parse.c",
+          "address": "0x200069c8",
+          "span_bytes": 74,
+          "span_sha256": "94837b5fede58d4c942c17987c68be4eb6476661a8f6659b4856b381dc1b076c"
+        }
+      ],
+      "hooked_hardware_boundaries": {
+        "digital_read": "0x20017e6c",
+        "pin_mode": "0x20017df4",
+        "interrupts_disable": "0x2001887e",
+        "interrupts_enable": "0x20018874",
+        "attach_interrupt": "0x20017b9c",
+        "rotation_handler": "0x20004711",
+        "button_handler": "0x2000473d"
+      }
+    }
+  }
+}

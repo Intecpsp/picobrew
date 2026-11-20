@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "cases": 368,
+      "case_trace_sha256": "14aac56e0b7184ced69e48d2b18097a991e231dd30f389508176f133db439500",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "comparisons": [
+        "all 1024 transfer-window bytes",
+        "cursor/viewport/font/color state",
+        "ordered GPIO/SPI/delay effects"
+      ],
+      "hardware_tested": false,
+      "limits": [
+        "Selected function domains, not whole-appliance equivalence",
+        "SSD1309 upper transfer-window bytes are supplied explicitly; original adjacent mutable state is not aliased"
+      ]
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "cases": 368,
+      "case_trace_sha256": "9aa7f0dc068d1b60e31167d1fc694584c4031c2e87bc380740bce784a0175409",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "comparisons": [
+        "all 1024 transfer-window bytes",
+        "cursor/viewport/font/color state",
+        "ordered GPIO/SPI/delay effects"
+      ],
+      "hardware_tested": false,
+      "limits": [
+        "Selected function domains, not whole-appliance equivalence",
+        "SSD1309 upper transfer-window bytes are supplied explicitly; original adjacent mutable state is not aliased"
+      ]
+    }
+  ],
+  "hardware_tested": false
+}

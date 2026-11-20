@@ -1,0 +1,59 @@
+{
+  "cases": 1984,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "cases": 992,
+      "functions": 68,
+      "trace_sha256": "490bc6300ff2dbaff5250fb1ad02bfc4be820fc02c6eac3cbae039126f5bc302",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "original_stack_overflows_observed": [
+        {
+          "function": "pico_ui_draw_clear_wifi_question",
+          "language": 2,
+          "return_pc": "0x73656576"
+        },
+        {
+          "function": "pico_ui_draw_clear_wifi_question",
+          "language": 2,
+          "return_pc": "0x73656576"
+        }
+      ],
+      "limits": [
+        "Graphics and peripheral boundaries recorded, not physical hardware",
+        "Menu/scroll/progress state checked; complete appliance not executed",
+        "French clear-WiFi prompt compared until observed OEM stack-overflow return; typed source bounds repaired"
+      ]
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "cases": 992,
+      "functions": 68,
+      "trace_sha256": "490bc6300ff2dbaff5250fb1ad02bfc4be820fc02c6eac3cbae039126f5bc302",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "original_stack_overflows_observed": [
+        {
+          "function": "pico_ui_draw_clear_wifi_question",
+          "language": 2,
+          "return_pc": "0x73656576"
+        },
+        {
+          "function": "pico_ui_draw_clear_wifi_question",
+          "language": 2,
+          "return_pc": "0x73656576"
+        }
+      ],
+      "limits": [
+        "Graphics and peripheral boundaries recorded, not physical hardware",
+        "Menu/scroll/progress state checked; complete appliance not executed",
+        "French clear-WiFi prompt compared until observed OEM stack-overflow return; typed source bounds repaired"
+      ]
+    }
+  ]
+}

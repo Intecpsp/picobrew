@@ -1,0 +1,13 @@
+{
+  "variant": "ssd1325",
+  "cases": 274,
+  "trace_sha256": "30d175c935a3f8061c70fb490c011fe0e063e7dd08403a352438d5fd890f637e",
+  "elf_sha256": "3d39e6c8407536496528e4cf526050902ea4a41fa9b07a17e98877e984e195d6",
+  "original_code_executed": true,
+  "rebuilt_arm_code_executed": true,
+  "hardware_tested": false,
+  "limits": [
+    "Drawing and scripted encoder-input boundaries; electrical timing not simulated",
+    "Valid original character indices and adjustment ranges only; explicit bounds repairs are separate"
+  ]
+}

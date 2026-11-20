@@ -1,0 +1,473 @@
+{
+  "schema_version": 1,
+  "images": {
+    "ssd1325": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+    "ssd1309": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226"
+  },
+  "reference_source_sha256": "f7a64b90435f253304bead5b4dcb302f8ce6ec11565d8a3855c6605d355b2a14",
+  "assets": [
+    {
+      "name": "pico_ui_builtin_font",
+      "bytes": 1280,
+      "sha256": "c6628e1c13dd7445117e2179862bbe27d43e3ac0ce0b6153b7eee906cccf96ae",
+      "occurrence_addresses": {
+        "ssd1325": "0x200277c8",
+        "ssd1309": "0x20027728"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_adjustment_filled",
+      "bytes": 8,
+      "sha256": "1e1585b31b45eee06b5d7ae99b5c78b1d79521eb7ac96fb49126294e6e0c81d8",
+      "occurrence_addresses": {
+        "ssd1325": "0x200228d0",
+        "ssd1309": "0x20022830"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_adjustment_empty",
+      "bytes": 8,
+      "sha256": "423e122552eb97ae666decdc74f951e43c4d786083e63ae4ddebe6ac53f420ec",
+      "occurrence_addresses": {
+        "ssd1325": "0x200228fc",
+        "ssd1309": "0x2002285c"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_0",
+      "bytes": 32,
+      "sha256": "e91535c2aaddbb5cbd56979df5dfb829f6686cc2b47c4e0b6e92c57159ba8100",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029255",
+        "ssd1309": "0x200291b5"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_1",
+      "bytes": 32,
+      "sha256": "644830738524b14761e3b9c76517040ada73e5c8ed54d4fb2f5c294ae23d11fe",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028774",
+        "ssd1309": "0x200286d4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_2",
+      "bytes": 32,
+      "sha256": "fcd934aa7b1c5eb3557c932de4c67b7c6fc57b94cd67d243a752415d69981a99",
+      "occurrence_addresses": {
+        "ssd1325": "0x200289b8",
+        "ssd1309": "0x20028918"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_3",
+      "bytes": 32,
+      "sha256": "9705de9bcf275a1a979b440e6ff849a23856ce32a270a16d9dc8a2cdabb0a532",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028754",
+        "ssd1309": "0x200286b4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_4",
+      "bytes": 32,
+      "sha256": "1af88d3c6567ef1014839171a12e425a087fb9b40d1209db1990f5cb6d4a757f",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028794",
+        "ssd1309": "0x200286f4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_5",
+      "bytes": 32,
+      "sha256": "348adfda2cd30b81488e95d2b8b1481325cd559f10bc819cda17405b0faad990",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029214",
+        "ssd1309": "0x20029174"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_6",
+      "bytes": 32,
+      "sha256": "6b0a2c7e15ad52ce998a8b5c208f730392f797641e43c63611527067c3124ce9",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029464",
+        "ssd1309": "0x200293c4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_7",
+      "bytes": 32,
+      "sha256": "31613c1f6cb6484a39215b6f24433821c8dc07621b646cd7f98a831f010db80d",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029670",
+        "ssd1309": "0x200295d0"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_8",
+      "bytes": 32,
+      "sha256": "9d8eeeb876acb36714d8e5fa13397ae9e6dbb1c1ba7e83d7a0985be5259eeae2",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029234",
+        "ssd1309": "0x20029194"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_digit_9",
+      "bytes": 32,
+      "sha256": "49ab5c25cc5bea2572b678ea4a0f436fc40966e8f380c3bb56589f3dd2effde2",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028fc0",
+        "ssd1309": "0x20028f20"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_0",
+      "bytes": 480,
+      "sha256": "2edec7f058e43f9aa4a04db31493c97980721d203641d46b2c3765bb5937b86a",
+      "occurrence_addresses": {
+        "ssd1325": "0x200287d8",
+        "ssd1309": "0x20028738"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_1",
+      "bytes": 480,
+      "sha256": "c18d4bef1e30e296265df321b050a7a816500e6577a88421611fea58bd9497c7",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029284",
+        "ssd1309": "0x200291e4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_2",
+      "bytes": 480,
+      "sha256": "a5bbf6519ce4f4d6a1dde37251a2b1b3bf67fe5fcd03c7fb2feacb6d93f34b73",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028bb8",
+        "ssd1309": "0x20028b18"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_3",
+      "bytes": 480,
+      "sha256": "c589477c81c135e8bb505d5edf6b4f863eaff35df02abd2b85134861d0756739",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029034",
+        "ssd1309": "0x20028f94"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_4",
+      "bytes": 480,
+      "sha256": "ec0203d332eb1000391a398041fece087755d84d5a7b844eb6fe6702f993e701",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028db6",
+        "ssd1309": "0x20028d16"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_5",
+      "bytes": 480,
+      "sha256": "373389a88b5549bdf400822b7eaf8cac2457663ec36866cf8cf6c1f328a2cb07",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029484",
+        "ssd1309": "0x200293e4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_6",
+      "bytes": 480,
+      "sha256": "373389a88b5549bdf400822b7eaf8cac2457663ec36866cf8cf6c1f328a2cb07",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029484",
+        "ssd1309": "0x200293e4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_setup_7",
+      "bytes": 480,
+      "sha256": "c18d4bef1e30e296265df321b050a7a816500e6577a88421611fea58bd9497c7",
+      "occurrence_addresses": {
+        "ssd1325": "0x20029284",
+        "ssd1309": "0x200291e4"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_program_primary",
+      "bytes": 224,
+      "sha256": "238bede1d73388af9e7faba1afd31e796c39e717558f021513e1f66f7212d4fa",
+      "occurrence_addresses": {
+        "ssd1325": "0x200289d8",
+        "ssd1309": "0x20028938"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_program_secondary",
+      "bytes": 256,
+      "sha256": "6c09e3e1d8a809c433cd734d4583f0353fae88368677389303513a047d3e6544",
+      "occurrence_addresses": {
+        "ssd1325": "0x2002235c",
+        "ssd1309": "0x200222bc"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_sousvide_secondary",
+      "bytes": 256,
+      "sha256": "160e1d4ad166966b3e2628f5310493d598b3066f4085d169a4dad93acd1f3d2f",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028ab8",
+        "ssd1309": "0x20028a18"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_temperature_footer",
+      "bytes": 30,
+      "sha256": "6d7dc80d417bcb01f276eeae263100a148cba3473d0f0e9dae0ceb023f299f5e",
+      "occurrence_addresses": {
+        "ssd1325": "0x200228a4",
+        "ssd1309": "0x20022804"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_temperature_header",
+      "bytes": 30,
+      "sha256": "480720deb06750cfce5563c306b6264573aa90431d7417ffe2376b72b563d526",
+      "occurrence_addresses": {
+        "ssd1325": "0x20022772",
+        "ssd1309": "0x200226d2"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_manual_overview",
+      "bytes": 480,
+      "sha256": "ff855597a37f73055a59b7464f9dd788bdd3841c4eb46117cb861e4d3d0a6a90",
+      "occurrence_addresses": {
+        "ssd1325": "0x20027342",
+        "ssd1309": "0x200272a2"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_bitmap_colon_dot",
+      "bytes": 16,
+      "sha256": "d4b1afeb6aa7a94f08a4695c60194acd4bbc65bb104e47494ef7be4f6ce80302",
+      "occurrence_addresses": {
+        "ssd1325": "0x200229a0",
+        "ssd1309": "0x20022900"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_done_large",
+      "bytes": 32,
+      "sha256": "97fa16dd96c89d2e60243ca07d444158c2001b2cabe8ad394cb51e0c82d3a674",
+      "occurrence_addresses": {
+        "ssd1325": "0x200272a8",
+        "ssd1309": "0x20027208"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_backspace_large",
+      "bytes": 32,
+      "sha256": "b6521cd7f2ce3c67e660386e3c912bf16e488956f780f2834c8f60e032089726",
+      "occurrence_addresses": {
+        "ssd1325": "0x20026c48",
+        "ssd1309": "0x20026ba8"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_space_large",
+      "bytes": 32,
+      "sha256": "40c76080405c545e6bb9e11ce9f662997ec30de89942b03198939628721b6bac",
+      "occurrence_addresses": {
+        "ssd1325": "0x20026c68",
+        "ssd1309": "0x20026bc8"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_space_small",
+      "bytes": 8,
+      "sha256": "502b14c3cc80e29bcff50b4b1a10260be315085b29826c91befe268577f38617",
+      "occurrence_addresses": {
+        "ssd1325": "0x200272c8",
+        "ssd1309": "0x20027228"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_backspace_small",
+      "bytes": 8,
+      "sha256": "fcadeb4586037e94c3d1b837b8c4acfa241b7891981bd574efc361459c81cbaf",
+      "occurrence_addresses": {
+        "ssd1325": "0x20022958",
+        "ssd1309": "0x200228b8"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_ui_editor_done_small",
+      "bytes": 8,
+      "sha256": "ad74d7e7763e6231e951e310b9a2fb96b555fbbdcc810efd49e441841dcd4539",
+      "occurrence_addresses": {
+        "ssd1325": "0x20022800",
+        "ssd1309": "0x20022760"
+      },
+      "evidence": "Exact immutable byte occurrence in each C payload; names inherited from matching S/Pro data"
+    },
+    {
+      "name": "pico_c_menu_left_cap",
+      "bytes": 30,
+      "sha256": "398dbf401b070d22663009513910035c9ac46a318d735f3a7b8b511225004533",
+      "occurrence_addresses": {
+        "ssd1325": "0x20022828",
+        "ssd1309": "0x20022788"
+      },
+      "evidence": "Original C menu draw routine literal pointers;16x15,row-major,MSB-first"
+    },
+    {
+      "name": "pico_c_menu_up",
+      "bytes": 30,
+      "sha256": "54b138ff246396a397878dcd9f20032c1badf6c3f4c3fcc7a52402629f6c3781",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028fe8",
+        "ssd1309": "0x20028f48"
+      },
+      "evidence": "Original C menu draw routine literal pointers;16x15,row-major,MSB-first"
+    },
+    {
+      "name": "pico_c_menu_down",
+      "bytes": 30,
+      "sha256": "519a3df969b43df1619717f03ff055e4016d8199143f29ce8ec082cc583b6339",
+      "occurrence_addresses": {
+        "ssd1325": "0x20028d98",
+        "ssd1309": "0x20028cf8"
+      },
+      "evidence": "Original C menu draw routine literal pointers;16x15,row-major,MSB-first"
+    },
+    {
+      "name": "pico_c_menu_single",
+      "bytes": 30,
+      "sha256": "064a05fc010d9d28dbf2ac4bf095c1f91d614a210cce5c554e6e6dccab4cbfa7",
+      "occurrence_addresses": {
+        "ssd1325": "0x20022754",
+        "ssd1309": "0x200226b4"
+      },
+      "evidence": "Original C menu draw routine literal pointers;16x15,row-major,MSB-first"
+    },
+    {
+      "name": "pico_c_menu_multiple",
+      "bytes": 30,
+      "sha256": "9b1d447be666cb628b0c169eac8b8cfc7dacf1dd8125e7505311aa0f8c69fbe7",
+      "occurrence_addresses": {
+        "ssd1325": "0x20027324",
+        "ssd1309": "0x20027284"
+      },
+      "evidence": "Original C menu draw routine literal pointers;16x15,row-major,MSB-first"
+    }
+  ],
+  "custom_font": {
+    "ssd1325": {
+      "descriptor_address": "0x20026c3c",
+      "glyph_address": "0x2002245c",
+      "bitmap_address": "0x20026c88",
+      "glyph_bytes": 760,
+      "glyph_sha256": "cfb5cd556af1afa453bb911c523a19a6836ddb4cc821ed128c46b300714b3461",
+      "bitmap_bytes": 1330,
+      "bitmap_sha256": "9bb6dbcaf194a178e75bfeb5f4252614fac046392d29e2dd8a9b3df734b9f154",
+      "first": 32,
+      "last": 126,
+      "y_advance": 16
+    },
+    "ssd1309": {
+      "descriptor_address": "0x20026b9c",
+      "glyph_address": "0x200223bc",
+      "bitmap_address": "0x20026be8",
+      "glyph_bytes": 760,
+      "glyph_sha256": "cfb5cd556af1afa453bb911c523a19a6836ddb4cc821ed128c46b300714b3461",
+      "bitmap_bytes": 1330,
+      "bitmap_sha256": "9bb6dbcaf194a178e75bfeb5f4252614fac046392d29e2dd8a9b3df734b9f154",
+      "first": 32,
+      "last": 126,
+      "y_advance": 16
+    }
+  },
+  "excluded_s_pro_assets": [
+    "pico_ui_bitmap_footer_single",
+    "pico_ui_bitmap_footer_multiple",
+    "pico_ui_bitmap_connection_ready",
+    "pico_ui_bitmap_connection_failed",
+    "pico_ui_bitmap_device",
+    "pico_ui_bitmap_instruction_18",
+    "pico_ui_bitmap_instruction_11",
+    "pico_ui_bitmap_instruction_17",
+    "pico_ui_bitmap_logo",
+    "pico_ui_bitmap_splash"
+  ],
+  "text_tables": [
+    {
+      "name": "pico_c_instruction_text",
+      "rows": 25,
+      "columns": 3,
+      "text_bytes": 1863,
+      "text_sha256": "3d5376edcddd37db54dda3e5e9891c6a87e5549127cf3fcb698d1061b001e1ed",
+      "evidence": "Original C dispatcher literal pointers and original string tables in both images"
+    },
+    {
+      "name": "pico_ui_titles",
+      "rows": 5,
+      "columns": 3,
+      "text_bytes": 151,
+      "text_sha256": "f29297cddbfa7f09038a634dfe96147ca51225f2491593aba361b31773602e6b",
+      "evidence": "Original C dispatcher literal pointers and original string tables in both images"
+    },
+    {
+      "name": "pico_ui_brew_labels",
+      "rows": 4,
+      "columns": 3,
+      "text_bytes": 98,
+      "text_sha256": "ed42dae8ed06bc57f840fd50063cfee7887ed3d09e797c78868e96aa3c312a61",
+      "evidence": "Original C dispatcher literal pointers and original string tables in both images"
+    },
+    {
+      "name": "pico_ui_instruction_names",
+      "rows": 25,
+      "columns": 1,
+      "text_bytes": 481,
+      "text_sha256": "16cfb1e68b3f10326665c6c19a064f9e077f4ff11485e9b5d528a8903c872fa9",
+      "evidence": "Original C dispatcher literal pointers and original string tables in both images"
+    }
+  ],
+  "hardware_tested": false
+}

@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "passed": true,
+  "full_adc_domain": true,
+  "physical_hardware_tested": false,
+  "complete_firmware_tested": false,
+  "scope": "Original ARM routines versus native typed C; exact binary32 sensor results and ordered peripheral/UI calls.",
+  "boundaries": "GPIO/ADC reads are supplied; GPIO writes, delays and UI pause/prompt are observed hooks. No electrical behavior or interrupt concurrency is simulated.",
+  "variants": {
+    "ssd1325": {
+      "payload_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "actuators": {
+        "functions": 16,
+        "cases": 195,
+        "mismatches": 0,
+        "ordered_trace_sha256": "5ee2a053a6a7d33d65d4319161c903a3b493fb8ac84146fd5e997546752c739a",
+        "meaningful_returns_checked": [
+          "pico_step_filter_is_inserted",
+          "pico_drain_pump_is_on",
+          "pico_pause_outputs_for_missing_filter"
+        ]
+      },
+      "sensors": {
+        "cases": 16384,
+        "groups": [
+          {
+            "pin": 26,
+            "session": 1,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "139b580699d833b7785375e5bbe060ec055bed6abd2ace1ccd625d2b0e6efb31"
+          },
+          {
+            "pin": 25,
+            "session": 1,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "9827e0d33f7fdba333791d6218b200856a2c5b737b256c5d9540abb90c8f0dcf"
+          },
+          {
+            "pin": 25,
+            "session": 2,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "eb5e69b1c6c1e8744a7ac562467d4d0ccd72c55b5a5d571f5622c12b77ff5a8c"
+          },
+          {
+            "pin": 25,
+            "session": 4,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "eb5e69b1c6c1e8744a7ac562467d4d0ccd72c55b5a5d571f5622c12b77ff5a8c"
+          }
+        ]
+      }
+    },
+    "ssd1309": {
+      "payload_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "actuators": {
+        "functions": 16,
+        "cases": 195,
+        "mismatches": 0,
+        "ordered_trace_sha256": "5ee2a053a6a7d33d65d4319161c903a3b493fb8ac84146fd5e997546752c739a",
+        "meaningful_returns_checked": [
+          "pico_step_filter_is_inserted",
+          "pico_drain_pump_is_on",
+          "pico_pause_outputs_for_missing_filter"
+        ]
+      },
+      "sensors": {
+        "cases": 16384,
+        "groups": [
+          {
+            "pin": 26,
+            "session": 1,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "139b580699d833b7785375e5bbe060ec055bed6abd2ace1ccd625d2b0e6efb31"
+          },
+          {
+            "pin": 25,
+            "session": 1,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "9827e0d33f7fdba333791d6218b200856a2c5b737b256c5d9540abb90c8f0dcf"
+          },
+          {
+            "pin": 25,
+            "session": 2,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "eb5e69b1c6c1e8744a7ac562467d4d0ccd72c55b5a5d571f5622c12b77ff5a8c"
+          },
+          {
+            "pin": 25,
+            "session": 4,
+            "cases": 4096,
+            "mismatches": 0,
+            "result_bits_sha256": "eb5e69b1c6c1e8744a7ac562467d4d0ccd72c55b5a5d571f5622c12b77ff5a8c"
+          }
+        ]
+      }
+    }
+  }
+}

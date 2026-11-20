@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "entry": "0x20007214",
+      "cases": 63,
+      "text_sha256": "fc5d4907c91573582a6f344b747e396291fa7631958ce5779e0e2546f19150a1"
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "entry": "0x200071fc",
+      "cases": 63,
+      "text_sha256": "fc5d4907c91573582a6f344b747e396291fa7631958ce5779e0e2546f19150a1"
+    }
+  ],
+  "original_code_executed": true,
+  "hardware_tested": false,
+  "codes": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    99
+  ],
+  "limits": [
+    "Graphics and scrolling are captured boundaries; no physical appliance execution"
+  ]
+}

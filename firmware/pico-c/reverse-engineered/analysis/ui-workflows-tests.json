@@ -1,0 +1,36 @@
+{
+  "cases": 1116,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "cases": 558,
+      "functions": 17,
+      "trace_sha256": "535e94814de5ab0e3b7ce927a8040edc2d6e302d21285cb41da48cff3a35bb2b"
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "cases": 558,
+      "functions": 17,
+      "trace_sha256": "535e94814de5ab0e3b7ce927a8040edc2d6e302d21285cb41da48cff3a35bb2b"
+    }
+  ],
+  "source_sha256": {
+    "src/ui/ui_workflows.c": "289224957a8f440ca674c8f99b4f1d3cd3b55e439571b3c7c5b92dbad3fc4b16",
+    "src/ui/workflow_adapters.c": "b7788ff187c9f65b9e5cf06300dc4bfefbaa59f2126000a0f074fa8949f8c838",
+    "src/ui/ui_program_menus.c": "db6d7e1d398ef985df1005f74485efd8275ae1d5b66730ef5f2ccdda35db526b",
+    "src/ui/screens.c": "2da0498833720b3eef5e750e3500150001dbfe7414440c7f0bcf9f5c0286c7b7",
+    "src/ui/ui_screens.c": "3f8144b248abe541dc07caff8d259c4a58f1bc93e0fdb04a45a46549f40ae66d",
+    "src/ui/instruction_screens.c": "fa7eff41a5a2727b6e9d4c6fc1078cad70bf7490ee9e53b9cd1d2a3190fab192",
+    "src/ui/translations.c": "8323783bc88831791c36be2d233d48dcded340041a7e376773287f8760987a97",
+    "src/ui/strings.c": "ee08106442160da26b0f721e73e6c75b2417205947fc31abb21826d3f5f114cf",
+    "src/ui/assets.c": "5cc85b58d3e1b9fe73490dd24eb0dbc522d2926368df4179533f88fe3f32848a",
+    "tests/workflow_fixture.c": "7b23324bb456f8091f6bfdf0484d1cb9e0808da0e9822c6122167a6c5ac5a751"
+  },
+  "scope": "Original ARM instructions and native typed workflow source; exact text, callback identity, menu labels, returns, state and ordered boundary events.",
+  "limits": [
+    "Menu input, scrolling-message wait, alarm and hardware services are scripted boundaries.",
+    "Physical appliance not tested; this is not a whole-firmware result."
+  ]
+}

@@ -1,0 +1,68 @@
+{
+  "schema_version": 1,
+  "source_repository": "https://github.com/chiefwigms/picobrew_pico",
+  "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+  "load_address": "0x20004000",
+  "architecture": "ARM Cortex-M, little-endian Thumb",
+  "hardware_tested": false,
+  "full_source_reconstruction": false,
+  "checksum_note": "OEM MD5 is over a signed nibble sum, not over raw image bytes; it is not a signature.",
+  "variants": {
+    "ssd1325": {
+      "oem_file": "oem/upstream/pico_c_0_1_34.bin",
+      "envelope_sha256": "10d508bd1f45aece1b016907478d9dd222809835af533c9577aeb337232d36e8",
+      "payload_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "payload_bytes": 156536,
+      "initial_stack_pointer": "0x20034ef4",
+      "reset_vector": "0x20017b15",
+      "embedded_identity": {
+        "model": "PICO_C",
+        "version": "v0.1.34",
+        "build_date": "Dec 16 2019",
+        "build_time": "12:59:11",
+        "git_hash": "d0da766714f2012e98f8e43ecd6519895caf565e",
+        "git_branch": "dev",
+        "display_controller": "SSD1325"
+      },
+      "identity_string_addresses": {
+        "PICO_C": "0x2002678e",
+        "v0.1.34": "0x200230aa",
+        "Dec 16 2019": "0x200267aa",
+        "12:59:11": "0x200267b6",
+        "d0da766714f2012e98f8e43ecd6519895caf565e": "0x200267dc",
+        "dev": "0x20026810",
+        "SSD1325": "0x2002681d"
+      },
+      "printable_string_count_minimum_length_6": 1349,
+      "unique_s_pro_span_anchors": 266
+    },
+    "ssd1309": {
+      "oem_file": "oem/upstream/pico_c_0_1_34_alt.bin",
+      "envelope_sha256": "004bd841e2b8919acbad45d9837c3547d218a3dcbd0767d24df3c6827f323225",
+      "payload_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "payload_bytes": 155864,
+      "initial_stack_pointer": "0x20034ef4",
+      "reset_vector": "0x20017a71",
+      "embedded_identity": {
+        "model": "PICO_C",
+        "version": "v0.1.34",
+        "build_date": "Dec 16 2019",
+        "build_time": "13:00:10",
+        "git_hash": "d0da766714f2012e98f8e43ecd6519895caf565e",
+        "git_branch": "dev",
+        "display_controller": "SSD1309"
+      },
+      "identity_string_addresses": {
+        "PICO_C": "0x200266ee",
+        "v0.1.34": "0x2002300a",
+        "Dec 16 2019": "0x2002670a",
+        "13:00:10": "0x20026716",
+        "d0da766714f2012e98f8e43ecd6519895caf565e": "0x2002673c",
+        "dev": "0x20026770",
+        "SSD1309": "0x2002677d"
+      },
+      "printable_string_count_minimum_length_6": 1347,
+      "unique_s_pro_span_anchors": 284
+    }
+  }
+}

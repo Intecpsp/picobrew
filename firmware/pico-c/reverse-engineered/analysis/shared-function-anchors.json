@@ -1,0 +1,4416 @@
+{
+  "schema_version": 1,
+  "method": "One unique, halfword-aligned byte-for-byte match of each S/Pro interval between adjacent known function starts, minimum 8 bytes.",
+  "limitations": [
+    "Intervals may include literal pools or alignment padding.",
+    "Identical PC-relative instruction bytes do not independently establish callee semantics.",
+    "Unmatched routines are not reconstructed; absence of a match does not prove absence of the feature.",
+    "Display controller variant and physical hardware identity are distinct from byte-span similarity."
+  ],
+  "variants": {
+    "ssd1325": [
+      {
+        "name": "pico_encoder_set_range",
+        "module": "encoder",
+        "address": "0x2000458a",
+        "s_pro_address": "0x20004592",
+        "span_bytes": 12,
+        "span_sha256": "7378df903a28213360f598e72e50a8376b266b33ed3cf3b8c654833d74eed9ef"
+      },
+      {
+        "name": "pico_encoder_enable_wrap",
+        "module": "encoder",
+        "address": "0x20004596",
+        "s_pro_address": "0x2000459e",
+        "span_bytes": 16,
+        "span_sha256": "e6d008d9b5362f1c4bdc6eaab25da17acfc4d5ec81ea6ffddbd06c2828a2f846"
+      },
+      {
+        "name": "pico_encoder_set_position",
+        "module": "encoder",
+        "address": "0x200045a6",
+        "s_pro_address": "0x200045ae",
+        "span_bytes": 8,
+        "span_sha256": "aa66875c9f5faf041e9272ca0d150ab94d155af7dfb69737ad44136f728484e0"
+      },
+      {
+        "name": "pico_encoder_get_position",
+        "module": "encoder",
+        "address": "0x200045ae",
+        "s_pro_address": "0x200045b6",
+        "span_bytes": 52,
+        "span_sha256": "446ef920de7b12a80e642d54e784e2e8475b5c102be9eb7e4786ac35bc27350b"
+      },
+      {
+        "name": "pico_encoder_take_click",
+        "module": "encoder",
+        "address": "0x200045e2",
+        "s_pro_address": "0x200045ea",
+        "span_bytes": 16,
+        "span_sha256": "917bc881a284dcd2845025c40813aa27240899d92f1bd894338e6046917fec74"
+      },
+      {
+        "name": "pico_still_clear_telemetry",
+        "module": "still",
+        "address": "0x200048e2",
+        "s_pro_address": "0x2000489a",
+        "span_bytes": 48,
+        "span_sha256": "2bba0565800f463f5ab9ea68956c5a440c97dfae666d3454813d1fe9dfa95456"
+      },
+      {
+        "name": "pico_menu_initialize",
+        "module": "menus",
+        "address": "0x20004938",
+        "s_pro_address": "0x200048f0",
+        "span_bytes": 16,
+        "span_sha256": "d636bbdc7b80f03b977c6b5fb4e51569c565eda3df06a1e7faaa4ea71d28029e"
+      },
+      {
+        "name": "pico_assert_nonfatal",
+        "module": "logging",
+        "address": "0x20004bc4",
+        "s_pro_address": "0x20004b7c",
+        "span_bytes": 12,
+        "span_sha256": "ffb07c414c63af6954ffd05abcd42c0b613a4b2d3c13033d73a3b71543b97967"
+      },
+      {
+        "name": "pico_heat_record_temperature_sample",
+        "module": "temperature",
+        "address": "0x20005148",
+        "s_pro_address": "0x20005004",
+        "span_bytes": 36,
+        "span_sha256": "f8eacdab50949bd6838342e8ab4a4ebaa79d045090f35f151f93f9444933ccdf"
+      },
+      {
+        "name": "pico_cstring_is_null_or_empty_duplicate",
+        "module": "cstring",
+        "address": "0x2000688c",
+        "s_pro_address": "0x200064c4",
+        "span_bytes": 20,
+        "span_sha256": "a2b3eb99aadcd79062e4174e553b3f008590aa99561b96062ce6bd16b1af68b7"
+      },
+      {
+        "name": "pico_parse_ipv4_address",
+        "module": "network",
+        "address": "0x200069e0",
+        "s_pro_address": "0x2000661c",
+        "span_bytes": 74,
+        "span_sha256": "94837b5fede58d4c942c17987c68be4eb6476661a8f6659b4856b381dc1b076c"
+      },
+      {
+        "name": "pico_parse_delimited_field",
+        "module": "parsing",
+        "address": "0x2000919c",
+        "s_pro_address": "0x20008c90",
+        "span_bytes": 60,
+        "span_sha256": "de5ba049d9da0f3e608c760bdedfadbc1eecc557c374222033f4a9132a7c4d62"
+      },
+      {
+        "name": "pico_url_write_escape",
+        "module": "parsing",
+        "address": "0x20009460",
+        "s_pro_address": "0x20008f54",
+        "span_bytes": 16,
+        "span_sha256": "5617f7b28514900f2ab6eb7f5eb480c850ee3023574adce95da1c8f95bed8f00"
+      },
+      {
+        "name": "pico_menu_choose",
+        "module": "ui_menus",
+        "address": "0x2000db56",
+        "s_pro_address": "0x2000c2c2",
+        "span_bytes": 18,
+        "span_sha256": "e3378b41a11edfadc52f102fac34ef97e2e69ffbb7f056a93bd1089552a5a2e0"
+      },
+      {
+        "name": "pico_api_read_recipe_bitmap",
+        "module": "network_api",
+        "address": "0x2000fa70",
+        "s_pro_address": "0x20010a64",
+        "span_bytes": 8,
+        "span_sha256": "c46865443b8458feb1d57280b264aaded5cc01d1abe3873f986fe37936ea09d9"
+      },
+      {
+        "name": "pico_api_fetch_default_recipe_failed",
+        "module": "network_api",
+        "address": "0x2000ff18",
+        "s_pro_address": "0x20010f0c",
+        "span_bytes": 20,
+        "span_sha256": "b96d52efc297c525a3ec9a937c069964575aecff825dfa9935bce950ab46e37f"
+      },
+      {
+        "name": "pico_wifi_log_step",
+        "module": "network_api",
+        "address": "0x200102b4",
+        "s_pro_address": "0x200112a8",
+        "span_bytes": 8,
+        "span_sha256": "a6e68191495608d37e9bae4553afbe9adda674526e44e5017654696484dd915a"
+      },
+      {
+        "name": "pico_title_id_is_valid",
+        "module": "ui_screens",
+        "address": "0x200124e8",
+        "s_pro_address": "0x20013404",
+        "span_bytes": 12,
+        "span_sha256": "01e14d9852773c4f60d15ac6bcaa663bd61b91198e668b7c08d33d693648c811"
+      },
+      {
+        "name": "GFX_draw_line",
+        "module": "graphics",
+        "address": "0x20012bcc",
+        "s_pro_address": "0x20013ae8",
+        "span_bytes": 200,
+        "span_sha256": "d826014537440dc2980392b940910efb99508cf9945bcd139af1e0ac680d9464"
+      },
+      {
+        "name": "GFX_draw_rectangle",
+        "module": "graphics",
+        "address": "0x20012c94",
+        "s_pro_address": "0x20013bb0",
+        "span_bytes": 94,
+        "span_sha256": "d145fac22df90377f0e456d988a8cbb8c44a54d3bda0db6ca7099f49b2cb6f2a"
+      },
+      {
+        "name": "GFX_draw_fast_vertical_line",
+        "module": "graphics",
+        "address": "0x20012cf2",
+        "s_pro_address": "0x20013c0e",
+        "span_bytes": 28,
+        "span_sha256": "16f9e4772a693c40d78ef439d0b952482c50f559830c7d58d8380b038e32dd2d"
+      },
+      {
+        "name": "GFX_draw_fast_horizontal_line",
+        "module": "graphics",
+        "address": "0x20012d0e",
+        "s_pro_address": "0x20013c2a",
+        "span_bytes": 26,
+        "span_sha256": "2b95877408a40af50808c193fb1cedba66b5a8fcd7949ba1ed5682a4d78368cd"
+      },
+      {
+        "name": "GFX_fill_rectangle",
+        "module": "graphics",
+        "address": "0x20012d28",
+        "s_pro_address": "0x20013c44",
+        "span_bytes": 60,
+        "span_sha256": "0e777abe51bbce6d825ec87fcacab0336be687b6b3ae58ff9d3a1525448f960c"
+      },
+      {
+        "name": "GFX_fill_screen",
+        "module": "graphics",
+        "address": "0x20012d64",
+        "s_pro_address": "0x20013c80",
+        "span_bytes": 28,
+        "span_sha256": "e1db52c49ebe7e579be86baeebcff986fdab1904e1e9552d1942fc67cd1ab2c7"
+      },
+      {
+        "name": "GFX_fill_triangle",
+        "module": "graphics",
+        "address": "0x20012db4",
+        "s_pro_address": "0x20013f7c",
+        "span_bytes": 432,
+        "span_sha256": "405e7199e561b916b9c748ab4f4b7a08a04d8637ec97a833867c207529d0a500"
+      },
+      {
+        "name": "GFX_write_character",
+        "module": "graphics",
+        "address": "0x200132a8",
+        "s_pro_address": "0x20014470",
+        "span_bytes": 248,
+        "span_sha256": "664ad75a6b602ccc902682fcbf987abc3150be85ac16b9f40ff1a92789ddb1e4"
+      },
+      {
+        "name": "GFX_set_rotation",
+        "module": "graphics",
+        "address": "0x200133ba",
+        "s_pro_address": "0x2001458c",
+        "span_bytes": 30,
+        "span_sha256": "85d445757c0a328d16b23c8dc8adebb5959d9af485d6279538a37248a246114e"
+      },
+      {
+        "name": "SPI_set_data_mode",
+        "module": "spi_bus",
+        "address": "0x20013490",
+        "s_pro_address": "0x2001464c",
+        "span_bytes": 36,
+        "span_sha256": "9fbefd659b5abf08a65ac481407742a6dc83706aa348e9f42e925db6d93be894"
+      },
+      {
+        "name": "SPI_transfer_byte",
+        "module": "spi_bus",
+        "address": "0x200134b4",
+        "s_pro_address": "0x20014670",
+        "span_bytes": 76,
+        "span_sha256": "965bd558bc549601f77d735361e29b263658b5f9c8d0971b6a8a13f4336a1aac"
+      },
+      {
+        "name": "PID_disable",
+        "module": "pid_controller",
+        "address": "0x20013510",
+        "s_pro_address": "0x200146cc",
+        "span_bytes": 8,
+        "span_sha256": "f6e4774691d2c9cf3604f29c275dfa266bf9ad9e25a0b575bef598339d61a27b"
+      },
+      {
+        "name": "PID_set_mode",
+        "module": "pid_controller",
+        "address": "0x200137a6",
+        "s_pro_address": "0x20014962",
+        "span_bytes": 32,
+        "span_sha256": "d15e7159596839b3ea4646d8d57d2897a0e698410f55e6850e2e198efa217ae1"
+      },
+      {
+        "name": "PID_construct",
+        "module": "pid_controller",
+        "address": "0x2001380c",
+        "s_pro_address": "0x200149c8",
+        "span_bytes": 92,
+        "span_sha256": "472cf864c8024c6a41349733c7de870d36d5dcad07c764fb1851aefd0d11ca5c"
+      },
+      {
+        "name": "WiFiClient_write_byte",
+        "module": "wifi_client",
+        "address": "0x20013f54",
+        "s_pro_address": "0x20015110",
+        "span_bytes": 34,
+        "span_sha256": "897175b2a66821a4fcebaf94d5e94c0dd67f8353811b3bdfcf94271f66335364"
+      },
+      {
+        "name": "WiFiClient_read_byte",
+        "module": "wifi_client",
+        "address": "0x20013f76",
+        "s_pro_address": "0x20015132",
+        "span_bytes": 34,
+        "span_sha256": "3886bea8abde8ff75bcb3f3097c1a321abdc2e4915487ef48d8740a9eccf8753"
+      },
+      {
+        "name": "WiFiClient_peek",
+        "module": "wifi_client",
+        "address": "0x20013f98",
+        "s_pro_address": "0x20015154",
+        "span_bytes": 22,
+        "span_sha256": "e9140bd8c58f8cecd5ebb6bd31a2d4c5262e56859c628b14baf5b9211c62fb57"
+      },
+      {
+        "name": "WiFiClient_is_valid",
+        "module": "wifi_client",
+        "address": "0x20013fae",
+        "s_pro_address": "0x2001516a",
+        "span_bytes": 10,
+        "span_sha256": "f6defc35c579ae6f50bf3a1a9737830b32d4864a8bf3a02651e309f3e08f96a6"
+      },
+      {
+        "name": "WiFiClient_connected",
+        "module": "wifi_client",
+        "address": "0x20014524",
+        "s_pro_address": "0x200156e0",
+        "span_bytes": 20,
+        "span_sha256": "de08809d37ec22961599faa2b2a73360233ba1fa1b961992be5c011596b91c23"
+      },
+      {
+        "name": "WiFiClient_status",
+        "module": "wifi_client",
+        "address": "0x20014538",
+        "s_pro_address": "0x200156f4",
+        "span_bytes": 16,
+        "span_sha256": "43dd674e85504dcbddd16a8abb35c266cca5e3c3438adfaada836a3fe29c6715"
+      },
+      {
+        "name": "nwp_register_interrupt_handler",
+        "module": "simplelink_spi_transport",
+        "address": "0x20014944",
+        "s_pro_address": "0x20015b00",
+        "span_bytes": 56,
+        "span_sha256": "6d62c81df37250851d92675ef21868d09b88aabd1e5204d88bbae39fd5967e28"
+      },
+      {
+        "name": "NwpMaskInterrupt",
+        "module": "simplelink_spi_transport",
+        "address": "0x2001497c",
+        "s_pro_address": "0x20015b38",
+        "span_bytes": 12,
+        "span_sha256": "7ada4a14ca361a0df6d27e5a5f2698d579aa98b5d44cfc50e6e997d415da2e8c"
+      },
+      {
+        "name": "NwpUnMaskInterrupt",
+        "module": "simplelink_spi_transport",
+        "address": "0x20014988",
+        "s_pro_address": "0x20015b44",
+        "span_bytes": 12,
+        "span_sha256": "725c25201ac38fcb437a27b38422affde652d2402fb11f8c9d9e0e63f5421ba0"
+      },
+      {
+        "name": "NwpPowerOn",
+        "module": "simplelink_spi_transport",
+        "address": "0x20014994",
+        "s_pro_address": "0x20015b50",
+        "span_bytes": 48,
+        "span_sha256": "4900d940fde30c097f05f358f43b80191229803a0cc38aba0e27da55a68671ab"
+      },
+      {
+        "name": "NwpPowerOff",
+        "module": "simplelink_spi_transport",
+        "address": "0x200149c4",
+        "s_pro_address": "0x20015b80",
+        "span_bytes": 60,
+        "span_sha256": "fce8bb02645ad4e7c246e9ce5bd0064b25d3ff93a4246b3f96d72e1b466d7be9"
+      },
+      {
+        "name": "NwpPowerOnPreamble",
+        "module": "simplelink_spi_transport",
+        "address": "0x20014a00",
+        "s_pro_address": "0x20015bbc",
+        "span_bytes": 96,
+        "span_sha256": "e4af76635bc06696874861fb69bfc0affd8798a3a8308471c01671a6cb040e85"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_01",
+        "module": "simplelink_protocol",
+        "address": "0x20014c34",
+        "s_pro_address": "0x20015df0",
+        "span_bytes": 20,
+        "span_sha256": "675b027fd747609962b88d685d757024256d68322d7f1ecd4fb8afb4e9c0a9d8"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_10",
+        "module": "simplelink_protocol",
+        "address": "0x20015168",
+        "s_pro_address": "0x20016324",
+        "span_bytes": 18,
+        "span_sha256": "f3b5f3aedb58f77e3a08aab12dda5b66613cfdef5b8e9dd4a8bbd9382b8e8e1b"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_11",
+        "module": "simplelink_protocol",
+        "address": "0x2001517a",
+        "s_pro_address": "0x20016336",
+        "span_bytes": 14,
+        "span_sha256": "c100f5886e815800017a8c26f58792180b2bd0aa2b17bbe8ecd565217c959448"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_12",
+        "module": "simplelink_protocol",
+        "address": "0x20015188",
+        "s_pro_address": "0x20016344",
+        "span_bytes": 20,
+        "span_sha256": "9534e164133a9a68328f6915f47476b4d353cbdc90fb160c4a11a06291de4994"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_14",
+        "module": "simplelink_protocol",
+        "address": "0x200151b8",
+        "s_pro_address": "0x20016374",
+        "span_bytes": 16,
+        "span_sha256": "3fd764e9492953a1191f281aa766a469b5b4f501749bd991f4e67517ca19fbc4"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_26",
+        "module": "simplelink_protocol",
+        "address": "0x20015a74",
+        "s_pro_address": "0x20016c30",
+        "span_bytes": 44,
+        "span_sha256": "b84bf9c4a87722e24686f6beb53b749ec356c1fc986ce3a54aa7efb8ac572225"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_29",
+        "module": "simplelink_protocol",
+        "address": "0x20015b12",
+        "s_pro_address": "0x20016cce",
+        "span_bytes": 26,
+        "span_sha256": "63aad67e7524b5d1de233ca441f343bf02b86898c2333f47f81e5f45b7feb2d4"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_31",
+        "module": "simplelink_protocol",
+        "address": "0x20015e90",
+        "s_pro_address": "0x2001704c",
+        "span_bytes": 24,
+        "span_sha256": "7c413f331c200cee3a0a7bc73588f03963bf33f986d1501cea20ad9184361a19"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_34",
+        "module": "simplelink_protocol",
+        "address": "0x20016010",
+        "s_pro_address": "0x200171cc",
+        "span_bytes": 28,
+        "span_sha256": "49512433f0f1f1f0a729aa3bb20c7e85e1d5b8d8a7225ffce180d2c4ce15dada"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_37",
+        "module": "simplelink_protocol",
+        "address": "0x20016390",
+        "s_pro_address": "0x2001754c",
+        "span_bytes": 8,
+        "span_sha256": "75d57c680fd5dea74d5dc53cc36f406711b6bc6da6aa5f19acf6b3d2225d63f5"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_40",
+        "module": "simplelink_protocol",
+        "address": "0x200163f8",
+        "s_pro_address": "0x200175b4",
+        "span_bytes": 46,
+        "span_sha256": "b8ddf0cb0c81fc6d4d5468e05b021e6b35d8cc36f24c32ca70dbe4d3544ba6dc"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_41",
+        "module": "simplelink_protocol",
+        "address": "0x20016426",
+        "s_pro_address": "0x200175e2",
+        "span_bytes": 42,
+        "span_sha256": "2c288f6c9386b4760382717dbfdb624588f82165e852f0b29ef526300cd0e514"
+      },
+      {
+        "name": "sl_Htonl",
+        "module": "simplelink_socket",
+        "address": "0x20016664",
+        "s_pro_address": "0x20017820",
+        "span_bytes": 34,
+        "span_sha256": "69d5a15c31ba43c05d169e0796cd98d28c6e22e05ebeec0fc135b19855f00df7"
+      },
+      {
+        "name": "sl_Htons",
+        "module": "simplelink_socket",
+        "address": "0x20016686",
+        "s_pro_address": "0x20017842",
+        "span_bytes": 22,
+        "span_sha256": "2ac3783a4acdc96fe5f088aaeae8ab25758708b8cc072cc390ff1e8224d5acec"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_45",
+        "module": "simplelink_protocol",
+        "address": "0x20016894",
+        "s_pro_address": "0x20017a50",
+        "span_bytes": 18,
+        "span_sha256": "776090d269e52ab9eeacb986dc0a1e982c0526c603401e1f2e824635a0074c38"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_46",
+        "module": "simplelink_protocol",
+        "address": "0x200168a6",
+        "s_pro_address": "0x20017a62",
+        "span_bytes": 22,
+        "span_sha256": "c65262b0ff9439c851a04e14214d2eea5ef3c076132665bdd17e9b110791e8c1"
+      },
+      {
+        "name": "sl_WlanDisconnect",
+        "module": "simplelink_wlan",
+        "address": "0x20016ab8",
+        "s_pro_address": "0x20017c74",
+        "span_bytes": 8,
+        "span_sha256": "d63c2a87c07448716b67d62209963caf97f5ec4fb1ccaaf24acbcfb7bd49893f"
+      },
+      {
+        "name": "sl_WlanRxStatStart",
+        "module": "simplelink_wlan",
+        "address": "0x20016cfc",
+        "s_pro_address": "0x20017eb8",
+        "span_bytes": 8,
+        "span_sha256": "2fa318abe35d629f1f385225dcfb841e8c9e1776726a45e1dff198212785bc37"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_55",
+        "module": "simplelink_protocol",
+        "address": "0x20016e28",
+        "s_pro_address": "0x20017fe4",
+        "span_bytes": 32,
+        "span_sha256": "6556e2344d5d7416d53f0abdb8141c36f62fd6b92bf5b59e18165e2f56b650a0"
+      },
+      {
+        "name": "SLFS_peek",
+        "module": "serial_flash",
+        "address": "0x20016f4e",
+        "s_pro_address": "0x2001810a",
+        "span_bytes": 44,
+        "span_sha256": "0413c0ef5018163a4b5396543a69bb2f2f7ddc874d1034bbf209e83db8bd5016"
+      },
+      {
+        "name": "SLFS_read_byte",
+        "module": "serial_flash",
+        "address": "0x20016f7a",
+        "s_pro_address": "0x20018136",
+        "span_bytes": 58,
+        "span_sha256": "24b0c3e90b2e8c43f930ad3ad2d68e2a2a2664dcea58794aa146d8a7bac812da"
+      },
+      {
+        "name": "SLFS_write_byte",
+        "module": "serial_flash",
+        "address": "0x20016fb4",
+        "s_pro_address": "0x20018170",
+        "span_bytes": 64,
+        "span_sha256": "62d280448d3269a1ae5a332c6773f11baa95dba7f998e1af2f7f7b61d711cb8d"
+      },
+      {
+        "name": "SLFS_write_buffer",
+        "module": "serial_flash",
+        "address": "0x20016ff4",
+        "s_pro_address": "0x200181b0",
+        "span_bytes": 56,
+        "span_sha256": "9700b420f9739ebb786b69fb4288f84a4fbead2402aac0a0beb3889c895d47e2"
+      },
+      {
+        "name": "SLFS_open",
+        "module": "serial_flash",
+        "address": "0x20017070",
+        "s_pro_address": "0x2001822c",
+        "span_bytes": 134,
+        "span_sha256": "6c0dd50dfc86db29a2ac3b78e9b16571f9bce7f0645f2a6162a3f24f7ab197b6"
+      },
+      {
+        "name": "SLFS_close",
+        "module": "serial_flash",
+        "address": "0x200170f6",
+        "s_pro_address": "0x200182b2",
+        "span_bytes": 40,
+        "span_sha256": "2c634096077e7dcbb668558686fc4d3a7f81df0d0ed8f1cfce1b896adfd67e24"
+      },
+      {
+        "name": "SLFS_remove",
+        "module": "serial_flash",
+        "address": "0x2001711e",
+        "s_pro_address": "0x200182da",
+        "span_bytes": 34,
+        "span_sha256": "42d7450d1d15dd69e5e1423ca1351142f51e06260d367b6ce0ba5e1582dcf5c6"
+      },
+      {
+        "name": "MFRC522_construct",
+        "module": "rfid_reader",
+        "address": "0x200172d8",
+        "s_pro_address": "0x20018494",
+        "span_bytes": 12,
+        "span_sha256": "ca6905292d2f00491d055c9d6c48c8dbf4965539173ee49894186fb2668e2484"
+      },
+      {
+        "name": "MFRC522_read_register_buffer",
+        "module": "rfid_reader",
+        "address": "0x200173dc",
+        "s_pro_address": "0x20018598",
+        "span_bytes": 20,
+        "span_sha256": "efb691fca6659d6ff7ff110a68c70a1d9b46af262a2e717c8c541f1fb576ef88"
+      },
+      {
+        "name": "MFRC522_set_register_bits",
+        "module": "rfid_reader",
+        "address": "0x200173f0",
+        "s_pro_address": "0x200185ac",
+        "span_bytes": 30,
+        "span_sha256": "1f71709b2595cb97f4048616bb3a046da5605b049efcfee2d2fdc5ae5663f406"
+      },
+      {
+        "name": "MFRC522_clear_register_bits",
+        "module": "rfid_reader",
+        "address": "0x2001740e",
+        "s_pro_address": "0x200185ca",
+        "span_bytes": 30,
+        "span_sha256": "373bd5ae65c580ccb45e90b45c652f9c795ef77ad85b5dc132ae29fc09eabaaa"
+      },
+      {
+        "name": "MFRC522_calculate_crc",
+        "module": "rfid_reader",
+        "address": "0x2001742c",
+        "s_pro_address": "0x200185e8",
+        "span_bytes": 118,
+        "span_sha256": "8b6e1ec053b657decb001e8fc2da82cb991e73437a2acd9d8b295333fcd62240"
+      },
+      {
+        "name": "MFRC522_reset",
+        "module": "rfid_reader",
+        "address": "0x200174a2",
+        "s_pro_address": "0x2001865e",
+        "span_bytes": 58,
+        "span_sha256": "2f9b643392fe724dfb2c153c1a85de5de2cb64cbcadb9634c43fe40fa2c29c14"
+      },
+      {
+        "name": "MFRC522_initialize",
+        "module": "rfid_reader",
+        "address": "0x200174dc",
+        "s_pro_address": "0x20018698",
+        "span_bytes": 140,
+        "span_sha256": "e148f287f00d78d9f577cc56195b7300b711044bd0a4766a4a1202d0bd0d39a0"
+      },
+      {
+        "name": "MFRC522_antenna_off",
+        "module": "rfid_reader",
+        "address": "0x20017568",
+        "s_pro_address": "0x20018724",
+        "span_bytes": 8,
+        "span_sha256": "35ce3f32c02366186a197eb86c2c53cc24cca2f61f57fca9bc3213a54885f42b"
+      },
+      {
+        "name": "MFRC522_communicate_with_card",
+        "module": "rfid_reader",
+        "address": "0x20017570",
+        "s_pro_address": "0x2001872c",
+        "span_bytes": 348,
+        "span_sha256": "b1c632c57c9bbc79ce367de0f13b51c7d1862b0a6784bbcda46e8a8e7bffcd6c"
+      },
+      {
+        "name": "MFRC522_transceive_data",
+        "module": "rfid_reader",
+        "address": "0x200176cc",
+        "s_pro_address": "0x20018888",
+        "span_bytes": 142,
+        "span_sha256": "c7ded2550af183f259cdb41e661d5a172dbf9640bca44cfb7c5a1d21cb7fc2c0"
+      },
+      {
+        "name": "MFRC522_request_card",
+        "module": "rfid_reader",
+        "address": "0x2001775a",
+        "s_pro_address": "0x20018916",
+        "span_bytes": 18,
+        "span_sha256": "c6cce12ab419d42ebbd38f5785486daa832bee697ccebeff951dc26f41053ebc"
+      },
+      {
+        "name": "MFRC522_select_card",
+        "module": "rfid_reader",
+        "address": "0x2001776c",
+        "s_pro_address": "0x20018928",
+        "span_bytes": 626,
+        "span_sha256": "34d632095cf496d4533a145cb3b2a0d1d3798e2591cd5c96fbc893548324e220"
+      },
+      {
+        "name": "MFRC522_power_down",
+        "module": "rfid_reader",
+        "address": "0x200179de",
+        "s_pro_address": "0x20018b9a",
+        "span_bytes": 34,
+        "span_sha256": "512c74b2302f89a1fa25e566a99abb7fb880764294b1eb89d44034c1d49003c8"
+      },
+      {
+        "name": "MFRC522_power_up",
+        "module": "rfid_reader",
+        "address": "0x20017a00",
+        "s_pro_address": "0x20018bbc",
+        "span_bytes": 28,
+        "span_sha256": "d5599037c156f3a3cdb5aff8323100cc820cf9a4ec9f8469c3f7c6d5a58112d8"
+      },
+      {
+        "name": "MFRC522_halt_card",
+        "module": "rfid_reader",
+        "address": "0x20017a1c",
+        "s_pro_address": "0x20018bd8",
+        "span_bytes": 74,
+        "span_sha256": "0d62238947e82fbda92db3d1687788293a725fa80dd30a774402b50f461fcd2b"
+      },
+      {
+        "name": "MFRC522_is_new_card_present",
+        "module": "rfid_reader",
+        "address": "0x20017a66",
+        "s_pro_address": "0x20018c22",
+        "span_bytes": 34,
+        "span_sha256": "f4f6332be541b24ec4846d94700cc2b04011ca665a238eca3e8aace20c62bedb"
+      },
+      {
+        "name": "MFRC522_read_card_serial",
+        "module": "rfid_reader",
+        "address": "0x20017a88",
+        "s_pro_address": "0x20018c44",
+        "span_bytes": 18,
+        "span_sha256": "1bccc2de4e3eb16e02619c2a56269445c3b76dfa3f54f02ea97b3694a07a6ea8"
+      },
+      {
+        "name": "ltoa",
+        "module": "energia_runtime",
+        "address": "0x20017a9a",
+        "s_pro_address": "0x20018c56",
+        "span_bytes": 110,
+        "span_sha256": "44781aa1d4ff3efb901cbf45a8b2c0a18c4901a53633b30d7afe94796b38cb02"
+      },
+      {
+        "name": "delay",
+        "module": "energia_runtime",
+        "address": "0x20017d4c",
+        "s_pro_address": "0x20018f08",
+        "span_bytes": 24,
+        "span_sha256": "2cda531020dc44ea368a48e6ccce9b8f347f56001f7b43b434ea628daa0beeab"
+      },
+      {
+        "name": "delayMicroseconds",
+        "module": "energia_runtime",
+        "address": "0x20017d64",
+        "s_pro_address": "0x20018f20",
+        "span_bytes": 80,
+        "span_sha256": "5145072415d565ab2466b105449c0037cd157be19b76c28de7e18529e47e056d"
+      },
+      {
+        "name": "HardwareSerial_available",
+        "module": "hardware_serial",
+        "address": "0x20017f6c",
+        "s_pro_address": "0x20019128",
+        "span_bytes": 22,
+        "span_sha256": "b2bed156ff8834b6e678326d493025c73b2d41c7dbde1f3c46ea114b6057ac7b"
+      },
+      {
+        "name": "HardwareSerial_peek",
+        "module": "hardware_serial",
+        "address": "0x20017f82",
+        "s_pro_address": "0x2001913e",
+        "span_bytes": 24,
+        "span_sha256": "859a8bca68df38763447e14f3c3aed7af230db18f21bf892609e11a3e8d1f050"
+      },
+      {
+        "name": "HardwareSerial_read",
+        "module": "hardware_serial",
+        "address": "0x20017f9a",
+        "s_pro_address": "0x20019156",
+        "span_bytes": 38,
+        "span_sha256": "f76172eacf9cb88143414d15483efcb4cb898e69a7433d085a31ba545e4ddf25"
+      },
+      {
+        "name": "HardwareSerial_flush",
+        "module": "hardware_serial",
+        "address": "0x20017fc0",
+        "s_pro_address": "0x2001917c",
+        "span_bytes": 16,
+        "span_sha256": "b3966a3db5ea85fe71755ea4b8beb7a34dac34276cdd6926ba0130981279058e"
+      },
+      {
+        "name": "HardwareSerial_clear",
+        "module": "hardware_serial",
+        "address": "0x2001803c",
+        "s_pro_address": "0x200191f8",
+        "span_bytes": 36,
+        "span_sha256": "0b05fd3a61dbd5b398a56022d5fe361a33ad347a35a011fa6c41fde36e87f49f"
+      },
+      {
+        "name": "IPAddress_printTo",
+        "module": "network_addresses",
+        "address": "0x200182d8",
+        "s_pro_address": "0x20019494",
+        "span_bytes": 60,
+        "span_sha256": "d4140b33954fadefda3ea4019ec57ea279c8efce5465806f84a709a283a51b9f"
+      },
+      {
+        "name": "IPAddress_assign_word",
+        "module": "network_addresses",
+        "address": "0x20018348",
+        "s_pro_address": "0x20019504",
+        "span_bytes": 20,
+        "span_sha256": "3a24fd5c0eb674ed5e8d9ac626a176ead0c04e0a658183f7b297f85a76de571f"
+      },
+      {
+        "name": "MACAddress_printTo",
+        "module": "network_addresses",
+        "address": "0x20018378",
+        "s_pro_address": "0x20019534",
+        "span_bytes": 96,
+        "span_sha256": "dff0e326984dd86eaa9fa490584f111a2afc0bde532d9a4c7da19777d24b422b"
+      },
+      {
+        "name": "energia_platform_init",
+        "module": "energia_runtime",
+        "address": "0x200183f8",
+        "s_pro_address": "0x200195b4",
+        "span_bytes": 76,
+        "span_sha256": "73e75b4e63ade16cdf76863227076f116f37d35ed0eb58b384be69f22fd89a81"
+      },
+      {
+        "name": "Print_write_buffer",
+        "module": "print_stream",
+        "address": "0x20018462",
+        "s_pro_address": "0x2001961e",
+        "span_bytes": 46,
+        "span_sha256": "9648466a4c417ae576a025aa619325f4a217979b922e4f8a68538f7fe9536e46"
+      },
+      {
+        "name": "Print_print_String",
+        "module": "print_stream",
+        "address": "0x200184aa",
+        "s_pro_address": "0x20019666",
+        "span_bytes": 52,
+        "span_sha256": "f123e08803a838cde4e3bd54b60e6f71764234704d2b8fccd30121f910fdb3e1"
+      },
+      {
+        "name": "Print_print_string",
+        "module": "print_stream",
+        "address": "0x200184de",
+        "s_pro_address": "0x2001969a",
+        "span_bytes": 8,
+        "span_sha256": "5d4a7c0683fad0ec67f37a2a59c03fb841628e2427023cf16712178f1ccb9b9d"
+      },
+      {
+        "name": "Print_print_char",
+        "module": "print_stream",
+        "address": "0x200184e6",
+        "s_pro_address": "0x200196a2",
+        "span_bytes": 10,
+        "span_sha256": "eb904719ae87c8622323e5acfd8012d01eb3da9b07498143078ffbebfec6f170"
+      },
+      {
+        "name": "Print_println",
+        "module": "print_stream",
+        "address": "0x200184f0",
+        "s_pro_address": "0x200196ac",
+        "span_bytes": 24,
+        "span_sha256": "1e003c968eb65955f9111e6eacb5095679353fa2234725dd2b2451b9cb6177bd"
+      },
+      {
+        "name": "Print_println_String",
+        "module": "print_stream",
+        "address": "0x20018508",
+        "s_pro_address": "0x200196c4",
+        "span_bytes": 20,
+        "span_sha256": "0c30ab0102d99d817e099961a03d1a4186f9bfbac2ca085b901779067c18775d"
+      },
+      {
+        "name": "Print_println_string",
+        "module": "print_stream",
+        "address": "0x2001851c",
+        "s_pro_address": "0x200196d8",
+        "span_bytes": 20,
+        "span_sha256": "8d5fd75186f63229ba755ee952c24e6a2a1bcfffdad49a7d7e39f27be5e021c8"
+      },
+      {
+        "name": "Print_print_number",
+        "module": "print_stream",
+        "address": "0x20018530",
+        "s_pro_address": "0x200196ec",
+        "span_bytes": 60,
+        "span_sha256": "95136c83daffef136842cba3bdc6faa679381780dfc1b423b085c92d1362cdcc"
+      },
+      {
+        "name": "Print_print_signed",
+        "module": "print_stream",
+        "address": "0x2001856c",
+        "s_pro_address": "0x20019728",
+        "span_bytes": 60,
+        "span_sha256": "2d8f686899c4e8e33eb04d491acdc7e84856a8bd7dbfdb7f639177d0528af5ff"
+      },
+      {
+        "name": "Print_println_signed",
+        "module": "print_stream",
+        "address": "0x200185ac",
+        "s_pro_address": "0x20019768",
+        "span_bytes": 20,
+        "span_sha256": "57155ae4544101fd59f5c278c4a97b36bf0e2972e16a07110480b49edaab7edb"
+      },
+      {
+        "name": "Print_print_unsigned",
+        "module": "print_stream",
+        "address": "0x200185c0",
+        "s_pro_address": "0x2001977c",
+        "span_bytes": 12,
+        "span_sha256": "d33fc495ee5af795e53cf8654a44ee24243512f0b6dac2547ae6fdcc31f3f406"
+      },
+      {
+        "name": "Print_println_unsigned",
+        "module": "print_stream",
+        "address": "0x200185d4",
+        "s_pro_address": "0x20019790",
+        "span_bytes": 20,
+        "span_sha256": "1f3ad9c51d55e25001a82e9abb5ebde0bd0bec8484f9cea9e18f3ffa356a2b96"
+      },
+      {
+        "name": "Print_println_float",
+        "module": "print_stream",
+        "address": "0x200186a4",
+        "s_pro_address": "0x20019860",
+        "span_bytes": 22,
+        "span_sha256": "659bcff29c2115e4743d58b7a2bb280fe0893d3373a7bee33a1a6a9eded6c78a"
+      },
+      {
+        "name": "String_reserve",
+        "module": "arduino_string",
+        "address": "0x200186f6",
+        "s_pro_address": "0x200198b2",
+        "span_bytes": 34,
+        "span_sha256": "7c558aa622c9b28e44769630a054567d15a075edcdb89809f1ed378e34473a79"
+      },
+      {
+        "name": "String_construct_c_string",
+        "module": "arduino_string",
+        "address": "0x20018760",
+        "s_pro_address": "0x2001991c",
+        "span_bytes": 20,
+        "span_sha256": "a157f45a015b8dc2e620d6c91058ae26a7fa98f18e2180ca9298f0040401bede"
+      },
+      {
+        "name": "String_character_at",
+        "module": "arduino_string",
+        "address": "0x20018774",
+        "s_pro_address": "0x20019930",
+        "span_bytes": 18,
+        "span_sha256": "5862320c8ce0a35c742a5c394c49dbfcb99642b9064c2f6a1a90a44e6fc564a8"
+      },
+      {
+        "name": "ADCEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018786",
+        "s_pro_address": "0x20019942",
+        "span_bytes": 10,
+        "span_sha256": "c44d85b561c538f872976638c94b64efdff529763f51422d3e0f9b3e20fbe076"
+      },
+      {
+        "name": "ADCDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018790",
+        "s_pro_address": "0x2001994c",
+        "span_bytes": 10,
+        "span_sha256": "3ea28dad45be1cf7b3db8b56a7b9dc6a91543b21315c41f23d72e47d18d56321"
+      },
+      {
+        "name": "ADCChannelEnable",
+        "module": "cc3200_adc",
+        "address": "0x2001879a",
+        "s_pro_address": "0x20019956",
+        "span_bytes": 34,
+        "span_sha256": "3901cb688478450e84001edaec985a7afab6bc5ab3bb5239b4573fbb007dcc3b"
+      },
+      {
+        "name": "ADCChannelDisable",
+        "module": "cc3200_adc",
+        "address": "0x200187bc",
+        "s_pro_address": "0x20019978",
+        "span_bytes": 36,
+        "span_sha256": "01f64baff423f4dfbac1e786349af4cc2f32705aede6fcf7274e221bf832aa5a"
+      },
+      {
+        "name": "ADCTimerConfig",
+        "module": "cc3200_adc",
+        "address": "0x200187e0",
+        "s_pro_address": "0x2001999c",
+        "span_bytes": 16,
+        "span_sha256": "15f9d3fa6c93c1dc307cf6e979e2c01ac5e114e9f3d9726c118a8fdcef186eb2"
+      },
+      {
+        "name": "ADCTimerEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200187f0",
+        "s_pro_address": "0x200199ac",
+        "span_bytes": 10,
+        "span_sha256": "fb075718509eb67088ab7282c4281f62ff24e6221fe4120e440483711afca4f0"
+      },
+      {
+        "name": "ADCTimerDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200187fa",
+        "s_pro_address": "0x200199b6",
+        "span_bytes": 10,
+        "span_sha256": "b2568e181d058078b96b2b0872f5df93adafea9471c868875960537a501332ad"
+      },
+      {
+        "name": "ADCFIFOLvlGet",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018804",
+        "s_pro_address": "0x200199c0",
+        "span_bytes": 10,
+        "span_sha256": "3f944a3021324c15e17cc284a7464b66e100f5df4665fa65f73f0ca6d63a0b71"
+      },
+      {
+        "name": "CPUcpsid",
+        "module": "cc3200_interrupts",
+        "address": "0x20018814",
+        "s_pro_address": "0x200199d0",
+        "span_bytes": 16,
+        "span_sha256": "8b009a1adcdb5bee673c7a0c1b700186e8677c9bcf7fa006d8e7c77ac354c26a"
+      },
+      {
+        "name": "CPUcpsie",
+        "module": "cc3200_interrupts",
+        "address": "0x20018824",
+        "s_pro_address": "0x200199e0",
+        "span_bytes": 16,
+        "span_sha256": "2a456863cbb5d3ccd202b506c0f4dce5fe688b38ddc60ca02b2b414bd3a505dd"
+      },
+      {
+        "name": "GPIOGetIntNumber",
+        "module": "cc3200_gpio",
+        "address": "0x20018834",
+        "s_pro_address": "0x200199f0",
+        "span_bytes": 60,
+        "span_sha256": "9dd0f688aac833d85016a8ba43133d490ccb6481b781e8a6015ad018912b9b03"
+      },
+      {
+        "name": "GPIODirModeSet",
+        "module": "cc3200_gpio",
+        "address": "0x20018870",
+        "s_pro_address": "0x20019a2c",
+        "span_bytes": 24,
+        "span_sha256": "2d721e2679156fbcb094c0f10a1ee95602613cfdc81b059ba6d3facb1c2fb547"
+      },
+      {
+        "name": "GPIOIntTypeSet",
+        "module": "cc3200_gpio",
+        "address": "0x20018888",
+        "s_pro_address": "0x20019a44",
+        "span_bytes": 66,
+        "span_sha256": "97ddc926303a2f2d456802b7e786c85225728bfd93716f84a76385d88f1da405"
+      },
+      {
+        "name": "GPIOIntEnable",
+        "module": "cc3200_gpio",
+        "address": "0x200188ca",
+        "s_pro_address": "0x20019a86",
+        "span_bytes": 12,
+        "span_sha256": "93d66f1e70d7bde15a795a8d129e1481cc17911e1e6e56852bcf4d15f97b60fb"
+      },
+      {
+        "name": "GPIOIntStatus",
+        "module": "cc3200_gpio",
+        "address": "0x200188d6",
+        "s_pro_address": "0x20019a92",
+        "span_bytes": 14,
+        "span_sha256": "9120c1e662fab921ae57c7b9096b62cdc0118ee5b9079298b9ebc451a84e889d"
+      },
+      {
+        "name": "GPIOIntRegister",
+        "module": "cc3200_gpio",
+        "address": "0x200188ea",
+        "s_pro_address": "0x20019aa6",
+        "span_bytes": 26,
+        "span_sha256": "46150a3cd1af123fffb418e3765d6b661ec1adfd2cd83f577c8882e818149b13"
+      },
+      {
+        "name": "GPIOPinRead",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018904",
+        "s_pro_address": "0x20019ac0",
+        "span_bytes": 12,
+        "span_sha256": "f08f7451da7374c505c0a4eb9816a9dfed59b427b1bb8392ede9e92d8fdb1e71"
+      },
+      {
+        "name": "unresolved_ti_drivers_01",
+        "module": "ti_drivers",
+        "address": "0x20018910",
+        "s_pro_address": "0x20019acc",
+        "span_bytes": 8,
+        "span_sha256": "ba1da34b35d7a5ae7f5d43042233a247d1cb4d73db110d922329a44c487c31a0"
+      },
+      {
+        "name": "IntMasterEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018918",
+        "s_pro_address": "0x20019ad4",
+        "span_bytes": 10,
+        "span_sha256": "859151e8f7ca86a2f0e0572e3a91eed7429a7a90a32314ec615efd668fd2d9e6"
+      },
+      {
+        "name": "IntMasterDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018922",
+        "s_pro_address": "0x20019ade",
+        "span_bytes": 10,
+        "span_sha256": "3f644133d3038f957a9ec6734e5298bf678475373c5309b6c52bfb575972df4a"
+      },
+      {
+        "name": "IntVTableBaseSet",
+        "module": "cc3200_interrupts",
+        "address": "0x2001892c",
+        "s_pro_address": "0x20019ae8",
+        "span_bytes": 12,
+        "span_sha256": "f272706275a79b84dd10bab6c7c894636327f26e053d2f21b2c31e50ac381ae5"
+      },
+      {
+        "name": "IntRegister",
+        "module": "cc3200_interrupts",
+        "address": "0x20018938",
+        "s_pro_address": "0x20019af4",
+        "span_bytes": 16,
+        "span_sha256": "2ac4b04846387ae3bb7a48f2f818800f090c537dc29e8293075932031b60d258"
+      },
+      {
+        "name": "PinConfigurePeripheral2mA",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018b14",
+        "s_pro_address": "0x20019cd0",
+        "span_bytes": 22,
+        "span_sha256": "2f724524306ff3956d95ef33f6fd4b58c63074d512d2b16e398f67eea9928d71"
+      },
+      {
+        "name": "PinConfigurePeripheral6mA",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018b2a",
+        "s_pro_address": "0x20019ce6",
+        "span_bytes": 22,
+        "span_sha256": "fcfe8c0cfc45b9b11b71c7157be960377d41c1ce69dadf0fcdf0a73da1bc14af"
+      },
+      {
+        "name": "PinTypeGPIO",
+        "module": "cc3200_gpio",
+        "address": "0x20018b40",
+        "s_pro_address": "0x20019cfc",
+        "span_bytes": 28,
+        "span_sha256": "30f0c028813194e571f73293feea41fbb0247e1e10e9b0ba52fadc34657a78f1"
+      },
+      {
+        "name": "PinTypeADC",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018b5c",
+        "s_pro_address": "0x20019d18",
+        "span_bytes": 12,
+        "span_sha256": "cc829890b4dfe3937efe1796e3aae562d3adf1bdd0c7066580919e6227ab3fb7"
+      },
+      {
+        "name": "PRCMMCUReset",
+        "module": "cc3200_clock",
+        "address": "0x20018b68",
+        "s_pro_address": "0x20019d24",
+        "span_bytes": 20,
+        "span_sha256": "bdbf2c51a09d67fb4d13172a904849c6e02e5bc0cd518fb7079edeccf938382f"
+      },
+      {
+        "name": "PRCMSysResetCauseGet",
+        "module": "cc3200_clock",
+        "address": "0x20018b7c",
+        "s_pro_address": "0x20019d38",
+        "span_bytes": 44,
+        "span_sha256": "eae9d9ac35d83d2212251c9952ea281c27930c1f5a50d529be596d8552c1ac52"
+      },
+      {
+        "name": "PRCMPeripheralClockGet",
+        "module": "cc3200_clock",
+        "address": "0x20018bf0",
+        "s_pro_address": "0x20019dac",
+        "span_bytes": 72,
+        "span_sha256": "cf89f0ce1ccd65c355c517bb9484c851346208771af9acdf89a05cdd3178325e"
+      },
+      {
+        "name": "PRCMCC3200MCUInit",
+        "module": "cc3200_clock",
+        "address": "0x20018c94",
+        "s_pro_address": "0x20019e50",
+        "span_bytes": 292,
+        "span_sha256": "ff1fb629d795c0a583c80433b6dd4cf46f9625628e53d505fa7046874031a9d6"
+      },
+      {
+        "name": "SHAMD5IntStatus",
+        "module": "cc3200_hash",
+        "address": "0x20018db8",
+        "s_pro_address": "0x20019f74",
+        "span_bytes": 44,
+        "span_sha256": "a31c6cd04aa8e9403eb6cf0d8b924794dc4c8f67e88a87bc35966d71c5379328"
+      },
+      {
+        "name": "SHAMD5IntEnable",
+        "module": "cc3200_hash",
+        "address": "0x20018de4",
+        "s_pro_address": "0x20019fa0",
+        "span_bytes": 48,
+        "span_sha256": "7acbd2797ff7517bb5a06f956b98a8ee497449c2392eca0a44531c4ba81e05e7"
+      },
+      {
+        "name": "SHAMD5IntDisable",
+        "module": "cc3200_hash",
+        "address": "0x20018e14",
+        "s_pro_address": "0x20019fd0",
+        "span_bytes": 52,
+        "span_sha256": "d8f91cb0092f506d8ac87024e2792aec35dc2f7cd41478d127c7d525aeccfb04"
+      },
+      {
+        "name": "SHAMD5IntRegister",
+        "module": "cc3200_hash",
+        "address": "0x20018e48",
+        "s_pro_address": "0x2001a004",
+        "span_bytes": 18,
+        "span_sha256": "672f9958faf3397465b95880a425620b50f9e3ee65c34fcfe6e8d544e04bd2ae"
+      },
+      {
+        "name": "SHAMD5DataWrite",
+        "module": "cc3200_hash",
+        "address": "0x20018e5e",
+        "s_pro_address": "0x2001a01a",
+        "span_bytes": 36,
+        "span_sha256": "eee88181122bbf60c706239758c11ecfddf1491d5c5278ec14b017f42b832890"
+      },
+      {
+        "name": "SHAMD5DataWriteMultiple",
+        "module": "cc3200_hash",
+        "address": "0x20018e82",
+        "s_pro_address": "0x2001a03e",
+        "span_bytes": 118,
+        "span_sha256": "34d2e3baa09f59e42245d7fa393b6c2fd4f262bf0e422b5bbe13b701c99bc8c7"
+      },
+      {
+        "name": "SHAMD5ResultRead",
+        "module": "cc3200_hash",
+        "address": "0x20018ef8",
+        "s_pro_address": "0x2001a0b4",
+        "span_bytes": 56,
+        "span_sha256": "6c5e6faa0a36dedfb663034d0091086565b23dcdbeae687eb429d47f107f333b"
+      },
+      {
+        "name": "unresolved_ti_drivers_02",
+        "module": "ti_drivers",
+        "address": "0x20018f30",
+        "s_pro_address": "0x2001a0ec",
+        "span_bytes": 44,
+        "span_sha256": "386a5b4f0aec7e42cafa46249ef8288c4d3f5355b0bb34d4e52e6f25e4d4ef58"
+      },
+      {
+        "name": "SPIEnable",
+        "module": "cc3200_spi",
+        "address": "0x20018f98",
+        "s_pro_address": "0x2001a154",
+        "span_bytes": 14,
+        "span_sha256": "9a80eddcec7cfc407bba625f072b7e493952982ec956881bda4107ca8159f3a5"
+      },
+      {
+        "name": "SPIDisable",
+        "module": "cc3200_spi",
+        "address": "0x20018fa6",
+        "s_pro_address": "0x2001a162",
+        "span_bytes": 14,
+        "span_sha256": "77666b3f9bcbdbb4e5b6108dcc6ec524ac852c90de67f6b79afbc31a509582ad"
+      },
+      {
+        "name": "SPIDmaDisable",
+        "module": "cc3200_spi",
+        "address": "0x20018fc0",
+        "s_pro_address": "0x2001a17c",
+        "span_bytes": 12,
+        "span_sha256": "17d294eeb7e1175f38cd9deb5ba52beedac5c64fd3603cf4af856507ea9e4505"
+      },
+      {
+        "name": "SPIReset",
+        "module": "cc3200_spi",
+        "address": "0x20018fcc",
+        "s_pro_address": "0x2001a188",
+        "span_bytes": 22,
+        "span_sha256": "cf8177bd3581845529b8895964bc20039053a63b4b0c9a6552e2fdcb2708d03c"
+      },
+      {
+        "name": "SPIConfigSetExpClk",
+        "module": "cc3200_spi",
+        "address": "0x20018fe2",
+        "s_pro_address": "0x2001a19e",
+        "span_bytes": 90,
+        "span_sha256": "b53d97851f0c583b25a0ae0d56224a7b4a5b710e48e7299c63e47a8f692661e3"
+      },
+      {
+        "name": "SPIFIFODisable",
+        "module": "cc3200_spi",
+        "address": "0x20019048",
+        "s_pro_address": "0x2001a204",
+        "span_bytes": 14,
+        "span_sha256": "ac2f5c85b2b7d397b578a222b035a4e1b456585b792ff3114e0892630ca0077d"
+      },
+      {
+        "name": "SPIFIFOLevelSet",
+        "module": "cc3200_spi",
+        "address": "0x20019056",
+        "s_pro_address": "0x2001a212",
+        "span_bytes": 24,
+        "span_sha256": "12f4ebee4ccb8b435ae50f365b112e3bcd6b779e6cd73f7fd1ca62698bbcfc90"
+      },
+      {
+        "name": "SPIWordCountSet",
+        "module": "cc3200_spi",
+        "address": "0x2001906e",
+        "s_pro_address": "0x2001a22a",
+        "span_bytes": 18,
+        "span_sha256": "aca570477a9e918b933f838fc50e57f0b08be8d623d4b951fdede6eb15c1d6ce"
+      },
+      {
+        "name": "SPIIntEnable",
+        "module": "cc3200_spi",
+        "address": "0x200190cc",
+        "s_pro_address": "0x2001a288",
+        "span_bytes": 60,
+        "span_sha256": "2f83196bc1758144ebb822e9037f93584579f1ceec3e9a873398bfdbe3bf4aef"
+      },
+      {
+        "name": "SPIIntClear",
+        "module": "cc3200_spi",
+        "address": "0x20019108",
+        "s_pro_address": "0x2001a2c4",
+        "span_bytes": 52,
+        "span_sha256": "51b1302b572d87ac76b697775eac28d7fd05b0fb141d684cca98c840a5a7094e"
+      },
+      {
+        "name": "SPICSEnable",
+        "module": "cc3200_spi",
+        "address": "0x2001913c",
+        "s_pro_address": "0x2001a2f8",
+        "span_bytes": 14,
+        "span_sha256": "9cfed82ddb38644fb01ce55b39b708926f3a98df2e36992ac764a6f030f4754b"
+      },
+      {
+        "name": "SPICSDisable",
+        "module": "cc3200_spi",
+        "address": "0x2001914a",
+        "s_pro_address": "0x2001a306",
+        "span_bytes": 14,
+        "span_sha256": "ee9b361cf794f4cfdd77e58490277730254ec58378ff159b0facd7352a64f634"
+      },
+      {
+        "name": "SPITransfer",
+        "module": "cc3200_spi",
+        "address": "0x20019158",
+        "s_pro_address": "0x2001a314",
+        "span_bytes": 412,
+        "span_sha256": "a7039634c523894183c480ade073b9717dffa6b6517a3fc9159924f928b748a0"
+      },
+      {
+        "name": "SysTickEnable",
+        "module": "cc3200_timer",
+        "address": "0x200192f4",
+        "s_pro_address": "0x2001a4b0",
+        "span_bytes": 16,
+        "span_sha256": "fee377f8e2edec879bb4c919295ed8fe77e2ec16eed13ce309a86c9708df4d6f"
+      },
+      {
+        "name": "SysTickIntEnable",
+        "module": "cc3200_timer",
+        "address": "0x20019304",
+        "s_pro_address": "0x2001a4c0",
+        "span_bytes": 16,
+        "span_sha256": "e90b890e7f037f44806bfd6f83ae7669024dcaf721ce23909cdaa7ff3fe28ff1"
+      },
+      {
+        "name": "SysTickPeriodSet",
+        "module": "cc3200_timer",
+        "address": "0x20019314",
+        "s_pro_address": "0x2001a4d0",
+        "span_bytes": 12,
+        "span_sha256": "3ccd2f06a77421692474a2e92cddb3030f804cb4a498c1fd8519c26a7c18bece"
+      },
+      {
+        "name": "TimerEnable",
+        "module": "cc3200_timer",
+        "address": "0x20019320",
+        "s_pro_address": "0x2001a4dc",
+        "span_bytes": 16,
+        "span_sha256": "bf6f0e85a347904e32b8e33533aa1eece06f541a589241ba66180418c4d2b632"
+      },
+      {
+        "name": "TimerConfigure",
+        "module": "cc3200_timer",
+        "address": "0x20019330",
+        "s_pro_address": "0x2001a4ec",
+        "span_bytes": 40,
+        "span_sha256": "e54bb884d3667dc0a9d53974cba62b4e7ad4410da1537ca8dba0f32962f1ce07"
+      },
+      {
+        "name": "TimerLoadSet",
+        "module": "cc3200_timer",
+        "address": "0x20019358",
+        "s_pro_address": "0x2001a514",
+        "span_bytes": 20,
+        "span_sha256": "7b22f12830b9a80607e80d808dff417a805e5221676190fea6338064d3673d6b"
+      },
+      {
+        "name": "TimerIntRegister",
+        "module": "cc3200_timer",
+        "address": "0x2001936c",
+        "s_pro_address": "0x2001a528",
+        "span_bytes": 96,
+        "span_sha256": "d1dd87d04a4298a403e11bd330f5af4fb1acedb318778b70af78a38924641f69"
+      },
+      {
+        "name": "TimerIntEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200193cc",
+        "s_pro_address": "0x2001a588",
+        "span_bytes": 8,
+        "span_sha256": "4f08f3c53d11bb03f5ce2a1ef0243ce2f716a610164c78e03e9c1b6e4f2ce9cd"
+      },
+      {
+        "name": "TimerIntStatus",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200193d4",
+        "s_pro_address": "0x2001a590",
+        "span_bytes": 10,
+        "span_sha256": "4b73ac4820cdd2ea6c7f11253f609dfd27e8285318b7765ed1e18377b9f20bd3"
+      },
+      {
+        "name": "UARTEnable",
+        "module": "cc3200_uart",
+        "address": "0x200193e2",
+        "s_pro_address": "0x2001a59e",
+        "span_bytes": 22,
+        "span_sha256": "6d200f80764d40f2c34d6f5039cd2f3016a11f1ff20c939143cacf10af012c7e"
+      },
+      {
+        "name": "UARTDisable",
+        "module": "cc3200_uart",
+        "address": "0x200193f8",
+        "s_pro_address": "0x2001a5b4",
+        "span_bytes": 28,
+        "span_sha256": "d11e2a1d5fa878a4d37285b800846dd28c13448122bed6da0af9885a1737a071"
+      },
+      {
+        "name": "UARTConfigSetExpClk",
+        "module": "cc3200_uart",
+        "address": "0x20019414",
+        "s_pro_address": "0x2001a5d0",
+        "span_bytes": 72,
+        "span_sha256": "89745c42d3e29242204dd6eda333f586a9eb0b47f41a5ceba50f34b5defbb2ae"
+      },
+      {
+        "name": "UARTCharsAvail",
+        "module": "cc3200_uart",
+        "address": "0x2001945c",
+        "s_pro_address": "0x2001a618",
+        "span_bytes": 12,
+        "span_sha256": "b0abea566c793d67d17b837cf1b151c1f9904208ebc476fbae3d7e424c0b6108"
+      },
+      {
+        "name": "UARTSpaceAvail",
+        "module": "cc3200_uart",
+        "address": "0x20019468",
+        "s_pro_address": "0x2001a624",
+        "span_bytes": 12,
+        "span_sha256": "e871f7d549b3b6aa8a075495451f3003e2a35f1006ac7b6f264403ab7f3cf2d6"
+      },
+      {
+        "name": "UARTCharGetNonBlocking",
+        "module": "cc3200_uart",
+        "address": "0x20019474",
+        "s_pro_address": "0x2001a630",
+        "span_bytes": 14,
+        "span_sha256": "d6e6f1321c7ebd23c79562edf2c875923db6f55a07d1b476da32432d2ef89371"
+      },
+      {
+        "name": "UARTCharPutNonBlocking",
+        "module": "cc3200_uart",
+        "address": "0x20019482",
+        "s_pro_address": "0x2001a63e",
+        "span_bytes": 14,
+        "span_sha256": "4516829f1891e11c1f77c5d5c133ea04c0073b3bb6b9357c0fc8cb3cc0db99d9"
+      },
+      {
+        "name": "UARTIntEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20019490",
+        "s_pro_address": "0x2001a64c",
+        "span_bytes": 8,
+        "span_sha256": "537e13b3b497fb2c985634761d06e67a2103327610cf567986349b8d59edd6cc"
+      },
+      {
+        "name": "UARTIntDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20019498",
+        "s_pro_address": "0x2001a654",
+        "span_bytes": 10,
+        "span_sha256": "39dab7babb1edbef80c597230724909877ba2c25f83472de42cb80fc0a6bd66b"
+      },
+      {
+        "name": "UARTIntStatus",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200194a2",
+        "s_pro_address": "0x2001a65e",
+        "span_bytes": 10,
+        "span_sha256": "d2c796599a81610f28f8abae362fd1f431f1ddf5253d2a3ee5e1d6229ab6f151"
+      },
+      {
+        "name": "uDMAEnable",
+        "module": "cc3200_dma",
+        "address": "0x200194b0",
+        "s_pro_address": "0x2001a66c",
+        "span_bytes": 12,
+        "span_sha256": "62a5ca80cf7a69ae12ce17e06e3d3b5f06513aaec67b3750015cf728ae1f162f"
+      },
+      {
+        "name": "uDMAChannelEnable",
+        "module": "cc3200_dma",
+        "address": "0x200194bc",
+        "s_pro_address": "0x2001a678",
+        "span_bytes": 20,
+        "span_sha256": "6594867cf6cbd0a42f50feef136177627f60b3ceaedb262870d29e4faaad37a5"
+      },
+      {
+        "name": "uDMAControlBaseSet",
+        "module": "cc3200_dma",
+        "address": "0x200194d0",
+        "s_pro_address": "0x2001a68c",
+        "span_bytes": 12,
+        "span_sha256": "64cf70db77cbaaa1ac999353eec7e38a1666150869321cd7739a522d3f3c80c3"
+      },
+      {
+        "name": "uDMAChannelAttributeEnable",
+        "module": "cc3200_dma",
+        "address": "0x200194dc",
+        "s_pro_address": "0x2001a698",
+        "span_bytes": 72,
+        "span_sha256": "7a13d315ad1faf0a7b506989e5af6d317b26f884322d5bca30180b2eb6ff8cce"
+      },
+      {
+        "name": "uDMAChannelAttributeDisable",
+        "module": "cc3200_dma",
+        "address": "0x20019524",
+        "s_pro_address": "0x2001a6e0",
+        "span_bytes": 72,
+        "span_sha256": "e04fdafd8e87bba592209d8c2ec655463d99e4b5e1da3954e524be48cbc813f3"
+      },
+      {
+        "name": "uDMAChannelControlSet",
+        "module": "cc3200_dma",
+        "address": "0x2001956c",
+        "s_pro_address": "0x2001a728",
+        "span_bytes": 32,
+        "span_sha256": "515e8e481e0e3b1e8383eff1839dc347f29f32286c46cae931367f5177b7bc76"
+      },
+      {
+        "name": "uDMAChannelTransferSet",
+        "module": "cc3200_dma",
+        "address": "0x2001958c",
+        "s_pro_address": "0x2001a748",
+        "span_bytes": 132,
+        "span_sha256": "2b570fa076f1982fa26eccc9e628370e735d7823b3006d9df6f6044e8656d3f5"
+      },
+      {
+        "name": "unresolved_ti_drivers_05",
+        "module": "ti_drivers",
+        "address": "0x20019610",
+        "s_pro_address": "0x2001a7cc",
+        "span_bytes": 20,
+        "span_sha256": "e990ac9f0870e709c2897295941dcd2a590f793483400df7bc5929bbd2cb9610"
+      },
+      {
+        "name": "uDMAIntStatus",
+        "module": "cc3200_dma",
+        "address": "0x20019624",
+        "s_pro_address": "0x2001a7e0",
+        "span_bytes": 12,
+        "span_sha256": "c9c522b06921aca5c71f3a9fdd4ca101cad7ab136a24dceebad37d7611bf5840"
+      },
+      {
+        "name": "uDMAIntClear",
+        "module": "cc3200_dma",
+        "address": "0x20019630",
+        "s_pro_address": "0x2001a7ec",
+        "span_bytes": 12,
+        "span_sha256": "020924e58baa75b91ff1966e9db102ad3c311a8c210009335e51d46b19022323"
+      },
+      {
+        "name": "uDMAChannelAssign",
+        "module": "cc3200_dma",
+        "address": "0x2001963c",
+        "s_pro_address": "0x2001a7f8",
+        "span_bytes": 44,
+        "span_sha256": "f99926c8359b030b2a9737d8b1080e4fcfb2382f3784f89947d9cd9e2e9be21f"
+      },
+      {
+        "name": "libm_ceil",
+        "module": "software_float",
+        "address": "0x20019670",
+        "s_pro_address": "0x2001a830",
+        "span_bytes": 288,
+        "span_sha256": "b67affb622792d332fe5c0e6dad5b337b097ece4adfa858f0a6868b75820f694"
+      },
+      {
+        "name": "libm_ieee754_log",
+        "module": "software_float",
+        "address": "0x20019878",
+        "s_pro_address": "0x2001aa38",
+        "span_bytes": 1016,
+        "span_sha256": "1c0175b23c3afe25c828e004d5d00e7b119151b0d5c6006d62b19f2195690b86"
+      },
+      {
+        "name": "libm_fpclassify",
+        "module": "software_float",
+        "address": "0x20019c70",
+        "s_pro_address": "0x2001ae30",
+        "span_bytes": 80,
+        "span_sha256": "3f7a8b087c83d9c1450ed0d2264289140f142062e2016f197bf9d79443a61595"
+      },
+      {
+        "name": "libm_quiet_nan",
+        "module": "software_float",
+        "address": "0x20019cc4",
+        "s_pro_address": "0x2001ae84",
+        "span_bytes": 12,
+        "span_sha256": "8e988b6a94945eadd20221478c56dd8f74c57804fe64bdcd1ae61c5f1749d03d"
+      },
+      {
+        "name": "unresolved_c_library_01",
+        "module": "c_library",
+        "address": "0x20019cd0",
+        "s_pro_address": "0x2001ae90",
+        "span_bytes": 12,
+        "span_sha256": "3396ca6079f13aa643f16c5b54383a1f312ac2cba8c65ada19728f457997c2e3"
+      },
+      {
+        "name": "libc_atof",
+        "module": "libc",
+        "address": "0x20019cdc",
+        "s_pro_address": "0x2001ae9c",
+        "span_bytes": 8,
+        "span_sha256": "c8cc9e0d5aaae8665575c4d64fadb9213af66653af33d97cff30d08da89a93bc"
+      },
+      {
+        "name": "libc_atoi",
+        "module": "libc",
+        "address": "0x20019ce4",
+        "s_pro_address": "0x2001aea4",
+        "span_bytes": 28,
+        "span_sha256": "1e23aadb4bb95bff73a660378149d2eefa0e5d9b58a89f598b547381019c91a1"
+      },
+      {
+        "name": "libc_memcmp",
+        "module": "libc",
+        "address": "0x2001a264",
+        "s_pro_address": "0x2001b424",
+        "span_bytes": 104,
+        "span_sha256": "5cb826ee23815ac7ca384e29f9cab80e84fab9f9ab0c3b5f765a8c35cf842e59"
+      },
+      {
+        "name": "libc_memcpy",
+        "module": "libc",
+        "address": "0x2001a2cc",
+        "s_pro_address": "0x2001b48c",
+        "span_bytes": 308,
+        "span_sha256": "f7d55b134d670e0b2158973b976317b32cd3e4ff70d9036be971c2525779e230"
+      },
+      {
+        "name": "libc_memmove",
+        "module": "libc",
+        "address": "0x2001a400",
+        "s_pro_address": "0x2001b5c0",
+        "span_bytes": 192,
+        "span_sha256": "60105c100b9d331038438c3f562057509f14fa9e7007559c897e832170ed8cd9"
+      },
+      {
+        "name": "libc_memset",
+        "module": "libc",
+        "address": "0x2001a4c0",
+        "s_pro_address": "0x2001b680",
+        "span_bytes": 148,
+        "span_sha256": "81c0c2019e61f07d0b9f479d9b6b25a22344de494da61a91e5445a212f757a11"
+      },
+      {
+        "name": "libc_strcat",
+        "module": "libc",
+        "address": "0x2001a9c4",
+        "s_pro_address": "0x2001bb84",
+        "span_bytes": 76,
+        "span_sha256": "1eaa4f7acf945442011c582b6ddb7c2846c78211af235707469cfc8ff11f3d39"
+      },
+      {
+        "name": "libc_strcmp",
+        "module": "libc",
+        "address": "0x2001aa10",
+        "s_pro_address": "0x2001bbd0",
+        "span_bytes": 540,
+        "span_sha256": "76585679413cd221cdab79e04aca33cc59acdc3b3387cbcab01eafee5c35ebc3"
+      },
+      {
+        "name": "libc_strcpy",
+        "module": "libc",
+        "address": "0x2001ac2c",
+        "s_pro_address": "0x2001bdec",
+        "span_bytes": 188,
+        "span_sha256": "729646df6ce4c7b88e7d18ac4c0b3249056acc39b222378e651ebf7e73b1b8f0"
+      },
+      {
+        "name": "libc_strlen",
+        "module": "libc",
+        "address": "0x2001ace8",
+        "s_pro_address": "0x2001bea8",
+        "span_bytes": 96,
+        "span_sha256": "aec807d00421bca5c0d284bf6cd784e3a29d26b99b0b5696b4f050cc9d1e3277"
+      },
+      {
+        "name": "libc_strncmp",
+        "module": "libc",
+        "address": "0x2001ad48",
+        "s_pro_address": "0x2001bf08",
+        "span_bytes": 180,
+        "span_sha256": "67400858814f03a05123879f4e8a97d3eb4ecb21372e59ee13d43e3508ee134e"
+      },
+      {
+        "name": "libc_strncpy",
+        "module": "libc",
+        "address": "0x2001adfc",
+        "s_pro_address": "0x2001bfbc",
+        "span_bytes": 100,
+        "span_sha256": "72489f274b904d31e9a356f69f7207df8a39e31b589c8b00ac076e7ffbd19cd0"
+      },
+      {
+        "name": "unresolved_c_library_09",
+        "module": "c_library",
+        "address": "0x2001d5f4",
+        "s_pro_address": "0x2001e7b4",
+        "span_bytes": 308,
+        "span_sha256": "b61f0c6e41a9fd6c58f522b3fbce2843fb19ed8756fc9342b8c41b6e11f71f1c"
+      },
+      {
+        "name": "unresolved_c_library_13",
+        "module": "c_library",
+        "address": "0x2001e798",
+        "s_pro_address": "0x2001f958",
+        "span_bytes": 160,
+        "span_sha256": "f3b2a63640022c03b60f0a4a08fb850aa0acc5fade9e2337abdef01ec984b8ec"
+      },
+      {
+        "name": "libc_memchr",
+        "module": "libc",
+        "address": "0x2001ef04",
+        "s_pro_address": "0x200200c4",
+        "span_bytes": 144,
+        "span_sha256": "ee908e4409cd0603de744911db7d16d0749372f275ced32b4278ad545e00776e"
+      },
+      {
+        "name": "unresolved_c_library_17",
+        "module": "c_library",
+        "address": "0x2001ef94",
+        "s_pro_address": "0x20020154",
+        "span_bytes": 76,
+        "span_sha256": "cd01ee797f588af932f5576c238ddd49efe17cc01f67e9872fb258e31861b617"
+      },
+      {
+        "name": "unresolved_c_library_18",
+        "module": "c_library",
+        "address": "0x2001efe0",
+        "s_pro_address": "0x200201a0",
+        "span_bytes": 20,
+        "span_sha256": "d2199b8f00413a6872c9fe4c74ec97b896db01d53ebfdb89030189b081af0fd9"
+      },
+      {
+        "name": "unresolved_c_library_19",
+        "module": "c_library",
+        "address": "0x2001eff4",
+        "s_pro_address": "0x200201b4",
+        "span_bytes": 152,
+        "span_sha256": "9ba2fa3b0995e887973246ddb124852d52972768c74d15213fb7d9e8740691ee"
+      },
+      {
+        "name": "unresolved_c_library_21",
+        "module": "c_library",
+        "address": "0x2001f08c",
+        "s_pro_address": "0x2002024c",
+        "span_bytes": 152,
+        "span_sha256": "19dfc00f269984b38ccb5620c517c168db6c9c03235d9fc3627cc37686d3254d"
+      },
+      {
+        "name": "unresolved_c_library_20",
+        "module": "c_library",
+        "address": "0x2001f124",
+        "s_pro_address": "0x200202e4",
+        "span_bytes": 64,
+        "span_sha256": "cc6a8b75feb0ce73a145f0b8e0da0bfc199b876dd91a8e7a00276ff95ed53934"
+      },
+      {
+        "name": "unresolved_c_library_21_2",
+        "module": "c_library",
+        "address": "0x2001f164",
+        "s_pro_address": "0x20020324",
+        "span_bytes": 92,
+        "span_sha256": "9d16979151f58033a9357ba581c1f49e2de0eb2b3a31d38669b3dc23434167dc"
+      },
+      {
+        "name": "unresolved_c_library_24",
+        "module": "c_library",
+        "address": "0x2001f1c0",
+        "s_pro_address": "0x20020380",
+        "span_bytes": 20,
+        "span_sha256": "2726067638ac603bd4006d21c191936a02b62c1fa86828815ceab2dba99e146c"
+      },
+      {
+        "name": "unresolved_c_library_22",
+        "module": "c_library",
+        "address": "0x2001f1d4",
+        "s_pro_address": "0x20020394",
+        "span_bytes": 316,
+        "span_sha256": "9cae8ad3773fe4b30c5a9035329c51db4a8e12b3fc8e59243cf68f1ae3eadf69"
+      },
+      {
+        "name": "unresolved_c_library_27",
+        "module": "c_library",
+        "address": "0x2001f3ac",
+        "s_pro_address": "0x2002056c",
+        "span_bytes": 188,
+        "span_sha256": "f895e81dec3eb26b9f6728abe9338e22242dfd85d17ef0efc460bfa983c2026b"
+      },
+      {
+        "name": "unresolved_c_library_24_2",
+        "module": "c_library",
+        "address": "0x2001f468",
+        "s_pro_address": "0x20020628",
+        "span_bytes": 72,
+        "span_sha256": "3c5439d8727441c4bf0387784b20cc4d8aa91009d08846ad0d20fe25c14af912"
+      },
+      {
+        "name": "unresolved_c_library_29",
+        "module": "c_library",
+        "address": "0x2001f4b0",
+        "s_pro_address": "0x20020670",
+        "span_bytes": 212,
+        "span_sha256": "bf6944d021f53a8a53a6b60a217c7d1af0b77c762b3c86fc490b139ec96a0fa0"
+      },
+      {
+        "name": "unresolved_floating_point_01",
+        "module": "floating_point",
+        "address": "0x2001f584",
+        "s_pro_address": "0x20020744",
+        "span_bytes": 64,
+        "span_sha256": "0b524d758f87b5fcf1314bb7d30deb428561038bd67ae8783e299f4127dfe2cc"
+      },
+      {
+        "name": "unresolved_floating_point_02",
+        "module": "floating_point",
+        "address": "0x2001f5c4",
+        "s_pro_address": "0x20020784",
+        "span_bytes": 180,
+        "span_sha256": "12189efec0ed329d18464b2e47c2c513df5edcd5c48fc936d394bf51783b7743"
+      },
+      {
+        "name": "unresolved_floating_point_03",
+        "module": "floating_point",
+        "address": "0x2001f678",
+        "s_pro_address": "0x20020838",
+        "span_bytes": 188,
+        "span_sha256": "65733c32c30c325f1af06a0f3a3d42418b87c608344cd70d8a0e6b2a08f8dc9d"
+      },
+      {
+        "name": "unresolved_floating_point_04",
+        "module": "floating_point",
+        "address": "0x2001f734",
+        "s_pro_address": "0x200208f4",
+        "span_bytes": 80,
+        "span_sha256": "f356b7dea669018fbae3825133cd9b97ae7f75481e6c98fcdd9220c46b3be3dc"
+      },
+      {
+        "name": "unresolved_floating_point_05",
+        "module": "floating_point",
+        "address": "0x2001f784",
+        "s_pro_address": "0x20020944",
+        "span_bytes": 72,
+        "span_sha256": "3b070440708fd4e875473f33ad625d5257248440492ddd81e78e6a852c1b741d"
+      },
+      {
+        "name": "unresolved_floating_point_06",
+        "module": "floating_point",
+        "address": "0x2001f7cc",
+        "s_pro_address": "0x2002098c",
+        "span_bytes": 96,
+        "span_sha256": "a45de276d28b0e262542d90663039ae6b7db9f42a608fb6c71c74d2c24e31bed"
+      },
+      {
+        "name": "unresolved_floating_point_07",
+        "module": "floating_point",
+        "address": "0x2001f82c",
+        "s_pro_address": "0x200209ec",
+        "span_bytes": 256,
+        "span_sha256": "aeb283289d5d6f9c1fcf3e671197d63ebfd000b76059b0efbb469ad0352257ff"
+      },
+      {
+        "name": "unresolved_floating_point_08",
+        "module": "floating_point",
+        "address": "0x2001f92c",
+        "s_pro_address": "0x20020aec",
+        "span_bytes": 104,
+        "span_sha256": "e3890e93446117d04deb659459970c234b870294c747ef3b706b25e04ad7cf80"
+      },
+      {
+        "name": "__aeabi_dadd",
+        "module": "software_float",
+        "address": "0x2001f998",
+        "s_pro_address": "0x20020b58",
+        "span_bytes": 632,
+        "span_sha256": "d8a83aa73681b7c90138d332571b51c0fe78d820a6d1255f8c2b7e6c93b83d08"
+      },
+      {
+        "name": "__aeabi_ui2d",
+        "module": "software_float",
+        "address": "0x2001fc10",
+        "s_pro_address": "0x20020dd0",
+        "span_bytes": 32,
+        "span_sha256": "46b41fddd0f4f7e42f8816dbbeb1db82781d857a4cc16df1330efe8035a06fdd"
+      },
+      {
+        "name": "__aeabi_i2d",
+        "module": "software_float",
+        "address": "0x2001fc30",
+        "s_pro_address": "0x20020df0",
+        "span_bytes": 36,
+        "span_sha256": "50d1e977a902279816235af96305a5d03bdd0270f1c0b9d2e1c93eaa16d1393e"
+      },
+      {
+        "name": "__aeabi_f2d",
+        "module": "software_float",
+        "address": "0x2001fc54",
+        "s_pro_address": "0x20020e14",
+        "span_bytes": 168,
+        "span_sha256": "4715799f790712f8fad5d50bf600e46752968a4bd1edaa738f0a7ab9d2338147"
+      },
+      {
+        "name": "__aeabi_dmul",
+        "module": "software_float",
+        "address": "0x2001fcfc",
+        "s_pro_address": "0x20020ebc",
+        "span_bytes": 476,
+        "span_sha256": "45908edf89fa4a1138c24f8463b2a6d9c50b0787a899c6bd3d0f1ab2cb8886b8"
+      },
+      {
+        "name": "soft_double_multiply_special",
+        "module": "software_float",
+        "address": "0x2001fed8",
+        "s_pro_address": "0x20021098",
+        "span_bytes": 120,
+        "span_sha256": "463492458c5ee740ab6b53f171174cc14cd2786c61ff2fc255e0752b3aae36c4"
+      },
+      {
+        "name": "__aeabi_ddiv",
+        "module": "software_float",
+        "address": "0x2001ff50",
+        "s_pro_address": "0x20021110",
+        "span_bytes": 366,
+        "span_sha256": "99fdb37de8541323a8597cd4c1de7fc6a06c2a0adb7cdbf409eda90c834ac391"
+      },
+      {
+        "name": "soft_double_divide_special",
+        "module": "software_float",
+        "address": "0x200200be",
+        "s_pro_address": "0x2002127e",
+        "span_bytes": 114,
+        "span_sha256": "8e79b2b3b85f0e6b76f209a8fce0ba67083e45186dbda61733dae1d2b65890db"
+      },
+      {
+        "name": "soft_double_compare_core",
+        "module": "software_float",
+        "address": "0x20020130",
+        "s_pro_address": "0x200212f0",
+        "span_bytes": 124,
+        "span_sha256": "ff8bdb779cf4cb45ca40519de716f61e73ddbe92f576a57939a127554249e96d"
+      },
+      {
+        "name": "soft_double_compare_reversed_flags",
+        "module": "software_float",
+        "address": "0x200201ac",
+        "s_pro_address": "0x2002136c",
+        "span_bytes": 16,
+        "span_sha256": "97abe023331f3ba52330a2ffa1917d111aa95f92448ac37d198645d05927f2c4"
+      },
+      {
+        "name": "soft_double_compare_flags",
+        "module": "software_float",
+        "address": "0x200201bc",
+        "s_pro_address": "0x2002137c",
+        "span_bytes": 16,
+        "span_sha256": "0a97ad67b4719afe391ddc342eee817edebbcb11e3ed2c1cc577c4d468c54f5c"
+      },
+      {
+        "name": "__aeabi_dcmpge",
+        "module": "software_float",
+        "address": "0x20020208",
+        "s_pro_address": "0x200213c8",
+        "span_bytes": 20,
+        "span_sha256": "6e95406f6aa5dab7e9d5cf98725fba15868d3578ab71ee3671a2205f25918eb7"
+      },
+      {
+        "name": "__aeabi_dcmpgt",
+        "module": "software_float",
+        "address": "0x2002021c",
+        "s_pro_address": "0x200213dc",
+        "span_bytes": 20,
+        "span_sha256": "89bf61d4a53f534a57a6fbcd1068bf6ebccddbe84459cce4fb7aecc4ac6dd9ce"
+      },
+      {
+        "name": "__aeabi_d2iz",
+        "module": "software_float",
+        "address": "0x20020230",
+        "s_pro_address": "0x200213f0",
+        "span_bytes": 80,
+        "span_sha256": "b60d414af0b79474d760e4c3f4f140c82b791332d3b54046e90c900d69050b55"
+      },
+      {
+        "name": "__aeabi_d2uiz",
+        "module": "software_float",
+        "address": "0x20020280",
+        "s_pro_address": "0x20021440",
+        "span_bytes": 64,
+        "span_sha256": "f8b548a26fd77fb2cbfeee3789d28c97be11a125b3dccbde467883fe7f8eaec7"
+      },
+      {
+        "name": "__aeabi_d2f",
+        "module": "software_float",
+        "address": "0x200202c0",
+        "s_pro_address": "0x20021480",
+        "span_bytes": 168,
+        "span_sha256": "179194c37fd1c834107b09b4c7a1c6e041c5fcd29f327f20b84f9dab53747a76"
+      },
+      {
+        "name": "__aeabi_fadd",
+        "module": "software_float",
+        "address": "0x2002036c",
+        "s_pro_address": "0x2002152c",
+        "span_bytes": 352,
+        "span_sha256": "c5354222f1fd42895908608e8d7cf29bf4392c9d3aeb4e7ef467f660bb54383d"
+      },
+      {
+        "name": "__aeabi_ui2f",
+        "module": "software_float",
+        "address": "0x200204cc",
+        "s_pro_address": "0x2002168c",
+        "span_bytes": 8,
+        "span_sha256": "66dad9f18b5361d737d9a1ef8e16e9416caaf3f20809f620c5c1a8817a789c18"
+      },
+      {
+        "name": "__aeabi_i2f",
+        "module": "software_float",
+        "address": "0x200204d4",
+        "s_pro_address": "0x20021694",
+        "span_bytes": 168,
+        "span_sha256": "368d11c86f54c81ece14ca19a1dbe924e75d4fd26752899dddaca2d2f3d41562"
+      },
+      {
+        "name": "__aeabi_fmul",
+        "module": "software_float",
+        "address": "0x2002057c",
+        "s_pro_address": "0x2002173c",
+        "span_bytes": 360,
+        "span_sha256": "6a649afe570fb980871c809bbf604bcaee5de482bd463977a0428bbe955f3986"
+      },
+      {
+        "name": "__aeabi_fdiv",
+        "module": "software_float",
+        "address": "0x200206e4",
+        "s_pro_address": "0x200218a4",
+        "span_bytes": 328,
+        "span_sha256": "d56288e9841eb80b24c2ec9cd6e8b1929e0ca5676c881160fe8b0f2d041460ba"
+      },
+      {
+        "name": "soft_float_compare_core",
+        "module": "software_float",
+        "address": "0x2002082c",
+        "s_pro_address": "0x200219ec",
+        "span_bytes": 104,
+        "span_sha256": "0aa661d43fa23b3fdeb08448dd97ba2e52c424dcd33e6b2d17ab60268deeed8e"
+      },
+      {
+        "name": "soft_float_compare_flags",
+        "module": "software_float",
+        "address": "0x20020894",
+        "s_pro_address": "0x20021a54",
+        "span_bytes": 16,
+        "span_sha256": "958b2de7a5ea83bbee9ff4acf663ad4e45862829c2f6666e029281f9fe293310"
+      },
+      {
+        "name": "__aeabi_fcmpge",
+        "module": "software_float",
+        "address": "0x200208e0",
+        "s_pro_address": "0x20021aa0",
+        "span_bytes": 20,
+        "span_sha256": "92fee7320de940c1935677ce05a7532da2b9930c6fa9c0a285163980e6314a66"
+      },
+      {
+        "name": "__aeabi_fcmpgt",
+        "module": "software_float",
+        "address": "0x200208f4",
+        "s_pro_address": "0x20021ab4",
+        "span_bytes": 20,
+        "span_sha256": "ff7cfff5f9a9c400be976d7a1f2a7bec2f87c796fc2e1d968c19dc23b1aad574"
+      },
+      {
+        "name": "__aeabi_f2iz",
+        "module": "software_float",
+        "address": "0x20020908",
+        "s_pro_address": "0x20021ac8",
+        "span_bytes": 76,
+        "span_sha256": "43545820040ffab5fc57ebaf96a27176e4eee673deccffcd6f38357512847594"
+      },
+      {
+        "name": "__aeabi_f2uiz",
+        "module": "software_float",
+        "address": "0x20020954",
+        "s_pro_address": "0x20021b14",
+        "span_bytes": 64,
+        "span_sha256": "6e156bb92821821cad59c2730a2d28ed1c969614e477a22c83ced6a231fa818d"
+      },
+      {
+        "name": "soft_unsigned_long_long_divide_wrapper",
+        "module": "software_float",
+        "address": "0x20020994",
+        "s_pro_address": "0x20021b54",
+        "span_bytes": 44,
+        "span_sha256": "7084b784d304f0b5fb382664542a4755acfc275fccf998413ea7eac832cbed82"
+      },
+      {
+        "name": "soft_signed_long_long_divmod",
+        "module": "software_float",
+        "address": "0x200209c0",
+        "s_pro_address": "0x20021b80",
+        "span_bytes": 48,
+        "span_sha256": "85591ca0879fbe4365ad9212632770515c0ce361f0e94b2224f8996c6db936d1"
+      },
+      {
+        "name": "soft_unsigned_long_long_divmod",
+        "module": "software_float",
+        "address": "0x200209f0",
+        "s_pro_address": "0x20021bb0",
+        "span_bytes": 52,
+        "span_sha256": "63a2d777867a997055e50555c1bd6cb98332893a16161173caadbd18903ddd4f"
+      },
+      {
+        "name": "soft_signed_long_long_division",
+        "module": "software_float",
+        "address": "0x20020a24",
+        "s_pro_address": "0x20021be4",
+        "span_bytes": 664,
+        "span_sha256": "25410826f72ca7689310b419a03c4e1f7a4a596150f932e99501d4cda6286d25"
+      }
+    ],
+    "ssd1309": [
+      {
+        "name": "pico_encoder_set_range",
+        "module": "encoder",
+        "address": "0x2000458e",
+        "s_pro_address": "0x20004592",
+        "span_bytes": 12,
+        "span_sha256": "7378df903a28213360f598e72e50a8376b266b33ed3cf3b8c654833d74eed9ef"
+      },
+      {
+        "name": "pico_encoder_enable_wrap",
+        "module": "encoder",
+        "address": "0x2000459a",
+        "s_pro_address": "0x2000459e",
+        "span_bytes": 16,
+        "span_sha256": "e6d008d9b5362f1c4bdc6eaab25da17acfc4d5ec81ea6ffddbd06c2828a2f846"
+      },
+      {
+        "name": "pico_encoder_set_position",
+        "module": "encoder",
+        "address": "0x200045aa",
+        "s_pro_address": "0x200045ae",
+        "span_bytes": 8,
+        "span_sha256": "aa66875c9f5faf041e9272ca0d150ab94d155af7dfb69737ad44136f728484e0"
+      },
+      {
+        "name": "pico_encoder_get_position",
+        "module": "encoder",
+        "address": "0x200045b2",
+        "s_pro_address": "0x200045b6",
+        "span_bytes": 52,
+        "span_sha256": "446ef920de7b12a80e642d54e784e2e8475b5c102be9eb7e4786ac35bc27350b"
+      },
+      {
+        "name": "pico_encoder_take_click",
+        "module": "encoder",
+        "address": "0x200045e6",
+        "s_pro_address": "0x200045ea",
+        "span_bytes": 16,
+        "span_sha256": "917bc881a284dcd2845025c40813aa27240899d92f1bd894338e6046917fec74"
+      },
+      {
+        "name": "pico_still_clear_telemetry",
+        "module": "still",
+        "address": "0x200048e6",
+        "s_pro_address": "0x2000489a",
+        "span_bytes": 48,
+        "span_sha256": "2bba0565800f463f5ab9ea68956c5a440c97dfae666d3454813d1fe9dfa95456"
+      },
+      {
+        "name": "pico_menu_initialize",
+        "module": "menus",
+        "address": "0x2000493c",
+        "s_pro_address": "0x200048f0",
+        "span_bytes": 16,
+        "span_sha256": "d636bbdc7b80f03b977c6b5fb4e51569c565eda3df06a1e7faaa4ea71d28029e"
+      },
+      {
+        "name": "pico_assert_nonfatal",
+        "module": "logging",
+        "address": "0x20004bc8",
+        "s_pro_address": "0x20004b7c",
+        "span_bytes": 12,
+        "span_sha256": "ffb07c414c63af6954ffd05abcd42c0b613a4b2d3c13033d73a3b71543b97967"
+      },
+      {
+        "name": "pico_heat_record_temperature_sample",
+        "module": "temperature",
+        "address": "0x2000514c",
+        "s_pro_address": "0x20005004",
+        "span_bytes": 36,
+        "span_sha256": "f8eacdab50949bd6838342e8ab4a4ebaa79d045090f35f151f93f9444933ccdf"
+      },
+      {
+        "name": "pico_cstring_is_null_or_empty_duplicate",
+        "module": "cstring",
+        "address": "0x20006874",
+        "s_pro_address": "0x200064c4",
+        "span_bytes": 20,
+        "span_sha256": "a2b3eb99aadcd79062e4174e553b3f008590aa99561b96062ce6bd16b1af68b7"
+      },
+      {
+        "name": "pico_parse_ipv4_address",
+        "module": "network",
+        "address": "0x200069c8",
+        "s_pro_address": "0x2000661c",
+        "span_bytes": 74,
+        "span_sha256": "94837b5fede58d4c942c17987c68be4eb6476661a8f6659b4856b381dc1b076c"
+      },
+      {
+        "name": "pico_parse_delimited_field",
+        "module": "parsing",
+        "address": "0x20009184",
+        "s_pro_address": "0x20008c90",
+        "span_bytes": 60,
+        "span_sha256": "de5ba049d9da0f3e608c760bdedfadbc1eecc557c374222033f4a9132a7c4d62"
+      },
+      {
+        "name": "pico_url_write_escape",
+        "module": "parsing",
+        "address": "0x20009448",
+        "s_pro_address": "0x20008f54",
+        "span_bytes": 16,
+        "span_sha256": "5617f7b28514900f2ab6eb7f5eb480c850ee3023574adce95da1c8f95bed8f00"
+      },
+      {
+        "name": "pico_menu_choose",
+        "module": "ui_menus",
+        "address": "0x2000db3e",
+        "s_pro_address": "0x2000c2c2",
+        "span_bytes": 18,
+        "span_sha256": "e3378b41a11edfadc52f102fac34ef97e2e69ffbb7f056a93bd1089552a5a2e0"
+      },
+      {
+        "name": "pico_api_read_recipe_bitmap",
+        "module": "network_api",
+        "address": "0x2000fa58",
+        "s_pro_address": "0x20010a64",
+        "span_bytes": 8,
+        "span_sha256": "c46865443b8458feb1d57280b264aaded5cc01d1abe3873f986fe37936ea09d9"
+      },
+      {
+        "name": "pico_api_fetch_default_recipe_failed",
+        "module": "network_api",
+        "address": "0x2000ff00",
+        "s_pro_address": "0x20010f0c",
+        "span_bytes": 20,
+        "span_sha256": "b96d52efc297c525a3ec9a937c069964575aecff825dfa9935bce950ab46e37f"
+      },
+      {
+        "name": "pico_wifi_log_step",
+        "module": "network_api",
+        "address": "0x2001029c",
+        "s_pro_address": "0x200112a8",
+        "span_bytes": 8,
+        "span_sha256": "a6e68191495608d37e9bae4553afbe9adda674526e44e5017654696484dd915a"
+      },
+      {
+        "name": "pico_title_id_is_valid",
+        "module": "ui_screens",
+        "address": "0x200124d0",
+        "s_pro_address": "0x20013404",
+        "span_bytes": 12,
+        "span_sha256": "01e14d9852773c4f60d15ac6bcaa663bd61b91198e668b7c08d33d693648c811"
+      },
+      {
+        "name": "GFX_draw_line",
+        "module": "graphics",
+        "address": "0x20012b44",
+        "s_pro_address": "0x20013ae8",
+        "span_bytes": 200,
+        "span_sha256": "d826014537440dc2980392b940910efb99508cf9945bcd139af1e0ac680d9464"
+      },
+      {
+        "name": "GFX_draw_rectangle",
+        "module": "graphics",
+        "address": "0x20012c0c",
+        "s_pro_address": "0x20013bb0",
+        "span_bytes": 94,
+        "span_sha256": "d145fac22df90377f0e456d988a8cbb8c44a54d3bda0db6ca7099f49b2cb6f2a"
+      },
+      {
+        "name": "GFX_draw_fast_vertical_line",
+        "module": "graphics",
+        "address": "0x20012c6a",
+        "s_pro_address": "0x20013c0e",
+        "span_bytes": 28,
+        "span_sha256": "16f9e4772a693c40d78ef439d0b952482c50f559830c7d58d8380b038e32dd2d"
+      },
+      {
+        "name": "GFX_draw_fast_horizontal_line",
+        "module": "graphics",
+        "address": "0x20012c86",
+        "s_pro_address": "0x20013c2a",
+        "span_bytes": 26,
+        "span_sha256": "2b95877408a40af50808c193fb1cedba66b5a8fcd7949ba1ed5682a4d78368cd"
+      },
+      {
+        "name": "GFX_fill_rectangle",
+        "module": "graphics",
+        "address": "0x20012ca0",
+        "s_pro_address": "0x20013c44",
+        "span_bytes": 60,
+        "span_sha256": "0e777abe51bbce6d825ec87fcacab0336be687b6b3ae58ff9d3a1525448f960c"
+      },
+      {
+        "name": "GFX_fill_screen",
+        "module": "graphics",
+        "address": "0x20012cdc",
+        "s_pro_address": "0x20013c80",
+        "span_bytes": 28,
+        "span_sha256": "e1db52c49ebe7e579be86baeebcff986fdab1904e1e9552d1942fc67cd1ab2c7"
+      },
+      {
+        "name": "GFX_fill_triangle",
+        "module": "graphics",
+        "address": "0x20012d2c",
+        "s_pro_address": "0x20013f7c",
+        "span_bytes": 432,
+        "span_sha256": "405e7199e561b916b9c748ab4f4b7a08a04d8637ec97a833867c207529d0a500"
+      },
+      {
+        "name": "GFX_write_character",
+        "module": "graphics",
+        "address": "0x20013220",
+        "s_pro_address": "0x20014470",
+        "span_bytes": 248,
+        "span_sha256": "664ad75a6b602ccc902682fcbf987abc3150be85ac16b9f40ff1a92789ddb1e4"
+      },
+      {
+        "name": "GFX_get_height",
+        "module": "graphics",
+        "address": "0x20013350",
+        "s_pro_address": "0x200145b0",
+        "span_bytes": 8,
+        "span_sha256": "879d1e53f8162fe07c6d804a2e2f835d4dcd5a6ce5b0eee6530f871c7ed5ee1e"
+      },
+      {
+        "name": "SPI_set_data_mode",
+        "module": "spi_bus",
+        "address": "0x200133ec",
+        "s_pro_address": "0x2001464c",
+        "span_bytes": 36,
+        "span_sha256": "9fbefd659b5abf08a65ac481407742a6dc83706aa348e9f42e925db6d93be894"
+      },
+      {
+        "name": "SPI_transfer_byte",
+        "module": "spi_bus",
+        "address": "0x20013410",
+        "s_pro_address": "0x20014670",
+        "span_bytes": 76,
+        "span_sha256": "965bd558bc549601f77d735361e29b263658b5f9c8d0971b6a8a13f4336a1aac"
+      },
+      {
+        "name": "PID_disable",
+        "module": "pid_controller",
+        "address": "0x2001346c",
+        "s_pro_address": "0x200146cc",
+        "span_bytes": 8,
+        "span_sha256": "f6e4774691d2c9cf3604f29c275dfa266bf9ad9e25a0b575bef598339d61a27b"
+      },
+      {
+        "name": "PID_compute",
+        "module": "pid_controller",
+        "address": "0x20013474",
+        "s_pro_address": "0x200146d4",
+        "span_bytes": 236,
+        "span_sha256": "c31efa3d717b858c5d0afcf26bd50918c9accc9ca6ce45afe97076044b3cc591"
+      },
+      {
+        "name": "PID_set_tunings",
+        "module": "pid_controller",
+        "address": "0x20013560",
+        "s_pro_address": "0x200147c0",
+        "span_bytes": 208,
+        "span_sha256": "74864d4d37e6eb025111fbc0a8f2ebf8b89f0874c67243e2334b175d4a5a3f24"
+      },
+      {
+        "name": "PID_set_output_limits",
+        "module": "pid_controller",
+        "address": "0x20013630",
+        "s_pro_address": "0x20014890",
+        "span_bytes": 140,
+        "span_sha256": "284fa566eb5263f95bd61a8a186a104eeca700dc49080499d376773c8314dc2b"
+      },
+      {
+        "name": "PID_initialize_integral",
+        "module": "pid_controller",
+        "address": "0x200136bc",
+        "s_pro_address": "0x2001491c",
+        "span_bytes": 70,
+        "span_sha256": "1a7d3315e849ccbf4f60f6f6eacd593b0d5f7fbf0fbb99ae994a7510d3e89ebe"
+      },
+      {
+        "name": "PID_set_mode",
+        "module": "pid_controller",
+        "address": "0x20013702",
+        "s_pro_address": "0x20014962",
+        "span_bytes": 32,
+        "span_sha256": "d15e7159596839b3ea4646d8d57d2897a0e698410f55e6850e2e198efa217ae1"
+      },
+      {
+        "name": "PID_set_direction",
+        "module": "pid_controller",
+        "address": "0x20013722",
+        "s_pro_address": "0x20014982",
+        "span_bytes": 70,
+        "span_sha256": "e38181f198fdbbab67690a346b8b9515536b9792e267b744851e17810f2c120e"
+      },
+      {
+        "name": "PID_construct",
+        "module": "pid_controller",
+        "address": "0x20013768",
+        "s_pro_address": "0x200149c8",
+        "span_bytes": 92,
+        "span_sha256": "472cf864c8024c6a41349733c7de870d36d5dcad07c764fb1851aefd0d11ca5c"
+      },
+      {
+        "name": "WiFi_get_local_ip",
+        "module": "wifi",
+        "address": "0x20013970",
+        "s_pro_address": "0x20014bd0",
+        "span_bytes": 76,
+        "span_sha256": "f05fddd53d7e42baa2654e64e323cf8c07a14b55d1fadc179c11056d8ac9fa6e"
+      },
+      {
+        "name": "WiFiClient_write_byte",
+        "module": "wifi_client",
+        "address": "0x20013eb0",
+        "s_pro_address": "0x20015110",
+        "span_bytes": 34,
+        "span_sha256": "897175b2a66821a4fcebaf94d5e94c0dd67f8353811b3bdfcf94271f66335364"
+      },
+      {
+        "name": "WiFiClient_read_byte",
+        "module": "wifi_client",
+        "address": "0x20013ed2",
+        "s_pro_address": "0x20015132",
+        "span_bytes": 34,
+        "span_sha256": "3886bea8abde8ff75bcb3f3097c1a321abdc2e4915487ef48d8740a9eccf8753"
+      },
+      {
+        "name": "WiFiClient_peek",
+        "module": "wifi_client",
+        "address": "0x20013ef4",
+        "s_pro_address": "0x20015154",
+        "span_bytes": 22,
+        "span_sha256": "e9140bd8c58f8cecd5ebb6bd31a2d4c5262e56859c628b14baf5b9211c62fb57"
+      },
+      {
+        "name": "WiFiClient_is_valid",
+        "module": "wifi_client",
+        "address": "0x20013f0a",
+        "s_pro_address": "0x2001516a",
+        "span_bytes": 10,
+        "span_sha256": "f6defc35c579ae6f50bf3a1a9737830b32d4864a8bf3a02651e309f3e08f96a6"
+      },
+      {
+        "name": "WiFiClient_flush",
+        "module": "wifi_client",
+        "address": "0x20013f9c",
+        "s_pro_address": "0x200151fc",
+        "span_bytes": 28,
+        "span_sha256": "67c8ba8837def3372318f683a07e902c074a0eb95ac647dce0d9245381a4ae69"
+      },
+      {
+        "name": "WiFiClient_read_buffer",
+        "module": "wifi_client",
+        "address": "0x2001407c",
+        "s_pro_address": "0x200152dc",
+        "span_bytes": 60,
+        "span_sha256": "cea035f1d7213f2731d6985fa1db0aad0ec625aaaa7bc720fe694ed85e7ae7f2"
+      },
+      {
+        "name": "WiFiClient_connected",
+        "module": "wifi_client",
+        "address": "0x20014480",
+        "s_pro_address": "0x200156e0",
+        "span_bytes": 20,
+        "span_sha256": "de08809d37ec22961599faa2b2a73360233ba1fa1b961992be5c011596b91c23"
+      },
+      {
+        "name": "WiFiClient_status",
+        "module": "wifi_client",
+        "address": "0x20014494",
+        "s_pro_address": "0x200156f4",
+        "span_bytes": 16,
+        "span_sha256": "43dd674e85504dcbddd16a8abb35c266cca5e3c3438adfaada836a3fe29c6715"
+      },
+      {
+        "name": "nwp_register_interrupt_handler",
+        "module": "simplelink_spi_transport",
+        "address": "0x200148a0",
+        "s_pro_address": "0x20015b00",
+        "span_bytes": 56,
+        "span_sha256": "6d62c81df37250851d92675ef21868d09b88aabd1e5204d88bbae39fd5967e28"
+      },
+      {
+        "name": "NwpMaskInterrupt",
+        "module": "simplelink_spi_transport",
+        "address": "0x200148d8",
+        "s_pro_address": "0x20015b38",
+        "span_bytes": 12,
+        "span_sha256": "7ada4a14ca361a0df6d27e5a5f2698d579aa98b5d44cfc50e6e997d415da2e8c"
+      },
+      {
+        "name": "NwpUnMaskInterrupt",
+        "module": "simplelink_spi_transport",
+        "address": "0x200148e4",
+        "s_pro_address": "0x20015b44",
+        "span_bytes": 12,
+        "span_sha256": "725c25201ac38fcb437a27b38422affde652d2402fb11f8c9d9e0e63f5421ba0"
+      },
+      {
+        "name": "NwpPowerOn",
+        "module": "simplelink_spi_transport",
+        "address": "0x200148f0",
+        "s_pro_address": "0x20015b50",
+        "span_bytes": 48,
+        "span_sha256": "4900d940fde30c097f05f358f43b80191229803a0cc38aba0e27da55a68671ab"
+      },
+      {
+        "name": "NwpPowerOff",
+        "module": "simplelink_spi_transport",
+        "address": "0x20014920",
+        "s_pro_address": "0x20015b80",
+        "span_bytes": 60,
+        "span_sha256": "fce8bb02645ad4e7c246e9ce5bd0064b25d3ff93a4246b3f96d72e1b466d7be9"
+      },
+      {
+        "name": "NwpPowerOnPreamble",
+        "module": "simplelink_spi_transport",
+        "address": "0x2001495c",
+        "s_pro_address": "0x20015bbc",
+        "span_bytes": 96,
+        "span_sha256": "e4af76635bc06696874861fb69bfc0affd8798a3a8308471c01671a6cb040e85"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_01",
+        "module": "simplelink_protocol",
+        "address": "0x20014b90",
+        "s_pro_address": "0x20015df0",
+        "span_bytes": 20,
+        "span_sha256": "675b027fd747609962b88d685d757024256d68322d7f1ecd4fb8afb4e9c0a9d8"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_10",
+        "module": "simplelink_protocol",
+        "address": "0x200150c4",
+        "s_pro_address": "0x20016324",
+        "span_bytes": 18,
+        "span_sha256": "f3b5f3aedb58f77e3a08aab12dda5b66613cfdef5b8e9dd4a8bbd9382b8e8e1b"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_11",
+        "module": "simplelink_protocol",
+        "address": "0x200150d6",
+        "s_pro_address": "0x20016336",
+        "span_bytes": 14,
+        "span_sha256": "c100f5886e815800017a8c26f58792180b2bd0aa2b17bbe8ecd565217c959448"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_12",
+        "module": "simplelink_protocol",
+        "address": "0x200150e4",
+        "s_pro_address": "0x20016344",
+        "span_bytes": 20,
+        "span_sha256": "9534e164133a9a68328f6915f47476b4d353cbdc90fb160c4a11a06291de4994"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_14",
+        "module": "simplelink_protocol",
+        "address": "0x20015114",
+        "s_pro_address": "0x20016374",
+        "span_bytes": 16,
+        "span_sha256": "3fd764e9492953a1191f281aa766a469b5b4f501749bd991f4e67517ca19fbc4"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_21",
+        "module": "simplelink_protocol",
+        "address": "0x20015490",
+        "s_pro_address": "0x200166f0",
+        "span_bytes": 8,
+        "span_sha256": "0f4266e8039d8ea08d49f6891697e832936862ac5ce0c0c5b758b068442226f7"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_26",
+        "module": "simplelink_protocol",
+        "address": "0x200159d0",
+        "s_pro_address": "0x20016c30",
+        "span_bytes": 44,
+        "span_sha256": "b84bf9c4a87722e24686f6beb53b749ec356c1fc986ce3a54aa7efb8ac572225"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_29",
+        "module": "simplelink_protocol",
+        "address": "0x20015a6e",
+        "s_pro_address": "0x20016cce",
+        "span_bytes": 26,
+        "span_sha256": "63aad67e7524b5d1de233ca441f343bf02b86898c2333f47f81e5f45b7feb2d4"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_31",
+        "module": "simplelink_protocol",
+        "address": "0x20015dec",
+        "s_pro_address": "0x2001704c",
+        "span_bytes": 24,
+        "span_sha256": "7c413f331c200cee3a0a7bc73588f03963bf33f986d1501cea20ad9184361a19"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_34",
+        "module": "simplelink_protocol",
+        "address": "0x20015f6c",
+        "s_pro_address": "0x200171cc",
+        "span_bytes": 28,
+        "span_sha256": "49512433f0f1f1f0a729aa3bb20c7e85e1d5b8d8a7225ffce180d2c4ce15dada"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_37",
+        "module": "simplelink_protocol",
+        "address": "0x200162ec",
+        "s_pro_address": "0x2001754c",
+        "span_bytes": 8,
+        "span_sha256": "75d57c680fd5dea74d5dc53cc36f406711b6bc6da6aa5f19acf6b3d2225d63f5"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_40",
+        "module": "simplelink_protocol",
+        "address": "0x20016354",
+        "s_pro_address": "0x200175b4",
+        "span_bytes": 46,
+        "span_sha256": "b8ddf0cb0c81fc6d4d5468e05b021e6b35d8cc36f24c32ca70dbe4d3544ba6dc"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_41",
+        "module": "simplelink_protocol",
+        "address": "0x20016382",
+        "s_pro_address": "0x200175e2",
+        "span_bytes": 42,
+        "span_sha256": "2c288f6c9386b4760382717dbfdb624588f82165e852f0b29ef526300cd0e514"
+      },
+      {
+        "name": "sl_Htonl",
+        "module": "simplelink_socket",
+        "address": "0x200165c0",
+        "s_pro_address": "0x20017820",
+        "span_bytes": 34,
+        "span_sha256": "69d5a15c31ba43c05d169e0796cd98d28c6e22e05ebeec0fc135b19855f00df7"
+      },
+      {
+        "name": "sl_Htons",
+        "module": "simplelink_socket",
+        "address": "0x200165e2",
+        "s_pro_address": "0x20017842",
+        "span_bytes": 22,
+        "span_sha256": "2ac3783a4acdc96fe5f088aaeae8ab25758708b8cc072cc390ff1e8224d5acec"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_45",
+        "module": "simplelink_protocol",
+        "address": "0x200167f0",
+        "s_pro_address": "0x20017a50",
+        "span_bytes": 18,
+        "span_sha256": "776090d269e52ab9eeacb986dc0a1e982c0526c603401e1f2e824635a0074c38"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_46",
+        "module": "simplelink_protocol",
+        "address": "0x20016802",
+        "s_pro_address": "0x20017a62",
+        "span_bytes": 22,
+        "span_sha256": "c65262b0ff9439c851a04e14214d2eea5ef3c076132665bdd17e9b110791e8c1"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_49",
+        "module": "simplelink_protocol",
+        "address": "0x200168a0",
+        "s_pro_address": "0x20017b00",
+        "span_bytes": 372,
+        "span_sha256": "a62fd9ff15ab5c42f72c71a61767f19a6782a5f9f2b867eb741a485342b7b177"
+      },
+      {
+        "name": "sl_WlanDisconnect",
+        "module": "simplelink_wlan",
+        "address": "0x20016a14",
+        "s_pro_address": "0x20017c74",
+        "span_bytes": 8,
+        "span_sha256": "d63c2a87c07448716b67d62209963caf97f5ec4fb1ccaaf24acbcfb7bd49893f"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_50",
+        "module": "simplelink_protocol",
+        "address": "0x20016a5c",
+        "s_pro_address": "0x20017cbc",
+        "span_bytes": 396,
+        "span_sha256": "5f07cd90fcd5d0a78bc6caf76af9ff4e6f309114ef62c510b267054e626c0788"
+      },
+      {
+        "name": "sl_WlanRxStatStart",
+        "module": "simplelink_wlan",
+        "address": "0x20016c58",
+        "s_pro_address": "0x20017eb8",
+        "span_bytes": 8,
+        "span_sha256": "2fa318abe35d629f1f385225dcfb841e8c9e1776726a45e1dff198212785bc37"
+      },
+      {
+        "name": "unresolved_simplelink_protocol_55",
+        "module": "simplelink_protocol",
+        "address": "0x20016d84",
+        "s_pro_address": "0x20017fe4",
+        "span_bytes": 32,
+        "span_sha256": "6556e2344d5d7416d53f0abdb8141c36f62fd6b92bf5b59e18165e2f56b650a0"
+      },
+      {
+        "name": "SLFS_peek",
+        "module": "serial_flash",
+        "address": "0x20016eaa",
+        "s_pro_address": "0x2001810a",
+        "span_bytes": 44,
+        "span_sha256": "0413c0ef5018163a4b5396543a69bb2f2f7ddc874d1034bbf209e83db8bd5016"
+      },
+      {
+        "name": "SLFS_read_byte",
+        "module": "serial_flash",
+        "address": "0x20016ed6",
+        "s_pro_address": "0x20018136",
+        "span_bytes": 58,
+        "span_sha256": "24b0c3e90b2e8c43f930ad3ad2d68e2a2a2664dcea58794aa146d8a7bac812da"
+      },
+      {
+        "name": "SLFS_write_byte",
+        "module": "serial_flash",
+        "address": "0x20016f10",
+        "s_pro_address": "0x20018170",
+        "span_bytes": 64,
+        "span_sha256": "62d280448d3269a1ae5a332c6773f11baa95dba7f998e1af2f7f7b61d711cb8d"
+      },
+      {
+        "name": "SLFS_write_buffer",
+        "module": "serial_flash",
+        "address": "0x20016f50",
+        "s_pro_address": "0x200181b0",
+        "span_bytes": 56,
+        "span_sha256": "9700b420f9739ebb786b69fb4288f84a4fbead2402aac0a0beb3889c895d47e2"
+      },
+      {
+        "name": "SLFS_open",
+        "module": "serial_flash",
+        "address": "0x20016fcc",
+        "s_pro_address": "0x2001822c",
+        "span_bytes": 134,
+        "span_sha256": "6c0dd50dfc86db29a2ac3b78e9b16571f9bce7f0645f2a6162a3f24f7ab197b6"
+      },
+      {
+        "name": "SLFS_close",
+        "module": "serial_flash",
+        "address": "0x20017052",
+        "s_pro_address": "0x200182b2",
+        "span_bytes": 40,
+        "span_sha256": "2c634096077e7dcbb668558686fc4d3a7f81df0d0ed8f1cfce1b896adfd67e24"
+      },
+      {
+        "name": "SLFS_remove",
+        "module": "serial_flash",
+        "address": "0x2001707a",
+        "s_pro_address": "0x200182da",
+        "span_bytes": 34,
+        "span_sha256": "42d7450d1d15dd69e5e1423ca1351142f51e06260d367b6ce0ba5e1582dcf5c6"
+      },
+      {
+        "name": "MFRC522_construct",
+        "module": "rfid_reader",
+        "address": "0x20017234",
+        "s_pro_address": "0x20018494",
+        "span_bytes": 12,
+        "span_sha256": "ca6905292d2f00491d055c9d6c48c8dbf4965539173ee49894186fb2668e2484"
+      },
+      {
+        "name": "MFRC522_read_register_buffer",
+        "module": "rfid_reader",
+        "address": "0x20017338",
+        "s_pro_address": "0x20018598",
+        "span_bytes": 20,
+        "span_sha256": "efb691fca6659d6ff7ff110a68c70a1d9b46af262a2e717c8c541f1fb576ef88"
+      },
+      {
+        "name": "MFRC522_set_register_bits",
+        "module": "rfid_reader",
+        "address": "0x2001734c",
+        "s_pro_address": "0x200185ac",
+        "span_bytes": 30,
+        "span_sha256": "1f71709b2595cb97f4048616bb3a046da5605b049efcfee2d2fdc5ae5663f406"
+      },
+      {
+        "name": "MFRC522_clear_register_bits",
+        "module": "rfid_reader",
+        "address": "0x2001736a",
+        "s_pro_address": "0x200185ca",
+        "span_bytes": 30,
+        "span_sha256": "373bd5ae65c580ccb45e90b45c652f9c795ef77ad85b5dc132ae29fc09eabaaa"
+      },
+      {
+        "name": "MFRC522_calculate_crc",
+        "module": "rfid_reader",
+        "address": "0x20017388",
+        "s_pro_address": "0x200185e8",
+        "span_bytes": 118,
+        "span_sha256": "8b6e1ec053b657decb001e8fc2da82cb991e73437a2acd9d8b295333fcd62240"
+      },
+      {
+        "name": "MFRC522_reset",
+        "module": "rfid_reader",
+        "address": "0x200173fe",
+        "s_pro_address": "0x2001865e",
+        "span_bytes": 58,
+        "span_sha256": "2f9b643392fe724dfb2c153c1a85de5de2cb64cbcadb9634c43fe40fa2c29c14"
+      },
+      {
+        "name": "MFRC522_initialize",
+        "module": "rfid_reader",
+        "address": "0x20017438",
+        "s_pro_address": "0x20018698",
+        "span_bytes": 140,
+        "span_sha256": "e148f287f00d78d9f577cc56195b7300b711044bd0a4766a4a1202d0bd0d39a0"
+      },
+      {
+        "name": "MFRC522_antenna_off",
+        "module": "rfid_reader",
+        "address": "0x200174c4",
+        "s_pro_address": "0x20018724",
+        "span_bytes": 8,
+        "span_sha256": "35ce3f32c02366186a197eb86c2c53cc24cca2f61f57fca9bc3213a54885f42b"
+      },
+      {
+        "name": "MFRC522_communicate_with_card",
+        "module": "rfid_reader",
+        "address": "0x200174cc",
+        "s_pro_address": "0x2001872c",
+        "span_bytes": 348,
+        "span_sha256": "b1c632c57c9bbc79ce367de0f13b51c7d1862b0a6784bbcda46e8a8e7bffcd6c"
+      },
+      {
+        "name": "MFRC522_transceive_data",
+        "module": "rfid_reader",
+        "address": "0x20017628",
+        "s_pro_address": "0x20018888",
+        "span_bytes": 142,
+        "span_sha256": "c7ded2550af183f259cdb41e661d5a172dbf9640bca44cfb7c5a1d21cb7fc2c0"
+      },
+      {
+        "name": "MFRC522_request_card",
+        "module": "rfid_reader",
+        "address": "0x200176b6",
+        "s_pro_address": "0x20018916",
+        "span_bytes": 18,
+        "span_sha256": "c6cce12ab419d42ebbd38f5785486daa832bee697ccebeff951dc26f41053ebc"
+      },
+      {
+        "name": "MFRC522_select_card",
+        "module": "rfid_reader",
+        "address": "0x200176c8",
+        "s_pro_address": "0x20018928",
+        "span_bytes": 626,
+        "span_sha256": "34d632095cf496d4533a145cb3b2a0d1d3798e2591cd5c96fbc893548324e220"
+      },
+      {
+        "name": "MFRC522_power_down",
+        "module": "rfid_reader",
+        "address": "0x2001793a",
+        "s_pro_address": "0x20018b9a",
+        "span_bytes": 34,
+        "span_sha256": "512c74b2302f89a1fa25e566a99abb7fb880764294b1eb89d44034c1d49003c8"
+      },
+      {
+        "name": "MFRC522_power_up",
+        "module": "rfid_reader",
+        "address": "0x2001795c",
+        "s_pro_address": "0x20018bbc",
+        "span_bytes": 28,
+        "span_sha256": "d5599037c156f3a3cdb5aff8323100cc820cf9a4ec9f8469c3f7c6d5a58112d8"
+      },
+      {
+        "name": "MFRC522_halt_card",
+        "module": "rfid_reader",
+        "address": "0x20017978",
+        "s_pro_address": "0x20018bd8",
+        "span_bytes": 74,
+        "span_sha256": "0d62238947e82fbda92db3d1687788293a725fa80dd30a774402b50f461fcd2b"
+      },
+      {
+        "name": "MFRC522_is_new_card_present",
+        "module": "rfid_reader",
+        "address": "0x200179c2",
+        "s_pro_address": "0x20018c22",
+        "span_bytes": 34,
+        "span_sha256": "f4f6332be541b24ec4846d94700cc2b04011ca665a238eca3e8aace20c62bedb"
+      },
+      {
+        "name": "MFRC522_read_card_serial",
+        "module": "rfid_reader",
+        "address": "0x200179e4",
+        "s_pro_address": "0x20018c44",
+        "span_bytes": 18,
+        "span_sha256": "1bccc2de4e3eb16e02619c2a56269445c3b76dfa3f54f02ea97b3694a07a6ea8"
+      },
+      {
+        "name": "ltoa",
+        "module": "energia_runtime",
+        "address": "0x200179f6",
+        "s_pro_address": "0x20018c56",
+        "span_bytes": 110,
+        "span_sha256": "44781aa1d4ff3efb901cbf45a8b2c0a18c4901a53633b30d7afe94796b38cb02"
+      },
+      {
+        "name": "delay",
+        "module": "energia_runtime",
+        "address": "0x20017ca8",
+        "s_pro_address": "0x20018f08",
+        "span_bytes": 24,
+        "span_sha256": "2cda531020dc44ea368a48e6ccce9b8f347f56001f7b43b434ea628daa0beeab"
+      },
+      {
+        "name": "delayMicroseconds",
+        "module": "energia_runtime",
+        "address": "0x20017cc0",
+        "s_pro_address": "0x20018f20",
+        "span_bytes": 80,
+        "span_sha256": "5145072415d565ab2466b105449c0037cd157be19b76c28de7e18529e47e056d"
+      },
+      {
+        "name": "HardwareSerial_available",
+        "module": "hardware_serial",
+        "address": "0x20017ec8",
+        "s_pro_address": "0x20019128",
+        "span_bytes": 22,
+        "span_sha256": "b2bed156ff8834b6e678326d493025c73b2d41c7dbde1f3c46ea114b6057ac7b"
+      },
+      {
+        "name": "HardwareSerial_peek",
+        "module": "hardware_serial",
+        "address": "0x20017ede",
+        "s_pro_address": "0x2001913e",
+        "span_bytes": 24,
+        "span_sha256": "859a8bca68df38763447e14f3c3aed7af230db18f21bf892609e11a3e8d1f050"
+      },
+      {
+        "name": "HardwareSerial_read",
+        "module": "hardware_serial",
+        "address": "0x20017ef6",
+        "s_pro_address": "0x20019156",
+        "span_bytes": 38,
+        "span_sha256": "f76172eacf9cb88143414d15483efcb4cb898e69a7433d085a31ba545e4ddf25"
+      },
+      {
+        "name": "HardwareSerial_flush",
+        "module": "hardware_serial",
+        "address": "0x20017f1c",
+        "s_pro_address": "0x2001917c",
+        "span_bytes": 16,
+        "span_sha256": "b3966a3db5ea85fe71755ea4b8beb7a34dac34276cdd6926ba0130981279058e"
+      },
+      {
+        "name": "HardwareSerial_clear",
+        "module": "hardware_serial",
+        "address": "0x20017f98",
+        "s_pro_address": "0x200191f8",
+        "span_bytes": 36,
+        "span_sha256": "0b05fd3a61dbd5b398a56022d5fe361a33ad347a35a011fa6c41fde36e87f49f"
+      },
+      {
+        "name": "IPAddress_printTo",
+        "module": "network_addresses",
+        "address": "0x20018234",
+        "s_pro_address": "0x20019494",
+        "span_bytes": 60,
+        "span_sha256": "d4140b33954fadefda3ea4019ec57ea279c8efce5465806f84a709a283a51b9f"
+      },
+      {
+        "name": "IPAddress_assign_word",
+        "module": "network_addresses",
+        "address": "0x200182a4",
+        "s_pro_address": "0x20019504",
+        "span_bytes": 20,
+        "span_sha256": "3a24fd5c0eb674ed5e8d9ac626a176ead0c04e0a658183f7b297f85a76de571f"
+      },
+      {
+        "name": "MACAddress_printTo",
+        "module": "network_addresses",
+        "address": "0x200182d4",
+        "s_pro_address": "0x20019534",
+        "span_bytes": 96,
+        "span_sha256": "dff0e326984dd86eaa9fa490584f111a2afc0bde532d9a4c7da19777d24b422b"
+      },
+      {
+        "name": "energia_platform_init",
+        "module": "energia_runtime",
+        "address": "0x20018354",
+        "s_pro_address": "0x200195b4",
+        "span_bytes": 76,
+        "span_sha256": "73e75b4e63ade16cdf76863227076f116f37d35ed0eb58b384be69f22fd89a81"
+      },
+      {
+        "name": "Print_write_buffer",
+        "module": "print_stream",
+        "address": "0x200183be",
+        "s_pro_address": "0x2001961e",
+        "span_bytes": 46,
+        "span_sha256": "9648466a4c417ae576a025aa619325f4a217979b922e4f8a68538f7fe9536e46"
+      },
+      {
+        "name": "Print_write_string",
+        "module": "print_stream",
+        "address": "0x200183ec",
+        "s_pro_address": "0x2001964c",
+        "span_bytes": 26,
+        "span_sha256": "253c7fbf3cbd0b3ab6521cd966a8b0a3e87feb4bb49e2f2b2a20c7c03ec50cf5"
+      },
+      {
+        "name": "Print_print_String",
+        "module": "print_stream",
+        "address": "0x20018406",
+        "s_pro_address": "0x20019666",
+        "span_bytes": 52,
+        "span_sha256": "f123e08803a838cde4e3bd54b60e6f71764234704d2b8fccd30121f910fdb3e1"
+      },
+      {
+        "name": "Print_print_string",
+        "module": "print_stream",
+        "address": "0x2001843a",
+        "s_pro_address": "0x2001969a",
+        "span_bytes": 8,
+        "span_sha256": "5d4a7c0683fad0ec67f37a2a59c03fb841628e2427023cf16712178f1ccb9b9d"
+      },
+      {
+        "name": "Print_print_char",
+        "module": "print_stream",
+        "address": "0x20018442",
+        "s_pro_address": "0x200196a2",
+        "span_bytes": 10,
+        "span_sha256": "eb904719ae87c8622323e5acfd8012d01eb3da9b07498143078ffbebfec6f170"
+      },
+      {
+        "name": "Print_println",
+        "module": "print_stream",
+        "address": "0x2001844c",
+        "s_pro_address": "0x200196ac",
+        "span_bytes": 24,
+        "span_sha256": "1e003c968eb65955f9111e6eacb5095679353fa2234725dd2b2451b9cb6177bd"
+      },
+      {
+        "name": "Print_println_String",
+        "module": "print_stream",
+        "address": "0x20018464",
+        "s_pro_address": "0x200196c4",
+        "span_bytes": 20,
+        "span_sha256": "0c30ab0102d99d817e099961a03d1a4186f9bfbac2ca085b901779067c18775d"
+      },
+      {
+        "name": "Print_println_string",
+        "module": "print_stream",
+        "address": "0x20018478",
+        "s_pro_address": "0x200196d8",
+        "span_bytes": 20,
+        "span_sha256": "8d5fd75186f63229ba755ee952c24e6a2a1bcfffdad49a7d7e39f27be5e021c8"
+      },
+      {
+        "name": "Print_print_number",
+        "module": "print_stream",
+        "address": "0x2001848c",
+        "s_pro_address": "0x200196ec",
+        "span_bytes": 60,
+        "span_sha256": "95136c83daffef136842cba3bdc6faa679381780dfc1b423b085c92d1362cdcc"
+      },
+      {
+        "name": "Print_print_signed",
+        "module": "print_stream",
+        "address": "0x200184c8",
+        "s_pro_address": "0x20019728",
+        "span_bytes": 60,
+        "span_sha256": "2d8f686899c4e8e33eb04d491acdc7e84856a8bd7dbfdb7f639177d0528af5ff"
+      },
+      {
+        "name": "Print_println_signed",
+        "module": "print_stream",
+        "address": "0x20018508",
+        "s_pro_address": "0x20019768",
+        "span_bytes": 20,
+        "span_sha256": "57155ae4544101fd59f5c278c4a97b36bf0e2972e16a07110480b49edaab7edb"
+      },
+      {
+        "name": "Print_print_unsigned",
+        "module": "print_stream",
+        "address": "0x2001851c",
+        "s_pro_address": "0x2001977c",
+        "span_bytes": 12,
+        "span_sha256": "d33fc495ee5af795e53cf8654a44ee24243512f0b6dac2547ae6fdcc31f3f406"
+      },
+      {
+        "name": "Print_println_unsigned",
+        "module": "print_stream",
+        "address": "0x20018530",
+        "s_pro_address": "0x20019790",
+        "span_bytes": 20,
+        "span_sha256": "1f3ad9c51d55e25001a82e9abb5ebde0bd0bec8484f9cea9e18f3ffa356a2b96"
+      },
+      {
+        "name": "Print_println_float",
+        "module": "print_stream",
+        "address": "0x20018600",
+        "s_pro_address": "0x20019860",
+        "span_bytes": 22,
+        "span_sha256": "659bcff29c2115e4743d58b7a2bb280fe0893d3373a7bee33a1a6a9eded6c78a"
+      },
+      {
+        "name": "String_destroy",
+        "module": "arduino_string",
+        "address": "0x20018616",
+        "s_pro_address": "0x20019876",
+        "span_bytes": 14,
+        "span_sha256": "88074453c7a3cf03814e8a1c5dbf4b76565faeefdf0121eb76146203573a0b9e"
+      },
+      {
+        "name": "String_invalidate",
+        "module": "arduino_string",
+        "address": "0x20018624",
+        "s_pro_address": "0x20019884",
+        "span_bytes": 22,
+        "span_sha256": "852403d0c2c27a4e5fd6c14d9e2ab698785fb32911cba1d33238d0d72385c02c"
+      },
+      {
+        "name": "String_change_buffer",
+        "module": "arduino_string",
+        "address": "0x2001863a",
+        "s_pro_address": "0x2001989a",
+        "span_bytes": 24,
+        "span_sha256": "3fb71faae8ebb235f6a220bc3f6f1da51fbb571a275a0e7bfef2457c1b7e254f"
+      },
+      {
+        "name": "String_reserve",
+        "module": "arduino_string",
+        "address": "0x20018652",
+        "s_pro_address": "0x200198b2",
+        "span_bytes": 34,
+        "span_sha256": "7c558aa622c9b28e44769630a054567d15a075edcdb89809f1ed378e34473a79"
+      },
+      {
+        "name": "String_copy",
+        "module": "arduino_string",
+        "address": "0x20018674",
+        "s_pro_address": "0x200198d4",
+        "span_bytes": 38,
+        "span_sha256": "eb03f76c9203b9339c768c5855de5cf15613550c0fc0cdbdf2665bfc0a58734a"
+      },
+      {
+        "name": "String_assign_c_string",
+        "module": "arduino_string",
+        "address": "0x2001869a",
+        "s_pro_address": "0x200198fa",
+        "span_bytes": 34,
+        "span_sha256": "5cfeaf75c4400434516e5031217bd63ae49f8d940c9f513bba599fdb4853f873"
+      },
+      {
+        "name": "String_construct_c_string",
+        "module": "arduino_string",
+        "address": "0x200186bc",
+        "s_pro_address": "0x2001991c",
+        "span_bytes": 20,
+        "span_sha256": "a157f45a015b8dc2e620d6c91058ae26a7fa98f18e2180ca9298f0040401bede"
+      },
+      {
+        "name": "String_character_at",
+        "module": "arduino_string",
+        "address": "0x200186d0",
+        "s_pro_address": "0x20019930",
+        "span_bytes": 18,
+        "span_sha256": "5862320c8ce0a35c742a5c394c49dbfcb99642b9064c2f6a1a90a44e6fc564a8"
+      },
+      {
+        "name": "ADCEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200186e2",
+        "s_pro_address": "0x20019942",
+        "span_bytes": 10,
+        "span_sha256": "c44d85b561c538f872976638c94b64efdff529763f51422d3e0f9b3e20fbe076"
+      },
+      {
+        "name": "ADCDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200186ec",
+        "s_pro_address": "0x2001994c",
+        "span_bytes": 10,
+        "span_sha256": "3ea28dad45be1cf7b3db8b56a7b9dc6a91543b21315c41f23d72e47d18d56321"
+      },
+      {
+        "name": "ADCChannelEnable",
+        "module": "cc3200_adc",
+        "address": "0x200186f6",
+        "s_pro_address": "0x20019956",
+        "span_bytes": 34,
+        "span_sha256": "3901cb688478450e84001edaec985a7afab6bc5ab3bb5239b4573fbb007dcc3b"
+      },
+      {
+        "name": "ADCChannelDisable",
+        "module": "cc3200_adc",
+        "address": "0x20018718",
+        "s_pro_address": "0x20019978",
+        "span_bytes": 36,
+        "span_sha256": "01f64baff423f4dfbac1e786349af4cc2f32705aede6fcf7274e221bf832aa5a"
+      },
+      {
+        "name": "ADCTimerConfig",
+        "module": "cc3200_adc",
+        "address": "0x2001873c",
+        "s_pro_address": "0x2001999c",
+        "span_bytes": 16,
+        "span_sha256": "15f9d3fa6c93c1dc307cf6e979e2c01ac5e114e9f3d9726c118a8fdcef186eb2"
+      },
+      {
+        "name": "ADCTimerEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x2001874c",
+        "s_pro_address": "0x200199ac",
+        "span_bytes": 10,
+        "span_sha256": "fb075718509eb67088ab7282c4281f62ff24e6221fe4120e440483711afca4f0"
+      },
+      {
+        "name": "ADCTimerDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018756",
+        "s_pro_address": "0x200199b6",
+        "span_bytes": 10,
+        "span_sha256": "b2568e181d058078b96b2b0872f5df93adafea9471c868875960537a501332ad"
+      },
+      {
+        "name": "ADCFIFOLvlGet",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018760",
+        "s_pro_address": "0x200199c0",
+        "span_bytes": 10,
+        "span_sha256": "3f944a3021324c15e17cc284a7464b66e100f5df4665fa65f73f0ca6d63a0b71"
+      },
+      {
+        "name": "CPUcpsid",
+        "module": "cc3200_interrupts",
+        "address": "0x20018770",
+        "s_pro_address": "0x200199d0",
+        "span_bytes": 16,
+        "span_sha256": "8b009a1adcdb5bee673c7a0c1b700186e8677c9bcf7fa006d8e7c77ac354c26a"
+      },
+      {
+        "name": "CPUcpsie",
+        "module": "cc3200_interrupts",
+        "address": "0x20018780",
+        "s_pro_address": "0x200199e0",
+        "span_bytes": 16,
+        "span_sha256": "2a456863cbb5d3ccd202b506c0f4dce5fe688b38ddc60ca02b2b414bd3a505dd"
+      },
+      {
+        "name": "GPIOGetIntNumber",
+        "module": "cc3200_gpio",
+        "address": "0x20018790",
+        "s_pro_address": "0x200199f0",
+        "span_bytes": 60,
+        "span_sha256": "9dd0f688aac833d85016a8ba43133d490ccb6481b781e8a6015ad018912b9b03"
+      },
+      {
+        "name": "GPIODirModeSet",
+        "module": "cc3200_gpio",
+        "address": "0x200187cc",
+        "s_pro_address": "0x20019a2c",
+        "span_bytes": 24,
+        "span_sha256": "2d721e2679156fbcb094c0f10a1ee95602613cfdc81b059ba6d3facb1c2fb547"
+      },
+      {
+        "name": "GPIOIntTypeSet",
+        "module": "cc3200_gpio",
+        "address": "0x200187e4",
+        "s_pro_address": "0x20019a44",
+        "span_bytes": 66,
+        "span_sha256": "97ddc926303a2f2d456802b7e786c85225728bfd93716f84a76385d88f1da405"
+      },
+      {
+        "name": "GPIOIntEnable",
+        "module": "cc3200_gpio",
+        "address": "0x20018826",
+        "s_pro_address": "0x20019a86",
+        "span_bytes": 12,
+        "span_sha256": "93d66f1e70d7bde15a795a8d129e1481cc17911e1e6e56852bcf4d15f97b60fb"
+      },
+      {
+        "name": "GPIOIntStatus",
+        "module": "cc3200_gpio",
+        "address": "0x20018832",
+        "s_pro_address": "0x20019a92",
+        "span_bytes": 14,
+        "span_sha256": "9120c1e662fab921ae57c7b9096b62cdc0118ee5b9079298b9ebc451a84e889d"
+      },
+      {
+        "name": "GPIOIntRegister",
+        "module": "cc3200_gpio",
+        "address": "0x20018846",
+        "s_pro_address": "0x20019aa6",
+        "span_bytes": 26,
+        "span_sha256": "46150a3cd1af123fffb418e3765d6b661ec1adfd2cd83f577c8882e818149b13"
+      },
+      {
+        "name": "GPIOPinRead",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018860",
+        "s_pro_address": "0x20019ac0",
+        "span_bytes": 12,
+        "span_sha256": "f08f7451da7374c505c0a4eb9816a9dfed59b427b1bb8392ede9e92d8fdb1e71"
+      },
+      {
+        "name": "unresolved_ti_drivers_01",
+        "module": "ti_drivers",
+        "address": "0x2001886c",
+        "s_pro_address": "0x20019acc",
+        "span_bytes": 8,
+        "span_sha256": "ba1da34b35d7a5ae7f5d43042233a247d1cb4d73db110d922329a44c487c31a0"
+      },
+      {
+        "name": "IntMasterEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018874",
+        "s_pro_address": "0x20019ad4",
+        "span_bytes": 10,
+        "span_sha256": "859151e8f7ca86a2f0e0572e3a91eed7429a7a90a32314ec615efd668fd2d9e6"
+      },
+      {
+        "name": "IntMasterDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x2001887e",
+        "s_pro_address": "0x20019ade",
+        "span_bytes": 10,
+        "span_sha256": "3f644133d3038f957a9ec6734e5298bf678475373c5309b6c52bfb575972df4a"
+      },
+      {
+        "name": "IntVTableBaseSet",
+        "module": "cc3200_interrupts",
+        "address": "0x20018888",
+        "s_pro_address": "0x20019ae8",
+        "span_bytes": 12,
+        "span_sha256": "f272706275a79b84dd10bab6c7c894636327f26e053d2f21b2c31e50ac381ae5"
+      },
+      {
+        "name": "IntRegister",
+        "module": "cc3200_interrupts",
+        "address": "0x20018894",
+        "s_pro_address": "0x20019af4",
+        "span_bytes": 16,
+        "span_sha256": "2ac4b04846387ae3bb7a48f2f818800f090c537dc29e8293075932031b60d258"
+      },
+      {
+        "name": "PinConfigurePeripheral2mA",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018a70",
+        "s_pro_address": "0x20019cd0",
+        "span_bytes": 22,
+        "span_sha256": "2f724524306ff3956d95ef33f6fd4b58c63074d512d2b16e398f67eea9928d71"
+      },
+      {
+        "name": "PinConfigurePeripheral6mA",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018a86",
+        "s_pro_address": "0x20019ce6",
+        "span_bytes": 22,
+        "span_sha256": "fcfe8c0cfc45b9b11b71c7157be960377d41c1ce69dadf0fcdf0a73da1bc14af"
+      },
+      {
+        "name": "PinTypeGPIO",
+        "module": "cc3200_gpio",
+        "address": "0x20018a9c",
+        "s_pro_address": "0x20019cfc",
+        "span_bytes": 28,
+        "span_sha256": "30f0c028813194e571f73293feea41fbb0247e1e10e9b0ba52fadc34657a78f1"
+      },
+      {
+        "name": "PinTypeADC",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20018ab8",
+        "s_pro_address": "0x20019d18",
+        "span_bytes": 12,
+        "span_sha256": "cc829890b4dfe3937efe1796e3aae562d3adf1bdd0c7066580919e6227ab3fb7"
+      },
+      {
+        "name": "PRCMMCUReset",
+        "module": "cc3200_clock",
+        "address": "0x20018ac4",
+        "s_pro_address": "0x20019d24",
+        "span_bytes": 20,
+        "span_sha256": "bdbf2c51a09d67fb4d13172a904849c6e02e5bc0cd518fb7079edeccf938382f"
+      },
+      {
+        "name": "PRCMSysResetCauseGet",
+        "module": "cc3200_clock",
+        "address": "0x20018ad8",
+        "s_pro_address": "0x20019d38",
+        "span_bytes": 44,
+        "span_sha256": "eae9d9ac35d83d2212251c9952ea281c27930c1f5a50d529be596d8552c1ac52"
+      },
+      {
+        "name": "PRCMPeripheralClockGet",
+        "module": "cc3200_clock",
+        "address": "0x20018b4c",
+        "s_pro_address": "0x20019dac",
+        "span_bytes": 72,
+        "span_sha256": "cf89f0ce1ccd65c355c517bb9484c851346208771af9acdf89a05cdd3178325e"
+      },
+      {
+        "name": "PRCMCC3200MCUInit",
+        "module": "cc3200_clock",
+        "address": "0x20018bf0",
+        "s_pro_address": "0x20019e50",
+        "span_bytes": 292,
+        "span_sha256": "ff1fb629d795c0a583c80433b6dd4cf46f9625628e53d505fa7046874031a9d6"
+      },
+      {
+        "name": "SHAMD5IntStatus",
+        "module": "cc3200_hash",
+        "address": "0x20018d14",
+        "s_pro_address": "0x20019f74",
+        "span_bytes": 44,
+        "span_sha256": "a31c6cd04aa8e9403eb6cf0d8b924794dc4c8f67e88a87bc35966d71c5379328"
+      },
+      {
+        "name": "SHAMD5IntEnable",
+        "module": "cc3200_hash",
+        "address": "0x20018d40",
+        "s_pro_address": "0x20019fa0",
+        "span_bytes": 48,
+        "span_sha256": "7acbd2797ff7517bb5a06f956b98a8ee497449c2392eca0a44531c4ba81e05e7"
+      },
+      {
+        "name": "SHAMD5IntDisable",
+        "module": "cc3200_hash",
+        "address": "0x20018d70",
+        "s_pro_address": "0x20019fd0",
+        "span_bytes": 52,
+        "span_sha256": "d8f91cb0092f506d8ac87024e2792aec35dc2f7cd41478d127c7d525aeccfb04"
+      },
+      {
+        "name": "SHAMD5IntRegister",
+        "module": "cc3200_hash",
+        "address": "0x20018da4",
+        "s_pro_address": "0x2001a004",
+        "span_bytes": 18,
+        "span_sha256": "672f9958faf3397465b95880a425620b50f9e3ee65c34fcfe6e8d544e04bd2ae"
+      },
+      {
+        "name": "SHAMD5DataWrite",
+        "module": "cc3200_hash",
+        "address": "0x20018dba",
+        "s_pro_address": "0x2001a01a",
+        "span_bytes": 36,
+        "span_sha256": "eee88181122bbf60c706239758c11ecfddf1491d5c5278ec14b017f42b832890"
+      },
+      {
+        "name": "SHAMD5DataWriteMultiple",
+        "module": "cc3200_hash",
+        "address": "0x20018dde",
+        "s_pro_address": "0x2001a03e",
+        "span_bytes": 118,
+        "span_sha256": "34d2e3baa09f59e42245d7fa393b6c2fd4f262bf0e422b5bbe13b701c99bc8c7"
+      },
+      {
+        "name": "SHAMD5ResultRead",
+        "module": "cc3200_hash",
+        "address": "0x20018e54",
+        "s_pro_address": "0x2001a0b4",
+        "span_bytes": 56,
+        "span_sha256": "6c5e6faa0a36dedfb663034d0091086565b23dcdbeae687eb429d47f107f333b"
+      },
+      {
+        "name": "unresolved_ti_drivers_02",
+        "module": "ti_drivers",
+        "address": "0x20018e8c",
+        "s_pro_address": "0x2001a0ec",
+        "span_bytes": 44,
+        "span_sha256": "386a5b4f0aec7e42cafa46249ef8288c4d3f5355b0bb34d4e52e6f25e4d4ef58"
+      },
+      {
+        "name": "SPIEnable",
+        "module": "cc3200_spi",
+        "address": "0x20018ef4",
+        "s_pro_address": "0x2001a154",
+        "span_bytes": 14,
+        "span_sha256": "9a80eddcec7cfc407bba625f072b7e493952982ec956881bda4107ca8159f3a5"
+      },
+      {
+        "name": "SPIDisable",
+        "module": "cc3200_spi",
+        "address": "0x20018f02",
+        "s_pro_address": "0x2001a162",
+        "span_bytes": 14,
+        "span_sha256": "77666b3f9bcbdbb4e5b6108dcc6ec524ac852c90de67f6b79afbc31a509582ad"
+      },
+      {
+        "name": "SPIDmaDisable",
+        "module": "cc3200_spi",
+        "address": "0x20018f1c",
+        "s_pro_address": "0x2001a17c",
+        "span_bytes": 12,
+        "span_sha256": "17d294eeb7e1175f38cd9deb5ba52beedac5c64fd3603cf4af856507ea9e4505"
+      },
+      {
+        "name": "SPIReset",
+        "module": "cc3200_spi",
+        "address": "0x20018f28",
+        "s_pro_address": "0x2001a188",
+        "span_bytes": 22,
+        "span_sha256": "cf8177bd3581845529b8895964bc20039053a63b4b0c9a6552e2fdcb2708d03c"
+      },
+      {
+        "name": "SPIConfigSetExpClk",
+        "module": "cc3200_spi",
+        "address": "0x20018f3e",
+        "s_pro_address": "0x2001a19e",
+        "span_bytes": 90,
+        "span_sha256": "b53d97851f0c583b25a0ae0d56224a7b4a5b710e48e7299c63e47a8f692661e3"
+      },
+      {
+        "name": "SPIFIFODisable",
+        "module": "cc3200_spi",
+        "address": "0x20018fa4",
+        "s_pro_address": "0x2001a204",
+        "span_bytes": 14,
+        "span_sha256": "ac2f5c85b2b7d397b578a222b035a4e1b456585b792ff3114e0892630ca0077d"
+      },
+      {
+        "name": "SPIFIFOLevelSet",
+        "module": "cc3200_spi",
+        "address": "0x20018fb2",
+        "s_pro_address": "0x2001a212",
+        "span_bytes": 24,
+        "span_sha256": "12f4ebee4ccb8b435ae50f365b112e3bcd6b779e6cd73f7fd1ca62698bbcfc90"
+      },
+      {
+        "name": "SPIWordCountSet",
+        "module": "cc3200_spi",
+        "address": "0x20018fca",
+        "s_pro_address": "0x2001a22a",
+        "span_bytes": 18,
+        "span_sha256": "aca570477a9e918b933f838fc50e57f0b08be8d623d4b951fdede6eb15c1d6ce"
+      },
+      {
+        "name": "SPIIntEnable",
+        "module": "cc3200_spi",
+        "address": "0x20019028",
+        "s_pro_address": "0x2001a288",
+        "span_bytes": 60,
+        "span_sha256": "2f83196bc1758144ebb822e9037f93584579f1ceec3e9a873398bfdbe3bf4aef"
+      },
+      {
+        "name": "SPIIntClear",
+        "module": "cc3200_spi",
+        "address": "0x20019064",
+        "s_pro_address": "0x2001a2c4",
+        "span_bytes": 52,
+        "span_sha256": "51b1302b572d87ac76b697775eac28d7fd05b0fb141d684cca98c840a5a7094e"
+      },
+      {
+        "name": "SPICSEnable",
+        "module": "cc3200_spi",
+        "address": "0x20019098",
+        "s_pro_address": "0x2001a2f8",
+        "span_bytes": 14,
+        "span_sha256": "9cfed82ddb38644fb01ce55b39b708926f3a98df2e36992ac764a6f030f4754b"
+      },
+      {
+        "name": "SPICSDisable",
+        "module": "cc3200_spi",
+        "address": "0x200190a6",
+        "s_pro_address": "0x2001a306",
+        "span_bytes": 14,
+        "span_sha256": "ee9b361cf794f4cfdd77e58490277730254ec58378ff159b0facd7352a64f634"
+      },
+      {
+        "name": "SPITransfer",
+        "module": "cc3200_spi",
+        "address": "0x200190b4",
+        "s_pro_address": "0x2001a314",
+        "span_bytes": 412,
+        "span_sha256": "a7039634c523894183c480ade073b9717dffa6b6517a3fc9159924f928b748a0"
+      },
+      {
+        "name": "SysTickEnable",
+        "module": "cc3200_timer",
+        "address": "0x20019250",
+        "s_pro_address": "0x2001a4b0",
+        "span_bytes": 16,
+        "span_sha256": "fee377f8e2edec879bb4c919295ed8fe77e2ec16eed13ce309a86c9708df4d6f"
+      },
+      {
+        "name": "SysTickIntEnable",
+        "module": "cc3200_timer",
+        "address": "0x20019260",
+        "s_pro_address": "0x2001a4c0",
+        "span_bytes": 16,
+        "span_sha256": "e90b890e7f037f44806bfd6f83ae7669024dcaf721ce23909cdaa7ff3fe28ff1"
+      },
+      {
+        "name": "SysTickPeriodSet",
+        "module": "cc3200_timer",
+        "address": "0x20019270",
+        "s_pro_address": "0x2001a4d0",
+        "span_bytes": 12,
+        "span_sha256": "3ccd2f06a77421692474a2e92cddb3030f804cb4a498c1fd8519c26a7c18bece"
+      },
+      {
+        "name": "TimerEnable",
+        "module": "cc3200_timer",
+        "address": "0x2001927c",
+        "s_pro_address": "0x2001a4dc",
+        "span_bytes": 16,
+        "span_sha256": "bf6f0e85a347904e32b8e33533aa1eece06f541a589241ba66180418c4d2b632"
+      },
+      {
+        "name": "TimerConfigure",
+        "module": "cc3200_timer",
+        "address": "0x2001928c",
+        "s_pro_address": "0x2001a4ec",
+        "span_bytes": 40,
+        "span_sha256": "e54bb884d3667dc0a9d53974cba62b4e7ad4410da1537ca8dba0f32962f1ce07"
+      },
+      {
+        "name": "TimerLoadSet",
+        "module": "cc3200_timer",
+        "address": "0x200192b4",
+        "s_pro_address": "0x2001a514",
+        "span_bytes": 20,
+        "span_sha256": "7b22f12830b9a80607e80d808dff417a805e5221676190fea6338064d3673d6b"
+      },
+      {
+        "name": "TimerIntRegister",
+        "module": "cc3200_timer",
+        "address": "0x200192c8",
+        "s_pro_address": "0x2001a528",
+        "span_bytes": 96,
+        "span_sha256": "d1dd87d04a4298a403e11bd330f5af4fb1acedb318778b70af78a38924641f69"
+      },
+      {
+        "name": "TimerIntEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20019328",
+        "s_pro_address": "0x2001a588",
+        "span_bytes": 8,
+        "span_sha256": "4f08f3c53d11bb03f5ce2a1ef0243ce2f716a610164c78e03e9c1b6e4f2ce9cd"
+      },
+      {
+        "name": "TimerIntStatus",
+        "module": "cc3200_driver_helpers",
+        "address": "0x20019330",
+        "s_pro_address": "0x2001a590",
+        "span_bytes": 10,
+        "span_sha256": "4b73ac4820cdd2ea6c7f11253f609dfd27e8285318b7765ed1e18377b9f20bd3"
+      },
+      {
+        "name": "UARTEnable",
+        "module": "cc3200_uart",
+        "address": "0x2001933e",
+        "s_pro_address": "0x2001a59e",
+        "span_bytes": 22,
+        "span_sha256": "6d200f80764d40f2c34d6f5039cd2f3016a11f1ff20c939143cacf10af012c7e"
+      },
+      {
+        "name": "UARTDisable",
+        "module": "cc3200_uart",
+        "address": "0x20019354",
+        "s_pro_address": "0x2001a5b4",
+        "span_bytes": 28,
+        "span_sha256": "d11e2a1d5fa878a4d37285b800846dd28c13448122bed6da0af9885a1737a071"
+      },
+      {
+        "name": "UARTConfigSetExpClk",
+        "module": "cc3200_uart",
+        "address": "0x20019370",
+        "s_pro_address": "0x2001a5d0",
+        "span_bytes": 72,
+        "span_sha256": "89745c42d3e29242204dd6eda333f586a9eb0b47f41a5ceba50f34b5defbb2ae"
+      },
+      {
+        "name": "UARTCharsAvail",
+        "module": "cc3200_uart",
+        "address": "0x200193b8",
+        "s_pro_address": "0x2001a618",
+        "span_bytes": 12,
+        "span_sha256": "b0abea566c793d67d17b837cf1b151c1f9904208ebc476fbae3d7e424c0b6108"
+      },
+      {
+        "name": "UARTSpaceAvail",
+        "module": "cc3200_uart",
+        "address": "0x200193c4",
+        "s_pro_address": "0x2001a624",
+        "span_bytes": 12,
+        "span_sha256": "e871f7d549b3b6aa8a075495451f3003e2a35f1006ac7b6f264403ab7f3cf2d6"
+      },
+      {
+        "name": "UARTCharGetNonBlocking",
+        "module": "cc3200_uart",
+        "address": "0x200193d0",
+        "s_pro_address": "0x2001a630",
+        "span_bytes": 14,
+        "span_sha256": "d6e6f1321c7ebd23c79562edf2c875923db6f55a07d1b476da32432d2ef89371"
+      },
+      {
+        "name": "UARTCharPutNonBlocking",
+        "module": "cc3200_uart",
+        "address": "0x200193de",
+        "s_pro_address": "0x2001a63e",
+        "span_bytes": 14,
+        "span_sha256": "4516829f1891e11c1f77c5d5c133ea04c0073b3bb6b9357c0fc8cb3cc0db99d9"
+      },
+      {
+        "name": "UARTIntEnable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200193ec",
+        "s_pro_address": "0x2001a64c",
+        "span_bytes": 8,
+        "span_sha256": "537e13b3b497fb2c985634761d06e67a2103327610cf567986349b8d59edd6cc"
+      },
+      {
+        "name": "UARTIntDisable",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200193f4",
+        "s_pro_address": "0x2001a654",
+        "span_bytes": 10,
+        "span_sha256": "39dab7babb1edbef80c597230724909877ba2c25f83472de42cb80fc0a6bd66b"
+      },
+      {
+        "name": "UARTIntStatus",
+        "module": "cc3200_driver_helpers",
+        "address": "0x200193fe",
+        "s_pro_address": "0x2001a65e",
+        "span_bytes": 10,
+        "span_sha256": "d2c796599a81610f28f8abae362fd1f431f1ddf5253d2a3ee5e1d6229ab6f151"
+      },
+      {
+        "name": "uDMAEnable",
+        "module": "cc3200_dma",
+        "address": "0x2001940c",
+        "s_pro_address": "0x2001a66c",
+        "span_bytes": 12,
+        "span_sha256": "62a5ca80cf7a69ae12ce17e06e3d3b5f06513aaec67b3750015cf728ae1f162f"
+      },
+      {
+        "name": "uDMAChannelEnable",
+        "module": "cc3200_dma",
+        "address": "0x20019418",
+        "s_pro_address": "0x2001a678",
+        "span_bytes": 20,
+        "span_sha256": "6594867cf6cbd0a42f50feef136177627f60b3ceaedb262870d29e4faaad37a5"
+      },
+      {
+        "name": "uDMAControlBaseSet",
+        "module": "cc3200_dma",
+        "address": "0x2001942c",
+        "s_pro_address": "0x2001a68c",
+        "span_bytes": 12,
+        "span_sha256": "64cf70db77cbaaa1ac999353eec7e38a1666150869321cd7739a522d3f3c80c3"
+      },
+      {
+        "name": "uDMAChannelAttributeEnable",
+        "module": "cc3200_dma",
+        "address": "0x20019438",
+        "s_pro_address": "0x2001a698",
+        "span_bytes": 72,
+        "span_sha256": "7a13d315ad1faf0a7b506989e5af6d317b26f884322d5bca30180b2eb6ff8cce"
+      },
+      {
+        "name": "uDMAChannelAttributeDisable",
+        "module": "cc3200_dma",
+        "address": "0x20019480",
+        "s_pro_address": "0x2001a6e0",
+        "span_bytes": 72,
+        "span_sha256": "e04fdafd8e87bba592209d8c2ec655463d99e4b5e1da3954e524be48cbc813f3"
+      },
+      {
+        "name": "uDMAChannelControlSet",
+        "module": "cc3200_dma",
+        "address": "0x200194c8",
+        "s_pro_address": "0x2001a728",
+        "span_bytes": 32,
+        "span_sha256": "515e8e481e0e3b1e8383eff1839dc347f29f32286c46cae931367f5177b7bc76"
+      },
+      {
+        "name": "uDMAChannelTransferSet",
+        "module": "cc3200_dma",
+        "address": "0x200194e8",
+        "s_pro_address": "0x2001a748",
+        "span_bytes": 132,
+        "span_sha256": "2b570fa076f1982fa26eccc9e628370e735d7823b3006d9df6f6044e8656d3f5"
+      },
+      {
+        "name": "unresolved_ti_drivers_05",
+        "module": "ti_drivers",
+        "address": "0x2001956c",
+        "s_pro_address": "0x2001a7cc",
+        "span_bytes": 20,
+        "span_sha256": "e990ac9f0870e709c2897295941dcd2a590f793483400df7bc5929bbd2cb9610"
+      },
+      {
+        "name": "uDMAIntStatus",
+        "module": "cc3200_dma",
+        "address": "0x20019580",
+        "s_pro_address": "0x2001a7e0",
+        "span_bytes": 12,
+        "span_sha256": "c9c522b06921aca5c71f3a9fdd4ca101cad7ab136a24dceebad37d7611bf5840"
+      },
+      {
+        "name": "uDMAIntClear",
+        "module": "cc3200_dma",
+        "address": "0x2001958c",
+        "s_pro_address": "0x2001a7ec",
+        "span_bytes": 12,
+        "span_sha256": "020924e58baa75b91ff1966e9db102ad3c311a8c210009335e51d46b19022323"
+      },
+      {
+        "name": "uDMAChannelAssign",
+        "module": "cc3200_dma",
+        "address": "0x20019598",
+        "s_pro_address": "0x2001a7f8",
+        "span_bytes": 44,
+        "span_sha256": "f99926c8359b030b2a9737d8b1080e4fcfb2382f3784f89947d9cd9e2e9be21f"
+      },
+      {
+        "name": "unresolved_ti_drivers_06",
+        "module": "ti_drivers",
+        "address": "0x200195c4",
+        "s_pro_address": "0x2001a824",
+        "span_bytes": 12,
+        "span_sha256": "fb28bd18609f03e3d904a1774552700078f831e1b9269de446e3d4aa1a162b9c"
+      },
+      {
+        "name": "libm_ceil",
+        "module": "software_float",
+        "address": "0x200195d0",
+        "s_pro_address": "0x2001a830",
+        "span_bytes": 288,
+        "span_sha256": "b67affb622792d332fe5c0e6dad5b337b097ece4adfa858f0a6868b75820f694"
+      },
+      {
+        "name": "libm_ieee754_log",
+        "module": "software_float",
+        "address": "0x200197d8",
+        "s_pro_address": "0x2001aa38",
+        "span_bytes": 1016,
+        "span_sha256": "1c0175b23c3afe25c828e004d5d00e7b119151b0d5c6006d62b19f2195690b86"
+      },
+      {
+        "name": "libm_fpclassify",
+        "module": "software_float",
+        "address": "0x20019bd0",
+        "s_pro_address": "0x2001ae30",
+        "span_bytes": 80,
+        "span_sha256": "3f7a8b087c83d9c1450ed0d2264289140f142062e2016f197bf9d79443a61595"
+      },
+      {
+        "name": "libm_quiet_nan",
+        "module": "software_float",
+        "address": "0x20019c24",
+        "s_pro_address": "0x2001ae84",
+        "span_bytes": 12,
+        "span_sha256": "8e988b6a94945eadd20221478c56dd8f74c57804fe64bdcd1ae61c5f1749d03d"
+      },
+      {
+        "name": "unresolved_c_library_01",
+        "module": "c_library",
+        "address": "0x20019c30",
+        "s_pro_address": "0x2001ae90",
+        "span_bytes": 12,
+        "span_sha256": "3396ca6079f13aa643f16c5b54383a1f312ac2cba8c65ada19728f457997c2e3"
+      },
+      {
+        "name": "libc_atof",
+        "module": "libc",
+        "address": "0x20019c3c",
+        "s_pro_address": "0x2001ae9c",
+        "span_bytes": 8,
+        "span_sha256": "c8cc9e0d5aaae8665575c4d64fadb9213af66653af33d97cff30d08da89a93bc"
+      },
+      {
+        "name": "libc_atoi",
+        "module": "libc",
+        "address": "0x20019c44",
+        "s_pro_address": "0x2001aea4",
+        "span_bytes": 28,
+        "span_sha256": "1e23aadb4bb95bff73a660378149d2eefa0e5d9b58a89f598b547381019c91a1"
+      },
+      {
+        "name": "libc_memcmp",
+        "module": "libc",
+        "address": "0x2001a1c4",
+        "s_pro_address": "0x2001b424",
+        "span_bytes": 104,
+        "span_sha256": "5cb826ee23815ac7ca384e29f9cab80e84fab9f9ab0c3b5f765a8c35cf842e59"
+      },
+      {
+        "name": "libc_memcpy",
+        "module": "libc",
+        "address": "0x2001a22c",
+        "s_pro_address": "0x2001b48c",
+        "span_bytes": 308,
+        "span_sha256": "f7d55b134d670e0b2158973b976317b32cd3e4ff70d9036be971c2525779e230"
+      },
+      {
+        "name": "libc_memmove",
+        "module": "libc",
+        "address": "0x2001a360",
+        "s_pro_address": "0x2001b5c0",
+        "span_bytes": 192,
+        "span_sha256": "60105c100b9d331038438c3f562057509f14fa9e7007559c897e832170ed8cd9"
+      },
+      {
+        "name": "libc_memset",
+        "module": "libc",
+        "address": "0x2001a420",
+        "s_pro_address": "0x2001b680",
+        "span_bytes": 148,
+        "span_sha256": "81c0c2019e61f07d0b9f479d9b6b25a22344de494da61a91e5445a212f757a11"
+      },
+      {
+        "name": "libc_strcat",
+        "module": "libc",
+        "address": "0x2001a924",
+        "s_pro_address": "0x2001bb84",
+        "span_bytes": 76,
+        "span_sha256": "1eaa4f7acf945442011c582b6ddb7c2846c78211af235707469cfc8ff11f3d39"
+      },
+      {
+        "name": "libc_strcmp",
+        "module": "libc",
+        "address": "0x2001a970",
+        "s_pro_address": "0x2001bbd0",
+        "span_bytes": 540,
+        "span_sha256": "76585679413cd221cdab79e04aca33cc59acdc3b3387cbcab01eafee5c35ebc3"
+      },
+      {
+        "name": "libc_strcpy",
+        "module": "libc",
+        "address": "0x2001ab8c",
+        "s_pro_address": "0x2001bdec",
+        "span_bytes": 188,
+        "span_sha256": "729646df6ce4c7b88e7d18ac4c0b3249056acc39b222378e651ebf7e73b1b8f0"
+      },
+      {
+        "name": "libc_strlen",
+        "module": "libc",
+        "address": "0x2001ac48",
+        "s_pro_address": "0x2001bea8",
+        "span_bytes": 96,
+        "span_sha256": "aec807d00421bca5c0d284bf6cd784e3a29d26b99b0b5696b4f050cc9d1e3277"
+      },
+      {
+        "name": "libc_strncmp",
+        "module": "libc",
+        "address": "0x2001aca8",
+        "s_pro_address": "0x2001bf08",
+        "span_bytes": 180,
+        "span_sha256": "67400858814f03a05123879f4e8a97d3eb4ecb21372e59ee13d43e3508ee134e"
+      },
+      {
+        "name": "libc_strncpy",
+        "module": "libc",
+        "address": "0x2001ad5c",
+        "s_pro_address": "0x2001bfbc",
+        "span_bytes": 100,
+        "span_sha256": "72489f274b904d31e9a356f69f7207df8a39e31b589c8b00ac076e7ffbd19cd0"
+      },
+      {
+        "name": "unresolved_c_library_09",
+        "module": "c_library",
+        "address": "0x2001d554",
+        "s_pro_address": "0x2001e7b4",
+        "span_bytes": 308,
+        "span_sha256": "b61f0c6e41a9fd6c58f522b3fbce2843fb19ed8756fc9342b8c41b6e11f71f1c"
+      },
+      {
+        "name": "unresolved_c_library_13",
+        "module": "c_library",
+        "address": "0x2001e6f8",
+        "s_pro_address": "0x2001f958",
+        "span_bytes": 160,
+        "span_sha256": "f3b2a63640022c03b60f0a4a08fb850aa0acc5fade9e2337abdef01ec984b8ec"
+      },
+      {
+        "name": "libc_memchr",
+        "module": "libc",
+        "address": "0x2001ee64",
+        "s_pro_address": "0x200200c4",
+        "span_bytes": 144,
+        "span_sha256": "ee908e4409cd0603de744911db7d16d0749372f275ced32b4278ad545e00776e"
+      },
+      {
+        "name": "unresolved_c_library_17",
+        "module": "c_library",
+        "address": "0x2001eef4",
+        "s_pro_address": "0x20020154",
+        "span_bytes": 76,
+        "span_sha256": "cd01ee797f588af932f5576c238ddd49efe17cc01f67e9872fb258e31861b617"
+      },
+      {
+        "name": "unresolved_c_library_18",
+        "module": "c_library",
+        "address": "0x2001ef40",
+        "s_pro_address": "0x200201a0",
+        "span_bytes": 20,
+        "span_sha256": "d2199b8f00413a6872c9fe4c74ec97b896db01d53ebfdb89030189b081af0fd9"
+      },
+      {
+        "name": "unresolved_c_library_19",
+        "module": "c_library",
+        "address": "0x2001ef54",
+        "s_pro_address": "0x200201b4",
+        "span_bytes": 152,
+        "span_sha256": "9ba2fa3b0995e887973246ddb124852d52972768c74d15213fb7d9e8740691ee"
+      },
+      {
+        "name": "unresolved_c_library_21",
+        "module": "c_library",
+        "address": "0x2001efec",
+        "s_pro_address": "0x2002024c",
+        "span_bytes": 152,
+        "span_sha256": "19dfc00f269984b38ccb5620c517c168db6c9c03235d9fc3627cc37686d3254d"
+      },
+      {
+        "name": "unresolved_c_library_20",
+        "module": "c_library",
+        "address": "0x2001f084",
+        "s_pro_address": "0x200202e4",
+        "span_bytes": 64,
+        "span_sha256": "cc6a8b75feb0ce73a145f0b8e0da0bfc199b876dd91a8e7a00276ff95ed53934"
+      },
+      {
+        "name": "unresolved_c_library_21_2",
+        "module": "c_library",
+        "address": "0x2001f0c4",
+        "s_pro_address": "0x20020324",
+        "span_bytes": 92,
+        "span_sha256": "9d16979151f58033a9357ba581c1f49e2de0eb2b3a31d38669b3dc23434167dc"
+      },
+      {
+        "name": "unresolved_c_library_24",
+        "module": "c_library",
+        "address": "0x2001f120",
+        "s_pro_address": "0x20020380",
+        "span_bytes": 20,
+        "span_sha256": "2726067638ac603bd4006d21c191936a02b62c1fa86828815ceab2dba99e146c"
+      },
+      {
+        "name": "unresolved_c_library_22",
+        "module": "c_library",
+        "address": "0x2001f134",
+        "s_pro_address": "0x20020394",
+        "span_bytes": 316,
+        "span_sha256": "9cae8ad3773fe4b30c5a9035329c51db4a8e12b3fc8e59243cf68f1ae3eadf69"
+      },
+      {
+        "name": "unresolved_c_library_27",
+        "module": "c_library",
+        "address": "0x2001f30c",
+        "s_pro_address": "0x2002056c",
+        "span_bytes": 188,
+        "span_sha256": "f895e81dec3eb26b9f6728abe9338e22242dfd85d17ef0efc460bfa983c2026b"
+      },
+      {
+        "name": "unresolved_c_library_24_2",
+        "module": "c_library",
+        "address": "0x2001f3c8",
+        "s_pro_address": "0x20020628",
+        "span_bytes": 72,
+        "span_sha256": "3c5439d8727441c4bf0387784b20cc4d8aa91009d08846ad0d20fe25c14af912"
+      },
+      {
+        "name": "unresolved_c_library_29",
+        "module": "c_library",
+        "address": "0x2001f410",
+        "s_pro_address": "0x20020670",
+        "span_bytes": 212,
+        "span_sha256": "bf6944d021f53a8a53a6b60a217c7d1af0b77c762b3c86fc490b139ec96a0fa0"
+      },
+      {
+        "name": "unresolved_floating_point_01",
+        "module": "floating_point",
+        "address": "0x2001f4e4",
+        "s_pro_address": "0x20020744",
+        "span_bytes": 64,
+        "span_sha256": "0b524d758f87b5fcf1314bb7d30deb428561038bd67ae8783e299f4127dfe2cc"
+      },
+      {
+        "name": "unresolved_floating_point_02",
+        "module": "floating_point",
+        "address": "0x2001f524",
+        "s_pro_address": "0x20020784",
+        "span_bytes": 180,
+        "span_sha256": "12189efec0ed329d18464b2e47c2c513df5edcd5c48fc936d394bf51783b7743"
+      },
+      {
+        "name": "unresolved_floating_point_03",
+        "module": "floating_point",
+        "address": "0x2001f5d8",
+        "s_pro_address": "0x20020838",
+        "span_bytes": 188,
+        "span_sha256": "65733c32c30c325f1af06a0f3a3d42418b87c608344cd70d8a0e6b2a08f8dc9d"
+      },
+      {
+        "name": "unresolved_floating_point_04",
+        "module": "floating_point",
+        "address": "0x2001f694",
+        "s_pro_address": "0x200208f4",
+        "span_bytes": 80,
+        "span_sha256": "f356b7dea669018fbae3825133cd9b97ae7f75481e6c98fcdd9220c46b3be3dc"
+      },
+      {
+        "name": "unresolved_floating_point_05",
+        "module": "floating_point",
+        "address": "0x2001f6e4",
+        "s_pro_address": "0x20020944",
+        "span_bytes": 72,
+        "span_sha256": "3b070440708fd4e875473f33ad625d5257248440492ddd81e78e6a852c1b741d"
+      },
+      {
+        "name": "unresolved_floating_point_06",
+        "module": "floating_point",
+        "address": "0x2001f72c",
+        "s_pro_address": "0x2002098c",
+        "span_bytes": 96,
+        "span_sha256": "a45de276d28b0e262542d90663039ae6b7db9f42a608fb6c71c74d2c24e31bed"
+      },
+      {
+        "name": "unresolved_floating_point_07",
+        "module": "floating_point",
+        "address": "0x2001f78c",
+        "s_pro_address": "0x200209ec",
+        "span_bytes": 256,
+        "span_sha256": "aeb283289d5d6f9c1fcf3e671197d63ebfd000b76059b0efbb469ad0352257ff"
+      },
+      {
+        "name": "unresolved_floating_point_08",
+        "module": "floating_point",
+        "address": "0x2001f88c",
+        "s_pro_address": "0x20020aec",
+        "span_bytes": 104,
+        "span_sha256": "e3890e93446117d04deb659459970c234b870294c747ef3b706b25e04ad7cf80"
+      },
+      {
+        "name": "__aeabi_dadd",
+        "module": "software_float",
+        "address": "0x2001f8f8",
+        "s_pro_address": "0x20020b58",
+        "span_bytes": 632,
+        "span_sha256": "d8a83aa73681b7c90138d332571b51c0fe78d820a6d1255f8c2b7e6c93b83d08"
+      },
+      {
+        "name": "__aeabi_ui2d",
+        "module": "software_float",
+        "address": "0x2001fb70",
+        "s_pro_address": "0x20020dd0",
+        "span_bytes": 32,
+        "span_sha256": "46b41fddd0f4f7e42f8816dbbeb1db82781d857a4cc16df1330efe8035a06fdd"
+      },
+      {
+        "name": "__aeabi_i2d",
+        "module": "software_float",
+        "address": "0x2001fb90",
+        "s_pro_address": "0x20020df0",
+        "span_bytes": 36,
+        "span_sha256": "50d1e977a902279816235af96305a5d03bdd0270f1c0b9d2e1c93eaa16d1393e"
+      },
+      {
+        "name": "__aeabi_f2d",
+        "module": "software_float",
+        "address": "0x2001fbb4",
+        "s_pro_address": "0x20020e14",
+        "span_bytes": 168,
+        "span_sha256": "4715799f790712f8fad5d50bf600e46752968a4bd1edaa738f0a7ab9d2338147"
+      },
+      {
+        "name": "__aeabi_dmul",
+        "module": "software_float",
+        "address": "0x2001fc5c",
+        "s_pro_address": "0x20020ebc",
+        "span_bytes": 476,
+        "span_sha256": "45908edf89fa4a1138c24f8463b2a6d9c50b0787a899c6bd3d0f1ab2cb8886b8"
+      },
+      {
+        "name": "soft_double_multiply_special",
+        "module": "software_float",
+        "address": "0x2001fe38",
+        "s_pro_address": "0x20021098",
+        "span_bytes": 120,
+        "span_sha256": "463492458c5ee740ab6b53f171174cc14cd2786c61ff2fc255e0752b3aae36c4"
+      },
+      {
+        "name": "__aeabi_ddiv",
+        "module": "software_float",
+        "address": "0x2001feb0",
+        "s_pro_address": "0x20021110",
+        "span_bytes": 366,
+        "span_sha256": "99fdb37de8541323a8597cd4c1de7fc6a06c2a0adb7cdbf409eda90c834ac391"
+      },
+      {
+        "name": "soft_double_divide_special",
+        "module": "software_float",
+        "address": "0x2002001e",
+        "s_pro_address": "0x2002127e",
+        "span_bytes": 114,
+        "span_sha256": "8e79b2b3b85f0e6b76f209a8fce0ba67083e45186dbda61733dae1d2b65890db"
+      },
+      {
+        "name": "soft_double_compare_core",
+        "module": "software_float",
+        "address": "0x20020090",
+        "s_pro_address": "0x200212f0",
+        "span_bytes": 124,
+        "span_sha256": "ff8bdb779cf4cb45ca40519de716f61e73ddbe92f576a57939a127554249e96d"
+      },
+      {
+        "name": "soft_double_compare_reversed_flags",
+        "module": "software_float",
+        "address": "0x2002010c",
+        "s_pro_address": "0x2002136c",
+        "span_bytes": 16,
+        "span_sha256": "97abe023331f3ba52330a2ffa1917d111aa95f92448ac37d198645d05927f2c4"
+      },
+      {
+        "name": "soft_double_compare_flags",
+        "module": "software_float",
+        "address": "0x2002011c",
+        "s_pro_address": "0x2002137c",
+        "span_bytes": 16,
+        "span_sha256": "0a97ad67b4719afe391ddc342eee817edebbcb11e3ed2c1cc577c4d468c54f5c"
+      },
+      {
+        "name": "__aeabi_dcmpge",
+        "module": "software_float",
+        "address": "0x20020168",
+        "s_pro_address": "0x200213c8",
+        "span_bytes": 20,
+        "span_sha256": "6e95406f6aa5dab7e9d5cf98725fba15868d3578ab71ee3671a2205f25918eb7"
+      },
+      {
+        "name": "__aeabi_dcmpgt",
+        "module": "software_float",
+        "address": "0x2002017c",
+        "s_pro_address": "0x200213dc",
+        "span_bytes": 20,
+        "span_sha256": "89bf61d4a53f534a57a6fbcd1068bf6ebccddbe84459cce4fb7aecc4ac6dd9ce"
+      },
+      {
+        "name": "__aeabi_d2iz",
+        "module": "software_float",
+        "address": "0x20020190",
+        "s_pro_address": "0x200213f0",
+        "span_bytes": 80,
+        "span_sha256": "b60d414af0b79474d760e4c3f4f140c82b791332d3b54046e90c900d69050b55"
+      },
+      {
+        "name": "__aeabi_d2uiz",
+        "module": "software_float",
+        "address": "0x200201e0",
+        "s_pro_address": "0x20021440",
+        "span_bytes": 64,
+        "span_sha256": "f8b548a26fd77fb2cbfeee3789d28c97be11a125b3dccbde467883fe7f8eaec7"
+      },
+      {
+        "name": "__aeabi_d2f",
+        "module": "software_float",
+        "address": "0x20020220",
+        "s_pro_address": "0x20021480",
+        "span_bytes": 168,
+        "span_sha256": "179194c37fd1c834107b09b4c7a1c6e041c5fcd29f327f20b84f9dab53747a76"
+      },
+      {
+        "name": "__aeabi_fadd",
+        "module": "software_float",
+        "address": "0x200202cc",
+        "s_pro_address": "0x2002152c",
+        "span_bytes": 352,
+        "span_sha256": "c5354222f1fd42895908608e8d7cf29bf4392c9d3aeb4e7ef467f660bb54383d"
+      },
+      {
+        "name": "__aeabi_ui2f",
+        "module": "software_float",
+        "address": "0x2002042c",
+        "s_pro_address": "0x2002168c",
+        "span_bytes": 8,
+        "span_sha256": "66dad9f18b5361d737d9a1ef8e16e9416caaf3f20809f620c5c1a8817a789c18"
+      },
+      {
+        "name": "__aeabi_i2f",
+        "module": "software_float",
+        "address": "0x20020434",
+        "s_pro_address": "0x20021694",
+        "span_bytes": 168,
+        "span_sha256": "368d11c86f54c81ece14ca19a1dbe924e75d4fd26752899dddaca2d2f3d41562"
+      },
+      {
+        "name": "__aeabi_fmul",
+        "module": "software_float",
+        "address": "0x200204dc",
+        "s_pro_address": "0x2002173c",
+        "span_bytes": 360,
+        "span_sha256": "6a649afe570fb980871c809bbf604bcaee5de482bd463977a0428bbe955f3986"
+      },
+      {
+        "name": "__aeabi_fdiv",
+        "module": "software_float",
+        "address": "0x20020644",
+        "s_pro_address": "0x200218a4",
+        "span_bytes": 328,
+        "span_sha256": "d56288e9841eb80b24c2ec9cd6e8b1929e0ca5676c881160fe8b0f2d041460ba"
+      },
+      {
+        "name": "soft_float_compare_core",
+        "module": "software_float",
+        "address": "0x2002078c",
+        "s_pro_address": "0x200219ec",
+        "span_bytes": 104,
+        "span_sha256": "0aa661d43fa23b3fdeb08448dd97ba2e52c424dcd33e6b2d17ab60268deeed8e"
+      },
+      {
+        "name": "soft_float_compare_flags",
+        "module": "software_float",
+        "address": "0x200207f4",
+        "s_pro_address": "0x20021a54",
+        "span_bytes": 16,
+        "span_sha256": "958b2de7a5ea83bbee9ff4acf663ad4e45862829c2f6666e029281f9fe293310"
+      },
+      {
+        "name": "__aeabi_fcmpge",
+        "module": "software_float",
+        "address": "0x20020840",
+        "s_pro_address": "0x20021aa0",
+        "span_bytes": 20,
+        "span_sha256": "92fee7320de940c1935677ce05a7532da2b9930c6fa9c0a285163980e6314a66"
+      },
+      {
+        "name": "__aeabi_fcmpgt",
+        "module": "software_float",
+        "address": "0x20020854",
+        "s_pro_address": "0x20021ab4",
+        "span_bytes": 20,
+        "span_sha256": "ff7cfff5f9a9c400be976d7a1f2a7bec2f87c796fc2e1d968c19dc23b1aad574"
+      },
+      {
+        "name": "__aeabi_f2iz",
+        "module": "software_float",
+        "address": "0x20020868",
+        "s_pro_address": "0x20021ac8",
+        "span_bytes": 76,
+        "span_sha256": "43545820040ffab5fc57ebaf96a27176e4eee673deccffcd6f38357512847594"
+      },
+      {
+        "name": "__aeabi_f2uiz",
+        "module": "software_float",
+        "address": "0x200208b4",
+        "s_pro_address": "0x20021b14",
+        "span_bytes": 64,
+        "span_sha256": "6e156bb92821821cad59c2730a2d28ed1c969614e477a22c83ced6a231fa818d"
+      },
+      {
+        "name": "soft_unsigned_long_long_divide_wrapper",
+        "module": "software_float",
+        "address": "0x200208f4",
+        "s_pro_address": "0x20021b54",
+        "span_bytes": 44,
+        "span_sha256": "7084b784d304f0b5fb382664542a4755acfc275fccf998413ea7eac832cbed82"
+      },
+      {
+        "name": "soft_signed_long_long_divmod",
+        "module": "software_float",
+        "address": "0x20020920",
+        "s_pro_address": "0x20021b80",
+        "span_bytes": 48,
+        "span_sha256": "85591ca0879fbe4365ad9212632770515c0ce361f0e94b2224f8996c6db936d1"
+      },
+      {
+        "name": "soft_unsigned_long_long_divmod",
+        "module": "software_float",
+        "address": "0x20020950",
+        "s_pro_address": "0x20021bb0",
+        "span_bytes": 52,
+        "span_sha256": "63a2d777867a997055e50555c1bd6cb98332893a16161173caadbd18903ddd4f"
+      },
+      {
+        "name": "soft_signed_long_long_division",
+        "module": "software_float",
+        "address": "0x20020984",
+        "s_pro_address": "0x20021be4",
+        "span_bytes": 664,
+        "span_sha256": "25410826f72ca7689310b419a03c4e1f7a4a596150f932e99501d4cda6286d25"
+      }
+    ]
+  }
+}

@@ -1,0 +1,827 @@
+{
+  "schema_version": 1,
+  "variants": {
+    "ssd1325": {
+      "raw_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "tables": {
+        "program_titles": {
+          "literal_address": "0x20004e4c",
+          "table_address": "0x20022904",
+          "bytes_sha256": "fd42c607608d8da1037dc9fba1b0b7bbe0a5d08fe44e722dbe13674e172f7072",
+          "values": [
+            "",
+            "",
+            "",
+            "BREWING",
+            "BREWING",
+            "BREWING",
+            "DEEP CLEAN",
+            "LIMPIEZA PROFUNDA",
+            "NETTOYAGE",
+            "SOUS VIDE",
+            "SOUS VIDE",
+            "SOUS VIDE",
+            "COLD BREW",
+            "COLD BREW",
+            "COLD BREW",
+            "PICOSTILL",
+            "PICOSTILL",
+            "PICOSTILL",
+            "MANUAL BREW",
+            "MANUAL BREW",
+            "MANUAL BREW"
+          ],
+          "string_addresses": [
+            "0x20026211",
+            "0x20026211",
+            "0x20026211",
+            "0x20026b2a",
+            "0x20026b2a",
+            "0x20026b2a",
+            "0x20026c00",
+            "0x20026c0b",
+            "0x20026b50",
+            "0x20026c1d",
+            "0x20026c1d",
+            "0x20026c1d",
+            "0x20026c27",
+            "0x20026c27",
+            "0x20026c27",
+            "0x20026c31",
+            "0x20026c31",
+            "0x20026c31",
+            "0x20026b9a",
+            "0x20026b9a",
+            "0x20026b9a"
+          ]
+        },
+        "program_names": {
+          "literal_address": "0x20004e50",
+          "table_address": "0x200271c8",
+          "bytes_sha256": "3012716c5fc7472caee1dea1835ae9878da552dd9b2e229d15087f51bfbd6012",
+          "values": [
+            "",
+            "",
+            "",
+            "brew",
+            "cerveza",
+            "brasser",
+            "clean",
+            "limpieza",
+            "nettoyer",
+            "sous vide",
+            "sous vide",
+            "sous vide",
+            "Cold Brew",
+            "Cold Brew",
+            "Cold Brew",
+            "session",
+            "session",
+            "session",
+            "Manual Brew",
+            "Manual Brew",
+            "Manual Brew"
+          ],
+          "string_addresses": [
+            "0x20026211",
+            "0x20026211",
+            "0x20026211",
+            "0x20026bda",
+            "0x200216ca",
+            "0x20026bdf",
+            "0x20026be7",
+            "0x20026bc0",
+            "0x20026bed",
+            "0x20026bf6",
+            "0x20026bf6",
+            "0x20026bf6",
+            "0x20021463",
+            "0x20021463",
+            "0x20021463",
+            "0x20026bd2",
+            "0x20026bd2",
+            "0x20026bd2",
+            "0x2002161b",
+            "0x2002161b",
+            "0x2002161b"
+          ]
+        },
+        "program_states": {
+          "literal_address": "0x20004e54",
+          "table_address": "0x20022308",
+          "bytes_sha256": "6887c40ebfb197ed45e47fe9932b971883f5c15f4950b640c0b44e63b4f98c00",
+          "values": [
+            "",
+            "",
+            "",
+            "Brewing",
+            "preparar cerveza",
+            "brassage",
+            "Cleaning",
+            "limpieza",
+            "nettoyage",
+            "Cooking",
+            "coccion",
+            "cuisson",
+            "Brewing",
+            "preparar",
+            "brassage",
+            "session",
+            "session",
+            "session",
+            "Brewing",
+            "preparar cerveza",
+            "brassage"
+          ],
+          "string_addresses": [
+            "0x20026211",
+            "0x20026211",
+            "0x20026211",
+            "0x2002603b",
+            "0x20026ba6",
+            "0x20026bb7",
+            "0x2002635d",
+            "0x20026bc0",
+            "0x20024f71",
+            "0x20026618",
+            "0x2002155f",
+            "0x20021573",
+            "0x2002603b",
+            "0x20026bc9",
+            "0x20026bb7",
+            "0x20026bd2",
+            "0x20026bd2",
+            "0x20026bd2",
+            "0x2002603b",
+            "0x20026ba6",
+            "0x20026bb7"
+          ]
+        },
+        "program_logos": {
+          "literal_address": "0x20004e58",
+          "table_address": "0x2002721c",
+          "bytes_sha256": "a0caa8c3cf6eb7896065a84ccd7932b0994af214d7c3988c0d06df3aaeffb239",
+          "values": [
+            "",
+            "",
+            "",
+            "NOW BREWING",
+            "CERVEZA",
+            "EN BRASSAGE",
+            "CLEANING",
+            "LIMPIEZA",
+            "NETTOYAGE",
+            "COOKING",
+            "COCINAR",
+            "CUISSON",
+            "NOW BREWING",
+            "PREPARAR",
+            "BRASSAGE",
+            "DISTILLING",
+            "DISTIL",
+            "DISTILLATION",
+            "MANUAL BREW",
+            "MANUAL BREW",
+            "MANUAL BREW"
+          ],
+          "string_addresses": [
+            "0x20026211",
+            "0x20026211",
+            "0x20026211",
+            "0x20026b26",
+            "0x20023df6",
+            "0x20026b32",
+            "0x20026b3e",
+            "0x20026b47",
+            "0x20026b50",
+            "0x20026b5a",
+            "0x20026b62",
+            "0x20026b6a",
+            "0x20026b26",
+            "0x20026b72",
+            "0x20026b35",
+            "0x20026b7b",
+            "0x20026b86",
+            "0x20026b8d",
+            "0x20026b9a",
+            "0x20026b9a",
+            "0x20026b9a"
+          ]
+        },
+        "program_interrupted": {
+          "literal_address": "0x20004e5c",
+          "table_address": "0x200272d0",
+          "bytes_sha256": "98ea99c2f82bc57c63dcef587fa30e75555def70889ec149df7f260388e2c62b",
+          "values": [
+            "",
+            "",
+            "",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU",
+            "CLEAN INTERRUPTED",
+            "LIMPIEZA INTERRUMPIDA",
+            "NETTOYAGE INTERROMPU",
+            "COOKING INTERRUPTED",
+            "COCINAR INTERRUMPIDA",
+            "CUISSON INTERROMPUE",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU",
+            "DISTIL INTERRUPTED",
+            "DISTIL INTERRUMPIDA",
+            "DISTILLATION INTERROMPUE",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU"
+          ],
+          "string_addresses": [
+            "0x20026211",
+            "0x20026211",
+            "0x20026211",
+            "0x20026a32",
+            "0x20026a43",
+            "0x20026a58",
+            "0x20026a6c",
+            "0x20026a7e",
+            "0x20026a94",
+            "0x20026aa9",
+            "0x20026abd",
+            "0x20026ad2",
+            "0x20026a32",
+            "0x20026a43",
+            "0x20026a58",
+            "0x20026ae6",
+            "0x20026af9",
+            "0x20026b0d",
+            "0x20026a32",
+            "0x20026a43",
+            "0x20026a58"
+          ]
+        },
+        "program_names_debug": {
+          "literal_address": "0x20004aa8",
+          "table_address": "0x20022848",
+          "bytes_sha256": "51d29dba11d5e26a3f77e8a04d8fe0f39ab6132bdcb9af99518e49adc9d52a2c",
+          "values": [
+            "None",
+            "Brew",
+            "Clean",
+            "SousVideDefault",
+            "CoffeeColdBrew",
+            "Still",
+            "ManualBrew"
+          ],
+          "string_addresses": [
+            "0x200212c7",
+            "0x20021468",
+            "0x20021693",
+            "0x20026667",
+            "0x200266b3",
+            "0x20026599",
+            "0x200263d2"
+          ]
+        },
+        "program_session_names": {
+          "literal_address": "0x20004a9c",
+          "table_address": "0x20022974",
+          "bytes_sha256": "3277bb1f7454c36733841bf18519b81d3872dd8038925bf9224eee0f7e7ae8d8",
+          "values": [
+            "Brewing",
+            "Cleaning",
+            "SousVide",
+            "Still",
+            "Coffee",
+            "ManualBrew"
+          ],
+          "string_addresses": [
+            "0x2002603b",
+            "0x2002635d",
+            "0x2002663e",
+            "0x20026599",
+            "0x20023272",
+            "0x200263d2"
+          ]
+        },
+        "actions_brewing": {
+          "literal_address": "0x20004e74",
+          "table_address": "0x2002288c",
+          "bytes_sha256": "eb559ee6b5081f9eca93eb9fd1a9949934b0eacd3436ed2acdc304ed69f5ab11",
+          "values": [
+            1,
+            3,
+            6,
+            5,
+            9,
+            11
+          ]
+        },
+        "actions_cleaning": {
+          "literal_address": "0x20004e78",
+          "table_address": "0x2002298c",
+          "bytes_sha256": "8dcc52383dcef9d20c8af2afa9ed982641c6dde8e0c5ff757a3e1a1f53030b03",
+          "values": [
+            1,
+            3,
+            5,
+            9,
+            11
+          ]
+        },
+        "actions_sousvide": {
+          "literal_address": "0x20004e7c",
+          "table_address": "0x20027294",
+          "bytes_sha256": "e058add6890199eaa8971b7631e3faf7519d593c0ef6e8b27758baa9ce368336",
+          "values": [
+            1,
+            3,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_still": {
+          "literal_address": "0x20004e80",
+          "table_address": "0x20022814",
+          "bytes_sha256": "76bc6a8774f9a8d1c33c0dd121670df52de6cd2f33c8e862ff869bcab6875e7a",
+          "values": [
+            1,
+            2,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_coffee": {
+          "literal_address": "0x20004e84",
+          "table_address": "0x20022960",
+          "bytes_sha256": "e058add6890199eaa8971b7631e3faf7519d593c0ef6e8b27758baa9ce368336",
+          "values": [
+            1,
+            3,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_manual": {
+          "literal_address": "0x20004e88",
+          "table_address": "0x20022808",
+          "bytes_sha256": "ed7a214db17baa33ce72e381b751f57105e4187b3b2e440c2f4e21a91cb3d201",
+          "values": [
+            1,
+            5,
+            4
+          ]
+        },
+        "manual_setup": {
+          "literal_address": "0x20011310",
+          "table_address": "0x20029008",
+          "values": [
+            13,
+            7,
+            1
+          ]
+        },
+        "manual_cleanup": {
+          "literal_address": "0x2001134c",
+          "table_address": "0x20029278",
+          "values": [
+            2,
+            3,
+            1
+          ]
+        },
+        "sousvide_setup": {
+          "literal_address": "0x20011a10",
+          "table_address": "0x20028748",
+          "values": [
+            4,
+            1,
+            13
+          ]
+        },
+        "coffee_setup": {
+          "literal_address": "0x20011a14",
+          "table_address": "0x20029664",
+          "values": [
+            5,
+            1,
+            13
+          ]
+        }
+      }
+    },
+    "ssd1309": {
+      "raw_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "tables": {
+        "program_titles": {
+          "literal_address": "0x20004e50",
+          "table_address": "0x20022864",
+          "bytes_sha256": "f5e29d2eff126fc5c893ede2bed0652fbfb93aee9d2b10d412e86669dbcd8d1b",
+          "values": [
+            "",
+            "",
+            "",
+            "BREWING",
+            "BREWING",
+            "BREWING",
+            "DEEP CLEAN",
+            "LIMPIEZA PROFUNDA",
+            "NETTOYAGE",
+            "SOUS VIDE",
+            "SOUS VIDE",
+            "SOUS VIDE",
+            "COLD BREW",
+            "COLD BREW",
+            "COLD BREW",
+            "PICOSTILL",
+            "PICOSTILL",
+            "PICOSTILL",
+            "MANUAL BREW",
+            "MANUAL BREW",
+            "MANUAL BREW"
+          ],
+          "string_addresses": [
+            "0x20026171",
+            "0x20026171",
+            "0x20026171",
+            "0x20026a8a",
+            "0x20026a8a",
+            "0x20026a8a",
+            "0x20026b60",
+            "0x20026b6b",
+            "0x20026ab0",
+            "0x20026b7d",
+            "0x20026b7d",
+            "0x20026b7d",
+            "0x20026b87",
+            "0x20026b87",
+            "0x20026b87",
+            "0x20026b91",
+            "0x20026b91",
+            "0x20026b91",
+            "0x20026afa",
+            "0x20026afa",
+            "0x20026afa"
+          ]
+        },
+        "program_names": {
+          "literal_address": "0x20004e54",
+          "table_address": "0x20027128",
+          "bytes_sha256": "ef6cfedcbd6ff0cfd4a485adc5142d0ee36bf0479ad599c16670cacd1da3a810",
+          "values": [
+            "",
+            "",
+            "",
+            "brew",
+            "cerveza",
+            "brasser",
+            "clean",
+            "limpieza",
+            "nettoyer",
+            "sous vide",
+            "sous vide",
+            "sous vide",
+            "Cold Brew",
+            "Cold Brew",
+            "Cold Brew",
+            "session",
+            "session",
+            "session",
+            "Manual Brew",
+            "Manual Brew",
+            "Manual Brew"
+          ],
+          "string_addresses": [
+            "0x20026171",
+            "0x20026171",
+            "0x20026171",
+            "0x20026b3a",
+            "0x2002162a",
+            "0x20026b3f",
+            "0x20026b47",
+            "0x20026b20",
+            "0x20026b4d",
+            "0x20026b56",
+            "0x20026b56",
+            "0x20026b56",
+            "0x200213c3",
+            "0x200213c3",
+            "0x200213c3",
+            "0x20026b32",
+            "0x20026b32",
+            "0x20026b32",
+            "0x2002157b",
+            "0x2002157b",
+            "0x2002157b"
+          ]
+        },
+        "program_states": {
+          "literal_address": "0x20004e58",
+          "table_address": "0x20022268",
+          "bytes_sha256": "9a39caa4d4eb2744e0a248959fa4afe69f68ae701b8d06156412a92dada7156f",
+          "values": [
+            "",
+            "",
+            "",
+            "Brewing",
+            "preparar cerveza",
+            "brassage",
+            "Cleaning",
+            "limpieza",
+            "nettoyage",
+            "Cooking",
+            "coccion",
+            "cuisson",
+            "Brewing",
+            "preparar",
+            "brassage",
+            "session",
+            "session",
+            "session",
+            "Brewing",
+            "preparar cerveza",
+            "brassage"
+          ],
+          "string_addresses": [
+            "0x20026171",
+            "0x20026171",
+            "0x20026171",
+            "0x20025f9b",
+            "0x20026b06",
+            "0x20026b17",
+            "0x200262bd",
+            "0x20026b20",
+            "0x20024ed1",
+            "0x20026578",
+            "0x200214bf",
+            "0x200214d3",
+            "0x20025f9b",
+            "0x20026b29",
+            "0x20026b17",
+            "0x20026b32",
+            "0x20026b32",
+            "0x20026b32",
+            "0x20025f9b",
+            "0x20026b06",
+            "0x20026b17"
+          ]
+        },
+        "program_logos": {
+          "literal_address": "0x20004e5c",
+          "table_address": "0x2002717c",
+          "bytes_sha256": "21d6247553ddb903a414f9e4816addc6a5397a60215e5222fb247e7de9981419",
+          "values": [
+            "",
+            "",
+            "",
+            "NOW BREWING",
+            "CERVEZA",
+            "EN BRASSAGE",
+            "CLEANING",
+            "LIMPIEZA",
+            "NETTOYAGE",
+            "COOKING",
+            "COCINAR",
+            "CUISSON",
+            "NOW BREWING",
+            "PREPARAR",
+            "BRASSAGE",
+            "DISTILLING",
+            "DISTIL",
+            "DISTILLATION",
+            "MANUAL BREW",
+            "MANUAL BREW",
+            "MANUAL BREW"
+          ],
+          "string_addresses": [
+            "0x20026171",
+            "0x20026171",
+            "0x20026171",
+            "0x20026a86",
+            "0x20023d56",
+            "0x20026a92",
+            "0x20026a9e",
+            "0x20026aa7",
+            "0x20026ab0",
+            "0x20026aba",
+            "0x20026ac2",
+            "0x20026aca",
+            "0x20026a86",
+            "0x20026ad2",
+            "0x20026a95",
+            "0x20026adb",
+            "0x20026ae6",
+            "0x20026aed",
+            "0x20026afa",
+            "0x20026afa",
+            "0x20026afa"
+          ]
+        },
+        "program_interrupted": {
+          "literal_address": "0x20004e60",
+          "table_address": "0x20027230",
+          "bytes_sha256": "08bc315f114416d4bce0161bf6f6be3fde640da66753cead5aad016a76efb8c1",
+          "values": [
+            "",
+            "",
+            "",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU",
+            "CLEAN INTERRUPTED",
+            "LIMPIEZA INTERRUMPIDA",
+            "NETTOYAGE INTERROMPU",
+            "COOKING INTERRUPTED",
+            "COCINAR INTERRUMPIDA",
+            "CUISSON INTERROMPUE",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU",
+            "DISTIL INTERRUPTED",
+            "DISTIL INTERRUMPIDA",
+            "DISTILLATION INTERROMPUE",
+            "BREW INTERRUPTED",
+            "CERVEZA INTERRUMPIDA",
+            "BRASSAGE INTERROMPU"
+          ],
+          "string_addresses": [
+            "0x20026171",
+            "0x20026171",
+            "0x20026171",
+            "0x20026992",
+            "0x200269a3",
+            "0x200269b8",
+            "0x200269cc",
+            "0x200269de",
+            "0x200269f4",
+            "0x20026a09",
+            "0x20026a1d",
+            "0x20026a32",
+            "0x20026992",
+            "0x200269a3",
+            "0x200269b8",
+            "0x20026a46",
+            "0x20026a59",
+            "0x20026a6d",
+            "0x20026992",
+            "0x200269a3",
+            "0x200269b8"
+          ]
+        },
+        "program_names_debug": {
+          "literal_address": "0x20004aac",
+          "table_address": "0x200227a8",
+          "bytes_sha256": "3acf6970092756c959720f25b55607f35423daf0e77913560ffe4b219589ae40",
+          "values": [
+            "None",
+            "Brew",
+            "Clean",
+            "SousVideDefault",
+            "CoffeeColdBrew",
+            "Still",
+            "ManualBrew"
+          ],
+          "string_addresses": [
+            "0x20021227",
+            "0x200213c8",
+            "0x200215f3",
+            "0x200265c7",
+            "0x20026613",
+            "0x200264f9",
+            "0x20026332"
+          ]
+        },
+        "program_session_names": {
+          "literal_address": "0x20004aa0",
+          "table_address": "0x200228d4",
+          "bytes_sha256": "4fcec164c972d79e5cf1e3ebbf4f1baf718878e983853090ca8b5a499be28d4a",
+          "values": [
+            "Brewing",
+            "Cleaning",
+            "SousVide",
+            "Still",
+            "Coffee",
+            "ManualBrew"
+          ],
+          "string_addresses": [
+            "0x20025f9b",
+            "0x200262bd",
+            "0x2002659e",
+            "0x200264f9",
+            "0x200231d2",
+            "0x20026332"
+          ]
+        },
+        "actions_brewing": {
+          "literal_address": "0x20004e78",
+          "table_address": "0x200227ec",
+          "bytes_sha256": "eb559ee6b5081f9eca93eb9fd1a9949934b0eacd3436ed2acdc304ed69f5ab11",
+          "values": [
+            1,
+            3,
+            6,
+            5,
+            9,
+            11
+          ]
+        },
+        "actions_cleaning": {
+          "literal_address": "0x20004e7c",
+          "table_address": "0x200228ec",
+          "bytes_sha256": "8dcc52383dcef9d20c8af2afa9ed982641c6dde8e0c5ff757a3e1a1f53030b03",
+          "values": [
+            1,
+            3,
+            5,
+            9,
+            11
+          ]
+        },
+        "actions_sousvide": {
+          "literal_address": "0x20004e80",
+          "table_address": "0x200271f4",
+          "bytes_sha256": "e058add6890199eaa8971b7631e3faf7519d593c0ef6e8b27758baa9ce368336",
+          "values": [
+            1,
+            3,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_still": {
+          "literal_address": "0x20004e84",
+          "table_address": "0x20022774",
+          "bytes_sha256": "76bc6a8774f9a8d1c33c0dd121670df52de6cd2f33c8e862ff869bcab6875e7a",
+          "values": [
+            1,
+            2,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_coffee": {
+          "literal_address": "0x20004e88",
+          "table_address": "0x200228c0",
+          "bytes_sha256": "e058add6890199eaa8971b7631e3faf7519d593c0ef6e8b27758baa9ce368336",
+          "values": [
+            1,
+            3,
+            5,
+            10,
+            11
+          ]
+        },
+        "actions_manual": {
+          "literal_address": "0x20004e8c",
+          "table_address": "0x20022768",
+          "bytes_sha256": "ed7a214db17baa33ce72e381b751f57105e4187b3b2e440c2f4e21a91cb3d201",
+          "values": [
+            1,
+            5,
+            4
+          ]
+        },
+        "manual_setup": {
+          "literal_address": "0x200112f8",
+          "table_address": "0x20028f68",
+          "values": [
+            13,
+            7,
+            1
+          ]
+        },
+        "manual_cleanup": {
+          "literal_address": "0x20011334",
+          "table_address": "0x200291d8",
+          "values": [
+            2,
+            3,
+            1
+          ]
+        },
+        "sousvide_setup": {
+          "literal_address": "0x200119f8",
+          "table_address": "0x200286a8",
+          "values": [
+            4,
+            1,
+            13
+          ]
+        },
+        "coffee_setup": {
+          "literal_address": "0x200119fc",
+          "table_address": "0x200295c4",
+          "values": [
+            5,
+            1,
+            13
+          ]
+        }
+      }
+    }
+  }
+}

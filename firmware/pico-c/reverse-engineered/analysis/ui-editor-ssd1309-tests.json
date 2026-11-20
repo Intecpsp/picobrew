@@ -1,0 +1,13 @@
+{
+  "variant": "ssd1309",
+  "cases": 274,
+  "trace_sha256": "30d175c935a3f8061c70fb490c011fe0e063e7dd08403a352438d5fd890f637e",
+  "elf_sha256": "873401f8d67ac55a7867f9374131492402a6dda2b876ef46147795f71df94aa4",
+  "original_code_executed": true,
+  "rebuilt_arm_code_executed": true,
+  "hardware_tested": false,
+  "limits": [
+    "Drawing and scripted encoder-input boundaries; electrical timing not simulated",
+    "Valid original character indices and adjustment ranges only; explicit bounds repairs are separate"
+  ]
+}

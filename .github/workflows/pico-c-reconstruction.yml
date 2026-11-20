@@ -1,0 +1,66 @@
+name: OEM Pico C reconstruction
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: firmware/pico-c/reverse-engineered
+
+jobs:
+  host-comparisons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-test.txt
+      - name: Verify C images, assets, graphics, input, and workflows
+        run: make host-test PYTHON=python
+      - name: Check shared firmware analysis tools
+        working-directory: .
+        run: python -m unittest discover -s tools/firmware_analysis -p 'test_*.py'
+      - name: Preserve comparison reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pico-c-host-comparisons
+          path: firmware/pico-c/reverse-engineered/build/verification/*.json
+
+  arm-comparisons:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        display: [ssd1325, ssd1309]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install -r requirements-test.txt
+      - name: Bootstrap pinned compiler and Energia SDK
+        run: make bootstrap PYTHON=python
+      - name: Build and compare the selected C variant
+        run: make target-test PYTHON=python DISPLAY=${{ matrix.display }}
+      - name: Preserve candidate firmware and comparison evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pico-c-oem-${{ matrix.display }}-candidate
+          path: |
+            firmware/pico-c/reverse-engineered/build/verification/*.json
+            firmware/pico-c/reverse-engineered/build/firmware/${{ matrix.display }}/pico-c-recovered.elf
+            firmware/pico-c/reverse-engineered/build/firmware/${{ matrix.display }}/pico-c-recovered.bin
+            firmware/pico-c/reverse-engineered/build/firmware/${{ matrix.display }}/pico-c-recovered.map
+            firmware/pico-c/reverse-engineered/build/firmware/${{ matrix.display }}/pico-c-recovered.update.txt
+            firmware/pico-c/reverse-engineered/build/firmware/${{ matrix.display }}/firmware-report.json

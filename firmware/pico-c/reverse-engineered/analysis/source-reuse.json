@@ -1,0 +1,288 @@
+{
+  "source_revision": "ea887709e72c493456583114034cde4aad746099",
+  "files": [
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/pid.c",
+      "source_sha256": "b7b84aaa655b1ab70f068a197308fc858dfc7b6a54f11d0d0f3073dddff25207",
+      "target": "src/pid.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/state.c",
+      "source_sha256": "ed7d42961699c8c2a06681422f015b10c1607790ffa3ec24feaa911180183be0",
+      "target": "src/state.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/control.c",
+      "source_sha256": "927e8104a1ac5d6d33c0e3a1539b13aa2eb3771978ac98827fbc6bd2d2780dec",
+      "target": "src/control.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/phase.c",
+      "source_sha256": "31bf3239edceaefbbcaaa4ca390fa3343cc44698bbc463dc6860de9404190f41",
+      "target": "src/phase.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/device.c",
+      "source_sha256": "1021304e106cc16e9aefd4b2859a44dceaaf5343f54d29f102215b81c1708c7f",
+      "target": "src/device.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/rfid.c",
+      "source_sha256": "d6ef598b9e06fe7ec2351c26731d06b4896e2f3beb32ac7429887227acd5230d",
+      "target": "src/rfid.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/pid.h",
+      "source_sha256": "cbac06bfdb814e75d6c04e3f83bc5c76f87d1948e01605b421cfde71866df48a",
+      "target": "include/pico_c/pid.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/state.h",
+      "source_sha256": "0b2735efe0603782caf628c07566aee6fa92629b0d28d3c4f6c5120203b98fd7",
+      "target": "include/pico_c/state.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/control.h",
+      "source_sha256": "7e2567d5aeb4cbfafb0c1c4aea050d4fdc9354bed36013f159e067d0eb6f66b2",
+      "target": "include/pico_c/control.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/phase.h",
+      "source_sha256": "9b594aab9540b93728816fafa5732c100396e1aab89e2e17fb0ef10a61a33b56",
+      "target": "include/pico_c/phase.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/device.h",
+      "source_sha256": "ee34af4181809b1cf88907f7b3b1defa72d3f7ea9cc0db4c630b52cfafda8033",
+      "target": "include/pico_c/device.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/rfid.h",
+      "source_sha256": "46cd9701e39028d63654b941a0fb1c5a1fd636f4678e814f9f38091694531afc",
+      "target": "include/pico_c/rfid.h",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/rfid_fixture.c",
+      "source_sha256": "10a1923c376535b7b0cbf6b7225dad5db526bc5716019f54e860883bed6ae894",
+      "target": "tests/rfid_fixture.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/phase_fixture.c",
+      "source_sha256": "5b5571c042cb645326affee42efb7f0367b9011094c2bfea914aeefc6fb96567",
+      "target": "tests/phase_fixture.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/control_fixture.c",
+      "source_sha256": "cdb7867428de9e65d3c5a769c8674e64a35806817c8d5b6ce46aa6c9522c767a",
+      "target": "tests/control_fixture.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/device_fixture.c",
+      "source_sha256": "5a08f15689edb4e9358a744b977a1a399886391b71a2523943f4320c78982a25",
+      "target": "tests/device_fixture.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/validation_entry.c",
+      "source_sha256": "7dd12a304b183cac9cc3bc579c8b50b0e7ef663677a3bea21c66d49a4efa78a4",
+      "target": "tests/validation_entry.c",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/validation.ld",
+      "source_sha256": "48df1267a0cbeb048252e536ebaedc0ff0d3e92c8952b03b38de03e632419d79",
+      "target": "tests/validation.ld",
+      "validation": "pending unless listed in a behavioral report"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/recipe.h",
+      "source_sha256": "ee69ae004b7511570244e404a412ee6593b52a0805b5c8a2c2141c0f430f1e97",
+      "target": "include/pico_c/recipe.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/text.h",
+      "source_sha256": "0521837aae25b90de024edbc20d5029d92a2be40c2928810ac0f52d65cc15626",
+      "target": "include/pico_c/text.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/network.h",
+      "source_sha256": "ce032e5a2bda66918527268eecaa076637731b70b79c7737e7121fdf769038e9",
+      "target": "include/pico_c/network.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/config.h",
+      "source_sha256": "547c141286b3ccaae77520901697168c9e7468e787d8bf0dcc3a20f398259bbc",
+      "target": "include/pico_c/config.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/application.h",
+      "source_sha256": "dce8b2ff513ec6f182e6a3a3aa95d2b369a81438d456464f073f8235c559016d",
+      "target": "include/pico_c/application.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/energia_cc3200.h",
+      "source_sha256": "b68298a6b4db5a3856ec7ae4a7ab0124df0af1cac0ce3e2b74ed3f97e0c2f089",
+      "target": "include/pico_c/energia_cc3200.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/energia_network.h",
+      "source_sha256": "4c07f22791a46806fad3a3d3478b1e4ac5a607c53390f7648ba4eec8b1088b57",
+      "target": "include/pico_c/energia_network.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/include/picobrew/pico_http_client.h",
+      "source_sha256": "e5aa2468f134db47c47ffdcc9e50bac6b8aabdb722488e0e48fc3aa5caa16e17",
+      "target": "include/pico_c/pico_http_client.h",
+      "validation": "Header contract; source implementations verified separately."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/recipe.c",
+      "source_sha256": "1fefacfea722931d3a4a7b82b710df61f22513410ebc10971703db5cd0f1c24c",
+      "target": "src/recipe.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/recipe_programs.c",
+      "source_sha256": "091fc17523a43e7beb5b317c7f81e00087ec76f29865938fdf8aa2c0673c04ad",
+      "target": "src/recipe_programs.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/recipe_utilities.c",
+      "source_sha256": "46d11ef966be041c9a95fa2d248371cd49985b41e2103d95d06e97c5cfe80077",
+      "target": "src/recipe_utilities.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/recipe_data.inc",
+      "source_sha256": "f080fd4ca64b8789cae24f2f1286cfe8b77a9ca8a394a00506cf672877fc5b92",
+      "target": "src/recipe_data.inc",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/api.c",
+      "source_sha256": "464895b76775534342b8c84f1e9fd90f9a8c51c9873a5bb8aa69e7a0c225b576",
+      "target": "src/network/api.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/network.c",
+      "source_sha256": "f177eadeedde3e5161f92adbc625dd6ec34b9a07ec93311e21c8fed0f1043b86",
+      "target": "src/network/network.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/network_internal.h",
+      "source_sha256": "437e7ec3d9ac98a3e5853900726077a95e06d64ccb1243c0ce2d09562fbd568f",
+      "target": "src/network/network_internal.h",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/still_network.c",
+      "source_sha256": "d0014f21f436199b4c672f9d3e5ce9863e74ccc3245624ba2962c28f571486d3",
+      "target": "src/network/still_network.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/storage.c",
+      "source_sha256": "1bfc83cbb0e8be78ec028ba0629a7619a95d8a95dad74f43d28f00b299cb0bf0",
+      "target": "src/network/storage.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/text.c",
+      "source_sha256": "8b83150ae17fd8ffe497eafe2647b2cd99a51268a626f1babdfe7407319728b2",
+      "target": "src/network/text.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/network/update.c",
+      "source_sha256": "440fa2fc20ff99676b294094d6ff7a1459d5c371b0cc568046ff680a6eb7da36",
+      "target": "src/network/update.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/recipe_fixture.c",
+      "source_sha256": "e7f9c01de8f6e4963f29b94f8e4fdcee104e2a3c7f39296255b6d8a6b5b6ab28",
+      "target": "tests/recipe_fixture.c",
+      "validation": "Implementation candidate; C-specific changes and behavioral reports follow."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/application.c",
+      "source_sha256": "c40c90eb59710e4436e37cadc514bc38dad2b1326689c689bc80c48fede0ffad",
+      "target": "src/application.c",
+      "validation": "C startup/main-menu service ordering and application bindings: analysis/application-ssd1325-tests.json and application-ssd1309-tests.json. Hardware calls are controlled boundaries."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/test_recipe.py",
+      "source_sha256": "7568d04712b843c401616c13401aa4faa7ff361fbd3af01850f06965efa8fbb6",
+      "target": "tests/test_recipe.py",
+      "validation": "C-specific original address map; selected suites report results independently."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/ui/workflow_adapters.c",
+      "source_sha256": "a1c13904e074f08e192cc08c4044092c0715cb17f4e55d9a905f899fa3d38530",
+      "target": "src/ui/workflow_adapters.c",
+      "validation": "C-specific reconstruction; selected entries are compared to original instructions in analysis/ui-workflows-tests.json. Untested outer menu paths remain outside that report."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_workflows.c",
+      "source_sha256": "98e83cc6b70b0bea96e7b88a0c9e4c752c165e700bb8d19d4bb0cfdd423d8d4b",
+      "target": "src/ui/ui_workflows.c",
+      "validation": "C-specific reconstruction; selected entries are compared to original instructions in analysis/ui-workflows-tests.json. Untested outer menu paths remain outside that report."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/application_fixture.c",
+      "source_sha256": "8f6958e5b52fb911cb19cb403858156e9c71da169c3683bda23d4410ebf8f3ff",
+      "target": "tests/application_fixture.c",
+      "validation": "Adapted to explicit Pico C entries and contracts. Scope and results are in the corresponding behavioral reports; source reuse alone is not equivalence."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/network_fixture.c",
+      "source_sha256": "725d5b71821547fbacecec282c828e3e545f52e21abd490aac367bc9f9057f2d",
+      "target": "tests/network_fixture.c",
+      "validation": "Adapted to explicit Pico C entries and contracts. Scope and results are in the corresponding behavioral reports; source reuse alone is not equivalence."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/test_application.py",
+      "source_sha256": "2f01327002128e8d3157d6122bf117a7cbfa1e88a7478a97b2d642b396c07288",
+      "target": "tests/test_application.py",
+      "validation": "Adapted to explicit Pico C entries and contracts. Scope and results are in the corresponding behavioral reports; source reuse alone is not equivalence."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tests/test_network.py",
+      "source_sha256": "19b38d642a58fe30379a3819ff78f698a582fbb3b905032cd7d49b7bd2a33634",
+      "target": "tests/test_network.py",
+      "validation": "Adapted to explicit Pico C entries and contracts. Scope and results are in the corresponding behavioral reports; source reuse alone is not equivalence."
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/src/ui/ui_menus.c",
+      "source_sha256": "f7abed34155c3127532488253d5d12cfecabcb059ed1e7601064b10b564a4035",
+      "target": "src/ui/ui_program_menus.c",
+      "validation": "Adapted to explicit Pico C entries and contracts. Scope and results are in the corresponding behavioral reports; source reuse alone is not equivalence."
+    }
+  ],
+  "limits": "Reused typed source is an implementation candidate until compared against the actual C image. Address correspondence is not source equivalence."
+}

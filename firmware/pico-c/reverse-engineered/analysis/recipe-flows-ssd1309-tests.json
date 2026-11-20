@@ -1,0 +1,1282 @@
+{
+  "schema_version": 1,
+  "passed": 89,
+  "variant": "ssd1309",
+  "original_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+  "rebuilt_elf_sha256": "95c4b1e1fecc6da52cf88d3b0f5702fe89cf463441b05caa0f047811c11d4c4a",
+  "source_sha256": {
+    "src/recipe_utilities.c": "10eea604f8ef6df35320aecfe092739bc3298aad3bcebbd182ae0db9ecbfaac9",
+    "tests/test_recipe_flows.py": "cd529ad6109b85880d11ad4f29423f64b5ea4db8be0a5da49bb32ecc29f1291d",
+    "tests/recipe_fixture.c": "21f9611b97372a14a04efd325efeda4aedb824668c8ac2fba4f934ac10eb41c1"
+  },
+  "scope": "Original ARM versus rebuilt ARM procedure ordering and state with explicit UI, clock, actuator and stepper boundaries.",
+  "physical_qualification": false,
+  "cases": [
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "accepted": 0
+      },
+      "events": 4,
+      "original_instructions": 15,
+      "rebuilt_instructions": 52
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 1,
+        "pauses": []
+      },
+      "events": 11,
+      "original_instructions": 33,
+      "rebuilt_instructions": 97
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 1,
+        "pauses": [
+          1
+        ]
+      },
+      "events": 11,
+      "original_instructions": 33,
+      "rebuilt_instructions": 97
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 1,
+        "pauses": [
+          1,
+          3
+        ]
+      },
+      "events": 11,
+      "original_instructions": 33,
+      "rebuilt_instructions": 97
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 2,
+        "pauses": []
+      },
+      "events": 14,
+      "original_instructions": 47,
+      "rebuilt_instructions": 120
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 2,
+        "pauses": [
+          1
+        ]
+      },
+      "events": 16,
+      "original_instructions": 53,
+      "rebuilt_instructions": 142
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 2,
+        "pauses": [
+          1,
+          3
+        ]
+      },
+      "events": 16,
+      "original_instructions": 53,
+      "rebuilt_instructions": 142
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 5,
+        "pauses": []
+      },
+      "events": 23,
+      "original_instructions": 89,
+      "rebuilt_instructions": 189
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 5,
+        "pauses": [
+          1
+        ]
+      },
+      "events": 25,
+      "original_instructions": 95,
+      "rebuilt_instructions": 211
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 5,
+        "pauses": [
+          1,
+          3
+        ]
+      },
+      "events": 27,
+      "original_instructions": 101,
+      "rebuilt_instructions": 233
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 21,
+        "pauses": []
+      },
+      "events": 71,
+      "original_instructions": 313,
+      "rebuilt_instructions": 557
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 21,
+        "pauses": [
+          1
+        ]
+      },
+      "events": 73,
+      "original_instructions": 319,
+      "rebuilt_instructions": 579
+    },
+    {
+      "procedure": "vacuum",
+      "inputs": {
+        "click_after": 21,
+        "pauses": [
+          1,
+          3
+        ]
+      },
+      "events": 75,
+      "original_instructions": 325,
+      "rebuilt_instructions": 601
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 0,
+        "click_after": 1
+      },
+      "events": 21,
+      "original_instructions": 71,
+      "rebuilt_instructions": 215
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 0,
+        "click_after": 7
+      },
+      "events": 63,
+      "original_instructions": 239,
+      "rebuilt_instructions": 599
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 0,
+        "click_after": 30
+      },
+      "events": 223,
+      "original_instructions": 890,
+      "rebuilt_instructions": 2095
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 1,
+        "click_after": 1
+      },
+      "events": 11,
+      "original_instructions": 34,
+      "rebuilt_instructions": 117
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 1,
+        "click_after": 7
+      },
+      "events": 11,
+      "original_instructions": 34,
+      "rebuilt_instructions": 117
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 0,
+        "automatic": 1,
+        "click_after": 30
+      },
+      "events": 11,
+      "original_instructions": 34,
+      "rebuilt_instructions": 117
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 0,
+        "click_after": 1
+      },
+      "events": 105,
+      "original_instructions": 437,
+      "rebuilt_instructions": 1013
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 0,
+        "click_after": 7
+      },
+      "events": 105,
+      "original_instructions": 425,
+      "rebuilt_instructions": 1001
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 0,
+        "click_after": 30
+      },
+      "events": 221,
+      "original_instructions": 884,
+      "rebuilt_instructions": 2067
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 1,
+        "click_after": 1
+      },
+      "events": 95,
+      "original_instructions": 400,
+      "rebuilt_instructions": 915
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 1,
+        "click_after": 7
+      },
+      "events": 95,
+      "original_instructions": 388,
+      "rebuilt_instructions": 903
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 1,
+        "automatic": 1,
+        "click_after": 30
+      },
+      "events": 95,
+      "original_instructions": 376,
+      "rebuilt_instructions": 891
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 0,
+        "click_after": 1
+      },
+      "events": 189,
+      "original_instructions": 803,
+      "rebuilt_instructions": 1811
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 0,
+        "click_after": 7
+      },
+      "events": 189,
+      "original_instructions": 791,
+      "rebuilt_instructions": 1799
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 0,
+        "click_after": 30
+      },
+      "events": 219,
+      "original_instructions": 878,
+      "rebuilt_instructions": 2039
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 1,
+        "click_after": 1
+      },
+      "events": 179,
+      "original_instructions": 766,
+      "rebuilt_instructions": 1713
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 1,
+        "click_after": 7
+      },
+      "events": 179,
+      "original_instructions": 754,
+      "rebuilt_instructions": 1701
+    },
+    {
+      "procedure": "flush_compartments",
+      "inputs": {
+        "minimum_cycles": 2,
+        "automatic": 1,
+        "click_after": 30
+      },
+      "events": 179,
+      "original_instructions": 718,
+      "rebuilt_instructions": 1665
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 80.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 64,
+      "original_instructions": 400,
+      "rebuilt_instructions": 689
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 80.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 70,
+      "original_instructions": 422,
+      "rebuilt_instructions": 755
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 80.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 56,
+      "original_instructions": 363,
+      "rebuilt_instructions": 618
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 80.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 62,
+      "original_instructions": 385,
+      "rebuilt_instructions": 684
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 209.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [],
+        "warm_per_tick": 5.0,
+        "warm_limit": 225.0
+      },
+      "events": 150,
+      "original_instructions": 1140,
+      "rebuilt_instructions": 1820
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 209.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ],
+        "warm_per_tick": 5.0,
+        "warm_limit": 225.0
+      },
+      "events": 159,
+      "original_instructions": 1173,
+      "rebuilt_instructions": 1919
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 209.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [],
+        "warm_per_tick": 5.0,
+        "warm_limit": 225.0
+      },
+      "events": 135,
+      "original_instructions": 991,
+      "rebuilt_instructions": 1608
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 209.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ],
+        "warm_per_tick": 5.0,
+        "warm_limit": 225.0
+      },
+      "events": 144,
+      "original_instructions": 1024,
+      "rebuilt_instructions": 1707
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 210.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 154,
+      "original_instructions": 1146,
+      "rebuilt_instructions": 1834
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 210.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 163,
+      "original_instructions": 1179,
+      "rebuilt_instructions": 1933
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 210.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 138,
+      "original_instructions": 994,
+      "rebuilt_instructions": 1617
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 210.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 147,
+      "original_instructions": 1027,
+      "rebuilt_instructions": 1716
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 219.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 154,
+      "original_instructions": 1152,
+      "rebuilt_instructions": 1840
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 219.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 163,
+      "original_instructions": 1185,
+      "rebuilt_instructions": 1939
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 219.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 138,
+      "original_instructions": 1000,
+      "rebuilt_instructions": 1623
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 219.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 147,
+      "original_instructions": 1033,
+      "rebuilt_instructions": 1722
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 220.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 149,
+      "original_instructions": 1107,
+      "rebuilt_instructions": 1785
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 220.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 158,
+      "original_instructions": 1140,
+      "rebuilt_instructions": 1884
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 220.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 134,
+      "original_instructions": 964,
+      "rebuilt_instructions": 1579
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 220.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 143,
+      "original_instructions": 997,
+      "rebuilt_instructions": 1678
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 149,
+      "original_instructions": 1137,
+      "rebuilt_instructions": 1815
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 158,
+      "original_instructions": 1170,
+      "rebuilt_instructions": 1914
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 134,
+      "original_instructions": 988,
+      "rebuilt_instructions": 1603
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 143,
+      "original_instructions": 1021,
+      "rebuilt_instructions": 1702
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 230.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 149,
+      "original_instructions": 1107,
+      "rebuilt_instructions": 1785
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 230.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 158,
+      "original_instructions": 1140,
+      "rebuilt_instructions": 1884
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 230.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 134,
+      "original_instructions": 964,
+      "rebuilt_instructions": 1579
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 230.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 143,
+      "original_instructions": 997,
+      "rebuilt_instructions": 1678
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 231.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 154,
+      "original_instructions": 967,
+      "rebuilt_instructions": 1640
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 231.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 163,
+      "original_instructions": 1000,
+      "rebuilt_instructions": 1739
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 231.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 138,
+      "original_instructions": 852,
+      "rebuilt_instructions": 1463
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 231.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 147,
+      "original_instructions": 885,
+      "rebuilt_instructions": 1562
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 260.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 154,
+      "original_instructions": 967,
+      "rebuilt_instructions": 1640
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 260.0,
+        "first": 1,
+        "next": 1,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 163,
+      "original_instructions": 1000,
+      "rebuilt_instructions": 1739
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 260.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": []
+      },
+      "events": 138,
+      "original_instructions": 852,
+      "rebuilt_instructions": 1463
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 260.0,
+        "first": 2,
+        "next": 2,
+        "tick_step": 10001,
+        "click_after": 7,
+        "pauses": [
+          1,
+          3,
+          8
+        ]
+      },
+      "events": 147,
+      "original_instructions": 885,
+      "rebuilt_instructions": 1562
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "tick_step": 20001,
+        "click_after": null
+      },
+      "events": 163,
+      "original_instructions": 1212,
+      "rebuilt_instructions": 1966
+    },
+    {
+      "procedure": "c_drain_sequence",
+      "inputs": {
+        "temperature": 225.0,
+        "tick_step": 10001,
+        "click_after": 3,
+        "tick_start": 4294963200
+      },
+      "events": 119,
+      "original_instructions": 975,
+      "rebuilt_instructions": 1497
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 80.0,
+        "target": 220.0,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true
+      },
+      "events": 22,
+      "original_instructions": 669,
+      "rebuilt_instructions": 1474
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 80.0,
+        "target": 240.9,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true
+      },
+      "events": 22,
+      "original_instructions": 669,
+      "rebuilt_instructions": 1474
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 200.0,
+        "target": 220.0,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 180,
+      "original_instructions": 6686,
+      "rebuilt_instructions": 15500
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 200.0,
+        "target": 240.9,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 258,
+      "original_instructions": 8648,
+      "rebuilt_instructions": 18176
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 230.0,
+        "target": 220.0,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 210,
+      "original_instructions": 7652,
+      "rebuilt_instructions": 16886
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 230.0,
+        "target": 240.9,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 192,
+      "original_instructions": 7142,
+      "rebuilt_instructions": 16106
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 240.0,
+        "target": 220.0,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 222,
+      "original_instructions": 8000,
+      "rebuilt_instructions": 17384
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 240.0,
+        "target": 240.9,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 204,
+      "original_instructions": 7490,
+      "rebuilt_instructions": 16604
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 260.0,
+        "target": 220.0,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 246,
+      "original_instructions": 8696,
+      "rebuilt_instructions": 18380
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 260.0,
+        "target": 240.9,
+        "steam": 0,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 222,
+      "original_instructions": 8144,
+      "rebuilt_instructions": 17528
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 80.0,
+        "target": 220.0,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true
+      },
+      "events": 22,
+      "original_instructions": 669,
+      "rebuilt_instructions": 1474
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 80.0,
+        "target": 240.9,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true
+      },
+      "events": 22,
+      "original_instructions": 669,
+      "rebuilt_instructions": 1474
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 200.0,
+        "target": 220.0,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 186,
+      "original_instructions": 6698,
+      "rebuilt_instructions": 15518
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 200.0,
+        "target": 240.9,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 264,
+      "original_instructions": 8660,
+      "rebuilt_instructions": 18194
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 230.0,
+        "target": 220.0,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 216,
+      "original_instructions": 7664,
+      "rebuilt_instructions": 16904
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 230.0,
+        "target": 240.9,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 198,
+      "original_instructions": 7154,
+      "rebuilt_instructions": 16124
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 240.0,
+        "target": 220.0,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 228,
+      "original_instructions": 8012,
+      "rebuilt_instructions": 17402
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 240.0,
+        "target": 240.9,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 210,
+      "original_instructions": 7502,
+      "rebuilt_instructions": 16622
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 260.0,
+        "target": 220.0,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 230.0
+      },
+      "events": 252,
+      "original_instructions": 8708,
+      "rebuilt_instructions": 18398
+    },
+    {
+      "procedure": "heat_flush_compartments",
+      "inputs": {
+        "temperature": 260.0,
+        "target": 240.9,
+        "steam": 1,
+        "tick_step": 5001,
+        "cool_per_display": 10.0,
+        "reset_temperature_on_move": true,
+        "warm_per_tick": 10.0,
+        "warm_limit": 250.9
+      },
+      "events": 228,
+      "original_instructions": 8156,
+      "rebuilt_instructions": 17546
+    }
+  ]
+}

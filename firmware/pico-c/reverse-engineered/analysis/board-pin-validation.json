@@ -1,0 +1,88 @@
+{
+  "passed": true,
+  "sdk_variant": "CC3200-LAUNCHXL",
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "image_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "passed": true,
+      "tables": {
+        "port_to_base": {
+          "bytes": 20,
+          "sha256": "22143f03c15ca4b144961d0b01c50db063bca6f8c8bc5ecfe3ed69685a06e2d1",
+          "locations": [
+            "0x20027f20"
+          ]
+        },
+        "digital_pin_to_pin_num": {
+          "bytes": 82,
+          "sha256": "5e22d2252636f15169b6edd3e853dc63025be90acbdeeed69952c707e473b67e",
+          "locations": [
+            "0x20027f34"
+          ]
+        },
+        "digital_pin_to_port": {
+          "bytes": 41,
+          "sha256": "187601bdc920dcade118afd6c36abe6079bcd1f1d35450a6fbe82fee88059bf7",
+          "locations": [
+            "0x20027f86"
+          ]
+        },
+        "digital_pin_to_bit_mask": {
+          "bytes": 41,
+          "sha256": "c3164a4660c4df6d06275a6a24a784e342ea63d83a9c73f891ff3aaaf57a9235",
+          "locations": [
+            "0x20027ef5"
+          ]
+        },
+        "digital_pin_to_timer": {
+          "bytes": 41,
+          "sha256": "da3452c7f4295c346f3a84aa5192f50e5d9a584feee75bfd0068202d6d851d2d",
+          "locations": []
+        }
+      }
+    },
+    {
+      "variant": "ssd1309",
+      "image_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "passed": true,
+      "tables": {
+        "port_to_base": {
+          "bytes": 20,
+          "sha256": "22143f03c15ca4b144961d0b01c50db063bca6f8c8bc5ecfe3ed69685a06e2d1",
+          "locations": [
+            "0x20027e80"
+          ]
+        },
+        "digital_pin_to_pin_num": {
+          "bytes": 82,
+          "sha256": "5e22d2252636f15169b6edd3e853dc63025be90acbdeeed69952c707e473b67e",
+          "locations": [
+            "0x20027e94"
+          ]
+        },
+        "digital_pin_to_port": {
+          "bytes": 41,
+          "sha256": "187601bdc920dcade118afd6c36abe6079bcd1f1d35450a6fbe82fee88059bf7",
+          "locations": [
+            "0x20027ee6"
+          ]
+        },
+        "digital_pin_to_bit_mask": {
+          "bytes": 41,
+          "sha256": "c3164a4660c4df6d06275a6a24a784e342ea63d83a9c73f891ff3aaaf57a9235",
+          "locations": [
+            "0x20027e55"
+          ]
+        },
+        "digital_pin_to_timer": {
+          "bytes": 41,
+          "sha256": "da3452c7f4295c346f3a84aa5192f50e5d9a584feee75bfd0068202d6d851d2d",
+          "locations": []
+        }
+      }
+    }
+  ],
+  "scope": "Exact complete digital pin-number, port-index, bit-mask and port-base array matches.",
+  "limits": "No PWM/timer-table match is required; matching these arrays does not establish whole-SDK or physical hardware equivalence."
+}
