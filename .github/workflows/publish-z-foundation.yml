@@ -1,0 +1,63 @@
+name: Publish verified z-foundation source snapshot
+on:
+  push:
+    branches: ['feature/z-series-reconstruction']
+    paths: ['.github/workflows/publish-z-foundation.yml', '.publication/z-foundation/**']
+permissions:
+  contents: write
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Restore the hash-verified reviewed source delta
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import base64, gzip, hashlib, json, os, subprocess
+          from pathlib import Path, PurePosixPath
+          parts = sorted(Path('.publication/z-foundation').glob('part-*.b64'))
+          assert len(parts) == 20
+          encoded = ''.join(p.read_text() for p in parts)
+          assert hashlib.sha256(encoded.encode()).hexdigest() == 'ee24cd1b80d47924c333e7faeb53e6b0f90f9c54a0ab036ef185479a51761bf4'
+          records = json.loads(gzip.decompress(base64.b64decode(encoded, validate=True)))
+          assert len(records) == 322
+          seen = set()
+          for item in records:
+              path = PurePosixPath(item['path'])
+              assert not path.is_absolute() and '..' not in path.parts and '.git' not in path.parts
+              assert str(path) == item['path'] and str(path) not in seen
+              assert not str(path).startswith('.publication/') and str(path) != '.github/workflows/publish-z-foundation.yml'
+              seen.add(str(path))
+              target = Path(str(path))
+              if item.get('delete'):
+                  target.unlink()
+              else:
+                  data = base64.b64decode(item['content'], validate=True)
+                  assert len(data) == item['size']
+                  digest = hashlib.sha1(b'blob ' + str(len(data)).encode() + b'\0' + data).hexdigest()
+                  assert digest == item['sha'], str(path)
+                  assert item['mode'] in ('100644', '100755')
+                  target.parent.mkdir(parents=True, exist_ok=True)
+                  target.write_bytes(data)
+                  os.chmod(target, int(item['mode'][-3:], 8))
+              subprocess.run(['git', 'add', '--', str(path)], check=True)
+          PY
+          git rm -r -- '.publication/z-foundation' '.github/workflows/publish-z-foundation.yml'
+          test "$(git write-tree)" = 'd5862ddd78e61ee10176b9d4a8fcff6c696dce03'
+      - name: Publish the exact reviewed source tree
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          test "$(git write-tree)" = 'd5862ddd78e61ee10176b9d4a8fcff6c696dce03'
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m 'Publish verified z-foundation source and original-firmware evidence'
+          gh auth setup-git
+          git push origin 'HEAD:refs/heads/feature/z-series-reconstruction'
