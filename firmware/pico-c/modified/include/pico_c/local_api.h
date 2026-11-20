@@ -23,6 +23,7 @@ typedef struct PicoLocalApi {
     uint8_t event_head;
     uint8_t event_count;
     bool auth_configured;
+    bool restart_pending;
 } PicoLocalApi;
 
 /* One appliance is bound; initialization does not perform I/O or enable an

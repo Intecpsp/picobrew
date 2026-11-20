@@ -77,7 +77,8 @@ static int32_t write_file(void *context, const uint8_t *data, size_t length)
     return fail ? (int32_t)count : (int32_t)length;
 }
 static bool close_file(void *context) { (void)context; bool result = opened >= 0; opened = -1; return result; }
-static int pin_read(void *context, uint8_t pin) { (void)context; (void)pin; return 0; }
+static int active_pin = -1;
+static int pin_read(void *context, uint8_t pin) { (void)context; return pin == active_pin; }
 static void mask(void *context) { (void)context; }
 static bool unmask(void *context) { (void)context; return false; }
 static const PicoNetworkPlatform network_platform = {
@@ -139,10 +140,42 @@ static int history_replace(void *context, const char *name, const uint8_t *data,
     return 0;
 }
 static const PicoHistoryStorage history_storage = {history_ready, stat_file, read_block, history_replace};
-const char *pico_http_method_name(PicoHttpMethod method)
+typedef struct {
+    const char *input;
+    char *output;
+    size_t capacity, sent;
+    bool closed;
+} TestWire;
+static int accept_wire(void *context) { (void)context; return 0; }
+static int read_wire(void *context, int client, uint8_t *data, size_t capacity)
 {
-    static const char *names[] = {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"};
-    return method <= PICO_HTTP_OPTIONS ? names[method] : "";
+    TestWire *wire = context; (void)client;
+    size_t count = strlen(wire->input);
+    if (count > capacity) count = capacity;
+    memcpy(data, wire->input, count);
+    wire->input += count;
+    return (int)count;
+}
+static int write_wire(void *context, int client, const uint8_t *data, size_t length)
+{
+    TestWire *wire = context; (void)client;
+    if (length > 16) length = 16;  /* Split headers and JSON over several polls. */
+    if (length >= wire->capacity - wire->sent) return PICO_HTTP_IO_ERROR;
+    memcpy(wire->output + wire->sent, data, length);
+    wire->sent += length;
+    wire->output[wire->sent] = 0;
+    return (int)length;
+}
+static void close_wire(void *context, int client) { (void)client; ((TestWire *)context)->closed = true; }
+int test_http_request(const char *key, const char *input, char *output, size_t capacity)
+{
+    static const PicoHttpIo io = {accept_wire, read_wire, write_wire, close_wire};
+    TestWire wire = {.input=input, .output=output, .capacity=capacity};
+    PicoHttpServer server;
+    pico_http_server_initialize(&server, &io, &wire, pico_local_api_http_handler, &api, NULL, 0);
+    pico_http_server_set_key(&server, key, strlen(key));
+    for (unsigned i=0; i<200 && !wire.closed; ++i) pico_http_server_poll(&server, i);
+    return wire.closed;
 }
 
 static bool ota_trial;
@@ -154,12 +187,13 @@ static bool fake_ota_inspect(bool *trial, char digest[65], uint32_t *size)
 }
 static bool fake_ota_commit(bool confirm) { return confirm == ota_trial; }
 void test_ota_enable(int trial) {
-    ota_trial = trial != 0; api.ota_inspect = fake_ota_inspect; api.ota_commit = fake_ota_commit;
+    ota_trial = trial != 0; api.ota_trial = ota_trial; api.ota_inspect = fake_ota_inspect; api.ota_commit = fake_ota_commit;
 }
 void test_reset(int clear_files)
 {
     if (clear_files) memset(files, 0, sizeof files);
     memset(&appliance, 0, sizeof appliance);
+    active_pin = -1;
     appliance.hardware = &hardware;
     appliance.network.app = &appliance.state;
     appliance.network.settings = &appliance.settings;
@@ -211,6 +245,13 @@ int test_request(const char *method, const char *path, const char *body, size_t 
     memcpy(out, arena, count); out[count] = 0;
     return status;
 }
+void test_restart_state(unsigned phase, bool enabled, int output_pin)
+{
+    appliance.state.controller.phase = (uint8_t)phase;
+    appliance.state.control_signals.enabled = enabled;
+    active_pin = output_pin;
+}
+int test_restart_pending(void) { return api.restart_pending; }
 void test_busy(int value) { busy = value != 0; }
 void test_ready(int value) { ready = value != 0; }
 void test_write_failure(int nth, int count) { fail_write_at = nth; fail_write_after = count; writes = 0; }

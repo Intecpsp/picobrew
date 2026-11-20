@@ -27,6 +27,16 @@ Firmware 1.2.0 reports `model`, `model_name`, and `model_family` on
 Older shared images do not report an exact S/Pro variant. The Hub uses the
 authenticated discovery response to identify the model automatically.
 
+## Restart the brewer
+
+When authenticated discovery reports `system_restart: true`, send an authenticated
+`POST /api/v1/system/restart` with `Content-Type: application/json` and body `{}`.
+The brewer must be at the main menu with the controller idle, all heating and
+pump outputs off, and the stop latch clear. A busy brewer responds with HTTP
+409. An accepted request returns HTTP 202 and `{"accepted":true}` before the
+controller restarts. Reconnect to the device after it boots. Installed firmware,
+the device key, Wi-Fi credentials, recipes and settings are preserved.
+
 ## Build and software checks
 
 Use a Linux build environment with Python 3.12 or a release providing

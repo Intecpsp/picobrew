@@ -30,7 +30,7 @@ static void service_local_http(void *context)
 {
     PicoEnergiaHttpServer *server = static_cast<PicoEnergiaHttpServer *>(context);
     pico_energia_http_poll(server);
-    if (local_api.ota_restart) {
+    if (local_api.restart_pending) {
         /* Remain inside this idle foreground call until reset. Finish the
          * current response without admitting any new request or panel input. */
         while (server->http.client >= 0) pico_energia_http_poll(server);
@@ -188,6 +188,7 @@ void setup()
     char digest[65];
     uint32_t size;
     if (ota_inspect(&trial, digest, &size)) {
+        local_api.ota_trial = trial;
         local_api.ota_inspect = ota_inspect;
         local_api.ota_commit = ota_commit;
     }

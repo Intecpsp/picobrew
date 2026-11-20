@@ -201,7 +201,7 @@ static int discovery(PicoLocalApi *api, Writer *w)
             "\"settings\",\"stop\",\"clear-stop\",\"encoder\"],\"dedicated_pause_resume\":false,"
             "\"front_panel\":true,\"events_persistent\":false,\"history_persistent\":true,"
             "\"history_capacity_records\":4224,\"history_capacity_sessions\":8,"
-            "\"telemetry_forwarding\":true,"
+            "\"telemetry_forwarding\":true,\"system_restart\":true,"
             "\"recipe_labels\":\"printable ASCII\",");
     format(w, "\"hub_ota_v1\":%s,", api->ota_inspect ? "true" : "false");
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
@@ -634,7 +634,7 @@ static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *pat
         return error(w, 404, "not_found", "Unknown firmware operation");
     if (strcmp(method, inspect ? "GET" : "POST"))
         return error(w, 405, "method_not_allowed", "Invalid firmware operation method");
-    if (!api->ota_inspect || !api->ota_commit || api->ota_restart ||
+    if (!api->ota_inspect || !api->ota_commit || api->restart_pending ||
         pico_local_control_busy() || pico_local_control_stopped())
         return error(w, 409, "ota_unavailable", "Firmware updates require an idle brewer");
     char expected[65] = {0};
@@ -662,12 +662,37 @@ static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *pat
     if (!inspect) {
         if (trial != confirm || strcmp(expected, digest) || !api->ota_commit(confirm))
             return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
-        api->ota_restart = !confirm;
+        if (confirm) api->ota_trial = false;
+        else api->restart_pending = true;
     }
     text(w, "{\"device_uid\":"); quote(w, api->application->state.device_uid);
     format(w, ",\"model\":\"%s\",\"sha256\":\"%s\",\"size\":%lu,\"trial\":%s,\"ok\":true}",
            PICO_MODEL_ID, digest, (unsigned long)size, trial && !confirm ? "true" : "false");
     return 200;
+}
+
+static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
+                          const char *body, size_t length)
+{
+    if (strcmp(method, "POST"))
+        return error(w, 405, "method_not_allowed", "Use POST for restart");
+    Json j = {body, body + length, true};
+    if (!token(&j, '{') || !token(&j, '}') || !done(&j))
+        return error(w, 400, "invalid_request", "Send an empty JSON object");
+    PicoApplication *a = api->application;
+    if (api->restart_pending || api->ota_trial || !pico_local_control_is_ready() || pico_local_control_busy() ||
+        pico_local_control_stopped() || a->state.control_signals.enabled ||
+        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
+        return error(w, 409, "busy", "Restart requires an idle brewer");
+    static const uint8_t outputs[] = {
+        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
+    };
+    for (unsigned i = 0; i < sizeof outputs; ++i)
+        if (a->hardware->digital_read(a->hardware_context, outputs[i]))
+            return error(w, 409, "busy", "An output is active");
+    text(w, "{\"accepted\":true}");
+    if (w->ok) api->restart_pending = true;
+    return 202;
 }
 
 int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *path,
@@ -690,6 +715,8 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
         error(&w, 405, "method_not_allowed", "Use GET for health");
     else if (!strcmp(path, "/api/v1")) result = get ? discovery(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for discovery");
+    else if (!strcmp(path, "/api/v1/system/restart"))
+        result = restart_system(api, &w, method, body, length);
     else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for status");
     else if (!strncmp(path, "/api/v1/ota", 11)) result = ota(api, &w, method, path, body, length);

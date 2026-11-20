@@ -15,6 +15,10 @@
 #include <SPI.h>
 extern "C" {
 #include <driverlib/interrupt.h>
+#if PICO_STANDALONE
+#include <driverlib/prcm.h>
+#include <utility/simplelink.h>
+#endif
 }
 
 static PicoApplication application;
@@ -27,7 +31,16 @@ static PicoLocalApi local_api;
 static PicoEnergiaHttpServer local_http;
 static void service_local_http(void *context)
 {
-    pico_energia_http_poll(static_cast<PicoEnergiaHttpServer *>(context));
+    PicoEnergiaHttpServer *server = static_cast<PicoEnergiaHttpServer *>(context);
+    pico_energia_http_poll(server);
+    if (local_api.restart_pending) {
+        /* Remain inside this idle foreground call until reset. Finish the
+         * current response without admitting any new request or panel input. */
+        while (server->http.client >= 0) pico_energia_http_poll(server);
+        delay(200);
+        sl_Stop(200);
+        for (;;) PRCMMCUReset(true);
+    }
 }
 static bool telemetry_snapshot(void *context, char *output, size_t capacity, size_t *length)
 {

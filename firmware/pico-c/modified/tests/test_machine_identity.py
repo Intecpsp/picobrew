@@ -16,7 +16,7 @@ from native_host import compiler, library_name, pic_flags, shared_flags, load_li
 
 SOURCES = [ROOT / name for name in (
     'tests/standalone/local_api_host.c', 'src/local_api.c', 'src/local_store.c',
-    'src/local_history.c', 'src/local_telemetry.c')]
+    'src/local_history.c', 'src/local_telemetry.c', 'src/http_server.c')]
 
 
 def archive_report(display):
