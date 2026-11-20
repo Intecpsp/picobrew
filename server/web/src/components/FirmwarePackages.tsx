@@ -55,9 +55,11 @@ export function FirmwareDetails({ item }: { item: FirmwareCandidate }) {
 export function FirmwarePackageCard({
   item,
   onRemove,
+  onInstall,
   disabled = false,
 }: {
   item: FirmwarePackage
+  onInstall?: (item: FirmwarePackage) => void
   onRemove?: (item: FirmwarePackage) => void
   disabled?: boolean
 }) {
@@ -115,6 +117,11 @@ export function FirmwarePackageCard({
         >
           <Download size={16} /> {downloading ? 'Downloading…' : 'Download package'}
         </Button>
+        {onInstall && (
+          <Button disabled={disabled} onClick={() => onInstall(item)}>
+            Update firmware
+          </Button>
+        )}
         {onRemove && (
           <Button variant="ghost" disabled={disabled} onClick={() => onRemove(item)}>
             <Trash2 size={16} /> Remove
@@ -134,11 +141,33 @@ export function MachineFirmwareDialog({
   onClose: () => void
 }) {
   const hub = useHub()
-  const firmware = useResource<MachineFirmware>(`/devices/${encodeURIComponent(deviceID)}/firmware`)
+  const firmware = useResource<MachineFirmware>(
+    `/devices/${encodeURIComponent(deviceID)}/firmware`,
+    4000
+  )
   const [display, setDisplay] = useState('')
   const [checked, setChecked] = useState(false)
   const [saving, setSaving] = useState(false)
   const [verificationError, setVerificationError] = useState('')
+  const [selection, setSelection] = useState<FirmwarePackage | null>(null)
+  async function install() {
+    if (!selection || saving || !firmware.data?.install_supported) return
+    setSaving(true)
+    setVerificationError('')
+    try {
+      await api(`/devices/${encodeURIComponent(deviceID)}/firmware/install`, {
+        method: 'POST',
+        body: { package_id: selection.id, device_uid: firmware.data.device_uid, confirm: true },
+      })
+      setSelection(null)
+      firmware.reload()
+      hub.notify('Firmware update started.')
+    } catch (error) {
+      setVerificationError(errorMessage(error))
+    } finally {
+      setSaving(false)
+    }
+  }
   async function verifyController(event: FormEvent) {
     event.preventDefault()
     if (!checked || !display || saving || !firmware.data?.device_uid) return
@@ -172,6 +201,31 @@ export function MachineFirmwareDialog({
               <span>Current version: {firmware.data.current_version || 'Not reported'}</span>
             </div>
             <p role="status">{firmware.data.reason}</p>
+            {firmware.data.last_install && (
+              <p role="status">
+                Last update ({firmware.data.last_install.state}):{' '}
+                {firmware.data.last_install.message}
+              </p>
+            )}
+            {selection && (
+              <div>
+                <p>
+                  Install {firmwareCandidateName(selection)} {selection.firmware_version} on{' '}
+                  {firmware.data.device_uid}? Keep the idle brewer powered and connected during both
+                  restarts.
+                </p>
+                <Button
+                  disabled={saving || !firmware.data.install_supported}
+                  onClick={() => void install()}
+                >
+                  Confirm firmware update
+                </Button>
+                <Button variant="secondary" disabled={saving} onClick={() => setSelection(null)}>
+                  Cancel
+                </Button>
+              </div>
+            )}
+            <ErrorBanner message={verificationError} />
             {firmware.data.model === 'pico-c' && (
               <details open={firmware.data.hardware_verification_required}>
                 <summary>Display controller verification</summary>
@@ -217,7 +271,6 @@ export function MachineFirmwareDialog({
                   >
                     {saving ? 'Saving…' : 'Save verified controller'}
                   </Button>
-                  <ErrorBanner message={verificationError} />
                 </form>
               </details>
             )}
@@ -225,7 +278,19 @@ export function MachineFirmwareDialog({
             {firmware.data.packages.length ? (
               <div className="firmware-package-list">
                 {firmware.data.packages.map((item) => (
-                  <FirmwarePackageCard key={item.id} item={item} />
+                  <FirmwarePackageCard
+                    key={item.id}
+                    item={item}
+                    disabled={saving}
+                    onInstall={
+                      firmware.data?.install_supported &&
+                      (!firmware.data.retry_package_id ||
+                        firmware.data.retry_package_id === item.id) &&
+                      item.hub_ota_protocol === 1
+                        ? setSelection
+                        : undefined
+                    }
+                  />
                 ))}
               </div>
             ) : (

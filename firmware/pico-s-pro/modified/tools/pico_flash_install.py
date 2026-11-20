@@ -46,14 +46,16 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 6
+INSTALL_REVISION = 7
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 165344
-CANDIDATE_SHA256 = '8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8'
+CANDIDATE_SIZE = 166288
+CANDIDATE_SHA256 = "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832"
+RELEASED_1_2_0_SIZE = 165344
+RELEASED_1_2_0_SHA256 = '8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8'
 # Previously installed standalone versions are approved upgrade sources,
 # never alternate payloads accepted by --firmware. Keep these identities fixed
 # when the target CANDIDATE_* values change.
@@ -68,6 +70,9 @@ RELEASED_1_1_0_SHA256 = "a5e7fc51841ad0444e6b3a731af48dcdac214cce65c04b54b373001
 BOOT_INFO = bytes.fromhex("01 3d 00 20 ba dc cd ab")
 BOOT_INFO_SHA256 = "59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e9435"
 APP_NAME = "/sys/mcuimg2.bin"
+RECOVERY_NAME = "/sys/mcuimg1.bin"
+RECOVERY_FILE = Path(__file__).resolve().parents[1] / "firmware/standalone/pico-hub-recovery.bin"
+RECOVERY_IMAGE = {"size_bytes": 43352, "sha256": "c76c390034d1564d4d80ddeeae0347b2e7171c820878b44d0fce7731c359c9ce"}
 # The pinned nonmirrored allocation is 48 x 4096 bytes. The CC3200 SDK's
 # _sl_GetCreateFsMode rounds this size range to 1024-byte pages, then TI's
 # filesystem adds metadata and rounds to 4096-byte blocks (SWRA657 section 4;
@@ -100,6 +105,7 @@ FILE_CLOSE_COMMAND = preflight.FILE_CLOSE_COMMAND
 SUCCESS_MARKERS = {
     "provision-key": "SUCCESS: API key provisioning and existing-file write verification completed",
     "install": "SUCCESS: standalone firmware, browser files and API key verified",
+    "install-recovery": "SUCCESS: pinned recovery and unchanged active application verified",
     "restore": "SUCCESS: original firmware restored and read back exactly",
 }
 
@@ -307,7 +313,10 @@ def _approved_current_applications(mode):
                            (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
+                           (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
                            (CANDIDATE_SIZE, CANDIDATE_SHA256)))
+    if mode == "install-recovery":
+        identities = [(CANDIDATE_SIZE, CANDIDATE_SHA256)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
@@ -315,6 +324,10 @@ def _expected_public(name):
     if name == preflight.BOOT_INFO_NAME:
         return {"size_bytes": 8, "sha256": BOOT_INFO_SHA256}
     return preflight.EXPECTED_FILES[name]
+
+
+def _protected_matches(name, observed):
+    return observed == _expected_public(name) or (name == RECOVERY_NAME and observed == RECOVERY_IMAGE)
 
 
 def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None):
@@ -332,6 +345,10 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
     if mode == "install":
         expected_names.add(APP_NAME)
         expected_names.update(web_assets)
+    if mode == "install-recovery":
+        expected_names.add(RECOVERY_NAME)
+        if not isinstance(immutable.get(RECOVERY_NAME), bytes) or _image_metadata(immutable[RECOVERY_NAME]) != RECOVERY_IMAGE:
+            raise InstallError("Recovery bytes do not match the pinned local recovery image")
     if set(immutable) != expected_names or any(not isinstance(v, bytes) for v in immutable.values()):
         raise InstallError("Write payload registration does not match the selected operation")
     if KEY_NAME in immutable:
@@ -443,7 +460,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
                     or not self.layout["image3_absent_in_all_fats"]):
                 raise InstallError("The live application layout differs from the approved layout")
             for name in PROTECTED_NAMES:
-                if self.observed.get(name) != _expected_public(name):
+                if not _protected_matches(name, self.observed.get(name)):
                     raise InstallError("Protected firmware or logical boot information has not verified")
             image3 = self.file_infos.get(preflight.OPTIONAL_IMAGE_NAME)
             if image3 is None or image3["exists"]:
@@ -472,6 +489,12 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
                     label = "key-existing-write-proof"
                 else:
                     raise InstallError("Unapproved key open mode")
+            elif name == RECOVERY_NAME and self.operation == "install-recovery":
+                if (flags != OPEN_EXISTING_WRITE or not self.key_matches or not info or not info["exists"]
+                        or self.mutation_attempts or not self.layout.get("recovery_allocation_verified")
+                        or self.observed.get(RECOVERY_NAME) != _expected_public(RECOVERY_NAME)):
+                    raise InstallError("Recovery installation requires the original recovery allocation and verified identity")
+                label = "recovery-existing-write"
             elif name == APP_NAME and self.operation in ("install", "restore"):
                 if flags != OPEN_EXISTING_WRITE or self.application_write_attempted:
                     raise InstallError("Only one existing-application write is permitted per session")
@@ -812,6 +835,11 @@ def read_live_layout(connection, cc):
                     raise InstallError("Live FAT names or allocations overlap")
                 names[name] = entry
                 occupied.update(blocks)
+            if connection.operation == "install-recovery":
+                recovery = names.get(RECOVERY_NAME)
+                if (recovery is None or recovery.start_block != 214 or recovery.size_blocks != 16
+                        or recovery.mirrored or recovery.flags != 0xC):
+                    raise InstallError("Recovery allocation differs from the profiled 16-block layout")
             app = names.get(APP_NAME)
             if (app is None or app.start_block != 130 or app.size_blocks != APPLICATION_ALLOCATION_BLOCKS
                     or app.mirrored or app.flags != 0xC):
@@ -865,6 +893,7 @@ def read_live_layout(connection, cc):
               "image3_absent_in_all_fats": image3_absent,
               "free_blocks_min": free_blocks_min, "free_file_slots_min": free_file_slots_min,
               "web_assets": web_layout}
+    result["recovery_allocation_verified"] = connection.operation == "install-recovery"
     connection.layout = result
     return result
 
@@ -874,7 +903,7 @@ def _check_protected(connection, progress):
     for name in PROTECTED_NAMES:
         data = read_file_bytes(connection, name)
         observed = _image_metadata(data)
-        if observed != _expected_public(name):
+        if not _protected_matches(name, observed):
             raise InstallError("Protected firmware or logical boot information differs from the verified device")
         result[name] = observed
         progress(f"VERIFIED: {name}: {observed['size_bytes']:,} bytes; SHA256 {observed['sha256']}")
@@ -979,7 +1008,7 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
     if mode != "restore" and key_bytes != connection.payloads.get(KEY_NAME):
         raise InstallError("The registered key payload changed")
     expected_app = original_bytes if mode == "restore" else candidate_bytes
-    if mode != "provision-key" and expected_app != connection.payloads.get(APP_NAME):
+    if mode in ("install","restore") and expected_app != connection.payloads.get(APP_NAME):
         raise InstallError("The registered application payload changed")
     details["live_preflight"] = before = {}
     before["flash"] = backup.detect_flash(connection)
@@ -1005,6 +1034,22 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
         progress(f"VERIFIED: {APP_NAME}: {len(data):,} bytes; SHA256 {observed['sha256']}")
     connection._live_state_ok()
     connection._record("live-preflight-passed", mode=mode)
+
+    if mode == "install-recovery":
+        _verify_key(connection, key_bytes)
+        if before["protected"][RECOVERY_NAME] != RECOVERY_IMAGE:
+            progress("RECOVERY: installing the pinned local recovery in its existing allocation")
+            _write_registered(connection, RECOVERY_NAME, OPEN_EXISTING_WRITE)
+        after = _check_protected(connection, progress)
+        if (after[RECOVERY_NAME] != RECOVERY_IMAGE or
+                _image_metadata(read_file_bytes(connection, APP_NAME)) != before["application"]):
+            raise InstallError("Recovery or active application failed post-install readback")
+        read_live_layout(connection, cc)
+        _verify_key(connection, key_bytes)
+        details["postcheck"] = {"protected": after, "application": before["application"]}
+        details["operation_verified"] = True
+        connection._record("operation-verified", mode=mode)
+        return details
 
     if mode != "restore":
         key_info = read_file_info(connection, KEY_NAME)
@@ -1183,6 +1228,10 @@ def main(argv=None):
         details["helper"] = {"name": backup.HELPER_NAME, "size_bytes": len(helper),
                              "sha256": backup.HELPER_SHA256, "destination": "SRAM only"}
         payloads = {APP_NAME: original} if args.mode == "restore" else {KEY_NAME: key}
+        if args.mode == "install-recovery":
+            payloads[RECOVERY_NAME] = _read_regular(RECOVERY_FILE, RECOVERY_IMAGE["size_bytes"])
+            if _image_metadata(payloads[RECOVERY_NAME]) != RECOVERY_IMAGE:
+                raise InstallError("Packaged recovery differs from the pinned recovery image")
         if args.mode == "install":
             payloads[APP_NAME] = candidate
             payloads.update(web_payloads)

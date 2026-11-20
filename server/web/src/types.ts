@@ -307,6 +307,7 @@ export interface FirmwareSettings {
   ref: string
 }
 export interface FirmwareCandidate {
+  hub_ota_protocol?: number
   model: string
   model_family: string
   display_variant?: string
@@ -337,7 +338,9 @@ export interface MachineFirmware {
   verified_display_variant?: string
   device_uid?: string
   hardware_verification_required?: boolean
-  install_supported: false
+  retry_package_id?: string
+  install_supported: boolean
+  last_install?: { package_id: string; started: string; state: string; message: string }
   reason: string
   packages: FirmwarePackage[]
 }

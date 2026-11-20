@@ -1,4 +1,4 @@
-# Standalone firmware 1.2.0 packages
+# Standalone firmware 1.3.0 packages
 
 The two packages use the shared S/Pro implementation with an explicit model
 selection. Install the image matching the physical appliance:
@@ -16,8 +16,8 @@ backups and contain no API key. The matching five compressed browser files in
 
 Build with `make standalone MODEL=pico-pro` or `make standalone MODEL=pico-s`.
 The default is Pro. Matching debug ELF, map and legacy update-response envelope
-files are generated in the model-specific build output. The standalone firmware
-does not implement an OTA receiver or HTTP flashing endpoint. Pico C, Z and
+files are generated in the model-specific build output. The main firmware hands authenticated updates to the separate
+`pico-hub-recovery.bin` application. See [OTA setup and verification](../../docs/hub-ota.md). Pico C, Z and
 Zymatic cannot use these images merely by changing a label.
 
 The [guarded USB installer](../../docs/macos-usb-installation.md) remains tied to

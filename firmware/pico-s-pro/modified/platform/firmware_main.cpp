@@ -11,6 +11,7 @@
 #include "picobrew/local_api.h"
 #include "picobrew/local_control.h"
 #include "picobrew/web_assets.h"
+#include "ota_cc3200.hpp"
 #endif
 #include <SPI.h>
 extern "C" {
@@ -23,11 +24,20 @@ static PicoEnergiaObjects native_objects;
 static PicoEnergiaInitialization initialization;
 static PicoEnergiaNetwork network_runtime;
 #if PICO_STANDALONE
-static PicoLocalApi local_api;
+static PicoLocalApi local_api __attribute__((section(".pico_api_bss")));
 static PicoEnergiaHttpServer local_http;
 static void service_local_http(void *context)
 {
-    pico_energia_http_poll(static_cast<PicoEnergiaHttpServer *>(context));
+    PicoEnergiaHttpServer *server = static_cast<PicoEnergiaHttpServer *>(context);
+    pico_energia_http_poll(server);
+    if (local_api.ota_restart) {
+        /* Remain inside this idle foreground call until reset. Finish the
+         * current response without admitting any new request or panel input. */
+        while (server->http.client >= 0) pico_energia_http_poll(server);
+        delay(200);
+        sl_Stop(200);
+        for (;;) PRCMMCUReset(true);
+    }
 }
 static bool telemetry_snapshot(void *context, char *output, size_t capacity, size_t *length)
 {
@@ -171,6 +181,17 @@ void setup()
     pico_telemetry_set_snapshot(telemetry_snapshot, &local_api);
 #endif
     pico_application_setup(&application);
+#if PICO_STANDALONE
+    /* Advertise updates only after checking the installed boot chain. USB
+     * provisioning restarts the MCU, so this capability is stable per boot. */
+    bool trial;
+    char digest[65];
+    uint32_t size;
+    if (ota_inspect(&trial, digest, &size)) {
+        local_api.ota_inspect = ota_inspect;
+        local_api.ota_commit = ota_commit;
+    }
+#endif
 }
 void loop()
 {

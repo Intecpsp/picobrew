@@ -94,7 +94,7 @@ func TestOpenAPIFirmwarePackageTransportAndInstallationBoundary(t *testing.T) {
 		t.Fatal("GitHub discovery claims package validation before download")
 	}
 	installed := schemas["MachineFirmware"].(schemaMap)["properties"].(schemaMap)["install_supported"].(schemaMap)
-	if !reflect.DeepEqual(installed["enum"], []bool{false}) {
+	if installed["type"] != "boolean" || installed["enum"] != nil {
 		t.Fatal("package management claims network installation support")
 	}
 }

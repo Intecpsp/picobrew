@@ -58,4 +58,7 @@ extern const char *const pico_ui_titles[5][3];
 extern const PicoInstructionText pico_ui_instructions[25][3];
 extern const char *const pico_ui_thermal_help[3][6];
 extern const char *const pico_ui_error_text[26][3][2];
+#if PICO_STANDALONE && !defined(PICO_DEFINE_PACKED_PIXELS)
+#include "packed_bitmaps.h"
+#endif
 #endif

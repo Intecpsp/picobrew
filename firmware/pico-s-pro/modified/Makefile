@@ -18,6 +18,8 @@ firmware-package: standalone
 	"$(PYTHON)" tools/package_hub_firmware.py --model "$(MODEL)" --firmware-directory "$(STANDALONE_DIR)"
 
 standalone-test:
+	"$(PYTHON)" tools/pack_bitmaps.py --check
+	"$(PYTHON)" tests/test_packed_bitmaps.py
 	"$(PYTHON)" tools/generate_starter_recipes.py --check
 	"$(PYTHON)" tools/generate_api_explorer.py --check
 	"$(PYTHON)" tools/embed_web.py --check

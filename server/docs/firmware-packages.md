@@ -93,21 +93,11 @@ reports and their hashes are not publisher signatures, independent physical
 hardware identification, or evidence of a successful installation. A model
 match compares declared package and machine model information.
 
-## Installation status
+## Installation
 
-This version manages packages; it does not send firmware writes or reboot a
-machine into recovery. The current standalone firmware cannot enter a
-qualified local recovery system, and the archived recovery candidate does not
-expose an authenticated device identity that the Hub can match to a registered
-machine. A successful upload or fetch therefore does not enable an Install
-action.
+An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose **Update firmware**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
-Network installation requires the initial USB recovery setup and an update
-protocol with verified identity, idle-state checks, complete readback, and
-qualified interrupted-transfer and boot behavior. Existing guarded USB
-installation procedures remain separate. See the
-[recovery candidate](../../firmware/pico-s-pro/modified/recovery/README.md) and
-its documented limits before planning that setup.
+The first installation on older firmware requires USB. The bootstrap tool currently supports one pinned Pico Pro profile. See the [setup, recovery and physical validation limits](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
 
 ## Storage and API
 
@@ -132,6 +122,7 @@ executes code from a package.
 | GET / DELETE | `/api/v1/firmware/packages/{packageID}` | Read metadata or remove a package |
 | GET | `/api/v1/firmware/packages/{packageID}/download` | Download the cached ZIP after checking its hash |
 | GET | `/api/v1/devices/{id}/firmware` | Read model-scoped packages and installation availability |
+| POST | `/api/v1/devices/{id}/firmware/install` | Confirm the package and brewer with `package_id`, `device_uid` and `confirm: true`. HTTP 202 starts a tracked update. |
 
 New imports return HTTP 201; an identical saved archive returns HTTP 200.
 Changing the repository after browsing invalidates an import request for the

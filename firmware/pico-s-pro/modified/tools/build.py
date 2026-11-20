@@ -55,10 +55,13 @@ def main():
     sources = sort_sources((ROOT / 'src').rglob('*.c'))
     if not options.standalone:
         sources = [p for p in sources if not (p.name.startswith('local_') or p.name == 'http_server.c')]
+    if options.standalone:
+        sources.append(ROOT / "recovery/recovery/sha256.c")
     objects = []
     source_hashes = {}
     for source in sources:
-        object_path = output / 'objects' / source.relative_to(ROOT / 'src').with_suffix('.o')
+        relative = source.relative_to(ROOT / 'src') if source.is_relative_to(ROOT / 'src') else source.relative_to(ROOT)
+        object_path = output / 'objects' / relative.with_suffix('.o')
         object_path.parent.mkdir(parents=True, exist_ok=True)
         subprocess.run([gcc, *flags, '-c', str(source), '-o', str(object_path)], check=True)
         objects.append(object_path)

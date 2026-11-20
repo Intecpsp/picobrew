@@ -18,7 +18,7 @@ modified v1.x source. The self-contained Go/React Hub lives in `server/`.
 The populated S/Pro source folders are under
 [`firmware/pico-s-pro/`](firmware/pico-s-pro/README.md). Its pre-v1 reconstruction
 is an exact 396-file snapshot of commit `ea887709`; its modified source is
-version 1.2.0. Both retain their own build tools, dependency manifests, tests,
+version 1.3.0 with [Hub OTA support](firmware/pico-s-pro/modified/docs/hub-ota.md). Both retain their own build tools, dependency manifests, tests,
 reference fixtures and documentation. The OEM reconstruction's documented
 repairs and validation limits remain attached to that source.
 

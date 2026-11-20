@@ -52,6 +52,26 @@ class LocalApi(unittest.TestCase):
     def setUp(self):
         LIB.test_reset(1)
 
+    def test_ota_identity_busy_and_trial_gates(self):
+        path = "/api/v1/ota"
+        self.assertEqual(request("GET", path)[0], 409)
+        LIB.test_ota_enable(0)
+        code, state = request("GET", path)
+        self.assertEqual(code, 200)
+        identity = {k: state[k] for k in ("device_uid", "model", "sha256")}
+        for field in identity:
+            self.assertEqual(request("POST", path + "/enter", {**identity,field:"wrong"})[0], 409)
+        self.assertEqual(request("POST", path + "/confirm", identity)[0], 409)
+        LIB.test_busy(1)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+        LIB.test_busy(0)
+        LIB.test_ota_enable(1)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+        self.assertEqual(request("POST", path + "/confirm", identity)[0], 200)
+        LIB.test_ota_enable(0)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 200)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+
     def test_discovery_health_status_and_screen(self):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
@@ -59,7 +79,7 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["zero_minute_steps"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.2.0")
+        self.assertEqual(data["firmware_version"], "1.3.0")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]

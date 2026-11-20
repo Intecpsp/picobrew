@@ -25,6 +25,7 @@ type Settings struct {
 // Candidate describes a report. The catalog does not assert that the image
 // and browser payloads have been downloaded or validated.
 type Candidate struct {
+	HubOTAProtocol  int    `json:"hub_ota_protocol,omitempty"`
 	Model           string `json:"model"`
 	ModelFamily     string `json:"model_family"`
 	DisplayVariant  string `json:"display_variant,omitempty"`
@@ -57,17 +58,28 @@ type Package struct {
 	Provenance   Provenance `json:"provenance"`
 }
 
+type InstallReceipt struct {
+	Stage     string    `json:"stage,omitempty"`
+	UID       string    `json:"device_uid"`
+	Model     string    `json:"model"`
+	PackageID string    `json:"package_id"`
+	Started   time.Time `json:"started"`
+	State     string    `json:"state"`
+	Message   string    `json:"message"`
+}
 type MachineFirmware struct {
-	DeviceID                     string    `json:"device_id"`
-	Model                        string    `json:"model"`
-	CurrentVersion               string    `json:"current_version"`
-	DisplayVariant               string    `json:"display_variant,omitempty"`
-	VerifiedDisplayVariant       string    `json:"verified_display_variant,omitempty"`
-	DeviceUID                    string    `json:"device_uid,omitempty"`
-	HardwareVerificationRequired bool      `json:"hardware_verification_required,omitempty"`
-	InstallSupported             bool      `json:"install_supported"`
-	Reason                       string    `json:"reason"`
-	Packages                     []Package `json:"packages"`
+	RetryPackageID               string          `json:"retry_package_id,omitempty"`
+	LastInstall                  *InstallReceipt `json:"last_install,omitempty"`
+	DeviceID                     string          `json:"device_id"`
+	Model                        string          `json:"model"`
+	CurrentVersion               string          `json:"current_version"`
+	DisplayVariant               string          `json:"display_variant,omitempty"`
+	VerifiedDisplayVariant       string          `json:"verified_display_variant,omitempty"`
+	DeviceUID                    string          `json:"device_uid,omitempty"`
+	HardwareVerificationRequired bool            `json:"hardware_verification_required,omitempty"`
+	InstallSupported             bool            `json:"install_supported"`
+	Reason                       string          `json:"reason"`
+	Packages                     []Package       `json:"packages"`
 }
 
 // Error contains a bounded, user-facing diagnostic, without a remote response

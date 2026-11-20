@@ -147,6 +147,9 @@ def main():
             'optional_telemetry_frame': {'maximum_payload_bytes': 1152, 'maximum_live_allocations': 1},
             'scope': 'Lazy buffers reused within the retained 32768-byte native heap; allocator overhead and other runtime allocations are additional. Allocation failure is reported without changing brewing controls.'}
         manifest=ROOT/'firmware/web/manifest.json'
+        report['hub_ota_protocol']=1
+        report['app_sources_sha256'].update({name:digest(ROOT/name) for name in
+            ('recovery/recovery/sha256.c','recovery/recovery/sha256.h')})
         report['browser_manifest_sha256']=digest(manifest)
         report['browser_storage']=json.loads(manifest.read_text(encoding='utf-8'))
         report['web_sources_sha256']={f.relative_to(ROOT).as_posix():digest(f)

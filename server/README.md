@@ -156,8 +156,7 @@ be downloaded or removed, and each physical machine's Firmware view shows its
 current version and packages declared for its model.
 
 Package management requires no compiler, Git checkout, or Node runtime on the
-Hub. Network installation still requires qualified recovery support and the
-initial USB setup; saving a package does not flash a machine. See
+Hub. On an idle Pico S or Pro with OTA-capable firmware and provisioned recovery, choose **Update firmware** in the machine’s Firmware view. See
 [Firmware packages](docs/firmware-packages.md) for the package format, build
 command, source configuration, storage, and API.
 

@@ -1,5 +1,6 @@
 /* Native monochrome renderer reconstructed from the original OLED/GFX paths. */
 #include "ui_internal.h"
+#include <string.h>
 
 void pico_graphics_pixel(PicoDisplay *d, int x, int y, int color)
 {
@@ -29,7 +30,7 @@ void pico_graphics_pixel(PicoDisplay *d, int x, int y, int color)
     else
         *cell &= (uint8_t)~mask;
 }
-void pico_graphics_bitmap(PicoDisplay *d, int16_t x, int16_t y, const uint8_t *pixels,
+static void draw_bitmap(PicoDisplay *d, int16_t x, int16_t y, const uint8_t *pixels,
                           int16_t width, int16_t height, uint16_t color)
 {
     int stride = (width + 7) / 8;
@@ -37,6 +38,36 @@ void pico_graphics_bitmap(PicoDisplay *d, int16_t x, int16_t y, const uint8_t *p
         for (int column = 0; column < width; column++)
             if (pixels[row * stride + column / 8] & (0x80u >> (column & 7)))
                 pico_graphics_pixel(d, (int16_t)(x + column), (int16_t)(y + row), color);
+}
+void pico_graphics_bitmap(PicoDisplay *d, int16_t x, int16_t y, const uint8_t *pixels,
+                          int16_t width, int16_t height, uint16_t color)
+{
+#if PICO_STANDALONE
+    if ((uintptr_t)pixels >= (uintptr_t)pico_packed_pixels &&
+        (uintptr_t)pixels < (uintptr_t)(pico_packed_pixels + sizeof pico_packed_pixels)) {
+        uint8_t raw[480];
+        size_t size = pixels[0] | ((size_t)pixels[1] << 8), offset = 0;
+        if (size > sizeof raw || width <= 0 || height <= 0 ||
+            (size_t)((width + 7) / 8) * height > size) return;
+        pixels += 2;
+        while (offset < size) {
+            unsigned tag = *pixels++;
+            size_t run = tag < 128 ? tag + 1 : tag - 128 + 3;
+            if (run > size - offset) return;
+            if (tag < 128) {
+                memcpy(raw + offset, pixels, run);
+                pixels += run; offset += run;
+            } else {
+                size_t distance = 1 + *pixels++;
+                if (distance > offset) return;
+                while (run--) { raw[offset] = raw[offset - distance]; ++offset; }
+            }
+        }
+        draw_bitmap(d, x, y, raw, width, height, color);
+        return;
+    }
+#endif
+    draw_bitmap(d, x, y, pixels, width, height, color);
 }
 void pico_graphics_fill_rectangle(PicoDisplay *d, int16_t x, int16_t y, int16_t width,
                                   int16_t height, uint16_t color)

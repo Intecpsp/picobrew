@@ -93,6 +93,9 @@ jobs:
         run: python -m pip install -r requirements-test.txt
       - name: Bootstrap pinned compiler and Energia SDK
         run: make bootstrap PYTHON=python
+      - name: Rebuild the Hub recovery image
+        if: runner.os == 'Linux'
+        run: python tools/build_hub_recovery.py --check
       - name: Build both product images and verify their packages and native storage
         shell: bash
         run: |
