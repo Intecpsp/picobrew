@@ -1,0 +1,157 @@
+package device
+
+import (
+	"bufio"
+	"bytes"
+	"context"
+	"encoding/binary"
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
+	"net/http/httputil"
+	"net/url"
+	"os"
+	"os/exec"
+	"strings"
+	"sync"
+	"testing"
+	"time"
+
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
+)
+
+// The component's standalone tests run without a compiler or firmware checkout.
+// CI also runs this test against the actual recovery dispatcher and flash model.
+func TestHubOTAWithNativeRecovery(t *testing.T) {
+	harness := os.Getenv("PICO_HUB_RECOVERY_TEST")
+	if harness == "" {
+		t.Skip("set PICO_HUB_RECOVERY_TEST to the recovery HTTP host fixture")
+	}
+	python := os.Getenv("PYTHON")
+	if python == "" {
+		python = "python3"
+	}
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
+	defer cancel()
+	command := exec.CommandContext(ctx, python, harness)
+	command.Stderr = os.Stderr
+	stdout, err := command.StdoutPipe()
+	if err != nil {
+		t.Fatal(err)
+	}
+	if err = command.Start(); err != nil {
+		t.Fatal(err)
+	}
+	defer func() { cancel(); command.Wait() }()
+	var port int
+	if _, err = fmt.Fscan(bufio.NewReader(stdout), &port); err != nil {
+		t.Fatal(err)
+	}
+	endpoint, _ := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
+	proxy := httputil.NewSingleHostReverseProxy(endpoint)
+	uid := "0123456789abcdef0123456789abcdef"
+	image := make([]byte, 2700)
+	binary.LittleEndian.PutUint32(image, 0x2003f000)
+	binary.LittleEndian.PutUint32(image[4:], 0x20004009)
+	pkg := firmware.UpdatePayload{Candidate: firmware.Candidate{Model: "pico-s", FirmwareVersion: "1.3.0", BinaryBytes: len(image), BinarySHA256: firmware.Digest(image)}}
+	pkg.Files[0] = image
+	for i := 1; i < len(pkg.Files); i++ {
+		pkg.Files[i] = append([]byte{0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 0, 3}, bytes.Repeat([]byte{byte(i)}, 1400)...)
+	}
+	old := otaIdentity{UID: uid, Model: pkg.Model, Digest: strings.Repeat("f", 64)}
+	target := otaIdentity{UID: uid, Model: pkg.Model, Digest: pkg.BinarySHA256}
+	key := strings.Repeat("a", 64)
+	var mu sync.Mutex
+	state := "normal"
+	interrupt := true
+	entered, confirmed, imageUploads := 0, 0, 0
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		defer mu.Unlock()
+		if r.Header.Get("Authorization") != "Bearer "+key {
+			w.WriteHeader(401)
+			return
+		}
+		if state == "recovery" {
+			if !strings.HasPrefix(r.URL.Path, "/api/v1/recovery") {
+				w.WriteHeader(404)
+				return
+			}
+			reply := httptest.NewRecorder()
+			proxy.ServeHTTP(reply, r)
+			if r.URL.Path == "/api/v1/recovery/finish" && reply.Code == 200 {
+				var ack recoveryAck
+				json.Unmarshal(reply.Body.Bytes(), &ack)
+				if ack.Mask == 1 {
+					imageUploads++
+				}
+				if interrupt && ack.Mask == 1 {
+					interrupt = false
+					w.WriteHeader(503)
+					return
+				}
+			}
+			if r.URL.Path == "/api/v1/recovery/select" && reply.Code == 200 {
+				state = "trial"
+			}
+			w.WriteHeader(reply.Code)
+			w.Write(reply.Body.Bytes())
+			return
+		}
+		value := old
+		if state != "normal" {
+			value = target
+		}
+		switch r.URL.Path {
+		case "/api/v1/ota":
+			json.NewEncoder(w).Encode(otaState{otaIdentity: value, Size: len(image), OK: true, Trial: state == "trial"})
+		case "/api/v1/ota/enter", "/api/v1/ota/confirm":
+			var claimed otaIdentity
+			if r.Method != "POST" || json.NewDecoder(r.Body).Decode(&claimed) != nil || value != claimed {
+				w.WriteHeader(409)
+				return
+			}
+			if r.URL.Path == "/api/v1/ota/enter" && state == "normal" {
+				state = "recovery"
+				entered++
+			} else if r.URL.Path == "/api/v1/ota/confirm" && state == "trial" {
+				state = "confirmed"
+				confirmed++
+			} else {
+				w.WriteHeader(409)
+				return
+			}
+			json.NewEncoder(w).Encode(otaState{otaIdentity: value, Size: len(image), OK: true})
+		case "/api/v1/status":
+			json.NewEncoder(w).Encode(map[string]any{"device_uid": uid, "model": pkg.Model, "ready": true})
+		case "/api/v1":
+			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "firmware_version": pkg.FirmwareVersion, "hub_ota_v1": true})
+		default:
+			w.WriteHeader(404)
+		}
+	}))
+	defer server.Close()
+	p, err := newPico(server.URL, key, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkpoint := func(string) error { return nil }
+	if err = p.InstallFirmware(ctx, "other-device", pkg, "", checkpoint); err == nil {
+		t.Fatal("changed device identity accepted")
+	}
+	if err = p.InstallFirmware(ctx, uid, pkg, "", checkpoint); err == nil {
+		t.Fatal("lost acknowledgement reported success")
+	}
+	if err = p.InstallFirmware(ctx, uid, pkg, "transferring", checkpoint); err != nil {
+		t.Fatal(err)
+	}
+	if err = p.InstallFirmware(ctx, uid, pkg, "confirming", checkpoint); err != nil {
+		t.Fatal(err)
+	}
+	mu.Lock()
+	defer mu.Unlock()
+	if state != "confirmed" || entered != 1 || confirmed != 1 || imageUploads != 1 {
+		t.Fatalf("state=%s entries=%d confirms=%d image writes=%d", state, entered, confirmed, imageUploads)
+	}
+}

@@ -58,6 +58,7 @@ var endpoints = []endpoint{
 	{"GET", "/firmware/packages/{packageID}", "Read saved package metadata and acquisition provenance", nil},
 	{"DELETE", "/firmware/packages/{packageID}", "Remove a firmware package from the Hub", nil},
 	{"GET", "/firmware/packages/{packageID}/download", "Download the package after verifying its cached archive hash", nil},
+	{"POST", "/devices/{id}/firmware/install", "Install a validated OTA package on an idle, recovery-equipped Pico S/Pro", map[string]any{"device_uid": "authenticated-device-uid", "package_id": strings.Repeat("a", 64), "confirm": true}},
 	{"GET", "/devices/{id}/firmware", "Read model-scoped firmware packages and installation availability", nil},
 	{"PUT", "/devices/{id}/firmware/hardware", "Record an independently verified C display controller for this pinned appliance", map[string]any{"device_uid": "authenticated-device-uid", "display_variant": "ssd1325"}},
 }
@@ -303,11 +304,14 @@ func addFirmwareSchemas(values schemaMap) {
 	}
 	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
 	values["FirmwareSettingsInput"] = schemaObject(sourceProperties, "repository")
+	values["FirmwareInstallInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "package_id": hash, "confirm": schemaMap{"type": "boolean", "enum": []bool{true}}}, "device_uid", "package_id", "confirm")
+	values["FirmwareInstallReceipt"] = schemaObject(schemaMap{"device_uid": stringSchema(), "model": stringSchema(), "package_id": hash, "started": stringSchema(), "state": stringSchema(), "message": stringSchema()}, "device_uid", "model", "package_id", "started", "state", "message")
 	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model, "display_variant": displayVariant}, "repository", "commit", "model")
 	values["FirmwareHardwareInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant}, "device_uid", "display_variant")
 	values["FirmwareHardware"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant, "verified_at": schemaMap{"type": "string", "format": "date-time"}}, "device_uid", "display_variant", "verified_at")
 	values["FirmwareUploadInput"] = schemaObject(schemaMap{"file": schemaMap{"type": "string", "format": "binary", "description": "Complete firmware ZIP, at most 2 MiB, with the report, model image, browser manifest and five matching gzip assets."}}, "file")
 	candidate := schemaMap{
+		"hub_ota_protocol": schemaMap{"type": "integer"},
 		"model":            model,
 		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro", "pico-c"}},
 		"display_variant":  displayVariant,
@@ -341,7 +345,9 @@ func addFirmwareSchemas(values schemaMap) {
 		"verified_display_variant":       displayVariant,
 		"device_uid":                     stringSchema(),
 		"hardware_verification_required": boolSchema(),
-		"install_supported":              schemaMap{"type": "boolean", "enum": []bool{false}, "description": "Network installation is not implemented in this Hub version. Package acquisition never changes machine firmware."},
+		"install_supported":              boolSchema(),
+		"retry_package_id":               hash,
+		"last_install":                   schemaRef("FirmwareInstallReceipt"),
 		"reason":                         stringSchema(),
 		"packages":                       schemaArray(schemaRef("FirmwarePackage")),
 	}, "device_id", "model", "current_version", "install_supported", "reason", "packages")
@@ -447,6 +453,8 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "FirmwareSettingsInput"
 	case "/firmware/github/import":
 		name = "FirmwareImportInput"
+	case "/devices/{id}/firmware/install":
+		name = "FirmwareInstallInput"
 	case "/devices/{id}/firmware/hardware":
 		name = "FirmwareHardwareInput"
 	}
@@ -592,6 +600,8 @@ func successResponses(e endpoint) schemaMap {
 		} else {
 			schema = schemaRef("FirmwarePackage")
 		}
+	case "/devices/{id}/firmware/install":
+		code, schema = "202", schemaRef("FirmwareInstallReceipt")
 	case "/devices/{id}/firmware":
 		schema = schemaRef("MachineFirmware")
 	case "/devices/{id}/firmware/hardware":

@@ -90,6 +90,7 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	HubOTAV1              bool                     `json:"hub_ota_v1,omitempty"`
 	APIVersion            int                      `json:"api_version"`
 	FirmwareVersion       string                   `json:"firmware_version"`
 	Model                 string                   `json:"model,omitempty"`

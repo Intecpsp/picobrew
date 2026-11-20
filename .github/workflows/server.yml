@@ -46,6 +46,11 @@ jobs:
           go vet ./...
           mkdir -p bin
           go build -trimpath -o bin/ ./cmd/picobrew-hub
+      - name: Exercise Hub updates against native S/Pro recovery
+        if: runner.os == 'Linux'
+        env:
+          PICO_HUB_RECOVERY_TEST: ${{ github.workspace }}/firmware/pico-s-pro/modified/tests/hub_recovery_host.py
+        run: go test ./internal/device -run TestHubOTAWithNativeRecovery -count=1
       - name: Check backend races
         if: runner.os != 'Windows'
         env:

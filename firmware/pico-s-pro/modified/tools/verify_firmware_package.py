@@ -35,7 +35,7 @@ def verify(model=DEFAULT_MODEL):
             raise ValueError("The committed standalone image is missing")
     for key in (
         "profile", "model", "model_family", "firmware_version", "image_layout", "app_sources_sha256",
-        "compiled_sources", "web_sources_sha256", "browser_storage",
+        "compiled_sources", "web_sources_sha256", "browser_storage", "hub_ota_protocol",
     ):
         if built[key] != packaged[key]:
             raise ValueError(f"Rebuilt {key} differs from the committed package")

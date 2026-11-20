@@ -23,6 +23,11 @@ typedef struct PicoLocalApi {
     uint8_t event_head;
     uint8_t event_count;
     bool auth_configured;
+    /* Returns the image2 digest and size only for the pinned recovery and a
+     * recognized boot record. commit preserves and verifies the boot record. */
+    bool (*ota_inspect)(bool *trial, char digest[65], uint32_t *size);
+    bool (*ota_commit)(bool confirm);
+    bool ota_restart;
 } PicoLocalApi;
 
 /* One appliance is bound; initialization does not perform I/O or enable an

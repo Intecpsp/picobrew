@@ -190,7 +190,7 @@ static int health(PicoLocalApi *api, Writer *w)
            (unsigned long)n->platform->millis(n->platform_context));
     return 200;
 }
-static int discovery(Writer *w)
+static int discovery(PicoLocalApi *api, Writer *w)
 {
     text(w, "{"); identity(w);
     text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
@@ -203,6 +203,7 @@ static int discovery(Writer *w)
             "\"history_capacity_records\":4224,\"history_capacity_sessions\":8,"
             "\"telemetry_forwarding\":true,"
             "\"recipe_labels\":\"printable ASCII\",");
+    format(w, "\"hub_ota_v1\":%s,", api->ota_inspect ? "true" : "false");
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
     return 200;
 }
@@ -624,6 +625,51 @@ static int telemetry(Writer *w, const char *method, const char *body, size_t len
 bad:
     return error(w, 400, "invalid_telemetry", "Use enabled, an IPv4 address or hostname, and port 1-65535");
 }
+static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *path,
+               const char *body, size_t length)
+{
+    bool inspect = !strcmp(path, "/api/v1/ota");
+    bool confirm = !strcmp(path, "/api/v1/ota/confirm");
+    if (!inspect && !confirm && strcmp(path, "/api/v1/ota/enter"))
+        return error(w, 404, "not_found", "Unknown firmware operation");
+    if (strcmp(method, inspect ? "GET" : "POST"))
+        return error(w, 405, "method_not_allowed", "Invalid firmware operation method");
+    if (!api->ota_inspect || !api->ota_commit || api->ota_restart ||
+        pico_local_control_busy() || pico_local_control_stopped())
+        return error(w, 409, "ota_unavailable", "Firmware updates require an idle brewer");
+    char expected[65] = {0};
+    if (!inspect) {
+        Json j = {body, body + length, true};
+        char field[32], uid[sizeof api->application->state.device_uid], model[16];
+        unsigned seen = 0;
+        if (!token(&j, '{')) return error(w, 400, "invalid_request", "Missing update identity");
+        do {
+            if (!key(&j, field)) break;
+            if (!strcmp(field, "device_uid") && !(seen & 1) && string(&j, uid, sizeof uid)) seen |= 1;
+            else if (!strcmp(field, "model") && !(seen & 2) && string(&j, model, sizeof model)) seen |= 2;
+            else if (!strcmp(field, "sha256") && !(seen & 4) && string(&j, expected, sizeof expected)) seen |= 4;
+            else return error(w, 400, "invalid_request", "Invalid update identity");
+        } while (comma_or_end(&j, '}'));
+        if (seen != 7 || !token(&j, '}') || !done(&j) || !*uid ||
+            strcmp(uid, api->application->state.device_uid) || strcmp(model, PICO_MODEL_ID))
+            return error(w, 409, "identity_mismatch", "Update identity does not match this brewer");
+    }
+    bool trial = false;
+    char digest[65];
+    uint32_t size = 0;
+    if (!api->ota_inspect(&trial, digest, &size))
+        return error(w, 409, "recovery_unavailable", "Install the matching recovery image and verify the boot layout over USB");
+    if (!inspect) {
+        if (trial != confirm || strcmp(expected, digest) || !api->ota_commit(confirm))
+            return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
+        api->ota_restart = !confirm;
+    }
+    text(w, "{\"device_uid\":"); quote(w, api->application->state.device_uid);
+    format(w, ",\"model\":\"%s\",\"sha256\":\"%s\",\"size\":%lu,\"trial\":%s,\"ok\":true}",
+           PICO_MODEL_ID, digest, (unsigned long)size, trial && !confirm ? "true" : "false");
+    return 200;
+}
+
 int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *path,
                           const char *body, size_t length, char *response, size_t capacity,
                           size_t *response_length)
@@ -642,10 +688,11 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
     bool get = !strcmp(method, "GET");
     if (!strcmp(path, "/api/v1/health")) result = get ? health(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for health");
-    else if (!strcmp(path, "/api/v1")) result = get ? discovery(&w) :
+    else if (!strcmp(path, "/api/v1")) result = get ? discovery(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for discovery");
     else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for status");
+    else if (!strncmp(path, "/api/v1/ota", 11)) result = ota(api, &w, method, path, body, length);
     else if (!strcmp(path, "/api/v1/display")) result = get ? display(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for display");
     else if (!strcmp(path, "/api/v1/events")) result = get ? events(api, &w) :

@@ -129,6 +129,7 @@ class FakeInstallUSB(FakePicoUSB):
     """
     def __init__(self, files=None, fault=None, flash_size=1024 * 1024, logical_missing=(), fault_target=None):
         super().__init__(HELPER, flash_size=flash_size)
+        self.writable_names = (APP_NAME, KEY_NAME, *WEB_NAMES)
         self.files = dict(fixture_images() if files is None else files)
         self.original_files = dict(self.files)
         self.logical_missing = set(logical_missing)
@@ -210,7 +211,7 @@ class FakeInstallUSB(FakePicoUSB):
             if flags == 0:
                 assert name in self.files
             else:
-                assert name in (APP_NAME, KEY_NAME, *WEB_NAMES), "Protected file write reached device"
+                assert name in self.writable_names, "Protected file write reached device"
                 if flags == 0x1000:
                     assert name in self.allocated_names, "Existing-write attempted without an allocation"
                 else:
@@ -254,7 +255,7 @@ class FakeInstallUSB(FakePicoUSB):
             self.rx.extend(ACK)
             self._reply(response, fault=fault)
         elif opcode == 0x24:
-            assert len(command) >= 6 and self.active_file in (APP_NAME, KEY_NAME, *WEB_NAMES)
+            assert len(command) >= 6 and self.active_file in self.writable_names
             assert self.active_mode == 0x1000 or (self.active_mode & ~0xFF) == 0x3000
             offset = struct.unpack(">I", command[1:5])[0]
             payload = command[5:]
@@ -367,7 +368,7 @@ class InstallWireTests(unittest.TestCase):
 
     def cli(self, mode, output):
         argv = [mode, "--backup", str(self.backup_path), "--output", str(output)]
-        if mode in ("provision-key", "install"):
+        if mode in ("provision-key", "install", "install-recovery"):
             argv += ["--key-file", str(self.key_path)]
         if mode == "install":
             argv += ["--firmware", str(self.candidate_path)]
@@ -387,7 +388,7 @@ class InstallWireTests(unittest.TestCase):
              contextlib.redirect_stdout(transcript), contextlib.redirect_stderr(transcript):
             result = installer.main(self.cli(mode, output))
         manifest = json.loads(output.read_text()) if output.exists() else None
-        self.assert_protected_unchanged(fake)
+        self.assert_protected_unchanged(fake, recovery=mode=="install-recovery")
         self.assert_secrets_absent(transcript.getvalue())
         for path in self.folder.iterdir():
             if path.name.startswith("operation-") and path.is_file():
@@ -400,8 +401,23 @@ class InstallWireTests(unittest.TestCase):
                                    hashlib.sha256(secret).hexdigest(), hashlib.sha256(secret.strip()).hexdigest()):
                 self.assertNotIn(representation, text)
 
-    def assert_protected_unchanged(self, fake):
+    def test_independent_recovery_bootstrap_keeps_application_selected(self):
+        files = dict(self.files)
+        files[APP_NAME] = self.candidate
+        files[KEY_NAME] = KEY
+        fake = FakeInstallUSB(files=files)
+        fake.writable_names = (installer.RECOVERY_NAME,)
+        result, report, _, _ = self.run_main(fake, "install-recovery")
+        self.assertEqual(result, 0, report)
+        self.assertEqual(fake.files[installer.RECOVERY_NAME], installer.RECOVERY_FILE.read_bytes())
+        self.assertEqual(fake.files[APP_NAME], self.candidate)
+        self.assertEqual(fake.files[KEY_NAME], KEY)
+        self.assertEqual(report["operation_verified"], True)
+
+    def assert_protected_unchanged(self, fake, recovery=False):
         for name in PROTECTED:
+            if recovery and name == installer.RECOVERY_NAME:
+                continue
             self.assertEqual(fake.files.get(name), fake.original_files.get(name), name)
         for command in fake.trace:
             self.assertNotIn(command[0], (0x28, 0x2e, 0x30), command.hex())
@@ -411,7 +427,7 @@ class InstallWireTests(unittest.TestCase):
                 flags, token = struct.unpack(">II", command[1:9])
                 self.assertEqual(token, 0)
                 if flags != 0:
-                    self.assertIn(command[9:-2].decode(), (KEY_NAME, APP_NAME, *WEB_NAMES))
+                    self.assertIn(command[9:-2].decode(), (installer.RECOVERY_NAME,) if recovery else (KEY_NAME, APP_NAME, *WEB_NAMES))
 
     def assert_protected_verified_before_mutations(self, fake, include_main=True):
         required = set(PROTECTED)

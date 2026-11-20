@@ -8,7 +8,7 @@ The [machine overview](../README.md) links the separate OEM image and unchanged
 The Pico S/Pro implementation provides a **standalone firmware profile**
 with an on-device REST API, browser console, recipe collection, settings,
 local session identifiers, retained brew histories, and optional telemetry
-forwarding. Firmware **1.2.0** keeps the REST contract at `/api/v1`.
+forwarding. Firmware **1.3.0** keeps the REST contract at `/api/v1`.
 It boots without a PicoBrew account, cloud recipe
 server, registration request or firmware-update service. The browser assets
 are compressed files on the Pico's serial flash; no companion server or CDN is required.
@@ -16,7 +16,7 @@ are compressed files on the Pico's serial flash; no companion server or CDN is r
 The [1.1.0 release](docs/release-1.1.0.md) seeds the local PicoPak catalogue,
 preserves zero-minute heating steps, adds non-destructive starter restoration,
 and provides explicit checkpoint recovery. It includes the earlier Settings
-layout patch. The current [1.2.0 release](docs/release-1.2.0.md) adds separate
+layout patch. Version 1.3.0 adds [Hub OTA updates with separate recovery](docs/hub-ota.md). The [1.2.0 release](docs/release-1.2.0.md) adds separate
 Pico S and Pico Pro builds, explicit device identity, and Hub-managed telemetry.
 The new model-specific images have not been physically installed or brewed with.
 The [release notes](docs/release-1.0.0.md)

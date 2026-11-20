@@ -528,7 +528,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 	}
 	out := firmware.MachineFirmware{
 		Packages: []firmware.Package{},
-		Reason:   "Network installation is not available yet. It requires an initial USB recovery setup that is still being developed.",
+		Reason:   "Network installation requires Hub OTA firmware and provisioned recovery on this brewer.",
 	}
 	d.mu.RLock()
 	out.DeviceID = d.view.ID
@@ -542,9 +542,37 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			out.Model = d.view.Capabilities.Model
 			out.DisplayVariant = d.view.Capabilities.DisplayVariant
 			out.DeviceUID = d.view.Status.DeviceUID
+			out.InstallSupported = !s.cfg.Demo && otaEligible(d.view)
+			if out.InstallSupported {
+				out.Reason = "The Hub can install a matching OTA package after the brewer verifies its recovery image and boot layout."
+			}
 		}
 	}
+	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && !d.identityMismatch
+	active := d.updatingFirmware
 	d.mu.RUnlock()
+	var receipt firmware.InstallReceipt
+	if _, err := s.db.Get("firmware-install", out.DeviceID, &receipt); err == nil {
+		if receipt.State == "running" && !active {
+			receipt.State = "interrupted"
+			receipt.Message = "Hub restarted before it recorded the result. Check the brewer before continuing."
+		}
+		out.LastInstall = &receipt
+		if !active && retryEnabled && !out.InstallSupported && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID) && receipt.State != "installed" && !s.cfg.Demo {
+			out.Model = receipt.Model
+			out.DeviceUID = receipt.UID
+			out.InstallSupported = true
+			out.RetryPackageID = receipt.PackageID
+			out.Reason = "Retry the same package to reconnect to recovery and verify each file again."
+		}
+	} else if !errors.Is(err, store.ErrNotFound) {
+		s.storeError(w, err)
+		return
+	}
+	if active {
+		out.InstallSupported = false
+		out.Reason = "Firmware update in progress."
+	}
 	if out.Model == "pico-c" {
 		verified, err := s.verifiedFirmwareDisplay(out.DeviceID, out.DeviceUID)
 		if err != nil {

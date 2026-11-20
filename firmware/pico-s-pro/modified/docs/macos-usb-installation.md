@@ -5,7 +5,7 @@ installation and stock restoration operations. It is restricted to one pinned
 Pico Pro installation profile. Separate Pico S firmware builds do not expand
 that profile or authorize writes to another appliance.
 
-The current 1.2.0 packages have not been physically installed or brewed with.
+The current 1.3.0 packages have not been physically installed or brewed with.
 Stock restoration and interrupted-write recovery remain physically unverified.
 Successful readback alone does not establish safe boot or output behavior.
 
@@ -13,9 +13,10 @@ Successful readback alone does not establish safe boot or output behavior.
 | --- | --- | --- |
 | `provision-key` | `/local/api.key` | Create/read back the required key, then rewrite/read back the same key using existing-file mode |
 | `install` | `/local/api.key`, the five `/local/web/*.gz` files, `/sys/mcuimg2.bin` | Verify the key, install/read back the pinned browser bundle, then install/read back the pinned application |
+| `install-recovery` | `/sys/mcuimg1.bin` | Install and read back the Hub recovery application on the pinned profile after main installation. See [OTA setup](hub-ota.md). |
 | `restore` | `/sys/mcuimg2.bin` | Restore and read back the exact stock application extracted from the verified original backup |
 
-The writer never writes the secondary bootloader, recovery image, boot
+The writer never writes the secondary bootloader, boot
 record, service pack or Wi-Fi configuration. It does not format flash,
 delete files, move allocations, perform raw flash writes, or automatically
 start the application. A saved preflight report cannot bypass its current
@@ -140,8 +141,8 @@ command needs a fresh programming session using the procedure above.
 
 ## Stage 2: install the pinned standalone candidate
 
-The commands below install the **1.2.0 Pico Pro update**. Approved earlier
-standalone releases, including 1.0.0 and 1.1.0, are separately pinned as upgrade
+The commands below install the **1.3.0 Pico Pro update**. Approved earlier
+standalone releases, including 1.0.0, 1.1.0 and 1.2.0, are separately pinned as upgrade
 sources. Their bytes must match an allowed source exactly.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after
@@ -198,8 +199,8 @@ The pinned installation profile requires an existing application allocation
 of 48 nonmirrored 4 KiB blocks. The writer
 additionally caps application payloads at 188,416 bytes, conservatively below
 the capacity derived from that allocation and the SDK's size-rounding rules.
-This is a derived guard, not a measured `AllocatedLen` value. The 165,344-byte
-1.2.0 Pico Pro image passes it; no application-file recreation or relocation is used.
+This is a derived guard, not a measured `AllocatedLen` value. The packaged
+1.3.0 Pico Pro image passes it; no application-file recreation or relocation is used.
 Every write requires an acknowledged command and successful loader status;
 the tool does not retry an ambiguous write chunk.
 
@@ -241,7 +242,7 @@ startup, network access and physical output behavior remain separate
 checks in [hardware validation](hardware-validation.md).
 
 The expected code path shows the Pico splash, attempts the saved Wi-Fi
-connection, and reaches the regular menu. Standalone 1.2.0 shows `v1.2.0`,
+connection, and reaches the regular menu. Standalone 1.3.0 shows `v1.3.0`,
 using the shared version in `include/picobrew/version.h`. If an old-session
 resume prompt appears, choose Abort for this initial observation.
 
@@ -254,8 +255,8 @@ fallback access point. From a browser on the same network, open:
 http://<pico-ip>/api/v1/health
 ```
 
-After initialization, the 1.2.0 read-only public endpoint should include
-`"firmware_version":"1.2.0"`, `"model":"pico-pro"`, `"api_version":1`,
+After initialization, the 1.3.0 read-only public endpoint should include
+`"firmware_version":"1.3.0"`, `"model":"pico-pro"`, `"api_version":1`,
 `"mode":"standalone"`,
 `"ready":true`, and `"auth_configured":true`. The response's `uptime_ms`
 varies. This is the running-firmware identity check; it requires no API key.
@@ -275,7 +276,7 @@ target appliance still needs physical verification for the installed release.
 
 After changing networks, wait for the connection attempt to complete,
 check **Settings > Network > Status**, and request `/api/v1/health` at the
-new address. Confirm `"firmware_version":"1.2.0"` after this upgrade and compare the address
+new address. Confirm `"firmware_version":"1.3.0"` after this upgrade and compare the address
 with the router's client information. The displayed saved SSID alone does
 not establish that the Pico joined that network or acquired a valid lease.
 

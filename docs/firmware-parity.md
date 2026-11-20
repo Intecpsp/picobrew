@@ -82,6 +82,6 @@ complete device flash layouts are also unverified. Those gaps require original
 device evidence; another family's image cannot supply it. Each current image
 still needs its corresponding physical installation and operating checks.
 
-The separate S/Pro web recovery candidate remains experimental, and a qualified
+S/Pro 1.3.0 supports [Hub OTA through separate recovery](../firmware/pico-s-pro/modified/docs/hub-ota.md). Hardware qualification remains pending, and a qualified
 OTA installation/recovery path is not claimed for the C, Z or accessory
 reference images. These installation limits remain visible in the API and Hub.

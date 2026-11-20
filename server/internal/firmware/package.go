@@ -53,6 +53,7 @@ type loadSegment struct {
 }
 
 type report struct {
+	HubOTAProtocol  int    `json:"hub_ota_protocol"`
 	Profile         string `json:"profile"`
 	Model           string `json:"model"`
 	ModelFamily     string `json:"model_family"`
@@ -320,7 +321,7 @@ func parseReport(data []byte) (report, error) {
 }
 
 func candidate(r report) Candidate {
-	return Candidate{Model: r.Model, ModelFamily: r.ModelFamily, DisplayVariant: r.DisplayVariant, FirmwareVersion: r.FirmwareVersion,
+	return Candidate{HubOTAProtocol: r.HubOTAProtocol, Model: r.Model, ModelFamily: r.ModelFamily, DisplayVariant: r.DisplayVariant, FirmwareVersion: r.FirmwareVersion,
 		BinarySHA256: r.BinarySHA256, BinaryBytes: r.ImageLayout.BinaryBytes}
 }
 
@@ -377,14 +378,13 @@ func fileLimit(name string) int {
 
 // ValidateArchive reads all eight files with independent limits and checks
 // their complete hash chain. No archive path is extracted to the filesystem.
-func ValidateArchive(data []byte) (Candidate, error) {
-	var empty Candidate
+func archiveFiles(data []byte) (map[string][]byte, error) {
 	if len(data) == 0 || len(data) > MaxArchiveBytes {
-		return empty, invalid("Upload a firmware ZIP no larger than 2 MiB")
+		return nil, invalid("Upload a firmware ZIP no larger than 2 MiB")
 	}
 	z, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil || len(z.File) != 8 {
-		return empty, invalid("The firmware ZIP must contain exactly the report, image, browser manifest and five browser files")
+		return nil, invalid("The firmware ZIP must contain exactly the report, image, browser manifest and five browser files")
 	}
 	files := make(map[string][]byte, 8)
 	total := uint64(0)
@@ -395,20 +395,33 @@ func ValidateArchive(data []byte) (Candidate, error) {
 			(f.Method != zip.Store && f.Method != zip.Deflate) ||
 			f.UncompressedSize64 == 0 || f.UncompressedSize64 > uint64(limit) ||
 			f.UncompressedSize64 > uint64(MaxExpandedBytes)-total {
-			return empty, invalid("The firmware ZIP contains an unsafe, duplicate, unexpected or oversized file")
+			return nil, invalid("The firmware ZIP contains an unsafe, duplicate, unexpected or oversized file")
 		}
 		total += f.UncompressedSize64
 		source, err := f.Open()
 		if err != nil {
-			return empty, invalid("The firmware ZIP could not be read")
+			return nil, invalid("The firmware ZIP could not be read")
 		}
 		payload, readErr := io.ReadAll(io.LimitReader(source, int64(limit)+1))
 		closeErr := source.Close()
 		if readErr != nil || closeErr != nil || len(payload) > limit || uint64(len(payload)) != f.UncompressedSize64 {
-			return empty, invalid("A firmware ZIP entry is truncated, oversized or has an invalid checksum")
+			return nil, invalid("A firmware ZIP entry is truncated, oversized or has an invalid checksum")
 		}
 		files[f.Name] = payload
 	}
+	return files, nil
+}
+
+func ValidateArchive(data []byte) (Candidate, error) {
+	var empty Candidate
+	files, err := archiveFiles(data)
+	if err != nil {
+		return empty, err
+	}
+	return validateFiles(files)
+}
+func validateFiles(files map[string][]byte) (Candidate, error) {
+	var empty Candidate
 	r, err := parseReport(files["firmware-report.json"])
 	if err != nil {
 		return empty, err
@@ -488,4 +501,31 @@ func buildArchive(files map[string][]byte) ([]byte, error) {
 		return nil, invalid("The firmware package exceeds 2 MiB")
 	}
 	return out.Bytes(), nil
+}
+
+// UpdatePayload contains only fixed, validated destinations in the order used by recovery.
+type UpdatePayload struct {
+	Candidate
+	Files [6][]byte
+}
+
+func ReadUpdatePayload(archive []byte) (UpdatePayload, error) {
+	var payload UpdatePayload
+	files, err := archiveFiles(archive)
+	if err != nil {
+		return payload, err
+	}
+	c, err := validateFiles(files)
+	if err != nil {
+		return payload, err
+	}
+	if (c.Model != "pico-s" && c.Model != "pico-pro") || c.HubOTAProtocol != 1 {
+		return payload, invalid("Choose an S/Pro package that supports Hub OTA trial confirmation")
+	}
+	payload.Candidate = c
+	payload.Files[0] = files[c.Model+"-standalone.bin"]
+	for i, f := range webFiles {
+		payload.Files[i+1] = files["web/"+f.source+".gz"]
+	}
+	return payload, nil
 }

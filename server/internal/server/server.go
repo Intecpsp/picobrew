@@ -35,6 +35,8 @@ type Config struct {
 	Logger                    *slog.Logger
 }
 type runtimeDevice struct {
+	updatingFirmware bool // guarded by mu
+
 	mu                 sync.RWMutex
 	statusMu           sync.Mutex
 	view               domain.DeviceView
@@ -250,6 +252,7 @@ func (s *Server) routes() http.Handler {
 			r.Patch("/devices/{id}/settings", s.machineSettings)
 			r.Get("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Put("/devices/{id}/telemetry", s.machineTelemetry)
+			r.Post("/devices/{id}/firmware/install", s.installFirmware)
 			r.Get("/devices/{id}/firmware", s.machineFirmware)
 			r.Put("/devices/{id}/firmware/hardware", s.verifyFirmwareHardware)
 			r.Post("/devices/{id}/sync-history", s.syncHistory)
