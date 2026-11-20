@@ -1,0 +1,80 @@
+{
+  "schema_version": 1,
+  "archived_reference_commit": "ea887709e72c493456583114034cde4aad746099",
+  "method": "Reuse the explicitly typed SDK boundaries for the same CC3200, with C-owned application sources and display selection. Build and hardware validation are separate.",
+  "hardware_tested": false,
+  "files": [
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/firmware_main.cpp",
+      "source_sha256": "2df895a6134b0debb536a5e2b205be5ac038ffabd84680979d21d10a21f26149",
+      "target": "platform/firmware_main.cpp",
+      "target_initial_sha256": "62e00fe63a1fd3de10b2b00243d430cdce25cb3f46dc3469c1efd8654e0932b1"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/energia_cc3200.cpp",
+      "source_sha256": "7d562c490af20b701809465243f350fb53c119957faa52cb1a0646548718d71b",
+      "target": "platform/energia_cc3200.cpp",
+      "target_initial_sha256": "a3ff5b0da47801864339a19bc4fe4443d76b3d7bcba083cbaf1ba049612288bc"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/energia_network.cpp",
+      "source_sha256": "03314d6b11d11b6f3ed7db80eb64c6eb80119cf803f009d71dde6c8607d9d757",
+      "target": "platform/energia_network.cpp",
+      "target_initial_sha256": "afa667dc62416d282591dadc89fe2762282dd0f97fc4268bd8cd7f2e881c9c30"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/pico_http_client.cpp",
+      "source_sha256": "687b69337b839b72443f5dbade71b2fe20951612f620a6a1fa0a057675ba42fe",
+      "target": "platform/pico_http_client.cpp",
+      "target_initial_sha256": "fa04603a4b1e696a5c6e0778c041b9d7e5de896299acaae6447b35e263e03533"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/energia_runtime_compat.c",
+      "source_sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+      "target": "platform/energia_runtime_compat.c",
+      "target_initial_sha256": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/platform/pico_cc3200.ld",
+      "source_sha256": "3f01e3473781da93be166f2ccb5bb2bd16acb5e508901d453ddd9e8a62ab7bc1",
+      "target": "platform/pico_cc3200.ld",
+      "target_initial_sha256": "e2ff7656a1c64265806530bab8b95ec62052a3ced7fadb8bc03be00af42fa0d7"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tools/build_sdk_validation.py",
+      "source_sha256": "3b2a0d467a59f1594794433ce9415cbce7016d7648bf2b2b6c217f6e87931afc",
+      "target": "tools/build_sdk_validation.py",
+      "target_initial_sha256": "bd59c47a2d67f3f6e5cfe4430787933cb22e7a8ca6936c2efd96626d4dcf0581"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tools/build_firmware.py",
+      "source_sha256": "2820512e496997185f65fc4b4699ab912407fe6d713979f1e5e13033f1c9d219",
+      "target": "tools/build_firmware.py",
+      "target_initial_sha256": "b0eea19c064bcf7aef3c2065d372e3abc9671dfde2e7594fcf8b17f970247073"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tools/build.py",
+      "source_sha256": "b3c0bb618b3fddb2227cc223802b93f82feff0f896826a9a569d7db47a18bf89",
+      "target": "tools/build.py",
+      "target_initial_sha256": "6b99b135381d144aecd62aec36a5ec0a11b19bfd19b32a220a29cb834a86e506"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tools/package_update.py",
+      "source_sha256": "5e1573222564989b3292217604bea51e1e991989d3237f7a2d9b36e53b65ca53",
+      "target": "tools/package_update.py",
+      "target_initial_sha256": "5e1573222564989b3292217604bea51e1e991989d3237f7a2d9b36e53b65ca53"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/tools/bootstrap_dependencies.py",
+      "source_sha256": "fd213448a9c3aab4168efd8d093184444e04d2d929ac49f067f6df22531ed728",
+      "target": "tools/bootstrap_dependencies.py",
+      "target_initial_sha256": "fd213448a9c3aab4168efd8d093184444e04d2d929ac49f067f6df22531ed728"
+    },
+    {
+      "source": "firmware/pico-s-pro/reverse-engineered/dependencies/lock.json",
+      "source_sha256": "530369beb1fefce7c46e0d9a3ced9b5e4a63d862249cc2aa1ccaa6f2c93c3e0f",
+      "target": "dependencies/lock.json",
+      "target_initial_sha256": "e5f1fb1d4e51a7560ace1b097833c8414f5fdbca566e772d7f4d4a33087a7760"
+    }
+  ]
+}

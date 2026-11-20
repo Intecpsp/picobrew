@@ -1,0 +1,23 @@
+{
+  "passed": true,
+  "variant": "ssd1325",
+  "checks": {
+    "pure": 2531,
+    "text": 48,
+    "status": 512,
+    "dns": 82,
+    "framing": 11,
+    "storage": 19,
+    "storage_differential": 12,
+    "still": 17,
+    "still_workflows": 152,
+    "update": 20,
+    "update_differential": 6,
+    "api": 37,
+    "repairs": 6
+  },
+  "total_cases": 3453,
+  "elf_sha256": "ce28d9416292e8dbc49c5dd9e1f4297908ba8dd9caa5504cbcc7813349198678",
+  "reference_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+  "limitations": "Function-level original Thumb/recompiled ARM differential and bounded I/O scenarios; no radio, flash-device, MCU or appliance test."
+}

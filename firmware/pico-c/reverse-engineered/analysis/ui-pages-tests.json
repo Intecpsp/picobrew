@@ -1,0 +1,8092 @@
+{
+  "schema_version": 1,
+  "variants": {
+    "ssd1325": {
+      "cases": 237,
+      "raw_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "records": [
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ee78e7d3393de263b4805c90ae1ee342fbf680915b8f233da47d705461419c09",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f274816fbd83709170c502e769a86ecf5ed0e8da70b299c49a2823efe71d543",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "057642688f079dfc5778d390d4dae0fdc9e527d67ab8fe48185f2a69a77a3613",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "44a7941e30127c2abe115293547b136ceb5c1d5688ec9ac5d57ae66d6aab19f3",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d4e10dfaf1ef7c1370b46c7d8228aaeb5c7b81494c6aef7aab58190ca87cb9d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "cf844805a7b142e1206c10a08b62e3bf4431cb6149e40fed15e3a7afdd1d61d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "15d627587e60c18dd0e053cfe88bef1bb3993585934100d64205c40b89230a5e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ff2b3c4c26aef2ffb1b2db5f9c825421f83a97c8ff80e993b6db2d60aa03484e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78e6d25948e3f882935e199e46ab881042607f8ed888712240cf3e5f37902574",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d2214179383738e372a0f052c2e4bfb3192587299a356861b817127290d87329",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "eb7e3f6252bf0858b5dc32657d5a51099b0c27b6f9c0e323739f6783fe710b13",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7a750968338012a0aced202d157b3a8f340bdcf0fcb62fa6064ce1189b24d395",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47870564692b794aa0f7d802bd911db4c0ab649a15a7da7241c624613f1887a1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "48f731e190fff680814b796403b1b74a8b1428d85aa4a32843df720b2c8688cc",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "48f731e190fff680814b796403b1b74a8b1428d85aa4a32843df720b2c8688cc",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c3910ac0cc72a634577dd025687513b1d82e9d349b83dad1961ba13737c65b5d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c3910ac0cc72a634577dd025687513b1d82e9d349b83dad1961ba13737c65b5d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "71443a834570a092936a6dc33c057bbe36a1d6cda776412489312be0e80aacc5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "71443a834570a092936a6dc33c057bbe36a1d6cda776412489312be0e80aacc5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "fff104da1d02f0690053fc106637b0c9a540a9fa01d1183f7579774f8235ce1e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "fff104da1d02f0690053fc106637b0c9a540a9fa01d1183f7579774f8235ce1e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3290d0a37ac48dd2ae7ad3ed6a5ea1820c536f91a799eb4054c321bf80e63f79",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3290d0a37ac48dd2ae7ad3ed6a5ea1820c536f91a799eb4054c321bf80e63f79",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "33a3747c34167040442c97af465dd733ec38872f52383db57c03c1db836368a6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "33a3747c34167040442c97af465dd733ec38872f52383db57c03c1db836368a6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f9a58adf3e5872fce42084dbd8a01e4fd0a7edb6480eb9981c29e7461f376188",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2de61a3c0f7d518ffeaa367428e1e7f0b52cfad544d56bd941a48477ee53501b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b88610e62271205d119e6d5c606cde5e620a4d831e920682e6cee7d7fd81a98c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ba8ceabdeb1a06245215e0a234707d45fe5462d9288c5cea17052992c743275f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7d36c0d62ba74dc2b2ab45575d409fb1999fad54756d25fd6c0997d391837994",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f4b573badcc296a0f7ae923804b210e254d830a68339237cc353912df859b948",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a448212758feeb1ddbfec8d9626228490fdc1bcb9e3d6962f3f2c68f367171ee",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "25359875c2157606fdd2f5e03d8e3b098358d10925ba565dcdab04f94aba5b6d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            1,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "555d75976c017e0a41398a376740ae945253c7aceb9fda120d57ef6c76315b10",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            2,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a108c91f8d958be5d561b8408d3dc49f53c7d9b4ae52b897cbf409abb0adcfc0",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            3,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7e09e431eed2043104bc78ba3db41146e9702c51c5389136efc16e0ad84c1c36",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            4,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "90f151be61cfb6026fbfbe170df071550340ac51b46487477928f1134010d0b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            5,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f242eb72b030b81a02527bdce5e88671804c2696ff75d1aba67c5ab3676f7742",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            6,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f242eb72b030b81a02527bdce5e88671804c2696ff75d1aba67c5ab3676f7742",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            7,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "555d75976c017e0a41398a376740ae945253c7aceb9fda120d57ef6c76315b10",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            8,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ec2ee159cd1628ef89d655c9c1669af03106c944eec3c1a0dc8e45926ff007d6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3ee0f77cb5b7c8ec4bb885e685c00311455dafeecd848e78da1ff33dcc3d15ce",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "095cda74d4d27d14b282e86b784d3dae66b4e52e9fb7299ade1376d43e8e952c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8e8416fcef405331db473a02f57084a01d6068bb39acb3f24cd8156946a6a76a",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3eb120bc85ae40a123156f14c537ba84cbd1360607e55f17305cf2f2ac82c63b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8ec091dddc355366d20099ebed7aedf39b10ca54d710639fdfd6d346acdb5573",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2267f19cc699dd65cbb0bf8a7b9a74edd920332a76634bf1f1e3525566aabdab",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3ee0f77cb5b7c8ec4bb885e685c00311455dafeecd848e78da1ff33dcc3d15ce",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "095cda74d4d27d14b282e86b784d3dae66b4e52e9fb7299ade1376d43e8e952c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8e8416fcef405331db473a02f57084a01d6068bb39acb3f24cd8156946a6a76a",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3eb120bc85ae40a123156f14c537ba84cbd1360607e55f17305cf2f2ac82c63b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8ec091dddc355366d20099ebed7aedf39b10ca54d710639fdfd6d346acdb5573",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2267f19cc699dd65cbb0bf8a7b9a74edd920332a76634bf1f1e3525566aabdab",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f37d05f6765e13ba393423731e3501475915239403ff536e0e52d5bbeb4e015a",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8ebf8455927cfa29a96387bea54fca19190130b6a0442844268eb29601a7c354",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c40374f78ab9493096e9953fad081aae74f2fc18614086edd7145d2bc065c907",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d89e8ad9885d27f8532a64257c55d9c5b623db82dd728111f1abee6da8e21d40",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "90de659219b2d41d527fbef53892c2e374c948e341014fa2f1683a94616be146",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "71e15d53827f6fc102fddce6715e0c745e8e7e9f10929fb1e2935e2627bd4f52",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c3254a6204378feaff49f74ec65ccaf40db9aa9d19c0773b8032321696bda91d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8e2650e336907d801fd64c6413720ee220d481b6cb8ec33c38665b1ffaa1db21",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c493cfa8e65c51be7d137b270a2a240ab2adfc948fbde229b688f3136071cee2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e518d8f73fa16bf179859e856f5cf44dc71fe09efd611daaf544ecb07a329328",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b762a997694dfcb5efe265a94adf33c03d35f50c8ed7639234eb2d30c1be1ccb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "5ce732e8297c41c2ab1415c96c28e19fb208432d8ac5919597e29be63328dd7a",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "fdf0161216e1bf40181ebcd5deb9366f352d3568250fd49dbed0829c1c8770dc",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9457bc4bade3a0f2c7a2002b626535828d5d80b948c0cf380dfea5450181b35d",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "04d09b730443cdec4f3ae2de7e3582f7602873339a071fe250d1e024e7eb959b",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e25bbf6af25e9cad7d3febbffffc35fa8c089bdcc7c251fd668453a9948c207e",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "04d09b730443cdec4f3ae2de7e3582f7602873339a071fe250d1e024e7eb959b",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f80a29f448353d22c9a60d0bf040251a32c5ceb91e01de9e6b1c4280118f1462",
+          "original_instructions": 4152
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2f08a48cff3e2d0de2e28a105a881fc53909e83bc3ef7eb123451380fba40072",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21ee5ba2a3cda939835ef3d1ad20a18e91b6c3ab3bb6bdf1d22e20160d1b9808",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "2459573a4d6e06098cde3f3ca1989b35237de4fd09c4af60a92c6f666ebdeabb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "48f731e190fff680814b796403b1b74a8b1428d85aa4a32843df720b2c8688cc",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            1,
+            2
+          ],
+          "framebuffer_sha256": "644360c659a5e040f641e2f5fd666da61226d790165b5c62bd11c6403761aed6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c3910ac0cc72a634577dd025687513b1d82e9d349b83dad1961ba13737c65b5d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            1,
+            2
+          ],
+          "framebuffer_sha256": "710430149b1311910bbc282d3f048b94e6938232bc5341faebe59526360aa7fc",
+          "original_instructions": 0
+        }
+      ]
+    },
+    "ssd1309": {
+      "cases": 237,
+      "raw_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "records": [
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_brew_name_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "350bd729a48514ba1cefa77485ccd8e11c308ec2469909cc96f53b2481ea0d51",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "51045bf493202f8b1adfe57c4a475a23d3560b83a5781584ed44f3dc67b8b86e",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "69195f2c646d50d6db0bc98130948df39c0eb0a55f753fbbbe11dacc35e527e1",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_recipe_metrics_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8a5f66bd5a0e44caea0112164d04f113120cf762daffa26055015d699ad84278",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "f38707cbf27389942334efa1dce7d72bd4cea3b8b599a01ca3779e33632f9056",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "636e7b5cd8e862d98e9ba757d85174f376a906199113de9a1c0dabe1ebfddb60",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_temperature_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "dd8c09665df9267456a9c4b3f3734f5f19441c723f3c619d3f868116b08a5a8d",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "30238c00a55d57342f3f7f0e096631c83f259643ca7b749e84e1ab65b94915b4",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c542ecf1bf9bf259d1f6a9d4e7731e56ac3dc4ac2e0672c56f5b5bf806eb375f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1a40348fc26aca94bccf7668fe14a04bf4ad4d4f330b8cc6e94063968652cacc",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "070b6aa774e1a088bb54cdfcf5bd9be799834b9648d2b121cd590bfeeb497d32",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "557a3d2cdac54c47021448bfeb9b92e7eb4684c508eb1d83a03becfa00f7983c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "37e63e79e7225633ff15d4d75a5363681fe599ae2c7a41808af23ab7f5e2ec3f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1fc6e1e599f14043dfb7f0a611e42d9e9ccbec36ceb74d981af5014e9b3eba58",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1fc6e1e599f14043dfb7f0a611e42d9e9ccbec36ceb74d981af5014e9b3eba58",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "149e6d0ab250bfbe747ca496620154512e732f8582b985df0e29c4b49b82dd27",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "149e6d0ab250bfbe747ca496620154512e732f8582b985df0e29c4b49b82dd27",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8f35a446c59a099e563c169b6a65c884b10db763f6d2425f3d1d700e19ce9682",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8f35a446c59a099e563c169b6a65c884b10db763f6d2425f3d1d700e19ce9682",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "4e0347e15c07b0c3b9206cfb28cfa4c60f93410ef9b36e498b39b9b334ab771c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "4e0347e15c07b0c3b9206cfb28cfa4c60f93410ef9b36e498b39b9b334ab771c",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b8550a6ac5ecf85ceabc1ebf9161986437a53dce7196d2e2637c4c8cc51528d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b8550a6ac5ecf85ceabc1ebf9161986437a53dce7196d2e2637c4c8cc51528d8",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "46209d0595767327cde2477dba5ae3849bfe66eb509c18955c63b470bf3ef7b4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "46209d0595767327cde2477dba5ae3849bfe66eb509c18955c63b470bf3ef7b4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_manual_overview_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "8356f8bbf7116f3988dc54fad683ff5d5851fbeeb73a3325cebff109ee0eaeaf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "54933673dfbbf201b8599a1926f6fc70a493c42cdfaf99dfe985af60c9721045",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_target_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9df03311d126a1cb42a8f0d566fe160deb24079e7b4019d58fb9f58d0c6a73e4",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d60c31e4d9aa710ffc0b141e1c210a4144d4a2d31c5e981a0eca69b31a6791b5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_logo_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "485835622aaa8ea50d384c9bc177ed8fecea0f0826ab16d0d5a15ab3d5943f23",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_recipe_image_page",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b20dc1a48bdcef0cbea148b3571322a5f67ae39c3d8c102c9d826f4ca370b694",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            1,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            1,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            2,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0703a07659afb86efa40f4b4aee28e4a522b34a021a6ab87f38877f4e5bc8b1f",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            1,
+            2,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ddea5a904bd8c591edb6b8481b3822755f102efbd3bda63b0b9801f8b8591be1",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            1,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e9b0f1d178ee9fa00b241bf99a33250837ab793977366b285a3b7bb402943d20",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            2,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "00f20db39c242f6c9793277acd46bb119acf0c6434e61663c82235977833af75",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            3,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7b548416faead7fb1397673c4f67020a1cb791f7139a13f9367a9302cfedd284",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            4,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b80444e46dd0d27ed0ddbdd5d4a3154901865164d1bb7c4d91305736943184f6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            5,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f2833887f5e192df72f69e49c844872e7bb2bbf6ab4e111c33cdaab60678f47",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            6,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3f2833887f5e192df72f69e49c844872e7bb2bbf6ab4e111c33cdaab60678f47",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            7,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e9b0f1d178ee9fa00b241bf99a33250837ab793977366b285a3b7bb402943d20",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_step_progress_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            8,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "ec2ee159cd1628ef89d655c9c1669af03106c944eec3c1a0dc8e45926ff007d6",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "23ff62e18f7e4be777b0ef3b550cebaa3b84a52b5d15675e53e45a2aff665b42",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "03c1abd0e1c88ec330636b94b1fa124d289c4f554ae208f57705d91642418f20",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3b45c4d71728d7268e9048342c1f021e03d65feccdea0f37276150965a3974cf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "919bfe5e52661091f0285a3ee0a6e675d0424a4263ceb397d4cafac28d6f94fb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0398594a55582b69d483cc6d0dcec2c058e880022577e619a82dc1ce938cc154",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_current_step_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78c565786e55d819b1462509b57d4ff57aa602c5465ac36842320178a3421950",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "23ff62e18f7e4be777b0ef3b550cebaa3b84a52b5d15675e53e45a2aff665b42",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "03c1abd0e1c88ec330636b94b1fa124d289c4f554ae208f57705d91642418f20",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "3b45c4d71728d7268e9048342c1f021e03d65feccdea0f37276150965a3974cf",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "919bfe5e52661091f0285a3ee0a6e675d0424a4263ceb397d4cafac28d6f94fb",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "0398594a55582b69d483cc6d0dcec2c058e880022577e619a82dc1ce938cc154",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_program_status_page",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "78c565786e55d819b1462509b57d4ff57aa602c5465ac36842320178a3421950",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d543eceb48197a43d7b567e101937791355df4755a59a63d0d2a27c5c03b756b",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "9b809bbaa43a2d91904863a238e5b024a6e30c7e154fcf7d8aff312cc8dfc56a",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "bc012a9bbce68709d6d9d680f11485e48456df2b3583cf56eccc4b7bd7357127",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "7fb6723144c29d6af14bda50679093abb8e0c16414b8d2f0767877958047b92c",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "4fad73813a75c0382510febe1d04c5da7d59774fc3c233791e7d66c27078f221",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_screen_detailed_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e7a06f511c96aa16768a9f40cb2823a9ace4b23622c62284056c223ffdbd9225",
+          "original_instructions": 1
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "951a27e82cc7eb9d15ca52735cd4c317016dac35637989fb9b5c707f3b7517d5",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b76126f7921b127a430be6e01edad6f80209f8d581d0f8f978991d5a3994468a",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "b6c092f50aa997927e744ce31f0669929801fc0b2df63a06bcf2a95ac79c833b",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "e186977cc4119ab843f7ce83d4a24d90d8c030c08ab4b9f87aa0d272bddacc9e",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "041f1129bf5ca94cb1ef9946edc221966b8843975de32c9e6d5fc0c2897054c9",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_hold_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "47804663f8aa902989c90d145fe9b4ac3dc271a257d727965969a3ff76f1878a",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            0,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "5b52cbd13cc654df742b0e8e411cf5955e8f87ef6abd457eded75838baaa6e5e",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            59,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "760609f438e68480502b34a5c60d2ff94367121475b4e53de749c590efe49997",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            60,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d3d45fc9f8dfb2aa51fd074021137588db5f282fbc7a2ffaa7461349415b8ab3",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3599,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "a8d377eec1bfb6101f7d314f00b2b15b39c64753daf9b5aa52563a686e26e38a",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            3600,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "d3d45fc9f8dfb2aa51fd074021137588db5f282fbc7a2ffaa7461349415b8ab3",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_ui_draw_circulation_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            1,
+            0,
+            86399,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "20f0a85844901f38a6619bcf06bc6de2e6e7a1f7fb387e50a1047a6540f8fe82",
+          "original_instructions": 1296
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            0,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "bcd32dbf385a1ab4cd41f317705a08be1069cdc483a5bde4aefeaafa526330f3",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            2,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "c4cdb600ebfab651d6d37bd7604e73ba31d401cdc71f3725f4e74e55d4342f89",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            2,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            7,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_basic_brew_status",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            -1,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "21039ad60bbc6e07cd75474bad9a678b64f039c4594ee2a58f57708f84bd58b2",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "1fc6e1e599f14043dfb7f0a611e42d9e9ccbec36ceb74d981af5014e9b3eba58",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            0,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            1,
+            2
+          ],
+          "framebuffer_sha256": "df0da44a360bb6e9bc785f99bccde8c9a4a8d0f4b56ef360e365e80492c9ee8f",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            0,
+            2
+          ],
+          "framebuffer_sha256": "149e6d0ab250bfbe747ca496620154512e732f8582b985df0e29c4b49b82dd27",
+          "original_instructions": 0
+        },
+        {
+          "page": "pico_screen_still_readings",
+          "config": [
+            0,
+            0,
+            1,
+            4,
+            0,
+            0,
+            0,
+            3661,
+            1,
+            2
+          ],
+          "framebuffer_sha256": "6821a7dc0f37beb0a8efbcbd8bd42b6511450cca453baa8cfd21983f1570f354",
+          "original_instructions": 0
+        }
+      ]
+    }
+  },
+  "source_sha256": {
+    "src/ui/graphics.c": "fd440f85a6afaf536029b9189f89be0a3bc76c21a6c6b0a14ca6ac1c0675d45a",
+    "src/ui/assets.c": "5cc85b58d3e1b9fe73490dd24eb0dbc522d2926368df4179533f88fe3f32848a",
+    "src/ui/context.c": "a056460b361e6905a81ee88d6fd3cedd1945dadfdb35177c51c0e3c4ee7f1424",
+    "src/ui/encoder.c": "70cba61960ad265cd358c7c9e9a804b383dce2b94b28a8ef3ef5b5f087356c95",
+    "src/ui/display_driver.c": "d09cbdc997c44a4cd955c2500cad8198d7e58ebef88cc6ab598e2b4d6a31651c",
+    "src/ui/scrolling.c": "538e64954467e5ecdcb76552c6af6c50c2052a379f1e42230ec8aa5d62da12f9",
+    "src/ui/menu_render.c": "061d1f7acf72ae7ada63c8da09672d0301b96bda40c243d355f2c516abcfe2df",
+    "src/ui/display_helpers.c": "bebf491db5a71585c11925bfebad2b1a74951ffad8c84415dbddd8448c43a335",
+    "src/ui/display_values.c": "5f55032cf20d881ec89280013d1bb3ecc54842019af0b62009456783cb29b596",
+    "src/ui/pages.c": "6fc863f9c6300c48a4f3b9f9fbbcc1419a612ce0ee27fbf97709741c8eff457f",
+    "src/network/text.c": "4124d72c7d42e84cd9fdceb076b2b3ccc2b51725d83ea4547422c75fde8f0a6b",
+    "tests/ui_fixture.c": "27950f549bed80363afa9d1654f2cf6849c1e70c68eadbe6f649bd9679106f9a",
+    "tests/pages_fixture.c": "4e0d1a37fbfc102dafcdf3a6c5452349f07a640394d75dfaa89e5ffefcbd0f34"
+  },
+  "scope": "Actual OEM ARM versus native C page composition and complete framebuffer, with only temperature-summary and state-label service boundaries substituted; real recovered fonts/assets/graphics.",
+  "hardware_executed": false
+}

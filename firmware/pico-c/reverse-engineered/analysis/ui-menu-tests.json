@@ -1,0 +1,29 @@
+{
+  "cases": 480,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "cases": 240,
+      "trace_sha256": "e7663451976d41110f1f9795bd89e5ba299d98fdac07129712bd27538922a03a",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "limits": [
+        "Clock/input/drawing/filter/still boundaries scripted; complete appliance not executed"
+      ]
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "cases": 240,
+      "trace_sha256": "e7663451976d41110f1f9795bd89e5ba299d98fdac07129712bd27538922a03a",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "limits": [
+        "Clock/input/drawing/filter/still boundaries scripted; complete appliance not executed"
+      ]
+    }
+  ]
+}

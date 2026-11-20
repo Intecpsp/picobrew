@@ -1,0 +1,31 @@
+{
+  "cases": 1296,
+  "variants": [
+    {
+      "variant": "ssd1325",
+      "input_sha256": "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b",
+      "cases": 648,
+      "result_sha256": "0f4d3c14222cd9e4f970eab8f560e7864c846f69f284b2c99e8701216a2ad37a",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "limits": [
+        "Valid action IDs 0..49 only; action 50 OEM out-of-bounds defect repaired",
+        "Assertion/log side effects excluded; string and menu bytes compared"
+      ]
+    },
+    {
+      "variant": "ssd1309",
+      "input_sha256": "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226",
+      "cases": 648,
+      "result_sha256": "0f4d3c14222cd9e4f970eab8f560e7864c846f69f284b2c99e8701216a2ad37a",
+      "original_code_executed": true,
+      "native_source_compiled": true,
+      "hardware_tested": false,
+      "limits": [
+        "Valid action IDs 0..49 only; action 50 OEM out-of-bounds defect repaired",
+        "Assertion/log side effects excluded; string and menu bytes compared"
+      ]
+    }
+  ]
+}

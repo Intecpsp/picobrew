@@ -1,0 +1,224 @@
+{
+  "source_revision": "ea887709e72c493456583114034cde4aad746099",
+  "reference_component": "firmware/pico-s-pro/reverse-engineered",
+  "files": [
+    {
+      "target": "include/pico_c/ui.h",
+      "current_sha256": "9afd10202740a62431e78cdfdaa6166b885217bed29de7e76ff2969d59a1821b",
+      "reference": "include/picobrew/ui.h",
+      "reference_sha256": "589c6468957f1fb4151022ac763a112db3f737c9bd4ef9c8be5407904a7e09ab",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/action_tables.c",
+      "current_sha256": "4bc63c018e36d8dc20727b5551dd3c3733fd52f9e4e39305a168c18736fe522f",
+      "reference": "src/ui/action_tables.c",
+      "reference_sha256": "be744a227f83f000ea73b5ec99e8c6f38ac08ce78c990803dc44bc83688b9144",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/actions.c",
+      "current_sha256": "c455a9b9e7ca79dc7f16c3080ada59dfbe2440f8f4aa8f393b181bfcf5129fec",
+      "reference": "src/ui/actions.c",
+      "reference_sha256": "6bf785253181cfd68f5af33e8b6110239dc4c416aa062886b0c1731b632449da",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/assets.c",
+      "current_sha256": "5cc85b58d3e1b9fe73490dd24eb0dbc522d2926368df4179533f88fe3f32848a",
+      "reference": "src/ui/assets.c",
+      "reference_sha256": "f7a64b90435f253304bead5b4dcb302f8ce6ec11565d8a3855c6605d355b2a14",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/context.c",
+      "current_sha256": "a056460b361e6905a81ee88d6fd3cedd1945dadfdb35177c51c0e3c4ee7f1424",
+      "reference": "src/ui/context.c",
+      "reference_sha256": "3f335790531204ec865a550467802dfde942708be23aef881ca836bea39df561",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/diagnostics.c",
+      "current_sha256": "27801a7bb8564f24ddfed7083f50fefc8ab0c04f3ee50248de3edccfdb194c5a",
+      "reference": "src/ui/diagnostics.c",
+      "reference_sha256": "bec38d05eaac3d01bc391b39a1543b3f393ec97404362780a9abc608817d9e8e",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/display_driver.c",
+      "current_sha256": "855ae32cdb1ac64180c1284715e88fa00b7a5a1ca680c6679f0a32b57a98a916",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/display_helpers.c",
+      "current_sha256": "bebf491db5a71585c11925bfebad2b1a74951ffad8c84415dbddd8448c43a335",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/display_values.c",
+      "current_sha256": "6bca72ae84a83428a299480d6afc2f6f4ed2fd38fb57fddbbf299714305d8425",
+      "reference": "src/ui/display_values.c",
+      "reference_sha256": "a36d983f344248b37656d8d8375fef9688c8edfe8c934ce1e98f9642189c74c6",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/encoder.c",
+      "current_sha256": "70cba61960ad265cd358c7c9e9a804b383dce2b94b28a8ef3ef5b5f087356c95",
+      "reference": "src/ui/encoder.c",
+      "reference_sha256": "6b7b1a0e32acc3c5ab438d2d14a20cdb73d452da5ccca3ec25f2df709e76287d",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/encoder_editor.c",
+      "current_sha256": "d0c4310f4e55038d642564419d85e90c6348947d9e523586b6f09d43a0f1a3b4",
+      "reference": "src/ui/encoder_editor.c",
+      "reference_sha256": "a1b59ede9f6c7d568c7f0409e188c3d72d3e02c170add524cd897c67ac9a34cd",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/error_text.inc",
+      "current_sha256": "54b8ffbc444951352a940347e41e311446d822d3464e33dd1d2f80f71c03d3f4",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/first_rinse_prompt.c",
+      "current_sha256": "b2f6d352c3582eec4c814ac7f499481df783859f4207f233f920dc91d51ebd80",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/graphics.c",
+      "current_sha256": "fd440f85a6afaf536029b9189f89be0a3bc76c21a6c6b0a14ca6ac1c0675d45a",
+      "reference": "src/ui/graphics.c",
+      "reference_sha256": "01b3ddeb63e35b516c4d9fd94863c6cac819e2dba0aa38e8b9dd592b0c19eccc",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/instruction_screens.c",
+      "current_sha256": "b7a2c4878ff16a504f2c91e527087df41968635ab7e70d42bd995587f075752a",
+      "reference": "src/ui/instruction_screens.c",
+      "reference_sha256": "c8038ee407e0e228f6cc1ccd5cb33dbe38abec9aa5636fe8a4d665b3be19204f",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/menu_control.c",
+      "current_sha256": "bc9405634da3e33c4386abceb5fbcb92b19c28ed3841be71052ad0bdd51ea4a0",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/menu_render.c",
+      "current_sha256": "061d1f7acf72ae7ada63c8da09672d0301b96bda40c243d355f2c516abcfe2df",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/menus.c",
+      "current_sha256": "2150d515695e6ced054fa20781e4307fcecc090f32881e01d2c42d1caf2fd2e8",
+      "reference": "src/ui/menus.c",
+      "reference_sha256": "a39921ace7a273c47aa414bfabd15e620e52421660b8763de0a71f2eb9c4d61e",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/pages.c",
+      "current_sha256": "6fc863f9c6300c48a4f3b9f9fbbcc1419a612ce0ee27fbf97709741c8eff457f",
+      "reference": "src/ui/pages.c",
+      "reference_sha256": "b8a950f53b9818bc38bc50a233344e13420f64d077e056f5aea7c280e0a307e9",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/screens.c",
+      "current_sha256": "2da0498833720b3eef5e750e3500150001dbfe7414440c7f0bcf9f5c0286c7b7",
+      "reference": "src/ui/screens.c",
+      "reference_sha256": "74f64560b3a330fa7e8ec71676eb3ff1daae2d0ab1349bbe575c6640bb53e967",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/scrolling.c",
+      "current_sha256": "538e64954467e5ecdcb76552c6af6c50c2052a379f1e42230ec8aa5d62da12f9",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/scrolling_prompt.c",
+      "current_sha256": "caea180cb5c4198cb2d849a458392f05f8e95f72efda86c69d84cad78215e6f6",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/still_ui.c",
+      "current_sha256": "2b01cbf944edaa1176cdc37b26ee7b81385d496de6139c46a31268d03a09af92",
+      "reference": "src/ui/still_ui.c",
+      "reference_sha256": "ea0834e1badecf625238318c2ec53a92769eda4e147723bbcf92339fc8fb820b",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/strings.c",
+      "current_sha256": "ee08106442160da26b0f721e73e6c75b2417205947fc31abb21826d3f5f114cf",
+      "reference": "src/ui/strings.c",
+      "reference_sha256": "c6ddda204dae55e2734a92af9ed42a92fa2475ae74f6d509977d76208b1d862b",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/translations.c",
+      "current_sha256": "8323783bc88831791c36be2d233d48dcded340041a7e376773287f8760987a97",
+      "reference": "src/ui/translations.c",
+      "reference_sha256": "dc7aad7b120015c3f01589fb5bb538965137a025b1f500cd780db183a0604d80",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/ui_assets.h",
+      "current_sha256": "83ad984993c72a0c3783acffbf96dc79895b347eabefc3b986af72ca43a8b1c7",
+      "reference": "src/ui/ui_assets.h",
+      "reference_sha256": "c8a77012448c6f31ac099cb11f958dee0dbf273f4f541471f2458f36edd50638",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/ui_internal.h",
+      "current_sha256": "018ca154d27c67cbd7f3a8753b455f37c98e422fad62f0b04e8c4f0d16d7b5e8",
+      "reference": "src/ui/ui_internal.h",
+      "reference_sha256": "238f9ea39458d1147e1447286a2d88e4ff9fb3040bdb9c9c6daba33e1ebc372a",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/ui_program_menus.c",
+      "current_sha256": "db6d7e1d398ef985df1005f74485efd8275ae1d5b66730ef5f2ccdda35db526b",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    },
+    {
+      "target": "src/ui/ui_screens.c",
+      "current_sha256": "3f8144b248abe541dc07caff8d259c4a58f1bc93e0fdb04a45a46549f40ae66d",
+      "reference": "src/ui/ui_screens.c",
+      "reference_sha256": "583ab2071461bd1b8b368fd5796a682878d20698eaa88944537a3c6ef60b2ca4",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/ui_workflows.c",
+      "current_sha256": "289224957a8f440ca674c8f99b4f1d3cd3b55e439571b3c7c5b92dbad3fc4b16",
+      "reference": "src/ui/ui_workflows.c",
+      "reference_sha256": "98e83cc6b70b0bea96e7b88a0c9e4c752c165e700bb8d19d4bb0cfdd423d8d4b",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/workflow_adapters.c",
+      "current_sha256": "b7788ff187c9f65b9e5cf06300dc4bfefbaa59f2126000a0f074fa8949f8c838",
+      "reference": "src/ui/workflow_adapters.c",
+      "reference_sha256": "a1c13904e074f08e192cc08c4044092c0715cb17f4e55d9a905f899fa3d38530",
+      "method": "Archived typed source supplied a candidate; C-specific behavior is reconstructed and compared separately."
+    },
+    {
+      "target": "src/ui/workflow_text.inc",
+      "current_sha256": "781ed3fc0e9dbfc7c07639fe69027038c10a17890ee1713791bd299890448d85",
+      "method": "C-specific source or generated original-image data; see UI extraction and original-instruction reports."
+    }
+  ],
+  "behavioral_evidence": [
+    "analysis/ui-graphics-tests.json",
+    "analysis/ui-values-tests.json",
+    "analysis/ui-data-tests.json",
+    "analysis/ui-menu-tests.json",
+    "analysis/ui-pages-tests.json",
+    "analysis/ui-screens-tests.json",
+    "analysis/ui-workflows-tests.json",
+    "analysis/ui-diagnostics-ssd1325-tests.json",
+    "analysis/ui-diagnostics-ssd1309-tests.json",
+    "analysis/ui-editor-ssd1325-tests.json",
+    "analysis/ui-editor-ssd1309-tests.json"
+  ],
+  "limits": "Source similarity is not a behavior test. Tests identify their boundaries; no physical qualification is claimed."
+}
