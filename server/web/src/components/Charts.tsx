@@ -47,19 +47,19 @@ export function TemperatureChart({
               onSelect?.(Number(value))
           }}
         >
-          <CartesianGrid vertical={false} stroke="#e7e1d8" strokeDasharray="3 4" />
+          <CartesianGrid vertical={false} stroke="var(--hub-line)" strokeDasharray="3 4" />
           <XAxis
             dataKey="elapsed_ms"
             tickFormatter={clockTime}
             minTickGap={55}
-            stroke="#8d8b81"
+            stroke="var(--hub-muted)"
             tickLine={false}
             axisLine={false}
             fontSize={14}
           />
           <YAxis
             domain={['auto', 'auto']}
-            stroke="#8d8b81"
+            stroke="var(--hub-muted)"
             tickLine={false}
             axisLine={false}
             fontSize={14}
@@ -72,13 +72,19 @@ export function TemperatureChart({
               value == null ? '—' : `${Number(value).toFixed(1)}°${unit}`,
               name,
             ]}
-            contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
+            contentStyle={{
+              backgroundColor: 'var(--hub-surface)',
+              color: 'var(--hub-ink)',
+              border: '1px solid var(--hub-line)',
+              borderRadius: 10,
+              fontSize: 16,
+            }}
           />
           <Line
             name="Wort"
             type="monotone"
             dataKey="wort"
-            stroke="#b46b40"
+            stroke="var(--hub-wort)"
             strokeWidth={2.5}
             dot={false}
             isAnimationActive={false}
@@ -87,7 +93,7 @@ export function TemperatureChart({
             name="Thermoblock"
             type="monotone"
             dataKey="block"
-            stroke="#597b6b"
+            stroke="var(--hub-block)"
             strokeWidth={1.7}
             dot={false}
             isAnimationActive={false}
@@ -96,7 +102,7 @@ export function TemperatureChart({
             name="Target"
             type="stepAfter"
             dataKey="target"
-            stroke="#afa38c"
+            stroke="var(--hub-target)"
             strokeDasharray="5 5"
             strokeWidth={1.5}
             dot={false}
@@ -106,9 +112,14 @@ export function TemperatureChart({
             <ReferenceLine
               key={index}
               x={note.elapsed_ms}
-              stroke="#565775"
+              stroke="var(--hub-phase)"
               strokeDasharray="3 3"
-              label={{ value: note.label, position: 'insideTopLeft', fontSize: 14 }}
+              label={{
+                value: note.label,
+                position: 'insideTopLeft',
+                fill: 'var(--hub-muted)',
+                fontSize: 14,
+              }}
             />
           ))}
         </LineChart>
@@ -135,19 +146,31 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
   return (
     <ResponsiveContainer width="100%" height={190}>
       <LineChart data={samples} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
-        <CartesianGrid vertical={false} stroke="#e7e1d8" />
-        <XAxis dataKey="elapsed_ms" tickFormatter={clockTime} minTickGap={55} fontSize={14} />
-        <YAxis allowDecimals={false} fontSize={14} width={52} />
+        <CartesianGrid vertical={false} stroke="var(--hub-line)" />
+        <XAxis
+          stroke="var(--hub-muted)"
+          dataKey="elapsed_ms"
+          tickFormatter={clockTime}
+          minTickGap={55}
+          fontSize={14}
+        />
+        <YAxis stroke="var(--hub-muted)" allowDecimals={false} fontSize={14} width={52} />
         <Tooltip
           labelFormatter={(value) => clockTime(Number(value))}
-          contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
+          contentStyle={{
+            backgroundColor: 'var(--hub-surface)',
+            color: 'var(--hub-ink)',
+            border: '1px solid var(--hub-line)',
+            borderRadius: 10,
+            fontSize: 16,
+          }}
         />
         {brewing && (
           <Line
             name="Phase"
             type="stepAfter"
             dataKey="phase"
-            stroke="#b46b40"
+            stroke="var(--hub-wort)"
             dot={false}
             isAnimationActive={false}
           />
@@ -157,7 +180,7 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
             name="Step"
             type="stepAfter"
             dataKey="current_step"
-            stroke="#597b6b"
+            stroke="var(--hub-block)"
             dot={false}
             isAnimationActive={false}
           />
@@ -167,7 +190,7 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
             name="Controller"
             type="stepAfter"
             dataKey="controller_status"
-            stroke="#77769a"
+            stroke="var(--hub-phase)"
             dot={false}
             isAnimationActive={false}
           />
@@ -176,7 +199,7 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
           name="Flags"
           type="stepAfter"
           dataKey="flags"
-          stroke="#b89a4c"
+          stroke="var(--hub-gold)"
           dot={false}
           isAnimationActive={false}
         />
@@ -185,7 +208,7 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
             name="Compartment"
             type="stepAfter"
             dataKey="compartment"
-            stroke="#8e9aa5"
+            stroke="var(--hub-pump)"
             dot={false}
             isAnimationActive={false}
           />
@@ -194,7 +217,7 @@ export function StateChart({ samples, brewing = true }: { samples: Sample[]; bre
           name="Device state"
           type="stepAfter"
           dataKey="device_state"
-          stroke="#343e43"
+          stroke="var(--hub-state)"
           dot={false}
           isAnimationActive={false}
         />
@@ -209,8 +232,8 @@ export function Sparkline({ values }: { values: { value: number | null }[] }) {
         <Area
           dataKey="value"
           type="monotone"
-          stroke="#b46b40"
-          fill="#f0e2d7"
+          stroke="var(--hub-wort)"
+          fill="var(--hub-chart-fill)"
           strokeWidth={2}
           isAnimationActive={false}
         />

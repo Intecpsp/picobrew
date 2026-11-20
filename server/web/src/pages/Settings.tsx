@@ -8,6 +8,30 @@ import { FirmwareManager } from '../components/FirmwareManager'
 import { Button, ErrorBanner, Field, PageTitle } from '../components/ui'
 export default function Settings() {
   const hub = useHub()
+  const [appearance, setAppearance] = useState(
+    () => document.documentElement.dataset.appearance || 'system'
+  )
+  useEffect(() => {
+    const observer = new MutationObserver(() =>
+      setAppearance(document.documentElement.dataset.appearance || 'system')
+    )
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-appearance'],
+    })
+    return () => observer.disconnect()
+  }, [])
+  function changeAppearance(value: string) {
+    if (value === 'system') delete document.documentElement.dataset.appearance
+    else document.documentElement.dataset.appearance = value
+    setAppearance(value)
+    try {
+      if (value === 'system') localStorage.removeItem('hub-appearance')
+      else localStorage.setItem('hub-appearance', value)
+    } catch {
+      /* The choice still applies for this page. */
+    }
+  }
   const firmwareSection = useRef<HTMLElement>(null)
   useEffect(() => {
     if (location.hash === '#/settings/firmware')
@@ -38,6 +62,17 @@ export default function Settings() {
             <p>Choose how readings appear in this browser.</p>
           </div>
           <div className="settings-fields">
+            <Field label="Appearance">
+              <select
+                className="short-field"
+                value={appearance}
+                onChange={(event) => changeAppearance(event.target.value)}
+              >
+                <option value="system">Use system setting</option>
+                <option value="light">Light</option>
+                <option value="dark">Dark</option>
+              </select>
+            </Field>
             <Field label="Temperature unit">
               <select
                 className="short-field"

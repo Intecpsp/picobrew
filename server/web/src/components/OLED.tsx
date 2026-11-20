@@ -5,11 +5,11 @@ export default function OLED({ display, error }: { display: Display | null; erro
   const ref = useRef<HTMLCanvasElement>(null)
   const [invalid, setInvalid] = useState('')
   useEffect(() => {
-    if (!display || !ref.current) return
+    if (!display || !ref.current || error) return
     try {
       const pixels = decodeDisplay(display)
       const ctx = ref.current.getContext('2d')
-      if (!ctx) return
+      if (!ctx) throw new Error('Display rendering is unavailable.')
       const data = ctx.createImageData(display.width, display.height)
       pixels.forEach((value, i) => {
         const amount = value / (display.format === 'row-gray4-msb-hex' ? 15 : 1)
@@ -23,20 +23,24 @@ export default function OLED({ display, error }: { display: Display | null; erro
     } catch (error) {
       setInvalid((error as Error).message)
     }
-  }, [display])
+  }, [display, error])
+  const live = !!display && !invalid && !error
   return (
     <div className="oled">
-      {display && !invalid ? (
-        <canvas
-          ref={ref}
-          width={display.width}
-          height={display.height}
-          aria-label="Live Pico OLED display"
-        />
+      <canvas
+        ref={ref}
+        hidden={!live}
+        width={display?.width}
+        height={display?.height}
+        aria-label="Live Pico OLED display"
+      />
+      {live ? (
+        <span>
+          LIVE OLED · {display.width} × {display.height}
+        </span>
       ) : (
         <div className="oled-placeholder">{error || invalid || 'Waiting for the front panel…'}</div>
       )}
-      <span>LIVE OLED · {display ? `${display.width} × ${display.height}` : '128 × 64'}</span>
     </div>
   )
 }

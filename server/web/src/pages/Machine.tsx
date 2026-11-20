@@ -40,7 +40,7 @@ import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components
 import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
-import { deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
+import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 import AccessoryMachine from './AccessoryMachine'
 import { DevicePreferences } from '../components/DevicePreferences'
 import { isAccessory, sensorValue, supports } from '../lib/capabilities'
@@ -83,7 +83,8 @@ function BrewerMachine({ id }: { id: string }) {
   const native = useResource<MachineRecipe[] | { recipes: MachineRecipe[] }>(
     device?.online && supports(device.capabilities, 'recipes') ? `/devices/${id}/recipes` : null
   )
-  const [program, setProgram] = useState('rinse')
+  const [chosenProgram, setProgram] = useState('rinse')
+  const [task, setTask] = useState<'recipes' | 'programs'>('recipes')
   const [monitorNextBrew, setMonitorNextBrew] = useState(false)
   const monitor = useResource<AIMonitorState>(device ? `/devices/${id}/ai-monitor` : null, 5000)
   const [recipeID, setRecipeID] = useState('')
@@ -196,11 +197,17 @@ function BrewerMachine({ id }: { id: string }) {
   const status = device.status
   const commands = device.capabilities?.commands || []
   const programs = Object.keys(programNames).filter((name) => commands.includes(name))
+  const program = programs.includes(chosenProgram) ? chosenProgram : programs[0] || ''
+  const hasRecipes = supports(device.capabilities, 'recipes')
+  const showRecipes = hasRecipes && (task === 'recipes' || !programs.length)
+  const live = device.online ? status : undefined
   const allowed = (name: string) => device.online && commands.includes(name)
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
   const state =
-    interrupted && !status?.busy && !status?.stopped ? 'Review checkpoint' : deviceState(device)
+    device.online && interrupted && !status?.busy && !status?.stopped
+      ? 'Review checkpoint'
+      : deviceState(device)
   return (
     <>
       <PageTitle
@@ -208,7 +215,7 @@ function BrewerMachine({ id }: { id: string }) {
         back={() => hub.navigate('/overview')}
         eyebrow={`${deviceModelLabel(device)} · ${device.location || 'YOUR BREWERY'}`}
         title={device.name}
-        description={device.base_url || 'Virtual brewer in your simulation workspace'}
+
         actions={
           <>
             <Badge
@@ -225,29 +232,21 @@ function BrewerMachine({ id }: { id: string }) {
               {state}
             </Badge>
             <Button
-              variant="ghost"
-              disabled={testingConnection || !device.enabled}
-              onClick={() => void testConnection()}
-            >
-              <RefreshCw size={16} className={testingConnection ? 'spin' : ''} />
-              Test connection
-            </Button>
-            <Button variant="secondary" onClick={() => setEditing(true)}>
-              <Pencil size={16} />
-              Edit connection
-            </Button>
-            <Button
               variant="secondary"
-              disabled={!device.online && device.adapter !== 'pico-standalone'}
-              onClick={() => setSettings(true)}
+              onClick={() => document.getElementById('machine-management')?.focus()}
             >
-              <SlidersHorizontal size={16} />
-              Brewer preferences
+              <Settings2 size={16} /> Manage machine
             </Button>
-            <Button variant="ghost" onClick={() => setRemoving(true)}>
-              <Trash2 size={16} />
-              Remove machine
-            </Button>
+            {commands.includes('stop') && (
+              <Button
+                variant="danger"
+                disabled={!allowed('stop') || pending === 'stop' || !!live?.stopped}
+                onClick={() => void command('stop')}
+                aria-label="Stop machine outputs"
+              >
+                <Square size={14} fill="currentColor" /> Stop
+              </Button>
+            )}
           </>
         }
       />
@@ -264,7 +263,7 @@ function BrewerMachine({ id }: { id: string }) {
       )}
       {device.key_reused && <DeviceKeyNotice />}
       <ErrorBanner message={error} />
-      {interrupted && (
+      {device.online && interrupted && (
         <section className="panel" aria-labelledby="recovery-heading">
           <SectionHeading
             title="Interrupted brew"
@@ -324,51 +323,11 @@ function BrewerMachine({ id }: { id: string }) {
           </div>
         </section>
       )}
-      <div className="machine-metrics">
-        <Metric
-          label="Wort temperature"
-          value={temperature(status?.wort_f, hub.unit)}
-          note="Current reading"
-          accent
-        />
-        <Metric
-          label="Thermoblock"
-          value={temperature(status?.thermoblock_f, hub.unit)}
-          note="Heating circuit"
-        />
-        <Metric
-          label="Target"
-          value={status?.target_f ? temperature(status.target_f, hub.unit) : 'Unheated'}
-          note={status?.step_name || 'No active step'}
-        />
-        <Metric
-          label="Step time"
-          value={duration((status?.step_seconds || 0) * 1000)}
-          note={
-            status?.step_count ? `Step ${status.current_step + 1} of ${status.step_count}` : 'Idle'
-          }
-        />
-      </div>
-      {!!status?.sensors?.length && (
-        <div className="machine-metrics accessory-metrics">
-          {status.sensors.map((sensor) => (
-            <Metric
-              key={sensor.id}
-              label={sensor.label}
-              value={sensorValue(sensor, hub.unit)}
-              note="Device sensor"
-            />
-          ))}
-        </div>
-      )}
       <div className="machine-main">
         <section className="panel front-panel">
           <SectionHeading
-            title="The front panel, wherever you are."
-            description="Turn the dial, follow the prompts, stay in control."
-            actions={
-              status?.filter_inserted === false && <Badge tone="amber">Filter removed</Badge>
-            }
+            title="Front panel"
+            actions={live?.filter_inserted === false && <Badge tone="amber">Filter removed</Badge>}
           />
           <OLED display={display.data} error={!device.online ? 'Machine offline' : display.error} />
           <div className="dial-controls">
@@ -378,7 +337,7 @@ function BrewerMachine({ id }: { id: string }) {
               disabled={!allowed('encoder') || !!pending}
               onClick={() => void command('encoder', { delta: -1 })}
             >
-              <ArrowUp size={20} />
+              <ArrowUp size={16} /> Up
             </Button>
             <Button
               disabled={!allowed('encoder') || !!pending}
@@ -392,122 +351,63 @@ function BrewerMachine({ id }: { id: string }) {
               disabled={!allowed('encoder') || !!pending}
               onClick={() => void command('encoder', { delta: 1 })}
             >
-              <ArrowDown size={20} />
+              Down <ArrowDown size={16} />
             </Button>
           </div>
-          <p className="help-text">
-            The display mirrors the physical brewer. Use its prompts to confirm preparation and
-            advance through each program.
-          </p>
+
+          <footer className="machine-footnotes" aria-label="Machine information">
+            {device.adapter === 'pico-standalone' ? (
+              <button className="firmware-link" onClick={() => setFirmware(true)}>
+                Firmware {device.capabilities?.firmware_version || '—'}
+              </button>
+            ) : (
+              <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
+            )}
+            <span>API v{device.capabilities?.api_version || '—'}</span>
+            <span>UID {status?.device_uid || 'Not reported'}</span>
+            <span>Uptime {live?.uptime_ms == null ? '—' : duration(live.uptime_ms)}</span>
+          </footer>
         </section>
         <section className="panel program-panel">
           <SectionHeading
-            title="What's brewing?"
+            title={
+              !device.online
+                ? 'Machine offline'
+                : live?.stopped
+                  ? 'Outputs stopped'
+                  : live?.busy
+                    ? 'Current session'
+                    : 'Run a program'
+            }
             description={
-              status?.busy
-                ? status.recipe_name || 'A program is in progress.'
-                : 'Choose a recipe or a maintenance program.'
+              !device.online
+                ? device.enabled
+                  ? 'Power on the brewer to reconnect.'
+                  : 'Monitoring is off for this machine.'
+                : live?.stopped
+                  ? live.stop_reason || 'Heating and pumping are latched off.'
+                  : live?.busy
+                    ? live.recipe_name || programNames[live.command] || live.command
+                    : undefined
             }
           />
-          <Field label="Recipe on this machine">
-            <select value={recipeID} onChange={(event) => setRecipeID(event.target.value)}>
-              <option value="">Choose a saved recipe</option>
-              {recipes.map((recipe) => (
-                <option key={recipe.id} value={recipe.id}>
-                  {recipe.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Button
-            className="full-width"
-            disabled={!recipeID || !allowed('brew') || !!pending || !!status?.busy || interrupted}
-            onClick={() =>
-              requestStart({
-                command: 'brew',
-                recipe_id: recipeID,
-                label: recipes.find((recipe) => recipe.id === recipeID)?.name || 'this recipe',
-              })
-            }
-          >
-            <Play size={16} />
-            Start recipe
-          </Button>
-          <button className="text-button recipe-link" onClick={() => setTransferRecipes(true)}>
-            <BookOpen size={15} />
-            Send recipes from the library
-            <ArrowUpRight size={14} />
-          </button>
-          <ErrorBanner message={native.error} retry={native.reload} />
-          <div className="native-library">
-            <small>
-              {recipes.length} / {device.capabilities?.recipe_capacity || '—'} recipe slots used
-            </small>
-            <Button
-              variant="ghost"
-              disabled={
-                !recipeID ||
-                !device.online ||
-                !status?.ready ||
-                !!status?.busy ||
-                !!status?.stopped ||
-                !!pending
-              }
-              onClick={() =>
-                setEditRecipe(recipes.find((recipe) => recipe.id === recipeID) || null)
-              }
-            >
-              <Pencil size={13} />
-              Edit saved program
-            </Button>
-            <Button
-              variant="ghost"
-              className="danger-text"
-              disabled={
-                !recipeID || !device.online || !!status?.busy || !!status?.stopped || !!pending
-              }
-              onClick={() => setRemoveRecipe(true)}
-            >
-              <Trash2 size={13} />
-              Remove selected copy
-            </Button>
-          </div>
-          <div className="divider" />
-          <Field label="Other programs">
-            <select value={program} onChange={(event) => setProgram(event.target.value)}>
-              {programs.map((command) => (
-                <option key={command} value={command}>
-                  {programNames[command]}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Button
-            variant="secondary"
-            className="full-width"
-            disabled={!allowed(program) || !!pending || !!status?.busy || interrupted}
-            onClick={() =>
-              requestStart({ command: program, label: programNames[program] || program })
-            }
-          >
-            Open program
-            <ArrowUpRight size={16} />
-          </Button>
-          <div className="stop-row">
-            <div>
-              <strong>{status?.stopped ? 'Outputs are stopped' : 'Stop machine outputs'}</strong>
-              <small>{status?.stop_reason || 'Immediately latch heating and pumping off.'}</small>
+          {!device.online && device.last_seen && (
+            <p className="help-text">Last connected {dateLabel(device.last_seen)}</p>
+          )}
+          {live?.busy && (
+            <div className="session-step">
+              <span>
+                {live.step_count
+                  ? `Step ${live.current_step + 1} of ${live.step_count}`
+                  : 'Current step'}
+              </span>
+              <strong>{live.step_name || 'Follow the front panel'}</strong>
+              {live.step_seconds > 0 && (
+                <span>{duration(live.step_seconds * 1000)} remaining in this step</span>
+              )}
             </div>
-            <Button
-              variant="danger"
-              disabled={!allowed('stop') || pending === 'stop'}
-              onClick={() => void command('stop')}
-            >
-              <Square size={14} fill="currentColor" />
-              Stop
-            </Button>
-          </div>
-          {status?.stopped && (
+          )}
+          {live?.stopped && (
             <Button
               variant="secondary"
               className="full-width"
@@ -517,7 +417,7 @@ function BrewerMachine({ id }: { id: string }) {
               Clear stop latch
             </Button>
           )}
-          {(commands.includes('pause') || commands.includes('resume')) && (
+          {live?.busy && (commands.includes('pause') || commands.includes('resume')) && (
             <div className="inline-actions">
               {['pause', 'resume']
                 .filter((name) => commands.includes(name))
@@ -533,8 +433,204 @@ function BrewerMachine({ id }: { id: string }) {
                 ))}
             </div>
           )}
+          {device.online && !live?.busy && !live?.stopped && (
+            <>
+              {hasRecipes && programs.length > 0 && (
+                <div className="program-switch" role="group" aria-label="Program type">
+                  <button
+                    type="button"
+                    aria-pressed={showRecipes}
+                    onClick={() => setTask('recipes')}
+                  >
+                    Saved recipes
+                  </button>
+                  <button
+                    type="button"
+                    aria-pressed={!showRecipes}
+                    onClick={() => setTask('programs')}
+                  >
+                    Other programs
+                  </button>
+                </div>
+              )}
+              {showRecipes && (
+                <>
+                  {recipes.length > 0 ? (
+                    <>
+                      <Field label="Recipe on this machine">
+                        <select
+                          value={recipeID}
+                          onChange={(event) => setRecipeID(event.target.value)}
+                        >
+                          <option value="">Choose a saved recipe</option>
+                          {recipes.map((recipe) => (
+                            <option key={recipe.id} value={recipe.id}>
+                              {recipe.name}
+                            </option>
+                          ))}
+                        </select>
+                      </Field>
+                      <Button
+                        className="full-width"
+                        disabled={
+                          !recipeID ||
+                          !allowed('brew') ||
+                          !!pending ||
+                          !!status?.busy ||
+                          interrupted
+                        }
+                        onClick={() =>
+                          requestStart({
+                            command: 'brew',
+                            recipe_id: recipeID,
+                            label:
+                              recipes.find((recipe) => recipe.id === recipeID)?.name ||
+                              'this recipe',
+                          })
+                        }
+                      >
+                        <Play size={16} />
+                        Start recipe
+                      </Button>
+                    </>
+                  ) : (
+                    <p>
+                      {native.loading
+                        ? 'Reading saved recipes…'
+                        : native.error
+                          ? 'Saved recipes are unavailable.'
+                          : 'No recipes on this machine yet.'}
+                    </p>
+                  )}
+                  <button
+                    className="text-button recipe-link"
+                    onClick={() => setTransferRecipes(true)}
+                  >
+                    <BookOpen size={15} />
+                    Send recipes from the library
+                    <ArrowUpRight size={14} />
+                  </button>
+                  <ErrorBanner message={native.error} retry={native.reload} />
+                  {recipes.length > 0 && (
+                    <details className="stored-recipes">
+                      <summary>Manage saved recipes</summary>
+                      <div className="native-library">
+                        <small>
+                          {recipes.length} / {device.capabilities?.recipe_capacity || '—'} recipe
+                          slots used
+                        </small>
+                        <Button
+                          variant="ghost"
+                          disabled={
+                            !recipeID ||
+                            !device.online ||
+                            !status?.ready ||
+                            !!status?.busy ||
+                            !!status?.stopped ||
+                            !!pending
+                          }
+                          onClick={() =>
+                            setEditRecipe(recipes.find((recipe) => recipe.id === recipeID) || null)
+                          }
+                        >
+                          <Pencil size={13} />
+                          Edit saved program
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          className="danger-text"
+                          disabled={
+                            !recipeID ||
+                            !device.online ||
+                            !!status?.busy ||
+                            !!status?.stopped ||
+                            !!pending
+                          }
+                          onClick={() => setRemoveRecipe(true)}
+                        >
+                          <Trash2 size={13} />
+                          Remove selected copy
+                        </Button>
+                      </div>
+                    </details>
+                  )}
+                </>
+              )}
+              {!showRecipes && programs.length > 0 && (
+                <>
+                  <Field label="Other programs">
+                    <select value={program} onChange={(event) => setProgram(event.target.value)}>
+                      {programs.map((command) => (
+                        <option key={command} value={command}>
+                          {programNames[command]}
+                        </option>
+                      ))}
+                    </select>
+                  </Field>
+                  <Button
+                    variant="secondary"
+                    className="full-width"
+                    disabled={!allowed(program) || !!pending || !!status?.busy || interrupted}
+                    onClick={() =>
+                      requestStart({ command: program, label: programNames[program] || program })
+                    }
+                  >
+                    Open program
+                    <ArrowUpRight size={16} />
+                  </Button>
+                </>
+              )}
+              {!hasRecipes && !programs.length && <p>Use the front panel to select a program.</p>}
+            </>
+          )}
+          {live && (
+            <section className="console-readings" aria-label="Live readings">
+              <h3>Live readings</h3>
+              <div className="machine-metrics">
+                <Metric
+                  label="Wort temperature"
+                  value={temperature(live?.wort_f, hub.unit)}
+
+                  accent
+                />
+                <Metric label="Thermoblock" value={temperature(live?.thermoblock_f, hub.unit)} />
+                <Metric
+                  label="Target"
+                  value={
+                    live?.target_f == null
+                      ? '—'
+                      : live.target_f
+                        ? temperature(live.target_f, hub.unit)
+                        : 'Unheated'
+                  }
+                  note={live?.step_name || ''}
+                />
+                <Metric
+                  label="Step time"
+                  value={
+                    live?.busy && live.step_seconds > 0 ? duration(live.step_seconds * 1000) : '—'
+                  }
+                  note={
+                    live?.step_count ? `Step ${live.current_step + 1} of ${live.step_count}` : ''
+                  }
+                />
+              </div>
+            </section>
+          )}
         </section>
       </div>
+      {!!live?.sensors?.length && (
+        <div className="machine-metrics accessory-metrics">
+          {live.sensors.map((sensor) => (
+            <Metric
+              key={sensor.id}
+              label={sensor.label}
+              value={sensorValue(sensor, hub.unit)}
+              note="Device sensor"
+            />
+          ))}
+        </div>
+      )}
       <section className="panel">
         <SectionHeading
           title="Readings through the brew"
@@ -584,18 +680,40 @@ function BrewerMachine({ id }: { id: string }) {
         loading={monitor.loading}
         reload={monitor.reload}
       />
-      <div className="machine-footnotes">
-        {device.adapter === 'pico-standalone' ? (
-          <button className="firmware-link" onClick={() => setFirmware(true)}>
-            Firmware {device.capabilities?.firmware_version || '—'}
-          </button>
-        ) : (
-          <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
-        )}
-        <span>API v{device.capabilities?.api_version || '—'}</span>
-        <span>UID {status?.device_uid || 'Not reported'}</span>
-        <span>Uptime {duration(status?.uptime_ms || 0)}</span>
-      </div>
+      <section
+        className="panel machine-management"
+        tabIndex={-1}
+        id="machine-management"
+        aria-label="Machine management"
+      >
+        <SectionHeading title="Machine management" description={device.base_url || undefined} />
+        <div className="inline-actions">
+          <Button
+            variant="ghost"
+            disabled={testingConnection || !device.enabled}
+            onClick={() => void testConnection()}
+          >
+            <RefreshCw size={16} className={testingConnection ? 'spin' : ''} />
+            Test connection
+          </Button>
+          <Button variant="secondary" onClick={() => setEditing(true)}>
+            <Pencil size={16} />
+            Edit connection
+          </Button>
+          <Button
+            variant="secondary"
+            disabled={!device.online && device.adapter !== 'pico-standalone'}
+            onClick={() => setSettings(true)}
+          >
+            <SlidersHorizontal size={16} />
+            Brewer preferences
+          </Button>
+          <Button variant="ghost" onClick={() => setRemoving(true)}>
+            <Trash2 size={16} />
+            Remove machine
+          </Button>
+        </div>
+      </section>
       {confirm && (
         <Confirm
           title={

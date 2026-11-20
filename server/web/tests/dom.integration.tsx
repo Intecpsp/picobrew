@@ -108,13 +108,13 @@ describe('UI interactions against the real isolated Go simulator', () => {
     await screen.findByRole('heading', { name: 'A good day to brew.' })
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
-    await screen.findByRole('heading', { name: 'The front panel, wherever you are.' })
+    await screen.findByRole('heading', { name: 'Front panel' })
     await waitFor(() => expect(painted).toHaveBeenCalled())
     const down = screen.getByRole('button', { name: 'Move selection down' }) as HTMLButtonElement
     await waitFor(() => expect(down.disabled).toBe(false))
     await user.click(down)
     await waitFor(() => expect(down.disabled).toBe(false))
-    expect(screen.getByRole('button', { name: 'Stop' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Stop machine outputs' })).toBeTruthy()
   })
   it('manages an offline machine from Overview and its detail page while retaining brew history', async () => {
     let id = ''
@@ -363,6 +363,7 @@ describe('community catalogue and local recipe slots', () => {
         screen.getByLabelText('Recipe on this machine', { exact: true }),
         original.native_program.id
       )
+      await user.click(screen.getByText('Manage saved recipes', { exact: true }))
       await user.click(screen.getByRole('button', { name: 'Edit saved program' }))
       dialog = await screen.findByRole('dialog', {
         name: 'Edit the machine’s saved program',

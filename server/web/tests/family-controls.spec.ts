@@ -268,12 +268,9 @@ for (const width of [1280, 390]) {
       if (brewing) {
         const canvas = page.locator('canvas[aria-label="Live Pico OLED display"]')
         await expect(canvas).toBeVisible()
-        await expect(
-          page.getByRole('button', { name: 'Pause session', exact: true })
-        ).toBeDisabled()
-        await expect(
-          page.getByRole('button', { name: 'Resume session', exact: true })
-        ).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Pause session' })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Resume session' })).toHaveCount(0)
+        await page.getByRole('button', { name: 'Other programs', exact: true }).click()
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Clean')
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Chill')
         const pixels = await canvas.evaluate((node) =>
@@ -329,6 +326,30 @@ for (const width of [1280, 390]) {
         await expect(
           page.getByRole('button', { name: 'Discard checkpoint', exact: true })
         ).toHaveCount(0)
+        Object.assign(status, {
+          busy: true,
+          state: 'brewing',
+          step_name: 'Mash',
+          step_seconds: 120,
+          current_step: 0,
+          step_count: 3,
+        })
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Current session' })).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Pause session' })).toBeEnabled()
+        await expect(page.getByRole('button', { name: 'Resume session' })).toBeEnabled()
+        await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Stop machine outputs' })).toBeEnabled()
+        Object.assign(device, { online: false })
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Machine offline' })).toBeVisible()
+        await expect(canvas).toBeHidden()
+        await expect(page.getByText('LIVE OLED', { exact: false })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toBeDisabled()
+        await expect(page.getByRole('region', { name: 'Live readings' })).toHaveCount(0)
+        Object.assign(device, { online: true })
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(canvas).toBeVisible()
       } else {
         await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toHaveCount(0)
         await expect(page.getByText('Thermoblock', { exact: true })).toHaveCount(0)
