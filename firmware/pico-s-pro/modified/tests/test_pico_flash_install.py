@@ -380,7 +380,9 @@ class InstallWireTests(unittest.TestCase):
         transcript = io.StringIO()
         port_class = backup.USBSerialPort
         def short_timeout_port(raw):
-            port = port_class(raw)
+            # Queued fixture bytes are immediately available. Advance simulated
+            # time only when a read waits on an empty endpoint.
+            port = port_class(raw, clock=lambda: fake.idle_seconds)
             port.timeout = 0.02
             return port
         with mock.patch.object(probe, "CH340USBTransport", return_value=fake) as transport_factory, \
@@ -1116,7 +1118,7 @@ class InstallWireTests(unittest.TestCase):
         if mode == "install":
             payloads[APP_NAME] = self.candidate
             payloads.update(self.web_payloads)
-        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, payloads, journal,
+        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake, clock=lambda: fake.idle_seconds), HELPER, mode, payloads, journal,
                                                web_manifest=self.web_manifest if mode == "install" else None)
         connection.helper_sent = len(HELPER)
         connection.helper_executed = True
@@ -1156,7 +1158,7 @@ class InstallWireTests(unittest.TestCase):
                              ("provision-key", {KEY_NAME: bytearray(KEY)})):
             with self.subTest(mode=mode):
                 with self.assertRaises(installer.InstallError):
-                    installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, values, MemoryJournal())
+                    installer.build_connection(cc, probe, backup.USBSerialPort(fake, clock=lambda: fake.idle_seconds), HELPER, mode, values, MemoryJournal())
         self.assertEqual(fake.trace, [])
 
     def test_browser_registration_and_application_sequence_are_guarded(self):
