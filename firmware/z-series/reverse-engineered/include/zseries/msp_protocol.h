@@ -64,7 +64,9 @@ enum z_msp_result {
     Z_MSP_BAD_IMAGE_CRC = -6,
     Z_MSP_BAD_APP_VERSION = -7,
     Z_MSP_UNRECOGNIZED_INITIAL_RESPONSE = -8,
-    Z_MSP_ERASE_FAILED = -9
+    Z_MSP_ERASE_FAILED = -9,
+    Z_MSP_MISSING_DIAGNOSTIC = -10,
+    Z_MSP_DIAGNOSTIC_FAILED = -11
 };
 
 /* Portable data model: no original C++ vtable or ESP32 ABI padding is exposed.
@@ -109,6 +111,26 @@ struct z_msp_transport {
     void (*delay_ms)(void *, uint32_t);
 };
 
+/* Borrowed services for the actual returning diagnostic behavior. Levels have
+ * ConsoleLevel's numeric values: Info=0, Warning=1, Error=2, Debug=3. A null
+ * source file is the OEM IV log form. trace is the DEBUG ScopeLogger, distinct
+ * from the T-prefixed diagnostic-test ScopeLogger. assertion must update the
+ * shared counter and delay 200 ms before returning. assertion_count and watchdog_reset
+ * are used by the real MSP update self-test. Bind after z_msp_init, which clears
+ * client bookkeeping. A missing required service is an integration failure.
+ * A null diagnostics pointer retains the explicitly guarded legacy API for
+ * callers whose old assertion-boundary evidence is not full continuation. */
+struct z_msp_diagnostics {
+    void *context;
+    bool (*assertion)(void *, const char *file, uint32_t line, const char *expression);
+    bool (*log)(void *, unsigned level, const char *tag, const char *file,
+                uint32_t line, const char *message);
+    bool (*trace)(void *, bool begin, const char *tag, const char *file,
+                  uint32_t line, const char *name);
+    uint32_t (*assertion_count)(void *);
+    bool (*watchdog_reset)(void *);
+};
+
 struct z_msp_client {
     struct z_msp_state *state;
     struct z_msp_transport transport;
@@ -119,6 +141,7 @@ struct z_msp_client {
     uint32_t transition_delay;
     uint32_t response_delay;
     uint8_t last_bsl_response;
+    const struct z_msp_diagnostics *diagnostics;
 };
 
 /* Pure byte transformations, independently callable without any transport. */
@@ -138,8 +161,11 @@ bool z_msp_is_expected_version(const uint8_t response[9]);
 
 /* Parameters are supplied explicitly: test fixture addresses/delays are not OEM
  * defaults. init initializes client bookkeeping but preserves the supplied state.
- * Negative results replace OEM fatal assertions at the documented boundaries;
- * positive programming results are unchanged one-byte controller error codes. */
+ * With diagnostics bound, assertions return and execution continues as in the
+ * OEM. Negative results identify API/integration failures; positive segment or
+ * erase results are unchanged one-byte controller error codes. The original
+ * void update/setup bodies log controller failures and return normally. Without
+ * diagnostics, the documented legacy assertion/error guards remain enabled. */
 int z_msp_init(struct z_msp_client *, struct z_msp_state *,
                struct z_msp_transport, uint8_t address, uint32_t poll_interval,
                uint32_t transition_delay, uint32_t response_delay);

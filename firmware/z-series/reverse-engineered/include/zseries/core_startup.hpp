@@ -8,7 +8,8 @@ namespace zseries { namespace oem {
 enum class CoreSetupStage : std::uint8_t {
     Wifi, HttpServer, Buzzer, System, Msp, Eeprom, Safeties, PowerButton,
     Accelerometer, Pressure, PicoStill, Head, Encoder, ZBackend, Runtime,
-    HttpBackend, SerialLogger, SessionLogger, Azure, TimerMonitor,
+    HttpBackend, SerialLogger, SessionLogger, Azure, Pinger,
+    TimerMonitor = Pinger, // compatibility name from the earlier partial map
     Diagnostics, Information
 };
 
@@ -38,6 +39,11 @@ struct CoreStartupServices {
     void (*attach_timer_interrupt)(void*, PlatformHandle, CoreTimerCallback, bool edge);
     void (*write_timer_alarm)(void*, PlatformHandle, std::uint64_t ticks, bool auto_reload);
     void (*enable_timer_alarm)(void*, PlatformHandle, bool);
+    bool (*register_heater_commands)(void*);
+    // A failed xTimerStart logs, increments the assertion counter and delays
+    // 200ms, then the original continues with hardware timers and diagnostics.
+    bool (*assertion)(void*, std::uint32_t source_line, const char* expression);
+    bool (*register_adc_commands)(void*);
 };
 
 struct CoreTimerHandles {

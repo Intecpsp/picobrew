@@ -11,8 +11,11 @@ export default function OLED({ display, error }: { display: Display | null; erro
       const ctx = ref.current.getContext('2d')
       if (!ctx) return
       const data = ctx.createImageData(display.width, display.height)
-      pixels.forEach((on, i) => {
-        const color = on ? [196, 219, 171] : [28, 43, 35]
+      pixels.forEach((value, i) => {
+        const amount = value / (display.format === 'row-gray4-msb-hex' ? 15 : 1)
+        const color = [28, 43, 35].map((base, index) =>
+          Math.round(base + ([196, 219, 171][index] - base) * amount)
+        )
         data.data.set([...color, 255], i * 4)
       })
       ctx.putImageData(data, 0, 0)

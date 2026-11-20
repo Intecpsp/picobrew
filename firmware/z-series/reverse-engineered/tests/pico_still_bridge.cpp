@@ -1,3 +1,9 @@
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+#include "still_continuation_probe.hpp"
+#define STILL_DIAGNOSTICS (&still_continuation_probe.services)
+#else
+#define STILL_DIAGNOSTICS nullptr
+#endif
 #include "zseries/pico_still.hpp"
 #include <algorithm>
 #include <cstring>
@@ -17,7 +23,11 @@ bool perform(void* context,const PicoStillAction& action,std::uint32_t& result){
     std::vector<std::uint32_t> row{static_cast<std::uint32_t>(action.effect),action.argument};
     append_text(row,action.text);append_text(row,action.credentials?action.credentials->ssid.data():nullptr);
     append_text(row,action.credentials?action.credentials->password.data():nullptr);row.push_back(action.credentials&&action.credentials->internet_expected);
-    f.events.push_back(row);result=1;
+    f.events.push_back(row);
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+    still_continuation_probe.service(f.events.size()-1);
+#endif
+result=1;
     switch(action.effect){
     case PicoStillEffect::AcquireRuntime:result=f.input[ALLOW];break;
     case PicoStillEffect::ScanCount:result=f.input[SCAN_COUNT];break;
@@ -35,6 +45,10 @@ bool perform(void* context,const PicoStillAction& action,std::uint32_t& result){
 extern "C" int pico_still_test(unsigned operation,const std::uint32_t* a,std::uint32_t* output,std::size_t capacity){
     EepromData settings;copy(settings.wifi_ssid,"configured-home");copy(settings.wifi_password,"configured-password");
     PicoStillController c(settings);Fixture f{a,&c,{}};c.services.context=&f;c.services.perform=perform;
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+    c.services.diagnostics=still_continuation_probe.services;
+#endif
+
     c.state.id=static_cast<PicoStillStateId>(a[STATE]);c.state.previous=static_cast<PicoStillStateId>(a[PREVIOUS]);
     c.next_poll_date=a[POLLDATE];c.poll_delay_ms=a[POLLDELAY];c.maximum_retries=static_cast<std::int32_t>(a[MAXRETRY]);
     c.failure_threshold=static_cast<std::int32_t>(a[THRESHOLD]);c.retry_count=static_cast<std::int32_t>(a[RETRY]);

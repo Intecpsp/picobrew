@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "scope": "Image construction inputs verified byte-for-byte against the pinned public dependency archives; no OEM device layout inferred.",
+  "profiles": {
+    "esp32": {
+      "archive_sha256": "040e99ef8d6190681e49e770e51c27c6bf9f9971459cf6b0f2c73de006644dc5",
+      "identity_sha256": {
+        "tools/esptool.py": "1537a53933045079a97abc21248970785966aa55caed968bd2e9bc91e2eaadb8",
+        "tools/gen_esp32part.py": "cec4bc565e68c5be0486d5d5437ec35203ce6cb6b623e80e8f02ea17635221ea",
+        "tools/sdk/bin/bootloader_dio_40m.bin": "6c63535767d25b656672913879672d01cbfabef8c25b62dffb91f98d04f37998",
+        "tools/sdk/ld/esp32_out.ld": "e730b50b4ccb98af01c926e3ae57f7761f35deb5e368d4c7c1a340c85f5dfff7"
+      }
+    },
+    "esp8266": {
+      "archive_sha256": "794f5e82fbc0490b68d45b2c63e8ece8f1fe3fe8ff51c78637823ca89a5a553c",
+      "identity_sha256": {
+        "platform.txt": "ba68b489558fe8c4485b195f61f9d7742b585b6a353c0689df479e504c239e40",
+        "bootloaders/eboot/eboot.elf": "86099b0b75de8aa87445d23837802768a41f0f0221429ed9328004a913976421",
+        "tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1"
+      }
+    }
+  }
+}

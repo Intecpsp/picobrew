@@ -3,6 +3,7 @@
 #include "zseries/enums.hpp"
 
 namespace zseries { namespace oem {
+struct ConsoleServices;
 struct Quantity {
     double value;
     Unit unit;
@@ -12,7 +13,8 @@ struct Quantity {
 // are consequently compatible in the original firmware as well.
 bool quantity_units_compatible(Unit from, Unit to) noexcept;
 
-// False reports the original returning Quantity.h:0x7d assertion. The OEM
-// continues with a zero result on that path; callers choose their error policy.
-bool quantity_in(const Quantity&, Unit to, double& result) noexcept;
+// Empty diagnostics retain the guarded standalone API (false, zero result).
+// Bound diagnostics execute the returning assertion and incompatibility log,
+// then return true with the OEM zero value. Callback failures return false.
+bool quantity_in(const Quantity&, Unit to, double& result,const ConsoleServices* diagnostics=nullptr) noexcept;
 }} // namespace zseries::oem

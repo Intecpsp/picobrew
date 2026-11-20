@@ -1,0 +1,160 @@
+
+<h1 id="product">PicoStill</h1>
+
+<table id="version" border="0" align="center"><tr><th>Firmware Version: </th><td id=versionNumber>0.0.x</td></tr></table>
+
+<table id="data-table" class="still-data-table">
+<!--     <caption id="data-table-caption">Data</caption> -->
+    <!-- Table body -->
+    <tr>
+        <th>T1</th>
+        <th>Coil Inlet</th>
+        <td id="T1">-</td>
+    </tr>
+    <tr>
+        <th>T2</th>
+        <th>Coil Outlet</th>
+        <td id="T2">-</td>
+    </tr>
+    <tr>
+        <th>T3</th>
+        <th>Pot</th>
+        <td id="T3">-</td>
+    </tr>
+    <tr>
+        <th>T4</th>
+        <th>Ambient</th>
+        <td id="T4">-</td>
+    </tr>
+    <tr>
+        <th>P </th>
+        <th>Pressure</th>
+        <td id="P">-</td>
+    </tr>
+</table>
+
+<label><input type="checkbox" id="isMetric" onclick="sensorDataController.update()">Metric</label>
+
+<div class="padded-div"></div>
+<!-- <div id="graph">
+    <canvas id="data-graph" class="still-data-graph"></canvas>
+</div> -->
+
+<!-- Tab links -->
+<div class="tab">
+    <button class="tablinks" onclick="openTab(event, 'Setup')" id="defaultOpen">Setup</button>
+    <button class="tablinks" onclick="openTab(event, 'Program')">Program</button>
+    <button class="tablinks" onclick="openTab(event, 'Utilities')">Utilities</button>
+    <button class="tablinks" onclick="openTab(event, 'Info')">Info</button>
+</div>
+
+<!-- Tab content -->
+<div id="Setup" class="tabcontent">
+    <h3>Machine Setup</h3>
+
+    <!-- Pico Instructions -->
+    <h4 id="PicoInst">Pico</h4>
+    <ol id="instructionSteps">
+        <li>Add 2 inches of water into the step filter</li>
+        <li>Insert the step filter with lid into Pico</li>
+        <li>Attach the IN and OUT hoses to PicoStill</li>
+        <li>Check that water reservoir is full</li>
+    </ol>
+
+    <!-- TODO this table element is a hacky way of getting a line between the Pico and Zymatic instructions -->
+    <!-- Right now its not high pri enough to create a new class to style the formatting of the table -->
+    <!-- But if another instruction set is added, this should be done correctly -->
+    <table id="setup-instruction-table" border="0" class="phone-table">
+        <tr><th font-weight="normal">
+        </th></tr>
+        <tr><th font-weight="normal">
+        </th></tr>
+    </table>
+
+    <!-- Zymatic Instructions -->   
+    <h4 id="ZymaticInst">Zymatic</h4>
+    <h5 id="zymatic-guide-link" hidden>For an illustrated manual, see link</h5>  <!-- todo? -->
+    <h5 id="zymatic-component-list">You will need:</h5>
+        <ul>Keg Adapter Set</ul>
+        <ul>5 Gallon Corny Keg</ul>
+        <ul>Zymatic Transfer Tube Assembly</ul>
+    <h5 id="zymatic-instruction-list">Setting up:</h5>
+    <ol id="instructionSteps">
+        <li>Add 2.5 gallons of tap water to the 5 gallon corny keg</li>
+        <li>Seal the keg with the Keg Seal, leaving the hole open (no foam trap or air lock) and slip the neoprene Keg Cozy over the keg to help prevent heat loss</li>
+        <li>Connect the hose with the grey ball lock fitting to the 'IN' post of the keg</li>
+        <li>Connect the fitting on one end of the clear Zymatic Transfer Tube assembly to the 'OUT' post of the keg</li>
+        <li>Assemble the keg adapters, making sure that the silicone pieces are inserted completely into the black plastic pieces, creating a tight and secure fitting</li>
+        <li>Attach the black fitting on the other end of your Zymatic Transfer Tube assembly to the Grey silicone keg fitting adapter, and connect this to the port on the still</li>
+        <li>Attach the Black 'Racking' silicone fitting adapter to the black ball lock fitting at the end of the other Zymatic hose. Remove the small black plug from the port on the still, and connect the adapter to the still</li>
+    </ol>
+</div>
+
+<div id="Program" class="tabcontent">
+    <h3>Program</h3>
+
+    <table id="programTable" border="0" class="phone-table">
+
+        <tr><th>Start Program</th><td id="start-row">
+<!--             <iframe name="startFormPostFrame" id="startFormPostFrame" hidden></iframe>
+            <form id="startForm" autocomplete="off" method="post" action="/start" target="startFormPostFrame" class="stillForm"> -->
+               <button id="startButton" class="stillButton" onclick="startProgram()">Start</button>
+<!--             </form> -->
+        </td></tr>
+
+        <tr><th>Stop Program</th><td id="stop-row">
+<!--             <iframe name="stopFormPostFrame" id="stopFormPostFrame" hidden></iframe>
+            <form id="stopForm" autocomplete="off" method="post" action="/end" target="stopFormPostFrame" class="stillForm"> -->
+               <button id="stopButton" class="stillButton" onclick="stopProgram()">Stop</button>
+<!--             </form> -->
+        </td></tr>
+
+    </table>
+</div>
+
+<div id="Utilities" class="tabcontent">
+    <h3>Utilities</h3>
+
+    <table id="utilitiesTable" border="0" class="phone-table">
+
+        <tr><th>Fan Toggle </th><td id="fan-toggle">
+            <label class="switch">
+              <input type="checkbox" id="fanCheckBox" onclick="fanToggle(this.checked)">
+              <span class="slider round"></span>
+            </label>
+        </td></tr>
+
+        <tr><th>Sensors On</th><td id="sensor-on">
+            <label class="switch">
+              <input type="checkbox" id="sensorCheckBox" onclick="sensorToggle()">
+              <span class="slider round"></span>
+            </label>
+        </td></tr>
+
+        <tr><th>Pump On</th><td id="pump-on">
+            <label class="switch">
+              <input type="checkbox" id="pumpCheckBox" onclick="pumpToggle(this.checked)">
+              <span class="slider round"></span>
+            </label>
+        </td></tr>
+
+        <tr hidden><th>Sync</th><td id="sensor-on"> <!-- This is not set up yet -->
+            <button id="stopButton" class="stillButton" onclick="syncWithStill()">Sync</button>
+        </td></tr>
+
+    </table>
+</div>
+
+<div id="Info" class="tabcontent">
+  <h3>Info</h3>
+  <table id="infoTable" border="0" class="phone-table">
+
+    <tr><th>Firmware Version: </th><td id="version-number">0.0.x</td></tr>
+
+    <tr><th>IP Address: </th><td id="ip-address">x.x.x.x</td></tr>
+
+  </table>
+</div>
+
+<h3></h3>
+<a href="wifi">Go to Network and Reset Page</a>

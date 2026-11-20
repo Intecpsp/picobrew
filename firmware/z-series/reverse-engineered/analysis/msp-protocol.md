@@ -12,6 +12,16 @@ controller's own embedded machine code has not been reconstructed into source.
 No controller, heater, pump, valve, I2C bus, or physical machine was operated by
 these tests.
 
+## Returning-diagnostic application interface
+
+The complete application now binds `z_msp_client::diagnostics`. That mode executes
+returning assertions, exact response/update/setup logs, and concrete MSP console
+self-tests. [msp-continuation.md](msp-continuation.md) records 123 complete original
+comparisons, including 320 actual assertion-helper executions. Statements below
+about guarded returns and the historical fixture apply to the **null-diagnostics
+legacy interface**. The old evidence remains unchanged and is not promoted to
+full continuation.
+
 ## Exact evidence
 
 All addresses below are ESP32 virtual addresses in the preserved file
@@ -102,8 +112,8 @@ The portable structure omits the original C++ vtable and ABI padding. Its two
 unresolved bytes remain `status_byte_2` and `status_byte_3` rather than receiving
 speculative hardware names.
 
-The portable command guard requires `AppRunning` (`2`). While the valve-moving
-flag is set, only state query `0xfd` is permitted. Valve positions must be `1..9` and
+The pure predicate and null-diagnostics command guard require `AppRunning` (`2`). While the valve-moving
+flag is set, only state query `0xfd` bypasses the busy assertion. Valve positions must be `1..9` and
 produce commands `0x14 + position`. The moving flag is set **after** processing
 the command response. Increment/decrement commands `0x1f`/`0x20` use the same
 post-response flag behavior. Invalid guard/position cases are compared only
@@ -132,7 +142,7 @@ command/address/data body, excluding the framing bytes and the CRC itself.
 Programming increments the full 32-bit source address, but only its low 24
 bits go onto the wire. It stops at the first nonzero result, with no retry.
 Erasing sends 30 descending addresses: `0xfbff`, `0xf9ff`, through `0xc1ff`,
-one per 512-byte segment. The portable erase operation stops at the first error,
+one per 512-byte segment. The null-diagnostics erase operation returns a guarded error at the first failure,
 where the OEM calls its assertion helper. The historical fixture ends there
 and does not compare the remaining OEM erase behavior.
 
@@ -171,10 +181,10 @@ Two less desirable OEM behaviors are deliberately preserved as evidence:
 - During setup, the OEM logs a programming failure or a failed second boot
   version probe and still tries to start/read the app. The typed reconstruction
   retains that sequence. An erase failure reaches an OEM assertion site and
-  stops the reconstructed operation; the historical comparison does not follow
+  stops the null-diagnostics operation; the historical comparison does not follow
   the OEM past that call.
 
-The portable interface returns explicit negative results at selected OEM
+The null-diagnostics interface returns explicit negative results at selected OEM
 assertion calls. The actual helper at `0x400db014` logs, increments a diagnostic
 counter, delays 200 ms, and returns. The historical harness throws before
 executing it, so these cases compare execution prefixes. Neither the typed

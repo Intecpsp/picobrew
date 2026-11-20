@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "modules_compiled": 127,
+  "ethernet2_dependency_objects": 9,
+  "owned_sources": [
+    {
+      "source": "src/application_console.cpp",
+      "source_sha256": "cd73f5e1b259e85c6c8e5e497c4fcb163539f40817eb283507d9d06a328e7087",
+      "object_sha256": "b843844bcb883c1ca21b16d77f79cd5d3a1b5ab0a899cdb2e7eb0b4138e6bab2",
+      "object_bytes": 135488
+    },
+    {
+      "source": "src/msp_console_tests.cpp",
+      "source_sha256": "90abdea9d42093da6ef4238c482f0d1f6cee2e9f3f794ed1a03838d7c5be84e8",
+      "object_sha256": "f2e92109a72300695bb9f4d373a322e04edbd011973c83d695b6949b3b36dbfd",
+      "object_bytes": 14032
+    },
+    {
+      "source": "src/msp_protocol.c",
+      "source_sha256": "51dbad57a389942d0f8c3549d2f5cd04d26158599d6c5f8e1faac7266464da45",
+      "object_sha256": "cfe9064721a88135ba3260d0940d78b4555189d1986c4fcea40dd3ac53221309",
+      "object_bytes": 29672
+    }
+  ],
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 3
+  }
+}

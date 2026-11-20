@@ -26,6 +26,11 @@ enum class BuzzerDiagnostic : std::uint8_t { Information, AlarmChanged };
 class Buzzer;
 struct BuzzerServices {
     void* context = nullptr;
+    // Optional recursive task mutex for the Core/software-timer concurrency
+    // boundary. Both hooks must be installed together. This is not an ISR lock:
+    // the original returning assertion can delay while set_alarm owns it.
+    void (*enter)(void*) = nullptr;
+    void (*leave)(void*) = nullptr;
     std::uint32_t (*millis)(void*) = nullptr;
     bool (*attach)(void*, std::uint8_t pin, std::uint8_t channel) = nullptr;
     // The OEM ignores ledcSetup's returned frequency. Completion here reports

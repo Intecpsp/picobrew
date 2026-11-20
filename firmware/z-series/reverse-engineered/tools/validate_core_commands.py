@@ -18,7 +18,7 @@ EXTRA=['program_id','temperature_bits','duration','location','still_id','command
        'raw_hex','raw_wort','raw_drain','raw_ambient','adc_type','buffer_type','buffer_unique_id','buffer_has_name','buffer_parameter_id','coffee_program_id',
        'imperial','queued_program_id','manual_location','manual_byte','manual_bytes','pid_sample_time','pid_reverse','coffee_success']
 SOURCES=['core_commands','core_flow','eeprom','heater','temperature','hex_detection','program_repository','program_catalog','program_writer',
-         'program_runtime','program_runtime_execution','runtime_instruction','quantity']
+         'program_runtime','program_runtime_execution','runtime_instruction','quantity','program_diagnostics','enums']
 
 def detector_temperatures(raw):
     # This previously accepted calibration is a declared Core-test boundary;

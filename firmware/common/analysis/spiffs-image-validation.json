@@ -1,0 +1,570 @@
+{
+  "schema_version": 1,
+  "profiles": {
+    "esp8266-2m": {
+      "empty": {
+        "schema_version": 1,
+        "profile": "esp8266-2m",
+        "geometry": {
+          "partition_offset": 1048576,
+          "partition_bytes": 1028096,
+          "page_bytes": 256,
+          "block_bytes": 8192,
+          "metadata_bytes": 0,
+          "magic_length": false,
+          "gc_max_runs": 5
+        },
+        "image_bytes": 1028096,
+        "image_sha256": "18a484702761fe942d97a59918fabc46d3f375c6e7c33ad252fbf612797aff48",
+        "staged_private_inputs": false,
+        "files": [],
+        "native": {
+          "files": 0,
+          "image_bytes": 1028096,
+          "spiffs_total_bytes": 957314,
+          "spiffs_used_bytes": 0,
+          "hal_reads": 36495,
+          "hal_writes": 250,
+          "hal_erases": 250,
+          "remount_verified": true,
+          "layout": {
+            "little_endian": true,
+            "object_id_bytes": 2,
+            "block_index_bytes": 2,
+            "page_index_bytes": 2,
+            "span_index_bytes": 2,
+            "page_header": {
+              "size": 5,
+              "obj_id": 0,
+              "span_ix": 2,
+              "flags": 4
+            },
+            "object_header": {
+              "size": 46,
+              "p_hdr": 0,
+              "_align": 5,
+              "file_size": 8,
+              "type": 12,
+              "name": 13,
+              "name_bytes": 32,
+              "metadata_bytes": 0
+            },
+            "index_header": {
+              "size": 8,
+              "p_hdr": 0,
+              "_align": 5
+            },
+            "magic_length": 0,
+            "gc_max_runs": 5
+          }
+        },
+        "independent_decode": {
+          "blocks": 125,
+          "live_pages": 0,
+          "files": 0,
+          "unused_tail_bytes": 4096,
+          "exact_contents": true
+        },
+        "sdk_identity_sha256": {
+          "esp8266/cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+          "esp8266/cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+          "esp8266/cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+          "esp8266/cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+          "esp8266/cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+          "esp8266/cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+          "esp8266/tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1"
+        },
+        "formatter_sha256": {
+          "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+          "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+          "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+          "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
+        },
+        "hardware_tested": false,
+        "implementation": "Pinned unmodified ESP8266 SPIFFS C sources; ESP32 on-flash configuration and packed ABI verified against its actual pinned SDK object. Native mount/readback plus independent image decoding; no ESP32 SDK binary execution is claimed."
+      },
+      "staged": {
+        "schema_version": 1,
+        "profile": "esp8266-2m",
+        "geometry": {
+          "partition_offset": 1048576,
+          "partition_bytes": 1028096,
+          "page_bytes": 256,
+          "block_bytes": 8192,
+          "metadata_bytes": 0,
+          "magic_length": false,
+          "gc_max_runs": 5
+        },
+        "image_bytes": 1028096,
+        "image_sha256": "43c58bbe9f7d2d5c2bc4cd745b120edd9afd369acce0144a65f3627727a3ab52",
+        "staged_private_inputs": true,
+        "files": [
+          {
+            "name": "/pb/abcdefghijklmnopqrstuvw",
+            "bytes": 777
+          },
+          {
+            "name": "/pb/api.key",
+            "bytes": 64
+          },
+          {
+            "name": "/pb/block.a",
+            "bytes": 8192
+          },
+          {
+            "name": "/pb/indices.a",
+            "bytes": 70001
+          },
+          {
+            "name": "/pb/network.a",
+            "bytes": 123
+          },
+          {
+            "name": "/pb/one.a",
+            "bytes": 1
+          },
+          {
+            "name": "/pb/page251.a",
+            "bytes": 251
+          },
+          {
+            "name": "/pb/page252.a",
+            "bytes": 252
+          },
+          {
+            "name": "/pb/page256.a",
+            "bytes": 256
+          },
+          {
+            "name": "/pb/zero.a",
+            "bytes": 0
+          }
+        ],
+        "native": {
+          "files": 10,
+          "image_bytes": 1028096,
+          "spiffs_total_bytes": 957314,
+          "spiffs_used_bytes": 84336,
+          "hal_reads": 41159,
+          "hal_writes": 3279,
+          "hal_erases": 250,
+          "remount_verified": true,
+          "layout": {
+            "little_endian": true,
+            "object_id_bytes": 2,
+            "block_index_bytes": 2,
+            "page_index_bytes": 2,
+            "span_index_bytes": 2,
+            "page_header": {
+              "size": 5,
+              "obj_id": 0,
+              "span_ix": 2,
+              "flags": 4
+            },
+            "object_header": {
+              "size": 46,
+              "p_hdr": 0,
+              "_align": 5,
+              "file_size": 8,
+              "type": 12,
+              "name": 13,
+              "name_bytes": 32,
+              "metadata_bytes": 0
+            },
+            "index_header": {
+              "size": 8,
+              "p_hdr": 0,
+              "_align": 5
+            },
+            "magic_length": 0,
+            "gc_max_runs": 5
+          }
+        },
+        "independent_decode": {
+          "blocks": 125,
+          "live_pages": 336,
+          "files": 10,
+          "unused_tail_bytes": 4096,
+          "exact_contents": true
+        },
+        "sdk_identity_sha256": {
+          "esp8266/cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+          "esp8266/cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+          "esp8266/cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+          "esp8266/cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+          "esp8266/cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+          "esp8266/cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+          "esp8266/tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1"
+        },
+        "formatter_sha256": {
+          "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+          "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+          "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+          "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
+        },
+        "hardware_tested": false,
+        "implementation": "Pinned unmodified ESP8266 SPIFFS C sources; ESP32 on-flash configuration and packed ABI verified against its actual pinned SDK object. Native mount/readback plus independent image decoding; no ESP32 SDK binary execution is claimed."
+      },
+      "deterministic": true,
+      "corrupted_magic_rejected": true,
+      "staged_permissions_private": true
+    },
+    "esp32-4m": {
+      "empty": {
+        "schema_version": 1,
+        "profile": "esp32-4m",
+        "geometry": {
+          "partition_offset": 2097152,
+          "partition_bytes": 2097152,
+          "page_bytes": 256,
+          "block_bytes": 4096,
+          "metadata_bytes": 4,
+          "magic_length": true,
+          "gc_max_runs": 10
+        },
+        "image_bytes": 2097152,
+        "image_sha256": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6",
+        "staged_private_inputs": false,
+        "files": [],
+        "native": {
+          "files": 0,
+          "image_bytes": 2097152,
+          "spiffs_total_bytes": 1920401,
+          "spiffs_used_bytes": 0,
+          "hal_reads": 137211,
+          "hal_writes": 1024,
+          "hal_erases": 512,
+          "remount_verified": true,
+          "layout": {
+            "little_endian": true,
+            "object_id_bytes": 2,
+            "block_index_bytes": 2,
+            "page_index_bytes": 2,
+            "span_index_bytes": 2,
+            "page_header": {
+              "size": 5,
+              "obj_id": 0,
+              "span_ix": 2,
+              "flags": 4
+            },
+            "object_header": {
+              "size": 49,
+              "p_hdr": 0,
+              "_align": 5,
+              "file_size": 8,
+              "type": 12,
+              "name": 13,
+              "name_bytes": 32,
+              "metadata_bytes": 4,
+              "meta": 45
+            },
+            "index_header": {
+              "size": 8,
+              "p_hdr": 0,
+              "_align": 5
+            },
+            "magic_length": 1,
+            "gc_max_runs": 10
+          }
+        },
+        "independent_decode": {
+          "blocks": 512,
+          "live_pages": 0,
+          "files": 0,
+          "unused_tail_bytes": 0,
+          "exact_contents": true
+        },
+        "sdk_identity_sha256": {
+          "esp8266/cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+          "esp8266/cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+          "esp8266/cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+          "esp8266/cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+          "esp8266/cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+          "esp8266/cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+          "esp8266/tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1",
+          "esp32/tools/partitions/default.csv": "87f8a63b37eb82848266de1261d1aa2b78d54ef8c763064bc695e3bf1f164cbf",
+          "esp32/tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+          "esp32/tools/sdk/include/spiffs/spiffs_config.h": "a75a8b04424ca0a4f20ab015a132ca4653a3a43975d6a99be920f0322434d217",
+          "esp32/tools/sdk/include/spi_flash/esp_spi_flash.h": "79a1bdc0e739b86dd9c438d6ae577b3fa4e36380800cbe707879ee6f396c575c",
+          "esp32/tools/sdk/lib/libspiffs.a": "2d2b09ca5e12c4e4b31b5e9c837a392d919868fe53d94d2627f276548829a60f"
+        },
+        "formatter_sha256": {
+          "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+          "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+          "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+          "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
+        },
+        "hardware_tested": false,
+        "implementation": "Pinned unmodified ESP8266 SPIFFS C sources; ESP32 on-flash configuration and packed ABI verified against its actual pinned SDK object. Native mount/readback plus independent image decoding; no ESP32 SDK binary execution is claimed."
+      },
+      "staged": {
+        "schema_version": 1,
+        "profile": "esp32-4m",
+        "geometry": {
+          "partition_offset": 2097152,
+          "partition_bytes": 2097152,
+          "page_bytes": 256,
+          "block_bytes": 4096,
+          "metadata_bytes": 4,
+          "magic_length": true,
+          "gc_max_runs": 10
+        },
+        "image_bytes": 2097152,
+        "image_sha256": "ebe567fbeb9083aa327f8fec2922896fd3b6deacfc948b57f851dcf950586b14",
+        "staged_private_inputs": true,
+        "files": [
+          {
+            "name": "/pb/abcdefghijklmnopqrstuvw",
+            "bytes": 777
+          },
+          {
+            "name": "/pb/api.key",
+            "bytes": 64
+          },
+          {
+            "name": "/pb/block.a",
+            "bytes": 8192
+          },
+          {
+            "name": "/pb/indices.a",
+            "bytes": 70001
+          },
+          {
+            "name": "/pb/network.a",
+            "bytes": 123
+          },
+          {
+            "name": "/pb/one.a",
+            "bytes": 1
+          },
+          {
+            "name": "/pb/page251.a",
+            "bytes": 251
+          },
+          {
+            "name": "/pb/page252.a",
+            "bytes": 252
+          },
+          {
+            "name": "/pb/page256.a",
+            "bytes": 256
+          },
+          {
+            "name": "/pb/zero.a",
+            "bytes": 0
+          }
+        ],
+        "native": {
+          "files": 10,
+          "image_bytes": 2097152,
+          "spiffs_total_bytes": 1920401,
+          "spiffs_used_bytes": 84336,
+          "hal_reads": 150615,
+          "hal_writes": 4105,
+          "hal_erases": 512,
+          "remount_verified": true,
+          "layout": {
+            "little_endian": true,
+            "object_id_bytes": 2,
+            "block_index_bytes": 2,
+            "page_index_bytes": 2,
+            "span_index_bytes": 2,
+            "page_header": {
+              "size": 5,
+              "obj_id": 0,
+              "span_ix": 2,
+              "flags": 4
+            },
+            "object_header": {
+              "size": 49,
+              "p_hdr": 0,
+              "_align": 5,
+              "file_size": 8,
+              "type": 12,
+              "name": 13,
+              "name_bytes": 32,
+              "metadata_bytes": 4,
+              "meta": 45
+            },
+            "index_header": {
+              "size": 8,
+              "p_hdr": 0,
+              "_align": 5
+            },
+            "magic_length": 1,
+            "gc_max_runs": 10
+          }
+        },
+        "independent_decode": {
+          "blocks": 512,
+          "live_pages": 336,
+          "files": 10,
+          "unused_tail_bytes": 0,
+          "exact_contents": true
+        },
+        "sdk_identity_sha256": {
+          "esp8266/cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+          "esp8266/cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+          "esp8266/cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+          "esp8266/cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+          "esp8266/cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+          "esp8266/cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+          "esp8266/cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+          "esp8266/tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1",
+          "esp32/tools/partitions/default.csv": "87f8a63b37eb82848266de1261d1aa2b78d54ef8c763064bc695e3bf1f164cbf",
+          "esp32/tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+          "esp32/tools/sdk/include/spiffs/spiffs_config.h": "a75a8b04424ca0a4f20ab015a132ca4653a3a43975d6a99be920f0322434d217",
+          "esp32/tools/sdk/include/spi_flash/esp_spi_flash.h": "79a1bdc0e739b86dd9c438d6ae577b3fa4e36380800cbe707879ee6f396c575c",
+          "esp32/tools/sdk/lib/libspiffs.a": "2d2b09ca5e12c4e4b31b5e9c837a392d919868fe53d94d2627f276548829a60f"
+        },
+        "formatter_sha256": {
+          "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+          "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+          "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+          "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
+        },
+        "hardware_tested": false,
+        "implementation": "Pinned unmodified ESP8266 SPIFFS C sources; ESP32 on-flash configuration and packed ABI verified against its actual pinned SDK object. Native mount/readback plus independent image decoding; no ESP32 SDK binary execution is claimed."
+      },
+      "deterministic": true,
+      "corrupted_magic_rejected": true,
+      "staged_permissions_private": true
+    }
+  },
+  "target_layout_probes": {
+    "esp8266": {
+      "compiler_sha256": "8760d3aafa06d5d88124197d2bd84a01411244efc561cc81bc6a35f39d565057",
+      "object_sha256": "dc28e9cb14a182fac1b651ac46bcca65363642c0489d02124c04c392da486a06",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        5,
+        0,
+        2,
+        4,
+        46,
+        0,
+        5,
+        8,
+        12,
+        13,
+        32,
+        0,
+        4294967295,
+        8,
+        0,
+        5,
+        0,
+        5
+      ],
+      "matches": true
+    },
+    "esp32": {
+      "compiler_sha256": "d10a65f40ea02d5bd10475a9d1bbcf26950ebecb43719273b954b3aa86e2dc1f",
+      "object_sha256": "37874e4b6c28a0e1f78d730df6c6286ccf3c4147dcb75afde736051dde0fd09c",
+      "values": [
+        2,
+        2,
+        2,
+        2,
+        5,
+        0,
+        2,
+        4,
+        49,
+        0,
+        5,
+        8,
+        12,
+        13,
+        32,
+        4,
+        45,
+        8,
+        0,
+        5,
+        1,
+        10
+      ],
+      "matches": true
+    }
+  },
+  "esp32_dwarf_witness": {
+    "archive_member": "spiffs_nucleus.o",
+    "object_sha256": "d1734f0fbe9eb6df9815b763346dc2429027bfc4397f5906c09a9f9b41e0f380",
+    "layout": {
+      "little_endian": true,
+      "object_id_bytes": 2,
+      "block_index_bytes": 2,
+      "page_index_bytes": 2,
+      "span_index_bytes": 2,
+      "page_header": {
+        "size": 5,
+        "obj_id": 0,
+        "span_ix": 2,
+        "flags": 4
+      },
+      "object_header": {
+        "size": 49,
+        "p_hdr": 0,
+        "_align": 5,
+        "file_size": 8,
+        "type": 12,
+        "name": 13,
+        "name_bytes": 32,
+        "metadata_bytes": 4,
+        "meta": 45
+      },
+      "index_header": {
+        "size": 8,
+        "p_hdr": 0,
+        "_align": 5
+      }
+    },
+    "source": "DWARF packed type sizes/member offsets from the actual pinned SDK object",
+    "format_function_sha256": {
+      "spiffs_erase_block": "6eaae85009f5aaf41b154c645b01254c7240ae79c0308cefac19d9646989124b",
+      "spiffs_obj_lu_scan": "8dd7e2b3c3d300b2fbf9e6f3e06fb19d57fb38f4eaf6d5a752010cb31bdc1f91",
+      "spiffs_object_create": "2a94c1956a033167f9153ed2ef45917e0b682d18291d8f545ac1007587e34a76",
+      "spiffs_object_read": "cd3bdec7cd25efdf72cd3af54e52768c41122a881b32e73e8ee0c30a9e945513"
+    }
+  },
+  "sdk_identity_sha256": {
+    "esp8266/cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+    "esp8266/cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+    "esp8266/cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+    "esp8266/cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+    "esp8266/cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+    "esp8266/cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+    "esp8266/cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+    "esp8266/cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+    "esp8266/tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1",
+    "esp32/tools/partitions/default.csv": "87f8a63b37eb82848266de1261d1aa2b78d54ef8c763064bc695e3bf1f164cbf",
+    "esp32/tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "esp32/tools/sdk/include/spiffs/spiffs_config.h": "a75a8b04424ca0a4f20ab015a132ca4653a3a43975d6a99be920f0322434d217",
+    "esp32/tools/sdk/include/spi_flash/esp_spi_flash.h": "79a1bdc0e739b86dd9c438d6ae577b3fa4e36380800cbe707879ee6f396c575c",
+    "esp32/tools/sdk/lib/libspiffs.a": "2d2b09ca5e12c4e4b31b5e9c837a392d919868fe53d94d2627f276548829a60f"
+  },
+  "invalid_logical_names_rejected": 13,
+  "invalid_key_rejected": true,
+  "source_sha256": {
+    "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+    "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+    "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+    "tools/validate_spiffs_format.py": "06507dd94223d11c51aab418de87acbc7d30fec8f02ffbd29d700f8224132162",
+    "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11",
+    "dependencies/esp8266-adapters.json": "dbdb5726b2135ca3be807834f3f30eb33a30113f27fdd0dcb99af6a98b196580",
+    "dependencies/esp32-spiffs-sizing.json": "cd300710f154903238ca8fb15253ff1991874a980762201252a30b094320e834"
+  },
+  "hardware_tested": false,
+  "passed": true
+}

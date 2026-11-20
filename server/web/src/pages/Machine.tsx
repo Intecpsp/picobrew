@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import {
   ArrowDown,
   ArrowUp,
@@ -41,6 +41,10 @@ import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
 import { deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
+import AccessoryMachine from './AccessoryMachine'
+import { DevicePreferences } from '../components/DevicePreferences'
+import { isAccessory, sensorValue, supports } from '../lib/capabilities'
+import { SensorHistory } from '../components/SensorHistory'
 const programNames: Record<string, string> = {
   'sous-vide': 'Sous vide',
   'cold-brew': 'Cold brew',
@@ -52,15 +56,32 @@ const programNames: Record<string, string> = {
   'drain-reservoir': 'Drain reservoir',
   'drain-filter': 'Drain filter',
   'rack-beer': 'Rack beer',
+  clean: 'Clean',
+  drain: 'Drain',
+  chill: 'Chill',
   utilities: 'Utilities',
   settings: 'Settings',
 }
 export default function Machine({ id }: { id: string }) {
   const hub = useHub()
+  const device = hub.devices.find((item) => item.id === id)
+  return device && isAccessory(device) ? (
+    <AccessoryMachine device={device} />
+  ) : (
+    <BrewerMachine id={id} />
+  )
+}
+function BrewerMachine({ id }: { id: string }) {
+  const hub = useHub()
   const device = hub.devices.find((device) => device.id === id)
-  const display = useResource<Display>(device?.online ? `/devices/${id}/display` : null, 2500)
+  const display = useResource<Display>(
+    device?.online && supports(device.capabilities, 'front_panel')
+      ? `/devices/${id}/display`
+      : null,
+    2500
+  )
   const native = useResource<MachineRecipe[] | { recipes: MachineRecipe[] }>(
-    device?.online ? `/devices/${id}/recipes` : null
+    device?.online && supports(device.capabilities, 'recipes') ? `/devices/${id}/recipes` : null
   )
   const [program, setProgram] = useState('rinse')
   const [monitorNextBrew, setMonitorNextBrew] = useState(false)
@@ -172,11 +193,14 @@ export default function Machine({ id }: { id: string }) {
         action={<Button onClick={() => hub.navigate('/overview')}>Return to overview</Button>}
       />
     )
-  const state = deviceState(device)
   const status = device.status
   const commands = device.capabilities?.commands || []
   const programs = Object.keys(programNames).filter((name) => commands.includes(name))
   const allowed = (name: string) => device.online && commands.includes(name)
+  const recovery = status?.recovery
+  const interrupted = !!recovery && (recovery.available || !recovery.valid)
+  const state =
+    interrupted && !status?.busy && !status?.stopped ? 'Review checkpoint' : deviceState(device)
   return (
     <>
       <PageTitle
@@ -193,7 +217,7 @@ export default function Machine({ id }: { id: string }) {
                   ? 'neutral'
                   : status?.stopped
                     ? 'danger'
-                    : status?.busy
+                    : status?.busy || interrupted
                       ? 'copper'
                       : 'green'
               }
@@ -240,6 +264,66 @@ export default function Machine({ id }: { id: string }) {
       )}
       {device.key_reused && <DeviceKeyNotice />}
       <ErrorBanner message={error} />
+      {interrupted && (
+        <section className="panel" aria-labelledby="recovery-heading">
+          <SectionHeading
+            title="Interrupted brew"
+            description={
+              recovery.valid
+                ? `${recovery.recipe_name} · ${recovery.step_name || 'Preparation'}`
+                : 'The saved checkpoint could not be verified. Discard it before starting another recipe.'
+            }
+          />
+          <h3 id="recovery-heading">Review the saved checkpoint</h3>
+          {recovery.valid && (
+            <p>
+              {recovery.step_seconds > 0
+                ? `${duration(recovery.step_seconds * 1000)} remaining in the saved step`
+                : 'Preparation or untimed phase'}
+              {' · '}
+              {duration(recovery.elapsed_seconds * 1000)} saved elapsed time
+            </p>
+          )}
+          <p className="help-text">
+            Verify the water, vessel and filter before resuming. Saved progress can be up to 30
+            seconds behind the interruption. Resuming uses the saved remaining step time and may
+            return to preparation prompts.
+          </p>
+          <div className="inline-actions">
+            {recovery.valid && commands.includes('resume-interrupted') && (
+              <Button
+                variant="primary"
+                disabled={
+                  !allowed('resume-interrupted') ||
+                  !recovery.available ||
+                  !!status?.busy ||
+                  !!status?.stopped ||
+                  !!pending
+                }
+                onClick={() =>
+                  requestStart({ command: 'resume-interrupted', label: recovery.recipe_name })
+                }
+              >
+                Resume interrupted brew
+              </Button>
+            )}
+            {commands.includes('discard-interrupted') && (
+              <Button
+                variant="secondary"
+                disabled={!allowed('discard-interrupted') || !!status?.busy || !!pending}
+                onClick={() =>
+                  requestStart({
+                    command: 'discard-interrupted',
+                    label: 'the interrupted checkpoint',
+                  })
+                }
+              >
+                Discard checkpoint
+              </Button>
+            )}
+          </div>
+        </section>
+      )}
       <div className="machine-metrics">
         <Metric
           label="Wort temperature"
@@ -265,6 +349,18 @@ export default function Machine({ id }: { id: string }) {
           }
         />
       </div>
+      {!!status?.sensors?.length && (
+        <div className="machine-metrics accessory-metrics">
+          {status.sensors.map((sensor) => (
+            <Metric
+              key={sensor.id}
+              label={sensor.label}
+              value={sensorValue(sensor, hub.unit)}
+              note="Device sensor"
+            />
+          ))}
+        </div>
+      )}
       <div className="machine-main">
         <section className="panel front-panel">
           <SectionHeading
@@ -325,7 +421,7 @@ export default function Machine({ id }: { id: string }) {
           </Field>
           <Button
             className="full-width"
-            disabled={!recipeID || !allowed('brew') || !!pending || !!status?.busy}
+            disabled={!recipeID || !allowed('brew') || !!pending || !!status?.busy || interrupted}
             onClick={() =>
               requestStart({
                 command: 'brew',
@@ -389,7 +485,7 @@ export default function Machine({ id }: { id: string }) {
           <Button
             variant="secondary"
             className="full-width"
-            disabled={!allowed(program) || !!pending || !!status?.busy}
+            disabled={!allowed(program) || !!pending || !!status?.busy || interrupted}
             onClick={() =>
               requestStart({ command: program, label: programNames[program] || program })
             }
@@ -421,6 +517,22 @@ export default function Machine({ id }: { id: string }) {
               Clear stop latch
             </Button>
           )}
+          {(commands.includes('pause') || commands.includes('resume')) && (
+            <div className="inline-actions">
+              {['pause', 'resume']
+                .filter((name) => commands.includes(name))
+                .map((name) => (
+                  <Button
+                    key={name}
+                    variant="secondary"
+                    disabled={!allowed(name) || !status?.busy || !!status?.stopped || !!pending}
+                    onClick={() => void command(name, { confirm: true })}
+                  >
+                    {name === 'pause' ? 'Pause session' : 'Resume session'}
+                  </Button>
+                ))}
+            </div>
+          )}
         </section>
       </div>
       <section className="panel">
@@ -451,7 +563,11 @@ export default function Machine({ id }: { id: string }) {
           }
         />
         {trace.data?.samples?.length ? (
-          <TemperatureChart samples={trace.data.samples} unit={hub.unit} />
+          (trace.data.sample_fields?.length || 0) > 11 ? (
+            <SensorHistory brew={trace.data} unit={hub.unit} />
+          ) : (
+            <TemperatureChart samples={trace.data.samples} unit={hub.unit} />
+          )
         ) : (
           <Empty
             icon={<Radio size={24} />}
@@ -469,7 +585,8 @@ export default function Machine({ id }: { id: string }) {
         reload={monitor.reload}
       />
       <div className="machine-footnotes">
-        {device.adapter === 'pico-standalone' ? (
+        {device.adapter === 'pico-standalone' &&
+        ['pico-s', 'pico-pro', 'pico-c'].includes(device.model) ? (
           <button className="firmware-link" onClick={() => setFirmware(true)}>
             Firmware {device.capabilities?.firmware_version || '—'}
           </button>
@@ -483,14 +600,33 @@ export default function Machine({ id }: { id: string }) {
       {confirm && (
         <Confirm
           title={
-            confirm.command === 'clear-stop' ? 'Clear the stop latch?' : `Start ${confirm.label}?`
+            confirm.command === 'clear-stop'
+              ? 'Clear the stop latch?'
+              : confirm.command === 'resume-interrupted'
+                ? `Resume ${confirm.label}?`
+                : confirm.command === 'discard-interrupted'
+                  ? 'Discard the interrupted checkpoint?'
+                  : `Start ${confirm.label}?`
           }
           description={
             confirm.command === 'clear-stop'
               ? 'This re-enables machine controls. Confirm that the operation has ended and the brewer is ready.'
-              : `This sends a command to ${device.name}. Confirm the brewer is prepared, then follow any prompts on its front panel.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
+              : confirm.command === 'resume-interrupted'
+                ? 'Verify the water, vessel and filter before resuming. Saved progress can be up to 30 seconds behind the interruption. The brewer resumes with its saved remaining step time and may return to preparation prompts.'
+                : confirm.command === 'discard-interrupted'
+                  ? 'This saved operation cannot be resumed afterward. Discard its checkpoint?'
+                  : `This sends a command to ${device.name}. Confirm the brewer is prepared, then follow any prompts on its front panel.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
           }
-          label={confirm.command === 'clear-stop' ? 'Clear stop' : 'Start program'}
+          label={
+            confirm.command === 'clear-stop'
+              ? 'Clear stop'
+              : confirm.command === 'resume-interrupted'
+                ? 'Resume brew'
+                : confirm.command === 'discard-interrupted'
+                  ? 'Discard checkpoint'
+                  : 'Start program'
+          }
+          danger={confirm.command === 'discard-interrupted'}
           busy={!!pending}
           onClose={() => !pending && setConfirm(null)}
           onConfirm={() =>
@@ -560,7 +696,7 @@ export default function Machine({ id }: { id: string }) {
           }}
         />
       )}{' '}
-      {settings && <MachineSettings id={id} onClose={() => setSettings(false)} />}
+      {settings && <DevicePreferences id={id} onClose={() => setSettings(false)} />}
       {firmware && <MachineFirmwareDialog deviceID={id} onClose={() => setFirmware(false)} />}
       {transferRecipes && (
         <TransferDialog
@@ -590,82 +726,5 @@ export default function Machine({ id }: { id: string }) {
         />
       )}
     </>
-  )
-}
-function MachineSettings({ id, onClose }: { id: string; onClose: () => void }) {
-  const hub = useHub()
-  const device = hub.devices.find((device) => device.id === id)
-  const settings = useResource<DeviceSettings>(device?.online ? `/devices/${id}/settings` : null)
-  const [form, setForm] = useState<DeviceSettings | null>(null)
-  const [busy, setBusy] = useState('')
-  const [error, setError] = useState('')
-  useEffect(() => {
-    if (settings.data) setForm(settings.data)
-  }, [settings.data])
-  async function save() {
-    setBusy('settings')
-    setError('')
-    try {
-      await api(`/devices/${id}/settings`, { method: 'PATCH', body: form })
-      hub.notify('Machine preferences saved.')
-    } catch (error) {
-      setError(errorMessage(error))
-    } finally {
-      setBusy('')
-    }
-  }
-  return (
-    <Modal title="Brewer preferences" onClose={onClose} wide>
-      <ErrorBanner message={error || settings.error} />
-      {device?.online && form ? (
-        <div className="settings-row compact">
-          <div>
-            <h3>Display preferences</h3>
-            <p>Saved on the machine.</p>
-          </div>
-          <div className="settings-fields">
-            <div className="form-grid">
-              <Field label="Temperature unit">
-                <select
-                  value={form.temperature_unit}
-                  onChange={(event) =>
-                    setForm({ ...form, temperature_unit: event.target.value as 'F' | 'C' })
-                  }
-                >
-                  <option value="F">Fahrenheit (°F)</option>
-                  <option value="C">Celsius (°C)</option>
-                </select>
-              </Field>
-              <Field label="Front-panel language">
-                <select
-                  value={form.language}
-                  onChange={(event) => setForm({ ...form, language: event.target.value })}
-                >
-                  <option value="en">English</option>
-                  <option value="es">Español</option>
-                  <option value="fr">Français</option>
-                </select>
-              </Field>
-            </div>
-            <label className="check-field">
-              <input
-                type="checkbox"
-                checked={form.detailed_status}
-                onChange={(event) => setForm({ ...form, detailed_status: event.target.checked })}
-              />
-              Show detailed status
-            </label>
-            <Button disabled={!!busy} onClick={() => void save()}>
-              Save preferences
-            </Button>
-          </div>
-        </div>
-      ) : device?.online && settings.loading ? (
-        <Loading />
-      ) : (
-        <p className="help-text">Connect the machine to change its display preferences.</p>
-      )}
-      {device && <HubConnectionSettings device={device} />}
-    </Modal>
   )
 }

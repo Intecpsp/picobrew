@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "identity_sha256": {
+    "tools/partitions/default.csv": "87f8a63b37eb82848266de1261d1aa2b78d54ef8c763064bc695e3bf1f164cbf",
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/include/spiffs/spiffs_config.h": "a75a8b04424ca0a4f20ab015a132ca4653a3a43975d6a99be920f0322434d217",
+    "tools/sdk/include/spi_flash/esp_spi_flash.h": "79a1bdc0e739b86dd9c438d6ae577b3fa4e36380800cbe707879ee6f396c575c",
+    "tools/sdk/lib/libspiffs.a": "2d2b09ca5e12c4e4b31b5e9c837a392d919868fe53d94d2627f276548829a60f"
+  },
+  "configuration": {
+    "partition_offset": 2691072,
+    "partition_bytes": 1503232,
+    "page_bytes": 256,
+    "block_bytes": 4096,
+    "gc_max_runs": 10,
+    "metadata_bytes": 4,
+    "use_magic_length": true
+  },
+  "block_evidence": "Pinned libspiffs.a esp_spiffs.o esp_spiffs_init loads g_rom_flashchip sector_size at +12 into logical and physical erase block fields; SDK SPI_FLASH_SEC_SIZE is 4096.",
+  "scope": "Reference geometry/configuration for a native sizing model using pinned ESP8266 SPIFFS C sources. This does not execute the ESP32 SPIFFS binary and does not establish an OEM partition map."
+}

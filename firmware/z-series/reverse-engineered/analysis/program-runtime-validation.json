@@ -175,13 +175,13 @@
     "target_compile": "Pinned official Xtensa GCC 5.2; warnings treated as errors; no flash image link claimed"
   },
   "validated_source_sha256": {
-    "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
+    "include/zseries/program_runtime.hpp": "eaa1de3248c389b293cb231d12e53d3abc820677c4408183acb0814cb94415a5",
     "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
-    "include/zseries/quantity.hpp": "17a78490378c14295478e4368cea2bdd324f1c97f5d65780aff4f2e6064cda04",
-    "src/program_runtime.cpp": "91e2afd14ff01fc9c5ea8c6b3fdd785be8bc02639aa69b0bf9c2fdf10219b0ac",
-    "src/program_runtime_execution.cpp": "2081db109cc28cec77d69283733658498c323899548398245b2c41782e0a9349",
+    "include/zseries/quantity.hpp": "9110702b8324d3c7e8a0408ae3826bb31bf69869fa09497f6f77e446ffc2d7be",
+    "src/program_runtime.cpp": "18a17d4a07db6cd2bab1bd54e7ec27b7877ddee3153de64692cb595162ed4869",
+    "src/program_runtime_execution.cpp": "ef3903cf1b31372504a6d0be5ded9528f6b885dbb8021deb232ce07396d3ed97",
     "src/program_runtime_heater.cpp": "fab8390fe04a889f10c0dcaad6e31b7086b07240a7b6daff6506ed1bab039bc6",
-    "src/quantity.cpp": "609503865e26b3d2b4038ae247515ef0b369edf4c536329dbc1633a260e15eba"
+    "src/quantity.cpp": "31376af9825f6119dc4ce771a355199c80c7adb41ee7343ec8c2fcb8056f944f"
   },
   "shared_estimator_replay": {
     "reason": "Program statistics and runtime pending-stack estimates now call the same original iterator implementation.",
@@ -219,5 +219,7 @@
       "0x561": 4
     },
     "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
-  }
+  },
+  "continuation_evidence": "runtime-continuation-validation.json",
+  "guarded_api_note": "The historical prefix fixture is retained only for the standalone API with no diagnostics bound. All5792 production-continuation cases now complete in the separate returning-assertion replay."
 }

@@ -13,10 +13,13 @@ export function decodeDisplay(display: Display): Uint8Array {
     height > 512
   )
     throw new Error('Invalid OLED dimensions')
-  if (display.format !== 'page-lsb-hex')
+  const gray = display.format === 'row-gray4-msb-hex'
+  if (display.format !== 'page-lsb-hex' && !gray)
     throw new Error(`Unsupported display format: ${display.format}`)
   const hex = display.data.replace(/\s/g, '')
-  const size = width * Math.ceil(height / 8)
+  if (gray && (width !== 128 || height !== 64 || display.rotation == null))
+    throw new Error('Invalid grayscale OLED geometry')
+  const size = gray ? (width * height) / 2 : width * Math.ceil(height / 8)
   const storage = display.storage_bytes ?? size
   const rotation = display.rotation ?? 2
   const transfer = display.transfer_bytes ?? storage
@@ -38,7 +41,8 @@ export function decodeDisplay(display: Display): Uint8Array {
   const pixels = new Uint8Array(width * height)
   for (let y = 0; y < height; y++)
     for (let x = 0; x < width; x++)
-      pixels[rotation === 2 ? (height - 1 - y) * width + (width - 1 - x) : y * width + x] =
-        (bytes[(y >> 3) * width + x] >> (y & 7)) & 1
+      pixels[rotation === 2 ? (height - 1 - y) * width + (width - 1 - x) : y * width + x] = gray
+        ? (bytes[y * (width / 2) + (x >> 1)] >> (x % 2 ? 0 : 4)) & 15
+        : (bytes[(y >> 3) * width + x] >> (y & 7)) & 1
   return pixels
 }

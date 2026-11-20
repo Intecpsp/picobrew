@@ -56,7 +56,7 @@ func Profiles() []domain.Profile {
 				Description: "Manufacturer nominal batch size: 5 L. This specification does not establish grain capacity or efficiency.",
 			}},
 		},
-		{ID: "z", Name: "PicoBrew Z, one module (planning only)", BatchLiters: 9.46352946, Efficiency: 70, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. No control adapter is implemented."},
+		{ID: "z", Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
 		{ID: "zymatic", Name: "Zymatic (planning only)", BatchLiters: 9.46352946, Efficiency: 70, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. No control adapter is implemented."},
 	}
 }

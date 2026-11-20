@@ -4,5 +4,8 @@ Upstream firmware is archived under [`../z-series/oem/`](../z-series/oem/).
 That upstream grouping does not establish which image is compatible with this
 configuration, so no image is relabeled as a verified PicoBrew Z1 dump.
 
-`reverse-engineered/` is reserved for OEM reconstruction; `modified/` is
-reserved for the custom firmware. Both are currently unimplemented.
+Recovered source and standalone development are implemented under
+[`../z-series/`](../z-series/README.md). This directory remains a physical-model
+qualification boundary, rather than a duplicate source tree. A generic family
+build does not identify a Z1 revision; `MODEL=z1` remains unavailable until an
+original device backup establishes the mapping.

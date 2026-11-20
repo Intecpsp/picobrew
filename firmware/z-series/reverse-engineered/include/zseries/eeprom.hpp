@@ -6,6 +6,7 @@
 #include <cstdint>
 
 namespace zseries { namespace oem {
+struct ConsoleServices;
 constexpr std::size_t EepromDataSize = 120;
 constexpr std::uint32_t OriginalEepromBufferSize = 512;
 using EepromBytes = std::array<std::uint8_t, EepromDataSize>;
@@ -70,12 +71,20 @@ template<class ArduinoEeprom> EepromBackend arduino_eeprom_backend(ArduinoEeprom
     return backend;
 }
 
-enum class EepromResult { Ok, MissingBackend, NotInitialized, BufferTooSmall, MissingRegistry, MissingReporter, InvalidCommand, SelfTestFailed };
+enum class EepromResult { Ok, MissingBackend, NotInitialized, BufferTooSmall, MissingRegistry, MissingReporter, InvalidCommand, SelfTestFailed, MissingDiagnostic, DiagnosticFailed, MissingSelfTest };
+EepromResult eeprom_report_data(const EepromData&,const ConsoleServices&);
+EepromResult eeprom_enforce_valid_enums(EepromData&,bool& changed,const ConsoleServices&);
+EepromResult eeprom_set_ssid(EepromData&,const char*,std::size_t& copied,const ConsoleServices&);
+EepromResult eeprom_set_password(EepromData&,const char*,std::size_t& copied,const ConsoleServices&);
 struct EepromStore;
 struct EepromServices {
     void* context = nullptr;
     void (*register_commands)(void*, EepromStore&, const std::array<EepromCommandDescriptor, 9>&) = nullptr;
     void (*report_data)(void*, const EepromData&) = nullptr;
+    // Borrowed actual diagnostic service. A null pointer preserves the legacy
+    // guarded API; the application binds it for original assertion continuation.
+    const ConsoleServices* diagnostics = nullptr;
+    bool (*self_test)(void*) = nullptr;
 };
 
 struct EepromStore {

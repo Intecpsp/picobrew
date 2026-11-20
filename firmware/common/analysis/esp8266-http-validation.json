@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "hardware_tested": false,
+  "original_oem_parity_claimed": false,
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "native_pointer_bytes": 8,
+  "results": {
+    "checks": 128,
+    "pbuf_nodes_created": 14,
+    "pbuf_nodes_freed": 14,
+    "all_pcbs_released": true,
+    "passed": true,
+    "address_sanitizer": true,
+    "undefined_sanitizer": true,
+    "leak_tracing": false
+  },
+  "source_sha256": {
+    "platform/esp8266/http.hpp": "b962f97a07c80ccca3f22f1a93f567d26c484bfadd7eaa6d89b6cb162105bdb1",
+    "platform/esp8266/http.cpp": "9c60e3dbba6dc0cde45c0a6c4130a905c1cea5fe370c9826ba74b077a4625538",
+    "include/picobrew/http_server.h": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+    "src/http_server.c": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+    "tests/esp8266_http_test.cpp": "d6712d979f362bbd28988206920644cc5274600e6b42719247e3257b0443ff4f",
+    "tests/test_esp8266_http.py": "1f8b6bf68c5ca0c56cdb7f2251766d551c9e0badddc87caa3898cf679f836f74",
+    "tests/esp8266_adapters_native.py": "5d5ca8d5b476f15f298dd570aa93bc1848748c20f91136581e7099a2c26e0a4f",
+    "tests/esp8266_sdk_host/arch/cc.h": "7361d841993d8283963cbc2e862bd13f00ad0800d92618a3824bc31ea30f7c5c",
+    "dependencies/esp8266-adapters.json": "dbdb5726b2135ca3be807834f3f30eb33a30113f27fdd0dcb99af6a98b196580"
+  },
+  "sdk_pin": "dependencies/esp8266-adapters.json",
+  "target_object": {
+    "source": "common/platform/esp8266/http.cpp",
+    "source_sha256": "9c60e3dbba6dc0cde45c0a6c4130a905c1cea5fe370c9826ba74b077a4625538",
+    "object_sha256": "049a5fb6f21128433778c9fda60e399deadcb01dc343b290b50fc93834144a2f",
+    "object_bytes": 24508
+  },
+  "scope": "Actual raw lwIP listener and common C HTTP parser under controlled raw SDK callbacks. Tests cover ownership,partial data,backpressure,half-close,connection generations,errors and authentication. Pinned SDK target object also participates in complete PicoFerm application link. No live radio/network or physical heap qualification.",
+  "provenance_scope": "This report records the observed test run and source identities; it is not an automatic claim that a later source change was tested."
+}

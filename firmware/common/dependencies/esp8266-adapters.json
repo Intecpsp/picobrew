@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "version": "Arduino ESP8266 2.4.1, bundled lwIP 1.4 and SPIFFS",
+  "sdk_url": "https://github.com/esp8266/Arduino/releases/download/2.4.1/esp8266-2.4.1.zip",
+  "sdk_archive_sha256": "794f5e82fbc0490b68d45b2c63e8ece8f1fe3fe8ff51c78637823ca89a5a553c",
+  "toolchain_url": "https://github.com/esp8266/Arduino/releases/download/2.3.0/linux64-xtensa-lx106-elf-gb404fb9.tgz",
+  "toolchain_archive_sha256": "46f057fbd8b320889a26167daf325038912096d09940b2a95489db92431473b7",
+  "sdk_identity_sha256": {
+    "platform.txt": "ba68b489558fe8c4485b195f61f9d7742b585b6a353c0689df479e504c239e40",
+    "cores/esp8266/core_version.h": "ed4715edf688d0ed0d13a4ca22ead9f8a830dc4e50fc393d0dda907411a7dfe0",
+    "cores/esp8266/spiffs_hal.cpp": "7076357a8d428dcb5dbfefaf14b3f18e02c406a38f5dac7cf850ba2728ddb101",
+    "cores/esp8266/spiffs_api.h": "d1214e0cddf5bbcc803ea13821d60f6f5d82d0c2360fe92739df11b1bbd7fbb6",
+    "cores/esp8266/spiffs_api.cpp": "ea67dd7ad148efe072a1395478e971cf66a7158cd8c70e95ec3b3548b7ee91ef",
+    "tools/sdk/lwip/include/lwip/dns.h": "541b1e406660570533ccdfdc5c7fe65cd2b522832dac234a429e5aad7dd416da",
+    "tools/sdk/lwip/include/lwip/tcp.h": "4c8b659308abcbcb4572f18ac78a3505756ef5fb2047150bb447fde399e0dbd8",
+    "tools/sdk/lwip/include/lwip/pbuf.h": "d031cc9a388c96e4e9ee980528d8fa8e5690543e4bebffd2b940ea3c5921a82e",
+    "tools/sdk/lwip/src/core/dns.c": "19448234a476503d7032cd1070635d88e25cb2a3dc9ed4a6236ecf6139dcd103",
+    "tools/sdk/lwip/src/core/tcp.c": "9a0714c5f89a14dc952f780ce0443d3482e859ee34b7be1a73ad7fee6f3a2289",
+    "tools/sdk/lwip/src/core/tcp_in.c": "977385cf8a3f27a29ae3d9f73e712eeca000a7994c04c0b79f6b966f04bd4102",
+    "tools/sdk/lwip/src/core/tcp_out.c": "5e2552f525a3305c506ad1eaa6866ceea32b6f9df0b3a16d2528aa4e61ad6288",
+    "tools/sdk/lib/liblwip_gcc.a": "42345e60c98ecc3e6a0e5418706a9c61e02b4e6cb1f2b4890238426811bb677e",
+    "cores/esp8266/spiffs/spiffs.h": "39c36c2f91ec5df43eaaec3acae691103db159f89f4fc2b54d29b4c4443c27de",
+    "cores/esp8266/spiffs/spiffs_cache.c": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+    "cores/esp8266/spiffs/spiffs_check.c": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+    "cores/esp8266/spiffs/spiffs_config.h": "5246ec94cdb1c32f6fea485b7c51321656d1b4fc99f9c1c3b0a9b1767860ebf8",
+    "cores/esp8266/spiffs/spiffs_gc.c": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+    "cores/esp8266/spiffs/spiffs_hydrogen.c": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+    "cores/esp8266/spiffs/spiffs_nucleus.c": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+    "cores/esp8266/spiffs/spiffs_nucleus.h": "0a1c4409b3c5b0ce83c5f1a318d4e23a24819312b705cd811f27b34a4852914f",
+    "tools/sdk/ld/eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1",
+    "tools/sdk/lwip/include/arch/cc.h": "323497dae7a265651331756597b07e824039388b602b60a1fd62d17cef3ee079",
+    "tools/sdk/lwip/include/lwipopts.h": "45a817d9fbaaff865da091e2e0d22007fcd22385fce92b1be56a3e9d64f10e5e"
+  },
+  "toolchain_identity_sha256": {
+    "bin/xtensa-lx106-elf-g++": "9090ec97ab7bc6d9cd3a1cb47b5899e05ecce8f83a7300efb868e491367bb5ec",
+    "bin/xtensa-lx106-elf-gcc": "8760d3aafa06d5d88124197d2bd84a01411244efc561cc81bc6a35f39d565057",
+    "bin/xtensa-lx106-elf-ar": "b2ea96a4a53533c7a0867c86942b5773ee1c83e0ca2bd227b673c2af71b48bac",
+    "bin/xtensa-lx106-elf-nm": "f925b7934c4f943929ff4db16f5e92f102a4ad329d6ee437e8e258ebb9fb9c60"
+  },
+  "scope": "Selected pinned standalone SDK adapters. No claim that the original vendor firmware used these standalone services.",
+  "licenses": "SDK/core/SPIFFS/lwIP retain their upstream license notices; dependency sources are not copied into this repository."
+}

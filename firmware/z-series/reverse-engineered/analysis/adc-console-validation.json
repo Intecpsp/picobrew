@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "input_file_sha256": "4784714da28307d9dda2c3d1a6e0a51dd2a711250946d6193744901f6e454b7e",
+  "cases": 68,
+  "all_results_match": true,
+  "original_functions": 12,
+  "returning_assertions": 275,
+  "source_sha256": {
+    "src/application_console.cpp": "cd73f5e1b259e85c6c8e5e497c4fcb163539f40817eb283507d9d06a328e7087",
+    "src/application_console_information.inc": "747a9ae06a98182b098623c58e338e8ea52e514b2fada3c699fe53431f23ef6e",
+    "src/application_console_manifest.inc": "f4f46b6e36520433c1e9e16d646208a906ec09131610c8cb08c123eca3169b01",
+    "include/zseries/application_console.hpp": "6c566b5c03b55c540cd5dacdffbc924e2cd84eaed7ae8cd88dd3ae37870183e7",
+    "src/sensor_acquisition.cpp": "dd3d7eb81bebb945e0e1606b7844579e723e25bf2a922ca9e5767867b7a988b4",
+    "src/temperature.cpp": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8",
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
+    "tests/adc_console_probe.cpp": "83d0ca3feb57be472bcb362f6bc29082b51515931a2556247bb538b2a0bbf494",
+    "tests/adc_console_cases.py": "72f1434cc852654df43f5d79575d3e051cd66d9286642e99d1f3f4fea91ed8be",
+    "tests/ghidra/EmulateAdcConsole.java": "e738e133c77f4f53bbc3b24aebed45865e825ac9fbc0c5203497e37e8685801f",
+    "tests/ghidra/SlideshowExecution.java": "574a57c81e391fe4f87f7a37d5389e531743c3eb188bd53b0a3ff65816e58489",
+    "tests/test_adc_console.py": "c6853d8964e4b311b42650587e4c6ca118bcffd9eb02710e7aca6d10e777703b",
+    "tools/validate_adc_console.py": "1c523a0f88e8c7fa9cf4c4f288bb240f468ccc486e0318251ea4e7d6cc329298"
+  },
+  "fixture_sha256": "2557bb10106a6960baa5b44b09cdfcb7837ccf45a075126bc6c2183d37944149",
+  "hardware_tested": false,
+  "scope": "Information, one-shot read and sensor detection callbacks execute through return, with actual ADC, thermistor, enum and returning assertion callees. Every diagnostic, Wire request/read, raw ADC, assertion counter and wrapping clock is compared. SDK Wire results, clock/delay, ROM primitives, compiler arithmetic and finite log/format operations are explicit boundaries; no physical ADC is emulated. Invalid sensor-type indices remain an owned rejection rather than an out-of-bounds OEM access."
+}

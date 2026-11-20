@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 374,
+  "input_file_sha256": "044a826543b49a62fc896ba6f869a5be8db3d96a41d8e0909513e35baa58534a",
+  "original_functions_executed": {
+    "0x400db014": 251,
+    "0x400db05c": 75,
+    "0x400e14c4": 270,
+    "0x400e15f8": 38,
+    "0x400e1738": 20,
+    "0x400f71b0": 1,
+    "0x401bf3d4": 116
+  },
+  "modeled_boundaries": {
+    "IPAddress_default_constructor": 54,
+    "IPAddress_fromString": 18,
+    "WiFi_hostByName": 36,
+    "WiFi_status": 270,
+    "__divsf3": 708,
+    "__extendsfdf2": 708,
+    "assertion_delay": 251,
+    "console_registry": 1,
+    "diagnostic_basename": 648,
+    "diagnostic_format_output": 648,
+    "esp_ping_set_target": 27,
+    "millis": 648,
+    "ping_init": 24
+  },
+  "hardware_tested": false,
+  "scope": "Complete original Pinger setup, numeric/hostname/text-IP requests and result callback, including actual assertion counter update and delay continuation. Compare target/remaining/return, assertion count, diagnostics and ordered SDK operations. DNS, SDK IP parsing, WiFi status, lwIP transport, console registry and printf formatting are explicit boundaries; no live network or RTOS concurrency claim.",
+  "all_results_match": true,
+  "golden_fixture_sha256": "61a0c71537f7b1eb62d2506cc62807af03f2f128d2b1440ae773d456bba68c22",
+  "source_sha256": {
+    "include/zseries/pinger.hpp": "36e29b186e8a2d38726feddc57d7f11b7847f609e2e9e3374aa521036a7d47ab",
+    "src/pinger.cpp": "0e3d00cf1ace570d78ce6a8c1eea691a15ce98a5d1cdd1d8a3bd4549339fcf80",
+    "platform/esp32/pinger_platform.hpp": "489d3aa5392ef8bda111bfa7f0be4cd38d5ff49821e87db12e706247879513ab",
+    "platform/esp32/pinger_platform.cpp": "5f991d684d3616274b0a4fa0996627999e0e50fb43d990fe1ffb96d849ac3391",
+    "tests/pinger_bridge.cpp": "59f335963ded10da93f38a633126a28a0685cdc0fa23f44f37332c024b763d36",
+    "tools/validate_pinger.py": "d9277b7a46a3d0cbcb227c88318a0858ab29637d553aab97c3692c82a2b6bb21",
+    "tools/ghidra/EmulatePinger.java": "972bfa58fef4cfc21e895213cd4af3bb4739bb7992ebf3d164455509b2e3cdc3",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  }
+}

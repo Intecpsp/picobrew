@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "layouts": {
+    "esp8266": {
+      "little_endian": true,
+      "object_id_bytes": 2,
+      "block_index_bytes": 2,
+      "page_index_bytes": 2,
+      "span_index_bytes": 2,
+      "page_header": {
+        "size": 5,
+        "obj_id": 0,
+        "span_ix": 2,
+        "flags": 4
+      },
+      "object_header": {
+        "size": 46,
+        "p_hdr": 0,
+        "_align": 5,
+        "file_size": 8,
+        "type": 12,
+        "name": 13,
+        "name_bytes": 32,
+        "metadata_bytes": 0
+      },
+      "index_header": {
+        "size": 8,
+        "p_hdr": 0,
+        "_align": 5
+      },
+      "magic_length": 0,
+      "gc_max_runs": 5
+    },
+    "esp32": {
+      "little_endian": true,
+      "object_id_bytes": 2,
+      "block_index_bytes": 2,
+      "page_index_bytes": 2,
+      "span_index_bytes": 2,
+      "page_header": {
+        "size": 5,
+        "obj_id": 0,
+        "span_ix": 2,
+        "flags": 4
+      },
+      "object_header": {
+        "size": 49,
+        "p_hdr": 0,
+        "_align": 5,
+        "file_size": 8,
+        "type": 12,
+        "name": 13,
+        "name_bytes": 32,
+        "metadata_bytes": 4,
+        "meta": 45
+      },
+      "index_header": {
+        "size": 8,
+        "p_hdr": 0,
+        "_align": 5
+      },
+      "magic_length": 1,
+      "gc_max_runs": 10
+    }
+  },
+  "esp32_dwarf_witness": {
+    "archive_member": "spiffs_nucleus.o",
+    "object_sha256": "d1734f0fbe9eb6df9815b763346dc2429027bfc4397f5906c09a9f9b41e0f380",
+    "layout": {
+      "little_endian": true,
+      "object_id_bytes": 2,
+      "block_index_bytes": 2,
+      "page_index_bytes": 2,
+      "span_index_bytes": 2,
+      "page_header": {
+        "size": 5,
+        "obj_id": 0,
+        "span_ix": 2,
+        "flags": 4
+      },
+      "object_header": {
+        "size": 49,
+        "p_hdr": 0,
+        "_align": 5,
+        "file_size": 8,
+        "type": 12,
+        "name": 13,
+        "name_bytes": 32,
+        "metadata_bytes": 4,
+        "meta": 45
+      },
+      "index_header": {
+        "size": 8,
+        "p_hdr": 0,
+        "_align": 5
+      }
+    },
+    "source": "DWARF packed type sizes/member offsets from the actual pinned SDK object",
+    "format_function_sha256": {
+      "spiffs_erase_block": "6eaae85009f5aaf41b154c645b01254c7240ae79c0308cefac19d9646989124b",
+      "spiffs_obj_lu_scan": "8dd7e2b3c3d300b2fbf9e6f3e06fb19d57fb38f4eaf6d5a752010cb31bdc1f91",
+      "spiffs_object_create": "2a94c1956a033167f9153ed2ef45917e0b682d18291d8f545ac1007587e34a76",
+      "spiffs_object_read": "cd3bdec7cd25efdf72cd3af54e52768c41122a881b32e73e8ee0c30a9e945513"
+    }
+  },
+  "magic_evidence": {
+    "function": "spiffs_erase_block",
+    "original_object": "spiffs_nucleus.o",
+    "formula": "uint16(0x0529 ^ page_bytes ^ (block_count - block_index))",
+    "instructions": "0x6f l32i page_size; 0x71 l32i block_count; 0x73 sub block_index; 0x76 xor page_size; 0x79 movi0x529; 0x7c xor; 0x7f s16i",
+    "magic_offset": "last lookup page end minus4; erase age at end minus2"
+  },
+  "scope": "Native pinned SPIFFS implementation and actual ESP32 SDK packed-format ABI/configuration identity; no claim of executing the ESP32 filesystem binary."
+}

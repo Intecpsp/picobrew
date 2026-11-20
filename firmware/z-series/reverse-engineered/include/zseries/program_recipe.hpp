@@ -45,6 +45,7 @@ struct HttpRecipeStep {
 };
 struct HttpRecipe {
     const char* name = nullptr;
+    const char* type_code = nullptr;
     bool is_beer = true;
     double start_water_liters = 11.36;
     std::int32_t pico_abv = 0;
@@ -55,5 +56,6 @@ struct HttpRecipe {
 };
 // 0x40114f8c (Zymatic/Z-recipe) and 0x4011595c (PicoPak).
 ProgramBuildResult build_http_recipe(ProgramBuffer&, const HttpRecipe&, HttpRecipeFormat,
-    SessionType, std::uint32_t id, const ProgramParameters&, const RecipeEnvironment&) noexcept;
+    SessionType, std::uint32_t id, const ProgramParameters&, const RecipeEnvironment&,
+    const ConsoleServices* diagnostics=nullptr) noexcept;
 }} // namespace zseries::oem

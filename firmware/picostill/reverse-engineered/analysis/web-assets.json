@@ -1,0 +1,49 @@
+{
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "assets": [
+    {
+      "path": "web/oem/data.css",
+      "address": 1061166191,
+      "file_offset": 7279,
+      "size_bytes": 6945,
+      "sha256": "3dfba31cce76d911859d386bd77e5a3a6b4bb92bbce7f80ada7dbadc5833a688"
+    },
+    {
+      "path": "web/oem/data.js",
+      "address": 1061173157,
+      "file_offset": 14245,
+      "size_bytes": 29356,
+      "sha256": "c04246355f8eca35f4e7284e014dc306622f311a35e4812772d62d2d3613ca1f"
+    },
+    {
+      "path": "web/oem/data.fragment.html",
+      "address": 1061202575,
+      "file_offset": 43663,
+      "size_bytes": 6394,
+      "sha256": "a79cb158a3abda47ddebf802ad4f29055cbaf33c7e6d5b3213da8e72ad80f448"
+    },
+    {
+      "path": "web/oem/wifi.css",
+      "address": 1061209015,
+      "file_offset": 50103,
+      "size_bytes": 4722,
+      "sha256": "d87db57d515239fe722fec411a608207adb7b7d41779766c60c14506dda12f2c"
+    },
+    {
+      "path": "web/oem/wifi.js",
+      "address": 1061213738,
+      "file_offset": 54826,
+      "size_bytes": 7521,
+      "sha256": "c96725e622ba352557db0d1bcf34fb43ecf8dad961b4a1d7428200f50140f4cc"
+    },
+    {
+      "path": "web/oem/wifi.fragment.html",
+      "address": 1061221357,
+      "file_offset": 62445,
+      "size_bytes": 3566,
+      "sha256": "8a4d4e26951c9b5abc0b996565ca8a0b936cf8e372858c2c375672f336b358c5"
+    }
+  ],
+  "scope": "Verbatim OEM asset literals. HTML files are fragments assembled by the original HTTP handler, not standalone pages. No claim of new authenticated API support.",
+  "modified": false
+}

@@ -4,7 +4,9 @@
     {"id": "pico-pro", "name": "Pico Pro", "family": "pico-s-pro", "custom_firmware": true},
     {"id": "pico-s", "name": "Pico S", "family": "pico-s-pro", "custom_firmware": true},
     {"id": "pico-c", "name": "Pico C", "family": "pico-c", "custom_firmware": true, "display_variants": ["ssd1325", "ssd1309"]},
-    {"id": "z", "name": "PicoBrew Z", "family": "z-series", "custom_firmware": false},
+    {"id": "z-series", "name": "Pico Z", "family": "z-series", "custom_firmware": true, "reference_package": true},
+    {"id": "picostill", "name": "PicoStill", "family": "picostill", "custom_firmware": true, "reference_package": true},
+    {"id": "picoferm", "name": "PicoFerm", "family": "picoferm", "custom_firmware": true, "reference_package": true},
     {"id": "zymatic", "name": "PicoBrew Zymatic", "family": "zymatic", "custom_firmware": false}
   ]
 }

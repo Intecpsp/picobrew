@@ -1,0 +1,99 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/diagnostics.cpp",
+      "source_sha256": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+      "object_sha256": "d0c2af2c7844038af7403e53176ba03a5d999a94bb416da1197c03415f29c412",
+      "object_bytes": 1864
+    },
+    {
+      "source": "src/system_setup.cpp",
+      "source_sha256": "0d8915af9849383ba0905be1cfd7a456416081f57666a619330dbcdb1b153cf5",
+      "object_sha256": "f580adfd493bf07f0ac8f7884d82f9eeb738637c386d866d81bdff7763cff6a8",
+      "object_bytes": 5368
+    },
+    {
+      "source": "platform/esp32/esp32_platform.cpp",
+      "source_sha256": "61af80f4af3b9cda85e7eefe99b2b7b9c46e3615524de8a03a4705ec2a116aec",
+      "object_sha256": "a36ff2125fc3127381c9dabe93be1ada92b9aa789547c30651633ecbe80a1263",
+      "object_bytes": 22124
+    },
+    {
+      "source": "platform/esp32/system_setup_platform.cpp",
+      "source_sha256": "c313a2abad3e7099eeaa70185f2ce28eaf7de3bc03a2d73201289c61ecea9d1a",
+      "object_sha256": "8585b80c02fdcabbc213beb98dfb223e6bd939502ffa3b0b948d0741e9f39613",
+      "object_bytes": 9476
+    }
+  ],
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "owned_header_sha256": {
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "include/zseries/system_setup.hpp": "c10cdb726543faab8f552c05db1a9b3b97980f986b75985ad4786c61a28b0bb8"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/esp32_platform.hpp": "7943c4334f1a80f92194b09037730831e1753450574864ea4b1052f5abf3de6a",
+    "platform/esp32/system_setup_platform.hpp": "3cb68302b429c7b8ef8726b89b983e8e508b867bd8ea223056259e3a43e4e6e3"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 4
+  }
+}

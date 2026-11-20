@@ -6,6 +6,15 @@ preserved `zseries_0_0_119.bin`. This closes the storage service used during Cor
 startup. It is not a replacement flash driver or a claim of a complete bootable
 application.
 
+## Application diagnostic continuation
+
+The application now obtains diagnostic services and the full EEPROM self-test
+from `ApplicationConsole::eeprom_services()`. With that binding, initialization
+and size assertions execute the real returning helper and subsequent storage
+work continues. [eeprom-continuation.md](eeprom-continuation.md) records the full
+2,363-case replay and exact logging. The old typed assertion guards and original
+sentinel fixture below remain explicitly limited to a null diagnostic pointer.
+
 ## Data layout
 
 The original record is exactly 120 bytes. Encoding and decoding use explicit

@@ -24,8 +24,13 @@ ArduinoJson 6.21.6 is an explicitly selected rebuild dependency; the original
 firmware's exact minor version remains unknown. Its source is verified against
 [`../../dependencies/arduinojson.json`](../../dependencies/arduinojson.json).
 
-`System::setup` performs original partition lookup, SPI/I²C initialization,
-bus scans and watchdog registration. `gpio`, `i2c`, `acquisition_clock` and
+`setup_system()` with `system_setup_services()` performs original partition
+lookup, SPI/I²C initialization, bus scans, watchdog registration and console
+registration. It uses the shared returning diagnostic handler, including its
+counter update and 200 ms delay, and continues console setup after watchdog
+errors. Its caller-owned bindings require the real console registry; see
+[System setup evidence](../../analysis/system-setup.md).
+`gpio`, `i2c`, `acquisition_clock` and
 `msp_transport` bind portable recovered modules to the SDK. `initialize_msp`
 creates the client using the original bus/address/delays but does not issue
 controller commands or perform an update on its own.

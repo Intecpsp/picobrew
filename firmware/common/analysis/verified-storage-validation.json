@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "flags": [
+    "-std=c++11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror"
+  ],
+  "results": {
+    "checks": 796,
+    "injected_callback_failures": 63,
+    "interrupted_transaction_states": 50,
+    "passed": true
+  },
+  "source_sha256": {
+    "include/picobrew/verified_storage.hpp": "0656ebc74cd243e148f5c9da90aab5103e2636b8ac9175974981c51702581228",
+    "src/verified_storage.cpp": "e59bb0d690fab10ab3b13dc8c7bcbcccae8699ccadf897f6246f1bc17461c1c8",
+    "tests/verified_storage_test.cpp": "6afe5a8d49ac7d8ec59e8a691ef87c9d96e970f8ed84a6823643e6e5635724ba",
+    "tests/test_verified_storage.py": "d7e3fa34cd69818a0732ffc4e97e0ed0f967337e0cacf60a1248546a2615ef16",
+    "tools/validate_verified_storage.py": "b3fe12384b781c77cc5590e1582a2458f1199cebed8210cd0c6857df6ec75a43"
+  },
+  "boundary": "Actual shared production transaction executes against a deterministic FileIo filesystem model. Every callback in replacement, first creation and removal is failed once; persisted snapshots before/after mutation model reset/remount. Partial transfer, readback corruption, wrong length, zero progress, invalid keys and main I/O versus absent-main fallback are checked. Actual pinned SPIFFS driver validation is separate.",
+  "hardware_tested": false,
+  "single_rename_atomicity_claimed": false
+}

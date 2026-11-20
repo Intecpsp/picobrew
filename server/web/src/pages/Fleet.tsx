@@ -25,6 +25,8 @@ import {
   SectionHeading,
 } from '../components/ui'
 import { DeviceDialog, RemoveDeviceDialog } from '../components/DeviceDialogs'
+import { SensorHistory } from '../components/SensorHistory'
+import { isAccessory } from '../lib/capabilities'
 import { Sparkline, TemperatureChart } from '../components/Charts'
 import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 export default function Fleet({ addMachine = false }: { addMachine?: boolean }) {
@@ -57,7 +59,7 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
       for (const device of devices)
         next[device.id] = [
           ...(old[device.id] || []),
-          { value: device.status?.wort_f ?? null },
+          { value: device.status?.temperature_f ?? device.status?.wort_f ?? null },
         ].slice(-40)
       return next
     })
@@ -94,7 +96,7 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
           note="Across your brewery"
         />
         <Metric
-          label="Brews in progress"
+          label="Sessions in progress"
           value={active.length}
           note={active.length ? 'Keeping an eye on every step' : 'Ready when you are'}
           accent
@@ -105,7 +107,7 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
           note="One collection, all your machines"
         />
         <Metric
-          label="Brew days recorded"
+          label="Sessions recorded"
           value={brews.length}
           note="Your craft, captured over time"
         />
@@ -177,7 +179,11 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
             }
           />
           {trace.data?.samples?.length ? (
-            <TemperatureChart samples={trace.data.samples} unit={unit} height={255} />
+            ['picoferm', 'picostill'].includes(trace.data.model) ? (
+              <SensorHistory brew={trace.data} unit={unit} height={255} />
+            ) : (
+              <TemperatureChart samples={trace.data.samples} unit={unit} height={255} />
+            )
           ) : (
             <Empty
               icon={<Radio size={25} />}
@@ -245,6 +251,7 @@ function MachineCard({
 }) {
   const { unit } = useHub()
   const status = device.status
+  const accessory = isAccessory(device)
   const state = deviceState(device)
   const progress = status?.step_count
     ? Math.min(100, ((status.current_step + 1) / status.step_count) * 100)
@@ -296,11 +303,32 @@ function MachineCard({
         </p>
       )}
       <div className="machine-card-body">
-        <BrewerIllustration active={!!status?.busy} />
+        <>
+          {accessory ? (
+            <div className="accessory-illustration" aria-hidden="true">
+              <FlaskConical size={70} strokeWidth={1} />
+              <span>{deviceModelLabel(device)}</span>
+            </div>
+          ) : (
+            <BrewerIllustration active={!!status?.busy} />
+          )}
+        </>
         <div className="machine-readings">
-          <span>WORT TEMPERATURE</span>
-          <strong>{device.online ? temperature(status?.wort_f, unit) : '—'}</strong>
-          <small>Target {temperature(status?.target_f, unit)}</small>
+          <span>{accessory ? 'TEMPERATURE' : 'WORT TEMPERATURE'}</span>
+          <strong>
+            {device.online
+              ? temperature(accessory ? status?.temperature_f : status?.wort_f, unit)
+              : '—'}
+          </strong>
+          <small>
+            {accessory
+              ? status?.pressure_kpa != null
+                ? `${status.pressure_kpa.toFixed(2)} kPa`
+                : status?.battery_v != null
+                  ? `${status.battery_v.toFixed(2)} V battery`
+                  : deviceState(device)
+              : `Target ${temperature(status?.target_f, unit)}`}
+          </small>
           {values.length > 1 ? (
             <Sparkline values={values} />
           ) : (
@@ -321,21 +349,31 @@ function MachineCard({
             ) : status?.stopped ? (
               'Outputs stopped'
             ) : status?.busy ? (
-              status.step_name || `Phase ${status.phase}`
+              accessory ? (
+                state
+              ) : (
+                status.step_name || `Phase ${status.phase}`
+              )
+            ) : accessory ? (
+              'Ready for a session'
             ) : (
               'Ready for the next recipe'
             )}
           </span>
-          {status?.busy && (
+          {status?.busy && !accessory && (
             <small>
               <Clock3 size={12} />
               {duration(status.step_seconds * 1000)}
             </small>
           )}
         </div>
-        <div className="progress-track">
-          <span style={{ width: `${progress}%` }} />
-        </div>
+        <>
+          {!accessory && (
+            <div className="progress-track">
+              <span style={{ width: `${progress}%` }} />
+            </div>
+          )}
+        </>
       </div>
       <footer>
         <span>

@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 328,
+  "original_functions": 96,
+  "all_results_match": true,
+  "all_framebuffers_match": true,
+  "returning_assertions": 19,
+  "source_sha256": {
+    "include/zseries/head_slideshow.hpp": "9c08589048a80843f65819ff524536a1b0cd1c5bc64612c59c1cd884c423c2a2",
+    "src/head_slideshow.cpp": "5fc4fb8c3a81cd8d126f2666b7bf47fb1fada11d899d7007dcb5a29be0e4d0c3",
+    "include/zseries/head_presentation.hpp": "63a8f64d99b84cb09413164d760a07e544a05cfa608d399a2f06f5d6ba3e2f23",
+    "src/head_presentation.cpp": "3a94de67afc7321bfbb0df61352813f7183e7e26c5d8bb0436c929c13689e516",
+    "tests/head_slideshow_bridge.cpp": "a7955be8018ee08d28cc84b20a5d8c21142683f60151fcd8ab5277fab8a82ee3",
+    "tests/head_slideshow_cases.py": "a58eb0837d5c6ca298ea33821cb7bfb5fd079bb15696874bc1322b350e07eb45",
+    "tests/head_slideshow_native.py": "42631ac5b75e1d61fa53ce7d1e55e756bb9e1622761e9706df7eabac989ef301",
+    "tests/test_head_slideshow.py": "c9028a9be5a07344cb91191fd041fa752a465fe443359d010342eaafd4588511",
+    "tests/ghidra/EmulateHeadSlideshow.java": "c08244a1d66a793089c8eac4c0bd0e58cb257567fcc43a5f0890d86f93f5d2c1",
+    "tests/ghidra/SlideshowExecution.java": "574a57c81e391fe4f87f7a37d5389e531743c3eb188bd53b0a3ff65816e58489",
+    "tools/validate_head_slideshow.py": "7b385d10bf24a65cdf7826af909028929d4d7d90602f9ff3ce4635f2c47a6c2d",
+    "tests/fixtures/head-slideshow-inputs.json.gz": "6291aaeafdc89e7ab7a2a74f7d0674886e7c8980958f1629c716d63855fbb33c",
+    "tests/fixtures/head-slideshow-original.json.gz": "b56bc4313ae666b68738f90d38c7480e9020a5ab93a26cf0c3f77438b353f6cd"
+  },
+  "scope": "Original Slideshow page renderers, entry constructors, population/selection, timers, reset and StabilityText self-test execute through return. All 4096 framebuffer bytes, dirty/assertion/counter/clock, entry timer/counter/title and diagnostic/scope callback sequence match. Root constructor geometry and initialization caller ordering, reviewed ROM/libc/soft-float helpers, clock/delay, stack high-water mark, task watchdog reset, scope renderer and HeadScreens reset are explicit boundaries. The original assertion body executes its counter update and delay; draw callees are never substituted.",
+  "complete_application_linked": false,
+  "hardware_tested": false
+}

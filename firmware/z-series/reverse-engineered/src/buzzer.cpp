@@ -2,6 +2,14 @@
 
 namespace zseries { namespace oem {
 namespace {
+struct BuzzerGuard {
+    const BuzzerServices& services;
+    bool valid;
+    explicit BuzzerGuard(const BuzzerServices& value):services(value),valid((value.enter==nullptr)==(value.leave==nullptr)){
+        if(valid&&services.enter)services.enter(services.context);
+    }
+    ~BuzzerGuard(){if(valid&&services.leave)services.leave(services.context);}
+};
 const BuzzerCommandDefinition commands[] = {
     {BuzzerCommand::Information, true, "i", "Displays Buzzer state"},
     {BuzzerCommand::On, true, "on", "Turn buzzer on"},
@@ -15,6 +23,7 @@ const BuzzerCommandDefinition* buzzer_commands(std::size_t& count) noexcept {
     return commands;
 }
 BuzzerResult Buzzer::register_commands() {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     if (!services.begin_console || !services.add_command) return BuzzerResult::MissingService;
     if (!services.begin_console(services.context, "Buzzer")) return BuzzerResult::ServiceFailure;
     for (const auto& value : commands)
@@ -22,6 +31,7 @@ BuzzerResult Buzzer::register_commands() {
     return BuzzerResult::Ok;
 }
 BuzzerResult Buzzer::setup() {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     if (!services.attach || !services.configure || !services.write ||
         !services.begin_console || !services.add_command) return BuzzerResult::MissingService;
     if (!services.attach(services.context, state.pin, state.channel) ||
@@ -31,6 +41,7 @@ BuzzerResult Buzzer::setup() {
     return register_commands();
 }
 BuzzerResult Buzzer::set_enabled(bool enabled) {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     if (state.enabled == enabled) return BuzzerResult::Ok;
     if (enabled) {
         if (!services.configure) return BuzzerResult::MissingService;
@@ -42,6 +53,7 @@ BuzzerResult Buzzer::set_enabled(bool enabled) {
     return BuzzerResult::Ok;
 }
 BuzzerResult Buzzer::tick() {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     if (!services.millis) return BuzzerResult::MissingService;
     services.millis(services.context);
     if (state.previous_enabled || state.enabled) {
@@ -54,6 +66,7 @@ BuzzerResult Buzzer::tick() {
     return BuzzerResult::Ok;
 }
 BuzzerResult Buzzer::command(BuzzerCommand value, const char* argument) {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     switch (value) {
     case BuzzerCommand::Information:
         if (!services.millis || !services.diagnostic) return BuzzerResult::MissingService;
@@ -73,6 +86,7 @@ BuzzerResult Buzzer::command(BuzzerCommand value, const char* argument) {
     return BuzzerResult::ServiceFailure;
 }
 BuzzerResult Buzzer::set_alarm(SystemAlarmState& alarm, bool enabled) {
+    BuzzerGuard guard(services);if(!guard.valid)return BuzzerResult::MissingService;
     if (alarm.enabled != state.enabled) {
         assertion_line = 0x118;
         if (!services.assertion) return BuzzerResult::MissingService;

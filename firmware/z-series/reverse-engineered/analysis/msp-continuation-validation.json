@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 123,
+  "original_functions": 40,
+  "returning_assertions": 320,
+  "original_crc_byte_executions": 227191,
+  "all_results_match": true,
+  "all_response_queues_consumed": true,
+  "event_records": 30975,
+  "validated_image_crc": {
+    "false": 24539,
+    "true": 36788
+  },
+  "source_sha256": {
+    "include/zseries/msp_protocol.h": "eca42029deedb69b4f932e11e8996058ff471f1ee68da6b5096bc995b7281aa3",
+    "src/msp_protocol.c": "51dbad57a389942d0f8c3549d2f5cd04d26158599d6c5f8e1faac7266464da45",
+    "include/zseries/msp_console_tests.hpp": "8d91a55ef6e712b39e9934a2ed671715b4a69ed613ffe874e3e53ecb231bd63d",
+    "src/msp_console_tests.cpp": "90abdea9d42093da6ef4238c482f0d1f6cee2e9f3f794ed1a03838d7c5be84e8",
+    "src/msp_images.cpp": "ffa65e543b38a34b14318e487c8874757c8b9089fc35d476544d446e86f5e9ba",
+    "tests/msp_continuation_bridge.cpp": "db01a7159cc07f8fbdfec43e8802a61e373bf27918edfbe63e9b63f90bfe28c1",
+    "tests/msp_continuation_cases.py": "2b8dea0c0f590e625a2ea0288d360d549345bf6d5a54a8b43a19b1ae2c9235b3",
+    "tests/msp_continuation_native.py": "8ef7fbee61fe34f40a9f88b05d5b78d911fdc1a01de6b72dd7a637361b2c8c70",
+    "tests/test_msp_continuation.py": "87463de916fefafe0014e0a0b98d72c0241e10b8f2099502d109759d41c6eecb",
+    "tests/test_msp_protocol.py": "9b21dd0c0614d30fbc1abdd86b63e0298ab25d11dfc9c54554f7b556a5205252",
+    "tests/ghidra/EmulateMspContinuation.java": "2cb70d1672324eb798cfcacc68f6df77baf8c248c84cf0f9be1544822f794e00",
+    "tests/ghidra/MspContinuationExecution.java": "43d8870110407a31213842cc19efc7e68011a4f28c75eed05906cdea66578eff",
+    "tools/validate_msp_continuation.py": "2463b0d867139856aeb84e84d2d37f4bcf507a9089825e80825bad444556603c",
+    "tests/fixtures/msp-continuation-inputs.json.gz": "7da01381b90bd2c1868cdcaaf5ebb27019d5acc97cca29c64b499be8be692f7f",
+    "tests/fixtures/msp-continuation-original.json.gz": "eaf8b2cee1c0ebb907ed17bacd4d3fe77773e65bdcabba85a6a51d561019fce3"
+  },
+  "scope": "Original MSP application/BSL transport, response handling, setup/update recovery, and every named MSP self-test execute through return. All bus frames, consumed response bytes, diagnostic order, state bytes, counters, wrapping clock and controller return codes match. The actual returning assertion helper and both debug/test ScopeLogger bodies execute. Original CRC8 LOOP instructions execute; the full image CRC is independently executed for unchanged and deliberately corrupted fixture data, then cached for repeated setup. SDK TwoWire, prescribed clock/stack high-water, task watchdog reset, ROM primitives, soft-float and scope text rendering are explicit environmental boundaries. No physical controller is contacted.",
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

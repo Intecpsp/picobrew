@@ -5,6 +5,7 @@ import argparse
 import copy
 import ctypes
 import hashlib
+import gzip
 import json
 import math
 import os
@@ -13,9 +14,12 @@ import random
 import shlex
 import struct
 import subprocess
+import sys
 import tempfile
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'tests'))
+import run_msp_emulation as common
 IMAGE_SHA = "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27"
 KINDS = ["setup_lis", "tick_lis", "setup_bmp", "calibration_bmp", "tick_bmp"]
 VALUES = ["acceleration_x", "acceleration_y", "acceleration_z", "pressure_pa", "estimated_boil_celsius"]
@@ -69,6 +73,14 @@ def input_cases():
             item = case(f"end-{kind}-{reg}-{status}", kind)
             item["ends"] = ([0] if reg == 250 else []) + [status]
             cases.append(item)
+    for enabled in (0,1):
+        for identity in (0,88):
+            for failure in range(6):
+                item=case(f'setup-calibration-failure-{enabled}-{identity}-{failure}','setup_bmp',enabled)
+                item['replies']['208']['bytes']=[identity]
+                if failure<3:item['replies']['136']['count']=[0,23,25][failure]
+                else:item['ends']=[0,0,[1,2,4][failure-3]]
+                cases.append(item)
     for p1 in (0, 1, 32768, 65535):
         for raw in (0, 1, 0x7ffff, 0xfffff):
             item = case(f"pressure-edge-{p1}-{raw}", "tick_bmp")
@@ -110,7 +122,7 @@ def load_native(directory):
     compiler = shlex.split(os.environ.get("CXX", "c++"))
     library = Path(directory) / "auxiliary-sensors.so"
     subprocess.run(compiler + FLAGS + ["-I", str(ROOT / "include"), str(ROOT / "tests/auxiliary_sensors_bridge.cpp"),
-                   str(ROOT / "src/auxiliary_sensors.cpp"), "-o", str(library)], check=True)
+                   str(ROOT / "src/auxiliary_sensors.cpp"), str(ROOT / "src/diagnostics.cpp"), "-o", str(library)], check=True)
     native = ctypes.CDLL(str(library))
     native.auxiliary_action.argtypes = [ctypes.c_uint, ctypes.POINTER(ctypes.c_double), ctypes.POINTER(ctypes.c_int64),
                                        ctypes.POINTER(ctypes.c_int), ctypes.c_size_t, ctypes.POINTER(ctypes.c_int), ctypes.c_size_t,
@@ -121,7 +133,7 @@ def load_native(directory):
 
 def native_case(native, item, missing=False):
     values = (ctypes.c_double * 5)(*item["values"])
-    words = (ctypes.c_int64 * 22)(*item["words"])
+    words = (ctypes.c_int64 * 24)(*item["words"])
     ends = (ctypes.c_int * len(item["ends"]))(*item["ends"])
     data = []
     for reg, reply in item["replies"].items():
@@ -133,13 +145,13 @@ def native_case(native, item, missing=False):
                                      events, ctypes.byref(count), missing)
     if count.value > len(events) or count.value % 4:
         raise AssertionError("Unexpected auxiliary event shape")
-    return result, {"id": item["id"], "words": list(words), "values": list(values),
-                    "events": [list(events[i:i+4]) for i in range(0, count.value, 4)]}
+    return result, {"id": item["id"], "words": list(words)[:22], "values": list(values),
+                    "events": [list(events[i:i+4]) for i in range(0, count.value, 4)],"counter":words[22],"now":words[23]}
 
 
 def compare_case(native, item, expected):
     result, actual = native_case(native, item)
-    if expected["id"] != item["id"] or actual["words"] != expected["words"] or actual["events"] != expected["events"]:
+    if any(actual[key]!=expected[key] for key in ['id','words','events','counter','now']):
         differences = [(key, got, want) for key, got, want in zip(WORDS, actual["words"], expected["words"]) if got != want]
         raise AssertionError(f"Auxiliary state mismatch {item['id']}: {differences}; events match={actual['events']==expected['events']}")
     exact, maximum = 0, 0.
@@ -149,6 +161,19 @@ def compare_case(native, item, expected):
         if not math.isclose(got, want, rel_tol=0, abs_tol=2e-12):
             raise AssertionError(f"Auxiliary value mismatch {item['id']} {name}: {got} != {want}")
     return exact, 5, maximum
+
+def verify_original(execution,cases):
+    raw=common.INPUT.read_bytes()
+    if hashlib.sha256(raw).hexdigest()!=IMAGE_SHA or execution['input_sha256']!=IMAGE_SHA:
+        raise ValueError('Original auxiliary image differs')
+    encoded=(json.dumps(cases,separators=(',',':'))+'\n').encode()
+    if hashlib.sha256(encoded).hexdigest()!=execution['input_file_sha256']:
+        raise ValueError('Original auxiliary execution input differs')
+    segments=[dict(address=s['load_address'],offset=s['file_offset'],size=s['size_bytes'])for s in common.images.parse_image(raw)['segments']]
+    for function in execution['original_functions']:
+        for span in function['ranges']:
+            if hashlib.sha256(common.read_mapped(raw,segments,span['address'],span['size'])).hexdigest()!=span['sha256']:
+                raise ValueError('Executed function bytes differ')
 
 
 def main():
@@ -176,27 +201,26 @@ def main():
     original = [json.loads(line) for line in args.original_jsonl.read_text().splitlines()]
     if execution["input_sha256"] != IMAGE_SHA or execution["cases"] != len(cases) or len(original) != len(cases):
         raise SystemExit("Unexpected original execution identity/count")
+    verify_original(execution,cases)
     exact, total, maximum, goldens = 0, 0, 0., []
     with tempfile.TemporaryDirectory(prefix="zseries-auxiliary-") as directory:
         native, compiler = load_native(directory)
         for item, expected in zip(cases, original):
             bits, count, error = compare_case(native, item, expected)
             exact += bits; total += count; maximum = max(maximum, error)
-            if not item["id"].startswith("random-") or int(item["id"].split("-")[-1]) < 24:
-                goldens.append({"input": item, "original": expected})
+            goldens.append({"input": item, "original": expected})
     report = dict(execution, all_results_match=True, binary64_comparisons=total, exact_binary64_matches=exact,
                   maximum_absolute_error=maximum, portable_golden_cases=len(goldens), native_compiler=compiler, native_flags=FLAGS,
                   original_execution_jsonl_sha256=digest(args.original_jsonl), original_execution_report_sha256=digest(report_file))
     if args.write_evidence:
-        if not args.export:
-            parser.error("Evidence needs --export")
-        report["instruction_export_sha256"] = {address: digest(args.export / "instructions" / ("fn_" + address[2:] + ".json"))
-                                               for address in execution["original_functions_executed"]}
         report["source_sha256"] = {path: digest(ROOT / path) for path in ("include/zseries/auxiliary_sensors.hpp", "src/auxiliary_sensors.cpp",
+                                  "include/zseries/diagnostics.hpp","src/diagnostics.cpp","include/zseries/console.hpp","tests/test_auxiliary_sensors.py",
                                   "tests/auxiliary_sensors_bridge.cpp", "tools/validate_auxiliary_sensors.py", "tools/ghidra/EmulateAuxiliarySensors.java",
                                   "tools/ghidra/Z119Execution.java", "analysis/auxiliary-math-symbols.json")}
-        fixture = ROOT / "tests/fixtures/auxiliary-sensors-original.json"
-        fixture.write_text(json.dumps({"schema_version": 1, "input_sha256": IMAGE_SHA, "words": WORDS, "values": VALUES, "cases": goldens}, separators=(",", ":")) + "\n")
+        fixture = ROOT / "tests/fixtures/auxiliary-sensors-original.json.gz"
+        content=(json.dumps({"schema_version": 2, "input_sha256": IMAGE_SHA, "words": WORDS, "values": VALUES, "cases": goldens}, separators=(",", ":")) + "\n").encode()
+        fixture.write_bytes(gzip.compress(content,mtime=0))
+        report['fixture_sha256']=hashlib.sha256(content).hexdigest()
         report["portable_golden_sha256"] = digest(fixture)
         (ROOT / "analysis/auxiliary-sensors-validation.json").write_text(json.dumps(report, indent=2) + "\n")
     print(json.dumps({k: report[k] for k in ("cases", "all_results_match", "binary64_comparisons", "exact_binary64_matches", "portable_golden_cases")}, indent=2))

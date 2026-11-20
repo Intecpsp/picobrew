@@ -4,6 +4,12 @@
 #include <array>
 #include <cstdint>
 
+#if defined(__XTENSA__)
+#define ZSERIES_HEATER_IRAM __attribute__((section(".iram1")))
+#else
+#define ZSERIES_HEATER_IRAM
+#endif
+
 namespace zseries { namespace oem {
 
 constexpr std::uint8_t OriginalHeaterOutputPin = 12;
@@ -62,12 +68,21 @@ struct HeaterState {
     double integral_display = 0.0;
 };
 
+// Optional task-side critical section, supplied by the assembled ESP32
+// application. Timer ISRs use the same platform lock through their wrappers.
+// No blocking I/O or diagnostic output is performed while this lock is held.
+struct HeaterSynchronization {
+    void* context=nullptr;
+    void (*enter)(void*)=nullptr;
+    void (*leave)(void*)=nullptr;
+};
 struct HeaterController {
     HeaterState state;
     PidState pid;
     std::uint8_t output_pin = OriginalHeaterOutputPin;
     std::int32_t countdown = 0;
     bool second_phase = false;
+    HeaterSynchronization synchronization;
 };
 
 // Required GPIO callbacks for operations that perform I/O. A missing callback
@@ -84,7 +99,7 @@ void pid_initialize(PidState& pid, double input) noexcept;
 void pid_set_mode(PidState& pid, bool automatic, double input, double& output) noexcept;
 bool pid_set_output_limits(PidState& pid, double minimum, double maximum, double& output) noexcept;
 void pid_set_direction(PidState& pid, bool reverse) noexcept;
-void pid_compute(PidState& pid, double input, double target, double& output) noexcept;
+ZSERIES_HEATER_IRAM void pid_compute(PidState& pid, double input, double target, double& output) noexcept;
 
 // Valid-domain boiler gains at 0x400de27c, followed by original setup tunings.
 bool heater_configure_boiler(HeaterController& heater, BoilerType boiler) noexcept;
@@ -98,12 +113,12 @@ bool heater_set_target(HeaterController& heater, double requested_celsius,
 // Original 0x40080540: a positive counter is decremented; a zero counter
 // writes LOW. Thus reaching zero by decrement does not switch LOW until
 // the next callback. Negative values do nothing. This detail is preserved.
-bool heater_tick_20ms(HeaterController& heater, const HeaterIo& io) noexcept;
+ZSERIES_HEATER_IRAM bool heater_tick_20ms(HeaterController& heater, const HeaterIo& io) noexcept;
 
 // Original 0x400805dc. Toggle each callback, performing work every other call.
 // Safety flags refresh only when enabled. Heater output is gated by too_hot
 // and too_old; the original does not gate it on too_cold or enabled here.
-bool heater_tick_1s(HeaterController& heater, HeaterSensors& sensors,
+ZSERIES_HEATER_IRAM bool heater_tick_1s(HeaterController& heater, HeaterSensors& sensors,
                     ThermalSafety& safety, const ThermalLimits& limits,
                     std::uint32_t now_ms, const HeaterIo& io) noexcept;
 

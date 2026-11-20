@@ -193,7 +193,7 @@ class ProgramRuntimeTests(unittest.TestCase):
                        check=True, capture_output=True, text=True)
         subprocess.run(cxx + ["-std=c++11", "-fno-fast-math", "-ffp-contract=off"] + warnings + ["-shared", str(bridge),
                        str(ROOT / "src/program_runtime.cpp"), str(ROOT / "src/runtime_instruction.cpp"),
-                       str(ROOT / "src/program_runtime_execution.cpp"), str(ROOT / "src/quantity.cpp"),
+                       str(ROOT / "src/program_runtime_execution.cpp"), str(ROOT / "src/quantity.cpp"), str(ROOT / "src/enums.cpp"),
                        str(ROOT / "src/program_runtime_heater.cpp"), str(ROOT / "src/heater.cpp"),
                        str(build / "msp.o"), "-o", str(build / "runtime.so")], check=True, capture_output=True, text=True)
         cls.native = ctypes.CDLL(str(build / "runtime.so"))

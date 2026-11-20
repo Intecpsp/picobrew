@@ -30,28 +30,35 @@
     "-fno-exceptions",
     "-fno-rtti"
   ],
-  "archive_sha256": "007dda3c7095134141fcfce6d2c0463a0ee0c17ab5dd5ed0232b48681499e692",
+  "archive_sha256": "d7738a789b8de427a7cfd63d03205973829c1a59d528cdb8ab0217576175663e",
   "complete_application_linked": false,
   "hardware_tested": false,
-  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
-  "scope": "Buzzer/alarm implementation with original returning-assertion continuation and actual Arduino LEDC adapter compiled in the historical ESP32 archive; console/assertion/diagnostic sinks and serialized application ownership remain required. No application link or hardware execution.",
-  "compiled_modules": 53,
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "compiled_modules": 127,
   "buzzer_sources": [
     {
       "source": "src/buzzer.cpp",
-      "source_sha256": "bbc613f9ad8a512e533be74ae668209727a49254d17c24dcd42fa09ada3b320e",
-      "object_sha256": "aec54e73c5bc8f166e1c22e8a058965855a8e7b20ceb22d293074d7da549b9a8",
-      "object_bytes": 7540
+      "source_sha256": "325217303425edea9396408690ba276f5861ddd4d3d70884cff71babe39abbb8",
+      "object_sha256": "2de359f4c2fca9f02776f0d96a3ed5fabb5be017f75b6affb40e94e0919b0d4a",
+      "object_bytes": 9388
     },
     {
       "source": "platform/esp32/buzzer_platform.cpp",
       "source_sha256": "320241d67db8270a585eb341e74e90609c0b027f8b26f4800fa05966fa9e2c30",
-      "object_sha256": "46215b4095ae1886c7d34e9a2d66470fc6b2158ee242d23fdf2f31ba262b348a",
+      "object_sha256": "71a45b7fcc82f102f316a33d625a618d1784e9ab36ba91e2a8d8878059c0c392",
       "object_bytes": 7748
     }
   ],
   "buzzer_headers_sha256": {
-    "include/zseries/buzzer.hpp": "edcd76c0c1fb889539df7b4847a7d93f0e8edb06f6b3b2d83d2f78b7b6f6cfb8",
+    "include/zseries/buzzer.hpp": "3d29e7b156076571c04a9be6af123d27ac8739be34941f52faf4ffb9f9c28642",
     "platform/esp32/buzzer_platform.hpp": "53d86dde450a9dafef827ed75a808c0f2ed7bc021628d05ce598cd44d14e2ff5"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 2
   }
 }

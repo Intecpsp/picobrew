@@ -1,0 +1,2 @@
+# The pinned historical esptool imports pyserial even for offline elf2image.
+pyserial==3.5

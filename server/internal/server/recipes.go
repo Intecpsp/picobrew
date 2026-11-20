@@ -143,7 +143,7 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 	if in.ProfileID == "" {
 		in.ProfileID = view.Model
 	}
-	if in.ProfileID != view.Model {
+	if !profileMatchesModel(in.ProfileID, view.Model) {
 		s.fail(w, 422, "profile_mismatch", "Choose the profile that matches the target machine")
 		return
 	}

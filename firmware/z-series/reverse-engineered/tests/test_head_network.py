@@ -57,7 +57,7 @@ static HeadNetworkEffect failure=HeadNetworkEffect::PostCoreCommand;
 static std::vector<HeadNetworkEffect> calls;
 static bool perform(void*,const HeadNetworkAction& action){calls.push_back(action.effect);return action.effect!=failure;}
 int main(){
-    ProgramParameters shared;HeadNetworkEvents head(shared);CoreWifiEvent wifi;wifi.type=WifiEventType::Error;
+    ProgramParameters shared;HeadNetworkEvents head(shared);unsigned assertion_count=0;head.services.context=&assertion_count;head.services.assertion=[](void* p,std::uint32_t){++*static_cast<unsigned*>(p);return true;};CoreWifiEvent wifi;wifi.type=WifiEventType::Error;
     head.core=CoreStateId::Running;assert(head.wifi(wifi)==HeadNetworkResult::Ok);
     head.core=CoreStateId::Idle;assert(head.wifi(wifi)==HeadNetworkResult::MissingService);
     head.services.perform=perform;HeadAzureEvent cloud;cloud.type=AzureEventType::ExitStartProgram;
@@ -68,6 +68,7 @@ int main(){
     assert(head.azure(cloud)==HeadNetworkResult::Ok&&head.assertion_line==0x7d);
     assert(shared.id==ZProgramId::CoffeeHot&&shared.water.value==0&&shared.water.unit==Unit::Liter);
     assert(shared.temperature.value==0&&shared.temperature.unit==Unit::Fahrenheit);
+    assert(assertion_count==2);
     assert((calls==std::vector<HeadNetworkEffect>{HeadNetworkEffect::ResetScreen,HeadNetworkEffect::AppendCommand,HeadNetworkEffect::GroupSessionScreen}));
     cloud.parameters.water={7,Unit::Liter};cloud.parameters.time={123,Unit::None};cloud.parameters.intensity={8,Unit::None};
     cloud.parameters.temperature={12,Unit::Gram};

@@ -33,6 +33,9 @@ func (s *Server) calibratedProfiles() ([]domain.Profile, error) {
 			if !profiles[i].ControlSupported {
 				profiles[i].Notes += " Planning and export only: no live control adapter is implemented for this model."
 			}
+			if profiles[i].ID == "z" {
+				profiles[i].Notes += " Hardware identity is generic z-series; Z1/Z2 mapping is unclaimed. Canonical programs require direct valve locations 1–6. Archived native Z/Zymatic routing and pause codes require explicit conversion before deployment."
+			}
 		} else if !errors.Is(err, store.ErrNotFound) {
 			return nil, err
 		}
@@ -48,6 +51,11 @@ func (s *Server) profiles(w http.ResponseWriter, r *http.Request) {
 	s.json(w, 200, values)
 }
 func (s *Server) selectProfile(id string) (domain.Profile, bool) {
+	// Hardware family identity stays z-series; the existing z profile is a
+	// generic planning baseline, not a claim about Z1/Z2 hardware.
+	if id == "z-series" {
+		id = "z"
+	}
 	values, err := s.calibratedProfiles()
 	if err != nil {
 		s.cfg.Logger.Error("Could not load planning profiles", "error", err)
@@ -59,6 +67,10 @@ func (s *Server) selectProfile(id string) (domain.Profile, bool) {
 		}
 	}
 	return domain.Profile{}, false
+}
+
+func profileMatchesModel(profileID, model string) bool {
+	return profileID == model || model == "z-series" && profileID == "z"
 }
 func (s *Server) saveProfile(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")

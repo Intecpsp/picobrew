@@ -11,7 +11,7 @@
     "tests/head_flow_bridge.cpp": "b238b06eae40ba1ac30899b66ce0cae43d3ba8baf16635e87a3fff999dd29c8f",
     "tools/validate_head_flow.py": "39197da2cd361fe5c02f9fb6b8c6827dee1866980d009eac6ab5fde5b916134b",
     "tools/ghidra/EmulateHeadFlow.java": "0f918ba1eed696a8003e703c1a7f7ce0597d6dfcb974051943952633779ebad1",
-    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493"
   },
   "hardware_tested": false,
   "scope": "Original Head event selection, timer, alarm, command and screen-routing instructions; event-specific bodies, presentation, System alarm, command construction/queue and diagnostics are explicit boundaries, not complete Head execution",
@@ -67,5 +67,17 @@
     "0x401074f8": "be8542ae4ed8a2a4afe8727988fb06d9b549f31a9e282956f3705e8252a2cc60",
     "0x40109958": "8a57713b635916bbdf291c07109538d5b0c6d03a32443e45c67173b418a9f0b1"
   },
-  "golden_fixture_sha256": "3a7175b7251acf3c9f9d18e3d341aeb34d503bde70efab7d7ac14f3549e2b111"
+  "golden_fixture_sha256": "3a7175b7251acf3c9f9d18e3d341aeb34d503bde70efab7d7ac14f3549e2b111",
+  "movsp_harness_replay": {
+    "all_results_match": true,
+    "cases": 751,
+    "original_execution_jsonl_sha256": "1051e253311f4735c8a2ba25ed3f5048312f9d925b706abdf27495188a9b93ac",
+    "boundary": "Windowed ABI stack move; CPU window spill and underflow exceptions remain outside the harness."
+  },
+  "trunc_s_harness_replay": {
+    "all_results_match": true,
+    "cases": 751,
+    "original_execution_jsonl_sha256": "1051e253311f4735c8a2ba25ed3f5048312f9d925b706abdf27495188a9b93ac",
+    "boundary": "Finite signed TRUNC.S uses the mathematical power-of-two scale; nonfinite values, overflow and CPU exceptions remain outside the harness."
+  }
 }

@@ -12,7 +12,7 @@
     "tests/core_event_bridge.cpp": "3ea3f282c126615de3f1beb50265b8c706c25c74570029eabd6564d49cc89c9f",
     "tools/validate_core_event.py": "dfe7ad07348a71d950fbfde7dbc0e15381454410d6109768d7a00e71026a4449",
     "tools/ghidra/EmulateCoreEvent.java": "6f3d6b8a63de00883c43101359da5fedbe495e52a9d0ca84bc6577f573670f38",
-    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493"
   },
   "golden_fixture_sha256": "0b2fa063e754b9686d738de5e6faabde410b883683326fd0b4f8b812bc65ee61",
   "original_execution_jsonl_sha256": "b9ce8b36ba7c87d3667ab34bb673c1f9532e5f9dc5fa30a07650a5c3df33667c",
@@ -43,5 +43,17 @@
     "0x400eef6c": "4306a41b6dd7d1030947b1c344acdc3b6ec838d8315ec5e4a8c12a99648133d2",
     "0x400f02e4": "812546e79970a0888764c0c4d0079b9ff876a18f576c4a55dcb9644b9fca774f",
     "0x401bf484": "a71b35a1a976946d778322f399e0b2c045ed34b8e258d1d18466dd7c2a55e2e1"
+  },
+  "movsp_harness_replay": {
+    "all_results_match": true,
+    "cases": 27,
+    "original_execution_jsonl_sha256": "b9ce8b36ba7c87d3667ab34bb673c1f9532e5f9dc5fa30a07650a5c3df33667c",
+    "boundary": "Windowed ABI stack move; CPU window spill and underflow exceptions remain outside the harness."
+  },
+  "trunc_s_harness_replay": {
+    "all_results_match": true,
+    "cases": 27,
+    "original_execution_jsonl_sha256": "b9ce8b36ba7c87d3667ab34bb673c1f9532e5f9dc5fa30a07650a5c3df33667c",
+    "boundary": "Finite signed TRUNC.S uses the mathematical power-of-two scale; nonfinite values, overflow and CPU exceptions remain outside the harness."
   }
 }

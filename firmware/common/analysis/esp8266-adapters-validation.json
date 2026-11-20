@@ -1,0 +1,49 @@
+{
+  "schema_version": 1,
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "results": {
+    "storage": {
+      "checks": 70,
+      "actual_spiffs_hal_reads": 4332,
+      "actual_spiffs_hal_writes": 1265,
+      "actual_spiffs_hal_erases": 64,
+      "flash_bytes": 262144,
+      "pointer_bytes": 4,
+      "passed": true
+    },
+    "telemetry": {
+      "checks": 261,
+      "dns_calls": 12,
+      "tcp_calls": 43,
+      "copied_writes": 4,
+      "pbuf_nodes_created": 16,
+      "pbuf_nodes_freed": 16,
+      "pointer_bytes": 4,
+      "long_bytes": 4,
+      "passed": true
+    }
+  },
+  "source_sha256": {
+    "include/picobrew/verified_storage.hpp": "0656ebc74cd243e148f5c9da90aab5103e2636b8ac9175974981c51702581228",
+    "src/verified_storage.cpp": "e59bb0d690fab10ab3b13dc8c7bcbcccae8699ccadf897f6246f1bc17461c1c8",
+    "platform/esp8266/storage.hpp": "b5ce6a38661ce1e3416fd0ce8ae87243c7e241678a74501acd1e4ff3d277efca",
+    "platform/esp8266/storage.cpp": "5b6762c959f9101116c059be820c5c18261f1e8c9e312209fe2b0f0a71fb90c4",
+    "platform/esp8266/telemetry.hpp": "499f68a38a4a66ab7642cc11adc3a396681b99cdca0fbead0dd9e2bab11f0857",
+    "platform/esp8266/telemetry.cpp": "71b7c2e9da67f82806e821b73d3875ad8a2d73b0502467e5c1c1bd00739f2f2d",
+    "tests/esp8266_storage_test.cpp": "626280f34747180f75ca9e3921732413f66172dae4027ce3b800e0e6aa7dff74",
+    "tests/esp8266_telemetry_test.cpp": "e513e5fbbf186ece5e1c4d6ae2a9249099f1918fe652f7504ca06213223d0561",
+    "tests/esp8266_sdk_host/arch/cc.h": "7361d841993d8283963cbc2e862bd13f00ad0800d92618a3824bc31ea30f7c5c",
+    "tests/esp8266_adapters_native.py": "5d5ca8d5b476f15f298dd570aa93bc1848748c20f91136581e7099a2c26e0a4f",
+    "tests/test_esp8266_adapters.py": "fbdb0848ccfdc69e162ee1a3c413df7c44aec3ad2c301df565ff2fdf87d3b554",
+    "tools/validate_esp8266_adapters.py": "a5a75e9b07e887d6817313cbd20987b67d5e6c79be84eb90420b827a050ea00c",
+    "tools/build_esp8266_adapters.py": "e9772363cc906a99486e628b38fb0b6ddf8296cfaacbc1b4890ba4ae0b285c37",
+    "dependencies/esp8266-adapters.json": "dbdb5726b2135ca3be807834f3f30eb33a30113f27fdd0dcb99af6a98b196580"
+  },
+  "sdk_pin": "dependencies/esp8266-adapters.json",
+  "storage_boundary": "Actual pinned SPIFFS C implementation and owned raw mount/FileIo/VerifiedStorage run against NOR flash read/write/erase callbacks backed by deterministic memory. Flash programming uses bitwise AND; erase geometry is checked. No Arduino FS wrapper or automatic format is used by the production adapter.",
+  "telemetry_boundary": "Actual owned transport and unmodified pinned lwIP public headers execute against explicit DNS/TCP/pbuf service callbacks. Native arch/cc.h supplies fixed-width wire types without ESP8266 ROM declarations. DNS cancellation/late callback, PCB errors, copied partial writes, deferred output, pbuf ownership/backpressure/EOF, and close are tested. No live DNS/network/cloud is contacted.",
+  "hardware_tested": false,
+  "original_oem_parity_claimed": false,
+  "i386_runtime": "GCC 14 multilib with pinned repository recipe-i386 sysroot and qemu-i386; pointer/long widths explicitly measured in results",
+  "i386_runtime_pin_sha256": "f567d1a035fbc0d2775893589a6a546f7eff7b71628fde47f22333fff54543fc"
+}

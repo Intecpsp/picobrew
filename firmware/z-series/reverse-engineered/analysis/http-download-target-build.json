@@ -1,0 +1,88 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/http_download.cpp",
+      "source_sha256": "77924395751c0a2b0f7bd197b89ee40eb50ce3a8795d85f96ce563e424e8ef58",
+      "object_sha256": "4822b2a462b99b634d4a12d2bb610cbde245f6b2f32b741f9d59b9a8df25d57e",
+      "object_bytes": 14992
+    },
+    {
+      "source": "platform/esp32/http_download_platform.cpp",
+      "source_sha256": "b42c53f5cd588d25532d31ab6015fccdf20f88efc9341f37de8f7928f9ef736c",
+      "object_sha256": "51628e834c10fc8694538878d30a38db6730e246675ecf2fb2d9bb2bdaea9f4c",
+      "object_bytes": 7708
+    }
+  ],
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "owned_header_sha256": {
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "include/zseries/http_client.hpp": "62368c63d0c9a8dc5d1e469ffedb452795e90f7fce92d01a285c59dec7352c0c",
+    "include/zseries/http_download.hpp": "2ee689f3ecf7b042cfafc99a07fb8b9557d70c7d22dc033d10e08382154d1d08"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/http_download_platform.hpp": "8eb7561e36b205f06a89054747e5f35d5626d939252f26b2532cda631ab9607d"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 2
+  }
+}

@@ -4,6 +4,7 @@
 using namespace zseries::oem;
 using Word = std::uint32_t;
 namespace {
+struct Context{std::vector<Word> events;Word assertions=7;};
 Quantity read_quantity(const Word*& w) {
     Quantity q;const std::uint64_t bits=std::uint64_t(w[0])|(std::uint64_t(w[1])<<32);
     std::memcpy(&q.value,&bits,8);q.unit=static_cast<Unit>(w[2]);w+=3;return q;
@@ -21,7 +22,7 @@ void write_parameters(Word*& w,const ProgramParameters& p){
 }
 bool perform(void* context,HeadNumericEffect effect,const CoreCommand* command){
     Word temperature=0;if(command)std::memcpy(&temperature,&command->temperature,4);
-    auto& out=*static_cast<std::vector<Word>*>(context);
+    auto& out=static_cast<Context*>(context)->events;
     out.insert(out.end(),{static_cast<Word>(effect),command?static_cast<Word>(command->id):0,
         command?command->program_id:0,temperature,command?command->duration:0,command?command->location:0});return true;
 }
@@ -31,7 +32,7 @@ extern "C" unsigned head_numeric_test(unsigned operation,const Word* initial,con
     s.manual.byte_00=*w++;s.manual.location=*w++;s.manual.temperature=read_quantity(w);s.manual.hold=read_quantity(w);s.manual.drain=read_quantity(w);
     for(auto& b:s.manual.bytes_38)b=*w++;
     read_parameters(w,s.parameters);read_parameters(w,s.coffee_defaults);s.abv_pending=*w++;s.ibu_pending=*w++;
-    std::vector<Word> events;head.services.context=&events;head.services.perform=perform;
+    Context context;auto& events=context.events;head.services.context=&context;head.services.perform=perform;head.services.assertion=[](void* p,Word line){auto& c=*static_cast<Context*>(p);c.events.insert(c.events.end(),{5,line,0,0,0,0,6,200,0,0,0,0});++c.assertions;return true;};
     float temperature;std::memcpy(&temperature,value,4);std::int32_t strength;std::memcpy(&strength,value,4);
     HeadNumericResult status=HeadNumericResult::Ok;
     switch(operation){
@@ -46,7 +47,7 @@ extern "C" unsigned head_numeric_test(unsigned operation,const Word* initial,con
     write_quantity(out,s.manual.temperature);write_quantity(out,s.manual.hold);write_quantity(out,s.manual.drain);
     for(auto b:s.manual.bytes_38)*out++=b;
     write_parameters(out,s.parameters);write_parameters(out,s.coffee_defaults);*out++=s.abv_pending;*out++=s.ibu_pending;
-    *out++=s.assertion_line;*out++=events.size();
+    *out++=s.assertion_line;*out++=events.size();*out++=context.assertions;
     for(unsigned i=0;i<events.size();++i)output[i]=events[i];
     return static_cast<unsigned>(status);
 }

@@ -1,0 +1,275 @@
+{
+  "schema_version": 1,
+  "complete_application_linked": true,
+  "hardware_tested": false,
+  "flash_image_produced": false,
+  "installation_qualified": false,
+  "elf_sha256": "ae899e552bf459f2429e24ba184ea5a7a2bb1bfb36940e88bdc26d16f1ab7c98",
+  "map_sha256": "aa5305935b0fcfecb057a741e1ae6276e10b61177cfe8bae32e08eb00cab9285",
+  "sdk_archive_sha256": "5e80f21e564134658d3d69bd6ff40f9d347705a2925086512809af0c6f7f4e2b",
+  "sdk_objects": [
+    {
+      "source": "cores/esp32/Esp.cpp",
+      "source_sha256": "163f5389b952e28f4dcd248b9a0a268f096b32c5d823c374cef869e0d6620040",
+      "object_sha256": "04580572d991cff5c19e0fe46db9017329915f9ded466cb8876ad0f3f6021836"
+    },
+    {
+      "source": "cores/esp32/FunctionalInterrupt.cpp",
+      "source_sha256": "412ba67dbf8a31d14e4d9e20a6544162a47046ca91d8fbc6b486878c8e6825b2",
+      "object_sha256": "11f354c79be93b947b48ec8cd1a99b2f33cfab8063bc1e625bf42651068c160b"
+    },
+    {
+      "source": "cores/esp32/HardwareSerial.cpp",
+      "source_sha256": "2c80c76728e1d8790d75b6fbef7ef4bd9214160e53c5bd9eae3eae89ef8e2fbb",
+      "object_sha256": "220ce33f7c3d6e3039add8c1f4984a58e5bbb7154390c3d0cad6addda9538fc7"
+    },
+    {
+      "source": "cores/esp32/IPAddress.cpp",
+      "source_sha256": "7876a1a39d7aa7306f5645f21995a723f81a7aeb188aac1e51f6619807150eba",
+      "object_sha256": "f281407d03f736b107607696718437ebd9453757fb471153a400171c9b297a79"
+    },
+    {
+      "source": "cores/esp32/IPv6Address.cpp",
+      "source_sha256": "6ff292917ec18f4d247944808671e7d80b3ec00dc481ae062292f387b767bb1d",
+      "object_sha256": "ce4e21d2380879d5225e18fde137c65c021a6cdb5933b2b95c5054a5e299506c"
+    },
+    {
+      "source": "cores/esp32/MD5Builder.cpp",
+      "source_sha256": "7eed105f1839269993b9f1181bd28af4e64b187b4e6ae7e8e673e1ea950466b9",
+      "object_sha256": "f0b5398cc7f24a00647106f4ab24397f1de606eba5378c08710ed866c76b030e"
+    },
+    {
+      "source": "cores/esp32/Print.cpp",
+      "source_sha256": "05851981efaedf6f9178c66f86292e1f2442f86b00e9a59cbedaad71f71b7393",
+      "object_sha256": "7239855d6c90d4151a4299857dbc7e74a6a19a7a6f057d3bbc3de2b8824a7648"
+    },
+    {
+      "source": "cores/esp32/Stream.cpp",
+      "source_sha256": "45bf8af958f0a754b4606e8a1e8fd176289a07df44995d727a6bfa906522e61f",
+      "object_sha256": "4c352c3d50b2ca981c2629135b4447ed92e04c0fc49f0f63630ef60a94734336"
+    },
+    {
+      "source": "cores/esp32/StreamString.cpp",
+      "source_sha256": "3ea9025d9c67cf516386fdab088cf45c2914faa1271668d86546e8cf729ee609",
+      "object_sha256": "27dc28c0dea657a41c7090f8203cb01bff4c12b428ff6a00ccfe720104989cd3"
+    },
+    {
+      "source": "cores/esp32/WMath.cpp",
+      "source_sha256": "104f6de96aece9f02364e1c0c99a77f8e7521271d43a417de90889fddcae16fb",
+      "object_sha256": "86f0ba38d0bc0d05832be79f60e1bda154d4b462e291229113363ad8067d19d5"
+    },
+    {
+      "source": "cores/esp32/WString.cpp",
+      "source_sha256": "5ecdddf816a03169cd2453162529046c347c48175ff74d343e645a13fad5def8",
+      "object_sha256": "392c8f44985e6f635577313ef6f4923c7158faa39bcb27efbbc0f4d3733223c8"
+    },
+    {
+      "source": "cores/esp32/base64.cpp",
+      "source_sha256": "581d44263fc36101c607898975923972630ad1d93369b13cc50046f16b631b69",
+      "object_sha256": "db1bbc5734ad20c90c2ffe36a3317d845bd2f67b93841eabbdc05fefe7a5852c"
+    },
+    {
+      "source": "cores/esp32/cbuf.cpp",
+      "source_sha256": "754ac3778d299eb9996bf76f7fe9c7a39bdafe7c049f8d0d10bf7e89c844b308",
+      "object_sha256": "b97b4430c4b6bb44263d0c2ca453581c19ac21527b1802d88a67f91aa75ed7bb"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-adc.c",
+      "source_sha256": "021e6f49b109eea2d4b39d58d47afc790a8253615cd41a1eaf82ed077b90b48d",
+      "object_sha256": "395d0f9fdfce4a8f2913e29c1da2e24728cebb5d6a577e8259f9ba1c47dcdd6b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-bt.c",
+      "source_sha256": "a051d28c21f589c8d3e64ab415837d8e32f8e4a767bcfdb0561732c065cf0a97",
+      "object_sha256": "67b59b2ad6fa0d1b8bbee4de5282af6addd015249c8b21873d8c84729bcef919"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-cpu.c",
+      "source_sha256": "4e21cbe7e5f0024ad4d61370307587a2c72384cc79798c08b52b3933076114e1",
+      "object_sha256": "c2acc6c1afad71738d31d7c7db36afe6b04ab3fe0f8491ae35676552754ef93b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-dac.c",
+      "source_sha256": "e66abe5a546ede634ab20cc93b151d98cee7da8a5ff46c229d64fd7392ec608d",
+      "object_sha256": "2867008e8111b769a1a1a25d5ae6b3febbbdb2d54340b40c411d5f995e3f43e9"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-gpio.c",
+      "source_sha256": "d9003f03c5e25f753475473f65cc1919f509cb19d47ae305c89f8119dec0d1db",
+      "object_sha256": "7cce3d72a553dfed1ca378155f46cdd241d3390807c8780c05a8da50c6af16a1"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-i2c.c",
+      "source_sha256": "0ab5d4caceff84cc14142530dd0858ffe68511891ac5aa5dffc6e5656c450733",
+      "object_sha256": "460fc5ae9fd62e710bd98319fc63d61c289947c8683fd80e538992eff9525e26"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-ledc.c",
+      "source_sha256": "c86d2fcb36ab3ee56043d42fd47c9e188ffd9c7d6148279432dbdeb1c24ed579",
+      "object_sha256": "b23e0ff41e78717b427a5e4e907eb4c92427eab30e2ed101ee8cc1911679fa4d"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-matrix.c",
+      "source_sha256": "eb8b3e41615544a72def5da08ec0eb2b0ed7aa96247404ed5cf3fac215cecf7b",
+      "object_sha256": "cdb54dcdbccee71068b99f10461f246016f879e76ea0f37d8eb4c12d142dfabe"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-misc.c",
+      "source_sha256": "63f0a87d562a88899ffc5ce9571b5c4ba5a2527243af1835a94a8e136aaed4ab",
+      "object_sha256": "09d7850cba4d69a6f41958842e54abaf69b3ca83205737871137124ecced2744"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-psram.c",
+      "source_sha256": "cc11473353967334eca0d8dcf7d0b56350feb8f0053e0d798f0d04dca520c664",
+      "object_sha256": "f31be4c49f068c6870204a911b68df23949178b26e617da6ac026338ce76cfaf"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-rmt.c",
+      "source_sha256": "a744a62234a30ffcb9f0e623085a497299af03964f1aba714fd2f2d8e82c5759",
+      "object_sha256": "7af91b7bc9212abec254706d07f636288e6e67f4cc32673598e5c89ad5d8210c"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-sigmadelta.c",
+      "source_sha256": "ba32a4a731851e1dcda959a71347a8a7c621d171ecb5132937cd07722e8c87eb",
+      "object_sha256": "f354c10e7491dfe74d30dca5c2a23285d9fd3f07678b195c3aee8fc53be44ee8"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-spi.c",
+      "source_sha256": "8a92b8e096ffecb94b995880bcd2bea80c7297d740eab9702b6bf08f5e9a4fdc",
+      "object_sha256": "a27bdbd4faeac7bc285dd9354f9b8ba5a8a1d7d37598d3d9c11cd8941472768d"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-time.c",
+      "source_sha256": "d681675f0fbd84b5adc88365f977beedab2d812e2efd79e91b1ac966a6fe62a4",
+      "object_sha256": "cfa93068f22dc82f0cfabfec7813566c69e4e178b6e16ff69a31b9ec22a3ec16"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-timer.c",
+      "source_sha256": "fb38dfd7d04ef6c7d90d225210525701377983cd6c6d5e06648caa2005e7e7cb",
+      "object_sha256": "4bf313b2de60eb7f6c94e7d35362d3e76bc67dd0e59c013fcdeb097d1c180b73"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-touch.c",
+      "source_sha256": "3a969b1c92797e70e4df7ce6ed3bc49c6f9d8d55833052e2b24c012e27a5df65",
+      "object_sha256": "841df235e25611bce35871424205c46f33f2d52823797111fceee93e0f507224"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-uart.c",
+      "source_sha256": "7b98775bfbbf2287c3a26c7fc487a2a1a6b7a3734ee4148590e927f93d5c1a93",
+      "object_sha256": "f216cfb24591c5f19e91da690d01c8be7fe1d220920259cd67f40dc400f218fe"
+    },
+    {
+      "source": "cores/esp32/main.cpp",
+      "source_sha256": "e4abf5086566c26e5e7c524ef93c09544585ddecf0cd19c1a6cab642d426a1f2",
+      "object_sha256": "8608a5f7740707eb5d09c3bbdfe6a69e968ea65d423e3bb7c415c29f5323bdab"
+    },
+    {
+      "source": "cores/esp32/stdlib_noniso.c",
+      "source_sha256": "756f3407f3bdfaa83fb34a69487cc9223c42ae88efa4c8a46111b2f00c0ae956",
+      "object_sha256": "e31a313a46728b05d9966e0392391914771674b8d3b924f7b92cb86b32893e2d"
+    },
+    {
+      "source": "cores/esp32/wiring_pulse.c",
+      "source_sha256": "afae5c27ca0fc234080c8e0ce3f3cb36a936dabfbb7182ffa1d0c0334aab9e25",
+      "object_sha256": "b5e5391acb037953e1a3f752fd9887d41b37d8cc7233df35395d54fac22eabbb"
+    },
+    {
+      "source": "cores/esp32/wiring_shift.c",
+      "source_sha256": "8a53aaf3dab5d70c5a209bd58dae8845dbbc1af4fd84725b8ace79c09093f3da",
+      "object_sha256": "c539ac54634a9dc6e018035915ca139efee4024bd754b2c9af72f71b7ca2d0bb"
+    },
+    {
+      "source": "libraries/Wire/src/Wire.cpp",
+      "source_sha256": "0624f16f6e73452256d7a6a73095809107407ee3b2afd1687b9f1400e6c23e2e",
+      "object_sha256": "dfeb6bd9f3cf414fb17b893d2a0008d63a2021c2fa7f1f6af6eaeff4a33c323b"
+    },
+    {
+      "source": "libraries/WiFi/src/ETH.cpp",
+      "source_sha256": "14404191bdc0f9f7a533217da8c3f7489e433c4cca69d108f5f02e2885e2a0c7",
+      "object_sha256": "74f2b0a633f51d83d6a98f7aabe3bd8d88baabae0080573aefe0d58c048272b3"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFi.cpp",
+      "source_sha256": "181b228f7165a2405a3b8c093436d119320b7b8d8f8f8f117915021dec5eeabc",
+      "object_sha256": "72a9682dcb88ce5ac37ad1d2d006d82d20895407fa4bef647da219ce2a69e619"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiAP.cpp",
+      "source_sha256": "6ceb9e779fc28ce0dd423230ac3e600ed363a63ad05611f3c2874d776c6f1bc2",
+      "object_sha256": "4a834e41b5382dcf184725790aef9b6ee9963d462320f06972109942e4b9da88"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiClient.cpp",
+      "source_sha256": "9ef3382a5795a8392396ec192f1538314e2f9ed3f65fee291ac933389cae190f",
+      "object_sha256": "cb0809c64c5b646882bacec38dea61cb0e0742d17a6854831505840e2f1d6822"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiGeneric.cpp",
+      "source_sha256": "7b02f4ac558cb54c54de9287c513a0f28cba3c46390aa2fa6fc0eb80ccf601ff",
+      "object_sha256": "6130f939581c255ed93f817f9c9969d443debe2a232ef73675acabc79807a6a9"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiMulti.cpp",
+      "source_sha256": "6680aad05cf364ba05f77ceff23a44fff3da8fdbba2c65a075e5f1e1f5ef296c",
+      "object_sha256": "f0756b6bb730ac24e5e1753d2dffafc16afaac8399a138f8d8249e3244b04e3d"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiSTA.cpp",
+      "source_sha256": "5dc5466a8e71436e787d0e6a6b534827e4f3d1dd9c38b319e7ac4dc1fa44afbb",
+      "object_sha256": "8ae8588b363608fa794005be15444dd76ee507e25679b41fac3f2586e5db2b45"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiScan.cpp",
+      "source_sha256": "ec8e9367dc60f13bd2ac9c4669a0876b732f56f0191a2119c7b3eebe9b355ecc",
+      "object_sha256": "c77453fd5b0e9ec2dcba306e5469ece0343a03f3965dd8c18819046378fe4bd4"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiServer.cpp",
+      "source_sha256": "6a925b747f9493b1b446a57234547f6d361a70053299365d7c7b6eba89952c1d",
+      "object_sha256": "3f140d657c6e5631fd023bfff51b84d1607b4f1e9be28a9d7fad6d1936e89755"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiUdp.cpp",
+      "source_sha256": "bb94fb6de526d7ac8d09913ce8264e88ec6658bcb1f19b362de4ebc44a010c5a",
+      "object_sha256": "5c94580ed9be2b8903074c587aca21f74aa5aa96e84ee0c5f2410b30d6e06f18"
+    },
+    {
+      "source": "libraries/Update/src/Updater.cpp",
+      "source_sha256": "6d9d1658dce75bbf9fcc3936bb7287e7fae8c9a76aeba0a8d56c7fcea3fd9198",
+      "object_sha256": "a962800c6affba5870365f46f83a9f7356078e1c282fd544056f162d63791da3"
+    }
+  ],
+  "required_application_symbols": {
+    "app_main": "0x400d1514",
+    "setup()": "0x4011de94",
+    "loop()": "0x4011deb8",
+    "picostill::oem::Application::poll()": "0x4011f170",
+    "picostill::oem::Controller::poll()": "0x4011fc6c",
+    "picostill::oem::Machine::setup()": "0x40121288",
+    "picostill::oem::Machine::dispatch_console()": "0x4012156c",
+    "picostill::oem::FirmwareUpdate::poll()": "0x40123298",
+    "picostill::oem::Backend::poll()": "0x40123dbc",
+    "picostill::oem::HttpServer::poll()": "0x401252a0"
+  },
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "reconstructed_object_report_sha256": "4ee7a208ed22ec1d39186f0c7ff79d6bb8158eaa75a17cbdded9cbd0bc865d54",
+  "build_script_sha256": "f71e5b757b5e026d8b9f21b57416075fa7823af3e7af0604820f1c907260b7cb",
+  "sdk_main_sha256": "e4abf5086566c26e5e7c524ef93c09544585ddecf0cd19c1a6cab642d426a1f2",
+  "original_linker_scripts": {
+    "esp32.common.ld": "3cb1e57bfc326dbe7949b8bf490c0299bc27e5297bb8f1d7e0e0f207cfc60f2a",
+    "esp32.extram.bss.ld": "3aa90854eb0eaa06dd9cc443d4fd59195eda674ed730870246d79cfae651b7b1",
+    "esp32.ld": "2af9c9680a9af887fcac79ca43242222b8746de00503fb5d60db70aa72463aab",
+    "esp32.peripherals.ld": "971513baed4da77f0c46916021fda57def4ad65998249b0afa06afc1d2045b9d",
+    "esp32.rom.ld": "2803306c7332598468ef2276a207322e162b19d0c860b20b0f092fd812638c2d",
+    "esp32.rom.libgcc.ld": "5c9635240a4a53a43962040bb377cba13a41bc4e6445afae493e3aee3cf28e17",
+    "esp32.rom.nanofmt.ld": "d70ce4ee4fa09362bc882c7b91e74d7b9a4218ceaa073541769261e04d87a6ad",
+    "esp32.rom.redefined.ld": "4c840ac97e4aaf911d9bafe40c176a2319ea5c9a67219d301dc74c839fe912aa",
+    "esp32.rom.spiflash.ld": "be5dfaf2c8f9b27d8c3ca127c430c186f58b549d45ce05801f7951ae1e6d04aa",
+    "esp32.rom.spiram_incompatible_fns.ld": "696b492692ec3df40bb9d3444682e054f94b768486f322b961417d05e10e9c93",
+    "esp32.spiram.rom-functions-dram.ld": "2f41008b09f5b7b2ab4c0fc1010246d59b5583ba7d7055cce2a379484648a0ea",
+    "esp32.spiram.rom-functions-iram.ld": "08955459f541d85d029fa76d96491ebc36a8446f20ece031e2157b8f27f8aede",
+    "esp32_out.ld": "e730b50b4ccb98af01c926e3ae57f7761f35deb5e368d4c7c1a340c85f5dfff7"
+  },
+  "size": "text\t   data\t    bss\t    dec\t    hex\tfilename\n 610726\t 237148\t  33652\t 881526\t  d7376\t/workspace/scratch/ae8953cf8f3f/family-parity-completion/firmware/picostill/reverse-engineered/build/application/picostill-application.elf",
+  "scope": "Complete recovered PicoStill machine composition with concrete SDK WiFi/Client/Update/NVS/GPIO/I2C/serial/partition adapters and original SDK main. No device partition layout or physical qualification is inferred."
+}

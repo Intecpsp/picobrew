@@ -1,0 +1,16 @@
+{
+  "name": "arduino-esp32",
+  "version": "1.0.1",
+  "commit": "9a7946e6859130146e56231c27a4aa177d9175a1",
+  "archive": "arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1.tar.gz",
+  "directory": "arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1",
+  "url": "https://codeload.github.com/espressif/arduino-esp32/tar.gz/9a7946e6859130146e56231c27a4aa177d9175a1",
+  "archive_bytes": 35515083,
+  "archive_sha256": "040e99ef8d6190681e49e770e51c27c6bf9f9971459cf6b0f2c73de006644dc5",
+  "identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "scope": "Pinned development SDK reference for concrete ESP32 drivers. This SDK pin is not proof of the entire lost PicoStill OEM build environment."
+}

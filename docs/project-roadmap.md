@@ -21,13 +21,13 @@ the same fleet, recipe and brew-history workflows across supported machines.
 
 | Machine or archive | Firmware state | Live Hub operation |
 | --- | --- | --- |
-| Pico S/Pro | Verified original application image; exact 396-file pre-v1.x reconstruction; modified 1.1.0 firmware implemented. Earlier builds have device installation/runtime evidence; 1.1.0 installation and a complete brew remain physically unverified. | Implemented through the S/Pro REST adapter |
+| Pico S/Pro | Verified original application image; exact 396-file pre-v1.x reconstruction; modified 1.2.0 firmware implemented. Earlier builds have device installation/runtime evidence; current model-specific images and a complete brew remain physically unverified. | Implemented through the S/Pro REST adapter |
 | Pico C | Both upstream 0.1.34 images preserved; OEM C reconstruction and standalone 1.2.0 source builds for explicit SSD1325/SSD1309 variants are implemented. Native/host software tests pass; physical installation, brewing and OTA recovery qualification remain outstanding. | C API adapter, model/variant discovery, telemetry, geometry-aware display and variant-scoped package management implemented |
-| Z1 and Z2 | Separate development directories; reconstruction and custom firmware unimplemented | Generic Z planning profile only; no model-specific live adapter |
-| Z-series archive | Two upstream images preserved in their original shared family grouping; compatibility with individual Z models unverified | No archive-derived live support |
+| Z1 and Z2 | Physical mappings remain unassigned; shared recovered/modified implementation is under z-series | Generic family identity only; no model-specific compatibility claim |
+| Z-series | Two originals preserved; recovered Core/Head SDK application and modified standalone reference image implement local control, persistent recipes/history and explicit restart recovery | Authenticated discovery, canonical recipe deployment, commands, grayscale display, settings, telemetry, recovery and history |
 | Zymatic | Reconstruction and custom firmware unimplemented; no image in the pinned upstream archive | Recipe planning only |
-| PicoFerm | All 16 upstream images preserved; reconstruction/custom implementation absent | Unimplemented |
-| PicoStill | All six upstream images preserved; reconstruction/custom implementation absent | Unimplemented |
+| PicoFerm | All 16 originals preserved; recovered SDK application and modified bounded acquisition/calibration/recording runtime implemented | Named sensors, explicit recording, calibration, cadence, history and telemetry; no brewer controls |
+| PicoStill | All six originals preserved; recovered SDK application and modified native accessory controller implemented | Native modes, pump/two fan channels, named sensors/actuators, history and telemetry; no heater/recipe claim |
 
 Recipe-planning profiles, archived programs and simulator results do not
 establish live support. See the [S/Pro firmware status](../firmware/pico-s-pro/modified/README.md),
@@ -41,6 +41,9 @@ and host/build verification are available, but its installation, entry path,
 trial confirmation and physical recovery remain unimplemented or unvalidated.
 
 ## Shared behavior
+
+The [firmware parity matrix](firmware-parity.md) records which workflows are
+shared and which controls depend on the actual machine hardware.
 
 The [S/Pro API guide](../firmware/pico-s-pro/modified/docs/standalone-api.md)
 and [OpenAPI contract](../firmware/pico-s-pro/modified/docs/openapi.json) are
@@ -60,12 +63,15 @@ storage and brewing capabilities.
 
 ## Work ahead
 
-Continue S/Pro validation and recover the firmware behavior and hardware
-interfaces of the other target machines. Keep original images and exact
-reconstruction baselines separate from work in each `modified/` directory.
-Implement ports against the common device contract, then verify their local
-browser and Hub workflows on corresponding hardware. Source/archive coverage,
-build/simulation results and physical validation are separate evidence.
+Keep originals and frozen reconstruction baselines unchanged, and retain every
+remaining original-execution limitation in the component evidence. Software
+source/image builds and the shared local API/browser/Hub are implemented for
+the available S/Pro, C, generic Z and accessory targets. Physical qualification
+still requires matching device backups/layouts, real sensor/output tests,
+heap/stack timing measurements, controlled restart tests and operating trials.
+Zymatic cannot be reconstructed from the other families' images; its original
+application and hardware mapping are still required. The separate S/Pro recovery
+candidate and C OTA/bootstrap remain outside the verified installation scope.
 
 Older community servers and archives are read-only research sources. Live
 integration uses each machine's standalone firmware API. The historical Python

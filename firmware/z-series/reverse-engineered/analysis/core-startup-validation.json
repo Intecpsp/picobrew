@@ -2,10 +2,10 @@
   "schema_version": 1,
   "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
   "function": "0x40113078",
-  "scope": "Original Core setup instruction body and call ordering; component and SDK boundaries modeled; independently checked heater/ADC effects expanded into their recorded pin/bus events; software timer create/start normalized to one port event",
-  "cases": 2,
+  "scope": "Original Core startup and Heater setup bodies, including real returning timer assertion/counter/delay and continued hardware timer/diagnostic setup. SDK and other component entry points are explicit boundaries; ADC pin/bus effects use separately validated behavior. Invalid null hardware-timer handles remain an owned guard, not an OEM-equivalent case.",
+  "cases": 4,
   "all_results_match": true,
-  "events_compared": 92,
+  "events_compared": 196,
   "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
   "native_flags": [
     "-std=c++11",
@@ -19,11 +19,12 @@
   "full_cpu_or_hardware_emulation": false,
   "instruction_export_sha256": "428c158e6c18dd86aa207b30b7d995f093115e7633779a85338b90716e7bf81b",
   "source_sha256": {
-    "include/zseries/core_startup.hpp": "7062a7f1aa7fc4a12fc1e188f1c43d51374f3808a049f8aeeff2080dbe544193",
-    "src/core_startup.cpp": "56cafa8b6ea14e2223e01d0ad9b1dcf3dfddbacf1e102613e7dd7f0579091006",
-    "tests/core_startup_bridge.cpp": "88a0eca6d29499a5b3d02ec28f9454f42983cb0e963dc30c76aa9441ca626bd8",
-    "tools/validate_core_startup.py": "bdcbf0718ff600c99193e40f062debd99079861ae2dc676501b385edaa6fa36c",
-    "tools/ghidra/EmulateCoreStartup.java": "87b45afe99dc02da0dfce3331a5d1be9d6b3081c48c5a2f5667ae593572967ea"
+    "include/zseries/core_startup.hpp": "0f1853c4f42743a92fbbdb76d25705809ab802a2d22426f97b2baf4c1505209a",
+    "src/core_startup.cpp": "689215f3b9d9b7321fb1bc5f861884fb61d96a028fff75e763cfc118ecc3ff1d",
+    "tests/core_startup_bridge.cpp": "507af0bf3cba921243027deead6abc04925ee292e21ec84867c60e4d8f156fcb",
+    "tools/validate_core_startup.py": "d7cf1c3fe5ac298351afd5e97c06cb6b09df59f87ddba1bb9986e63d5379eb60",
+    "tools/ghidra/EmulateCoreStartup.java": "44a8e8a74f710683406ee6c5887d567ceed510a00eb55ef246c69de75f49d603",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
   },
-  "portable_golden_sha256": "7a7edc074191d6fc67e8b2d60360ccd90428a052458c7cc88ed573dbe14e0cb9"
+  "portable_golden_sha256": "0f3da228990999023cad514d5dc117f0e7f7e58455330bb03aecbc43d7c23ee2"
 }

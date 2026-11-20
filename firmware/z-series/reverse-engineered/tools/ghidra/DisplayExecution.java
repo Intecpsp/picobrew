@@ -87,6 +87,35 @@ public final class DisplayExecution implements AutoCloseable {
             }
             if(opcode.startsWith("loop"))throw new IllegalStateException("Unreviewed Xtensa LOOP variant");
             if(opcode.startsWith("retw")){returns=new long[6];for(int i=0;i<6;i++)returns[i]=register(i+2);break;}
+            // Windowed calls above are adapted explicitly. The matching
+            // single-thread MOVSP effect is a stack-pointer move; processor
+            // register-window spill/underflow exceptions are outside this
+            // harness. Leaving Ghidra's synthetic WindowStart at zero would
+            // otherwise turn dynamic stack allocation into a silent no-op.
+            if(opcode.equals("movsp")){
+                Register destination=instruction.getRegister(0), source=instruction.getRegister(1);
+                if(destination==null||source==null||!destination.getName().equals("a1"))throw new IllegalStateException("Unreviewed MOVSP at "+pc);
+                emulator.writeRegister(destination,emulator.readRegister(source));
+                countBoundary("windowed_ABI_MOVSP_stack_move");
+                emulator.getEmulator().setExecuteAddress(pc.getOffset()+instruction.getLength());continue;
+            }
+            // Ghidra 12.2's Xtensa TRUNC.S uses the integer scale bit pattern
+            // as a float in its final truncation (fs f* scale), unlike its
+            // preceding NaN check (fs f* int2float(scale)). Model the reviewed
+            // finite, signed conversion explicitly; exception/saturation
+            // behavior outside this domain is deliberately not substituted.
+            if(opcode.equals("trunc.s")){
+                Register destination=instruction.getRegister(0), source=instruction.getRegister(1);
+                if(destination==null||source==null||instruction.getScalar(2)==null)throw new IllegalStateException("Unreviewed TRUNC.S at "+pc);
+                long scale=instruction.getScalar(2).getUnsignedValue();
+                if(scale>15)throw new IllegalStateException("Unreviewed TRUNC.S scale");
+                float value=Float.intBitsToFloat(emulator.readRegister(source).intValue());
+                double scaled=Math.scalb((double)value,(int)scale);
+                if(!Double.isFinite(scaled)||scaled<Integer.MIN_VALUE||scaled>=2147483648.0)throw new IllegalStateException("TRUNC.S outside reviewed finite domain");
+                emulator.writeRegister(destination,((long)(int)scaled)&0xffffffffL);
+                countBoundary("reviewed_finite_TRUNC_S_power_of_two_scale");
+                emulator.getEmulator().setExecuteAddress(pc.getOffset()+instruction.getLength());continue;
+            }
             // The harness has one thread and deterministic memory. MEMW's
             // ordering effect has no competing access to synchronize here.
             // This explicit boundary does not validate concurrent hardware.

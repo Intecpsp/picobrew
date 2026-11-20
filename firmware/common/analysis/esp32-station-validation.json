@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "native_checks": 149,
+  "native_test_command": "python -m unittest discover -s firmware/common/tests -p test_esp32_station.py -v",
+  "pinned_target_compiled": true,
+  "hardware_tested": false,
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "flags": [
+    "-std=gnu++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-mlongcalls",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "object_sha256": "0f767fbeab87597158dd9f2683eeee5d8814a88c834b0399029ba98b2f277012",
+  "scope": "Checked RAM-only ESP32 station configuration with 32-byte SSID and 64-hex PSK, each failing SDK operation stops later operations; no association wait.",
+  "inputs": {
+    "platform/esp32/station.hpp": "19cc6ad295936d1d191ba183e06a2a9a4bef6e45316ade4bb4b2dd97619947f5",
+    "platform/esp32/station.cpp": "e539266aae51923a75b2b635f468bf9446f9ecf29adf4fe40fd40230a01dc50f",
+    "tests/station_native.cpp": "2d0a377fc5987e00e3d9f259bce52e45f3307cc56babe8d8bb51617319c59929",
+    "tests/test_esp32_station.py": "681443bb5d7601aa305557b88b881429e0fad84fa61de79575e744fd71326432",
+    "tests/station_shim/WiFi.h": "1564a721fb5371a3aeb97292a11d504415928c8803318763a1b00ae89f1dc655",
+    "tests/station_shim/esp_wifi.h": "281c08aa2712b81c39297455bc8548a1c893b17888ca3401ff33c01dd91210ed",
+    "tests/station_shim/tcpip_adapter.h": "8dcadae69cf186374f326c889b6d9614c3f9f7e4abe6382722ddc47fc0df26cd"
+  }
+}

@@ -1,0 +1,65 @@
+{
+  "schema_version": 1,
+  "assets": [
+    {
+      "source": "index.html",
+      "content_type": "text/html; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 4714,
+      "source_length": 16589,
+      "source_sha256": "92bf9b99b2d699f22e9a8efe588abacc088fa5f8f0551d49fc5ee6411282569a",
+      "sha256": "8513f39cec95271f3e19f633605cd4e51988da5ad3768de7c31202a2b46c733a",
+      "file_path": "/common/web/index.html.gz"
+    },
+    {
+      "source": "device.js",
+      "content_type": "application/javascript; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 1878,
+      "source_length": 4712,
+      "source_sha256": "c0f911f816561ad5547e1ac6ad7f463142406fa88623002aeff61aa8b0c4313f",
+      "sha256": "6c70dd885b740e02a50d6905404d9eb2724be8b73f908bb4557bdc7a06a9a53a",
+      "file_path": "/common/web/device.js.gz"
+    },
+    {
+      "source": "app.js",
+      "content_type": "application/javascript; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 9774,
+      "source_length": 32909,
+      "source_sha256": "2dc815b945a2d9b58426e854bde2b5a2ace1308f011f9e8ea1dd48c7dc41bc2c",
+      "sha256": "a0aa9358ca5f6e986171915159a99ef3a1637d7bf7c9082c11d436ab240b45d6",
+      "file_path": "/common/web/app.js.gz"
+    },
+    {
+      "source": "api-explorer.js",
+      "content_type": "application/javascript; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 3420,
+      "source_length": 9477,
+      "source_sha256": "86a25f6772233d7f9bec7a96d2e3aba8cd1488f56b2e7c25d84336e6be16d321",
+      "sha256": "ae4060b9354d8abdb69795d2f3909c818ba95f9f7d69646447565578c0a2fa35",
+      "file_path": "/common/web/api-explorer.js.gz"
+    },
+    {
+      "source": "history.js",
+      "content_type": "application/javascript; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 5320,
+      "source_length": 15812,
+      "source_sha256": "0900eb9d5f3678e386f0c515134a74986d35865de30933f27fca85aa36dd6669",
+      "sha256": "37e00219502086c47bc8d451371557594fbbb0ed3c8d862a0be3edf323c5a698",
+      "file_path": "/common/web/history.js.gz"
+    },
+    {
+      "source": "style.css",
+      "content_type": "text/css; charset=utf-8",
+      "content_encoding": "gzip",
+      "length": 3855,
+      "source_length": 14120,
+      "source_sha256": "dd8c011d949dffa23027397b625db67a4fca74d3239268ab41f28de07c0d61c2",
+      "sha256": "ebcd9cbf07cea906012df00dc8285f884916763ebfb390536b6c4e9f1760d1f3",
+      "file_path": "/common/web/style.css.gz"
+    }
+  ]
+}

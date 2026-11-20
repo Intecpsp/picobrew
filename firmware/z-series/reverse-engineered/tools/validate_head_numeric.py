@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
 """Accept native Head numeric input bodies only after comparison with original instructions."""
 import argparse
+import gzip
 import hashlib
+import io
 import json
 from pathlib import Path
 import shutil
@@ -52,16 +54,19 @@ def main():
         "tests/head_numeric_bridge.cpp", "tests/head_numeric_native.py", "tests/test_head_numeric.py",
         "tools/validate_head_numeric.py"]}
     proof["native_validation"] = dict(all_results_match=True, cases=len(cases),
-        scope="Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion boundaries and ordered screen operations after the event is consumed")
+        scope="Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion line/counter, ordered assertion/delay and subsequent screen operations after the event is consumed")
     proof["remaining_scope"] = [
         "Core command delivery and screen presentation are required services, with no default successful no-op.",
         "The source handler API accepts an already consumed event; original one-slot mailbox consumption executes in the oracle and is separately retained as evidence.",
-        "Invalid quantity IDs return InvalidQuantity with the original assertion line instead of terminating the process.",
+        "Invalid quantity IDs execute the returning diagnostic callback and continue to the unchanged manual or coffee editor, matching the original helper and continuation.",
         "Physical display/actuator behavior, concurrent event delivery and a complete linked application remain unverified."]
     if args.write_evidence:
-        destination = ROOT / "tests/fixtures/head-numeric-original.json"
-        if fixture != destination:
-            shutil.copyfile(fixture, destination)
+        destination = ROOT / "tests/fixtures/head-numeric-original.json.gz"
+        buffer=io.BytesIO()
+        with gzip.GzipFile(filename="",mode="wb",fileobj=buffer,mtime=0) as output:output.write(fixture.read_bytes())
+        destination.write_bytes(buffer.getvalue())
+        proof["compressed_fixture_sha256"]=common.shared.digest(destination)
+        proof["fixture_encoding"]="gzip with mtime=0; decompressed bytes retain fixture_sha256"
         (ROOT / "analysis/head-numeric-validation.json").write_text(json.dumps(proof, indent=2) + "\n")
     print(f"Verified {len(cases)} original Head numeric input cases")
 

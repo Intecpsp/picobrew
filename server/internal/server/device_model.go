@@ -13,11 +13,14 @@ func modelControlReady(v domain.DeviceView) bool {
 }
 
 func validateStatusModel(status domain.Status, caps domain.Capabilities) error {
+	if _, err := device.ReportedModel(caps); err != nil {
+		return err
+	}
 	model, err := device.ReportedModel(domain.Capabilities{Model: status.Model, ModelName: status.ModelName, ModelFamily: status.ModelFamily, DisplayVariant: status.DisplayVariant})
 	if err != nil {
 		return err
 	}
-	if model == "" && caps.Model != "pico-c" {
+	if model == "" && (caps.Model == "" || caps.Model == "pico-s" || caps.Model == "pico-pro") {
 		return nil
 	} // Older status snapshots omitted identity fields.
 	if model != caps.Model || status.ModelFamily != "" && caps.ModelFamily != "" && status.ModelFamily != caps.ModelFamily || status.ModelName != "" && caps.ModelName != "" && status.ModelName != caps.ModelName || model == "pico-c" && status.DisplayVariant != caps.DisplayVariant {

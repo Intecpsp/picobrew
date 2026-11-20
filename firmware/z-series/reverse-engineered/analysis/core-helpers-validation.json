@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 1842,
+  "all_results_match": true,
+  "hardware_tested": false,
+  "complete_application_linked": false,
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "source_sha256": {
+    "include/zseries/core_helpers.hpp": "6712b7c7aab8097c34506b57ef59aceb966d17d54ce57255eb528e6957968400",
+    "src/core_helpers.cpp": "a8ac0f1bddb14a5a1d2927b808857601713961bba963e919528a3b63b2c51591",
+    "tests/core_helpers_bridge.cpp": "6075aa262841b6a2a4343786f9070ff7db288596a4267b5b3491c2e8abbc8aeb",
+    "tools/validate_core_helpers.py": "d2ea7845f48cef6e842647065368d0ddb288592fc8452ac06e5188e0416d882f",
+    "tools/ghidra/EmulateCoreHelpers.java": "79e3af10d0329205a90ee8c648b9561ecc1a17c913ad5bf680586b3d89d463d0",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  },
+  "golden_fixture_sha256": "56e436d9ba082dacaf773cb8afd8faf58047bb2a462c5f67a91ac217d99bd297",
+  "original_execution_jsonl_sha256": "5dd1f3d7066c056478308e8dcb4ef11bd0589cc9cbbb7135e2b69f1dbb3c155b",
+  "scope": "Completed original registration/download helper ticks and SessionLogger begin/transition/tick, including CoreEvent reset, returning assertion helper, counter and 200 ms delay. HTTP/backend operations, mailbox storage and diagnostic formatting are explicit call boundaries. State words, ordered semantic calls, diagnostic source lines, counter and post-delay clock are compared. No original network/server execution or full application claim.",
+  "original_functions_executed": {
+    "0x400db014": 89,
+    "0x400fb100": 210,
+    "0x4010ca44": 20,
+    "0x4010ca58": 48,
+    "0x4011c7c8": 661,
+    "0x4011c928": 1371,
+    "0x4011cadc": 94,
+    "0x401bf484": 8
+  },
+  "modeled_boundaries": {
+    "CoreEvent_mailbox": 8,
+    "HttpBackend_registration_request": 28,
+    "HttpClient_GET": 20,
+    "HttpClient_cancel": 35,
+    "HttpClient_configure": 20,
+    "ZBackend_canSync": 250,
+    "ZBackend_create_session": 16,
+    "ZBackend_end_session": 94,
+    "ZBackend_log_session": 25,
+    "__divsf3": 458,
+    "__extendsfdf2": 458,
+    "assertion_delay_200ms": 89,
+    "diagnostic_basename": 458,
+    "diagnostic_log": 458,
+    "diagnostic_scope_begin": 16,
+    "diagnostic_scope_end": 16,
+    "millis": 1102
+  },
+  "original_instruction_sha256": {
+    "0x400db014": "e6e6f2f962eea736bab8b7eaf8359cdee456e5163ea56e53ce50bc6c5ae3dc46",
+    "0x400fb100": "6129ca47df0fddb73d95e58b56690d21d5cb68b0d6ad558bc3484aca35253823",
+    "0x4010ca44": "42cf4f485e4ff9d0091c57b412f79ff56403a90c053fce32ed40f5ce754b4d59",
+    "0x4010ca58": "a2e0315ea70b0f0867b4156420ca9b136bd7aaac8900b1fe3cdae814b2fafed0",
+    "0x4011c7c8": "27333282a064910a6642575762baeb4280be35a0c537196b71faae2a6b699dac",
+    "0x4011c928": "1b0ebbe6eec19c3a5aef7042def5307af59ef3b4023d92d58e5be964f40a7939",
+    "0x4011cadc": "1bcec4765287b2ede93aa9cee02705e2eeff53b7473e7adea83c2034e76f3d55",
+    "0x401bf484": "a71b35a1a976946d778322f399e0b2c045ed34b8e258d1d18466dd7c2a55e2e1"
+  }
+}

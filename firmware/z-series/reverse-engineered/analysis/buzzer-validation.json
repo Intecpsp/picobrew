@@ -124,8 +124,8 @@
     "complete_application_linked": false
   },
   "validated_source_sha256": {
-    "include/zseries/buzzer.hpp": "edcd76c0c1fb889539df7b4847a7d93f0e8edb06f6b3b2d83d2f78b7b6f6cfb8",
-    "src/buzzer.cpp": "bbc613f9ad8a512e533be74ae668209727a49254d17c24dcd42fa09ada3b320e",
+    "include/zseries/buzzer.hpp": "3d29e7b156076571c04a9be6af123d27ac8739be34941f52faf4ffb9f9c28642",
+    "src/buzzer.cpp": "325217303425edea9396408690ba276f5861ddd4d3d70884cff71babe39abbb8",
     "platform/esp32/buzzer_platform.hpp": "53d86dde450a9dafef827ed75a808c0f2ed7bc021628d05ce598cd44d14e2ff5",
     "platform/esp32/buzzer_platform.cpp": "320241d67db8270a585eb341e74e90609c0b027f8b26f4800fa05966fa9e2c30",
     "tests/buzzer_bridge.cpp": "c13ebc2e6ccf4307cd0599f6ad33fb325b6a528834bda51677d7a13179d05a78",
@@ -300,5 +300,13 @@
     "Caller must serialize Core, console and FreeRTOS timer accesses and install real console/assertion/diagnostic services.",
     "No physical audio, full application link, boot, flash or hardware qualification is claimed."
   ],
-  "compressed_fixture_sha256": "337dc0879657d61991ee96a8e35445323d750177a46befd350a692e1dc140739"
+  "compressed_fixture_sha256": "337dc0879657d61991ee96a8e35445323d750177a46befd350a692e1dc140739",
+  "integration_revalidation": {
+    "scope": "Current portable implementation replayed against every retained original fixture by the combined 272-test native suite; only provenance checks failed before this refresh. This is not a fresh execution of discarded original-case records or a hardware test.",
+    "changed_sources": [
+      "include/zseries/buzzer.hpp",
+      "src/buzzer.cpp"
+    ],
+    "target_build_report": "integration-target-build.json"
+  }
 }

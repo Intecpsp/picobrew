@@ -88,7 +88,7 @@
     "calls": [],
     "peripheral_address": "0x3ff44000",
     "linker_sha256": "971513baed4da77f0c46916021fda57def4ad65998249b0afa06afc1d2045b9d",
-    "disassembly_sha256": "bfcc7c2027b3772d1e40d50e06253e73f99d9d031d73b1d903f6b3c01ffc9da9"
+    "disassembly_sha256": "f78779aad01347c5884921d55a3572bb50d02a40338ec3882b7b7c08aedbfae0"
   },
   "volatile_memory_barriers": 2,
   "complete_application_linked": false,

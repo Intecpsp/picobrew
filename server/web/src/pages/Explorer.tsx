@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { Play, Search, Code2, Copy, ArrowUpRight, LockKeyhole, ChevronRight } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { copyText, errorMessage, saveBlob } from '../lib/api'
+import { calibrationPrerequisite } from '../lib/capabilities'
 import { inspectAPI } from '../lib/explorer'
 import {
   Badge,
@@ -58,7 +59,27 @@ export default function Explorer() {
           ? hub.brews[0]?.id
           : ''
     setPath(operation.path.replace('{id}', firstID || '{id}'))
-    const example = operation.definition.requestBody?.content?.['application/json']?.example
+    let example = operation.definition.requestBody?.content?.['application/json']?.example
+    if (operation.path.endsWith('/commands')) {
+      const device = hub.devices.find((item) => item.id === firstID)
+      const command = device?.capabilities?.commands?.includes('encoder')
+        ? 'encoder'
+        : device?.capabilities?.commands?.[0]
+      if (command) {
+        example = { command, ...(command === 'encoder' ? { delta: 1 } : { confirm: false }) }
+        for (const field of device?.capabilities?.command_fields?.[command]?.required || [])
+          example[field] =
+            field === 'enabled' || field === 'confirm'
+              ? false
+              : field === 'value'
+                ? 300
+                : field === 'channel'
+                  ? 1
+                  : field === 'recipe_id'
+                    ? 'recipe-id'
+                    : 0
+      }
+    }
     setBody(
       JSON.stringify(
         example || operation.path.includes('/commands')
@@ -194,6 +215,9 @@ export default function Explorer() {
                 )}
                 {selected.method !== 'GET' && (
                   <>
+                    {selected.path.endsWith('/commands') && body.includes('calibrate') && (
+                      <p className="notice">{calibrationPrerequisite}</p>
+                    )}
                     {multipart ? (
                       <Field
                         label="File to upload"

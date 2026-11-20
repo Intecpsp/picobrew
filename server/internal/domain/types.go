@@ -18,55 +18,120 @@ type Device struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 type Status struct {
-	Model            string   `json:"model,omitempty"`
-	ModelName        string   `json:"model_name,omitempty"`
-	ModelFamily      string   `json:"model_family,omitempty"`
-	DisplayVariant   string   `json:"display_variant,omitempty"`
-	UptimeMS         uint64   `json:"uptime_ms"`
-	Ready            bool     `json:"ready"`
-	DeviceUID        string   `json:"device_uid"`
-	Busy             bool     `json:"busy"`
-	Stopped          bool     `json:"stopped"`
-	Command          string   `json:"command"`
-	DeviceState      int      `json:"device_state"`
-	Phase            int      `json:"phase"`
-	ControllerStatus int      `json:"controller_status"`
-	Compartment      int      `json:"compartment"`
-	WortF            *float64 `json:"wort_f"`
-	ThermoblockF     *float64 `json:"thermoblock_f"`
-	TargetF          *float64 `json:"target_f"`
-	StepSeconds      int      `json:"step_seconds"`
-	CurrentStep      int      `json:"current_step"`
-	StepCount        int      `json:"step_count"`
-	RecipeName       string   `json:"recipe_name"`
-	StepName         string   `json:"step_name"`
-	SessionID        string   `json:"session_id"`
-	FilterInserted   *bool    `json:"filter_inserted"`
-	StopReason       string   `json:"stop_reason"`
+	Model            string     `json:"model,omitempty"`
+	ModelName        string     `json:"model_name,omitempty"`
+	ModelFamily      string     `json:"model_family,omitempty"`
+	DisplayVariant   string     `json:"display_variant,omitempty"`
+	UptimeMS         uint64     `json:"uptime_ms"`
+	Ready            bool       `json:"ready"`
+	DeviceUID        string     `json:"device_uid"`
+	Busy             bool       `json:"busy"`
+	Stopped          bool       `json:"stopped"`
+	Command          string     `json:"command"`
+	DeviceState      int        `json:"device_state"`
+	Phase            int        `json:"phase"`
+	ControllerStatus int        `json:"controller_status"`
+	Compartment      int        `json:"compartment"`
+	WortF            *float64   `json:"wort_f"`
+	ThermoblockF     *float64   `json:"thermoblock_f"`
+	TargetF          *float64   `json:"target_f"`
+	StepSeconds      int        `json:"step_seconds"`
+	CurrentStep      int        `json:"current_step"`
+	StepCount        int        `json:"step_count"`
+	RecipeName       string     `json:"recipe_name"`
+	StepName         string     `json:"step_name"`
+	SessionID        string     `json:"session_id"`
+	FilterInserted   *bool      `json:"filter_inserted"`
+	StopReason       string     `json:"stop_reason"`
+	State            string     `json:"state,omitempty"`
+	TemperatureF     *float64   `json:"temperature_f,omitempty"`
+	PressureKPa      *float64   `json:"pressure_kpa,omitempty"`
+	BatteryV         *float64   `json:"battery_v,omitempty"`
+	Sensors          []Sensor   `json:"sensors,omitempty"`
+	Actuators        []Actuator `json:"actuators,omitempty"`
+	Recovery         *Recovery  `json:"recovery,omitempty"`
 	Encoder          struct {
 		Position int `json:"position"`
 		Min      int `json:"min"`
 		Max      int `json:"max"`
 	} `json:"encoder"`
 }
-type Capabilities struct {
-	APIVersion            int      `json:"api_version"`
-	FirmwareVersion       string   `json:"firmware_version"`
-	Model                 string   `json:"model,omitempty"`
-	ModelName             string   `json:"model_name,omitempty"`
-	ModelFamily           string   `json:"model_family,omitempty"`
-	DisplayVariant        string   `json:"display_variant,omitempty"`
-	Commands              []string `json:"commands"`
-	RecipeCapacity        int      `json:"recipe_capacity"`
-	StepCapacity          int      `json:"step_capacity"`
-	FrontPanel            bool     `json:"front_panel"`
-	HistoryPersistent     bool     `json:"history_persistent"`
-	TelemetryForwarding   bool     `json:"telemetry_forwarding"`
-	DedicatedPauseResume  bool     `json:"dedicated_pause_resume"`
-	ZeroMinuteSteps       bool     `json:"zero_minute_steps"`
-	RestoreDefaultRecipes bool     `json:"restore_default_recipes"`
-	StarterRecipeCount    int      `json:"starter_recipe_count"`
+type Recovery struct {
+	Available      bool   `json:"available"`
+	Valid          bool   `json:"valid"`
+	RecipeName     string `json:"recipe_name"`
+	StepName       string `json:"step_name"`
+	CurrentStep    int    `json:"current_step"`
+	StepSeconds    uint32 `json:"step_seconds"`
+	ElapsedSeconds uint32 `json:"elapsed_seconds"`
 }
+type Sensor struct {
+	ID    string   `json:"id"`
+	Label string   `json:"label"`
+	Kind  string   `json:"kind"`
+	Unit  string   `json:"unit"`
+	Value *float64 `json:"value"`
+}
+type Actuator struct {
+	ID      string   `json:"id"`
+	Label   string   `json:"label"`
+	Kind    string   `json:"kind"`
+	Enabled *bool    `json:"enabled"`
+	Level   *float64 `json:"level"`
+	RPM     *float64 `json:"rpm"`
+}
+type CommandFields struct {
+	Allowed  []string `json:"allowed"`
+	Required []string `json:"required"`
+}
+type FieldMetadata struct {
+	Label string `json:"label"`
+	Unit  string `json:"unit"`
+	Kind  string `json:"kind"`
+}
+type Capabilities struct {
+	APIVersion            int                      `json:"api_version"`
+	FirmwareVersion       string                   `json:"firmware_version"`
+	Model                 string                   `json:"model,omitempty"`
+	ModelName             string                   `json:"model_name,omitempty"`
+	ModelFamily           string                   `json:"model_family,omitempty"`
+	DisplayVariant        string                   `json:"display_variant,omitempty"`
+	Commands              []string                 `json:"commands"`
+	RecipeCapacity        int                      `json:"recipe_capacity"`
+	StepCapacity          int                      `json:"step_capacity"`
+	FrontPanel            bool                     `json:"front_panel"`
+	HistoryPersistent     bool                     `json:"history_persistent"`
+	TelemetryForwarding   bool                     `json:"telemetry_forwarding"`
+	DedicatedPauseResume  bool                     `json:"dedicated_pause_resume"`
+	ZeroMinuteSteps       bool                     `json:"zero_minute_steps"`
+	RestoreDefaultRecipes bool                     `json:"restore_default_recipes"`
+	StarterRecipeCount    int                      `json:"starter_recipe_count"`
+	Features              map[string]bool          `json:"capabilities,omitempty"`
+	SettingsFields        []string                 `json:"settings_fields"`
+	CommandFields         map[string]CommandFields `json:"command_fields,omitempty"`
+}
+
+// New firmware reports explicit capabilities. Older brewing firmware keeps
+// its established discovery contract and derives only its existing features.
+func (c Capabilities) Supports(name string) bool {
+	if value, ok := c.Features[name]; ok {
+		return value
+	}
+	switch name {
+	case "recipes":
+		return c.RecipeCapacity > 0
+	case "front_panel":
+		return c.FrontPanel
+	case "brewing", "heating", "temperature", "pump":
+		return c.RecipeCapacity > 0 && (c.Model == "" || c.Model == "pico-s" || c.Model == "pico-pro" || c.Model == "pico-c")
+	case "telemetry_forwarding":
+		return c.TelemetryForwarding
+	case "history_persistent":
+		return c.HistoryPersistent
+	}
+	return false
+}
+
 type DeviceView struct {
 	Device
 	Online                 bool            `json:"online"`
@@ -92,20 +157,30 @@ type TelemetryStatus struct {
 	LastChecked *time.Time `json:"last_checked,omitempty"`
 }
 type Display struct {
-	Width          int    `json:"width"`
-	Height         int    `json:"height"`
-	Rotation       *int   `json:"rotation,omitempty"`
-	DisplayVariant string `json:"display_variant,omitempty"`
-	StorageBytes   int    `json:"storage_bytes,omitempty"`
-	TransferBytes  int    `json:"transfer_bytes,omitempty"`
-	Format         string `json:"format"`
-	Data           string `json:"data"`
+	Width          int     `json:"width"`
+	Height         int     `json:"height"`
+	Rotation       *int    `json:"rotation,omitempty"`
+	DisplayVariant string  `json:"display_variant,omitempty"`
+	StorageBytes   int     `json:"storage_bytes,omitempty"`
+	TransferBytes  int     `json:"transfer_bytes,omitempty"`
+	Format         string  `json:"format"`
+	Data           string  `json:"data"`
+	Offset         *int    `json:"offset,omitempty"`
+	TotalBytes     int     `json:"total_bytes,omitempty"`
+	NextOffset     *int    `json:"next_offset,omitempty"`
+	Revision       *uint32 `json:"revision,omitempty"`
 }
 type Command struct {
-	Command  string `json:"command"`
-	RecipeID string `json:"recipe_id,omitempty"`
-	Delta    int    `json:"delta,omitempty"`
-	Click    bool   `json:"click,omitempty"`
+	Command         string   `json:"command"`
+	RecipeID        string   `json:"recipe_id,omitempty"`
+	Delta           int      `json:"delta,omitempty"`
+	Click           bool     `json:"click,omitempty"`
+	Channel         *int     `json:"channel,omitempty"`
+	Level           *float64 `json:"level,omitempty"`
+	Enabled         *bool    `json:"enabled,omitempty"`
+	Value           *float64 `json:"value,omitempty"`
+	DurationSeconds *uint32  `json:"duration_seconds,omitempty"`
+	Confirm         *bool    `json:"confirm,omitempty"`
 }
 type MachineStep struct {
 	Name         string `json:"name"`
@@ -222,19 +297,23 @@ type Adapted struct {
 	ProfileFingerprint string         `json:"profile_fingerprint,omitempty"`
 }
 type Sample struct {
-	ElapsedMS        int64      `json:"elapsed_ms"`
-	ObservedAt       *time.Time `json:"observed_at,omitempty"`
-	WortF            *float64   `json:"wort_f"`
-	ThermoblockF     *float64   `json:"thermoblock_f"`
-	TargetF          *float64   `json:"target_f"`
-	StepSeconds      int        `json:"step_seconds"`
-	Phase            int        `json:"phase"`
-	ControllerStatus int        `json:"controller_status"`
-	Compartment      int        `json:"compartment"`
-	CurrentStep      int        `json:"current_step"`
-	Flags            int        `json:"flags"`
-	DeviceState      int        `json:"device_state"`
-	Source           string     `json:"source"`
+	ElapsedMS        int64               `json:"elapsed_ms"`
+	ObservedAt       *time.Time          `json:"observed_at,omitempty"`
+	WortF            *float64            `json:"wort_f"`
+	ThermoblockF     *float64            `json:"thermoblock_f"`
+	TargetF          *float64            `json:"target_f"`
+	StepSeconds      int                 `json:"step_seconds"`
+	Phase            int                 `json:"phase"`
+	ControllerStatus int                 `json:"controller_status"`
+	Compartment      int                 `json:"compartment"`
+	CurrentStep      int                 `json:"current_step"`
+	Flags            int                 `json:"flags"`
+	DeviceState      int                 `json:"device_state"`
+	Source           string              `json:"source"`
+	TemperatureF     *float64            `json:"temperature_f,omitempty"`
+	PressureKPa      *float64            `json:"pressure_kpa,omitempty"`
+	BatteryV         *float64            `json:"battery_v,omitempty"`
+	Readings         map[string]*float64 `json:"readings,omitempty"`
 }
 type HistorySession struct {
 	Available             bool   `json:"available"`
@@ -243,6 +322,7 @@ type HistorySession struct {
 	RecipeName            string `json:"recipe_name"`
 	State                 string `json:"state"`
 	DurationMS            int64  `json:"duration_ms"`
+	SampleIntervalMS      int64  `json:"sample_interval_ms,omitempty"`
 	RecordCount           int    `json:"record_count"`
 	PersistedRecordCount  int    `json:"persisted_record_count"`
 	FirstElapsedMS        int64  `json:"first_elapsed_ms"`
@@ -253,29 +333,42 @@ type HistorySession struct {
 }
 type History struct {
 	HistorySession
-	Sessions []HistorySession `json:"sessions"`
-	Fields   []string         `json:"fields"`
+	Sessions      []HistorySession         `json:"sessions"`
+	Fields        []string                 `json:"fields"`
+	FieldMetadata map[string]FieldMetadata `json:"field_metadata,omitempty"`
+}
+
+// HistoryPage retains the schema stored with a specific session. Older devices
+// omit it on the wire; their adapter supplies the catalog's legacy schema.
+type HistoryPage struct {
+	Samples       []Sample
+	Next          *int
+	Fields        []string
+	FieldMetadata map[string]FieldMetadata
 }
 type Brew struct {
-	ID              string     `json:"id"`
-	DeviceID        string     `json:"device_id"`
-	DeviceName      string     `json:"device_name"`
-	Model           string     `json:"model"`
-	RecipeName      string     `json:"recipe_name"`
-	RecipeID        string     `json:"recipe_id,omitempty"`
-	RecipeRevision  int64      `json:"recipe_revision,omitempty"`
-	State           string     `json:"state"`
-	Command         string     `json:"command"`
-	StartedAt       *time.Time `json:"started_at"`
-	ObservedAt      time.Time  `json:"observed_at"`
-	DurationMS      int64      `json:"duration_ms"`
-	DeviceHistoryID uint64     `json:"device_history_id"`
-	GapCount        int        `json:"gap_count"`
-	Truncated       bool       `json:"truncated"`
-	Notes           string     `json:"notes"`
-	Rating          int        `json:"rating"`
-	SampleCount     int        `json:"sample_count"`
-	Source          string     `json:"source"`
+	ID               string                   `json:"id"`
+	DeviceID         string                   `json:"device_id"`
+	DeviceName       string                   `json:"device_name"`
+	Model            string                   `json:"model"`
+	RecipeName       string                   `json:"recipe_name"`
+	RecipeID         string                   `json:"recipe_id,omitempty"`
+	RecipeRevision   int64                    `json:"recipe_revision,omitempty"`
+	State            string                   `json:"state"`
+	Command          string                   `json:"command"`
+	StartedAt        *time.Time               `json:"started_at"`
+	ObservedAt       time.Time                `json:"observed_at"`
+	DurationMS       int64                    `json:"duration_ms"`
+	DeviceHistoryID  uint64                   `json:"device_history_id"`
+	GapCount         int                      `json:"gap_count"`
+	Truncated        bool                     `json:"truncated"`
+	Notes            string                   `json:"notes"`
+	Rating           int                      `json:"rating"`
+	SampleCount      int                      `json:"sample_count"`
+	Source           string                   `json:"source"`
+	SampleFields     []string                 `json:"sample_fields,omitempty"`
+	SampleIntervalMS int64                    `json:"sample_interval_ms,omitempty"`
+	FieldMetadata    map[string]FieldMetadata `json:"field_metadata,omitempty"`
 }
 type BrewDetail struct {
 	Brew

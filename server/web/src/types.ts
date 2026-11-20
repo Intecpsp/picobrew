@@ -6,6 +6,13 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
+  state?: string
+  temperature_f?: number | null
+  pressure_kpa?: number | null
+  battery_v?: number | null
+  sensors?: Sensor[]
+  actuators?: Actuator[]
+  recovery?: InterruptedRecovery | null
   model?: string
   model_name?: string
   model_family?: string
@@ -33,7 +40,39 @@ export interface DeviceStatus {
   stop_reason: string
   encoder: { position: number; min: number; max: number }
 }
+export interface InterruptedRecovery {
+  available: boolean
+  valid: boolean
+  recipe_name: string
+  step_name: string
+  current_step: number
+  step_seconds: number
+  elapsed_seconds: number
+}
+export interface Sensor {
+  id: string
+  label: string
+  kind: string
+  unit: string
+  value: number | null
+}
+export interface Actuator {
+  id: string
+  label: string
+  kind: string
+  enabled: boolean | null
+  level: number | null
+  rpm: number | null
+}
+export interface FieldMetadata {
+  label: string
+  unit: string
+  kind: string
+}
 export interface Capabilities {
+  capabilities?: Record<string, boolean>
+  settings_fields?: string[] | null
+  command_fields?: Record<string, { allowed: string[]; required: string[] }>
   model?: string
   model_name?: string
   model_family?: string
@@ -79,6 +118,10 @@ export interface Device {
   }
 }
 export interface Display {
+  offset?: number
+  total_bytes?: number
+  next_offset?: number | null
+  revision?: number
   width: number
   height: number
   rotation?: number
@@ -185,6 +228,10 @@ export interface Adapted {
   profile_fingerprint?: string
 }
 export interface Sample {
+  temperature_f?: number | null
+  pressure_kpa?: number | null
+  battery_v?: number | null
+  readings?: Record<string, number | null>
   elapsed_ms: number
   observed_at?: string
   wort_f: number | null
@@ -200,6 +247,9 @@ export interface Sample {
   source: string
 }
 export interface Brew {
+  sample_fields?: string[]
+  sample_interval_ms?: number
+  field_metadata?: Record<string, FieldMetadata>
   id: string
   device_id: string
   device_name: string

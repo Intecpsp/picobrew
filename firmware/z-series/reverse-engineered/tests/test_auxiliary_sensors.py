@@ -1,5 +1,7 @@
 from __future__ import annotations
 import json
+import gzip
+import hashlib
 from pathlib import Path
 import sys
 import tempfile
@@ -15,7 +17,7 @@ class AuxiliarySensorTests(unittest.TestCase):
     def setUpClass(cls):
         cls.build = tempfile.TemporaryDirectory(prefix="zseries-auxiliary-test-")
         cls.native, _ = validation.load_native(cls.build.name)
-        cls.fixture = json.loads((ROOT / "tests/fixtures/auxiliary-sensors-original.json").read_text())
+        cls.fixture = json.loads(gzip.decompress((ROOT / "tests/fixtures/auxiliary-sensors-original.json.gz").read_bytes()))
 
     @classmethod
     def tearDownClass(cls):
@@ -61,7 +63,10 @@ class AuxiliarySensorTests(unittest.TestCase):
     def test_provenance(self):
         report = json.loads((ROOT / "analysis/auxiliary-sensors-validation.json").read_text())
         self.assertEqual(report["input_sha256"], validation.digest(ROOT.parent / "oem/upstream/zseries_0_0_119.bin"))
-        self.assertEqual(report["portable_golden_sha256"], validation.digest(ROOT / "tests/fixtures/auxiliary-sensors-original.json"))
+        compressed=(ROOT / 'tests/fixtures/auxiliary-sensors-original.json.gz').read_bytes()
+        self.assertEqual(report["portable_golden_sha256"],hashlib.sha256(compressed).hexdigest())
+        self.assertEqual(report['fixture_sha256'],hashlib.sha256(gzip.decompress(compressed)).hexdigest())
+        validation.verify_original(report,validation.input_cases())
         self.assertEqual(report["portable_golden_cases"], len(self.fixture["cases"]))
         for path, expected in report["source_sha256"].items():
             self.assertEqual(validation.digest(ROOT / path), expected, path)

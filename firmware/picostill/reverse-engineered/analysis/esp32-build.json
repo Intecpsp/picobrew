@@ -1,0 +1,226 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "dependency_pin_sha256": "7921d28b17b9a032d8aaa5b10cd461ba8b745ca1650cb8076dd1c4bcba296881",
+  "flags": [
+    "-std=gnu++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-Wno-unused-parameter",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "sources": [
+    {
+      "source": "src/animations.cpp",
+      "source_sha256": "9d2dfa182c747045da9631118d8e9022ea5d11d3fc90f2bdd28449d11b07c79a",
+      "object_sha256": "ce91bed3959051f50cc7a8969611445488dd7fd0a6064875dd1ae5dee3caeba8",
+      "object_bytes": 3084
+    },
+    {
+      "source": "src/application.cpp",
+      "source_sha256": "695a26db58c8f386a3bdae39c6da5a5b7476654b04ee5b010acbc6145c90ce44",
+      "object_sha256": "a45c29b93611f6d85027e104c68bb2cd46937d5ece08610258af19ee89911027",
+      "object_bytes": 17104
+    },
+    {
+      "source": "src/backend.cpp",
+      "source_sha256": "cc4e93d2fbdbda57dc9dede2b81735faa3e719d4b412c6c9be6c9c2c7b6eec2e",
+      "object_sha256": "d35a104bd3b0df92a880926ddbec0e2a2053ba5534aee8629983f27542b43002",
+      "object_bytes": 9148
+    },
+    {
+      "source": "src/controller.cpp",
+      "source_sha256": "1c8e0a74696fd69959eb26dcaf271ebb52e947a36ed5cd29b5d7e55cb2bc64b4",
+      "object_sha256": "539596241b36f30579bb157c13e71f78d7a21246c3c13b6804758cf7d4fe61e0",
+      "object_bytes": 33492
+    },
+    {
+      "source": "src/core.cpp",
+      "source_sha256": "c46ff14fbb449f52a3711ced487a7f7c1d3d5b34ff250609230736360c9b9f56",
+      "object_sha256": "03fe6785654f4c392e3ed79eb83f31881553c799113c32ff7cfdcf6876667ed0",
+      "object_bytes": 14168
+    },
+    {
+      "source": "src/data.cpp",
+      "source_sha256": "81b5e81a11727b7e3377a61e15b2abe83f211b8775841c1ae05a38770260db6b",
+      "object_sha256": "9aee31e31f08f01f08c41ef0da6411d5acbb76a0d0d76ec3e498bf8ef6b80ff8",
+      "object_bytes": 9932
+    },
+    {
+      "source": "src/device.cpp",
+      "source_sha256": "b908e46624a3ea85d48a72a3b74cac33533b989ea91860d2d0bf043a70e963cc",
+      "object_sha256": "457d97ad0f15e3a1c65e870aa4138343643beeabaeb555ec764f28f02ece1407",
+      "object_bytes": 20412
+    },
+    {
+      "source": "src/enums.cpp",
+      "source_sha256": "17dca96b56256f5676c2dba1efee49e5e93e09e77213d61b89839ba07561d399",
+      "object_sha256": "f7c0e4672137d0d6b2e6c80488cc17dc38d36b63e162559f705da8d2131eff72",
+      "object_bytes": 10828
+    },
+    {
+      "source": "src/hardware.cpp",
+      "source_sha256": "0d52963890edd5c750d1ce656b57ad85f517743b6e696d5de248cccfe6b4132f",
+      "object_sha256": "5199510a42a5dc386cd8f660f646f99a686c9098aa0079c86304830e549d6af2",
+      "object_bytes": 15364
+    },
+    {
+      "source": "src/http.cpp",
+      "source_sha256": "2d6e3bfd127576052a738e562f1a1d1cbf32aaae9c8ee25c77cb9ab905e83d75",
+      "object_sha256": "8871745f0d6bf4a754b0f6b0ac7f7226155346e51089e201f45f3cde8ea0f9de",
+      "object_bytes": 11252
+    },
+    {
+      "source": "src/http_server.cpp",
+      "source_sha256": "116352508ff8220f35b89f1884e16701f74482db770428d0a31e61eadc5edb51",
+      "object_sha256": "df2dd821b77a17155c70a8d1f72f86e7b846c02d7eccae8bb69116a675fb4514",
+      "object_bytes": 28920
+    },
+    {
+      "source": "src/machine.cpp",
+      "source_sha256": "0a9bbe3281855d395f32a4eb41678881019810cea35b481c7b3e64f8be1022a7",
+      "object_sha256": "5d14041b07c588519f2b8e267b7d24896c01407972ded32c70fbe4a9200fb519",
+      "object_bytes": 55936
+    },
+    {
+      "source": "src/reports.cpp",
+      "source_sha256": "a8a39c376b0d0ce8240d10982f370d239c3a0ed3e619441a3c213be4802a02a8",
+      "object_sha256": "07778b3fca878e612cb657a638e6b9441be401e75267afb0b07dc7cd87698d65",
+      "object_bytes": 12092
+    },
+    {
+      "source": "src/self_tests.cpp",
+      "source_sha256": "e632023bca89e3952280546101d35248047ce418fc84bfa7f030776c1d2578d8",
+      "object_sha256": "c8ca3b5c2acf03e57b5ae1193f1e0b64741be3a19731d0cba805a9baf7f953d2",
+      "object_bytes": 25800
+    },
+    {
+      "source": "src/sensors.cpp",
+      "source_sha256": "2e6fbd24b1ac583c761d0d289310a68f74f77b70378dfdfbf84a4cd9a7d41be8",
+      "object_sha256": "1cf024f73b0ba7f7dcd0b02ef93dd51918954e71894df6b2cc40242292d1de45",
+      "object_bytes": 7504
+    },
+    {
+      "source": "src/storage.cpp",
+      "source_sha256": "fefe0da285f695cf398881011c38a71f6f6240c647f30f4b18ccc695f1373dee",
+      "object_sha256": "0b26b5324bad7a28c9e0f90db158c53f7cfa768ddb609dbff2b7113ef2b3edf2",
+      "object_bytes": 5352
+    },
+    {
+      "source": "src/update.cpp",
+      "source_sha256": "e464e9bbd8b6c476669c41205e5c34df77aeb59128bd4f8e3a4cc174d2708b63",
+      "object_sha256": "1360e37c569e87f7a955147ec011d64a1d52ac8939646c1f6dc03471bf8c576d",
+      "object_bytes": 12400
+    },
+    {
+      "source": "src/web_data.cpp",
+      "source_sha256": "406f2910a485e6512093c8ef82eee571f44de6c6def4db169cd3e22337eb48c3",
+      "object_sha256": "f82a1808835703869b28fc53d4d29f600f1eebea9b5b6e94188a0008e14de087",
+      "object_bytes": 43860
+    },
+    {
+      "source": "src/web_wifi.cpp",
+      "source_sha256": "a3d93c6100b6226ed8cff5fdaa79a7dde7c425325c7ab800e63469f68c48e2a0",
+      "object_sha256": "c4f63759a37ac99d3aabc1e3e64a1a0597036e7319d78bd2e301eccf8ef3fd18",
+      "object_bytes": 16976
+    },
+    {
+      "source": "src/wifi.cpp",
+      "source_sha256": "3b0590ca95f72db2b57e9418c1f164b9c25442ec03b1e18aeea7981878501194",
+      "object_sha256": "5d344fb4ccf75ad424e661162773c6b764640a588077bb37b80b128a76fb5f3c",
+      "object_bytes": 10736
+    },
+    {
+      "source": "platform/esp32/application_main.cpp",
+      "source_sha256": "d3964188ddb4faf7b13945e1b72745308061821c7bea56d8e20b7853284516e7",
+      "object_sha256": "46783819cbb8f5aab2f3e25db4e37053d9ec71243f4d37036cb0a448a0479a27",
+      "object_bytes": 19496
+    },
+    {
+      "source": "platform/esp32/arduino_ports.cpp",
+      "source_sha256": "2ed0280f5ee6f707c1352ee6a3b2156209a622c9c050d7dd087a74745ae10d7a",
+      "object_sha256": "d05013a5fb6d698e6e928966f81336ba055811ada021b8da8ea68e3aab89436d",
+      "object_bytes": 21276
+    },
+    {
+      "source": "platform/esp32/http_ports.cpp",
+      "source_sha256": "4da296947ab370509890775c97ac5f79377d2a3260cf9b6b12b345a730d33fa6",
+      "object_sha256": "c18c64df27b57802ac242eafe98f46963cc6f2e81155505f2978c2dfb5896076",
+      "object_bytes": 17164
+    },
+    {
+      "source": "platform/esp32/nvs_ports.cpp",
+      "source_sha256": "f26b2daa5cec68dc7bc00ed923a7389028d7f928e8c1ef3cc358780a8a523823",
+      "object_sha256": "e7cc7aa0d4c8df93cc0409c23d4610508049eac74cf9c62a370d423f8b2bb627",
+      "object_bytes": 10044
+    },
+    {
+      "source": "platform/esp32/outbound_ports.cpp",
+      "source_sha256": "0e4dedb68aad8b9d94b844cb1d38efcaa12aedc73f92104c5f14020781bd8af6",
+      "object_sha256": "26667ff4eed342b01e882ae5f36a13475b01fbed463669296bd755654554952e",
+      "object_bytes": 18516
+    },
+    {
+      "source": "platform/esp32/system_ports.cpp",
+      "source_sha256": "5deec95649c4a555cb7939455eb99f48c27c5f10ba31e0f82d082dbee7570c7d",
+      "object_sha256": "d085f2ee7c3913d872b94ed0fb61edd21669da50841b44e6fb263582eaeec195",
+      "object_bytes": 21784
+    },
+    {
+      "source": "platform/esp32/wifi_ports.cpp",
+      "source_sha256": "b8ffe040e99b8bf4988503cd1cedc0884e6e1b09c6f69f2dee45ddde7fe9f327",
+      "object_sha256": "f1bf454d53a5293822f8a6d591f123051d7218682d7e3a97864c3e2bfc60751f",
+      "object_bytes": 17288
+    }
+  ],
+  "archive_sha256": "9fec39918394619d996ef66b6da1ed5e5e118536aec18fe5972e4fa5b05cc5e5",
+  "build_script_sha256": "f3124d876248c963fa62bcbff93654ab1176021cb5bb405eaef1f7165ca7d54d",
+  "headers": {
+    "include/picostill/application.hpp": "9a37ec6ec9ba18c7314bc9071d2bdbad904b61596a86ff8dc17cc9c7a04c6c70",
+    "include/picostill/backend.hpp": "960ca19371c27c405d10e8fefdfd8e41aa2d35cf44298e7e570e4b8019c3171e",
+    "include/picostill/controller.hpp": "cba826b9d540a8a94d76139c448bb8d606e9c6726eda1e815ed65ab0b98d8e80",
+    "include/picostill/core.hpp": "d19983e75abfba118a7b18a0b6b8f37711fc5f86f6c0072ec6f358e90399542a",
+    "include/picostill/data.hpp": "249898462dbaad799a0bfc975000c033186ff28f9197c0c067a11eed3cafaa86",
+    "include/picostill/device.hpp": "4753a40e3462da23e6b539461ac5048533f5b1262ca1873217602bb22a32d77a",
+    "include/picostill/enums.hpp": "26ee1cfa39aca7350278692fc89e71efb00fa5998b9eb9064c0061b61f18dfdf",
+    "include/picostill/hardware.hpp": "5cc48d3c3c148b624c1c022198c62851877f6db669eb1a18f9f0bf882d361e75",
+    "include/picostill/http.hpp": "104af08cb660c4f589e7596142547fbbb8686ed0a53a56632dfbf9de5bbb6851",
+    "include/picostill/http_server.hpp": "d90f01db27c60e2a6586271cc9fbb6c030a9726c9e7a71752898b7cfd31b84d7",
+    "include/picostill/machine.hpp": "d81a67a047fda765c717a45d952d27e48067daf9beff717536df986181bcd133",
+    "include/picostill/reports.hpp": "96639342750acda7c6aef7169a1ab4b9e06993320f31fbd75933d3a50b7f7c60",
+    "include/picostill/sensors.hpp": "503d8f8696582803a9c435e8fe88646cd6ce66553ee9a7417b380abde23b8dbc",
+    "include/picostill/storage.hpp": "329b6dd02e0d02b1eeb5f6643165455a9ecd1bb226fb7dac34c947d62807256d",
+    "include/picostill/transport.hpp": "6a325848db01808d7126846acc92f25a94ab988a2ffdba7051697d246cb2911d",
+    "include/picostill/update.hpp": "b55df241742eb955e76a24d59762512b2ccb62a2450ed343d70e2423d4278304",
+    "include/picostill/web_assets.hpp": "a88188af3916074125944c68194173d4e13840e2c47801ada95f40a3a93a7098",
+    "include/picostill/wifi.hpp": "ce8b250609812f1973a83316f1d9a88aa563c46d37adb57300685a1eaddd74d6"
+  },
+  "platform_headers": {
+    "platform/esp32/arduino_ports.hpp": "dadbf98a61f72e422ff9bff7233b150a5b14160eafa68ee6dac22b797a9f73cd",
+    "platform/esp32/http_ports.hpp": "45036cfe2bde1c099ab6f5a44f633c84905c9b05407d86361770c51416fc6df5",
+    "platform/esp32/nvs_ports.hpp": "e04e7dc1ae8453dd920fbad22984b94e0104214326709068eea01e0f6fa0a961",
+    "platform/esp32/outbound_ports.hpp": "2af91099ebc07a95b78164f762e6c1f1fa3fb21ee1a87b5e27798320c96f610e",
+    "platform/esp32/system_ports.hpp": "952972eaed8f9645cc7535be29ccb5d1edb5b5b0407ceb91fc721ea0ad4fa478",
+    "platform/esp32/wifi_ports.hpp": "2c54861e660129679b246c9a639fb3780f176ad946953c52ed33e32590497a9d"
+  },
+  "arduino_dependency_sha256": "45f502a14a5d4251470da9f2078ccac30d38eb1ee33c99da50075025c62f0005",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Xtensa ESP32 object compilation of recovered application modules and concrete Arduino GPIO/PWM/I2C/clock/serial, NVS, Wi-Fi/HTTP clients and flash-update drivers. Includes concrete application startup; full SDK linking is recorded separately. No partition mapping, flash package or physical qualification."
+}

@@ -19,16 +19,31 @@ const char* common_program_string(std::uint32_t reference) noexcept {
     return is_common_string_reference(reference) ? strings[reference - 0x8000u] : nullptr;
 }
 
-RuntimeResult InstructionStack::push(Instruction instruction) noexcept {
-    if (size_ == capacity) return RuntimeResult::StackFull;
+namespace {
+RuntimeResult stack_assertion(const ConsoleServices* diagnostics,std::uint32_t line,const char* expression,RuntimeResult guarded){
+    if(!diagnostics)return guarded;
+    if(!diagnostics->assertion)return RuntimeResult::MissingService;
+    return diagnostics->assertion(diagnostics->context,"Runtime.h",line,expression)?RuntimeResult::Ok:RuntimeResult::ServiceFailure;
+}
+}
+RuntimeResult InstructionStack::push(Instruction instruction,const ConsoleServices* diagnostics) noexcept {
+    if (size_ >= capacity) return stack_assertion(diagnostics,0x43,"codeSize < Program::MaxCodeSize",RuntimeResult::StackFull);
     code_[size_++] = instruction;
     return RuntimeResult::Ok;
 }
-RuntimeResult InstructionStack::push_checked(Instruction instruction) noexcept {
-    return instruction_valid(instruction) ? push(instruction) : RuntimeResult::InvalidProgram;
+RuntimeResult InstructionStack::push_checked(Instruction instruction,const ConsoleServices* diagnostics) noexcept {
+    if(!instruction_valid(instruction)){
+        const auto result=stack_assertion(diagnostics,0x4e,"instr.isValid()",RuntimeResult::InvalidProgram);
+        if(result!=RuntimeResult::Ok)return result;
+    }
+    return push(instruction,diagnostics);
 }
-RuntimeResult InstructionStack::pop(Instruction& instruction) noexcept {
-    if (size_ == 0) return RuntimeResult::StackEmpty;
+RuntimeResult InstructionStack::pop(Instruction& instruction,const ConsoleServices* diagnostics) noexcept {
+    if (size_ == 0) {
+        const auto result=stack_assertion(diagnostics,0x37,"!isEmpty()",RuntimeResult::StackEmpty);
+        if(result!=RuntimeResult::Ok)return result;
+        instruction=Instruction{OpCode::Noop,0};return RuntimeResult::Ok;
+    }
     instruction = code_[--size_];
     return RuntimeResult::Ok;
 }
@@ -36,10 +51,12 @@ void InstructionStack::clear() noexcept {
     code_.fill(Instruction{static_cast<OpCode>(0), 0});
     size_ = 0;
 }
-RuntimeResult InstructionStack::load(const ProgramView& program) noexcept {
+RuntimeResult InstructionStack::load(const ProgramView& program,const ConsoleServices* diagnostics) noexcept {
     if (program_validation_error(program)) return RuntimeResult::InvalidProgram;
-    if (program.code_size > capacity - size_) return RuntimeResult::StackFull;
-    for (std::size_t i = program.code_size; i != 0; --i) (void)push(program.code[i - 1]);
+    if (!diagnostics && program.code_size > capacity - size_) return RuntimeResult::StackFull;
+    for (std::size_t i = program.code_size; i != 0; --i) {
+        const auto result=push(program.code[i - 1],diagnostics);if(result!=RuntimeResult::Ok)return result;
+    }
     return RuntimeResult::Ok;
 }
 
@@ -71,8 +88,17 @@ std::uint32_t instruction_duration_ms(Instruction instruction) noexcept {
     return 0;
 }
 
+const ConsoleServices* ProgramRuntime::diagnostics() const noexcept {
+    return services.diagnostics.assertion||services.diagnostics.log?&services.diagnostics:nullptr;
+}
+RuntimeResult ProgramRuntime::record_assertion(const char* file,std::uint32_t line,const char* expression,RuntimeResult guarded){
+    assertion_line=line;const auto* sink=diagnostics();if(!sink)return guarded;
+    if(!sink->assertion)return RuntimeResult::MissingService;
+    return sink->assertion(sink->context,file,line,expression)?RuntimeResult::Ok:RuntimeResult::ServiceFailure;
+}
 RuntimeResult ProgramRuntime::push(OpCode code, std::uint32_t argument) noexcept {
-    RuntimeResult result = stack.push(Instruction{code, argument});
+    if(stack.size()==InstructionStack::capacity)assertion_line=0x43;
+    RuntimeResult result = stack.push(Instruction{code, argument},diagnostics());
     if (result == RuntimeResult::StackFull) assertion_line = 0x43;
     return result;
 }
@@ -136,12 +162,13 @@ RuntimeResult ProgramRuntime::transition_still(std::uint32_t id) {
     state.still.id = id;
     if (id == 4) {
         if (!state.still.reference_date) {
-            assertion_line = 0x220;
-            return RuntimeResult::UndefinedStillReference;
+            Z_RUNTIME_TRY(record_assertion("Runtime.h",0x220,"rtState.isRefDefined()",RuntimeResult::UndefinedStillReference));
         }
         if (!services.millis) return RuntimeResult::MissingService;
-        state.still.step_date = services.millis(services.context);
-        state.still.step_target = state.still.heat_loss + 2.0;
+        const auto step_date=services.millis(services.context);
+        const auto step_target=state.still.heat_loss+2.0;
+        if(!state.still.reference_date)Z_RUNTIME_TRY(record_assertion("RuntimeState.h",0x41a,"isRefDefined()",RuntimeResult::UndefinedStillReference));
+        state.still.step_date=step_date;state.still.step_target=step_target;
     }
     return RuntimeResult::Ok;
 }
@@ -196,10 +223,10 @@ RuntimeResult ProgramRuntime::dispatch(Instruction instruction) {
         case OpCode::SetTarget:
             (void)instruction_temperature(instruction, temperature); return set_target(temperature);
         case OpCode::Heater:
-            if (state.ignore_monitor_safeties) { assertion_line = 0x379; return RuntimeResult::MonitorSafetiesIgnored; }
+            if (state.ignore_monitor_safeties) Z_RUNTIME_TRY(record_assertion("Runtime.h",0x379,"!_rtState.areMonitorSafetiesIgnored",RuntimeResult::MonitorSafetiesIgnored));
             return enable_heater(arg == 1);
         case OpCode::StartPid:
-            if (state.ignore_monitor_safeties) { assertion_line = 0x37c; return RuntimeResult::MonitorSafetiesIgnored; }
+            if (state.ignore_monitor_safeties) Z_RUNTIME_TRY(record_assertion("Runtime.h",0x37c,"!_rtState.areMonitorSafetiesIgnored",RuntimeResult::MonitorSafetiesIgnored));
             Z_RUNTIME_TRY(start_pid()); state.pid_active = true; return RuntimeResult::Ok;
         case OpCode::StopPid:
             Z_RUNTIME_TRY(stop_pid()); state.pid_active = false; return RuntimeResult::Ok;
@@ -207,7 +234,7 @@ RuntimeResult ProgramRuntime::dispatch(Instruction instruction) {
         case OpCode::StepName: {
             saved_step_reference = arg;
             const char* name = string(arg);
-            if (!name) { assertion_line = 0x78; return RuntimeResult::InvalidStringReference; }
+            if (!name) { Z_RUNTIME_TRY(record_assertion("Program.h",0x78,"valid",RuntimeResult::InvalidStringReference));name="<INVALID>"; }
             state.step_name = name;
             state.step_buffer.fill(0);
             if (arg == 0x8025) {
@@ -223,7 +250,7 @@ RuntimeResult ProgramRuntime::dispatch(Instruction instruction) {
         case OpCode::SubStepName: {
             saved_substep_reference = arg;
             const char* name = string(arg);
-            if (!name) { assertion_line = 0x78; return RuntimeResult::InvalidStringReference; }
+            if (!name) { Z_RUNTIME_TRY(record_assertion("Program.h",0x78,"valid",RuntimeResult::InvalidStringReference));name="<INVALID>"; }
             state.substep_name = name;
             return RuntimeResult::Ok;
         }
@@ -356,7 +383,7 @@ RuntimeResult ProgramRuntime::dispatch(Instruction instruction) {
                 case 0x200: Z_RUNTIME_TRY(push(OpCode::ShowScreen, 10)); break;
                 case 0x100: Z_RUNTIME_TRY(push_setup_instructions(state.flags)); break;
                 case 0: break;
-                default: assertion_line = 0x463; return RuntimeResult::InvalidSetupMode;
+                default: Z_RUNTIME_TRY(record_assertion("Runtime.h",0x463,"setupMode == RSFLAG_INSTRUCTION_OFF",RuntimeResult::InvalidSetupMode));break;
             }
             if (arg & 0x800) Z_RUNTIME_TRY(push(OpCode::ShowScreen, 99));
             return push(OpCode::StepName, 0x8002);
@@ -379,12 +406,12 @@ RuntimeResult ProgramRuntime::transition(RuntimeStateId id) {
         case RuntimeStateId::Idle: {
             if (!msp || !msp->state) return RuntimeResult::MissingService;
             if (msp->state->valve_position != 3) {
-                assertion_line = 0x2fd; return RuntimeResult::InvalidValveLocation;
+                Z_RUNTIME_TRY(record_assertion("Runtime.h",0x2fd,"_cState.mspState.valvePosition == POSITION_REST",RuntimeResult::InvalidValveLocation));
             }
             Z_RUNTIME_TRY(stop_outputs());
             if (!services.still_cancel) return RuntimeResult::MissingService;
             services.still_cancel(services.context);
-            reset_t1_drop_watch();
+            Z_RUNTIME_TRY(reset_t1_drop_watch());
             Z_RUNTIME_TRY(set_pumps(0x40));
             controller_result = z_msp_send(msp, Z_MSP_FAN_ON, 0, 0);
             if (controller_result != Z_MSP_OK) return RuntimeResult::ControllerFailure;
@@ -415,7 +442,7 @@ RuntimeResult ProgramRuntime::transition(RuntimeStateId id) {
         case RuntimeStateId::Standby:
             if (!msp || !msp->state) return RuntimeResult::MissingService;
             if (msp->state->valve_position != 3) {
-                assertion_line = 0x2f3; return RuntimeResult::InvalidValveLocation;
+                Z_RUNTIME_TRY(record_assertion("Runtime.h",0x2f3,"_cState.mspState.valvePosition == POSITION_REST",RuntimeResult::InvalidValveLocation));
             }
             Z_RUNTIME_TRY(set_pumps(0));
             controller_result = z_msp_send(msp, Z_MSP_FAN_OFF, 0, 0);
@@ -434,18 +461,18 @@ RuntimeResult ProgramRuntime::transition(RuntimeStateId id) {
 }
 
 // 0x400e6240. The subtraction is the OEM unsigned tick arithmetic; a fully
-// elapsed WaitFor is an assertion, not a silently rescheduled zero-length wait.
+// elapsed WaitFor asserts and then keeps the original unsigned subtraction.
 RuntimeResult ProgramRuntime::save_pending(std::uint32_t now) {
     Instruction pending = state.instruction;
     if (pending.opcode == OpCode::WaitFor) {
         const std::uint32_t elapsed = (now - state.instruction_date) / 1000;
         if (pending.argument <= elapsed) {
-            assertion_line = 0x1cc; return RuntimeResult::InvalidPendingInstruction;
+            Z_RUNTIME_TRY(record_assertion("Runtime.h",0x1cc,"pending.arg > ellapsedSec",RuntimeResult::InvalidPendingInstruction));
         }
         pending.argument -= elapsed;
     }
     if (!instruction_valid(pending)) {
-        assertion_line = 0x4e; return RuntimeResult::InvalidProgram;
+        Z_RUNTIME_TRY(record_assertion("Runtime.h",0x4e,"instr.isValid()",RuntimeResult::InvalidProgram));
     }
     return push(pending.opcode, pending.argument);
 }
@@ -469,7 +496,7 @@ RuntimeResult ProgramRuntime::push_resume(std::uint32_t now, bool pending_comple
 RuntimeResult ProgramRuntime::pending_complete(RuntimeCommandId command, std::uint32_t now, bool& result) {
     result = false;
     if (now < state.instruction_date) {
-        assertion_line = 0x29e; return RuntimeResult::ClockWentBackwards;
+        Z_RUNTIME_TRY(record_assertion("Runtime.h",0x29e,"now >= _rtState.iStartDate",RuntimeResult::ClockWentBackwards));
     }
     switch (state.instruction.opcode) {
         case OpCode::WaitUser:
@@ -528,7 +555,7 @@ RuntimeResult ProgramRuntime::pending_complete(RuntimeCommandId command, std::ui
 RuntimeResult ProgramRuntime::pause_still(std::uint32_t now, bool pending_completed,
                                          OpCode wait, std::uint32_t step_reference, bool stop_pumps) {
     if (state.still.paused_id) {
-        assertion_line = 0x1ee; return RuntimeResult::InvalidRuntimeState;
+        Z_RUNTIME_TRY(record_assertion("Runtime.h",0x1ee,"_rtState.stillState.pausedId == RuntimeStillStateId::None",RuntimeResult::InvalidRuntimeState));
     }
     state.still.paused_id = state.still.id;
     if (!pending_completed) Z_RUNTIME_TRY(save_pending(now));
@@ -551,7 +578,7 @@ RuntimeResult ProgramRuntime::progress_still(std::uint32_t now, OpCode completed
     interrupted = false;
     const bool done = completed != OpCode::Noop;
     if (done && completed != state.instruction.opcode) {
-        assertion_line = 0x23b; return RuntimeResult::InvalidPendingInstruction;
+        Z_RUNTIME_TRY(record_assertion("Runtime.h",0x23b,"!pendingCompleted || completed == _rtState.instruction.opCode",RuntimeResult::InvalidPendingInstruction));
     }
     const std::uint32_t id = state.still.id;
     if (id == 1) return RuntimeResult::Ok;
@@ -571,15 +598,15 @@ RuntimeResult ProgramRuntime::progress_still(std::uint32_t now, OpCode completed
     }
     if (id == 4) {
         if (completed != OpCode::WaitT1Rise) {
-            if (!state.still.step_date) { assertion_line = 0x403; return RuntimeResult::UndefinedStillReference; }
+            if (!state.still.step_date) { Z_RUNTIME_TRY(record_assertion("RuntimeState.h",0x403,"isStepDefined()",RuntimeResult::UndefinedStillReference)); }
             if (state.still.step_date + 60000u < now) {
-                if (!state.still.reference_date) { assertion_line = 0x41a; return RuntimeResult::UndefinedStillReference; }
+                if (!state.still.reference_date) { Z_RUNTIME_TRY(record_assertion("RuntimeState.h",0x41a,"isRefDefined()",RuntimeResult::UndefinedStillReference)); }
                 state.still.step_target = (state.still.step_target + 0.5) - observed.scalar_b48;
                 state.still.step_date = now;
             }
             return set_target(state.still.step_target + observed.still_t3);
         }
-        if (!now) { assertion_line = 0x35; return RuntimeResult::ClockWentBackwards; }
+        if (!now) { Z_RUNTIME_TRY(record_assertion("Temperature.h",0x35,"now != 0",RuntimeResult::ClockWentBackwards)); }
         state.still.boil_t3 = observed.still_t3;
         state.still.boil_date = now;
         state.still.boil_scalar_978 = observed.scalar_978;
@@ -600,7 +627,7 @@ RuntimeResult ProgramRuntime::progress_still(std::uint32_t now, OpCode completed
 
 // 0x400e6124. Fans may stop only for an inactive-pump WaitFor at/below threshold.
 RuntimeResult ProgramRuntime::update_fan(double threshold) {
-    if (state.id != RuntimeStateId::Running) { assertion_line = 0x4eb; return RuntimeResult::InvalidRuntimeState; }
+    if (state.id != RuntimeStateId::Running) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x4eb,"RuntimeStateId::Running == _rtState.stateId",RuntimeResult::InvalidRuntimeState)); }
     if (!msp || !msp->state) return RuntimeResult::MissingService;
     const bool off = state.instruction.opcode == OpCode::WaitFor && !(msp->state->pumps & 0x30) &&
                      threshold >= observed.wort_temperature && threshold >= observed.hex_temperature &&

@@ -6,7 +6,7 @@ namespace {
 void configure_output(void*, std::uint8_t pin) { pinMode(pin, OUTPUT); }
 void configure_input(void*, std::uint8_t pin) { pinMode(pin, INPUT); }
 int read_pin(void*, std::uint8_t pin) { return digitalRead(pin); }
-void write_pin(void*, std::uint8_t pin, bool high) { digitalWrite(pin, high ? HIGH : LOW); }
+void IRAM_ATTR write_pin(void*, std::uint8_t pin, bool high) { digitalWrite(pin, high ? HIGH : LOW); }
 void begin(void* context, std::uint8_t address) { static_cast<TwoWire*>(context)->beginTransmission(address); }
 std::size_t write(void* context, std::uint8_t value) { return static_cast<TwoWire*>(context)->write(value); }
 std::uint8_t end(void* context, bool stop) { return static_cast<TwoWire*>(context)->endTransmission(stop); }
@@ -47,23 +47,11 @@ void scan(TwoWire& wire, const std::uint8_t* expected, std::size_t count, BusPre
 
 System::System() : spi(2), sensor_bus(Wire), controller_bus(Wire1) {}
 
-esp_err_t System::setup() {
-    boot_partition = esp_ota_get_boot_partition();
-    running_partition = esp_ota_get_running_partition();
-    factory_partition = esp_partition_find_first(ESP_PARTITION_TYPE_APP, ESP_PARTITION_SUBTYPE_APP_FACTORY, nullptr);
-    // Preserve the order at 0x40112f88, including setters before SPI::begin.
-    spi.setDataMode(0);
-    spi.setFrequency(4000000);
-    spi.begin(17, 5, 16, -1);
-    sensor_bus.begin(22, 23, 400000);
-    controller_bus.begin(25, 26, 400000);
+void System::scan_buses() {
     const std::uint8_t sensor_addresses[] = {0x19, 0x34, 0x76};
     const std::uint8_t controller_addresses[] = {0x40};
     scan(sensor_bus, sensor_addresses, 3, sensors);
     scan(controller_bus, controller_addresses, 1, controller);
-    const esp_err_t initialized = esp_task_wdt_init(45, true);
-    if (initialized != ESP_OK) return initialized;
-    return esp_task_wdt_add(nullptr);
 }
 
 HeaterIo gpio() noexcept { return {nullptr, configure_output, write_pin}; }

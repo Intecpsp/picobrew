@@ -4,11 +4,9 @@ import (
 	"bytes"
 	"context"
 	"crypto/tls"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
 	"io"
-	"math"
 	"net"
 	"net/http"
 	"net/url"
@@ -26,11 +24,13 @@ const maxRequestBytes = 4095
 const maxResponseBytes = 64 << 10
 
 type pico struct {
-	base         *url.URL
-	key          string
-	client       *http.Client
-	gate         chan struct{}
-	capabilities *domain.Capabilities
+	base            *url.URL
+	key             string
+	client          *http.Client
+	gate            chan struct{}
+	capabilities    *domain.Capabilities
+	historyFields   []string
+	historyMetadata map[string]domain.FieldMetadata
 }
 
 var apiKey = regexp.MustCompile(`^[0-9a-fA-F]{64}$`)
@@ -241,31 +241,8 @@ func (p *pico) Status(ctx context.Context) (domain.Status, error) {
 	}
 	defer p.unlock()
 	err := p.request(ctx, http.MethodGet, "/api/v1/status", nil, &result, 200)
-	return result, err
-}
-func (p *pico) Display(ctx context.Context) (domain.Display, error) {
-	var result domain.Display
-	if err := p.lock(ctx); err != nil {
-		return result, err
-	}
-	defer p.unlock()
-	err := p.request(ctx, http.MethodGet, "/api/v1/display", nil, &result, 200)
 	if err == nil {
-		// Older S/Pro responses omit geometry metadata and expose exactly the
-		// visible pages. C SSD1309 retains a larger buffer than its 32-row view.
-		logicalBytes := result.Width * ((result.Height + 7) / 8)
-		storageBytes := result.StorageBytes
-		if storageBytes == 0 {
-			storageBytes = logicalBytes
-		}
-		_, hexErr := hex.DecodeString(result.Data)
-		rotationOK := result.Rotation == nil || *result.Rotation == 0 || *result.Rotation == 2
-		transferOK := result.TransferBytes == 0 || (result.TransferBytes >= logicalBytes && result.TransferBytes <= storageBytes)
-		if result.Width != 128 || (result.Height != 32 && result.Height != 64) ||
-			result.Format != "page-lsb-hex" || !rotationOK || !transferOK ||
-			storageBytes < logicalBytes || storageBytes > 1024 || len(result.Data) != storageBytes*2 || hexErr != nil {
-			err = &Error{Code: "invalid_response", Message: "Device display format is unsupported"}
-		}
+		err = validateRecovery(result.Recovery)
 	}
 	return result, err
 }
@@ -274,6 +251,9 @@ func (p *pico) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 		return nil, err
 	}
 	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
+		return nil, unsupportedCapability("recipes")
+	}
 	var list struct {
 		Recipes []struct {
 			ID string `json:"id"`
@@ -309,6 +289,9 @@ func (p *pico) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) error
 		return err
 	}
 	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
+		return unsupportedCapability("recipes")
+	}
 	for _, step := range recipe.Steps {
 		if step.Minutes != 0 {
 			continue
@@ -346,12 +329,12 @@ func (p *pico) DeleteRecipe(ctx context.Context, id string) error {
 		return err
 	}
 	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
+		return unsupportedCapability("recipes")
+	}
 	return p.request(ctx, http.MethodDelete, "/api/v1/recipes/"+id, nil, nil, 204)
 }
 func (p *pico) Command(ctx context.Context, command domain.Command) error {
-	if err := validateCommand(command); err != nil {
-		return err
-	}
 	if err := p.lock(ctx); err != nil {
 		return err
 	}
@@ -370,6 +353,9 @@ func (p *pico) Command(ctx context.Context, command domain.Command) error {
 	}
 	if !allowed {
 		return &Error{StatusCode: 400, Code: "unsupported_command", Message: "Device did not advertise this command"}
+	}
+	if err := validateDiscoveredCommand(command, *p.capabilities); err != nil {
+		return err
 	}
 	var reply struct {
 		Accepted bool   `json:"accepted"`
@@ -406,6 +392,13 @@ func (p *pico) UpdateSettings(ctx context.Context, settings map[string]any) erro
 		return err
 	}
 	defer p.unlock()
+	if p.capabilities != nil && p.capabilities.SettingsFields != nil {
+		for field := range settings {
+			if !includes(p.capabilities.SettingsFields, field) {
+				return invalid("Device does not advertise the " + field + " preference")
+			}
+		}
+	}
 	return p.request(ctx, http.MethodPatch, "/api/v1/settings", settings, nil, 200)
 }
 func (p *pico) UpdateTelemetry(ctx context.Context, settings map[string]any) error {
@@ -417,65 +410,4 @@ func (p *pico) UpdateTelemetry(ctx context.Context, settings map[string]any) err
 	}
 	defer p.unlock()
 	return p.request(ctx, http.MethodPut, "/api/v1/telemetry", settings, nil, 200)
-}
-func (p *pico) History(ctx context.Context) (domain.History, error) {
-	var result domain.History
-	if err := p.lock(ctx); err != nil {
-		return result, err
-	}
-	defer p.unlock()
-	err := p.request(ctx, http.MethodGet, "/api/v1/history", nil, &result, 200)
-	if err == nil && (!reflect.DeepEqual(result.Fields, historyFields) || len(result.Sessions) > 8) {
-		err = &Error{Code: "invalid_response", Message: "Device history schema is unsupported"}
-	}
-	return result, err
-}
-func (p *pico) HistoryPage(ctx context.Context, id uint64, offset int) ([]domain.Sample, *int, error) {
-	if id == 0 || id > math.MaxUint32 || offset < 0 || offset > 4224 {
-		return nil, nil, invalid("History ID or offset is invalid")
-	}
-	if err := p.lock(ctx); err != nil {
-		return nil, nil, err
-	}
-	defer p.unlock()
-	var reply struct {
-		ID      uint64       `json:"id"`
-		Offset  int          `json:"offset"`
-		Samples [][]*float64 `json:"samples"`
-		Next    *int         `json:"next_offset"`
-	}
-	path := "/api/v1/history/samples/" + strconv.Itoa(offset) + "?id=" + strconv.FormatUint(id, 10)
-	if err := p.request(ctx, http.MethodGet, path, nil, &reply, 200); err != nil {
-		return nil, nil, err
-	}
-	if reply.ID != id || reply.Offset != offset || len(reply.Samples) > 32 || offset+len(reply.Samples) > 4224 || reply.Next != nil && (*reply.Next != offset+len(reply.Samples) || len(reply.Samples) == 0 || *reply.Next > 4224) {
-		return nil, nil, &Error{Code: "invalid_response", Message: "Device history page identity or continuation is invalid"}
-	}
-	result := make([]domain.Sample, 0, len(reply.Samples))
-	for _, row := range reply.Samples {
-		if len(row) != 11 {
-			return nil, nil, &Error{Code: "invalid_response", Message: "Device history row has an invalid field count"}
-		}
-		for _, index := range []int{0, 4, 5, 6, 7, 8, 9, 10} {
-			low, high := float64(0), float64(255)
-			if index == 0 {
-				high = math.MaxUint32
-			} else if index == 4 {
-				low, high = math.MinInt32, math.MaxInt32
-			}
-			if row[index] == nil || math.IsNaN(*row[index]) || math.IsInf(*row[index], 0) || *row[index] != math.Trunc(*row[index]) || *row[index] < low || *row[index] > high {
-				return nil, nil, &Error{Code: "invalid_response", Message: "Device history row has invalid integer fields"}
-			}
-		}
-		for _, index := range []int{1, 2, 3} {
-			if row[index] != nil && (math.IsNaN(*row[index]) || math.IsInf(*row[index], 0) || *row[index] < -3276.7 || *row[index] > 3276.7) {
-				return nil, nil, &Error{Code: "invalid_response", Message: "Device history row has an invalid temperature"}
-			}
-		}
-		if len(result) > 0 && int64(*row[0]) < result[len(result)-1].ElapsedMS {
-			return nil, nil, &Error{Code: "invalid_response", Message: "Device history page elapsed times are not ordered"}
-		}
-		result = append(result, domain.Sample{ElapsedMS: int64(*row[0]), WortF: row[1], ThermoblockF: row[2], TargetF: row[3], StepSeconds: int(*row[4]), Phase: int(*row[5]), ControllerStatus: int(*row[6]), Compartment: int(*row[7]), CurrentStep: int(*row[8]), Flags: int(*row[9]), DeviceState: int(*row[10]), Source: "device"})
-	}
-	return result, reply.Next, nil
 }

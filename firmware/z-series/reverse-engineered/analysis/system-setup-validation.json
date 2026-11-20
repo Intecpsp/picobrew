@@ -1,0 +1,55 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 200,
+  "all_results_match": true,
+  "hardware_tested": false,
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "source_sha256": {
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "src/diagnostics.cpp": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+    "include/zseries/system_setup.hpp": "c10cdb726543faab8f552c05db1a9b3b97980f986b75985ad4786c61a28b0bb8",
+    "src/system_setup.cpp": "0d8915af9849383ba0905be1cfd7a456416081f57666a619330dbcdb1b153cf5",
+    "tests/system_setup_bridge.cpp": "96e17db96abddbd930d33b7b8e8830f6f7efc37935700d898fbfc494fe91dafb",
+    "tools/validate_system_setup.py": "4d4d9263627c888b08dc904ded3c75e87bc4525f5b783cb9c965938ad08f74f5",
+    "tools/ghidra/EmulateSystemSetup.java": "a61678f9eea6b35ce00c0ee2b59870363ddb580ca623ee42b77653ab93f2831d",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  },
+  "golden_fixture_sha256": "6962ba32fd669e6ed3fcea2c7b8bfb505ef473a585ae5a53a870e95b38370cee",
+  "original_execution_jsonl_sha256": "24c7d92b50d264a8eb2289596e43a1697550de4eefd50dd21975ed468f9c48d8",
+  "scope": "Original System setup, console registration and returning assertion-helper instructions. Partition/SPI/I2C/watchdog SDK operations, bus scans, shell allocation/registration, C++ closure lifetime, arithmetic, diagnostic formatting and delay are explicit boundaries. Full ordered effects, assertion counter, float-derived timestamp bits and command descriptors are compared. No actual partition, bus, watchdog, interrupt, console invocation or complete-application execution claim.",
+  "original_functions_executed": {
+    "0x400db014": 320,
+    "0x400f7f48": 200,
+    "0x40112f88": 200
+  },
+  "modeled_boundaries": {
+    "Cxx_temporary_destructor": 1600,
+    "SPI_begin": 200,
+    "SPI_setDataMode": 200,
+    "SPI_setFrequency": 200,
+    "Shell_allocate_System": 200,
+    "Shell_register_child": 200,
+    "Shell_register_command": 1400,
+    "System_scan_buses": 200,
+    "Wire_begin": 400,
+    "__divsf3": 320,
+    "__extendsfdf2": 320,
+    "assertion_log": 320,
+    "delay": 320,
+    "diagnostic_basename": 320,
+    "esp_ota_get_boot_partition": 200,
+    "esp_ota_get_running_partition": 200,
+    "esp_partition_find_first_factory": 200,
+    "esp_task_wdt_add": 200,
+    "esp_task_wdt_init": 200,
+    "millis": 320,
+    "shared_ptr_assign_shell": 200,
+    "single_thread_memw": 800
+  },
+  "original_instruction_sha256": {
+    "0x400db014": "e6e6f2f962eea736bab8b7eaf8359cdee456e5163ea56e53ce50bc6c5ae3dc46",
+    "0x400f7f48": "7252fb9acdc0120914e34443760ca5159b1f8125d9347bb13c4182d2a888bcf5",
+    "0x40112f88": "0b5aeefe9fa8da02fb4810525c58cdf3f40e0bf885adcd555db066d1d7b1a869"
+  }
+}

@@ -18,7 +18,7 @@ modified v1.x source. The self-contained Go/React Hub lives in `server/`.
 The populated S/Pro source folders are under
 [`firmware/pico-s-pro/`](firmware/pico-s-pro/README.md). Its pre-v1 reconstruction
 is an exact 396-file snapshot of commit `ea887709`; its modified source is
-version 1.1.0. Both retain their own build tools, dependency manifests, tests,
+version 1.2.0. Both retain their own build tools, dependency manifests, tests,
 reference fixtures and documentation. The OEM reconstruction's documented
 repairs and validation limits remain attached to that source.
 
@@ -96,8 +96,25 @@ assets are in `firmware/pico-s-pro/modified/firmware/web/`. [Pico C](firmware/pi
 now has recovered C-based standalone builds for explicit SSD1325/SSD1309 variants:
 `make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325` (or `ssd1309`). Both C images
 are software-tested; physical installation and brewing remain unverified. The
-[model registry and identity contract](docs/machine-identity.md) retain planned
-identifiers for other families. Start with the
+[Z](firmware/z-series/modified/README.md),
+[PicoStill](firmware/picostill/modified/README.md) and
+[PicoFerm](firmware/picoferm/modified/README.md) profiles have complete SDK
+source builds and reference packages, using the common authenticated API,
+device browser, history and optional Hub connection. On Linux x86-64:
+
+```sh
+python -m pip install -r firmware/common/requirements-build.txt
+make firmware-bootstrap MODEL=z-series
+make firmware-package MODEL=z-series
+make firmware-test MODEL=z-series
+```
+
+Select `MODEL=picostill` or `MODEL=picoferm` for those models. Bootstrap downloads
+and verifies their pinned dependencies. Packages include explicit reference
+layouts and prepared filesystems; no target connects to or flashes hardware.
+Z1/Z2 compatibility is still unassigned, and Zymatic lacks an original image.
+The [model registry and identity contract](docs/machine-identity.md) describes
+those boundaries. Start with the
 [S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
 entry points. No build or test target flashes a brewer.
 
@@ -145,12 +162,18 @@ supported installation or physical recovery validation.
 
 ## Direction and current support
 
+The [firmware parity matrix](docs/firmware-parity.md) compares the implemented
+S/Pro, C, Z and accessory behavior and records the remaining device evidence.
+
 The goal is custom standalone firmware for Pico C, S/Pro, Z1, Z2, Zymatic and
 other supported machines, using the S/Pro REST API and browser experience as
 the common contract. Each brewer owns its control loop and local operation;
-the Hub is optional. S/Pro and C have implemented standalone source builds and
-Hub adapters. C physical installation/brewing validation remains outstanding;
-the other families are tracked separately and are not claimed as completed ports.
+the Hub is optional. S/Pro, C, generic Z, PicoStill and PicoFerm have implemented
+standalone source builds and Hub adapters. Hardware-specific capabilities
+prevent the accessory profiles from offering brewer-only controls. The latest
+model builds still need physical installation and operating qualification;
+generic Z source does not establish a Z1/Z2 mapping. Zymatic remains blocked
+on an original firmware image and its hardware evidence.
 
 The Hub includes the previously requested offline recipe catalogue and assets.
 No historical Python Zymatic server or unrelated community application is

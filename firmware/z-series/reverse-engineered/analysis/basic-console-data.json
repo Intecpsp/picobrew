@@ -1,0 +1,180 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "original_data": [
+    {
+      "name": "stats_samples",
+      "address": "0x3f41ed88",
+      "bytes": 144,
+      "sha256": "f18a1d1849f8461a9122260390f199f0aa591f127e268f9f814ea8d27b8ae9d3"
+    },
+    {
+      "name": "stable_pressure",
+      "address": "0x3f424108",
+      "bytes": 5144,
+      "sha256": "d23bfe6c1cd576e621fbff81a54aa6630ce41c3727b6c5216dc4c2d8c170bbf0"
+    },
+    {
+      "name": "unstable_pressure",
+      "address": "0x3f423048",
+      "bytes": 4288,
+      "sha256": "063dd358a9a9fde9770f6fb490281365554cc056a184bbcb14239279e7f0094d"
+    },
+    {
+      "name": "stable_t1",
+      "address": "0x3f421958",
+      "bytes": 5872,
+      "sha256": "3745e9e42d170ea4c6672d14d05c07b72a61fa73360c0b7a92f131261fd1cc8a"
+    },
+    {
+      "name": "unstable_t1",
+      "address": "0x3f41ff60",
+      "bytes": 6648,
+      "sha256": "81e4cb13ff338da75e13a13bf9e285d34831ec7f590e09bb119b50ff461eaede"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f40adba",
+      "bytes": 19,
+      "sha256": "ff30276fcf981d05ff7293e862d33c445a4a9e7849a447dcab62a1df9427e2d7"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a507",
+      "bytes": 38,
+      "sha256": "e6e594d0cb43782c1662995a357e9f0c878aa1b0e52d24cafea7be485459998f"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a52d",
+      "bytes": 40,
+      "sha256": "bd967c6eaa0d8caa2fa3b1feea810a44ca17cb564fe380ddd290cb6f5aa4a2ed"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a555",
+      "bytes": 63,
+      "sha256": "8d170453c49230d475449045a8745aaa1fed81557e5f786b4a9dab3702131dd7"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a594",
+      "bytes": 112,
+      "sha256": "19715ada3fdfe60eac4e7622dd74a7c98070e87f890394ff5a13d749c37bd01d"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a604",
+      "bytes": 155,
+      "sha256": "b607c6bd53c7b9594ef1f0c00298c646955a6b364b65e2064f1534bde0a1e5fa"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a69f",
+      "bytes": 38,
+      "sha256": "683ccede03c8344ec976c3860521c7f03d672241f416cf7b3f574eae682bd432"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a6c5",
+      "bytes": 55,
+      "sha256": "04101a4845883c7227a588c4b36ec48956ab739144e620bd4c3f969bd737151a"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a6fc",
+      "bytes": 62,
+      "sha256": "6a44351ddfce518c7fca0c28ede85fc33fbe3868965a4f068e7815fad80f25bb"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a73a",
+      "bytes": 30,
+      "sha256": "be0c0dc0cee20b3c3ab7ce5fd73e92ad9f5ac6f1ead3b171f29ff527e5a76886"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a75f",
+      "bytes": 31,
+      "sha256": "ff1e634a29ea4038889a3df1a470362e85ba5a39ff76cdc61647000debe22fbf"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a758",
+      "bytes": 38,
+      "sha256": "e001c56f8de40392f18d90145efd2d7623dd5dbe3ee1d7da42b33a79d5ca0ff8"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a77e",
+      "bytes": 45,
+      "sha256": "5674d77c72591104a629adb3999d8a3f5defd82882f591726d51a1b4794b8ce8"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a7ab",
+      "bytes": 35,
+      "sha256": "9739d6783eae86479108b1b9a022ee6fc41579cb217c40ff21b3795f7e31d352"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a7ce",
+      "bytes": 49,
+      "sha256": "82bfc9171959a1f8228140a6dfd0e512e9bd850e7f488e37a44f68bdc926ed5d"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a7ff",
+      "bytes": 38,
+      "sha256": "77aa97c2f9aca3f774011468e31ea1943fc12a834c8b55383c57ff06e3e3c0f7"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a825",
+      "bytes": 53,
+      "sha256": "2c3c224e9df71fee24cfb3a45d2aa241e111e3cc9bf8da4e4ec196615bda2533"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f40adef",
+      "bytes": 42,
+      "sha256": "b8f76d57d211aa9c0fe0a862b70fce24b97db1032364d22ddfae459321d25d4a"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a864",
+      "bytes": 9,
+      "sha256": "f9444b42e21d1012d21a2311a636e609ef7fe6aff9ebff2bba8191ed97b42c2f"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a85a",
+      "bytes": 19,
+      "sha256": "fb7cc1f8f612aa2c6e505775be6bf8a173429d1f878abfe222e75f448b7d619f"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a86d",
+      "bytes": 78,
+      "sha256": "e2bc4f1df5557daa4b71608352419bdf81cdafdcc5ee8f005a32a3b7ad9234bb"
+    },
+    {
+      "name": "paragraph",
+      "address": "0x3f41a8bb",
+      "bytes": 96,
+      "sha256": "9d3e223bd1801172878f2435b799f4f6bb74a484135d1a721769ad735049c8c8"
+    },
+    {
+      "name": "writer_binary",
+      "address": "0x3f442569",
+      "bytes": 315,
+      "sha256": "a3068bf5f9e1a3a4d4578bfc94c7171c97f8246e234466a25d671c0dd45c2fc8"
+    }
+  ],
+  "generated_source_sha256": {
+    "src/basic_console_samples.inc": "d718d5f9f3e52e1c7a2fd996fc196414d8cfe9bfbbc5ffbadc7a73452ae7e876",
+    "src/basic_console_paragraphs.inc": "b0e6b903bb3cb9e456dedcb3b82aca2dd253545706c7fcd6b7130de1dbd6ca92",
+    "src/basic_console_binary.inc": "009651f0b84926dc5ced3ff21ae73bd0f3fa9fa26a01f54b076062fe811c7e32"
+  },
+  "scope": "Exact immutable diagnostic inputs; the portable callbacks execute their operations in source. The OEM image is used only by offline extraction and validation."
+}

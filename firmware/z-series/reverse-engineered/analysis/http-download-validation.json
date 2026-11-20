@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 425,
+  "all_results_match": true,
+  "hardware_tested": false,
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "source_sha256": {
+    "include/zseries/http_download.hpp": "2ee689f3ecf7b042cfafc99a07fb8b9557d70c7d22dc033d10e08382154d1d08",
+    "src/http_download.cpp": "77924395751c0a2b0f7bd197b89ee40eb50ce3a8795d85f96ce563e424e8ef58",
+    "include/zseries/http_client.hpp": "62368c63d0c9a8dc5d1e469ffedb452795e90f7fce92d01a285c59dec7352c0c",
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "src/diagnostics.cpp": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+    "tests/http_download_bridge.cpp": "d7ff975ba26350aee7ef5954981a1b49967b3d0eeac1d79a2a81ed43bfc976f6",
+    "tools/validate_http_download.py": "ed107c238c8e2464077904205db2432a2026cceb0105f2751cdbb6db03917c6c",
+    "tools/ghidra/EmulateHttpDownload.java": "edd309a755ec3d269530cf078f595ff698ea5f84fd508e024ca7cf32be83288f",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  },
+  "golden_fixture_sha256": "9646da79a7b657427ca0c2e9c4f9d18ae857ab349fda27000fd50f7b822b8396",
+  "original_execution_jsonl_sha256": "7f7827d1f605007676f7ab355bfb5dc0c97e8aa9836c90412994d23b5f0515bd",
+  "scope": "Original HttpUpdate and DownloadBinary headers/body/completion callbacks through return, including real returning assertion helper. Arduino Update begin/write/end and its error/progress fields, MD5 string lifetime, restart, ROM memcpy/CString comparison, formatted diagnostics, float helpers and time/delay are explicit SDK boundaries. Compares ordered update actions/logs, acceptance, sticky errors, complete flags, received/expected lengths, full binary buffer hash, assertion counter and timestamp bits. Does not flash, restart or validate a partition layout. Null spans and already-corrupt binary indices above 2048 are explicit reconstruction guards outside the equivalence domain.",
+  "original_functions_executed": {
+    "0x400d093c": 75,
+    "0x400d8068": 54,
+    "0x400da534": 142,
+    "0x400da5f0": 142,
+    "0x400db014": 44,
+    "0x400e5c4c": 72,
+    "0x400e5cfc": 48
+  },
+  "modeled_boundaries": {
+    "Arduino_String_destructor": 21,
+    "CString_exact_match": 284,
+    "ESP_restart": 21,
+    "MD5Builder_toString": 21,
+    "ROM_memcpy": 46,
+    "Update_begin": 58,
+    "Update_end": 54,
+    "Update_write": 75,
+    "__divsf3": 455,
+    "__extendsfdf2": 455,
+    "delay": 44,
+    "diagnostic_basename": 326,
+    "formatted_diagnostic": 455,
+    "millis": 553
+  },
+  "original_instruction_sha256": {
+    "0x400d093c": "9b1a7511251b2e7d727b2e2ba883477667576138d29125d322e749c42d8fb157",
+    "0x400d8068": "02d5749d4d3a8271442be7c7d1ba1df464d12d6c4053b1894458cb9c18081924",
+    "0x400da534": "ba8a5c5c7052d8a2bb173460705be2346c941f2fa2b150da1efa3566f7eefe68",
+    "0x400da5f0": "b5cabcb71f9c63d90f73a7ecb7c8c2e4ba8152340ca8f02f7ff37f20170ba872",
+    "0x400db014": "e6e6f2f962eea736bab8b7eaf8359cdee456e5163ea56e53ce50bc6c5ae3dc46",
+    "0x400e5c4c": "c0e6be1785b397cd64c31605a001a02655cbcad0fe52462e3a72bd228ae12955",
+    "0x400e5cfc": "9ce0433c6a9ac3c860e49ccf59f9a60d8ad9de0ef4296f9a7d0a8e70a61ae066"
+  }
+}

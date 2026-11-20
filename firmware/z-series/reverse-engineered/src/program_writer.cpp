@@ -1,4 +1,5 @@
 #include "zseries/program_repository.hpp"
+#include "zseries/program_diagnostics.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -18,7 +19,7 @@ bool integer(double value, std::int32_t& result) noexcept {
 
 // 0x400ec670. Metadata changes follow the same order as the original writer.
 ProgramBuildResult finish_program(ProgramBuffer& buffer, const ProgramParameters& parameters,
-        double pressure, double maximum_temperature, std::uint32_t added_seconds) noexcept {
+        double pressure, double maximum_temperature, std::uint32_t added_seconds,const ConsoleServices* diagnostics) noexcept {
     if (static_cast<std::uint32_t>(parameters.water.unit) > 1) {
         buffer.assertion_line = 0x278; return ProgramBuildResult::InvalidVolume;
     }
@@ -29,9 +30,11 @@ ProgramBuildResult finish_program(ProgramBuffer& buffer, const ProgramParameters
     buffer.stats.heating_rate_celsius_per_minute = rate;
     const auto& program = buffer.record().view;
     buffer.stats.duration_seconds = estimate_instructions_seconds(program.code, program.code_size, false, 0, 0, 12.77, rate);
+    if(diagnostics&&!report_program_estimate(*diagnostics,buffer.record(),rate,buffer.stats.duration_seconds))return ProgramBuildResult::DiagnosticFailure;
     buffer.stats.pressure_pascal = pressure;
     buffer.stats.maximum_temperature_celsius = maximum_temperature;
     buffer.stats.maximum_temperature_added_seconds = added_seconds;
+    if(diagnostics&&!report_program_buffer(*diagnostics,buffer))return ProgramBuildResult::DiagnosticFailure;
     return ProgramBuildResult::Ok;
 }
 

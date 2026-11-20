@@ -1,0 +1,521 @@
+{
+  "schema_version": 1,
+  "machine": "picostill",
+  "source_repository": "https://github.com/chiefwigms/picobrew_pico",
+  "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+  "images": [
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 709472,
+      "sha256": "f68f6d9082ca3d60568221d4badc8d3e4cf762fadb3e9b9425c5dbb8efaf635f",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074278868,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 203772,
+          "memory_kind": "DROM",
+          "sha256": "5ec5406523636e70cc99d03d723a736ba7c2c4f2dd257cdb1802033aab7c220d"
+        },
+        {
+          "index": 1,
+          "header_offset": 203804,
+          "file_offset": 203812,
+          "load_address": 1073479680,
+          "size_bytes": 12968,
+          "memory_kind": "DRAM",
+          "sha256": "2af21c8cb369f0b61928285b47767af7fa5248e6e8aac14c9f4afa52632499a0"
+        },
+        {
+          "index": 2,
+          "header_offset": 216780,
+          "file_offset": 216788,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "d6c3083e2ee07175001317ddbbaf4509a27959f06bac18af814f0ee8e89be76b"
+        },
+        {
+          "index": 3,
+          "header_offset": 217812,
+          "file_offset": 217820,
+          "load_address": 1074267136,
+          "size_bytes": 44340,
+          "memory_kind": "IRAM",
+          "sha256": "136a674d77b3643db24fd2c77cc3500ede0b6f8771e3cbfdaa2f7ea02f681387"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 414620,
+          "memory_kind": "IROM",
+          "sha256": "7f9d785b205d7bbfe445e1ecc8a8aa3881150b660f44368d07528139ac18c621"
+        },
+        {
+          "index": 5,
+          "header_offset": 676788,
+          "file_offset": 676796,
+          "load_address": 1074311476,
+          "size_bytes": 32532,
+          "memory_kind": "IRAM",
+          "sha256": "3061809d53917cec804cf141385a608e02a0d30896eb7d1e8630a6ef1bb555fd"
+        },
+        {
+          "index": 6,
+          "header_offset": 709328,
+          "file_offset": 709336,
+          "load_address": 1074528256,
+          "size_bytes": 100,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "137ad95a7bff998e53c19864ca42a27ab327e43890c02af5a9a2afecf7faf2b7"
+        }
+      ],
+      "checksum_offset": 709439,
+      "checksum": 242,
+      "checksum_verified": true,
+      "appended_sha256": "5a6aad091ee139963bf6e58e1184f0f9cc0455acc07821c8146090bab217c35e",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_30.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_30.bin"
+    },
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 709616,
+      "sha256": "be0c132d3182764db205123f479eef72486f68efaddd95e36cdac6d22cdf8b26",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074278868,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 203856,
+          "memory_kind": "DROM",
+          "sha256": "881de03b26153e11859017ccb1bf557cc11d361ed41b653991b5f63b3266c0fa"
+        },
+        {
+          "index": 1,
+          "header_offset": 203888,
+          "file_offset": 203896,
+          "load_address": 1073479680,
+          "size_bytes": 12968,
+          "memory_kind": "DRAM",
+          "sha256": "bdfca4f16135d57a949e2e13cfb111165ae724bf2506f2de41922b768bf39516"
+        },
+        {
+          "index": 2,
+          "header_offset": 216864,
+          "file_offset": 216872,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "d6c3083e2ee07175001317ddbbaf4509a27959f06bac18af814f0ee8e89be76b"
+        },
+        {
+          "index": 3,
+          "header_offset": 217896,
+          "file_offset": 217904,
+          "load_address": 1074267136,
+          "size_bytes": 44256,
+          "memory_kind": "IRAM",
+          "sha256": "cf4d5f8b346eb3dea088364c3d3f6183241d106167bd1d38fa71f3079462774e"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 414680,
+          "memory_kind": "IROM",
+          "sha256": "646cfc3b28c7a7d27f8a32ef707f74a03d324529493431800ea079fd541b00bd"
+        },
+        {
+          "index": 5,
+          "header_offset": 676848,
+          "file_offset": 676856,
+          "load_address": 1074311392,
+          "size_bytes": 32616,
+          "memory_kind": "IRAM",
+          "sha256": "58eb664c3c7101a54564d7836473b5450083a26982cd1bc4e45e23c96b7bb9b0"
+        },
+        {
+          "index": 6,
+          "header_offset": 709472,
+          "file_offset": 709480,
+          "load_address": 1074528256,
+          "size_bytes": 100,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "137ad95a7bff998e53c19864ca42a27ab327e43890c02af5a9a2afecf7faf2b7"
+        }
+      ],
+      "checksum_offset": 709583,
+      "checksum": 191,
+      "checksum_verified": true,
+      "appended_sha256": "5acfbda0f233cde8869661a10beb6621ab93c95388cb92dcfdbab3699cda7a6a",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_31.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_31.bin"
+    },
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 709616,
+      "sha256": "8c9c2c430a1ca3d11a7c6def809ae7a960239e6564a588211a15777fe22ca492",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074278868,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 203860,
+          "memory_kind": "DROM",
+          "sha256": "863212b19e69017d01fd27e35266f725d8d810a24a17c722c1e748ec64da69cc"
+        },
+        {
+          "index": 1,
+          "header_offset": 203892,
+          "file_offset": 203900,
+          "load_address": 1073479680,
+          "size_bytes": 12968,
+          "memory_kind": "DRAM",
+          "sha256": "84a77295938b844fcdfc693f8e3870c982d7a97e7385361350285a48fa465f63"
+        },
+        {
+          "index": 2,
+          "header_offset": 216868,
+          "file_offset": 216876,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "d6c3083e2ee07175001317ddbbaf4509a27959f06bac18af814f0ee8e89be76b"
+        },
+        {
+          "index": 3,
+          "header_offset": 217900,
+          "file_offset": 217908,
+          "load_address": 1074267136,
+          "size_bytes": 44252,
+          "memory_kind": "IRAM",
+          "sha256": "34c5ca3324d9da8459a9732c88ca8e06784442fe96883d35ba29124b8e94f66e"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 414668,
+          "memory_kind": "IROM",
+          "sha256": "f9c82266f44dd4d80445c7556686aa0036e28be4423d7c33ad6ebebe56df63a3"
+        },
+        {
+          "index": 5,
+          "header_offset": 676836,
+          "file_offset": 676844,
+          "load_address": 1074311388,
+          "size_bytes": 32620,
+          "memory_kind": "IRAM",
+          "sha256": "16371544126db0e95bfd09102d9e1d6800479d0937439b0102ad07f2ddc6ffb4"
+        },
+        {
+          "index": 6,
+          "header_offset": 709464,
+          "file_offset": 709472,
+          "load_address": 1074528256,
+          "size_bytes": 100,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "137ad95a7bff998e53c19864ca42a27ab327e43890c02af5a9a2afecf7faf2b7"
+        }
+      ],
+      "checksum_offset": 709583,
+      "checksum": 81,
+      "checksum_verified": true,
+      "appended_sha256": "d2dfcfdf234a0c6f900bc5bc803d7686dd4eec848b7d2d5f0e837fa18830f5a1",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_32.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_32.bin"
+    },
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 829920,
+      "sha256": "3dedd43140b13535f8fd5b2c407759df2fbebcb052184f19e5ba924608d6512c",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074280132,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 229672,
+          "memory_kind": "DROM",
+          "sha256": "bd1a4cb4ac2fdbaac1a62f04cc9495da80d6dbdd6d90fd669a4f2d09f142fbab"
+        },
+        {
+          "index": 1,
+          "header_offset": 229704,
+          "file_offset": 229712,
+          "load_address": 1073470304,
+          "size_bytes": 13484,
+          "memory_kind": "DRAM",
+          "sha256": "985b2a5553983eaf4c1266b0979fd2bedbe4db837ca78894c91ae99550668697"
+        },
+        {
+          "index": 2,
+          "header_offset": 243196,
+          "file_offset": 243204,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "e745332b870f4ff686bcd90ded4f9300a7fc699539e9c54b0b47eda764438050"
+        },
+        {
+          "index": 3,
+          "header_offset": 244228,
+          "file_offset": 244236,
+          "load_address": 1074267136,
+          "size_bytes": 17924,
+          "memory_kind": "IRAM",
+          "sha256": "c5b1574d62b86572e588c5e36757735e5f9fe45f3d91310b56b7400754e46672"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 503152,
+          "memory_kind": "IROM",
+          "sha256": "f5dd614f694b618c9608acce79069103c8e1fe3f73a873a04728f92ff20e0cda"
+        },
+        {
+          "index": 5,
+          "header_offset": 765320,
+          "file_offset": 765328,
+          "load_address": 1074285060,
+          "size_bytes": 64428,
+          "memory_kind": "IRAM",
+          "sha256": "3a6d770d65545940caabe3ae274be282cabfc9a988397cf156999b7ba783dd40"
+        },
+        {
+          "index": 6,
+          "header_offset": 829756,
+          "file_offset": 829764,
+          "load_address": 1074528256,
+          "size_bytes": 108,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "01bb5e7640b801129e09e35e1322e140a086871300fb9bb780c6e32b25757c9e"
+        }
+      ],
+      "checksum_offset": 829887,
+      "checksum": 118,
+      "checksum_verified": true,
+      "appended_sha256": "1e3756750d0ed3de66537f6a39ddd403cacf200fb2b14785dd0ecdd5f7c3fb05",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_33.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_33.bin"
+    },
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 834080,
+      "sha256": "69448a4290ea617623f2b888df065566b3f3baf22ff8d19d5360649592755377",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074280184,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 233440,
+          "memory_kind": "DROM",
+          "sha256": "d52312284414f726e88ea1ec3eb786d1e1619c59cb73ff18847d753852437dd9"
+        },
+        {
+          "index": 1,
+          "header_offset": 233472,
+          "file_offset": 233480,
+          "load_address": 1073470304,
+          "size_bytes": 13564,
+          "memory_kind": "DRAM",
+          "sha256": "4fcd46395fe3416bff649984e26b23c23911f69812a1cc0a5de9e62974a996b1"
+        },
+        {
+          "index": 2,
+          "header_offset": 247044,
+          "file_offset": 247052,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "56df636d26b0bd663d084080cf1ba920feb28c3695913c9f4c8aac337a658888"
+        },
+        {
+          "index": 3,
+          "header_offset": 248076,
+          "file_offset": 248084,
+          "load_address": 1074267136,
+          "size_bytes": 14076,
+          "memory_kind": "IRAM",
+          "sha256": "76f1e560be43d83b2a8700fe8e796a2ec8a29a7b38b6c5d5b06149e3b8c9ac65"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 504020,
+          "memory_kind": "IROM",
+          "sha256": "3878759c4b2522516cd7b513d1f8dd8e0a6be2c0e0e2643e390f7f1d911d1a42"
+        },
+        {
+          "index": 5,
+          "header_offset": 766188,
+          "file_offset": 766196,
+          "load_address": 1074281212,
+          "size_bytes": 67720,
+          "memory_kind": "IRAM",
+          "sha256": "cffa545857c53c10c28ccfebb2276e139b7056ab54025294959e00bc790496ad"
+        },
+        {
+          "index": 6,
+          "header_offset": 833916,
+          "file_offset": 833924,
+          "load_address": 1074528256,
+          "size_bytes": 108,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "01bb5e7640b801129e09e35e1322e140a086871300fb9bb780c6e32b25757c9e"
+        }
+      ],
+      "checksum_offset": 834047,
+      "checksum": 126,
+      "checksum_verified": true,
+      "appended_sha256": "40737c46c63500173efb7cea3fc3dea6556b09f320940caccc2b49c67115390d",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_34.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_34.bin"
+    },
+    {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 837440,
+      "sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+      "segment_count": 7,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 47,
+      "entry_address": 1074280184,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 235680,
+          "memory_kind": "DROM",
+          "sha256": "34b2c6861c62a89b5a97fd9d9208042230de480d4c59546e66784c7636160b05"
+        },
+        {
+          "index": 1,
+          "header_offset": 235712,
+          "file_offset": 235720,
+          "load_address": 1073470304,
+          "size_bytes": 13564,
+          "memory_kind": "DRAM",
+          "sha256": "6d812181bb188d56fa70dc1e2d60e6239467131851d45d73c2bbae3de7443c63"
+        },
+        {
+          "index": 2,
+          "header_offset": 249284,
+          "file_offset": 249292,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "56df636d26b0bd663d084080cf1ba920feb28c3695913c9f4c8aac337a658888"
+        },
+        {
+          "index": 3,
+          "header_offset": 250316,
+          "file_offset": 250324,
+          "load_address": 1074267136,
+          "size_bytes": 11836,
+          "memory_kind": "IRAM",
+          "sha256": "03d9dd1eb09c30ede385ca24539c045d37b17c77b6c1eacc725a41771bc08737"
+        },
+        {
+          "index": 4,
+          "header_offset": 262160,
+          "file_offset": 262168,
+          "load_address": 1074593816,
+          "size_bytes": 505144,
+          "memory_kind": "IROM",
+          "sha256": "c1313ecd8cba11e988fad59a5fa43000be20234f62000eb7e9c3544ada9dabec"
+        },
+        {
+          "index": 5,
+          "header_offset": 767312,
+          "file_offset": 767320,
+          "load_address": 1074278972,
+          "size_bytes": 69960,
+          "memory_kind": "IRAM",
+          "sha256": "6b2dbeee2b33f00d89b60bf73931f7c250c7da12f7e733665c19732136867182"
+        },
+        {
+          "index": 6,
+          "header_offset": 837280,
+          "file_offset": 837288,
+          "load_address": 1074528256,
+          "size_bytes": 108,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "01bb5e7640b801129e09e35e1322e140a086871300fb9bb780c6e32b25757c9e"
+        }
+      ],
+      "checksum_offset": 837407,
+      "checksum": 35,
+      "checksum_verified": true,
+      "appended_sha256": "7c7d797e942aa907589ea6a30e6ae88334e4722ff61b2675dea577ca0ec349fd",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "input": "picostill_0_0_35.bin",
+      "source_path": "app/firmware/picostill/picostill_0_0_35.bin"
+    }
+  ],
+  "flash_layout_established": false,
+  "hardware_tested": false,
+  "scope": "Complete image-container checks and virtual mappings. No bootloader/partition/flashing compatibility claim."
+}

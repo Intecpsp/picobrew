@@ -25,11 +25,15 @@ transaction would change the original behavior.
 
 The request path first sets all four raw channels to `-1`. Only an exact
 eight-byte reply is decoded. Each pair is big endian and masked with `0xfff`.
-A negative byte read triggers an OEM assertion; the typed adapter reports
-`ReadFailure` at that channel and the acquisition caller publishes no partial
-read. Short replies likewise leave previously published temperatures and
-timestamps untouched, allowing the existing stale-input checks to observe
-the loss of data.
+A negative byte read triggers a returning OEM assertion. With the production
+diagnostic sink bound, the adapter logs it, increments the diagnostic counter,
+delays 200 ms and continues decoding all four channels. The masked result may
+still be a valid raw value and therefore reach temperature publication. The
+owned `ReadFailure` status records the event without stopping later Core
+services. A short reply logs its expected/actual counts and leaves previously
+published temperatures and timestamps untouched, allowing the existing
+stale-input checks to observe the loss of data. Core continues after this
+nonfatal result as well.
 
 Hex uses calibration type 0 for Big and 3 for Small. Wort and Drain use type 1;
 Ambient uses type 2. Raw values 15 through 4094 alone reach the conversion and
@@ -40,11 +44,16 @@ divides by the number received; once full it removes the overwritten sample
 before adding the new one. A gap **strictly greater than 2,000 ms** resets
 the ring index, count, sum, average and result timestamp, but does not clear
 old sample bytes. Elapsed time uses unsigned subtraction. A previous timestamp
-of zero disables that particular gap test.
+of zero disables that particular gap test. Production diagnostics preserve the
+additional clock sample and `NoiseSmoother.h:0x6e` warning before an expired
+frame is reset.
 
 Core publication uses the Core tick's `now` argument. The smoother obtains a
 separate `millis()` value for each valid channel. The typed interface preserves
-this distinction with `tick_ms` and `AcquisitionClock`.
+this distinction with `tick_ms` and `AcquisitionClock`. A zero Core timestamp
+is asserted **after** smoothing each valid channel. The helper returns, and
+that channel is still published with timestamp zero. Its 200 ms delay affects
+the clock sampled for later channels.
 
 ## Validation
 
@@ -57,10 +66,24 @@ Portable tests retain 164 scenarios. GPIO and real sensors were not exercised.
 `EmulateAcquisition.java` executes the original ADC and smoother instructions,
 including nested application calls, with explicit Wire, clock, compiler
 arithmetic and diagnostic boundaries. It rejects unknown calls, assertions
-and unmodeled hardware loops. The Core publication loop itself is manually
-traced at `0x40120120`; it is not counted among these executed bodies.
-Nonfinite samples, malformed owned smoother state, missing callbacks and a
-zero publication time are explicit adapter rejections tested separately.
+and unmodeled hardware loops. Those historical cases alone do not execute the
+Core publication loop or any returning assertion.
+
+The additional `adc-continuation-validation.json` records **255 complete
+original comparisons**, including **206 executions of Core::tick** and
+**597 executions of the real assertion helper**. It executes the ADC,
+thermistor and smoother callees and checks the subsequent ordered Core
+services through the caller's return. All **13,260 binary64 fields** match
+exactly in the recorded environment. Other Core services, Wire, SDK clock,
+delay, printf, compiler arithmetic and logarithm remain explicit boundaries;
+this is not a complete hardware or RTOS emulation. The complete compressed
+fixture is retained, with OEM function byte ranges and input/source hashes.
+
+The old data-only API remains available without a diagnostic sink: it rejects
+negative byte reads and zero publication time. These guarded calls are not
+claimed as full OEM continuation. Nonfinite samples, malformed owned smoother
+state and missing callbacks also remain explicit adapter rejections. Production
+Core binds the sink and uses the continuation path.
 
 ```sh
 python3 tools/validate_acquisition.py --prepare-input build/acquisition-input.json

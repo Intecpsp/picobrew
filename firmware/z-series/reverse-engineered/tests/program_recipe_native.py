@@ -8,7 +8,7 @@ import subprocess
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-SOURCES = ["program_recipe", "program_repository", "program_catalog", "program_writer",
+SOURCES = ["program_diagnostics", "enums", "program_recipe", "program_repository", "program_catalog", "program_writer",
            "program_runtime", "program_runtime_execution", "runtime_instruction", "quantity"]
 
 

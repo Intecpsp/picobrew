@@ -106,6 +106,11 @@ func adaptNative(r domain.Recipe, profile, builtIn domain.Profile, batchLiters f
 	if r.Provenance != nil {
 		plan.Warnings = append(plan.Warnings, r.Provenance.Warnings...)
 	}
+	if r.SourceModel == "z" || r.SourceModel == "zymatic" {
+		plan.Profile.ControlSupported = false
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, "Archived Z/Zymatic programs use locations 0–5 for valves 1–6 and location 6 for a pause. The standalone Z API uses direct valve locations 1–6; an explicit reviewed conversion is required. The source program is retained for reference and export.")
+		return plan, nil
+	}
 	if !nativeModelMatches(r.SourceModel, profile.ID) {
 		plan.DeploymentBlockers = append(plan.DeploymentBlockers, fmt.Sprintf("Native %s routing cannot be used on %s; the exact source schedule is retained for reference.", r.SourceModel, profile.ID))
 		return plan, nil

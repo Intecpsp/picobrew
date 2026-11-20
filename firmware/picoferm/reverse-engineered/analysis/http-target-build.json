@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-lx106-elf-g++ (crosstool-NG 1.20.0) 4.8.2",
+  "compiler_sha256": "9090ec97ab7bc6d9cd3a1cb47b5899e05ecce8f83a7300efb868e491367bb5ec",
+  "flags": [
+    "-std=c++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-mlongcalls",
+    "-mtext-section-literals",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-falign-functions=4",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-D__ets__",
+    "-DICACHE_FLASH",
+    "-U__STRICT_ANSI__",
+    "-DESP8266",
+    "-DARDUINO_ARCH_ESP8266",
+    "-DARDUINO=10805",
+    "-DF_CPU=80000000L"
+  ],
+  "sources": [
+    {
+      "source": "src/http.cpp",
+      "source_sha256": "3177c643e6db99652c339f2cbfad82fa85277febc690799c469d466f8867ef19",
+      "object_sha256": "d789356bf14cd83a940c3256076503527297effb9e04c0cd205e9feee65b909d",
+      "object_bytes": 18284
+    },
+    {
+      "source": "src/http_server.cpp",
+      "source_sha256": "c2f9caaed4a7025a94bd5cb4524656f2c226ec333e28f4dfe1c0964cbc2516f5",
+      "object_sha256": "d4c6f625d3a0e19615c35bf12600a27745d30e430ce5bff8a3f55732a7e07d22",
+      "object_bytes": 43056
+    },
+    {
+      "source": "platform/esp8266/http_ports.cpp",
+      "source_sha256": "3352828a701e0e11addeb066d1f6a8a30d03d5dd8fae5a324093224eedd9e55b",
+      "object_sha256": "9e12ae0eccd1f8bdd969a4878e49f753b458a4f768aee7088a356b7bd09c1561",
+      "object_bytes": 18872
+    }
+  ],
+  "headers": {
+    "include/picoferm/http.hpp": "6c1a8ea6f65b1bdcfa0d93dedcd4f8a3d0b21bd4e1e981c2bb31e81d85a0c29e",
+    "include/picoferm/http_server.hpp": "eff129d5af3da5570c0fd5fbf1523cb138f16061ff4a6438e274bad5ef895522",
+    "platform/esp8266/http_ports.hpp": "a32a27abd4e6f0945268c1e868a8ba65fbe4b155b243278b52f959de37ae1a8f",
+    "src/http_assets.inc": "fefe7a17f944409045b8ec4979bd4a69434c95c3da78e366276043d31266688e"
+  },
+  "sdk": {
+    "libraries/DNSServer/src/DNSServer.h": "b41d7ddd5db3b3eff6a27adf21f5365dda4fe606a4b36e79850c613a9dfecea5",
+    "libraries/DNSServer/src/DNSServer.cpp": "b835a304e826e40204e20178cb5136e5872ffcd668ef5c3904321d732740d43e",
+    "libraries/ESP8266WiFi/src/WiFiClient.h": "3cb761a03cc8bc71902aac5908fb1c6ebd38d04f577f04aa44d2e60918fa7685",
+    "libraries/ESP8266WiFi/src/WiFiClient.cpp": "906dccd2d8e49a461bae3d25309b9c9f702a76ff5ab0ece2b53039bb6f394e4f",
+    "libraries/ESP8266WiFi/src/WiFiServer.h": "a737155dbbf9a78da52b44d502ca04db818f8f3713312d2ea14b501785f91254",
+    "libraries/ESP8266WiFi/src/WiFiServer.cpp": "c54f8d525abcf5c99fa7fa51e3ccb86ea487d3b1c253ddc5dc72050ee39945c1",
+    "cores/esp8266/pgmspace.h": "52178aab44a78d13ac274fe577ea2734ab85ca9e971657de4ae4d9f2f3dad469"
+  },
+  "build_script_sha256": "d5e80395edcf42cf2f969701edfe193a50e99886608197fbf66ae9a7d20d1875",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Three real HTTP modules compiled with pinned Xtensa LX106 GCC4.8.2 and Arduino ESP8266 2.4.1; application/SDK link and physical qualification remain separate evidence."
+}

@@ -33,7 +33,7 @@ bool perform(void* p,const HeadNetworkAction& action){
 extern "C" unsigned head_network_test(const Word* args,const Word* state,const Word* payload,Word* result,Word* effects){
     ProgramParameters parameters;read_parameters(state,parameters);HeadNetworkEvents head(parameters);
     head.core=static_cast<CoreStateId>(args[1]);head.language=static_cast<LanguageType>(args[2]);
-    std::vector<Word> actions;head.services.context=&actions;head.services.perform=perform;
+    std::vector<Word> actions;head.services.context=&actions;head.services.perform=perform;head.services.assertion=[](void*,Word){return true;};
     HeadNetworkResult status;
     if(args[0]==0){CoreWifiEvent event;event.type=static_cast<WifiEventType>(args[3]);event.argument=args[4];event.second_argument=args[5];status=head.wifi(event);}
     else{HeadAzureEvent event;event.type=static_cast<AzureEventType>(args[3]);event.program=static_cast<ZProgramId>(args[4]);read_parameters(payload,event.parameters);status=head.azure(event);}

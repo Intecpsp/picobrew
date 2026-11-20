@@ -1,0 +1,849 @@
+{
+  "schema_version": 1,
+  "input": "picostill_0_0_35.bin",
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "scope": "Original lookup labels and unsigned bounds, manually reviewed against instruction exports. Names are owned copies; no absolute addresses are used at runtime.",
+  "enums": [
+    {
+      "name": "ProgramId",
+      "count": 9,
+      "table_address": 1061235796,
+      "evidence_function": 1074603772,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061225559,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "PumpTest",
+          "text": "PumpTest",
+          "string_address": 1061234512,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "HardwareTest",
+          "text": "HardwareTest",
+          "string_address": 1061234521,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "PinTest",
+          "text": "PinTest",
+          "string_address": 1061165011,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "FullTest",
+          "text": "FullTest",
+          "string_address": 1061234534,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Cleaning",
+          "text": "Cleaning",
+          "string_address": 1061234581,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "PicoEssentialOils",
+          "text": "PicoEssentialOils",
+          "string_address": 1061234543,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "PicoManual",
+          "text": "PicoManual",
+          "string_address": 1061234561,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "RequestedCleaning",
+          "text": "RequestedCleaning",
+          "string_address": 1061234572,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "StillError",
+      "count": 21,
+      "table_address": 1061235712,
+      "evidence_function": 1074603796,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061225559,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "UnhandledError",
+          "text": "UnhandledError",
+          "string_address": 1061233898,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "WifiSsidNotFound",
+          "text": "WifiSsidNotFound",
+          "string_address": 1061233913,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "WifiInvalidCredentials",
+          "text": "WifiInvalidCredentials",
+          "string_address": 1061233930,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "WifiConnectingTimeout",
+          "text": "WifiConnectingTimeout",
+          "string_address": 1061233953,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "WifiNoInternet",
+          "text": "WifiNoInternet",
+          "string_address": 1061233975,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "FanFailure",
+          "text": "FanFailure",
+          "string_address": 1061233990,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "SensorOutOfRange",
+          "text": "SensorOutOfRange",
+          "string_address": 1061234001,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "SensorFailure",
+          "text": "SensorFailure",
+          "string_address": 1061234018,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "PressureLeak",
+          "text": "PressureLeak",
+          "string_address": 1061234032,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "NoVacuumSeal",
+          "text": "NoVacuumSeal",
+          "string_address": 1061234045,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "PumpClogged",
+          "text": "PumpClogged",
+          "string_address": 1061234058,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "HardwareNotConnected",
+          "text": "HardwareNotConnected",
+          "string_address": 1061234191,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "SensorConnectionWrong",
+          "text": "SensorConnectionWrong",
+          "string_address": 1061234070,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "FanConnectionWrong",
+          "text": "FanConnectionWrong",
+          "string_address": 1061234092,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "PressureLeak_HardwareNotConnected",
+          "text": "PressureLeak_HardwareNotConnected",
+          "string_address": 1061234111,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "NoVacuumSeal_HardwareNotConnected",
+          "text": "NoVacuumSeal_HardwareNotConnected",
+          "string_address": 1061234145,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "PumpClogged_HardwareNotConnected",
+          "text": "PumpClogged_HardwareNotConnected",
+          "string_address": 1061234179,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "PressureLeak_ConnectionWrong",
+          "text": "PressureLeak_ConnectionWrong",
+          "string_address": 1061234212,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "NoVacuumSeal_ConnectionWrong",
+          "text": "NoVacuumSeal_ConnectionWrong",
+          "string_address": 1061234241,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "PumpClogged_ConnectionWrong",
+          "text": "PumpClogged_ConnectionWrong",
+          "string_address": 1061234270,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "StillState",
+      "count": 14,
+      "table_address": 1061235644,
+      "evidence_function": 1074609992,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061233269,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "WaitingSsid",
+          "text": "WaitingSsid",
+          "string_address": 1061233877,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Configuring",
+          "text": "Configuring",
+          "string_address": 1061234405,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "CheckingUpdate",
+          "text": "CheckingUpdate",
+          "string_address": 1061234417,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Updating",
+          "text": "Updating",
+          "string_address": 1061233889,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "WaitingPico",
+          "text": "WaitingPico",
+          "string_address": 1061232906,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Connecting",
+          "text": "Connecting",
+          "string_address": 1061233334,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Ready",
+          "text": "Ready",
+          "string_address": 1061234506,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "ManualProgramSelect",
+          "text": "ManualProgramSelect",
+          "string_address": 1061234432,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "ProgramRunning",
+          "text": "ProgramRunning",
+          "string_address": 1061165823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "ProgramCompleted",
+          "text": "ProgramCompleted",
+          "string_address": 1061234452,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "ErrorPending",
+          "text": "ErrorPending",
+          "string_address": 1061234469,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "ErrorSending",
+          "text": "ErrorSending",
+          "string_address": 1061234482,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "Error",
+          "text": "Error",
+          "string_address": 1061225465,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "PumpTestState",
+      "count": 6,
+      "table_address": 1061235620,
+      "evidence_function": 1074612840,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Starting",
+          "text": "Starting",
+          "string_address": 1061234309,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "CheckingVacuumSeal",
+          "text": "CheckingVacuumSeal",
+          "string_address": 1061234318,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "CheckingClog",
+          "text": "CheckingClog",
+          "string_address": 1061234337,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "CheckingLeak",
+          "text": "CheckingLeak",
+          "string_address": 1061234350,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Evaluating",
+          "text": "Evaluating",
+          "string_address": 1061234363,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Done",
+          "text": "Done",
+          "string_address": 1061225589,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "HWState",
+      "count": 9,
+      "table_address": 1061235832,
+      "evidence_function": 1074620936,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Off",
+          "text": "Off",
+          "string_address": 1061233757,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "On",
+          "text": "On",
+          "string_address": 1061233764,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "CondenserOutputOverTemp",
+          "text": "CondenserOutputOverTemp",
+          "string_address": 1061234590,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "PumpOff",
+          "text": "PumpOff",
+          "string_address": 1061234614,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Cleaning",
+          "text": "Cleaning",
+          "string_address": 1061234581,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "PumpTest",
+          "text": "PumpTest",
+          "string_address": 1061234512,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "HardwareTest",
+          "text": "HardwareTest",
+          "string_address": 1061234521,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "PinTest",
+          "text": "PinTest",
+          "string_address": 1061165011,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "FullTest",
+          "text": "FullTest",
+          "string_address": 1061234534,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "EventType",
+      "count": 3,
+      "table_address": 1061235700,
+      "evidence_function": 1074613296,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Error",
+          "text": "Error",
+          "string_address": 1061225465,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "AccessPointReady",
+          "text": "AccessPointReady",
+          "string_address": 1061234495,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Connected",
+          "text": "Connected",
+          "string_address": 1061165844,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "WifiState",
+      "count": 10,
+      "table_address": 1061235112,
+      "evidence_function": 1074618276,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061233269,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061232515,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Scanning",
+          "text": "Scanning",
+          "string_address": 1061233277,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "AccessPoint",
+          "text": "AccessPoint",
+          "string_address": 1061233286,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "AccessPointDisconnecting",
+          "text": "AccessPointDisconnecting",
+          "string_address": 1061233298,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "PoweringUp",
+          "text": "PoweringUp",
+          "string_address": 1061233323,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Connecting",
+          "text": "Connecting",
+          "string_address": 1061233334,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Checking",
+          "text": "Checking",
+          "string_address": 1061233345,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Connected",
+          "text": "Connected",
+          "string_address": 1061165844,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Disconnecting",
+          "text": "Disconnecting",
+          "string_address": 1061233309,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "Animation",
+      "count": 39,
+      "table_address": 1061235464,
+      "evidence_function": 1074617788,
+      "values": [
+        {
+          "value": 0,
+          "identifier": "AllOff",
+          "text": "AllOff",
+          "string_address": 1061233754,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "AllOn",
+          "text": "AllOn",
+          "string_address": 1061233761,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "SteadyGreen",
+          "text": "SteadyGreen",
+          "string_address": 1061233767,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "SteadyYellow",
+          "text": "SteadyYellow",
+          "string_address": 1061233779,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "SteadyRed",
+          "text": "SteadyRed",
+          "string_address": 1061233792,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "FastGreen",
+          "text": "FastGreen",
+          "string_address": 1061233802,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "FastYellow",
+          "text": "FastYellow",
+          "string_address": 1061233812,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "FastRed",
+          "text": "FastRed",
+          "string_address": 1061233823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "SlowGreen",
+          "text": "SlowGreen",
+          "string_address": 1061233831,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "SlowYellow",
+          "text": "SlowYellow",
+          "string_address": 1061233841,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "SlowRed",
+          "text": "SlowRed",
+          "string_address": 1061233852,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "Busy",
+          "text": "Busy",
+          "string_address": 1061233860,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "BusyRolling",
+          "text": "BusyRolling",
+          "string_address": 1061233865,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061233269,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "WaitingSsid",
+          "text": "WaitingSsid",
+          "string_address": 1061233877,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "Updating",
+          "text": "Updating",
+          "string_address": 1061233889,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "WaitingPico",
+          "text": "WaitingPico",
+          "string_address": 1061232906,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "Ready",
+          "text": "Ready",
+          "string_address": 1061234506,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "ProgramRunning",
+          "text": "ProgramRunning",
+          "string_address": 1061165823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "UnhandledError",
+          "text": "UnhandledError",
+          "string_address": 1061233898,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "WifiSsidNotFound",
+          "text": "WifiSsidNotFound",
+          "string_address": 1061233913,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "WifiInvalidCredentials",
+          "text": "WifiInvalidCredentials",
+          "string_address": 1061233930,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "WifiConnectingTimeout",
+          "text": "WifiConnectingTimeout",
+          "string_address": 1061233953,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "WifiNoInternet",
+          "text": "WifiNoInternet",
+          "string_address": 1061233975,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "FanFailure",
+          "text": "FanFailure",
+          "string_address": 1061233990,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "SensorOutOfRange",
+          "text": "SensorOutOfRange",
+          "string_address": 1061234001,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "SensorFailure",
+          "text": "SensorFailure",
+          "string_address": 1061234018,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "PressureLeak",
+          "text": "PressureLeak",
+          "string_address": 1061234032,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "NoVacuumSeal",
+          "text": "NoVacuumSeal",
+          "string_address": 1061234045,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 29,
+          "identifier": "PumpClogged",
+          "text": "PumpClogged",
+          "string_address": 1061234058,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 30,
+          "identifier": "HardwareNotConnected",
+          "text": "HardwareNotConnected",
+          "string_address": 1061234191,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 31,
+          "identifier": "SensorConnectionWrong",
+          "text": "SensorConnectionWrong",
+          "string_address": 1061234070,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 32,
+          "identifier": "FanConnectionWrong",
+          "text": "FanConnectionWrong",
+          "string_address": 1061234092,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 33,
+          "identifier": "PressureLeak_HardwareNotConnected",
+          "text": "PressureLeak_HardwareNotConnected",
+          "string_address": 1061234111,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 34,
+          "identifier": "NoVacuumSeal_HardwareNotConnected",
+          "text": "NoVacuumSeal_HardwareNotConnected",
+          "string_address": 1061234145,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 35,
+          "identifier": "PumpClogged_HardwareNotConnected",
+          "text": "PumpClogged_HardwareNotConnected",
+          "string_address": 1061234179,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 36,
+          "identifier": "PressureLeak_ConnectionWrong",
+          "text": "PressureLeak_ConnectionWrong",
+          "string_address": 1061234212,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 37,
+          "identifier": "NoVacuumSeal_ConnectionWrong",
+          "text": "NoVacuumSeal_ConnectionWrong",
+          "string_address": 1061234241,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 38,
+          "identifier": "PumpClogged_ConnectionWrong",
+          "text": "PumpClogged_ConnectionWrong",
+          "string_address": 1061234270,
+          "identifier_from_display_label": false
+        }
+      ]
+    }
+  ]
+}

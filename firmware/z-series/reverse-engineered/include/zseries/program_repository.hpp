@@ -39,7 +39,8 @@ struct ProgramStats {
 enum class ProgramBuildResult {
     Ok, CodeFull, StringsFull, EmptyString, NameTruncated, NullCode,
     TooManyInstructions, InvalidVolume, InvalidUnit, InvalidTemperature,
-    InvalidNumericDomain, InvalidProgramId, TruncatedEncoding, InvalidEncoding
+    InvalidNumericDomain, InvalidProgramId, TruncatedEncoding, InvalidEncoding,
+    DiagnosticFailure
 };
 
 class ProgramBuffer {
@@ -75,7 +76,8 @@ const ProgramRecord* builtin_program(std::uint32_t id) noexcept;
 bool is_buffered_program(std::uint32_t id) noexcept;
 bool program_heating_rate(double batch_liters, double& result) noexcept;
 ProgramBuildResult finish_program(ProgramBuffer&, const ProgramParameters&, double pressure_pascal,
-    double maximum_temperature_celsius, std::uint32_t maximum_temperature_added_seconds) noexcept;
+    double maximum_temperature_celsius, std::uint32_t maximum_temperature_added_seconds,
+    const ConsoleServices* diagnostics=nullptr) noexcept;
 ProgramBuildResult begin_coffee_program(ProgramBuffer&, const char* name) noexcept;
 void append_cold_coffee_steps(ProgramBuffer&) noexcept;
 ProgramBuildResult append_hot_coffee_steps(ProgramBuffer&, std::int32_t fahrenheit, std::int32_t minutes) noexcept;

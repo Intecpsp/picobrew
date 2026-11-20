@@ -45,7 +45,7 @@ class SafetiesTests(unittest.TestCase):
         compiler = shlex.split(os.environ.get("CXX", "c++"))
         sources = ["tests/safeties_runtime_integration.cpp", "src/core_control_state.cpp", "src/safeties.cpp",
                    "src/program_runtime_heater.cpp", "src/program_runtime.cpp", "src/program_runtime_execution.cpp",
-                   "src/runtime_instruction.cpp", "src/quantity.cpp", "src/heater.cpp", "src/msp_protocol.c"]
+                   "src/runtime_instruction.cpp", "src/quantity.cpp", "src/enums.cpp", "src/heater.cpp", "src/msp_protocol.c"]
         subprocess.run(compiler + ["-std=c++11", "-O2", "-fno-fast-math", "-ffp-contract=off", "-I", str(ROOT / "include")]
                        + [str(ROOT / source) for source in sources] + ["-o", str(executable)], check=True)
         subprocess.run([str(executable)], check=True)

@@ -1,0 +1,2 @@
+# Exact OEM string literals: preserve CRLF and original whitespace.
+* -text -whitespace

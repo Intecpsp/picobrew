@@ -1,0 +1,157 @@
+{
+  "schema_version": 1,
+  "models": [
+    "picoferm",
+    "picostill",
+    "z-series"
+  ],
+  "all_three_models": true,
+  "hardware_access_performed": false,
+  "installation_qualified": false,
+  "wrong_geometry_with_valid_md5_rejected": true,
+  "cases": [
+    {
+      "model": "picoferm",
+      "profile": "esp8266-2m",
+      "source_entries_verified": 112,
+      "elf_sha256": "f2a9af2399ac2fff9aa424974bce43f538d3ebbf689fda23bacf10ee283b0d25",
+      "build_report_sha256": "6271201da1b21f0917826d4fa3b5ef1d3bd261bab9c51bad19d479f858dfb129",
+      "manifest_sha256": "1a362e35f3d0125195da9cbd0fa56c36f9c2e5f7470f8a3836308f77a8148168",
+      "components": [
+        {
+          "file": "application.bin",
+          "kind": "eboot-and-application",
+          "offset": 0,
+          "bytes": 383200,
+          "maximum_bytes": 1048576,
+          "sha256": "413bef332129a1b31252ad3370d9d30a070d8d6ce06b86931d0772b4e852392e"
+        },
+        {
+          "file": "spiffs.bin",
+          "kind": "verified-empty-spiffs",
+          "offset": 1048576,
+          "bytes": 1028096,
+          "maximum_bytes": 1028096,
+          "sha256": "18a484702761fe942d97a59918fabc46d3f375c6e7c33ad252fbf612797aff48"
+        }
+      ],
+      "deterministic_refresh": true,
+      "unrelated_file_preserved": true,
+      "corrupt_image_rejected": true,
+      "changed_address_rejected": true,
+      "stale_build_rejected_without_replacement": true,
+      "image_bytes_match_elf": true,
+      "filesystem_remount_and_independent_decode": true
+    },
+    {
+      "model": "picostill",
+      "profile": "esp32-4m",
+      "source_entries_verified": 107,
+      "elf_sha256": "90d53853b3b389bc38713911a78da25fb9a1d8e97e076899909086b1d06bce2a",
+      "build_report_sha256": "ade3850374b8474cdb16b123380fded85ba5ebc1df6e8f5a66cc6629f17198db",
+      "manifest_sha256": "dabab38455058487db03cb0b044ee465b522abfd5ae4f086da7f9e4648efb546",
+      "components": [
+        {
+          "file": "bootloader.bin",
+          "kind": "pinned-sdk-bootloader",
+          "offset": 4096,
+          "bytes": 16176,
+          "maximum_bytes": 28672,
+          "sha256": "6c63535767d25b656672913879672d01cbfabef8c25b62dffb91f98d04f37998"
+        },
+        {
+          "file": "partitions.bin",
+          "kind": "explicit-reference-partition-table",
+          "offset": 32768,
+          "bytes": 3072,
+          "maximum_bytes": 4096,
+          "sha256": "cc5b9d52da361e51fdf767a6adf777909c44d0546a1f80d0f3bae3aa154a1ab9"
+        },
+        {
+          "file": "application.bin",
+          "kind": "factory-application",
+          "offset": 65536,
+          "bytes": 796784,
+          "maximum_bytes": 2031616,
+          "sha256": "79dba344ccee884302126aa3d835fc3860b8b9dcfa293fb3de477240744d1d1b"
+        },
+        {
+          "file": "spiffs.bin",
+          "kind": "verified-empty-spiffs",
+          "offset": 2097152,
+          "bytes": 2097152,
+          "maximum_bytes": 2097152,
+          "sha256": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6"
+        }
+      ],
+      "deterministic_refresh": true,
+      "unrelated_file_preserved": true,
+      "corrupt_image_rejected": true,
+      "changed_address_rejected": true,
+      "stale_build_rejected_without_replacement": true,
+      "image_bytes_match_elf": true,
+      "filesystem_remount_and_independent_decode": true
+    },
+    {
+      "model": "z-series",
+      "profile": "esp32-4m",
+      "source_entries_verified": 351,
+      "elf_sha256": "0d9f1d2e0b651188b96fb43e046547edbc34402441b9b2dbca7530be57066bdb",
+      "build_report_sha256": "6c71c5a98ba13264764b5d1eca0820f448e9dc9547d94f41b2a85132fb3c8c6c",
+      "manifest_sha256": "13a2e58003dd02b0b54d559b160b309a4dbde9b230501c5338619bb84c53f9be",
+      "components": [
+        {
+          "file": "bootloader.bin",
+          "kind": "pinned-sdk-bootloader",
+          "offset": 4096,
+          "bytes": 16176,
+          "maximum_bytes": 28672,
+          "sha256": "6c63535767d25b656672913879672d01cbfabef8c25b62dffb91f98d04f37998"
+        },
+        {
+          "file": "partitions.bin",
+          "kind": "explicit-reference-partition-table",
+          "offset": 32768,
+          "bytes": 3072,
+          "maximum_bytes": 4096,
+          "sha256": "cc5b9d52da361e51fdf767a6adf777909c44d0546a1f80d0f3bae3aa154a1ab9"
+        },
+        {
+          "file": "application.bin",
+          "kind": "factory-application",
+          "offset": 65536,
+          "bytes": 1634176,
+          "maximum_bytes": 2031616,
+          "sha256": "c96d04e67f2cf0439fae038f0cbf7a84357fca38600d6522a637865e0d87acb6"
+        },
+        {
+          "file": "spiffs.bin",
+          "kind": "verified-empty-spiffs",
+          "offset": 2097152,
+          "bytes": 2097152,
+          "maximum_bytes": 2097152,
+          "sha256": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6"
+        }
+      ],
+      "deterministic_refresh": true,
+      "unrelated_file_preserved": true,
+      "corrupt_image_rejected": true,
+      "changed_address_rejected": true,
+      "stale_build_rejected_without_replacement": true,
+      "image_bytes_match_elf": true,
+      "filesystem_remount_and_independent_decode": true
+    }
+  ],
+  "source_sha256": {
+    "tools/package_reference.py": "af1ea2f7bf62afb724a304350202521ae750b5c1ad2ed186da84ec178d445ea9",
+    "tools/build_esp8266_image.py": "cd17970ab3bfdafaf9ca1ed1a218ddebf312d273434f112318ed861e6cd15f39",
+    "tools/validate_reference_packages.py": "7ae7dcbf9fe85a12bd2a76505d5bd36f751796fe0852a40d995e48230161f156",
+    "tools/build_spiffs_image.py": "4862e58ca2d2f6c0c186dc6f55f4d37a291a7fe7355949440f1e36f26f27e2e9",
+    "tools/spiffs_format.py": "1f6ff97c82f742ae074ec781bac6eb4a966baf062629c68feca7f321c39e336a",
+    "tools/spiffs_image_native.cpp": "ea4e070455ccd7a0751ef6c68b1d3350356510e27dd0f618d02e1b9eed772c07",
+    "dependencies/reference-images.json": "29846a20cd20b6aa891cf9db2378e6394c1da010e5c2ab1214954cd3f06f325c",
+    "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
+  },
+  "image_parser_sha256": "c8c0260d815e36cf33f069d653b0d27857713c01171ebc3cb296697631b8ece5",
+  "scope": "Real complete application ELFs and build reports; deterministic offline packages, every allocated image byte bound to ELF, exact partition geometry and filesystem readback, corruption/stale-input rejection. No hardware installation or runtime qualification."
+}

@@ -38,8 +38,10 @@ BMP280 setup writes `0xf4 = 0x3f`, checks identity `0xd0` for `0x58`, and reads
 are unsigned 16-bit; the other ten are signed. Calibration is attempted even
 when the identity read fails. Setup transmission results for register writes
 are ignored in the original. Wrong identities cause a returning assertion
-diagnostic; the owned module reports the condition without inventing a
-successful sensor detection.
+diagnostic. Production Core supplies the real diagnostic sink, which logs,
+increments the assertion counter and delays 200 ms before setup continues.
+The owned status flags expose the condition without inventing a successful
+sensor detection or stopping later Core setup and tick services.
 
 Pressure state holds signed 64-bit raw fields, a signed 32-bit `temperature_fine`
 intermediate and the twelve calibration coefficients. The reconstruction
@@ -72,16 +74,21 @@ silently convert that original timestamp into a freshness guarantee.
 
 ## Validation and reproduction
 
-All **617 original-instruction cases** match the native implementation:
+All **641 original-instruction cases** match the native implementation:
 complete setup/read transactions, device state, raw fields, coefficient bytes,
-compensation intermediate and timestamp. All **3,085 double comparisons** are
-bit-identical in the recorded environment. The portable test suite retains
-129 original cases, plus tests for the byte defect, failed-read behavior and
-missing transport boundaries.
+compensation intermediate and timestamp. All **3,205 double comparisons** are
+bit-identical in the recorded environment. The compressed portable fixture
+retains every case, including 32 executions of the actual returning assertion
+helper. Comparisons include exact diagnostic file, line and expression,
+counter changes, the 200 ms delay, subsequent calibration reads and clock
+samples. Separate tests cover the byte defect, failed-read behavior, missing
+transport boundaries and Core's continuation after nonfatal sensor failures.
 
-The Ghidra harness executes all seven original bodies with nested register
-reads. Compiler arithmetic, Wire, clock and returning diagnostic calls are
-explicit boundaries. `MEMW` is an explicit single-thread ordering boundary;
+The Ghidra harness executes all seven original sensor bodies with nested
+register reads and the real assertion helper at `0x400db014`. Compiler
+arithmetic, Wire, clock, printf, basename and SDK delay are explicit boundaries.
+The assertion helper itself is not replaced by a boundary. `MEMW` is an
+explicit single-thread ordering boundary;
 the fixture supplies a stack canary and checks the original comparison. This
 does not simulate concurrent interrupts or validate physical sensors.
 

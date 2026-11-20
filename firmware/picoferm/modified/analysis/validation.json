@@ -1,0 +1,75 @@
+{
+  "schema_version": 1,
+  "modified_profile": "picoferm-1.2.0",
+  "source_complete": true,
+  "hardware_tested": false,
+  "installation_qualified": false,
+  "original_oem_parity_claimed": false,
+  "compiler": "g++ (Debian 14.2.0-19) 14.2.0",
+  "native_pointer_bytes": 8,
+  "results": {
+    "optimized": {
+      "checks": 262,
+      "passed": true
+    },
+    "address_and_undefined_sanitizers": {
+      "checks": 262,
+      "passed": true,
+      "leak_tracing": false
+    },
+    "raw_lwip_http": {
+      "checks": 128,
+      "pbufs_created_and_freed": 14,
+      "passed": true
+    }
+  },
+  "source_sha256": {
+    "firmware/picoferm/modified/src/bounded_acquisition.cpp": "6352f8485047de417ebc069ee318fdd3e67e446a61b1bf4677a9d0e8324fbae9",
+    "firmware/picoferm/modified/src/calibration_store.cpp": "076a142139079bb3b63e9b84c49f3805d6fc8b1674fc941dd6267dc931ccbab6",
+    "firmware/picoferm/modified/src/local_controls.cpp": "178705e85ad802297f40d49a48e22f6ffd6cad76830ae6b8c0e34cbefa633551",
+    "firmware/picoferm/modified/src/standalone.cpp": "08a1726e80cdf5adbdc5003732300a5688e9c77eedb5f1fa76fd2acc51914ed1",
+    "firmware/picoferm/modified/include/picoferm/bounded_acquisition.hpp": "126a2ccfbb2df882bb2686f97ad3fe6e5dac0776862786de075aeeb5ed696c9b",
+    "firmware/picoferm/modified/include/picoferm/calibration_store.hpp": "b86576d7aa6ababcbff18ba010f0cb9aec3ca955cc7abb94a2f310eb7067d7ce",
+    "firmware/picoferm/modified/include/picoferm/local_controls.hpp": "1bafc3973b53a9dacde518d80ff1821cde7622c6a0ad48b9650de31aff75aa14",
+    "firmware/picoferm/modified/include/picoferm/standalone.hpp": "d3a6f21e8930c97dab5010a266b2170180b7d5b6d4a672197e0004f8c58127e7",
+    "firmware/picoferm/modified/tests/standalone_test.cpp": "2ab234d5bcf43094f83494fbe64425e5b1a24f402a1f9ca625c02ccb11f514ea",
+    "firmware/picoferm/modified/tests/test_standalone.py": "e990623a9df1b3262e70fc1a560532ffe02839ba7bdc497535d9589172a93b44",
+    "firmware/common/src/http_server.c": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+    "firmware/common/src/engine.cpp": "8c4fd8224a95c0e312fde16892f44a8e97b007a5f5ba3d90f5b661c63fd56768",
+    "firmware/common/src/api.cpp": "1d339af8cd34bdb871ad716592da246dcb737a6050deb07b76eacb15bcacf193",
+    "firmware/common/src/values.cpp": "c83ca984fad2c640229d604ee14c04b33a675d5c341900af7268b4280bf63e88",
+    "firmware/common/src/records.cpp": "9deec7864ea4dbfb9dcfad9a24ed9c52416724fb67af0c89ac6c7a000151ccc2",
+    "firmware/common/src/history.cpp": "b66d329d4a860a3e0dc5f44e3a9eef8e76795f360fefbcdb31eaf091ce308d71",
+    "firmware/common/src/history_records.cpp": "0336a037dcdb32ca4f4d8f237839a4e412b6030d91d8fd676e22ea02a4296e2b",
+    "firmware/common/src/telemetry.cpp": "331a628f461d0060df520e29f23079696ed3a09402afb9c4c68a107d4224fa70",
+    "firmware/common/src/engine_internal.hpp": "57521041b6c10f7ce3a2af9d0d909db47568d43ef1e0f2fae1c385faa99adb79",
+    "firmware/common/src/records.hpp": "19dc25a561479648e6bae02d8157f6e6d47678acd313d4a37d9c7350ecd5c6bd",
+    "firmware/common/src/json.hpp": "5ee0a5b00b92a6f5c3070fc0b29114fb707cc686380f0ab6abf28589c65c6654",
+    "firmware/common/include/picobrew/common_web.h": "a32e78944bc9c6f470f03afaac681ecc8f040ada75e7fd0364696af3f2a5172b",
+    "firmware/common/include/picobrew/http_server.h": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+    "firmware/common/include/picobrew/device_services.hpp": "428b31a12cc5803289595c472b005352756fb86c442cd38d4e6f526f868185ef",
+    "firmware/common/include/picobrew/provisioning.hpp": "9bdbdd768daf8f7b8834bfc7a9e3220cf7cbb953321694250efd0c35f02daadd",
+    "firmware/common/include/picobrew/standalone_engine.hpp": "279419441fd728e2ad871cc812749d148ab18960ac3fe75dca31fc4384787dd2",
+    "firmware/common/include/picobrew/verified_storage.hpp": "0656ebc74cd243e148f5c9da90aab5103e2636b8ac9175974981c51702581228",
+    "firmware/picoferm/reverse-engineered/src/core.cpp": "e240bbf86afc795f67308bb188f0d61c2310217e314256a82eab2dd0af956d6b",
+    "firmware/picoferm/reverse-engineered/src/hardware.cpp": "21229e08540302786909e7b34c5654c2dc6f789fa18e790e22456a2708b84a30",
+    "firmware/picoferm/reverse-engineered/include/picoferm/core.hpp": "6498ecaba77190c5d6c5e414e90c75cec7558a2b340bcd6887920668db12ea67",
+    "firmware/picoferm/reverse-engineered/include/picoferm/hardware.hpp": "6fedb90ef68b39f7ac5b96882f1d345afb07fab247999ca0ec49539fa1daaadf",
+    "firmware/common/src/verified_storage.cpp": "e59bb0d690fab10ab3b13dc8c7bcbcccae8699ccadf897f6246f1bc17461c1c8"
+  },
+  "target_report": "esp8266-build.json",
+  "target_report_sha256": "b91815818bd5738a9646e68f0697234ca03fc4428acc5593995f7d04a98bd9e1",
+  "boundaries": [
+    "Actual portable Controller and common Engine execute together with deterministic checked I2C, clock and persistent-memory callbacks.",
+    "Unmodified recovered temperature conversion executes; modified bounded acquisition preserves register/channel/discard order but intentionally faults on failed or invalid samples.",
+    "Normal button/LED sequences compare with the reconstructed OEM implementation; modified rollover cases require elapsed-time behavior.",
+    "Existing modified calibration corruption is never overwritten from OEM data; confirmed calibration acquires fresh data and activates only verified storage.",
+    "Start reserves actual persistent history before recording; reboot never resumes,300-second sessions do not repeat15-second rows,and later intervals retain prior session metadata.",
+    "Actual common C HTTP parser and new raw-lwIP listener execute against pinned SDK declarations and controlled callbacks,not a live network.",
+    "Pinned original SDK startup links with complete application. Target linker geometry is a reference,not a physical device layout qualification.",
+    "ASan and UBSan passed. LeakSanitizer process tracing is unavailable in the managed executor; explicit listener allocation ownership assertions remain active."
+  ],
+  "scope_refresh": "Native controller/Engine tests and ASan/UBSan rerun after capability-specific memory allocation and real-filesystem key validation corrections; complete pinned SDK application image regenerated.",
+  "memory_report": "memory-validation.json",
+  "memory_report_sha256": "a778d32c52b9bb234bf4ceb339d5f5d6b4385b9642b12cd7ab9072740e43864c"
+}

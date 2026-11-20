@@ -1,0 +1,108 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "sources": [
+    {
+      "source": "src/http_backend_console_network.cpp",
+      "source_sha256": "02ff30a4344e88137175927757ebadf605b878385e69d1aa9a5ddc92f53b9f54",
+      "object_sha256": "eec368af6e04d4852047ef3d210ba2426bd062878ee802758222333e7ff6b04e",
+      "object_bytes": 16892
+    },
+    {
+      "source": "src/http_backend.cpp",
+      "source_sha256": "47fdd415cf2c9a9558a046358a0d8a4c3f5e481611ee657bc0d829cc7f964707",
+      "object_sha256": "3841707a2b226b3a465babb429807a5d323df87b0dbfdca757bb93fe9b1d21d4",
+      "object_bytes": 30416
+    },
+    {
+      "source": "adapters/arduinojson/http_backend_json.cpp",
+      "source_sha256": "2531b71d5353589fea1010ea3fbad1ce69437a3d81edcbc66fc38fb8698fc530",
+      "object_sha256": "20b0fc6a30f68e8984a0dd2de9fbb4f296740e59cc223c2d2dea2b4199255d68",
+      "object_bytes": 92944
+    }
+  ],
+  "owned_header_sha256": {
+    "adapters/arduinojson/recipe_document.hpp": "dcbf31ca3f86efe68a41d2fa1865c193d6bb9009d7b216d92bc459ed397fe84c",
+    "include/zseries/application_console.hpp": "6c566b5c03b55c540cd5dacdffbc924e2cd84eaed7ae8cd88dd3ae37870183e7",
+    "include/zseries/buzzer.hpp": "3d29e7b156076571c04a9be6af123d27ac8739be34941f52faf4ffb9f9c28642",
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
+    "include/zseries/core_startup.hpp": "0f1853c4f42743a92fbbdb76d25705809ab802a2d22426f97b2baf4c1505209a",
+    "include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
+    "include/zseries/heater.hpp": "835ca0b60d7fcb3aa2a51e0752bb1f345a4313cf8dea3fb2e6d4a402ca50e29f",
+    "include/zseries/http_backend.hpp": "5d06d427c97cbc5671c440c375a457af69e4ff91e9f9e62014a1add443ddaa7c",
+    "include/zseries/http_client.hpp": "62368c63d0c9a8dc5d1e469ffedb452795e90f7fce92d01a285c59dec7352c0c",
+    "include/zseries/http_client_console_tests.hpp": "bf90f4af1a3d2ace79cf49599be6623da3dcc4e44e158fb59315e5a624463cf1",
+    "include/zseries/msp_protocol.h": "eca42029deedb69b4f932e11e8996058ff471f1ee68da6b5096bc995b7281aa3",
+    "include/zseries/network_console_tests.hpp": "46dd4f866191d39d501324b3eb80d3e27d89e18d79d17b8dae5f2f65d0fdb505",
+    "include/zseries/program_diagnostics.hpp": "6560b504f0d8f4570b238326456a628fa9aea99ba33d016ea2cfc67dcfbaa7da",
+    "include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "include/zseries/program_recipe.hpp": "8ccad90db217b8d2fbb727432260e9e9a05515f1420b57e0b2ccaa35ec482010",
+    "include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494",
+    "include/zseries/program_repository.hpp": "d04f1641278f5c0efbdf64a517774bc6ed364d99f37fb3fda23eaf8396f29448",
+    "include/zseries/program_runtime.hpp": "eaa1de3248c389b293cb231d12e53d3abc820677c4408183acb0814cb94415a5",
+    "include/zseries/quantity.hpp": "9110702b8324d3c7e8a0408ae3826bb31bf69869fa09497f6f77e446ffc2d7be",
+    "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
+    "include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "include/zseries/z_backend.hpp": "68696268b6c5316a239bc0ba550a8771a1641fd5af2391bba22408528072304b"
+  },
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 3
+  }
+}

@@ -1,0 +1,306 @@
+{
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 255,
+  "input_file_sha256": "359ac98b35dee120b89b3dbac1a6b196d5a05a688aa9e7b62b791644521239a2",
+  "scope": "Complete original ADC poll and Core tick with actual thermistor, smoother and returning assertion callees; other Core services are ordered explicit boundaries. SDK Wire, printf, clock, delay, compiler arithmetic and log are modeled. Compare original continuation, counter, timing, raw data and all published/smoother fields.",
+  "original_functions": [
+    {
+      "address": "0x400d6ac0",
+      "calls": 384,
+      "ranges": [
+        {
+          "address": 1074621120,
+          "size": 288,
+          "sha256": "ebc45f11f0e0cac94b60c8fead2930ff2229ea64a052b933a538464d227acd95"
+        }
+      ]
+    },
+    {
+      "address": "0x400db014",
+      "calls": 597,
+      "ranges": [
+        {
+          "address": 1074638868,
+          "size": 58,
+          "sha256": "1b17275bd5a7c784b0c7cb71cea3746d3b1c337e73ef59f4d40bea8696ba9042"
+        }
+      ]
+    },
+    {
+      "address": "0x400dd738",
+      "calls": 1560,
+      "ranges": [
+        {
+          "address": 1074648888,
+          "size": 30,
+          "sha256": "68d3abafffea372b7fed980e44687b15998cf8de185f3ff2157bd72606f0a431"
+        }
+      ]
+    },
+    {
+      "address": "0x400dd770",
+      "calls": 384,
+      "ranges": [
+        {
+          "address": 1074648944,
+          "size": 84,
+          "sha256": "b3be8b7d9a9e3cc0287d6e1de136e43a64145f0a027354374286c5aeb0563e6f"
+        }
+      ]
+    },
+    {
+      "address": "0x400dd7c8",
+      "calls": 384,
+      "ranges": [
+        {
+          "address": 1074649032,
+          "size": 72,
+          "sha256": "b3bd79395e3b78bbdd24de3e56ef568ed91adf94b6c9689971d67f15c167e79a"
+        }
+      ]
+    },
+    {
+      "address": "0x400dd908",
+      "calls": 247,
+      "ranges": [
+        {
+          "address": 1074649352,
+          "size": 155,
+          "sha256": "adc469abd3e0bb119b7b216d13eafa6b5822a09ea37b655703868f3f914cdf6e"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee1f0",
+      "calls": 768,
+      "ranges": [
+        {
+          "address": 1074717168,
+          "size": 41,
+          "sha256": "3a10910dfc594e5c6f0cae93f5f292ffd46e10cb8aba4e173dddb9720559d049"
+        }
+      ]
+    },
+    {
+      "address": "0x40110924",
+      "calls": 384,
+      "ranges": [
+        {
+          "address": 1074858276,
+          "size": 94,
+          "sha256": "608b8db9fbeb557e91ad2582fcdcb385c25b0fd5c7d95f145217a00d507bc303"
+        }
+      ]
+    },
+    {
+      "address": "0x40110990",
+      "calls": 384,
+      "ranges": [
+        {
+          "address": 1074858384,
+          "size": 181,
+          "sha256": "b661586d6c8616cc1fb37a8f2c3e7289e20d2caf8dd0cacd572109e1886d7ecc"
+        },
+        {
+          "address": 1074858566,
+          "size": 46,
+          "sha256": "b5e454767c110e39711a0daac2de63ce74ad1739c51d10c182d33ddbb2a8dffc"
+        }
+      ]
+    },
+    {
+      "address": "0x40120120",
+      "calls": 206,
+      "ranges": [
+        {
+          "address": 1074921760,
+          "size": 384,
+          "sha256": "8fab59879d43233c7e8ee1231a4fa4263baab088b5fa4fecda6d35ad5fb1c34a"
+        },
+        {
+          "address": 1074922145,
+          "size": 19,
+          "sha256": "dcd33f4c4d61e3b318ca3a4e1c263e910c27af435f0d56fe7118bdf29482d298"
+        },
+        {
+          "address": 1074922165,
+          "size": 101,
+          "sha256": "d8f7b7808e64db7797aecac136d29c23ef09037fb622cb1ddef8f42e5bc2ea8b"
+        },
+        {
+          "address": 1074922269,
+          "size": 106,
+          "sha256": "beb475a1d65d5de3280234c4d5c979c6a2af2a36e58354f74d4a986a1065f50e"
+        },
+        {
+          "address": 1074922377,
+          "size": 149,
+          "sha256": "cd64c0ae0e41b31e8e18258c83b2decd42149855e0a2d45e94af3bbb429bffb3"
+        },
+        {
+          "address": 1074922528,
+          "size": 59,
+          "sha256": "04f116824ef452f2b4b7f0c612d3de75decf05048e71a40b3b68eb9613f2149a"
+        },
+        {
+          "address": 1074922588,
+          "size": 55,
+          "sha256": "cc5845ca0b189723ef45e0be10bdc536cb91704f3a22d5f61f7dfc5dbacd8b87"
+        },
+        {
+          "address": 1074922644,
+          "size": 120,
+          "sha256": "a9a6621eda46fe7e8421878815337aa3c184a9bca7ed7d4060422f3051d82f4b"
+        },
+        {
+          "address": 1074922767,
+          "size": 75,
+          "sha256": "22b9887f45fbd034122aceded72f1ba736a032f667060c1fd534bfa8e0583bcd"
+        },
+        {
+          "address": 1074922844,
+          "size": 75,
+          "sha256": "4a78560cada1d08ffb9f5f8ada1e3eb2b6c40d56b8be29ed4ef37f1e4bb2a8a0"
+        },
+        {
+          "address": 1074922921,
+          "size": 118,
+          "sha256": "dc01ff8bd392718b4782e17dd83463e61f5e8b5de6d95d003fc23f8a5b407e49"
+        },
+        {
+          "address": 1074923040,
+          "size": 47,
+          "sha256": "173aee584d16a5727c5d6b6f35efe4c5323f6f182d1fe78fb07105edebcda70f"
+        },
+        {
+          "address": 1074923090,
+          "size": 19,
+          "sha256": "c522ad3b6e6166f0381461b3c0cbfda051be6e8a221f135dc44bd449d6b252b0"
+        },
+        {
+          "address": 1074923111,
+          "size": 116,
+          "sha256": "74e8490f87d67f03311f77a279ee0a3476704b90fbb767dc393432f4f0d6cbb6"
+        },
+        {
+          "address": 1074923228,
+          "size": 37,
+          "sha256": "6a874117491ea226f863e2fb94bde1f7b3940e92a11e59c9afef93c15960e617"
+        },
+        {
+          "address": 1074923268,
+          "size": 84,
+          "sha256": "d067f4e360a5adedf6b2058a0a53789852c7b2f7424924c775ed1de1d48fc3a3"
+        },
+        {
+          "address": 1074923353,
+          "size": 142,
+          "sha256": "f21fc4b6f282479a91f21040d56d04f263da193b074ed8ff7b9d98add0996864"
+        },
+        {
+          "address": 1074923496,
+          "size": 29,
+          "sha256": "1fded111aaa6283ba208bbbaf857533f8f174a7e52f8e994bf4b9cc296093dfb"
+        },
+        {
+          "address": 1074923528,
+          "size": 8,
+          "sha256": "fbaa08db9cc1f9f64281e0958cc896f3f50019246659ebfa338faecb60b1571e"
+        }
+      ]
+    }
+  ],
+  "original_functions_executed": {
+    "0x400d6ac0": 384,
+    "0x400db014": 597,
+    "0x400dd738": 1560,
+    "0x400dd770": 384,
+    "0x400dd7c8": 384,
+    "0x400dd908": 247,
+    "0x400ee1f0": 768,
+    "0x40110924": 384,
+    "0x40110990": 384,
+    "0x40120120": 206
+  },
+  "modeled_boundaries": {
+    "Core_tick_stage_0": 206,
+    "Core_tick_stage_1": 198,
+    "Core_tick_stage_10": 206,
+    "Core_tick_stage_11": 206,
+    "Core_tick_stage_12": 206,
+    "Core_tick_stage_13": 206,
+    "Core_tick_stage_14": 206,
+    "Core_tick_stage_15": 206,
+    "Core_tick_stage_16": 206,
+    "Core_tick_stage_17": 206,
+    "Core_tick_stage_18": 206,
+    "Core_tick_stage_19": 206,
+    "Core_tick_stage_2": 206,
+    "Core_tick_stage_20": 206,
+    "Core_tick_stage_21": 206,
+    "Core_tick_stage_22": 206,
+    "Core_tick_stage_3": 206,
+    "Core_tick_stage_4": 206,
+    "Core_tick_stage_5": 206,
+    "Core_tick_stage_6": 206,
+    "Core_tick_stage_7": 206,
+    "Core_tick_stage_8": 206,
+    "Core_tick_stage_9": 206,
+    "SDK_delay": 597,
+    "SDK_log": 384,
+    "Wire_read": 1656,
+    "Wire_requestFrom": 247,
+    "__adddf3": 1152,
+    "__divdf3": 1152,
+    "__divsf3": 745,
+    "__extendsfdf2": 745,
+    "__floatsidf": 384,
+    "__floatunsidf": 384,
+    "__muldf3": 1920,
+    "__subdf3": 842,
+    "basename": 745,
+    "clock_millis": 1129,
+    "diagnostic_log": 745
+  },
+  "hardware_tested": false,
+  "full_cpu_or_hardware_emulation": false,
+  "all_results_match": true,
+  "exact_binary64_matches": 13260,
+  "binary64_comparisons": 13260,
+  "maximum_absolute_error": 0.0,
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-pedantic",
+    "-fPIC",
+    "-shared",
+    "-fno-fast-math",
+    "-ffp-contract=off"
+  ],
+  "original_execution_jsonl_sha256": "6bf2f41de51d26eb88a759fa85d268ee8db371aec8a20eba2965a48a603fa364",
+  "original_execution_report_sha256": "73737669f28409345e80c653bd687a08c48def2cf070425ddb009c0cb314ca3c",
+  "fixture_sha256": "f18ae87f6d416214d6c5c1327789a0af0913e5058338107c3a0c598280274d79",
+  "portable_golden_sha256": "45f4b4b8663892253efe11f06d76eeea8664777a4d9ba3c5d2ef0cbefd032eed",
+  "portable_golden_cases": 255,
+  "source_sha256": {
+    "include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
+    "src/sensor_acquisition.cpp": "dd3d7eb81bebb945e0e1606b7844579e723e25bf2a922ca9e5767867b7a988b4",
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "src/temperature.cpp": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8",
+    "include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
+    "src/core_flow.cpp": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449",
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "src/diagnostics.cpp": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "tests/adc_continuation_bridge.cpp": "e45e403ac69c3ad3f96604364baffb78dbdf271067903b086c6847a0b58ce3be",
+    "tests/test_adc_continuation.py": "0c152dd1cb761aeaff2b0859baa8245c20b5f0a0be8ec12f9e909b465a33ce73",
+    "tools/validate_adc_continuation.py": "fcbcfa01f2a5c2b679766cb7e2ba28e642baf269efc55c8108dc32acb08b5410",
+    "tools/ghidra/EmulateAdcContinuation.java": "dd508533e259fbcdc46d667b001c1a96aba819ecd83992a14eec1b7a62204b15",
+    "tools/ghidra/EmulateCoreFlow.java": "a2141e591328bf96858ab83d2064bc8ebcbd61a82fad87185a26f522f1834d1e",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  }
+}

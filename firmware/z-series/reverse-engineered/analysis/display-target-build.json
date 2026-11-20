@@ -36,17 +36,19 @@
   ],
   "flags": [
     "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti",
     "-Os",
     "-Wall",
     "-Wextra",
     "-Werror",
     "-Wno-unused-parameter",
-    "-fno-exceptions",
-    "-fno-rtti",
     "-ffunction-sections",
     "-fdata-sections",
     "-fstrict-volatile-bitfields",
     "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
     "-DESP_PLATFORM",
     "-DESP32",
     "-DARDUINO_ARCH_ESP32",
@@ -62,5 +64,13 @@
     "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
     "include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
     "include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3"
-  }
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 5
+  },
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed."
 }

@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-lx106-elf-g++ (crosstool-NG 1.20.0) 4.8.2",
+  "compiler_sha256": "9090ec97ab7bc6d9cd3a1cb47b5899e05ecce8f83a7300efb868e491367bb5ec",
+  "flags": [
+    "-std=c++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-mlongcalls",
+    "-mtext-section-literals",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-falign-functions=4",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-D__ets__",
+    "-DICACHE_FLASH",
+    "-U__STRICT_ANSI__",
+    "-DESP8266",
+    "-DARDUINO_ARCH_ESP8266",
+    "-DARDUINO=10805",
+    "-DF_CPU=80000000L"
+  ],
+  "sources": [
+    {
+      "source": "src/application.cpp",
+      "source_sha256": "4d63f66addbd3e3bb0e1276c108c2e35c28543807bc9d3c0d612fde9cddafcd9",
+      "object_sha256": "2d7cbd7185f9acf289815c7b45c6fa34ba4a11941bb77a0aaa1a135252afc0a6",
+      "object_bytes": 48484
+    },
+    {
+      "source": "src/backend.cpp",
+      "source_sha256": "4c3ca58a69d9bf4fe0e51b8b2db6e1f068c7b85bc596c7a8174775ad571cfa75",
+      "object_sha256": "79aec63d74de8f1cb1daa853d414744680ed4f76122ae390760e4dcc349e27c9",
+      "object_bytes": 18860
+    },
+    {
+      "source": "src/console.cpp",
+      "source_sha256": "78c8eb4048ebdbd5cad50c54375065dcb35fbc3a998bc1efe050ec32e3f51480",
+      "object_sha256": "8ea096cc227a0f63db26969d08c6275a25c540f7d65c2952e140c6ed0e20bfef",
+      "object_bytes": 12644
+    },
+    {
+      "source": "src/core.cpp",
+      "source_sha256": "e240bbf86afc795f67308bb188f0d61c2310217e314256a82eab2dd0af956d6b",
+      "object_sha256": "60889c96bbdbb2d23414d8b78c3791e2fd9e535eee7c3e0fc54e22fa09fe5f7d",
+      "object_bytes": 19116
+    },
+    {
+      "source": "src/data.cpp",
+      "source_sha256": "3f51ecf38f913091cc5e391c1099864153e95cc9b67acbc5e4e14e6dca1dc124",
+      "object_sha256": "2e52a28ca9edda4736151e5f4cfc0ebaa5f381f742cf52b53237c6bdaf7c0416",
+      "object_bytes": 10972
+    },
+    {
+      "source": "src/hardware.cpp",
+      "source_sha256": "21229e08540302786909e7b34c5654c2dc6f789fa18e790e22456a2708b84a30",
+      "object_sha256": "c0b102bc143f0dd95d18264b346f5d214b1c39eb0cb8254b42091a5c3b05309f",
+      "object_bytes": 22108
+    },
+    {
+      "source": "src/http.cpp",
+      "source_sha256": "3177c643e6db99652c339f2cbfad82fa85277febc690799c469d466f8867ef19",
+      "object_sha256": "d789356bf14cd83a940c3256076503527297effb9e04c0cd205e9feee65b909d",
+      "object_bytes": 18284
+    },
+    {
+      "source": "src/http_server.cpp",
+      "source_sha256": "c2f9caaed4a7025a94bd5cb4524656f2c226ec333e28f4dfe1c0964cbc2516f5",
+      "object_sha256": "d4c6f625d3a0e19615c35bf12600a27745d30e430ce5bff8a3f55732a7e07d22",
+      "object_bytes": 43056
+    },
+    {
+      "source": "src/self_tests.cpp",
+      "source_sha256": "b0120735e6a236f412e01c2997bc5a82f12f101133f39f93d209a726fd0dc59b",
+      "object_sha256": "22296821648bd38428e222fdf1736ec89d9788bd5bad0bf9657167479595f07a",
+      "object_bytes": 20160
+    },
+    {
+      "source": "src/wifi.cpp",
+      "source_sha256": "98fe3c82c8abd14a2fb73ec5690a3607e4f675e25388d68743dd087a731d18d7",
+      "object_sha256": "b48784dab6923b320d6d0cf7c5324b73e82feeac63f1ea2d868e715307b425a9",
+      "object_bytes": 12092
+    },
+    {
+      "source": "platform/esp8266/application_main.cpp",
+      "source_sha256": "d1569dcc94acfb98a2a79e6b6ca83abee3bed10b8d1591548afe1c6d2743601c",
+      "object_sha256": "dd6ca8f3f3335a2dab56bd7654ccd44f8b355f328ed0a3fc9859111f32ba5d56",
+      "object_bytes": 56792
+    },
+    {
+      "source": "platform/esp8266/arduino_ports.cpp",
+      "source_sha256": "8eb75a2745f3d542c79fb0cf178930d421cf74ffbbe487b2e0467a541e4db983",
+      "object_sha256": "328a48d2b9aafed164b79a73e585228a15c8db4958712623d65daee71ed4e69f",
+      "object_bytes": 10960
+    },
+    {
+      "source": "platform/esp8266/hardware_ports.cpp",
+      "source_sha256": "44c84e8ea065f52dda30e1110f09d765bd35cf2df0c5ceea355665b0cff066e0",
+      "object_sha256": "0593bf364dfb57a1f033bc0d5b744696de57b8e41d48f102b7e0557a755d1787",
+      "object_bytes": 10696
+    },
+    {
+      "source": "platform/esp8266/http_ports.cpp",
+      "source_sha256": "3352828a701e0e11addeb066d1f6a8a30d03d5dd8fae5a324093224eedd9e55b",
+      "object_sha256": "9e12ae0eccd1f8bdd969a4878e49f753b458a4f768aee7088a356b7bd09c1561",
+      "object_bytes": 18872
+    },
+    {
+      "source": "platform/esp8266/outbound_ports.cpp",
+      "source_sha256": "1f47591015ae54be2b6751f0de67c53296c150b383d4a52ff28e6b244e81d12b",
+      "object_sha256": "0e830d4b4de67bb6309c49c6dbcb0b93da499d74cec26dc8f82a512935e4a47d",
+      "object_bytes": 18836
+    },
+    {
+      "source": "platform/esp8266/system_ports.cpp",
+      "source_sha256": "346d5baa702209c5bf69578615184f73afe6b289b579d172b1caabfc42194d3c",
+      "object_sha256": "1693c71a56da9f0a3542f2e245c66a16668537e290a2151994c4188d1d1188fc",
+      "object_bytes": 13300
+    },
+    {
+      "source": "platform/esp8266/wifi_ports.cpp",
+      "source_sha256": "009f762e5b0bb219daaa4a653605f8627bed04352bc5c906ba4cc959b36d09be",
+      "object_sha256": "ac9fb9123b8817701a357be6c096700925f67f0c005f60272284bd628a1bda36",
+      "object_bytes": 15168
+    }
+  ],
+  "archive_sha256": "330b08900ab276107f4076d0ecec82687502cd6c2ee4a52d95918f7dcf6d2e37",
+  "build_script_sha256": "08834bc6ffcd8d297686a1fcf26c9255b0996a74e924f7ea0bb09d25e30cdae7",
+  "headers": {
+    "include/picoferm/application.hpp": "2e8090e8a4c17eaba85d598989279fc6f1372892374ab53d6ad8daa5fd41bc65",
+    "include/picoferm/backend.hpp": "9565280e45ef078c06966c3d629ab7e59f0599750f2bb647c4d61e4c337123fb",
+    "include/picoferm/core.hpp": "6498ecaba77190c5d6c5e414e90c75cec7558a2b340bcd6887920668db12ea67",
+    "include/picoferm/data.hpp": "98e873dd158c68f14996ad046281838d2b72f6db617192870e0c8370260914e8",
+    "include/picoferm/hardware.hpp": "6fedb90ef68b39f7ac5b96882f1d345afb07fab247999ca0ec49539fa1daaadf",
+    "include/picoferm/http.hpp": "6c1a8ea6f65b1bdcfa0d93dedcd4f8a3d0b21bd4e1e981c2bb31e81d85a0c29e",
+    "include/picoferm/http_server.hpp": "eff129d5af3da5570c0fd5fbf1523cb138f16061ff4a6438e274bad5ef895522",
+    "include/picoferm/transport.hpp": "96aa73fd496e0e85cb8766040f62f40f03773004a1084ab766ff15228d103cc8",
+    "include/picoferm/wifi.hpp": "b4c88b957e554012778924d1d91a00310326cf3d214cf4347994f82fb2049237",
+    "platform/esp8266/arduino_ports.hpp": "5876fa1f07fd0fc1afbe8001b601d3b67780679bb79b21d89a1eb7e3d279e84b",
+    "platform/esp8266/hardware_ports.hpp": "f684d696c04c57732504349d95ae340b28cfb3eb42e22d46af2c45da8a0e4474",
+    "platform/esp8266/http_ports.hpp": "a32a27abd4e6f0945268c1e868a8ba65fbe4b155b243278b52f959de37ae1a8f",
+    "platform/esp8266/outbound_ports.hpp": "6ae257b94c6ed8a0a24b21843d42881212522ad62ffa30732b757dae264253d3",
+    "platform/esp8266/system_ports.hpp": "ff03a7be246e972a5ceca832cbb002fab97d340efcb2303d236bb1fd73a48ec0",
+    "platform/esp8266/wifi_ports.hpp": "def15aa90fdfafc14c30bb8ec945bdd6c0db3b98de42394af29f011b57f25c97"
+  },
+  "dependencies": {
+    "arduino-esp8266.json": "e8f143a4478a8c59665f141db08bf1554afb2e340f54da24ff0e518f29d4c940",
+    "toolchain.json": "a7aa18e676018bb342605d2a952594058635004c15f1772884c715918d2d2592"
+  },
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Pinned Xtensa LX106 GCC 4.8.2 and Arduino ESP8266 2.4.1 object compilation of the complete application and concrete SDK drivers. Object report only: complete ELF/map linkage is recorded separately. No flash/install package."
+}

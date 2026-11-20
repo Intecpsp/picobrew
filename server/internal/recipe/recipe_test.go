@@ -48,6 +48,9 @@ func TestAdaptScalesWithExplicitMappingsWithoutMutatingSource(t *testing.T) {
 
 func TestUnsupportedModelsCannotBePromotedToControl(t *testing.T) {
 	for _, p := range recipe.Profiles()[3:] {
+		if p.ID == "z" {
+			continue
+		} // Canonical direct-valve Z programs have an adapter.
 		p.ControlSupported = true // a caller cannot manufacture an adapter this way.
 		plan, err := recipe.Adapt(source(), p, 5)
 		if err != nil {

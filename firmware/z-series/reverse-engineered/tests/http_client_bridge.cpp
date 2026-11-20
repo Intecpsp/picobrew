@@ -47,7 +47,7 @@ extern "C" int http_client_test(unsigned operation,const std::uint32_t* a,const 
     c.state_date=a[DATE];c.deadline=a[DEADLINE];c.reply_timeout_ms=a[REPLY_TIMEOUT];c.header_timeout_ms=a[HEADER_TIMEOUT];c.stalled=a[STALLED]!=0;
     c.content_received=a[RECEIVED];c.response.status=static_cast<std::int32_t>(a[STATUS]);c.response.content_length=static_cast<std::int32_t>(a[CONTENT_LENGTH]);copy(c.response.content_type,"old/type");
     c.buffer_length=std::min<std::size_t>(std::strlen(pending_buffer),1024);std::memcpy(c.buffer.data(),pending_buffer,c.buffer_length);c.buffer_remaining=1024-c.buffer_length;c.buffer_frozen=a[FROZEN]!=0;c.buffer_truncated=a[TRUNCATED]!=0;
-    c.timing.send_date=a[SEND_DATE];c.timing.headers_date=a[HEADERS_DATE];c.timing.body_date=a[BODY_DATE];c.timing.send_duration=a[SEND_DURATION];c.timing.reply_duration=a[REPLY_DURATION];c.timing.body_duration=a[BODY_DURATION];
+    c.timing.trace=false;c.timing.name="";c.timing.send_date=a[SEND_DATE];c.timing.headers_date=a[HEADERS_DATE];c.timing.body_date=a[BODY_DATE];c.timing.send_duration=a[SEND_DURATION];c.timing.reply_duration=a[REPLY_DURATION];c.timing.body_duration=a[BODY_DURATION];
     bool accepted=false;HttpResult status=HttpResult::Ok;std::uint32_t result=0;
     switch(operation){
     case 0:result=c.request.parse(uri);break;

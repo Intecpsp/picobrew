@@ -1,0 +1,658 @@
+{
+  "schema_version": 1,
+  "model": "picostill",
+  "firmware_version": "1.2.0",
+  "complete_application_linked": true,
+  "flash_image_produced": true,
+  "hardware_tested": false,
+  "installation_qualified": false,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-mlongcalls",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "owned_sources": [
+    {
+      "source": "picostill/modified/src/controller.cpp",
+      "source_sha256": "86ddd4c5e03ed42b61f095251d2a06173c06c67682f882d3ce4bf8cef7c42244",
+      "object_sha256": "6ea270d9ffc5bd9c1d0251e61da8ff714f8dc80a728c6c37c6838a3fb182e09f",
+      "object_bytes": 33500
+    },
+    {
+      "source": "picostill/modified/src/hardware.cpp",
+      "source_sha256": "8007ab5df4b6cf7b048d98a49e93cb1490a2276cae7823fbd0af8fd75c144af6",
+      "object_sha256": "693faf6de49d1538206bf94734c6b5c8995defcc14dbc0fc0ce6aea65a29e909",
+      "object_bytes": 15216
+    },
+    {
+      "source": "picostill/modified/src/standalone.cpp",
+      "source_sha256": "1b528d62b9d255605f6be4cfbef085f21271dabb734362049afc945a0938e495",
+      "object_sha256": "b6cd8df24f5d5c4a695a8676503ac98f7a656478336678509deabc80054a1c62",
+      "object_bytes": 47200
+    },
+    {
+      "source": "picostill/modified/platform/esp32/application_main.cpp",
+      "source_sha256": "320382a38346c661811697fa36d0134cb1cf2c695bee13f0d8558bd59c4e2ad5",
+      "object_sha256": "c8779bba02ed6b4c8702fc3b0f33093ccaf61632b1d06b5023a4a4987c979b44",
+      "object_bytes": 20292
+    },
+    {
+      "source": "picostill/reverse-engineered/src/core.cpp",
+      "source_sha256": "c46ff14fbb449f52a3711ced487a7f7c1d3d5b34ff250609230736360c9b9f56",
+      "object_sha256": "03fe6785654f4c392e3ed79eb83f31881553c799113c32ff7cfdcf6876667ed0",
+      "object_bytes": 14168
+    },
+    {
+      "source": "picostill/reverse-engineered/src/enums.cpp",
+      "source_sha256": "17dca96b56256f5676c2dba1efee49e5e93e09e77213d61b89839ba07561d399",
+      "object_sha256": "f7c0e4672137d0d6b2e6c80488cc17dc38d36b63e162559f705da8d2131eff72",
+      "object_bytes": 10828
+    },
+    {
+      "source": "picostill/reverse-engineered/src/animations.cpp",
+      "source_sha256": "9d2dfa182c747045da9631118d8e9022ea5d11d3fc90f2bdd28449d11b07c79a",
+      "object_sha256": "ce91bed3959051f50cc7a8969611445488dd7fd0a6064875dd1ae5dee3caeba8",
+      "object_bytes": 3084
+    },
+    {
+      "source": "picostill/reverse-engineered/src/sensors.cpp",
+      "source_sha256": "2e6fbd24b1ac583c761d0d289310a68f74f77b70378dfdfbf84a4cd9a7d41be8",
+      "object_sha256": "1cf024f73b0ba7f7dcd0b02ef93dd51918954e71894df6b2cc40242292d1de45",
+      "object_bytes": 7504
+    },
+    {
+      "source": "picostill/reverse-engineered/platform/esp32/arduino_ports.cpp",
+      "source_sha256": "2ed0280f5ee6f707c1352ee6a3b2156209a622c9c050d7dd087a74745ae10d7a",
+      "object_sha256": "d05013a5fb6d698e6e928966f81336ba055811ada021b8da8ea68e3aab89436d",
+      "object_bytes": 21276
+    },
+    {
+      "source": "common/src/engine.cpp",
+      "source_sha256": "8c4fd8224a95c0e312fde16892f44a8e97b007a5f5ba3d90f5b661c63fd56768",
+      "object_sha256": "b9536bc5819cd20d02379e1300172e79bee65248754c58530a35ac217ad47b08",
+      "object_bytes": 48884
+    },
+    {
+      "source": "common/src/api.cpp",
+      "source_sha256": "1d339af8cd34bdb871ad716592da246dcb737a6050deb07b76eacb15bcacf193",
+      "object_sha256": "283ad649963877ef9d5c1bc7f52b89788b73a672532c022a18cfbbb0a4365a9d",
+      "object_bytes": 68248
+    },
+    {
+      "source": "common/src/values.cpp",
+      "source_sha256": "c83ca984fad2c640229d604ee14c04b33a675d5c341900af7268b4280bf63e88",
+      "object_sha256": "f3f2f348e4d87338b229b5438ad3c77e487d48d05ac211e7e6444fc336df3493",
+      "object_bytes": 43224
+    },
+    {
+      "source": "common/src/records.cpp",
+      "source_sha256": "9deec7864ea4dbfb9dcfad9a24ed9c52416724fb67af0c89ac6c7a000151ccc2",
+      "object_sha256": "ec0eaf89f7f9d12a63465fa968021388d83ee4221a3f35b2f4227e1c6323f1af",
+      "object_bytes": 11332
+    },
+    {
+      "source": "common/src/history.cpp",
+      "source_sha256": "b66d329d4a860a3e0dc5f44e3a9eef8e76795f360fefbcdb31eaf091ce308d71",
+      "object_sha256": "b8b411ac9d139eed811b10604d461424ae0b2c8afcb62af2471660cfefc1a8e4",
+      "object_bytes": 30632
+    },
+    {
+      "source": "common/src/history_records.cpp",
+      "source_sha256": "0336a037dcdb32ca4f4d8f237839a4e412b6030d91d8fd676e22ea02a4296e2b",
+      "object_sha256": "6b8816a6969b4580b518e28029614d4d2a0b33faf5a9edc8b7f57c2cf4e5918f",
+      "object_bytes": 32500
+    },
+    {
+      "source": "common/src/telemetry.cpp",
+      "source_sha256": "331a628f461d0060df520e29f23079696ed3a09402afb9c4c68a107d4224fa70",
+      "object_sha256": "f14866365c22bd482539fee084990804896d8ef6dbf4f071de0ea2844f6500bd",
+      "object_bytes": 26104
+    },
+    {
+      "source": "common/src/provisioning.cpp",
+      "source_sha256": "f589cc17fa3fb0d8e80d2eb5975beeaf30db47ed4989f4ea919ce753240922d8",
+      "object_sha256": "3b915fe9d60643020da4ad6d22f777f239948a29628ecc1b1b12bb22c8e4789d",
+      "object_bytes": 14360
+    },
+    {
+      "source": "common/src/verified_storage.cpp",
+      "source_sha256": "e59bb0d690fab10ab3b13dc8c7bcbcccae8699ccadf897f6246f1bc17461c1c8",
+      "object_sha256": "f59419942c27470ca4fbb1f400f111f65a55c9407bc5cac2aea3b38aef0bb492",
+      "object_bytes": 15212
+    },
+    {
+      "source": "common/src/common_web_assets.cpp",
+      "source_sha256": "e870f9af47215d14b9df95ab0568c8cba57654d06aa2e8298ee902e8be50dc54",
+      "object_sha256": "f314160e3fb07e90377b310e17869beecf13d9cbaab01aa5f2d67f99f735e332",
+      "object_bytes": 34344
+    },
+    {
+      "source": "common/src/http_server.c",
+      "source_sha256": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
+      "object_sha256": "eba17eabef3ce5fa876e17ae03ade51cecc67824bfbb6dc809800f3c4aabda08",
+      "object_bytes": 23844
+    },
+    {
+      "source": "common/platform/esp32/network_ports.cpp",
+      "source_sha256": "cbd020866db7d50d137aa395e2923182b775f59a1ea272eb04b2d350eb3bb278",
+      "object_sha256": "52c36859142883d7e89f5393cb35c39acba370a633fd239268b8e08ddb9ccf90",
+      "object_bytes": 20480
+    },
+    {
+      "source": "common/platform/esp32/storage_ports.cpp",
+      "source_sha256": "bf26ec3804e840962bccb922a041f9e06f274e3c08bcdc50036da3bf1652515a",
+      "object_sha256": "1580d223fd5d606cde617bd6991d1cf06e0988875ec5c8aad2cebca204184043",
+      "object_bytes": 15600
+    },
+    {
+      "source": "common/platform/esp32/startup.cpp",
+      "source_sha256": "63efe0ff463f7e44bf019bb8b23a4f31057c6121a9c91fbe55e05afb1993c443",
+      "object_sha256": "9dc9359de5898d04dffeda3b53931686240407e4f07b1dfc16c4c0d0a1280306",
+      "object_bytes": 4356
+    },
+    {
+      "source": "common/platform/esp32/station.cpp",
+      "source_sha256": "e539266aae51923a75b2b635f468bf9446f9ecf29adf4fe40fd40230a01dc50f",
+      "object_sha256": "0f767fbeab87597158dd9f2683eeee5d8814a88c834b0399029ba98b2f277012",
+      "object_bytes": 4636
+    }
+  ],
+  "sdk_sources": [
+    {
+      "source": "cores/esp32/Esp.cpp",
+      "source_sha256": "163f5389b952e28f4dcd248b9a0a268f096b32c5d823c374cef869e0d6620040",
+      "object_sha256": "04580572d991cff5c19e0fe46db9017329915f9ded466cb8876ad0f3f6021836",
+      "object_bytes": 21760
+    },
+    {
+      "source": "cores/esp32/FunctionalInterrupt.cpp",
+      "source_sha256": "412ba67dbf8a31d14e4d9e20a6544162a47046ca91d8fbc6b486878c8e6825b2",
+      "object_sha256": "11f354c79be93b947b48ec8cd1a99b2f33cfab8063bc1e625bf42651068c160b",
+      "object_bytes": 3676
+    },
+    {
+      "source": "cores/esp32/HardwareSerial.cpp",
+      "source_sha256": "2c80c76728e1d8790d75b6fbef7ef4bd9214160e53c5bd9eae3eae89ef8e2fbb",
+      "object_sha256": "220ce33f7c3d6e3039add8c1f4984a58e5bbb7154390c3d0cad6addda9538fc7",
+      "object_bytes": 13628
+    },
+    {
+      "source": "cores/esp32/IPAddress.cpp",
+      "source_sha256": "7876a1a39d7aa7306f5645f21995a723f81a7aeb188aac1e51f6619807150eba",
+      "object_sha256": "f281407d03f736b107607696718437ebd9453757fb471153a400171c9b297a79",
+      "object_bytes": 8176
+    },
+    {
+      "source": "cores/esp32/IPv6Address.cpp",
+      "source_sha256": "6ff292917ec18f4d247944808671e7d80b3ec00dc481ae062292f387b767bb1d",
+      "object_sha256": "ce4e21d2380879d5225e18fde137c65c021a6cdb5933b2b95c5054a5e299506c",
+      "object_bytes": 8720
+    },
+    {
+      "source": "cores/esp32/MD5Builder.cpp",
+      "source_sha256": "7eed105f1839269993b9f1181bd28af4e64b187b4e6ae7e8e673e1ea950466b9",
+      "object_sha256": "f0b5398cc7f24a00647106f4ab24397f1de606eba5378c08710ed866c76b030e",
+      "object_bytes": 7804
+    },
+    {
+      "source": "cores/esp32/Print.cpp",
+      "source_sha256": "05851981efaedf6f9178c66f86292e1f2442f86b00e9a59cbedaad71f71b7393",
+      "object_sha256": "7239855d6c90d4151a4299857dbc7e74a6a19a7a6f057d3bbc3de2b8824a7648",
+      "object_bytes": 20420
+    },
+    {
+      "source": "cores/esp32/Stream.cpp",
+      "source_sha256": "45bf8af958f0a754b4606e8a1e8fd176289a07df44995d727a6bfa906522e61f",
+      "object_sha256": "4c352c3d50b2ca981c2629135b4447ed92e04c0fc49f0f63630ef60a94734336",
+      "object_bytes": 12408
+    },
+    {
+      "source": "cores/esp32/StreamString.cpp",
+      "source_sha256": "3ea9025d9c67cf516386fdab088cf45c2914faa1271668d86546e8cf729ee609",
+      "object_sha256": "27dc28c0dea657a41c7090f8203cb01bff4c12b428ff6a00ccfe720104989cd3",
+      "object_bytes": 7268
+    },
+    {
+      "source": "cores/esp32/WMath.cpp",
+      "source_sha256": "104f6de96aece9f02364e1c0c99a77f8e7521271d43a417de90889fddcae16fb",
+      "object_sha256": "86f0ba38d0bc0d05832be79f60e1bda154d4b462e291229113363ad8067d19d5",
+      "object_bytes": 3016
+    },
+    {
+      "source": "cores/esp32/WString.cpp",
+      "source_sha256": "5ecdddf816a03169cd2453162529046c347c48175ff74d343e645a13fad5def8",
+      "object_sha256": "392c8f44985e6f635577313ef6f4923c7158faa39bcb27efbbc0f4d3733223c8",
+      "object_bytes": 49260
+    },
+    {
+      "source": "cores/esp32/base64.cpp",
+      "source_sha256": "581d44263fc36101c607898975923972630ad1d93369b13cc50046f16b631b69",
+      "object_sha256": "db1bbc5734ad20c90c2ffe36a3317d845bd2f67b93841eabbdc05fefe7a5852c",
+      "object_bytes": 3928
+    },
+    {
+      "source": "cores/esp32/cbuf.cpp",
+      "source_sha256": "754ac3778d299eb9996bf76f7fe9c7a39bdafe7c049f8d0d10bf7e89c844b308",
+      "object_sha256": "b97b4430c4b6bb44263d0c2ca453581c19ac21527b1802d88a67f91aa75ed7bb",
+      "object_bytes": 8080
+    },
+    {
+      "source": "cores/esp32/esp32-hal-adc.c",
+      "source_sha256": "021e6f49b109eea2d4b39d58d47afc790a8253615cd41a1eaf82ed077b90b48d",
+      "object_sha256": "395d0f9fdfce4a8f2913e29c1da2e24728cebb5d6a577e8259f9ba1c47dcdd6b",
+      "object_bytes": 12820
+    },
+    {
+      "source": "cores/esp32/esp32-hal-bt.c",
+      "source_sha256": "a051d28c21f589c8d3e64ab415837d8e32f8e4a767bcfdb0561732c065cf0a97",
+      "object_sha256": "67b59b2ad6fa0d1b8bbee4de5282af6addd015249c8b21873d8c84729bcef919",
+      "object_bytes": 3788
+    },
+    {
+      "source": "cores/esp32/esp32-hal-cpu.c",
+      "source_sha256": "4e21cbe7e5f0024ad4d61370307587a2c72384cc79798c08b52b3933076114e1",
+      "object_sha256": "c2acc6c1afad71738d31d7c7db36afe6b04ab3fe0f8491ae35676552754ef93b",
+      "object_bytes": 8680
+    },
+    {
+      "source": "cores/esp32/esp32-hal-dac.c",
+      "source_sha256": "e66abe5a546ede634ab20cc93b151d98cee7da8a5ff46c229d64fd7392ec608d",
+      "object_sha256": "2867008e8111b769a1a1a25d5ae6b3febbbdb2d54340b40c411d5f995e3f43e9",
+      "object_bytes": 1860
+    },
+    {
+      "source": "cores/esp32/esp32-hal-gpio.c",
+      "source_sha256": "d9003f03c5e25f753475473f65cc1919f509cb19d47ae305c89f8119dec0d1db",
+      "object_sha256": "7cce3d72a553dfed1ca378155f46cdd241d3390807c8780c05a8da50c6af16a1",
+      "object_bytes": 9096
+    },
+    {
+      "source": "cores/esp32/esp32-hal-i2c.c",
+      "source_sha256": "0ab5d4caceff84cc14142530dd0858ffe68511891ac5aa5dffc6e5656c450733",
+      "object_sha256": "460fc5ae9fd62e710bd98319fc63d61c289947c8683fd80e538992eff9525e26",
+      "object_bytes": 29376
+    },
+    {
+      "source": "cores/esp32/esp32-hal-ledc.c",
+      "source_sha256": "c86d2fcb36ab3ee56043d42fd47c9e188ffd9c7d6148279432dbdeb1c24ed579",
+      "object_sha256": "b23e0ff41e78717b427a5e4e907eb4c92427eab30e2ed101ee8cc1911679fa4d",
+      "object_bytes": 11580
+    },
+    {
+      "source": "cores/esp32/esp32-hal-matrix.c",
+      "source_sha256": "eb8b3e41615544a72def5da08ec0eb2b0ed7aa96247404ed5cf3fac215cecf7b",
+      "object_sha256": "cdb54dcdbccee71068b99f10461f246016f879e76ea0f37d8eb4c12d142dfabe",
+      "object_bytes": 2792
+    },
+    {
+      "source": "cores/esp32/esp32-hal-misc.c",
+      "source_sha256": "63f0a87d562a88899ffc5ce9571b5c4ba5a2527243af1835a94a8e136aaed4ab",
+      "object_sha256": "09d7850cba4d69a6f41958842e54abaf69b3ca83205737871137124ecced2744",
+      "object_bytes": 10072
+    },
+    {
+      "source": "cores/esp32/esp32-hal-psram.c",
+      "source_sha256": "cc11473353967334eca0d8dcf7d0b56350feb8f0053e0d798f0d04dca520c664",
+      "object_sha256": "f31be4c49f068c6870204a911b68df23949178b26e617da6ac026338ce76cfaf",
+      "object_bytes": 1704
+    },
+    {
+      "source": "cores/esp32/esp32-hal-rmt.c",
+      "source_sha256": "a744a62234a30ffcb9f0e623085a497299af03964f1aba714fd2f2d8e82c5759",
+      "object_sha256": "7af91b7bc9212abec254706d07f636288e6e67f4cc32673598e5c89ad5d8210c",
+      "object_bytes": 19744
+    },
+    {
+      "source": "cores/esp32/esp32-hal-sigmadelta.c",
+      "source_sha256": "ba32a4a731851e1dcda959a71347a8a7c621d171ecb5132937cd07722e8c87eb",
+      "object_sha256": "f354c10e7491dfe74d30dca5c2a23285d9fd3f07678b195c3aee8fc53be44ee8",
+      "object_bytes": 5688
+    },
+    {
+      "source": "cores/esp32/esp32-hal-spi.c",
+      "source_sha256": "8a92b8e096ffecb94b995880bcd2bea80c7297d740eab9702b6bf08f5e9a4fdc",
+      "object_sha256": "a27bdbd4faeac7bc285dd9354f9b8ba5a8a1d7d37598d3d9c11cd8941472768d",
+      "object_bytes": 39820
+    },
+    {
+      "source": "cores/esp32/esp32-hal-time.c",
+      "source_sha256": "d681675f0fbd84b5adc88365f977beedab2d812e2efd79e91b1ac966a6fe62a4",
+      "object_sha256": "cfa93068f22dc82f0cfabfec7813566c69e4e178b6e16ff69a31b9ec22a3ec16",
+      "object_bytes": 5156
+    },
+    {
+      "source": "cores/esp32/esp32-hal-timer.c",
+      "source_sha256": "fb38dfd7d04ef6c7d90d225210525701377983cd6c6d5e06648caa2005e7e7cb",
+      "object_sha256": "4bf313b2de60eb7f6c94e7d35362d3e76bc67dd0e59c013fcdeb097d1c180b73",
+      "object_bytes": 15500
+    },
+    {
+      "source": "cores/esp32/esp32-hal-touch.c",
+      "source_sha256": "3a969b1c92797e70e4df7ce6ed3bc49c6f9d8d55833052e2b24c012e27a5df65",
+      "object_sha256": "841df235e25611bce35871424205c46f33f2d52823797111fceee93e0f507224",
+      "object_bytes": 6020
+    },
+    {
+      "source": "cores/esp32/esp32-hal-uart.c",
+      "source_sha256": "7b98775bfbbf2287c3a26c7fc487a2a1a6b7a3734ee4148590e927f93d5c1a93",
+      "object_sha256": "f216cfb24591c5f19e91da690d01c8be7fe1d220920259cd67f40dc400f218fe",
+      "object_bytes": 24600
+    },
+    {
+      "source": "cores/esp32/stdlib_noniso.c",
+      "source_sha256": "756f3407f3bdfaa83fb34a69487cc9223c42ae88efa4c8a46111b2f00c0ae956",
+      "object_sha256": "e31a313a46728b05d9966e0392391914771674b8d3b924f7b92cb86b32893e2d",
+      "object_bytes": 5140
+    },
+    {
+      "source": "cores/esp32/wiring_pulse.c",
+      "source_sha256": "afae5c27ca0fc234080c8e0ce3f3cb36a936dabfbb7182ffa1d0c0334aab9e25",
+      "object_sha256": "b5e5391acb037953e1a3f752fd9887d41b37d8cc7233df35395d54fac22eabbb",
+      "object_bytes": 2696
+    },
+    {
+      "source": "cores/esp32/wiring_shift.c",
+      "source_sha256": "8a53aaf3dab5d70c5a209bd58dae8845dbbc1af4fd84725b8ace79c09093f3da",
+      "object_sha256": "c539ac54634a9dc6e018035915ca139efee4024bd754b2c9af72f71b7ca2d0bb",
+      "object_bytes": 2380
+    },
+    {
+      "source": "libraries/Wire/src/Wire.cpp",
+      "source_sha256": "0624f16f6e73452256d7a6a73095809107407ee3b2afd1687b9f1400e6c23e2e",
+      "object_sha256": "dfeb6bd9f3cf414fb17b893d2a0008d63a2021c2fa7f1f6af6eaeff4a33c323b",
+      "object_bytes": 18684
+    },
+    {
+      "source": "libraries/WiFi/src/ETH.cpp",
+      "source_sha256": "14404191bdc0f9f7a533217da8c3f7489e433c4cca69d108f5f02e2885e2a0c7",
+      "object_sha256": "74f2b0a633f51d83d6a98f7aabe3bd8d88baabae0080573aefe0d58c048272b3",
+      "object_bytes": 14764
+    },
+    {
+      "source": "libraries/WiFi/src/WiFi.cpp",
+      "source_sha256": "181b228f7165a2405a3b8c093436d119320b7b8d8f8f8f117915021dec5eeabc",
+      "object_sha256": "72a9682dcb88ce5ac37ad1d2d006d82d20895407fa4bef647da219ce2a69e619",
+      "object_bytes": 4628
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiAP.cpp",
+      "source_sha256": "6ceb9e779fc28ce0dd423230ac3e600ed363a63ad05611f3c2874d776c6f1bc2",
+      "object_sha256": "4a834e41b5382dcf184725790aef9b6ee9963d462320f06972109942e4b9da88",
+      "object_bytes": 12136
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiClient.cpp",
+      "source_sha256": "9ef3382a5795a8392396ec192f1538314e2f9ed3f65fee291ac933389cae190f",
+      "object_sha256": "cb0809c64c5b646882bacec38dea61cb0e0742d17a6854831505840e2f1d6822",
+      "object_bytes": 46536
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiGeneric.cpp",
+      "source_sha256": "7b02f4ac558cb54c54de9287c513a0f28cba3c46390aa2fa6fc0eb80ccf601ff",
+      "object_sha256": "6130f939581c255ed93f817f9c9969d443debe2a232ef73675acabc79807a6a9",
+      "object_bytes": 38468
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiMulti.cpp",
+      "source_sha256": "6680aad05cf364ba05f77ceff23a44fff3da8fdbba2c65a075e5f1e1f5ef296c",
+      "object_sha256": "f0756b6bb730ac24e5e1753d2dffafc16afaac8399a138f8d8249e3244b04e3d",
+      "object_bytes": 9624
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiSTA.cpp",
+      "source_sha256": "5dc5466a8e71436e787d0e6a6b534827e4f3d1dd9c38b319e7ac4dc1fa44afbb",
+      "object_sha256": "8ae8588b363608fa794005be15444dd76ee507e25679b41fac3f2586e5db2b45",
+      "object_bytes": 29316
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiScan.cpp",
+      "source_sha256": "ec8e9367dc60f13bd2ac9c4669a0876b732f56f0191a2119c7b3eebe9b355ecc",
+      "object_sha256": "c77453fd5b0e9ec2dcba306e5469ece0343a03f3965dd8c18819046378fe4bd4",
+      "object_bytes": 11696
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiServer.cpp",
+      "source_sha256": "6a925b747f9493b1b446a57234547f6d361a70053299365d7c7b6eba89952c1d",
+      "object_sha256": "3f140d657c6e5631fd023bfff51b84d1607b4f1e9be28a9d7fad6d1936e89755",
+      "object_bytes": 10152
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiUdp.cpp",
+      "source_sha256": "bb94fb6de526d7ac8d09913ce8264e88ec6658bcb1f19b362de4ebc44a010c5a",
+      "object_sha256": "5c94580ed9be2b8903074c587aca21f74aa5aa96e84ee0c5f2410b30d6e06f18",
+      "object_bytes": 17196
+    }
+  ],
+  "headers": {
+    "picostill/modified/include/picostill/standalone.hpp": "7f983b836a26406889d19cc2c65eec0c4ed0a4aebb4c3a8b52928244ecaf1562",
+    "picostill/reverse-engineered/include/picostill/application.hpp": "9a37ec6ec9ba18c7314bc9071d2bdbad904b61596a86ff8dc17cc9c7a04c6c70",
+    "picostill/reverse-engineered/include/picostill/backend.hpp": "960ca19371c27c405d10e8fefdfd8e41aa2d35cf44298e7e570e4b8019c3171e",
+    "picostill/reverse-engineered/include/picostill/controller.hpp": "cba826b9d540a8a94d76139c448bb8d606e9c6726eda1e815ed65ab0b98d8e80",
+    "picostill/reverse-engineered/include/picostill/core.hpp": "d19983e75abfba118a7b18a0b6b8f37711fc5f86f6c0072ec6f358e90399542a",
+    "picostill/reverse-engineered/include/picostill/data.hpp": "249898462dbaad799a0bfc975000c033186ff28f9197c0c067a11eed3cafaa86",
+    "picostill/reverse-engineered/include/picostill/device.hpp": "4753a40e3462da23e6b539461ac5048533f5b1262ca1873217602bb22a32d77a",
+    "picostill/reverse-engineered/include/picostill/enums.hpp": "26ee1cfa39aca7350278692fc89e71efb00fa5998b9eb9064c0061b61f18dfdf",
+    "picostill/reverse-engineered/include/picostill/hardware.hpp": "5cc48d3c3c148b624c1c022198c62851877f6db669eb1a18f9f0bf882d361e75",
+    "picostill/reverse-engineered/include/picostill/http.hpp": "104af08cb660c4f589e7596142547fbbb8686ed0a53a56632dfbf9de5bbb6851",
+    "picostill/reverse-engineered/include/picostill/http_server.hpp": "d90f01db27c60e2a6586271cc9fbb6c030a9726c9e7a71752898b7cfd31b84d7",
+    "picostill/reverse-engineered/include/picostill/machine.hpp": "d81a67a047fda765c717a45d952d27e48067daf9beff717536df986181bcd133",
+    "picostill/reverse-engineered/include/picostill/reports.hpp": "96639342750acda7c6aef7169a1ab4b9e06993320f31fbd75933d3a50b7f7c60",
+    "picostill/reverse-engineered/include/picostill/sensors.hpp": "503d8f8696582803a9c435e8fe88646cd6ce66553ee9a7417b380abde23b8dbc",
+    "picostill/reverse-engineered/include/picostill/storage.hpp": "329b6dd02e0d02b1eeb5f6643165455a9ecd1bb226fb7dac34c947d62807256d",
+    "picostill/reverse-engineered/include/picostill/transport.hpp": "6a325848db01808d7126846acc92f25a94ab988a2ffdba7051697d246cb2911d",
+    "picostill/reverse-engineered/include/picostill/update.hpp": "b55df241742eb955e76a24d59762512b2ccb62a2450ed343d70e2423d4278304",
+    "picostill/reverse-engineered/include/picostill/web_assets.hpp": "a88188af3916074125944c68194173d4e13840e2c47801ada95f40a3a93a7098",
+    "picostill/reverse-engineered/include/picostill/wifi.hpp": "ce8b250609812f1973a83316f1d9a88aa563c46d37adb57300685a1eaddd74d6",
+    "picostill/reverse-engineered/platform/esp32/arduino_ports.hpp": "dadbf98a61f72e422ff9bff7233b150a5b14160eafa68ee6dac22b797a9f73cd",
+    "picostill/reverse-engineered/platform/esp32/http_ports.hpp": "45036cfe2bde1c099ab6f5a44f633c84905c9b05407d86361770c51416fc6df5",
+    "picostill/reverse-engineered/platform/esp32/nvs_ports.hpp": "e04e7dc1ae8453dd920fbad22984b94e0104214326709068eea01e0f6fa0a961",
+    "picostill/reverse-engineered/platform/esp32/outbound_ports.hpp": "2af91099ebc07a95b78164f762e6c1f1fa3fb21ee1a87b5e27798320c96f610e",
+    "picostill/reverse-engineered/platform/esp32/system_ports.hpp": "952972eaed8f9645cc7535be29ccb5d1edb5b5b0407ceb91fc721ea0ad4fa478",
+    "picostill/reverse-engineered/platform/esp32/wifi_ports.hpp": "2c54861e660129679b246c9a639fb3780f176ad946953c52ed33e32590497a9d",
+    "common/include/picobrew/common_web.h": "a32e78944bc9c6f470f03afaac681ecc8f040ada75e7fd0364696af3f2a5172b",
+    "common/include/picobrew/device_services.hpp": "428b31a12cc5803289595c472b005352756fb86c442cd38d4e6f526f868185ef",
+    "common/include/picobrew/http_server.h": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
+    "common/include/picobrew/provisioning.hpp": "9bdbdd768daf8f7b8834bfc7a9e3220cf7cbb953321694250efd0c35f02daadd",
+    "common/include/picobrew/standalone_engine.hpp": "279419441fd728e2ad871cc812749d148ab18960ac3fe75dca31fc4384787dd2",
+    "common/include/picobrew/verified_storage.hpp": "0656ebc74cd243e148f5c9da90aab5103e2636b8ac9175974981c51702581228",
+    "common/src/engine_internal.hpp": "57521041b6c10f7ce3a2af9d0d909db47568d43ef1e0f2fae1c385faa99adb79",
+    "common/src/json.hpp": "5ee0a5b00b92a6f5c3070fc0b29114fb707cc686380f0ab6abf28589c65c6654",
+    "common/src/records.hpp": "19dc25a561479648e6bae02d8157f6e6d47678acd313d4a37d9c7350ecd5c6bd",
+    "common/platform/esp32/network_ports.hpp": "3f7a7e46be1ef8e2a35e33cd0095bddd748ba9b4faa04fc5b2d3e1b640f3cbc5",
+    "common/platform/esp32/startup.hpp": "99db24ebff5a41267c18425adede2a8ec6dede2fd6e09b1c8c120b52a93832a8",
+    "common/platform/esp32/station.hpp": "19cc6ad295936d1d191ba183e06a2a9a4bef6e45316ade4bb4b2dd97619947f5",
+    "common/platform/esp32/storage_ports.hpp": "413d3da6f25225a7b1e897b633bbdf696ddaa43a162433f7f0e1174e953f3fe5"
+  },
+  "required_symbols": {
+    "app_main": "0x400d2468",
+    "picostill::oem::ArduinoPorts::initialize_hardware(picostill::oem::FanBank&, picostill::oem::OutputPin&, picostill::oem::Sensors&)": "0x400d2c3c",
+    "picobrew::standalone::Engine::poll()": "0x400d31ec",
+    "picobrew::standalone::Provisioning::feed(char, picobrew::standalone::Result&)": "0x400da030",
+    "pico_http_server_poll": "0x400dab68",
+    "picobrew::standalone::esp32::TelemetrySocket::send(unsigned char const*, unsigned int)": "0x400db780",
+    "picobrew::standalone::esp32::SpiffsFiles::mount()": "0x400dba38",
+    "picobrew::standalone::esp32::initialize_arduino()": "0x400dbe20",
+    "picobrew::standalone::esp32::connect_station(char const*, char const*)": "0x400dbe74",
+    "picostill::standalone::Device::execute(picobrew::standalone::Command const&)": "0x400dcd54",
+    "picostill::standalone::Device::poll()": "0x400dd190",
+    "picostill::oem::Controller::poll()": "0x400de648",
+    "picostill::standalone::OutputGuard::inhibit()": "0x4015718c"
+  },
+  "forbidden_symbols_absent": [
+    " initArduino",
+    " loopTask(",
+    "picostill::oem::Machine::",
+    "picostill::oem::Application::",
+    "picostill::oem::Backend::",
+    "picostill::oem::FirmwareUpdate::",
+    "picostill::oem::CredentialStorage::",
+    "picostill::oem::HttpServer::"
+  ],
+  "elf_sha256": "90d53853b3b389bc38713911a78da25fb9a1d8e97e076899909086b1d06bce2a",
+  "map_sha256": "9d7b697577621afd83ac70070c1e219e44472797b79126ecfa54e8c9665d0842",
+  "app_image": {
+    "file": "application.bin",
+    "bytes": 796784,
+    "sha256": "79dba344ccee884302126aa3d835fc3860b8b9dcfa293fb3de477240744d1d1b",
+    "parsed": {
+      "format": "Espressif ESP32 application image",
+      "architecture": "Xtensa LX6",
+      "size_bytes": 796784,
+      "sha256": "79dba344ccee884302126aa3d835fc3860b8b9dcfa293fb3de477240744d1d1b",
+      "segment_count": 12,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 32,
+      "entry_address": 1074278752,
+      "segments": [
+        {
+          "index": 0,
+          "header_offset": 24,
+          "file_offset": 32,
+          "load_address": 1061158944,
+          "size_bytes": 145580,
+          "memory_kind": "DROM",
+          "sha256": "24486068e96392356290e2516cce5acd7d87381f04c0ccdcc479160270a766b7"
+        },
+        {
+          "index": 1,
+          "header_offset": 145612,
+          "file_offset": 145620,
+          "load_address": 1073217536,
+          "size_bytes": 0,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "index": 2,
+          "header_offset": 145620,
+          "file_offset": 145628,
+          "load_address": 1073217536,
+          "size_bytes": 0,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "index": 3,
+          "header_offset": 145628,
+          "file_offset": 145636,
+          "load_address": 1073470304,
+          "size_bytes": 12224,
+          "memory_kind": "DRAM",
+          "sha256": "c00ea6314c16d393b031d804c417420ecb1124be9484681b3d182980a2fc744b"
+        },
+        {
+          "index": 4,
+          "header_offset": 157860,
+          "file_offset": 157868,
+          "load_address": 1073482528,
+          "size_bytes": 0,
+          "memory_kind": "DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "index": 5,
+          "header_offset": 157868,
+          "file_offset": 157876,
+          "load_address": 1074266112,
+          "size_bytes": 1024,
+          "memory_kind": "IRAM",
+          "sha256": "0818ecaee9ef223d4e2abfdf4e6db8d5381d21bba4b59842b274339cc102e1d3"
+        },
+        {
+          "index": 6,
+          "header_offset": 158900,
+          "file_offset": 158908,
+          "load_address": 1074267136,
+          "size_bytes": 37716,
+          "memory_kind": "IRAM",
+          "sha256": "ac6c7a684c7f767b9a50ecb6b5a94767cc878e71a366bdc0134a0c9be7ef3dff"
+        },
+        {
+          "index": 7,
+          "header_offset": 196624,
+          "file_offset": 196632,
+          "load_address": 1074593816,
+          "size_bytes": 561164,
+          "memory_kind": "IROM",
+          "sha256": "39c553370384ca757acf4b2cac098ff11160b683240a224899b721bfc3297657"
+        },
+        {
+          "index": 8,
+          "header_offset": 757796,
+          "file_offset": 757804,
+          "load_address": 1074304852,
+          "size_bytes": 38908,
+          "memory_kind": "IRAM",
+          "sha256": "ee36bdf11549e08956ab4803f32d433238765a0596afb3d0eabf5cb9759ef5b2"
+        },
+        {
+          "index": 9,
+          "header_offset": 796712,
+          "file_offset": 796720,
+          "load_address": 1074528256,
+          "size_bytes": 0,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "index": 10,
+          "header_offset": 796720,
+          "file_offset": 796728,
+          "load_address": 1342177792,
+          "size_bytes": 0,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "index": 11,
+          "header_offset": 796728,
+          "file_offset": 796736,
+          "load_address": 1342177792,
+          "size_bytes": 0,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "checksum_offset": 796751,
+      "checksum": 235,
+      "checksum_verified": true,
+      "appended_sha256": "820cc8db4a4fb86bf4c8776a27866b4a5d418a51e6708cab82196a5d7e4dc950",
+      "digest_verified": true,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "extended_header_hex": "ee000000000000000000000000000001"
+    }
+  },
+  "image_converter_sha256": "1537a53933045079a97abc21248970785966aa55caed968bd2e9bc91e2eaadb8",
+  "build_script_sha256": "6c655061251dfdd148b5cde7c010ee9fd53a3152ffdad5011409ed2948724a5a",
+  "dependency_pins": {
+    "arduino-esp32.json": "45f502a14a5d4251470da9f2078ccac30d38eb1ee33c99da50075025c62f0005",
+    "toolchain.json": "7921d28b17b9a032d8aaa5b10cd461ba8b745ca1650cb8076dd1c4bcba296881"
+  },
+  "original_linker_scripts": {
+    "esp32_out.ld": "e730b50b4ccb98af01c926e3ae57f7761f35deb5e368d4c7c1a340c85f5dfff7",
+    "esp32.common.ld": "3cb1e57bfc326dbe7949b8bf490c0299bc27e5297bb8f1d7e0e0f207cfc60f2a",
+    "esp32.rom.ld": "2803306c7332598468ef2276a207322e162b19d0c860b20b0f092fd812638c2d",
+    "esp32.peripherals.ld": "971513baed4da77f0c46916021fda57def4ad65998249b0afa06afc1d2045b9d",
+    "esp32.rom.spiram_incompatible_fns.ld": "696b492692ec3df40bb9d3444682e054f94b768486f322b961417d05e10e9c93"
+  },
+  "size": "text\t   data\t    bss\t    dec\t    hex\tfilename\n 638810\t 157804\t  33728\t 830342\t  cab86\t/workspace/scratch/ae8953cf8f3f/family-parity-completion/firmware/picostill/modified/build/esp32/picostill-standalone.elf",
+  "task_stack_bytes": 8192,
+  "scope": "Complete modified PicoStill task, real GPIO/I2C, repaired rollover timers, common local API/browser/history, verified storage/provisioning and asynchronous optional telemetry. App binary fits the explicit 4-MiB standalone reference layout. No OEM partition-table or physical installation qualification is inferred."
+}

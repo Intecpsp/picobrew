@@ -1,0 +1,3366 @@
+{
+  "schema": 1,
+  "image_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "scope": "Exact original string literals and decompiled line/domain bindings, with native rendering contracts. This is not a new original-function execution comparison; backend control-flow execution is separately covered by backend-services-validation.json and core-helpers-validation.json.",
+  "assertion_count": 29,
+  "diagnostic_count": 42,
+  "literals": [
+    {
+      "address": "0x3f413a15",
+      "text": "!CString::isNullOrEmpty(ctl)"
+    },
+    {
+      "address": "0x3f4139f7",
+      "text": "!CString::isNullOrEmpty(type)"
+    },
+    {
+      "address": "0x3f4185ff",
+      "text": "!CString::isNullOrEmpty(uri)"
+    },
+    {
+      "address": "0x3f40d592",
+      "text": "!_backState.IsRegistered"
+    },
+    {
+      "address": "0x3f40b6b2",
+      "text": "!_isFrozen"
+    },
+    {
+      "address": "0x3f411af5",
+      "text": "!_uri.isTruncated()"
+    },
+    {
+      "address": "0x3f40005c",
+      "text": "%s"
+    },
+    {
+      "address": "0x3f40b85f",
+      "text": "Buffer truncated"
+    },
+    {
+      "address": "0x3f419124",
+      "text": "Cannot start session (backend cannot sync)"
+    },
+    {
+      "address": "0x3f4190e0",
+      "text": "Cannot start session (state %s)"
+    },
+    {
+      "address": "0x3f40b893",
+      "text": "Dropping %d bytes"
+    },
+    {
+      "address": "0x3f418fd6",
+      "text": "Error while creating session"
+    },
+    {
+      "address": "0x3f40f5df",
+      "text": "Failed to send command"
+    },
+    {
+      "address": "0x3f4181f5",
+      "text": "Invalid newState %d"
+    },
+    {
+      "address": "0x3f40d57c",
+      "text": "Missing network"
+    },
+    {
+      "address": "0x3f418e53",
+      "text": "Missing step name"
+    },
+    {
+      "address": "0x3f40b080",
+      "text": "Not enough space to receive response"
+    },
+    {
+      "address": "0x3f418f2e",
+      "text": "Session cannot end session on backend"
+    },
+    {
+      "address": "0x3f418ee7",
+      "text": "Session cannot send log data point"
+    },
+    {
+      "address": "0x3f419017",
+      "text": "Timeout while creating session"
+    },
+    {
+      "address": "0x3f41909f",
+      "text": "Timeout while ending session"
+    },
+    {
+      "address": "0x3f41905a",
+      "text": "Timeout while logging data point"
+    },
+    {
+      "address": "0x3f414d68",
+      "text": "Truncating list (retaining only %d recipes)"
+    },
+    {
+      "address": "0x3f40d6a8",
+      "text": "Unexpected command type %s"
+    },
+    {
+      "address": "0x3f403480",
+      "text": "Unexpected content type"
+    },
+    {
+      "address": "0x3f41444e",
+      "text": "Unsupported type"
+    },
+    {
+      "address": "0x3f41444e",
+      "text": "Unsupported type for ResumableSession"
+    },
+    {
+      "address": "0x3f40d4c9",
+      "text": "Useless call to setState"
+    },
+    {
+      "address": "0x3f414c18",
+      "text": "ZBackendError is missing"
+    },
+    {
+      "address": "0x3f418f92",
+      "text": "_cState.sessionState.Id == _sessionId"
+    },
+    {
+      "address": "0x3f4186e2",
+      "text": "_httpClient.%s()"
+    },
+    {
+      "address": "0x3f41867e",
+      "text": "_httpClient.init()"
+    },
+    {
+      "address": "0x3f40d649",
+      "text": "_pendingRecipe.id == 0"
+    },
+    {
+      "address": "0x3f40d61e",
+      "text": "_pendingRecipe.kind == RecipeKind::BrewPen"
+    },
+    {
+      "address": "0x3f40d660",
+      "text": "_pendingRecipe.kind == RecipeKind::PicoPak"
+    },
+    {
+      "address": "0x3f40d5f3",
+      "text": "_pendingRecipe.kind == RecipeKind::Zymatic"
+    },
+    {
+      "address": "0x3f418eb6",
+      "text": "_state != newState"
+    },
+    {
+      "address": "0x3f4057b4",
+      "text": "areCompatible(_unit, unit)"
+    },
+    {
+      "address": "0x3f418836",
+      "text": "backState.BackendError == ZBackendError::None"
+    },
+    {
+      "address": "0x3f40d52e",
+      "text": "beginSync() called while not in Idle state"
+    },
+    {
+      "address": "0x3f417b0b",
+      "text": "canSync()"
+    },
+    {
+      "address": "0x3f412b65",
+      "text": "count == 0"
+    },
+    {
+      "address": "0x3f40b822",
+      "text": "data != nullptr || datalen == 0"
+    },
+    {
+      "address": "0x3f4140e8",
+      "text": "deserializeJson error %d %s"
+    },
+    {
+      "address": "0x3f40d5c8",
+      "text": "get() called while not in Idle state"
+    },
+    {
+      "address": "0x3f413c87",
+      "text": "isEnumValid<EClass>(e)"
+    },
+    {
+      "address": "0x3f413b8d",
+      "text": "isEnumValid<EClass>(value)"
+    },
+    {
+      "address": "0x3f417b15",
+      "text": "s.Type != SessionType::Unknown"
+    },
+    {
+      "address": "0x3f403ce5",
+      "text": "start()"
+    },
+    {
+      "address": "0x3f401992",
+      "text": "stop"
+    },
+    {
+      "address": "0x3f413637",
+      "text": "typelen> 0"
+    }
+  ],
+  "native_cases": [
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 231
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 231,
+            "assertion": "backState.BackendError == ZBackendError::None"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 739
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 739,
+            "assertion": "!CString::isNullOrEmpty(ctl)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 745
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 745,
+            "assertion": "!_uri.isTruncated()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 750
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 750,
+            "assertion": "!CString::isNullOrEmpty(type)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 756
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 756,
+            "assertion": "!_uri.isTruncated()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 766
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 766,
+            "assertion": "!_uri.isTruncated()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 771
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 771,
+            "assertion": "!CString::isNullOrEmpty(uri)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 774
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 774,
+            "assertion": "!_uri.isTruncated()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 940
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 940,
+            "assertion": "_pendingRecipe.kind == RecipeKind::Zymatic"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 945
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 945,
+            "assertion": "_pendingRecipe.kind == RecipeKind::BrewPen"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 946
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 946,
+            "assertion": "_pendingRecipe.id == 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 950
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 950,
+            "assertion": "_pendingRecipe.kind == RecipeKind::PicoPak"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 126
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 126,
+            "assertion": "typelen> 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 252
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 252,
+            "assertion": "canSync()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 253
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 253,
+            "assertion": "s.Type != SessionType::Unknown"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 264
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 264,
+            "assertion": "canSync()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 275
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 275,
+            "assertion": "canSync()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 2,
+        "line": 220
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 220,
+            "assertion": "!_backState.IsRegistered"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 2,
+        "line": 330
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 330,
+            "assertion": "_state != newState"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 2,
+        "line": 449
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 449,
+            "assertion": "_cState.sessionState.Id == _sessionId"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 93
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 93,
+            "assertion": "!_isFrozen"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 94
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 94,
+            "assertion": "data != nullptr || datalen == 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 104
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 104,
+            "assertion": "count == 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 93
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 93,
+            "assertion": "!_isFrozen"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 94
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 94,
+            "assertion": "data != nullptr || datalen == 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 104
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 104,
+            "assertion": "count == 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 0,
+        "line": 15
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Json.h",
+            "line": 15,
+            "assertion": "isEnumValid<EClass>(e)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 23
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Json.h",
+            "line": 23,
+            "assertion": "isEnumValid<EClass>(value)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "assertion",
+        "domain": 1,
+        "line": 125
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Quantity.h",
+            "line": 125,
+            "assertion": "areCompatible(_unit, unit)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 175
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "Useless call to setState"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 175
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 175,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Useless call to setState"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 224
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 224,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 224,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 237
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 1,
+        "kind": 0,
+        "format": "ZBackendError is missing"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 237
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 237,
+            "tag": "JSON",
+            "level": 1,
+            "message": "ZBackendError is missing"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 244
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 1,
+        "format": "%s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 244,
+        "backend_error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 244,
+            "tag": "HBE",
+            "level": 2,
+            "message": "None"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 244,
+        "backend_error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 244,
+            "tag": "HBE",
+            "level": 2,
+            "message": "BoilerSNInv"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 244,
+        "backend_error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 244,
+            "tag": "HBE",
+            "level": 2,
+            "message": "BTypeMismatch"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 244,
+        "backend_error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 244,
+            "tag": "HBE",
+            "level": 2,
+            "message": "BUpdateError"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 244,
+        "backend_error": 99
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 244,
+            "tag": "HBE",
+            "level": 2,
+            "message": "<ZBackendError::INVALID>"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 266
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 266,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 266,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 284
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 1,
+        "kind": 2,
+        "format": "Truncating list (retaining only %d recipes)"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 284,
+        "argument": 0,
+        "count": 0,
+        "state": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 284,
+            "tag": "JSON",
+            "level": 1,
+            "message": "Truncating list (retaining only 0 recipes)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 284,
+        "argument": 16,
+        "count": 16,
+        "state": 16
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 284,
+            "tag": "JSON",
+            "level": 1,
+            "message": "Truncating list (retaining only 16 recipes)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 284,
+        "argument": 4294967295,
+        "count": 4294967295,
+        "state": 4294967295
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 284,
+            "tag": "JSON",
+            "level": 1,
+            "message": "Truncating list (retaining only -1 recipes)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 320
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 320,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 320,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 629
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 629,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 629,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 650
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 650,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 650,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 672
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 672,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 672,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 693
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "JSON",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 693,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 693,
+            "tag": "JSON",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 712
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "Unsupported type for ResumableSession"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 712
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 712,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unsupported type for ResumableSession"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 794
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "Unsupported type"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 794
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 794,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unsupported type"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 810
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "_httpClient.init()"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 810
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 810,
+            "tag": "HBE",
+            "level": 2,
+            "message": "_httpClient.init()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 848
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 1,
+        "format": "_httpClient.%s()"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 848,
+        "text": "POST"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 848,
+            "tag": "HBE",
+            "level": 2,
+            "message": "_httpClient.POST()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 848,
+        "text": "GET"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 848,
+            "tag": "HBE",
+            "level": 2,
+            "message": "_httpClient.GET()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 848,
+        "text": "SetProgram"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 848,
+            "tag": "HBE",
+            "level": 2,
+            "message": "_httpClient.SetProgram()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 959
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 1,
+        "format": "Unexpected command type %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 959,
+        "text": "POST"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 959,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unexpected command type POST"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 959,
+        "text": "GET"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 959,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unexpected command type GET"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 959,
+        "text": "SetProgram"
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 959,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unexpected command type SetProgram"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 1061
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "Unexpected content type"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 1061
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 1061,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Unexpected content type"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 244
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "ZBackend.h",
+        "tag": "ZBEND",
+        "level": 2,
+        "kind": 0,
+        "format": "Failed to send command"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 244
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 244,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "Failed to send command"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 284
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "ZBackend.h",
+        "tag": "ZBEND",
+        "level": 1,
+        "kind": 0,
+        "format": "Missing step name"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 284
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 284,
+            "tag": "ZBEND",
+            "level": 1,
+            "message": "Missing step name"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 353
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "ZBackend.h",
+        "tag": "ZBEND",
+        "level": 2,
+        "kind": 0,
+        "format": "Unexpected content type"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 353
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 353,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "Unexpected content type"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 356
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "ZBackend.h",
+        "tag": "ZBEND",
+        "level": 2,
+        "kind": 0,
+        "format": "Not enough space to receive response"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 356
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 356,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "Not enough space to receive response"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 376
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "ZBackend.h",
+        "tag": "ZBEND",
+        "level": 2,
+        "kind": 3,
+        "format": "deserializeJson error %d %s"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 0 Ok"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 1 IncompleteInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 2 InvalidInput"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 3 NoMemory"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 4 NotSupported"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 376,
+        "error": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "ZBackend.h",
+            "line": 376,
+            "tag": "ZBEND",
+            "level": 2,
+            "message": "deserializeJson error 5 TooDeep"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 379
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 2,
+        "format": "Invalid newState %d"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 379,
+        "argument": 0,
+        "count": 0,
+        "state": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 379,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Invalid newState 0"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 379,
+        "argument": 16,
+        "count": 16,
+        "state": 16
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 379,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Invalid newState 16"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 379,
+        "argument": 4294967295,
+        "count": 4294967295,
+        "state": 4294967295
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 379,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Invalid newState -1"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 425
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 1,
+        "format": "Cannot start session (state %s)"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state Idle)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 1
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state Creating)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 2
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state Waiting)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 3
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state Logging)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 4
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state Ending)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 5
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state <State::INVALID>)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 425,
+        "state": 6
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 425,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (state <State::INVALID>)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 427
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Cannot start session (backend cannot sync)"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 427
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 427,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Cannot start session (backend cannot sync)"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 430
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 1,
+        "kind": 0,
+        "format": "start()"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 430
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 430,
+            "tag": "ZSES",
+            "level": 1,
+            "message": "start()"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 451
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Error while creating session"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 451
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 451,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Error while creating session"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 458
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Timeout while creating session"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 458
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 458,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Timeout while creating session"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 472
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Timeout while logging data point"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 472
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 472,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Timeout while logging data point"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 480
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Timeout while ending session"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 480
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 480,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Timeout while ending session"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 919
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "get() called while not in Idle state"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 919
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 919,
+            "tag": "HBE",
+            "level": 2,
+            "message": "get() called while not in Idle state"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 921
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 1,
+        "kind": 0,
+        "format": "Missing network"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 921
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 921,
+            "tag": "HBE",
+            "level": 1,
+            "message": "Missing network"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 971
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "beginSync() called while not in Idle state"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 971
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 971,
+            "tag": "HBE",
+            "level": 2,
+            "message": "beginSync() called while not in Idle state"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 973
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 1,
+        "kind": 0,
+        "format": "Missing network"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 973
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 973,
+            "tag": "HBE",
+            "level": 1,
+            "message": "Missing network"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 1065
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "HttpBackend.h",
+        "tag": "HBE",
+        "level": 2,
+        "kind": 0,
+        "format": "Not enough space to receive response"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 1065
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "HttpBackend.h",
+            "line": 1065,
+            "tag": "HBE",
+            "level": 2,
+            "message": "Not enough space to receive response"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 359
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Session cannot send log data point"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 359
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 359,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Session cannot send log data point"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 370
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "ZSES",
+        "level": 2,
+        "kind": 0,
+        "format": "Session cannot end session on backend"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 370
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 370,
+            "tag": "ZSES",
+            "level": 2,
+            "message": "Session cannot end session on backend"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 102
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "Buffer.h",
+        "tag": "BUF",
+        "level": 1,
+        "kind": 0,
+        "format": "Buffer truncated"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 102
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 102,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Buffer truncated"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 0,
+        "line": 106
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "Buffer.h",
+        "tag": "BUF",
+        "level": 1,
+        "kind": 2,
+        "format": "Dropping %d bytes"
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 106,
+        "argument": 0,
+        "count": 0,
+        "state": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping 0 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 106,
+        "argument": 16,
+        "count": 16,
+        "state": 16
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping 16 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 0,
+        "line": 106,
+        "argument": 4294967295,
+        "count": 4294967295,
+        "state": 4294967295
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping -1 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 102
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "Buffer.h",
+        "tag": "BUF",
+        "level": 1,
+        "kind": 0,
+        "format": "Buffer truncated"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 102
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 102,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Buffer truncated"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 1,
+        "line": 106
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "Buffer.h",
+        "tag": "BUF",
+        "level": 1,
+        "kind": 2,
+        "format": "Dropping %d bytes"
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 106,
+        "argument": 0,
+        "count": 0,
+        "state": 0
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping 0 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 106,
+        "argument": 16,
+        "count": 16,
+        "state": 16
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping 16 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "domain": 1,
+        "line": 106,
+        "argument": 4294967295,
+        "count": 4294967295,
+        "state": 4294967295
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "Buffer.h",
+            "line": 106,
+            "tag": "BUF",
+            "level": 1,
+            "message": "Dropping -1 bytes"
+          }
+        ]
+      }
+    },
+    {
+      "input": {
+        "op": "description",
+        "domain": 2,
+        "line": 202
+      },
+      "expected": {
+        "ok": true,
+        "events": [],
+        "file": "CoreHelpers.h",
+        "tag": "REG",
+        "level": 3,
+        "kind": 4,
+        "format": "stop"
+      }
+    },
+    {
+      "input": {
+        "domain": 2,
+        "line": 202,
+        "scope": true
+      },
+      "expected": {
+        "ok": true,
+        "events": [
+          {
+            "file": "CoreHelpers.h",
+            "line": 202,
+            "tag": "REG",
+            "scope": "stop"
+          }
+        ]
+      }
+    }
+  ],
+  "source_sha256": {
+    "include/zseries/backend_diagnostics.hpp": "ccb6063f39c1bbebada1878b24417ecfd4aa2390d511a1a13074f6d21d6c00e1",
+    "src/backend_diagnostics.cpp": "45b4b89db0320572a6386b1271486bbf3ae4d7cfde67f97087c7dee099c6840e",
+    "tests/backend_diagnostics_probe.cpp": "dffd5719206aab65cb62164d27c5568c202407a1100366f100bca7c465e07ddc",
+    "tests/test_backend_diagnostics.py": "a8ee858b325fe092644d3c00d8942a8bc6e4ab0eff38c6ed28fc12e15f5d1bdf",
+    "include/zseries/http_backend.hpp": "5d06d427c97cbc5671c440c375a457af69e4ff91e9f9e62014a1add443ddaa7c",
+    "include/zseries/z_backend.hpp": "68696268b6c5316a239bc0ba550a8771a1641fd5af2391bba22408528072304b",
+    "src/http_backend.cpp": "47fdd415cf2c9a9558a046358a0d8a4c3f5e481611ee657bc0d829cc7f964707",
+    "src/z_backend.cpp": "93afa0a59e8b9cff741f84b00d38ec8b9df7c490fb46fe090542d6d5e077bbc6"
+  },
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

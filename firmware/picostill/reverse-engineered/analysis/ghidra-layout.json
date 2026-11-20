@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "language_id": "Xtensa:LE:32:default",
+  "compiler_spec": "default",
+  "thumb": false,
+  "segments": [
+    {
+      "name": "segment_0_drom",
+      "offset": 32,
+      "address": 1061158944,
+      "size": 235680,
+      "read": true,
+      "write": false,
+      "execute": false
+    },
+    {
+      "name": "segment_1_dram",
+      "offset": 235720,
+      "address": 1073470304,
+      "size": 13564,
+      "read": true,
+      "write": true,
+      "execute": false
+    },
+    {
+      "name": "segment_2_iram",
+      "offset": 249292,
+      "address": 1074266112,
+      "size": 1024,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_3_iram",
+      "offset": 250324,
+      "address": 1074267136,
+      "size": 11836,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_4_irom",
+      "offset": 262168,
+      "address": 1074593816,
+      "size": 505144,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_5_iram",
+      "offset": 767320,
+      "address": 1074278972,
+      "size": 69960,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_6_rtc_iram",
+      "offset": 837288,
+      "address": 1074528256,
+      "size": 108,
+      "read": true,
+      "write": false,
+      "execute": true
+    }
+  ],
+  "entry_points": [
+    1074280184
+  ],
+  "labels": [
+    {
+      "address": 1074603752,
+      "name": "unresolved_callback_400d26e8",
+      "function": true
+    },
+    {
+      "address": 1074607516,
+      "name": "unresolved_callback_400d359c",
+      "function": true
+    },
+    {
+      "address": 1074610672,
+      "name": "unresolved_callback_400d41f0",
+      "function": true
+    },
+    {
+      "address": 1074628232,
+      "name": "unresolved_callback_400d8688",
+      "function": true
+    }
+  ]
+}
