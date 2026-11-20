@@ -42,3 +42,11 @@ application dependencies. Neither binding is replaced with a successful no-op.
 See [Wi-Fi reconstruction and validation](../../analysis/wifi.md). The OEM
 DNS/access-point behavior is retained here and does not constitute the future
 standalone network implementation.
+
+`http_client_platform.*` binds outgoing HTTP socket operations through the
+historical Arduino `Client` interface, with actual heap, errno and clock
+operations. A caller can supply a WiFiClient or WiFiClientSecure instance and
+its explicit class. Automatic client acquisition and the custom Ethernet
+client's TLS preparation remain required application callbacks. The recovered
+StillClient uses this HTTP engine through `still_http_services()` and
+`tick_still_http()`. See [outgoing HTTP behavior and validation](../../analysis/http-client.md).

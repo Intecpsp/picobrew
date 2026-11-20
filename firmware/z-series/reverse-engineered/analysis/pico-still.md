@@ -6,6 +6,9 @@ single-slot command and Wi-Fi mailboxes, scan selection, network handoff,
 authorization gate, command retry and sensor-poll scheduling. Its outgoing HTTP,
 StillClient, authorization backend and runtime gate are explicit required service
 interfaces. They are not successful no-ops or claims of complete networking.
+The separately recovered [StillClient protocol](still-client.md) and
+[outgoing HTTP engine](http-client.md) now bind the first two interfaces;
+authorization and complete application assembly remain required.
 
 ## Original mapping
 

@@ -4,8 +4,10 @@
 callbacks. `pico_still_sensors.*` recovers the sensor CSV decoder, sample
 derivatives, timed snapshots and rolling statistics. The existing
 `PicoStillController` can call this client directly and consume its observation
-snapshot. Outgoing HTTP transport remains a required interface, with completion
-and application return values kept separate.
+snapshot. The separately reconstructed [outgoing HTTP engine](http-client.md)
+now supplies that transport interface through `still_http.*`, with completion
+and application return values kept separate. Application socket acquisition
+and complete backend assembly remain explicit dependencies.
 
 ## Original mapping
 
