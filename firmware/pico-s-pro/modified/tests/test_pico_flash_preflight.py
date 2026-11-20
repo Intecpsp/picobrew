@@ -48,7 +48,6 @@ class FakePicoUSB:
         self._break = False
         self.break_count = 0
         self.read_count = 0
-        self.idle_seconds = 0.0
         self.read_bytes = 0
         self.raw_reads = []
         self.host_acks = 0
@@ -82,8 +81,6 @@ class FakePicoUSB:
     def read(self, count=1):
         self.read_count += 1
         length = min(count, 32, len(self.rx))
-        if not length:
-            self.idle_seconds += 0.001
         result = bytes(self.rx[:length])
         del self.rx[:length]
         return result
