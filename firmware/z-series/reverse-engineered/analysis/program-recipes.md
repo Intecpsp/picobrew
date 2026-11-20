@@ -78,24 +78,69 @@ The selected library differs on malformed literal tokens such as `trux`,
 `falsx`, `nulx`, and `truex`. It also retains a partial scalar for `1x` after
 returning InvalidInput. Exact observations are recorded in
 `program-recipe-compatibility.json`. These differences are explicit exceptions
-to parser equivalence. The program-builder acceptance requires exact agreement
-for every application case. A separate 64-bit host observation for the number
+to parser equivalence. Application acceptance distinguishes complete OEM
+outputs from the historical first-assertion observations described below.
+A separate 64-bit host observation for the number
 4294967296 is absent in the 32-bit replay, which reproduces the OEM overflow
 path.
 
 ## Original-instruction validation
 
-The accepted fixture contains **592 cases across 70 executed original function
-bodies**. All **510 application cases** agree exactly on generated names,
-instructions, metadata, assertion results and observed completion state. The
-remaining 82 cases exercise JSON values, errors, nesting, comments, escapes and
-memory limits; five malformed-token diagnostic differences are explicitly
-recorded. The four reviewed TRUNC.S sites execute 67 times in this corpus.
+The historical fixture contains **592 cases across 70 executed original
+function bodies**: **497 complete application outputs**, **13 application
+observations at the first modeled assertion**, and 82 parser cases. The 497
+complete application outputs agree on names, instructions, metadata and
+completion state. The old executor raised an exception at `0x400db014`, so the
+13 remaining application snapshots only establish agreement before the
+assertion helper returns. They do not establish final OEM behavior. The helper
+actually logs, increments the counter at `0x3ffc2e84`, delays 200 ms and returns.
+Five malformed-token parser differences are explicitly recorded. The four
+reviewed TRUNC.S sites execute 67 times in the historical corpus.
 
-The same 592 cases pass the separate 32-bit replay. Four focused native test
-groups pass, including actual Runtime loading, input-string lifetime, the
-distinct local/HTTP failure behavior, and complete source/input provenance.
-Both production objects compile with pinned Xtensa GCC 5.2.
+The separate 32-bit replay passes the same 592 historical observations, with
+the same 497-complete/13-boundary scope; it does not turn those 13 partial
+observations into complete execution evidence. Four focused native test groups
+check actual Runtime loading, input-string lifetime, the distinct local/HTTP
+failure behavior, and source/input provenance. Both production objects compile
+with pinned Xtensa GCC 5.2.
+
+### Returning assertions and retained bounded policy
+
+`program-recipe-continuations-validation.json` and its separate fixture replay
+the **13 affected inputs through 67 original function bodies**, including the
+returning assertion helper and all subsequent recipe instructions. Every case
+increments the original diagnostic counter once and requests one 200 ms delay.
+The historical fixture and executor remain unchanged for provenance; the
+continuation report supersedes any earlier claim of complete parity for these
+inputs.
+
+The selected shared builder keeps its existing typed rejection policy in this
+checkpoint. Empty recipe/step strings and overlong recipe names return errors
+instead of completing the OEM's defined append/truncation paths; zero
+StartWater returns `InvalidVolume` instead of completing the OEM's
+estimator fallback. The new evidence records the complete original output and
+the bounded source result separately. These are documented policy deviations,
+not claims that the OEM terminates or that its continuation is undefined.
+
+| Inputs in the historical fixture | Complete OEM continuation | Retained source policy |
+| --- | --- | --- |
+| Zero StartWater, case 351 | Assert at line 43, clamp the estimator input to 0.1 L, compute heating rate 113.6 and duration 1,962 seconds, retain the zero-liter parameter payload | Return `InvalidVolume` with the already generated instructions and parameter payload, leaving statistics at defaults |
+| Empty recipe name, cases 568, 576, 584 | Assert at line 339, store the empty name, generate all seven recipe instructions and statistics | Return `EmptyString` before adding the name or recipe instructions |
+| Empty step name, cases 572, 580, 588 | Assert at line 339, store the empty step string, complete the step and recipe statistics | Return `EmptyString` after Setup, retaining only the recipe name and default parameters/statistics |
+| Recipe name of 48 or 80 bytes, cases 570, 571, 578, 579, 586, 587 | Copy the first 47 bytes, assert at line 626, then generate the complete recipe and statistics | Return `NameTruncated` after retaining the truncated name, before generating instructions or statistics |
+
+All four local-recipe continuation cases set backend state 7 and invoke the
+completion notification. The selected bounded failures retain the previous
+backend state and do not notify. The HTTP builder entry points have no local
+completion notification in either execution. The source records its first
+diagnostic line as error metadata; it does not reproduce the original helper's
+counter increment or 200 ms delay on these bounded rejection paths.
+
+The composed incoming HTTP evidence in `local-http-application.md` independently
+executes six unnamed recipes to complete program publication and HTTP 200 after
+two returning assertions. The selected application rejects those inputs with
+HTTP 400 and retains the prior Core event/mailbox. Its report explicitly checks
+that different outcome rather than asserting original state equivalence.
 
 `tests/run_program_recipe_emulation.py` verifies all mapped original image
 bytes before running a read-only Ghidra project. It executes the real original
@@ -147,6 +192,15 @@ python3 tests/run_program_recipe_32bit.py \
   --toolchain /path/to/optional/i386-test-tools \
   --fixture tests/fixtures/program-recipe-original.json \
   --output /new/32bit-validation.json
+
+python3 tests/run_program_recipe_continuations.py \
+  --project /path/to/verified/z119-project \
+  --ghidra-home /path/to/ghidra_12.2_PUBLIC \
+  --java-home /path/to/jdk-25.0.5+8 \
+  --output /new/recipe-continuations
+python3 tools/validate_program_recipe_continuations.py \
+  --original-directory /new/recipe-continuations
+python3 -m unittest discover -s tests -p 'test_program_recipe_continuations.py' -v
 ```
 
 The optional 32-bit runner downloads hash-pinned Debian multilib packages and

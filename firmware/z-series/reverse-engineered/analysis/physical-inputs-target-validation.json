@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "isr_sections_verified": true,
+  "isr_symbols": [
+    {
+      "object": "src_physical_inputs.cpp.o",
+      "symbol": "_ZN7zseries3oem15PhysicalEncoder6sampleERh",
+      "address": 0,
+      "section": ".iram1",
+      "bytes": 62
+    },
+    {
+      "object": "src_physical_inputs.cpp.o",
+      "symbol": "_ZN7zseries3oem15PhysicalEncoder9interruptEv",
+      "address": 64,
+      "section": ".iram1",
+      "bytes": 76
+    },
+    {
+      "object": "platform_esp32_physical_input_platform.cpp.o",
+      "symbol": "_ZN7zseries3oem5esp3212_GLOBAL__N_114encoder_changeEv",
+      "address": 0,
+      "section": ".iram1.12",
+      "bytes": 23
+    },
+    {
+      "object": "platform_esp32_physical_input_platform.cpp.o",
+      "symbol": "_ZN7zseries3oem5esp3212_GLOBAL__N_18read_pinEPvhRi",
+      "address": 0,
+      "section": ".iram1.11",
+      "bytes": 18
+    },
+    {
+      "object": "platform_esp32_physical_input_platform.cpp.o",
+      "symbol": "_ZN7zseries3oem5esp3212_GLOBAL__N_114button_fallingEv",
+      "address": 0,
+      "section": ".iram1.13",
+      "bytes": 5
+    },
+    {
+      "object": "sdk_gpio_isr.o",
+      "symbol": "__digitalRead",
+      "address": 0,
+      "section": ".iram1.14",
+      "bytes": 50
+    },
+    {
+      "object": "sdk_gpio_isr.o",
+      "symbol": "digitalRead",
+      "address": 0,
+      "section": ".iram1.14",
+      "bytes": 50
+    },
+    {
+      "object": "sdk_gpio_isr.o",
+      "symbol": "__onPinInterrupt",
+      "address": 0,
+      "section": ".iram1.15",
+      "bytes": 117
+    }
+  ],
+  "owned_sources": [
+    {
+      "source": "src/physical_inputs.cpp",
+      "source_sha256": "4fc1e99429368b4b2a43e2f53d1ca2f544e9d2f06a08d771f14ef2b718d42713",
+      "object_sha256": "8a6e1ad766740660e2da6446dc1c7d5d429c7fd6028be9d78700174518ab1636",
+      "object_bytes": 11204
+    },
+    {
+      "source": "platform/esp32/physical_input_platform.cpp",
+      "source_sha256": "a2caa220aa50d18d324fb13dad44f7be5f3783d8a5bf54c7fab04717dfccec06",
+      "object_sha256": "7f2d432faf7e3496e724e56f7b34f2e8f616994abe874292702f06e96453e4aa",
+      "object_bytes": 6616
+    }
+  ],
+  "owned_header_sha256": {
+    "include/zseries/physical_inputs.hpp": "5a2aab934e9024019934d6850c832ae9da8eaeafc15edfb4cf8f9dd67391242e",
+    "platform/esp32/physical_input_platform.hpp": "7183b00b57cd510303ad2b3e9a3e2d498f233501ac820be3abfce34be37d1bbf"
+  },
+  "checker_sha256": "4da04174d1da165bd14e5cd79cb9fbd88a1be97ea9e1b1f1b262c9ea93719328",
+  "sdk_gpio_source_sha256": "d9003f03c5e25f753475473f65cc1919f509cb19d47ae305c89f8119dec0d1db",
+  "sdk_gpio_object_sha256": "e8b922b0c89a85e4ff91e4b0598bb0c781544cce6fa9ed3dc3434e5c638e4890",
+  "sdk_archive_sha256": "040e99ef8d6190681e49e770e51c27c6bf9f9971459cf6b0f2c73de006644dc5",
+  "sdk_gpio_read": {
+    "calls": [],
+    "peripheral_address": "0x3ff44000",
+    "linker_sha256": "971513baed4da77f0c46916021fda57def4ad65998249b0afa06afc1d2045b9d",
+    "disassembly_sha256": "bfcc7c2027b3772d1e40d50e06253e73f99d9d031d73b1d903f6b3c01ffc9da9"
+  },
+  "volatile_memory_barriers": 2,
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Historical target objects place both encoder ISR callbacks, portable interrupt/sample bodies and concrete GPIO callback in IRAM. The pinned SDK digitalRead alias is in IRAM and directly reads the mapped GPIO peripheral without calls. Application-owned binding/encoder storage must remain in internal RAM; actual concurrent interrupts and cache-disabled hardware operation are not exercised."
+}

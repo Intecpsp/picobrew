@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "archive_sha256": "007dda3c7095134141fcfce6d2c0463a0ee0c17ab5dd5ed0232b48681499e692",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "scope": "Buzzer/alarm implementation with original returning-assertion continuation and actual Arduino LEDC adapter compiled in the historical ESP32 archive; console/assertion/diagnostic sinks and serialized application ownership remain required. No application link or hardware execution.",
+  "compiled_modules": 53,
+  "buzzer_sources": [
+    {
+      "source": "src/buzzer.cpp",
+      "source_sha256": "bbc613f9ad8a512e533be74ae668209727a49254d17c24dcd42fa09ada3b320e",
+      "object_sha256": "aec54e73c5bc8f166e1c22e8a058965855a8e7b20ceb22d293074d7da549b9a8",
+      "object_bytes": 7540
+    },
+    {
+      "source": "platform/esp32/buzzer_platform.cpp",
+      "source_sha256": "320241d67db8270a585eb341e74e90609c0b027f8b26f4800fa05966fa9e2c30",
+      "object_sha256": "46215b4095ae1886c7d34e9a2d66470fc6b2158ee242d23fdf2f31ba262b348a",
+      "object_bytes": 7748
+    }
+  ],
+  "buzzer_headers_sha256": {
+    "include/zseries/buzzer.hpp": "edcd76c0c1fb889539df7b4847a7d93f0e8edb06f6b3b2d83d2f78b7b6f6cfb8",
+    "platform/esp32/buzzer_platform.hpp": "53d86dde450a9dafef827ed75a808c0f2ed7bc021628d05ce598cd44d14e2ff5"
+  }
+}

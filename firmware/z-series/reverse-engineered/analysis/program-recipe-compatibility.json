@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "dependency": "ArduinoJson 6.21.6, explicitly selected; OEM minor version unknown",
-  "scope": "These differences are isolated malformed-token diagnostics, plus one host-only integer-width observation. Reconstructed recipe instruction and metadata comparisons require exact agreement.",
+  "scope": "This file records malformed-token diagnostics and one host-only integer-width observation. Historical application evidence comprises 497 complete outputs and 13 first-assertion snapshots; the latter are not completed OEM outputs. Defined returning-assertion continuations and the retained bounded source-policy deviations are recorded separately in program-recipe-continuations-validation.json and program-recipes.md.",
   "differences": [
     {
       "json": "1x",

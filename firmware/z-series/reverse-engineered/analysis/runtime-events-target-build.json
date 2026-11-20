@@ -259,7 +259,7 @@
       "object_bytes": 54672
     }
   ],
-  "archive_sha256": "9a6d8ba388a1e43b28bdcb13eb5bfa434ed809b783a21d2eb4bb3bd394f6eb8c",
+  "archive_sha256": "b319118222aee78930474695e7c32daedea26c3189d8a20978bae4b09927531b",
   "complete_application_linked": false,
   "hardware_tested": false,
   "scope": "Target object compilation of owned source against the evidenced historical SDK; no application entry point, partition selection, firmware packaging, or installation",
@@ -310,7 +310,7 @@
     "include/zseries/program_repository.hpp": "78fafe3ab9fc805aae72d229044d9744050773e4c0e69900fb64d5a533d4de29",
     "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
     "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
-    "include/zseries/quantity.hpp": "a73eef8d3a2cb8a3b03e9b345441e564eb96b80ed53c7fb7d6633dd62af52ff6",
+    "include/zseries/quantity.hpp": "17a78490378c14295478e4368cea2bdd324f1c97f5d65780aff4f2e6064cda04",
     "include/zseries/runtime_events.hpp": "5a69947c3d9243517b6b011322e1378e9dc51a810ac3b87f1845e89025e22495",
     "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
     "include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
@@ -323,5 +323,11 @@
     "platform/esp32/display_platform.hpp": "ce0798074651299483bacfba3525a8b18352836951774b2d8255131992da830b",
     "platform/esp32/esp32_platform.hpp": "8c38382ea7851d5f1d57f2d09e46f9d888b7a20bf67c20fc3199a2ebb9fdf4e8",
     "platform/esp32/wifi_platform.hpp": "eaf55a57772a15888444074ada086e398ce2e5783b5e72c39c142dff092b8b43"
+  },
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "772de3fbba5dfe6754ccf9c950f5508c041dccb199f2aa89a1c1e2c350264935",
+    "compiled_modules": 59,
+    "scope": "These selected source, header and object identities were refreshed from the complete integrated object build; archive_sha256, where present, identifies that 59-module archive."
   }
 }

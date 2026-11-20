@@ -47,6 +47,10 @@ build in `.github/workflows/zseries-reconstruction.yml`. The latter acquires
 hash-pinned compiler/SDK sources using `tools/acquire_esp32.py`. Shared ELF
 analysis controls use the pin in `requirements-test.txt`. The target output is
 a static archive and compilation evidence, not an installable firmware image.
+The current combined build contains 59 recovered modules/adapters; its complete
+source, header and object identities are recorded in
+[`analysis/integration-target-build.json`](analysis/integration-target-build.json).
+CI also checks eight encoder/GPIO interrupt-path symbols for IRAM placement.
 
 The default build requires a C++11 compiler. The ordinary tests use Python's
 standard library and a native compiler; recipe tests also use the selected
@@ -62,27 +66,47 @@ or run its portable tests.
 | `include/zseries/temperature.hpp`, `src/temperature.cpp` | `MAX11613.h` code and DROM calibration records; [address map](analysis/temperature.md) | All coefficient bits checked; 16,384 native temperature results compared with original Xtensa instruction execution at explicit SDK boundaries |
 | `include/zseries/hex_detection.hpp`, `src/hex_detection.cpp` | Original `0x400dd9f4` decision and exact sensor conversion arguments; [behavior](analysis/hex-detection.md) | 8,439 original-instruction cases match native source, covering all nine result codes; 119 portable goldens |
 | `include/zseries/runtime_instruction.hpp`, `src/runtime_instruction.cpp` | Original 8-byte instructions, 58 opcodes, argument checks and fixed point decoder; [address map](analysis/runtime-instruction.md) | 29,632 original argument checks and 1,852 original decoder cases match native source; 1,792 portable goldens |
-| `include/zseries/msp_protocol.h`, `src/msp_protocol.c` | Original auxiliary-controller framing, state, setup and update sequence; [scope](analysis/msp-protocol.md) | 5,553 original cases across 24 bodies; explicit I²C, delay, logging and assertion boundaries |
+| `include/zseries/msp_protocol.h`, `src/msp_protocol.c` | Original auxiliary-controller framing, state, setup and update sequence; [scope](analysis/msp-protocol.md) | 5,553 observations across 24 bodies: 3,741 completed paths and 1,812 assertion-stopped prefixes; explicit I²C, delay and logging boundaries |
 | `include/zseries/heater.hpp`, `src/heater.cpp` | Original PID, heater GPIO and 1 s/20 ms timer callbacks; [address map](analysis/heater.md) | 583 scenarios / 930 actions match original instructions; 24,180 double fields bit-identical and exact GPIO events |
 | `include/zseries/sensor_acquisition.hpp`, `src/sensor_acquisition.cpp` | Original I²C setup/polling, ten-sample smoothing and Core temperature publication; [scope](analysis/sensor-acquisition.md) | 340 transaction/smoother scenarios, 3,116 updates, 37,392 bit-identical double fields; explicit bus and clock boundaries |
 | `include/zseries/auxiliary_sensors.hpp`, `src/auxiliary_sensors.cpp` | Original LIS3DHTR/BMP280 bus operations, smoothing and compensation; [scope and preserved OEM defect](analysis/auxiliary-sensors.md) | 617 original scenarios, 3,085 bit-identical double fields, exact bus/calibration/integer state |
 | `include/zseries/safeties.hpp`, `src/safeties.cpp`, `core_control_state.*` | Original timed interlocks, filter input and runtime flag integration; [scope](analysis/safeties.md) | 660 scenarios / 1,435 original ticks match; 10,045 double fields bit-identical and exact latch/deadline/GPIO state |
-| `include/zseries/program_runtime*.hpp`, `src/program_runtime*.cpp`, `quantity.*` | Original program dispatcher, waiters, transitions, manual steps and runtime ticks; [scope](analysis/program-runtime.md) | 5,792 original cases across 52 original bodies; typed heater/MSP integration checked |
+| `include/zseries/program_runtime*.hpp`, `src/program_runtime*.cpp`, `quantity.*` | Original program dispatcher, waiters, transitions, manual steps and runtime ticks; [scope](analysis/program-runtime.md) | 5,792 observations across 52 bodies: 4,769 completed paths and 1,023 assertion-stopped prefixes; typed heater/MSP integration checked |
 | `include/zseries/eeprom.hpp`, `src/eeprom.cpp` | Original configuration schema and EEPROM lifecycle; [scope](analysis/eeprom.md) | 2,363 original cases across 19 bodies; real SDK EEPROM adapter compiles |
-| `include/zseries/program_repository.hpp`, catalog/repository/writer source | Original built-in catalog, buffered program storage and coffee generation; [scope](analysis/program-repository.md) | 669 original cases across 34 bodies; all 23 built-in programs load through the real recovered Runtime |
-| `program_recipe.hpp`, recipe builders and ArduinoJson adapter | Local JSON, Zymatic/Z-recipe and PicoPak transformations; [scope and parser compatibility](analysis/program-recipes.md) | 592 original cases / 70 bodies; all 510 application outputs exact, separate 32-bit replay and explicit malformed-token exceptions |
+| `include/zseries/program_repository.hpp`, catalog/repository/writer source | Original built-in catalog, buffered program storage and coffee generation; [scope](analysis/program-repository.md) | 669 observations across 34 bodies: 538 completed paths and 131 assertion-stopped prefixes; all 23 built-in programs load through the real recovered Runtime |
+| `program_recipe.hpp`, recipe builders and ArduinoJson adapter | Local JSON, Zymatic/Z-recipe and PicoPak transformations; [scope and parser compatibility](analysis/program-recipes.md) | Historical 592-case fixture: 497 complete application matches, 13 first-assertion observations and 82 parser cases; separate 32-bit replay. Fresh continuation evidence documents the 13 bounded-policy deviations |
 | `include/zseries/core_startup.hpp`, `src/core_startup.cpp`, `platform/esp32/` | Original Core startup ordering, constructors, peripheral assignments and SDK calls; [remaining application boundary](analysis/core-startup.md) | Both boiler startup traces match 92 observed events; target objects compile against pinned GCC 5.2 / Arduino ESP32 1.0.1 |
+| `system_tick.hpp`, `system_tick.cpp`, ESP32 watchdog adapter | Original watchdog reset, loop timing and maximum-duration warning; [scope and assertion boundaries](analysis/system-tick.md) | 228 original scenarios match exact integer/double state and ordered calls; real historical watchdog/clock adapter compiles |
 | `include/zseries/core_flow.hpp`, `src/core_flow.cpp` | Core state transitions, component order, event priority and session gates; [scope](analysis/core-flow.md) | 1,672 original scenarios / 17 bodies match 17,442 ordered service calls, state and credentials |
 | `include/zseries/core_commands.hpp`, `src/core_commands.cpp` | State-dependent dispatcher, program-start metadata, boiler and reset operations; [scope](analysis/core-commands.md) | 1,662 original scenarios across 40 bodies; 1,106 ordered effects and exact session/Runtime/PID state |
 | `wifi.hpp`, `wifi.cpp`, ESP32 Wi-Fi adapter | Original connection/scan/AP state machine, credentials, DNS gate and retry timer; [scope](analysis/wifi.md) | 1,240 original scenarios across 17 bodies; real Core mailbox integration and historical SDK target compilation |
 | `runtime_events.hpp`, `runtime_events.cpp` | Original four-field Runtime mailbox, Core forwarding and Head notification identity; [scope](analysis/runtime-events.md) | 288 independent original copy/drop/read cases; composed Core-to-Head notification check; full 1,672 Core-flow and 1,662 command scenarios replayed |
+| `program_list.hpp`, `program_list.cpp` | Original Core event payload, recipe references and readiness publication; [scope](analysis/core-event.md) | 27 original cases match initialization, reset and occupied-mailbox behavior; recipe-ready events retain the original payload ownership |
+| `local_http_server.hpp`, `local_http_server.cpp` | Original incoming connection lifecycle, request buffering and response framing; [scope](analysis/local-http-server.md) | 169 original cases match ordered transport calls, parser state and dispatch; host failure paths and historical target compilation pass |
+| `local_http_state.hpp`, `local_http_state.cpp` | Original complete `/state` response and live control-state bindings; [scope](analysis/local-http-state.md) | 80 original cases match the exact JSON bytes; concrete sensor/heater/MSP/Runtime snapshots and output failures are checked |
+| `pico_still.hpp`, `pico_still.cpp` | Original Still controller, scan selection, authorization/network handoff and retry/polling; [scope](analysis/pico-still.md) | 2,284 original scenarios across 28 bodies; sanitizer integration with recovered Wi-Fi/Core mailboxes and historical target compilation |
+| `still_client.*`, `pico_still_sensors.*` | Original HTTP command/response protocol, form encoding, sensor CSV, sample derivatives and statistics; [scope](analysis/still-client.md) | 4,186 original scenarios across 50 bodies; fragmented-response integration with the recovered controller and historical target compilation |
+| `http_client.*`, `still_http.*`, ESP32 Client adapter | Original outgoing URI/request writer, six-state response engine and real StillClient bridge; [scope and original limitations](analysis/http-client.md) | 933 original scenarios across 42 bodies; sanitizer transport-to-controller integration and historical target compilation |
+| `local_http_application.*`, ESP32 incoming socket adapter | Concrete POST recipe parsing, full Core-event publication and live `/state`; [scope and bounded input-validation policy](analysis/local-http-application.md) | 68 composed original cases across 70 bodies: 62 exact, six intentional rejections of defined OEM continuations; fragmented-request/ownership/write-failure integration and historical target compilation |
+| `buzzer.*`, ESP32 LEDC adapter | Original enable/timer, System alarm and five console commands; [scope](analysis/buzzer.md) | 561 original scenarios across eleven bodies (including the returning assertion helper) and a constructor slice; composed Head alarm/SDK checks and historical target compilation |
 | `head_flow.hpp`, `head_flow.cpp` | Original Head event priority, alarm timeout, redraw timer and command routing; [scope](analysis/head-flow.md) | 751 original scenarios across six bodies match state, pending slots and ordered service/clock calls |
 | `head_events.hpp`, `head_events.cpp` | Runtime alarm/notification decisions and encoder-button handlers; [scope](analysis/head-events.md) | 13,812 original cases match ordered effects, notification ID and hijack state; actual alarm timers and screen presentation remain service boundaries |
-| `head_numeric_inputs.hpp`, `head_numeric_inputs.cpp` | Temperature, duration, location, quantity and recipe-strength handlers; [scope and assertion repair](analysis/head-numeric-inputs.md) | 1,637 original cases match command payloads, parameter bits, input flags and ordered screen effects |
+| `head_numeric_inputs.hpp`, `head_numeric_inputs.cpp` | Temperature, duration, location, quantity and recipe-strength handlers; [scope and bounded guards](analysis/head-numeric-inputs.md) | 1,637 observations: 1,403 completed paths and 234 assertion-stopped prefixes; command payloads, parameter bits, input flags and ordered effects compared within that scope |
+| `head_text_input.hpp`, `head_text_input.cpp` | Password priority, recipe-reference routing and bounded kit-code storage; [scope and C-library boundary](analysis/head-text-input.md) | 922 original cases match retained state and typed command payloads; concrete Core envelope assembly remains a required service |
+| `head_network_events.hpp`, `head_network_events.cpp` | Wi-Fi presentation gates and Azure group-session choices/coffee normalization; [scope](analysis/head-network-events.md) | 1,444 completed original cases match localized action text, menu commands, parameter bits and continuation after returning assertions |
+| `head_encoder.hpp`, `head_encoder.cpp` | Encoder widget order, selections, duration steps and timer resets; [scope](analysis/head-encoder.md) | 3,099 traces: 3,026 complete matches and 73 bounded character-selection prefixes; original continuation is retained separately for the guarded cases |
+| `physical_inputs.*`, ESP32 GPIO/interrupt adapter | Physical buttons, encoder sampling/ISR/ring, decoding and event production; [scope](analysis/physical-inputs.md) | 948 original cases across 22 bodies; composed Head/Core input checks and eight ISR-path symbols verified in IRAM against the pinned SDK |
+| `ui_screen_tick.hpp`, `ui_screen_tick.cpp` | Normal/combined screen timing and ordered periodic widget dispatch; [scope](analysis/ui-screen-tick.md) | 2,148 original cases match strict/equal deadline guards, waiting frames, 32-bit timer wrap and ordered widget calls |
 | `display.hpp`, `display.cpp`, ESP32 display adapter | Original SSD1325 GPIO/SPI, native 4-bit framebuffer and packed geometry; [scope](analysis/display.md) | 1,010 original scenarios across 18 bodies match framebuffer, transfer and bus events |
 | Display fonts and text source | Five byte-verified original font tables and native text renderer; [scope](analysis/display-text.md) | 503 original scenarios across 19 text bodies match native source |
 | `display_effects.hpp`, `display_effects.cpp` | Original gradients, caret, animation and slides; [scope](analysis/display-effects.md) | 989 original scenarios match complete frame/transfer buffers and serialized GPIO/SPI/delay output |
 | `ui_catalog.hpp`, `ui_catalog.cpp` | 18 localized categories, 102 screen bodies and 16 non-font bitmaps; [scope and language guard](analysis/ui-catalog.md) | 2,706 original lookup cases match returned text and unchanged-output behavior; all bitmap descriptors and 3,183 pixel bytes match preserved data |
+
+The original assertion helper logs, increments a diagnostic counter, waits
+200 ms and returns. A fixture stopped at that call proves only the preceding
+execution prefix. [Assertion evidence coverage](analysis/assertion-coverage.md)
+classifies the older fixtures; newer module reports explicitly distinguish
+complete matches from deliberate bounded-policy deviations.
 
 The temperature comparison was exact in the recorded native environment;
 portable tests retain representative original-execution goldens and a small
@@ -163,6 +187,12 @@ functions (5,709 decompiled). The actual static initialization table contains
 45 entries; constructor and callback evidence is retained in
 [`analysis/startup-bindings.json`](analysis/startup-bindings.json). Additional
 unreferenced entry candidates remain unvalidated. The complete linked
-application still requires the complete Head/UI, composed Core services, network
-backends, PicoStill and remaining platform/service objects; the startup interface
-requires these implementations and does not substitute successful no-ops.
+application still requires the remaining Head/UI widgets and screen composition,
+composed Core services, network backends, session/logging/update services, and
+remaining platform/service objects. The recovered PicoStill controller and HTTP
+client still require application lifetime, network-client selection and Core
+assembly. The startup interface requires these implementations and does not
+substitute successful no-ops.
+
+The concrete remaining services, original entry points and ownership/linking
+requirements are tracked in [application assembly](analysis/application-assembly.md).

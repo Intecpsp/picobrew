@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 27,
+  "all_results_match": true,
+  "hardware_tested": false,
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "source_sha256": {
+    "include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "src/program_list.cpp": "d3a427bcd81939d93e29bc073222287297e6ccdd4ead17f82aead780f2d78b84",
+    "tests/core_event_fixture.hpp": "313402150b3626478ead06a6ed5d9c74ba4b9d855392cee222a1e58cd1e9a820",
+    "tests/core_event_bridge.cpp": "3ea3f282c126615de3f1beb50265b8c706c25c74570029eabd6564d49cc89c9f",
+    "tools/validate_core_event.py": "dfe7ad07348a71d950fbfde7dbc0e15381454410d6109768d7a00e71026a4449",
+    "tools/ghidra/EmulateCoreEvent.java": "6f3d6b8a63de00883c43101359da5fedbe495e52a9d0ca84bc6577f573670f38",
+    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+  },
+  "golden_fixture_sha256": "0b2fa063e754b9686d738de5e6faabde410b883683326fd0b4f8b812bc65ee61",
+  "original_execution_jsonl_sha256": "b9ce8b36ba7c87d3667ab34bb673c1f9532e5f9dc5fa30a07650a5c3df33667c",
+  "scope": "Original CoreEvent and twenty RecipeRef constructors, metadata reset and one-slot mailbox publication. Complete payload bytes excluding compiler vtable are compared after each operation. ROM memory, diagnostics and sequential MEMW are explicit boundaries; no concurrent mailbox claim.",
+  "original_functions_executed": {
+    "0x400d0f80": 60,
+    "0x400ee998": 60,
+    "0x400eed28": 60,
+    "0x400eef6c": 3,
+    "0x400f02e4": 14,
+    "0x401bf484": 26
+  },
+  "modeled_boundaries": {
+    "CoreEvent_diagnostic_description": 14,
+    "ROM_memcpy": 5,
+    "ROM_memset": 60,
+    "__divsf3": 27,
+    "__extendsfdf2": 27,
+    "diagnostic_basename": 27,
+    "diagnostic_log": 27,
+    "diagnostic_millis": 27,
+    "single_thread_memw": 56
+  },
+  "original_instruction_sha256": {
+    "0x400d0f80": "69ff406caa7cd9d831b49fa7702b732bfcd6f6096422832982996f03ce11a267",
+    "0x400ee998": "8ba16a5c578e2462e6a76a59de0c24d55b7525976566636d2a2ce5bd9a3574f2",
+    "0x400eed28": "56ae7cce1cc54de22e84449130978d25c474acf9a6a7dcdf67846a8e919e4b00",
+    "0x400eef6c": "4306a41b6dd7d1030947b1c344acdc3b6ec838d8315ec5e4a8c12a99648133d2",
+    "0x400f02e4": "812546e79970a0888764c0c4d0079b9ff876a18f576c4a55dcb9644b9fca774f",
+    "0x401bf484": "a71b35a1a976946d778322f399e0b2c045ed34b8e258d1d18466dd7c2a55e2e1"
+  }
+}

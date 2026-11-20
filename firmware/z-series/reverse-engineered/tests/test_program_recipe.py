@@ -1,4 +1,4 @@
-"""Original-instruction acceptance of local, Zymatic and PicoPak recipes."""
+"""Historical recipe observations: 497 complete outputs and 13 assertion boundaries."""
 import ctypes
 import hashlib
 import json
@@ -28,7 +28,7 @@ class ProgramRecipeTests(unittest.TestCase):
             cls.cases = cls.cases[:20] + [c for c in cls.cases if c["action"] == 2][:10] + [c for c in cls.cases if c["action"] == 3][:10]
         cls.actual = native.run(cls.executable, cls.cases)
 
-    def test_original_local_and_http_programs_and_metadata(self):
+    def test_historical_complete_and_first_assertion_recipe_observations(self):
         self.assertEqual(len(self.cases), len(self.fixture["cases"]))
         self.assertEqual(len(self.cases), len(self.actual))
         for index, (case, original, actual) in enumerate(zip(self.cases, self.fixture["cases"], self.actual)):
@@ -70,7 +70,8 @@ class ProgramRecipeTests(unittest.TestCase):
         self.assertEqual(width["fixture_sha256"], fixture_sha)
         self.assertEqual(width["cases"], len(self.cases))
         self.assertEqual(width["abi"], dict(pointer=4, long=4, json_integer=4, local_capacity=1024, http_capacity=4096))
-        self.assertTrue(width["all_application_cases_match_original"])
+        self.assertTrue(width["all_application_cases_match_historical_observations"])
+        self.assertEqual((width["complete_application_matches"], width["first_assertion_observations"]), (497, 13))
         self.assertTrue(width["runtime_integration_passed"])
         for filename, expected in width["source_sha256"].items():
             self.assertEqual(hashlib.sha256((ROOT / filename).read_bytes()).hexdigest(), expected, filename)

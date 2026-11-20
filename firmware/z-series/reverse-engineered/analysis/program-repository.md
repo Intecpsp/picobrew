@@ -53,9 +53,11 @@ original logs and continues. String appends check capacity before asserting a
 nonempty source, truncate at 47 bytes and retain the tail after the terminator.
 Starting a program resets it, stores session type and ID, appends its name, then
 checks equality with that name. A long name is therefore truncated before the
-original assertion. Setting code asserts a non-null source even for count zero,
-and rejects counts greater than 256. The typed API exposes capacity and assertion
-outcomes without pretending that rejected operations succeeded.
+original assertion. Setting code asserts a non-null source even for count zero
+and asserts when the count exceeds 256. The typed API rejects those inputs and
+exposes capacity and assertion outcomes. The OEM assertion helper returns;
+the historical comparison stops at that call and does not establish the
+remaining OEM behavior for these rejected inputs.
 
 The data member names in `ProgramParameters` are supported by the original
 diagnostic function `0x400defe4`: program ID, ABV, IBU, time, water, intensity,
@@ -76,26 +78,38 @@ All Fahrenheit/fixed-point rounding and uint32 minute multiplication are retaine
 The metadata writer checks water is a volume, copies parameters, computes a
 heating estimate of `11.36 / batchLiters`, and computes duration using original
 reference wort temperature 12.77 C. It then writes pressure, maximum temperature,
-and added seconds. Volumes below 0.1 L follow the original assertion boundary.
+and added seconds. Volumes below 0.1 L reach an original assertion site, where
+the typed API and historical comparison stop; subsequent OEM work is not compared.
 Static program statistics use the same duration estimator, heating rate 1 C/min,
 and estimated boil temperature minus 2 C.
 
 The original forward/reverse iterator estimator is now the shared
 `estimate_instructions_seconds` function used by both the writer and runtime.
 This avoids duplicating its unusual wait-time, heating, cooling, and unsigned
-wrap behavior. The previously accepted 5,792 runtime cases and real
-runtime→heater→MSP integration were replayed after extracting this common code.
+wrap behavior. The 5,792 runtime comparisons, including their historical
+assertion-boundary prefixes, and real runtime→heater→MSP integration were replayed
+after extracting this common code. Their scope is recorded in
+[program-runtime.md](program-runtime.md).
 
 ## Evidence and remaining scope
 
 `tests/fixtures/program-repository-original.json` records **669 original-instruction
-scenarios across 34 function bodies**. Cases compare complete active instruction
-and string data, record fields, parameters, bit-exact double statistics, assertion
-lines, return values, and hashes of all retained code/string storage. They cover
+scenarios across 34 function bodies**: **538 complete within the stated service
+boundaries; 131 stop at an assertion call**. The latter are compared execution
+prefixes, not completed OEM operations. The historical harness throws at
+`0x400db014` and records the state before that helper executes. The actual helper
+logs, increments a diagnostic counter, delays 200 ms, and returns. Its effects
+and the caller's subsequent behavior are not covered by those 131 comparisons.
+
+Cases compare active instruction and string data, record fields, parameters,
+bit-exact double statistics, assertion lines, represented return values, and
+hashes of retained code/string storage at the captured endpoint. They cover
 every resolver ID, invalid IDs, buffer boundaries, null/empty/long strings,
 partial mutations before assertions, coffee parameter ranges and static/dynamic
 duration calculations. Separate integration loads every built-in and a buffered
-program through the actual reconstructed runtime.
+program through the actual reconstructed runtime. See
+[assertion-coverage.md](assertion-coverage.md) for counts and the distinction
+between historical prefixes and continuing traces.
 
 `analysis/program-repository-validation.json` pins input/tool/generator/source
 identities and execution limits. Target compilation with the pinned Xtensa GCC

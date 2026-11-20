@@ -115,7 +115,7 @@
     "process_timeout_seconds": 900,
     "instruction_budget_per_case": 200000
   },
-  "scope": "Original Xtensa instructions; reviewed ENTRY/CALL8/RETW register-window boundaries; MEMW uses the fixture's sequential memory order; pinned SDK scalar math, clocks, diagnostic/string library services, independently validated MSP operations and explicit heater/PicoStill/event callbacks",
+  "scope": "Original Xtensa instructions; reviewed ENTRY/CALL8/RETW register-window boundaries; MEMW uses the fixture's sequential memory order; pinned SDK scalar math, clocks, diagnostic/string library services, independently validated MSP operations and explicit heater/PicoStill/event callbacks. 4769 cases complete within the stated service boundaries; 1023 cases compare only the prefix before the returning OEM assertion helper at 0x400db014. Post-assertion continuation is not compared for those prefixes.",
   "hardware_tested": false,
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
@@ -177,7 +177,7 @@
   "validated_source_sha256": {
     "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
     "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
-    "include/zseries/quantity.hpp": "a73eef8d3a2cb8a3b03e9b345441e564eb96b80ed53c7fb7d6633dd62af52ff6",
+    "include/zseries/quantity.hpp": "17a78490378c14295478e4368cea2bdd324f1c97f5d65780aff4f2e6064cda04",
     "src/program_runtime.cpp": "91e2afd14ff01fc9c5ea8c6b3fdd785be8bc02639aa69b0bf9c2fdf10219b0ac",
     "src/program_runtime_execution.cpp": "2081db109cc28cec77d69283733658498c323899548398245b2c41782e0a9349",
     "src/program_runtime_heater.cpp": "fab8390fe04a889f10c0dcaad6e31b7086b07240a7b6daff6506ed1bab039bc6",
@@ -187,5 +187,37 @@
     "reason": "Program statistics and runtime pending-stack estimates now call the same original iterator implementation.",
     "original_cases_replayed": 5792,
     "runtime_heater_msp_integration_passed": true
+  },
+  "assertion_coverage": {
+    "total_cases": 5792,
+    "completed_without_assertion_stop": 4769,
+    "assertion_stopped_prefix_cases": 1023,
+    "stop_address": "0x400db014",
+    "original_helper_returns": true,
+    "post_assertion_continuation_compared": false,
+    "count_method": "Count nonzero cases[*].assertion in the retained fixture.",
+    "assertion_line_counts": {
+      "0x35": 1,
+      "0x37": 1,
+      "0x43": 11,
+      "0x4e": 18,
+      "0x78": 1,
+      "0x7d": 937,
+      "0x1cc": 13,
+      "0x1ee": 8,
+      "0x220": 9,
+      "0x23b": 1,
+      "0x29e": 8,
+      "0x2f3": 1,
+      "0x2fd": 1,
+      "0x379": 1,
+      "0x37c": 1,
+      "0x403": 4,
+      "0x41a": 1,
+      "0x463": 1,
+      "0x4eb": 1,
+      "0x561": 4
+    },
+    "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
   }
 }

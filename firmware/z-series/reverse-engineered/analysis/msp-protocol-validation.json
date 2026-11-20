@@ -112,8 +112,24 @@
     "process_timeout_seconds": 600,
     "instruction_budget_per_case": 6000000
   },
-  "scope": "Original Xtensa instructions; register-window ENTRY/CALL8/RETW boundaries normalized; CRC LOOP8 explicitly interpreted; I2C, clocks and diagnostic calls supplied by fixtures; setup reuses independently instruction-validated image CRCs",
+  "scope": "Original Xtensa instructions; register-window ENTRY/CALL8/RETW boundaries normalized; CRC LOOP8 explicitly interpreted; I2C, clocks and diagnostic calls supplied by fixtures; setup reuses independently instruction-validated image CRCs. 3741 cases complete within the stated service boundaries; 1812 cases compare only the prefix before the returning OEM assertion helper at 0x400db014. Post-assertion continuation is not compared for those prefixes.",
   "hardware_tested": false,
   "full_cpu_emulation": false,
-  "complete_esp32_firmware_rebuild": false
+  "complete_esp32_firmware_rebuild": false,
+  "assertion_coverage": {
+    "total_cases": 5553,
+    "completed_without_assertion_stop": 3741,
+    "assertion_stopped_prefix_cases": 1812,
+    "stop_address": "0x400db014",
+    "original_helper_returns": true,
+    "post_assertion_continuation_compared": false,
+    "count_method": "Count nonzero guards[*][3], erase[*][1], valve[*][2] and setup[*][1] (zero-based field indices); the other seven case arrays contain no assertion-stop records.",
+    "assertion_stopped_prefixes_by_group": {
+      "guards": 1791,
+      "erase": 3,
+      "valve": 15,
+      "setup": 3
+    },
+    "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
+  }
 }

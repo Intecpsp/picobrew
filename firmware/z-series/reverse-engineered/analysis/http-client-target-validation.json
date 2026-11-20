@@ -1,0 +1,80 @@
+{
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "archive_sha256": "720ca233516a5c5d0a81c387ed342ce287d6b3c0911189a638a14b90e5ce1699",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "schema_version": 1,
+  "scope": "Outgoing HTTP state machine, StillClient bridge and concrete Arduino Client adapter compile in the 38-module historical ESP32 archive. The application network-client factory and Ethernet TLS preparation remain required bindings; no application link or hardware execution.",
+  "compiled_modules": 38,
+  "http_client_sources": [
+    {
+      "source": "src/http_client.cpp",
+      "source_sha256": "8ea1fa26563b05c337a2b89651555d06ccd1c4fcb15bfb96c879b67dbab75b52",
+      "object_sha256": "5afa9cbf6fe391273c3067eb2903eb959c6d991eee6f6647bce33ad87dcb9e70",
+      "object_bytes": 29556
+    },
+    {
+      "source": "src/still_http.cpp",
+      "source_sha256": "b064d49a9d2de90b9f4cf177e99e1d9f070880335d0b92a12a3af162c946870a",
+      "object_sha256": "1cf33b18d9df365e4c18c6f8c4e7fc82d866e153893125aacaa4a31af67fbc85",
+      "object_bytes": 6276
+    },
+    {
+      "source": "platform/esp32/http_client_platform.cpp",
+      "source_sha256": "069240969435715fabb40caaae52c41d7a56e9f24c19b45bff3143c817a17a3b",
+      "object_sha256": "ad191ffb0633219d94c4b7ea84e3aacbf1efc4d6f48f317ca0e97408bfb9d537",
+      "object_bytes": 5996
+    }
+  ],
+  "http_client_headers_sha256": {
+    "include/zseries/http_client.hpp": "ca5f6e679716c6bb2bbe6399c354a8a779e21a01dbcc5aef077742d8976b6bc4",
+    "include/zseries/still_http.hpp": "4b42693c31f1a8b0851ecb7cd7f24ea2ccd69eec1eb14592bcfb5a995f1cb54b",
+    "platform/esp32/http_client_platform.hpp": "ab52a95c8d6a7989de381cc20b82315df89cff3a207cb4e9afe2773257b469d5"
+  }
+}

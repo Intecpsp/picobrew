@@ -129,12 +129,26 @@
   "native_validation": {
     "all_results_match": true,
     "cases": 1637,
-    "scope": "Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion boundaries and ordered screen operations after the event is consumed"
+    "scope": "Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion boundaries and ordered screen operations after the event is consumed. 1403 cases complete within the stated service boundaries; 234 cases compare only the prefix before the returning OEM assertion helper at 0x400db014. Post-assertion continuation is not compared for those prefixes."
   },
   "remaining_scope": [
     "Core command delivery and screen presentation are required services, with no default successful no-op.",
     "The source handler API accepts an already consumed event; original one-slot mailbox consumption executes in the oracle and is separately retained as evidence.",
-    "Invalid quantity IDs return InvalidQuantity with the original assertion line instead of terminating the process.",
+    "Invalid quantity IDs return InvalidQuantity at the original assertion site; the historical fixture stops before the returning helper and does not compare later OEM handler or screen behavior.",
     "Physical display/actuator behavior, concurrent event delivery and a complete linked application remain unverified."
-  ]
+  ],
+  "assertion_coverage": {
+    "total_cases": 1637,
+    "completed_without_assertion_stop": 1403,
+    "assertion_stopped_prefix_cases": 234,
+    "stop_address": "0x400db014",
+    "original_helper_returns": true,
+    "post_assertion_continuation_compared": false,
+    "count_method": "Count nonzero cases[*].assertion_line in the retained fixture.",
+    "assertion_line_counts": {
+      "0x2ba": 210,
+      "0x349": 24
+    },
+    "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
+  }
 }

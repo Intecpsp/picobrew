@@ -8,15 +8,18 @@ opcode inventory. `src/quantity.cpp` supplies its recovered unit conversion.
 `src/program_runtime_heater.cpp` connects the interpreter to the independently
 reconstructed heater controller; pump and valve commands call `msp_protocol.c`.
 
-The source passes **5,792 original-instruction cases from 52 original function
-bodies**. Each case compares the represented runtime state, expansion stack,
-step-name buffers, returned value, assertion boundary, and ordered service calls.
+The source matches **5,792 original-instruction comparisons from 52 original
+function bodies**: **4,769 complete within the stated service boundaries;
+1,023 stop at an assertion call**. Each case compares the represented runtime
+state, expansion stack, step-name buffers, returned value, assertion boundary,
+and ordered service calls at its captured endpoint. The 1,023 assertion cases
+are execution prefixes, not completed OEM traces.
 The focused test also links the real runtime, heater, and MSP implementations to
 check their integration. All four new C++ modules compile with the pinned official
 Xtensa GCC 5.2 compiler using warnings as errors.
 
-This closes the interpreter dependency of a Z application. It does not establish
-a linked ESP32 application, a byte-identical OEM rebuild, installed firmware, or
+This supplies the interpreter module with the bounded behavior described below.
+It does not establish a linked ESP32 application, a byte-identical OEM rebuild, installed firmware, or
 physical brewing validation. Repository lookup, queue storage, PicoStill transport,
 and platform services must still be supplied by the enclosing application. Missing
 services produce explicit errors; the production implementation does not provide
@@ -103,8 +106,9 @@ These behaviors are deliberate fidelity choices in the reconstruction, not new
 product policies:
 
 - Timed wait completion is strict: `start + duration < now`, using 32-bit unsigned
-  arithmetic. Separate original assertions reject a clock earlier than the
-  instruction start. Duration multiplication can wrap.
+  arithmetic. Separate original assertions report a clock earlier than the
+  instruction start; the typed guards and historical fixture stop at those
+  calls. Duration multiplication can wrap.
 - HoldFor, CircFor, and DrainFor complete their high-level instruction immediately
   after expansion; the generated WaitFor performs the actual wait.
 - Saving a partially completed WaitFor subtracts whole elapsed seconds. Saving a
@@ -124,7 +128,13 @@ product policies:
 - Equal unknown unit enum values are compatible in the OEM quantity function.
   Unequal unknown values fail compatibility.
 
-Portable result codes replace fatal assertions and missing callback failures.
+Portable result codes expose typed guards at selected OEM assertion sites and
+report missing callback failures. The original helper at `0x400db014` logs,
+increments a diagnostic counter, delays 200 ms, and returns. The historical
+runtime harness instead throws before executing it. Its assertion cases compare
+the represented prefix state and calls; they do not prove that the OEM stopped,
+nor compare its later state changes or service calls.
+
 Out-of-range manual numeric conversions and nonfinite current-temperature delta
 estimates are explicit `InvalidNumericDomain` errors rather than undefined host
 C++ conversions. Those added API boundaries are separate from the finite original
@@ -144,8 +154,9 @@ array bound additionally rejects out-of-range direct MoveValve indices.
 | Fahrenheit to Celsius | (value − 32) / 1.8 |
 
 These are the original constants, including their precision. Incompatible units
-return false in the typed API in place of the original fatal assertion. Its result
-value is zero on that path, matching the OEM's fallback after a returning assertion.
+return false with a zero result in the typed API. The historical runtime fixture
+stops at the original assertion call on that path, so its comparison does not
+validate the original conversion's post-assertion continuation.
 
 ## Validation and limits
 
@@ -154,8 +165,10 @@ combinations; stack limits; wrapped durations and timing boundaries; all relevan
 command/wait combinations; threshold-adjacent temperatures and PicoStill signals;
 pause/resume, stop, and state transitions; all 2,048 selected safety-priority
 combinations; manual-step conversions; 1,089 quantity conversions and 121 unit
-compatibility cases; repository-selection flags; program validation; and full
-periodic runtime ticks.
+compatibility cases; repository-selection flags; program validation; and
+periodic runtime ticks. All are subject to the assertion-boundary scope above.
+The assertion counts and counting method are recorded in
+[assertion-coverage.md](assertion-coverage.md).
 
 The original execution harness uses the verified read-only Ghidra project and a
 200,000-instruction budget per case. It normalizes reviewed Xtensa register-window

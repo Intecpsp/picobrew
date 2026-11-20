@@ -115,7 +115,7 @@
     "process_timeout_seconds": 1800,
     "instruction_budget_per_case": 3000000
   },
-  "scope": "Original Xtensa JSON deserializer and local/Zymatic/PicoPak recipe-to-program instructions; reviewed ENTRY/CALL8/RETW windows, sequential MEMW and four finite TRUNC.S scale-zero sites; explicit scalar math, ROM memory/string, single-thread C++ static guards, error-text output, diagnostics and notification boundaries",
+  "scope": "Original Xtensa JSON deserializer and local/Zymatic/PicoPak recipe-to-program instructions; reviewed ENTRY/CALL8/RETW windows, sequential MEMW and four finite TRUNC.S scale-zero sites; explicit scalar math, ROM memory/string, single-thread C++ static guards, error-text output, diagnostics and notification boundaries; historical first-assertion boundary only for 13 application cases; fresh complete continuations are recorded separately in program-recipe-continuations-validation.json",
   "hardware_tested": false,
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
@@ -134,7 +134,7 @@
     "include/zseries/program_repository.hpp": "78fafe3ab9fc805aae72d229044d9744050773e4c0e69900fb64d5a533d4de29",
     "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
     "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
-    "include/zseries/quantity.hpp": "a73eef8d3a2cb8a3b03e9b345441e564eb96b80ed53c7fb7d6633dd62af52ff6",
+    "include/zseries/quantity.hpp": "17a78490378c14295478e4368cea2bdd324f1c97f5d65780aff4f2e6064cda04",
     "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
     "include/zseries/msp_protocol.h": "9665b35c82dd30a4ef9ca4311f5b6fd5a2319344db2a2c2cc2b067861811ab19",
     "adapters/arduinojson/program_recipe_json.cpp": "9e3a6a2a4d124297ef66dfba569881f1d7180233a55f6749e057afd40dc6c6d3",
@@ -145,9 +145,9 @@
     "tests/program_recipe_native.py": "6236886c5a07ab5e99cea1c6e8e391af70af0deae3b98e837d43a6f34b1b9ff4",
     "tests/program_recipe_cases.py": "a2625f35d3886d224fc8b87d076496c5809047824eb8d7e63d88d392d9067621",
     "tests/acquire_recipe_i386.py": "d12e1ad5ea9f80e786f7329d8fa3e9f4c798d8bfd64c9df9aed34f8ae78f0ce5",
-    "tests/run_program_recipe_32bit.py": "84067c50dbf9cfb47c61336d6f7c7171c17780544f8d16cc6900eeca95592562",
+    "tests/run_program_recipe_32bit.py": "8e5e056dd43ec13bb1b8e7b72ff0585a58399c32a56a1cd731288b6d42f6c059",
     "tests/toolchains/recipe-i386.json": "f567d1a035fbc0d2775893589a6a546f7eff7b71628fde47f22333fff54543fc",
-    "analysis/program-recipe-compatibility.json": "e5bb86ff8306bf0e079417254ce970bc3a8e272d99fdae89802a2023fd52971e"
+    "analysis/program-recipe-compatibility.json": "df63a7ef34997ef8ab693d210a224cf9dc9784b674406f353845332b9508098d"
   },
   "instruction_boundaries": [
     {
@@ -165,7 +165,9 @@
       "isa_source": "https://www.cadence.com/content/dam/cadence-www/global/en_US/documents/tools/silicon-solutions/compute-ip/isa-summary.pdf#page=633"
     }
   ],
-  "native_application_comparison": "All application cases exactly match original instruction output; malformed-token library exceptions are explicit in program-recipe-compatibility.json",
+  "native_application_comparison": "497 complete application outputs match exactly. 13 additional application results match only historical first-assertion observations; fresh complete OEM continuations are explicitly different from the retained bounded source policy. The remaining 82 parser cases retain the documented malformed-token/host-width differences.",
   "application_cases": 510,
-  "original_function_bodies": 70
+  "original_function_bodies": 70,
+  "complete_application_matches": 497,
+  "first_assertion_observations": 13
 }

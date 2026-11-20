@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "sources": [
+    {
+      "source": "src/system_tick.cpp",
+      "source_sha256": "7008b0484ae6eea99b1b316dc33d3190d9e1593e5acc548b9385f909de9515bc",
+      "object_sha256": "1245a97647a4d2c4fd12ca967f58d0911fe061c9f31136135df320c564c80d6a",
+      "object_bytes": 2584
+    },
+    {
+      "source": "platform/esp32/system_tick_platform.cpp",
+      "source_sha256": "2413e58a1dd2dc4f8683385ddf784cb6f6959fe68062378e9365caaee7fca939",
+      "object_sha256": "505ab839a65c0250002b79da7e1b015e014fbcf4308d889d294fd15fafc8a796",
+      "object_bytes": 5520
+    }
+  ],
+  "owned_header_sha256": {
+    "include/zseries/system_tick.hpp": "d486f835ceebc83e5c44372898a882cfd248a6450f864848df7e412f57fd53fb"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/system_tick_platform.hpp": "9ebe57df7007abe79e9b39a7655adc43e38ff5c01266aa5b2a17c376b9f1068e"
+  },
+  "scope": "Target compilation of recovered System watchdog/loop timing, returning assertion callback and real ESP32 watchdog/clock adapter. Required diagnostic bindings remain explicit. No complete application link or hardware validation."
+}

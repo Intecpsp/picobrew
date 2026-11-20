@@ -60,6 +60,13 @@ jobs:
             --arduino build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1 \
             --arduinojson build/dependencies/ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b \
             --output build/esp32-ci
+      - name: Verify encoder interrupt code and GPIO reads remain in IRAM
+        run: |
+          python tools/verify_physical_input_target.py \
+            --objects build/esp32-ci \
+            --toolchain build/dependencies/xtensa-esp32-elf \
+            --arduino build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1 \
+            --output build/esp32-ci/physical-inputs-iram.json
       - name: Preserve target objects and compilation evidence
         if: always()
         uses: actions/upload-artifact@v4
@@ -68,6 +75,7 @@ jobs:
           path: |
             firmware/z-series/reverse-engineered/build/esp32-ci/*.a
             firmware/z-series/reverse-engineered/build/esp32-ci/build-report.json
+            firmware/z-series/reverse-engineered/build/esp32-ci/physical-inputs-iram.json
             firmware/z-series/reverse-engineered/build/dependencies/esp32-acquisition.json
           if-no-files-found: ignore
 
