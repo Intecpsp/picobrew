@@ -1,0 +1,75 @@
+name: OEM Z-series source reconstruction
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+defaults:
+  run:
+    working-directory: firmware/z-series/reverse-engineered
+
+jobs:
+  host-comparisons:
+    name: Z-series recovered source and original fixtures
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned analysis test dependency
+        run: python -m pip install -r requirements-test.txt
+      - name: Acquire the pinned JSON rebuild dependency
+        run: python tools/acquire_arduinojson.py
+      - name: Verify preserved images, recovered behavior and source provenance
+        run: make verify PYTHON=python
+      - name: Build the concrete JSON adapter archive
+        run: make json-adapter PYTHON=python
+      - name: Check shared firmware analysis tooling
+        working-directory: .
+        run: python -m unittest discover -s tools/firmware_analysis -p 'test_*.py'
+      - name: Preserve host libraries
+        uses: actions/upload-artifact@v4
+        with:
+          name: zseries-recovered-host-libraries
+          path: firmware/z-series/reverse-engineered/build/libzseries_oem*.a
+
+  historical-target-objects:
+    name: Z-series historical ESP32 object compilation
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Acquire hash-pinned compiler, SDK and JSON sources
+        run: |
+          python tools/acquire_esp32.py
+          python tools/acquire_arduinojson.py
+      - name: Compile recovered modules and concrete adapters
+        run: |
+          python tools/build_esp32_objects.py \
+            --toolchain build/dependencies/xtensa-esp32-elf \
+            --arduino build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1 \
+            --arduinojson build/dependencies/ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b \
+            --output build/esp32-ci
+      - name: Preserve target objects and compilation evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: zseries-recovered-esp32-objects
+          path: |
+            firmware/z-series/reverse-engineered/build/esp32-ci/*.a
+            firmware/z-series/reverse-engineered/build/esp32-ci/build-report.json
+            firmware/z-series/reverse-engineered/build/dependencies/esp32-acquisition.json
+          if-no-files-found: ignore
+
+# These archives validate recovered source and SDK interfaces. They are not a
+# complete linked ESP32 application, update package, or hardware qualification.

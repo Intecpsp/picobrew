@@ -48,14 +48,19 @@ jobs:
                   os.chmod(target, int(item['mode'][-3:], 8))
               subprocess.run(['git', 'add', '--', str(path)], check=True)
           PY
-          git rm -r -- '.publication/z-foundation' '.github/workflows/publish-z-foundation.yml'
-          test "$(git write-tree)" = 'd5862ddd78e61ee10176b9d4a8fcff6c696dce03'
+          git rm -r -- '.publication/z-foundation'
+          publication_index=$(mktemp)
+          cp "$(git rev-parse --git-path index)" "$publication_index"
+          GIT_INDEX_FILE="$publication_index" git update-index --force-remove '.github/workflows/publish-z-foundation.yml'
+          test "$(GIT_INDEX_FILE="$publication_index" git write-tree)" = 'd5862ddd78e61ee10176b9d4a8fcff6c696dce03'
+          rm "$publication_index"
+          test -z "$(git diff --cached --name-only -- .github/workflows)"
       - name: Publish the exact reviewed source tree
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          test "$(git write-tree)" = 'd5862ddd78e61ee10176b9d4a8fcff6c696dce03'
+          test -z "$(git diff --cached --name-only -- .github/workflows)"
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git commit -m 'Publish verified z-foundation source and original-firmware evidence'
