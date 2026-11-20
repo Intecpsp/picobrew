@@ -78,6 +78,7 @@ type Server struct {
 	firmwareGitHub            *firmware.GitHub
 	firmwareMu                sync.Mutex
 	firmwareWorkMu            sync.Mutex
+	releaseMu                 sync.Mutex
 }
 
 func New(cfg Config) (*Server, error) {
@@ -164,6 +165,10 @@ func New(cfg Config) (*Server, error) {
 	}
 	s.wg.Add(1)
 	go func() { defer s.wg.Done(); s.monitorAI(ctx) }()
+	if !cfg.Demo {
+		s.wg.Add(1)
+		go func() { defer s.wg.Done(); s.monitorReleases(ctx) }()
+	}
 	s.resumeChatGPTCallback()
 	s.router = s.routes()
 	return s, nil
@@ -289,6 +294,9 @@ func (s *Server) routes() http.Handler {
 			r.Post("/ai/subscription/callback", s.aiSubscriptionCallback)
 			r.Get("/ai/settings", s.aiSettings)
 			r.Put("/ai/settings", s.aiSettings)
+			r.Get("/firmware/updates", s.firmwareUpdates)
+			r.Post("/firmware/updates", s.firmwareUpdates)
+			r.Post("/firmware/releases/{packageID}/stage", s.stageRelease)
 			r.Get("/firmware/settings", s.firmwareSettings)
 			r.Put("/firmware/settings", s.firmwareSettings)
 			r.Get("/firmware/github", s.firmwareGitHubCatalog)

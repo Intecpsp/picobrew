@@ -1,136 +1,25 @@
 import { useState, type FormEvent } from 'react'
-import { Download, Trash2 } from 'lucide-react'
+import { Download, RefreshCw } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
-import type { FirmwareCandidate, FirmwarePackage, MachineFirmware } from '../types'
+import type { FirmwareCandidate, FirmwarePackage, MachineFirmware, FirmwareUpdates } from '../types'
 import { Button, ErrorBanner, Field, Loading, Modal } from './ui'
 
-export function firmwareModelName(model: string) {
+function firmwareModelName(model: string) {
   return model === 'pico-s'
     ? 'Pico S'
     : model === 'pico-pro'
       ? 'Pico Pro'
       : model === 'pico-c'
         ? 'Pico C'
-        : model || 'Not identified'
-}
-
-export function firmwareCandidateName(item: FirmwareCandidate) {
-  return (
-    firmwareModelName(item.model) +
-    (item.display_variant ? ` · ${item.display_variant.toUpperCase()}` : '')
-  )
-}
-
-export function firmwareSize(bytes: number) {
-  return bytes >= 1024 * 1024
-    ? `${(bytes / (1024 * 1024)).toFixed(1)} MB`
-    : `${Math.ceil(bytes / 1024)} KB`
-}
-
-export function FirmwareDetails({ item }: { item: FirmwareCandidate }) {
-  return (
-    <details className="firmware-details">
-      <summary>Package details</summary>
-      <dl>
-        <dt>Machine family</dt>
-        <dd>{item.model_family}</dd>
-        {item.display_variant && (
-          <>
-            <dt>Display controller</dt>
-            <dd>{item.display_variant.toUpperCase()}</dd>
-          </>
-        )}
-        <dt>Machine image</dt>
-        <dd>{firmwareSize(item.binary_bytes)}</dd>
-        <dt>Image SHA-256</dt>
-        <dd>
-          <code>{item.binary_sha256}</code>
-        </dd>
-      </dl>
-    </details>
-  )
-}
-
-export function FirmwarePackageCard({
-  item,
-  onRemove,
-  onInstall,
-  disabled = false,
-}: {
-  item: FirmwarePackage
-  onInstall?: (item: FirmwarePackage) => void
-  onRemove?: (item: FirmwarePackage) => void
-  disabled?: boolean
-}) {
-  const [downloading, setDownloading] = useState(false)
-  const [error, setError] = useState('')
-  async function saveFile() {
-    setDownloading(true)
-    setError('')
-    try {
-      await download(
-        `/firmware/packages/${encodeURIComponent(item.id)}/download`,
-        `${item.model}${item.display_variant ? '-' + item.display_variant : ''}-${item.firmware_version}.zip`
-      )
-    } catch (error) {
-      setError(errorMessage(error))
-    } finally {
-      setDownloading(false)
-    }
-  }
-  return (
-    <article
-      className="firmware-package"
-      aria-label={`${firmwareCandidateName(item)} ${item.firmware_version}`}
-    >
-      <div className="firmware-package-heading">
-        <h4>
-          {firmwareCandidateName(item)} <span>{item.firmware_version}</span>
-        </h4>
-        <span className="help-text">{firmwareSize(item.package_bytes)}</span>
-      </div>
-      <p className="firmware-source">
-        {item.provenance.source === 'github' ? (
-          <>
-            GitHub · {item.provenance.repository}{' '}
-            {item.provenance.commit && item.provenance.repository && (
-              <a
-                href={`https://github.com/${item.provenance.repository}/commit/${item.provenance.commit}`}
-                target="_blank"
-                rel="noreferrer"
-              >
-                {item.provenance.commit.slice(0, 12)}
-              </a>
-            )}
-          </>
-        ) : (
-          'Uploaded package'
-        )}
-      </p>
-      <FirmwareDetails item={item} />
-      <div className="inline-actions">
-        <Button
-          variant="secondary"
-          disabled={downloading || disabled}
-          onClick={() => void saveFile()}
-        >
-          <Download size={16} /> {downloading ? 'Downloading…' : 'Download package'}
-        </Button>
-        {onInstall && (
-          <Button disabled={disabled} onClick={() => onInstall(item)}>
-            Update firmware
-          </Button>
-        )}
-        {onRemove && (
-          <Button variant="ghost" disabled={disabled} onClick={() => onRemove(item)}>
-            <Trash2 size={16} /> Remove
-          </Button>
-        )}
-      </div>
-      <ErrorBanner message={error} />
-    </article>
-  )
+        : {
+            'pico-s-pro': 'Historical Pico S/Pro',
+            'z-series': 'Pico Z',
+            picoferm: 'PicoFerm',
+            picostill: 'PicoStill',
+          }[model] ||
+          model ||
+          'Not identified'
 }
 
 export function MachineFirmwareDialog({
@@ -149,23 +38,82 @@ export function MachineFirmwareDialog({
   const [checked, setChecked] = useState(false)
   const [saving, setSaving] = useState(false)
   const [verificationError, setVerificationError] = useState('')
-  const [selection, setSelection] = useState<FirmwarePackage | null>(null)
-  async function install() {
-    if (!selection || saving || !firmware.data?.install_supported) return
-    setSaving(true)
+  const updates = useResource<FirmwareUpdates>('/firmware/updates', 60000)
+  const [chosen, setChosen] = useState('')
+  const [activity, setActivity] = useState('')
+  const machine = firmware.data
+  const model = machine?.model || hub.devices?.find((d) => d.id === deviceID)?.model
+  const items = new Map<string, FirmwareCandidate & { remote: boolean; kind?: string }>()
+  for (const item of updates.data?.releases || []) {
+    const same =
+      item.model === model &&
+      (model !== 'pico-c' ||
+        (!machine?.hardware_verification_required &&
+          item.display_variant === machine?.display_variant))
+    if (same || (item.kind === 'historical' && (model === 'pico-s' || model === 'pico-pro'))) {
+      items.set(item.archive_sha256, { ...item, remote: true })
+    }
+  }
+  for (const item of machine?.packages || []) {
+    if (!items.has(item.id)) items.set(item.id, { ...item, remote: false })
+  }
+  const versions = [...items].sort(
+    ([, a], [, b]) =>
+      Number(b.kind !== 'historical') - Number(a.kind !== 'historical') ||
+      Number(a.firmware_version.startsWith('preview')) -
+        Number(b.firmware_version.startsWith('preview')) ||
+      b.firmware_version.localeCompare(a.firmware_version, 'en', { numeric: true })
+  )
+  const id = items.has(chosen)
+    ? chosen
+    : machine?.retry_package_id && items.has(machine.retry_package_id)
+      ? machine.retry_package_id
+      : versions[0]?.[0]
+  const selected = id ? items.get(id) : undefined
+  const canInstall =
+    machine?.install_supported &&
+    selected?.hub_ota_protocol === 1 &&
+    (!machine.retry_package_id || machine.retry_package_id === id)
+  async function checkUpdates() {
+    setActivity('Checking…')
     setVerificationError('')
     try {
-      await api(`/devices/${encodeURIComponent(deviceID)}/firmware/install`, {
-        method: 'POST',
-        body: { package_id: selection.id, device_uid: firmware.data.device_uid, confirm: true },
-      })
-      setSelection(null)
-      firmware.reload()
-      hub.notify('Firmware update started.')
+      updates.setData(await api<FirmwareUpdates>('/firmware/updates', { method: 'POST' }))
     } catch (error) {
       setVerificationError(errorMessage(error))
     } finally {
-      setSaving(false)
+      setActivity('')
+    }
+  }
+  async function useVersion(install: boolean) {
+    if (!id || !selected || !machine || (install && !canInstall)) return
+    setVerificationError('')
+    setActivity(install ? 'Preparing update…' : 'Downloading…')
+    try {
+      if (selected.remote && !machine.packages.some((p) => p.id === id)) {
+        const saved = await api<FirmwarePackage>(`/firmware/releases/${id}/stage`, {
+          method: 'POST',
+        })
+        if (saved.id !== id)
+          throw new Error('The staged package does not match the selected release.')
+      }
+      if (install) {
+        await api(`/devices/${encodeURIComponent(deviceID)}/firmware/install`, {
+          method: 'POST',
+          body: { package_id: id, device_uid: machine.device_uid, confirm: true },
+        })
+        hub.notify('Firmware update started.')
+      } else {
+        await download(
+          `/firmware/packages/${id}/download`,
+          `${selected.model}-${selected.display_variant ? selected.display_variant + '-' : ''}${selected.firmware_version}.zip`
+        )
+      }
+      firmware.reload()
+    } catch (error) {
+      setVerificationError(errorMessage(error))
+    } finally {
+      setActivity('')
     }
   }
   async function verifyController(event: FormEvent) {
@@ -197,7 +145,10 @@ export function MachineFirmwareDialog({
         firmware.data && (
           <div className="machine-firmware">
             <div className="firmware-current">
-              <strong>{firmwareModelName(firmware.data.model)}</strong>
+              <strong>
+                {hub.devices?.find((d) => d.id === deviceID)?.name ||
+                  firmwareModelName(model || '')}
+              </strong>
               <span>Current version: {firmware.data.current_version || 'Not reported'}</span>
             </div>
             <p role="status">{firmware.data.reason}</p>
@@ -206,24 +157,6 @@ export function MachineFirmwareDialog({
                 Last update ({firmware.data.last_install.state}):{' '}
                 {firmware.data.last_install.message}
               </p>
-            )}
-            {selection && (
-              <div>
-                <p>
-                  Install {firmwareCandidateName(selection)} {selection.firmware_version} on{' '}
-                  {firmware.data.device_uid}? Keep the idle brewer powered and connected during both
-                  restarts.
-                </p>
-                <Button
-                  disabled={saving || !firmware.data.install_supported}
-                  onClick={() => void install()}
-                >
-                  Confirm firmware update
-                </Button>
-                <Button variant="secondary" disabled={saving} onClick={() => setSelection(null)}>
-                  Cancel
-                </Button>
-              </div>
             )}
             <ErrorBanner message={verificationError} />
             {firmware.data.model === 'pico-c' && (
@@ -274,37 +207,52 @@ export function MachineFirmwareDialog({
                 </form>
               </details>
             )}
-            <h3>Matching packages in this Hub</h3>
-            {firmware.data.packages.length ? (
-              <div className="firmware-package-list">
-                {firmware.data.packages.map((item) => (
-                  <FirmwarePackageCard
-                    key={item.id}
-                    item={item}
-                    disabled={saving}
-                    onInstall={
-                      firmware.data?.install_supported &&
-                      (!firmware.data.retry_package_id ||
-                        firmware.data.retry_package_id === item.id) &&
-                      item.hub_ota_protocol === 1
-                        ? setSelection
-                        : undefined
-                    }
-                  />
+            <Field label="Firmware version">
+              <select
+                value={id || ''}
+                disabled={!versions.length || !!activity}
+                onChange={(e) => setChosen(e.target.value)}
+              >
+                {!versions.length && <option value="">No versions available</option>}
+                {versions.map(([key, v]) => (
+                  <option key={key} value={key}>
+                    {v.firmware_version}
+                    {v.display_variant ? ' · ' + v.display_variant.toUpperCase() : ''}
+                    {v.kind === 'historical'
+                      ? ' · Historical S/Pro build'
+                      : v.kind === 'reference'
+                        ? ' · Reference package'
+                        : ''}
+                  </option>
                 ))}
-              </div>
-            ) : (
-              <p className="help-text">No matching packages are stored in this Hub.</p>
+              </select>
+            </Field>
+            <div className="inline-actions">
+              {canInstall && (
+                <Button disabled={!!activity || saving} onClick={() => void useVersion(true)}>
+                  Install
+                </Button>
+              )}
+              <Button
+                variant="secondary"
+                disabled={!selected || !!activity}
+                onClick={() => void useVersion(false)}
+              >
+                <Download size={16} />
+                Download
+              </Button>
+              <Button variant="secondary" disabled={!!activity} onClick={() => void checkUpdates()}>
+                <RefreshCw size={16} />
+                Check for Updates
+              </Button>
+            </div>
+            {activity && <p role="status">{activity}</p>}
+            {updates.data?.checked && (
+              <p className="help-text">
+                Last checked {new Date(updates.data.checked).toLocaleString()}
+              </p>
             )}
-            <Button
-              variant="secondary"
-              onClick={() => {
-                onClose()
-                hub.navigate('/settings/firmware')
-              }}
-            >
-              Manage firmware packages
-            </Button>
+            <ErrorBanner message={updates.error} />
           </div>
         )
       )}

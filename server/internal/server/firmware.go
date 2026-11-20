@@ -346,8 +346,8 @@ func (s *Server) readFirmwareArchive(id string) ([]byte, error) {
 	if err := s.ensureFirmwareCache(); err != nil {
 		return nil, err
 	}
-	data, err := privatefs.ReadFile(filepath.Join(s.firmwareCacheDir(), id+".zip"), firmware.MaxArchiveBytes)
-	if err != nil || len(data) > firmware.MaxArchiveBytes || firmware.Digest(data) != id {
+	data, err := privatefs.ReadFile(filepath.Join(s.firmwareCacheDir(), id+".zip"), firmware.MaxReleaseBytes)
+	if err != nil || len(data) > firmware.MaxReleaseBytes || firmware.Digest(data) != id {
 		return nil, cacheCorrupt()
 	}
 	return data, nil
@@ -379,7 +379,7 @@ func (s *Server) saveFirmwarePackage(archive []byte, metadata firmware.Candidate
 	if err != nil {
 		return existing, false, err
 	}
-	if len(packages) >= firmware.MaxPackages {
+	if provenance.Source != "library" && len(packages) >= firmware.MaxPackages {
 		return existing, false, cacheFull()
 	}
 	if err := s.ensureFirmwareCache(); err != nil {
@@ -404,7 +404,7 @@ func (s *Server) saveFirmwarePackage(archive []byte, metadata firmware.Candidate
 			count++
 		}
 	}
-	if count >= firmware.MaxPackages || total+int64(len(archive)) > firmware.MaxPackages*firmware.MaxArchiveBytes {
+	if provenance.Source != "library" && (count >= firmware.MaxPackages || total+int64(len(archive)) > firmware.MaxPackages*firmware.MaxReleaseBytes) {
 		return existing, false, cacheFull()
 	}
 	createdFile := false
@@ -538,7 +538,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 		out.CurrentVersion = d.view.Capabilities.FirmwareVersion
 		_, modelError := device.ReportedModel(*d.view.Capabilities)
 		if d.view.ModelSource == "firmware" && d.view.ModelError == "" &&
-			modelError == nil && firmware.ValidModel(d.view.Capabilities.Model) && d.view.Status != nil && validateStatusModel(*d.view.Status, *d.view.Capabilities) == nil {
+			modelError == nil && device.SupportedModel(d.view.Capabilities.Model) && d.view.Status != nil && validateStatusModel(*d.view.Status, *d.view.Capabilities) == nil {
 			out.Model = d.view.Capabilities.Model
 			out.DisplayVariant = d.view.Capabilities.DisplayVariant
 			out.DeviceUID = d.view.Status.DeviceUID

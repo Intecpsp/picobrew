@@ -1,30 +1,16 @@
 # Firmware packages in PicoBrew Hub
 
-Open **Workspace settings → Firmware** to upload a firmware package or fetch
-one from GitHub. Saved packages remain available after a Hub restart and can
-be downloaded or removed from the Hub. A physical machine's **Firmware** view
-shows its current version and packages declared for its model.
+Open a machine's **Firmware** view, choose a version, and click **Install**. The Hub downloads the chosen archive on demand, verifies it, and reuses it on subsequent requests. **Download** saves that version to your computer. Only compatible, idle machines and packages that implement trial confirmation offer **Install**. Historical family builds and reference packages are available for download.
 
-## GitHub source
+## GitHub source and version checks
 
-The default repository is `jeffreydwalter/picobrew-pico-pro-firmware`. The
-repository is editable, so a fork or another repository with the same package
-layout can supply builds. Leave the branch/tag field empty to use that
-repository's default branch, or enter a branch, tag, or full commit ID.
+**Workspace settings → Firmware** contains the GitHub repository and optional branch, tag, or commit. The default is `jeffreydwalter/picobrew-pico-pro-firmware` on its default branch. A compatible source publishes `firmware/releases.json`. The Hub pins that catalog and its archives to the same Git commit. Each entry also records the build's source revision. A manual **Check for Updates** in the machine view refreshes the metadata immediately.
 
-Save the source, choose **Check GitHub**, and select the model to fetch. The Hub
-resolves the selected revision to one immutable commit before reading any
-package files. It records the repository and commit with the saved package.
-Changing a branch during a download therefore cannot mix a report, image, and
-website from different revisions.
+While physical devices are registered, the Hub checks daily. The admin Overview displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
-This reads the committed package files; it does not require a GitHub Release,
-an Actions artifact, a GitHub account, a local checkout, or a compiler on the
-Hub host. The source must be a public repository on GitHub.com. Source lookup
-and download happen only when requested. Saving the source does not download
-or install firmware.
+The catalog includes separately targeted S, Pro and C display builds, historical S/Pro family images, and reference packages for the generic Z, PicoFerm and PicoStill. Each catalog entry identifies the release type, model, version, and SHA-256 of the ZIP and application. Named historical versions and pre-release snapshots retain their original bytes. For a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
-The current source layout is:
+The earlier package upload and single-revision acquisition APIs remain available for external tools. The current source layout is:
 
 - `firmware/pico-s-pro/modified/firmware/standalone/<model>/firmware-report.json`
 - The adjacent `<model>-standalone.bin` image.
@@ -95,7 +81,7 @@ match compares declared package and machine model information.
 
 ## Installation
 
-An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose **Update firmware**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
+An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
 The first installation on older firmware requires USB. The bootstrap tool currently supports one pinned Pico Pro profile. See the [setup, recovery and physical validation limits](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
 
@@ -115,6 +101,8 @@ executes code from a package.
 | Method | API path | Behavior |
 | --- | --- | --- |
 | GET / PUT | `/api/v1/firmware/settings` | Read or save `repository` and `ref` |
+| GET / POST | `/api/v1/firmware/updates` | Read cached versions and notices or check the configured source now |
+| POST | `/api/v1/firmware/releases/{packageID}/stage` | Fetch and verify the selected catalog archive for download or install |
 | GET | `/api/v1/firmware/github` | Inspect model packages at one resolved source commit |
 | POST | `/api/v1/firmware/github/import` | Fetch `{repository, commit, model}` into the Hub |
 | GET | `/api/v1/firmware/packages` | List saved, validated packages |

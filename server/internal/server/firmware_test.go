@@ -488,3 +488,42 @@ func TestDemoFirmwareAcquisitionRemainsExplicitAndLocal(t *testing.T) {
 		t.Fatal("demo firmware route accepts nonlocal Host or contacted GitHub", rec.Code)
 	}
 }
+
+func TestVersionCheckUsesMetadataAndStagesOnlySelectedArchive(t *testing.T) {
+	s, h, c, close := startFirmwareServer(t, newTestDataDir(t))
+	defer close()
+	csrf := signIn(t, c, h.URL)
+	archive := firmwaretest.Archive(firmwaretest.Files("pico-s"))
+	candidate, err := firmware.ValidateArchive(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	release := firmware.Release{Candidate: candidate, ArchiveSHA256: firmware.Digest(archive), SourceCommit: strings.Repeat("a", 40), Kind: "standalone"}
+	index, _ := json.Marshal(map[string]any{"schema_version": 1, "releases": []firmware.Release{release}})
+	files := map[string][]byte{"releases.json": index, firmware.DefaultRepository: []byte(`{"default_branch":"master"}`), "commits/master": []byte(`{"sha":"` + release.SourceCommit + `"}`), release.FirmwareVersion + ".zip": archive}
+	reads := 0
+	s.firmwareGitHub.HTTP = &http.Client{Transport: firmwareTransport(func(r *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(r.URL.Path, ".zip") {
+			reads++
+		}
+		return fixtureGitHubResponse(r, files), nil
+	})}
+	d := &runtimeDevice{cancel: func() {}, view: domain.DeviceView{Device: domain.Device{ID: "test", Name: "Brewer", Adapter: "pico-standalone", Model: "pico-s"}, Capabilities: &domain.Capabilities{Model: "pico-s", FirmwareVersion: "0.1.0"}}}
+	s.mu.Lock()
+	s.devices["test"] = d
+	s.mu.Unlock()
+	code, body := request(t, c, "POST", h.URL+"/api/v1/firmware/updates", csrf, nil, nil)
+	var got releaseView
+	if code != 200 || json.Unmarshal(body, &got) != nil || len(got.Releases) != 1 || len(got.Notices) != 1 || reads != 0 {
+		t.Fatalf("version check %d %s; archive reads %d", code, body, reads)
+	}
+	for range 2 {
+		code, body = request(t, c, "POST", h.URL+"/api/v1/firmware/releases/"+release.ArchiveSHA256+"/stage", csrf, nil, nil)
+		if code != 200 || parseFirmwarePackage(t, body).ID != release.ArchiveSHA256 {
+			t.Fatalf("stage %d %s", code, body)
+		}
+	}
+	if reads != 1 {
+		t.Fatalf("staging twice downloaded %d archives", reads)
+	}
+}

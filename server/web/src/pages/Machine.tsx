@@ -585,8 +585,7 @@ function BrewerMachine({ id }: { id: string }) {
         reload={monitor.reload}
       />
       <div className="machine-footnotes">
-        {device.adapter === 'pico-standalone' &&
-        ['pico-s', 'pico-pro', 'pico-c'].includes(device.model) ? (
+        {device.adapter === 'pico-standalone' ? (
           <button className="firmware-link" onClick={() => setFirmware(true)}>
             Firmware {device.capabilities?.firmware_version || '—'}
           </button>

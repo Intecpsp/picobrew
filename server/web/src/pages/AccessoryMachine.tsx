@@ -20,7 +20,9 @@ import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components
 import { DevicePreferences } from '../components/DevicePreferences'
 import { SensorHistory } from '../components/SensorHistory'
 
+import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 export default function AccessoryMachine({ device }: { device: Device }) {
+  const [firmwareOpen, setFirmwareOpen] = useState(false)
   const hub = useHub(),
     id = device.id,
     status = device.status
@@ -322,7 +324,12 @@ export default function AccessoryMachine({ device }: { device: Device }) {
         )}
       </section>
       <div className="machine-footnotes">
-        <span>Firmware {device.capabilities?.firmware_version || '—'}</span>
+        <button className="firmware-link" onClick={() => setFirmwareOpen(true)}>
+          Firmware {device.capabilities?.firmware_version || '—'}
+        </button>
+        {firmwareOpen && (
+          <MachineFirmwareDialog deviceID={device.id} onClose={() => setFirmwareOpen(false)} />
+        )}
         <span>API v{device.capabilities?.api_version || '—'}</span>
         <span>UID {status?.device_uid || 'Not reported'}</span>
         <span>Uptime {duration(status?.uptime_ms || 0)}</span>
