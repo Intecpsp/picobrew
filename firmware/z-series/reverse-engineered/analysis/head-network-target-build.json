@@ -1,0 +1,321 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/auxiliary_sensors.cpp",
+      "source_sha256": "49b7eb780c6de6e45de013bd982f6c9023ebbb5bea9bbc03cd310546749328ae",
+      "object_sha256": "145cdf97717c69be1ad52677c88c3e24878cf53ef79565bff438d8e12b19c0ca",
+      "object_bytes": 12896
+    },
+    {
+      "source": "src/core_commands.cpp",
+      "source_sha256": "bf455c576b8f005a1866353140b978ced1fc21c1b636ef3f53f27ba9d9d6955b",
+      "object_sha256": "25549ad4675e7b932f8ee80f7fa874c4c2ee3232eff9b42477c6359249e8a18f",
+      "object_bytes": 18552
+    },
+    {
+      "source": "src/core_control_state.cpp",
+      "source_sha256": "8b02c46df064667cde35b90bcb4b2b438c95dc58e766665b02cae7974ddaf001",
+      "object_sha256": "01a6ed0e830bd8c5b93a910869a503ac3271c1e7597cf45874bab700e17535c6",
+      "object_bytes": 1936
+    },
+    {
+      "source": "src/core_flow.cpp",
+      "source_sha256": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449",
+      "object_sha256": "bffb173d777feebba449ab827adc1b65e2d49bd202bb236240f90bb8333b9d9d",
+      "object_bytes": 21344
+    },
+    {
+      "source": "src/core_startup.cpp",
+      "source_sha256": "56cafa8b6ea14e2223e01d0ad9b1dcf3dfddbacf1e102613e7dd7f0579091006",
+      "object_sha256": "8f51c7e0fab15578c7d258c638acf28977a9d41a074309573ecd4113cf10fb0e",
+      "object_bytes": 7456
+    },
+    {
+      "source": "src/display.cpp",
+      "source_sha256": "0f92a8cccaee3fa0195ee983faf3f111fb128490f7b95e4f1b417cafc088c888",
+      "object_sha256": "41b77dc9dc34e94f5e8efd6cb659e965b0fb75c49f643e8d519cf70a263229f5",
+      "object_bytes": 14540
+    },
+    {
+      "source": "src/display_effects.cpp",
+      "source_sha256": "f88fa5aebc708678f27c768bdaf1b3caf9dbc54fe3bfbf0a846de87a58af543e",
+      "object_sha256": "912d48ba8589566e1036181d4ec2319f5d29715d68b435e989f6e773fa32b96c",
+      "object_bytes": 11816
+    },
+    {
+      "source": "src/display_fonts.cpp",
+      "source_sha256": "7b93fe8aebea9be365631da0ae120fc00b29eaf6ca296e6cec612e02f1d9114b",
+      "object_sha256": "a391dad4e0694653cd78ee20ed6506355f435c757a4f7c39026155eb8e841788",
+      "object_bytes": 98572
+    },
+    {
+      "source": "src/display_text.cpp",
+      "source_sha256": "1bbf504231346f3cdddd3725bcf7cad272cf7affa091feeb813acf7d849072d7",
+      "object_sha256": "d78a359eef681737f21e53407704e1e6a4294a8b317b50cd0b5d38540e83bef1",
+      "object_bytes": 11628
+    },
+    {
+      "source": "src/eeprom.cpp",
+      "source_sha256": "59b953aa70cfbcee0f3e63eb1c10e731fecac15087bda84d9241d5b191d2f14f",
+      "object_sha256": "efe4766d86f5ef58bc8137d164ae8799e30806341dd2dbc7680abe19df0d9e8d",
+      "object_bytes": 16748
+    },
+    {
+      "source": "src/enums.cpp",
+      "source_sha256": "fce5148e7b40c06fa898ad7ee979e46c83416e7b940b16d3336a29cbf66a49c1",
+      "object_sha256": "53edc9e53333ed6ddff23df280200fd5f036ea97481cb29e9c86c45a4b427d73",
+      "object_bytes": 56828
+    },
+    {
+      "source": "src/head_encoder.cpp",
+      "source_sha256": "322446cfc858087c70920264033a9aee2c1f736680a3c5b569441c1be9f2324e",
+      "object_sha256": "e954f31dfe949adac6e97e25c414e333e014527fc6b87212afa604be9e3415bd",
+      "object_bytes": 5700
+    },
+    {
+      "source": "src/head_events.cpp",
+      "source_sha256": "8968ea7c271cf5904bca1b4c829d673eca96a1c6415347a51f2f977d859555b4",
+      "object_sha256": "8181ab162e8a41aec082bd410fc3703a4e389c536768ac05c0215ad7b89b1840",
+      "object_bytes": 3368
+    },
+    {
+      "source": "src/head_flow.cpp",
+      "source_sha256": "cd831c3df0f993d9eda73c9133790f59737a240acbe92a23a81fc660520fd16b",
+      "object_sha256": "9cc422abc622e029307e70e27f240d2603d8c1cfbb8a29d16b0491a7e5220198",
+      "object_bytes": 7740
+    },
+    {
+      "source": "src/head_network_events.cpp",
+      "source_sha256": "e573b472558aa2292f7d770b31ee7bf493bccdc4f7f1b5b84b4e5bbb570c0c5e",
+      "object_sha256": "560bdb6e74c8b3f3e83f2288d34d40ad3190ea9bec7626a4a7a8647655a4d2ec",
+      "object_bytes": 6620
+    },
+    {
+      "source": "src/head_numeric_inputs.cpp",
+      "source_sha256": "72cb1d7b9254101da69979c2e5ca2bfe6854bcac7fb635d7ccfe7844a51f9bca",
+      "object_sha256": "5265781008966387f22b670dcf246e18ad1911ecfde1bc314346670955a2664e",
+      "object_bytes": 6624
+    },
+    {
+      "source": "src/head_text_input.cpp",
+      "source_sha256": "2d3b3a3d9c5260634ede8611403c6a78222145c31c162fb7250f2e7a405c96df",
+      "object_sha256": "9e80339df1e13fac7882e2066db24a6eb4621bef445fe1c26ff7790bc1e9d9f4",
+      "object_bytes": 3060
+    },
+    {
+      "source": "src/heater.cpp",
+      "source_sha256": "816339ecb3173c11cfa8feb6a3e98e3309c2f267b843c7eae5ee4afce4b3c7f9",
+      "object_sha256": "1ff5f465a6f1ca568581a080262a35ece46b2b8797fb647e07e267979bd14942",
+      "object_bytes": 18032
+    },
+    {
+      "source": "src/hex_detection.cpp",
+      "source_sha256": "fc7bacd53991a8cae60dc1ac4019815404d2fb44884edc2d8afaabcb7a5d6d65",
+      "object_sha256": "0905ca8f848a4bc7acb78d04732a16a5f9495f1776b03ee2e64e6681f8fa8d04",
+      "object_bytes": 6532
+    },
+    {
+      "source": "src/program_catalog.cpp",
+      "source_sha256": "a3133b4351b023d3aed6a574f291da45bbd9bfac90da74d526fc32e27fcfa663",
+      "object_sha256": "82abffb07e464308fe54eb9ca5e521422da9169394a4671932b46381987836a3",
+      "object_bytes": 23304
+    },
+    {
+      "source": "src/program_recipe.cpp",
+      "source_sha256": "58e41bf1d62e0320b277f68ba99830814b4b8ebe92e95683d23deabc0ad90bf9",
+      "object_sha256": "2a1d817ba8fac4f084f353dd6c8da45ae77019463334c2a3d635d4d1edf3c911",
+      "object_bytes": 15972
+    },
+    {
+      "source": "src/program_repository.cpp",
+      "source_sha256": "4e53c359c0cd10bb5ff702768af61cbf3033b56d6cb892a6b274e320dbfb848c",
+      "object_sha256": "ccea415564dc5d588135876b6b295602e1a390b0653266d090fcd2c914305d29",
+      "object_bytes": 9328
+    },
+    {
+      "source": "src/program_runtime.cpp",
+      "source_sha256": "91e2afd14ff01fc9c5ea8c6b3fdd785be8bc02639aa69b0bf9c2fdf10219b0ac",
+      "object_sha256": "4f4585dedd98e55ba1b9f67179388f89ffbffc332299d2007dd32f7a0161ceab",
+      "object_bytes": 49300
+    },
+    {
+      "source": "src/program_runtime_execution.cpp",
+      "source_sha256": "2081db109cc28cec77d69283733658498c323899548398245b2c41782e0a9349",
+      "object_sha256": "7b1ab6d2c68a9c07d701e39fc9916b266c448dd1015120d1045b715086ddbe85",
+      "object_bytes": 26188
+    },
+    {
+      "source": "src/program_runtime_heater.cpp",
+      "source_sha256": "fab8390fe04a889f10c0dcaad6e31b7086b07240a7b6daff6506ed1bab039bc6",
+      "object_sha256": "9ae74628e52dd385e16a010f6b21d7de9f0ab76b6419a55a4e1345147683f67f",
+      "object_bytes": 4988
+    },
+    {
+      "source": "src/program_writer.cpp",
+      "source_sha256": "6318df0b73d110c74b06211ade2eb318f7c104ffb9d42a91fec7dec725cce843",
+      "object_sha256": "46467f0fa95b6e6dcf266658a979ee1e846337d86838d6957939b0d09bbfef5d",
+      "object_bytes": 13444
+    },
+    {
+      "source": "src/quantity.cpp",
+      "source_sha256": "609503865e26b3d2b4038ae247515ef0b369edf4c536329dbc1633a260e15eba",
+      "object_sha256": "6f1dc25009a36c8be37544e19c2db25df5e8c46eb4098bc61af6136028480939",
+      "object_bytes": 3812
+    },
+    {
+      "source": "src/runtime_instruction.cpp",
+      "source_sha256": "dfa89bc150e4bb7a6b2a21e9a13ae6a438867cb43c30ebeec9f580663121fc75",
+      "object_sha256": "8791dd72f229df4e0f7877a55fcf77c48da18a8b98b18babd864cf83e485d6f5",
+      "object_bytes": 4860
+    },
+    {
+      "source": "src/safeties.cpp",
+      "source_sha256": "c8c32484861c8175ee080402b50bb0c02a28e3e1898b6b26a3d7d5167da11df4",
+      "object_sha256": "69cff9ccdfb0207ff4a52fdc846143fa7f39e3b27a3f45657912504088365d49",
+      "object_bytes": 5096
+    },
+    {
+      "source": "src/sensor_acquisition.cpp",
+      "source_sha256": "29969474a4a98f393e2f7e8d8045e86c21908b8b39b60c4e806136021a84d6b2",
+      "object_sha256": "48ea6ec467a4022d9ab582fc35d3e0e462c8d103e897e03dc95c93f29a69b347",
+      "object_bytes": 6240
+    },
+    {
+      "source": "src/temperature.cpp",
+      "source_sha256": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8",
+      "object_sha256": "5a431b2ed90bbde34f1a65daa9d44fa287decbbc7b10055b2f818d78df2f14f2",
+      "object_bytes": 5640
+    },
+    {
+      "source": "src/ui_catalog.cpp",
+      "source_sha256": "ee2f3d99b121abbd1b519f98aa0e6706ce834bf3102c0c7b02c0e3380a5d95f1",
+      "object_sha256": "a2f51ac718236349ca6ee925efb590003067119ad6518af20ed2a90e06f2abe1",
+      "object_bytes": 154148
+    },
+    {
+      "source": "src/ui_screen_tick.cpp",
+      "source_sha256": "6fca041d9c4a8fdfc560cc4f4ce1db6975877eab2291a15e9e93cfdc3d1b56fd",
+      "object_sha256": "0a6f08c25d7ea44f1b86ea9de4723dfaa9b081314740e78949e3c27e9bc104cb",
+      "object_bytes": 3768
+    },
+    {
+      "source": "src/msp_protocol.c",
+      "source_sha256": "5867e06fd50f8c74376a38346e18de1eb69a4fe71ca7516b21fad2be0427ead2",
+      "object_sha256": "903f2d4686c54b628bd3631ad6418e947a2bd3b1757c2010b3bd65a83b1834b3",
+      "object_bytes": 17460
+    },
+    {
+      "source": "platform/esp32/display_platform.cpp",
+      "source_sha256": "cab1c7422a752e4cd231e310bb9ec4e5325766474fae70831711af3546d73164",
+      "object_sha256": "b6d6d9724c06f407119186a6aa3601b41d9df78ede91e0b6a0d9363c578323e9",
+      "object_bytes": 5484
+    },
+    {
+      "source": "platform/esp32/esp32_platform.cpp",
+      "source_sha256": "1c64cfc2de6ddeb7682e3348ad5110e9c04ca20fcfca52d1985717757f98ab03",
+      "object_sha256": "484ef86eac341347524f9785163724b933d8a27e85c2a38049bdd4125a1085a9",
+      "object_bytes": 23148
+    },
+    {
+      "source": "adapters/arduinojson/program_recipe_json.cpp",
+      "source_sha256": "9e3a6a2a4d124297ef66dfba569881f1d7180233a55f6749e057afd40dc6c6d3",
+      "object_sha256": "f3b50551e9c71498ce0cb98e06c44b8d05983d1d4a264da0548e1d50e870f898",
+      "object_bytes": 54672
+    }
+  ],
+  "archive_sha256": "81e2d154894fea7832819814a52ae5abaeb6ddf05d1f91dfed84a35cd23cb43a",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Target object compilation of owned source against the evidenced historical SDK; no application entry point, partition selection, firmware packaging, or installation",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "build_script_sha256": "017a14ce55ea71dcecafc446246a888898b79bc7be759dfc98c3a65583a633a3",
+  "owned_header_sha256": {
+    "include/zseries/auxiliary_sensors.hpp": "fa832d9268da5df2039671bd834b41d0b08c63575e3128653abe5e8c248d7dd2",
+    "include/zseries/core_commands.hpp": "cf8469a0e19bed4a8d29448315704f77ce7dd5045493270fd2f13a7b781a24d5",
+    "include/zseries/core_control_state.hpp": "bc86aa2e63ee2344e21f7cca8ec558f2f42c82a2d7a3eff9884dd24ba3d6d502",
+    "include/zseries/core_flow.hpp": "5882362d744fb5612d31e72300ac90d836ba7d28bfcbdfa9b5f22b7fb09d9fc0",
+    "include/zseries/core_startup.hpp": "7062a7f1aa7fc4a12fc1e188f1c43d51374f3808a049f8aeeff2080dbe544193",
+    "include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
+    "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
+    "include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
+    "include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3",
+    "include/zseries/eeprom.hpp": "b6827377c269161f9e1989f1af457b126bb181f2535ec4a8c9b8fac4a6df77bd",
+    "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
+    "include/zseries/head_encoder.hpp": "3aaf5fcbaf19e23ba3d80428b12d5fadd5211200fa8c4503b3d01109df84d853",
+    "include/zseries/head_events.hpp": "f5a2c3d5698e3f9d21e52162458670031f0f2bd5fa2cf231c2a2ff10f07d73a0",
+    "include/zseries/head_flow.hpp": "e1c446688590f00da33b7e8651c9f10c19d513795f5868e666a4d3fa1494f5e9",
+    "include/zseries/head_network_events.hpp": "9b7dc79823d0b1b85105bb5f705083f36b6edd95042f3c0d52eb60a4ac9cae20",
+    "include/zseries/head_numeric_inputs.hpp": "f0225507f4574d2d84e921bb6d8185290e57e5ab134b5c36ae199870a538fca5",
+    "include/zseries/head_text_input.hpp": "5403ea3974d75ea00f06151e4d7e4f7b1c58c019963c7defde0913421d09bf0e",
+    "include/zseries/heater.hpp": "bc7055a7ccd85a656b804ee1a53803679ded1aa480917658383eca7bd0d46387",
+    "include/zseries/hex_detection.hpp": "18415d26c54cb898bcdea1ce63233f6642171c958de70ac3387c0c54ba9487d5",
+    "include/zseries/msp_protocol.h": "9665b35c82dd30a4ef9ca4311f5b6fd5a2319344db2a2c2cc2b067861811ab19",
+    "include/zseries/program_recipe.hpp": "088c20869345d5caf717fab538c448f63b3f8fc0d5070e731b0d042daeedad39",
+    "include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494",
+    "include/zseries/program_repository.hpp": "78fafe3ab9fc805aae72d229044d9744050773e4c0e69900fb64d5a533d4de29",
+    "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
+    "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
+    "include/zseries/quantity.hpp": "a73eef8d3a2cb8a3b03e9b345441e564eb96b80ed53c7fb7d6633dd62af52ff6",
+    "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
+    "include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
+    "include/zseries/sensor_acquisition.hpp": "eb21c7067000af5338a735404386ef691a00aec414d5a741529dbc9feb9da61a",
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "include/zseries/ui_catalog.hpp": "bac363941ec5673aead8fbfd91d512650bd173bf2f0223956cc6d8476ac81426",
+    "include/zseries/ui_screen_tick.hpp": "6d932062f71986cb8f1f01c7d9c43a472d65ee81057ad2ad1e7a855b975c4ea3"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/display_platform.hpp": "ce0798074651299483bacfba3525a8b18352836951774b2d8255131992da830b",
+    "platform/esp32/esp32_platform.hpp": "8c38382ea7851d5f1d57f2d09e46f9d888b7a20bf67c20fc3199a2ebb9fdf4e8"
+  }
+}

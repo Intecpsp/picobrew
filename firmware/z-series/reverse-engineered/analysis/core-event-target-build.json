@@ -1,0 +1,50 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "build_script_sha256": "017a14ce55ea71dcecafc446246a888898b79bc7be759dfc98c3a65583a633a3",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "sources": [
+    {
+      "source": "src/program_list.cpp",
+      "source_sha256": "d3a427bcd81939d93e29bc073222287297e6ccdd4ead17f82aead780f2d78b84",
+      "object_sha256": "fd9b68e45057bffcfb3196058f3d8f7c9dec86632582b484e0190fa164f5d42a",
+      "object_bytes": 4512
+    }
+  ],
+  "owned_header_sha256": {
+    "include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494",
+    "include/zseries/program_repository.hpp": "78fafe3ab9fc805aae72d229044d9744050773e4c0e69900fb64d5a533d4de29"
+  },
+  "scope": "Target compilation of CoreEvent, recipe-reference state and concrete local recipe readiness publication. No complete application link or concurrency claim."
+}

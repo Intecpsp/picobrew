@@ -1,0 +1,73 @@
+{
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "archive_sha256": "d7e75b2e7ae566319b264398f720b427aff4bd8ccae8077f1c7e9f379993eeed",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "schema_version": 1,
+  "scope": "StillClient protocol and PicoStill sample/statistics source compile in the 35-module historical ESP32 archive; outgoing HTTP remains required. No application link or hardware execution.",
+  "compiled_modules": 35,
+  "still_client_sources": [
+    {
+      "source": "src/pico_still_sensors.cpp",
+      "source_sha256": "27dfdcf296030571e9497e8c63a01ade587ad4e7eb44a98cd4def4ea9d29e6a0",
+      "object_sha256": "401df67d43a0f48b09bf080cce69eb423aa5297066646f5c54f72b9150920c1a",
+      "object_bytes": 11104
+    },
+    {
+      "source": "src/still_client.cpp",
+      "source_sha256": "845329f80bed7caa208b8c7fd5c59f261849cf72e7da4ff3c28e47f7ecb30138",
+      "object_sha256": "54c9d00e6ae61e2744a58352334ce999af7badec7d382e1d404d5945c3969503",
+      "object_bytes": 17924
+    }
+  ],
+  "still_client_headers_sha256": {
+    "include/zseries/still_client.hpp": "6f2b3b38ec80694527509464556ea4596d15372ec05b901796b080c53fd77e24",
+    "include/zseries/pico_still_sensors.hpp": "98e83b575d3d4c764256c1e659927a19ae1832f9dcc5e61b5e02a12f0861697e"
+  }
+}

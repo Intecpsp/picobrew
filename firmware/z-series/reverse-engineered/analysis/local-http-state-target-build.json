@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "build_script_sha256": "017a14ce55ea71dcecafc446246a888898b79bc7be759dfc98c3a65583a633a3",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "sources": [
+    {
+      "source": "src/local_http_state.cpp",
+      "source_sha256": "04cfdab2a7fd5b68d51e31c0ad793b1e895fc6b42df9e86caed3218cec8df293",
+      "object_sha256": "2ff202253348c14829276a7b5b1f5318355e76008f4a6d22c48f61d39c068b54",
+      "object_bytes": 15128
+    }
+  ],
+  "owned_header_sha256": {
+    "include/zseries/local_http_state.hpp": "98749c2026b41d1c0b80be7e69f85795c6a0ecfa9de5d2035c39e74b5f8da058",
+    "include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
+    "include/zseries/heater.hpp": "bc7055a7ccd85a656b804ee1a53803679ded1aa480917658383eca7bd0d46387",
+    "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81"
+  },
+  "scope": "Target compilation of complete /state serializer and concrete control snapshot adapter. No physical network test or complete application link."
+}
