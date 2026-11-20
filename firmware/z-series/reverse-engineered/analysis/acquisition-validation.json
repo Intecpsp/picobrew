@@ -1,0 +1,70 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "scope": "Original ADC setup/poll and noise-smoother instructions; explicit TwoWire, clock, compiler arithmetic, and diagnostic boundaries; register windows adapted at ENTRY/RETW",
+  "cases": 340,
+  "smoother_updates": 3116,
+  "all_results_match": true,
+  "binary64_comparisons": 37392,
+  "exact_binary64_matches": 37392,
+  "maximum_absolute_error": 0.0,
+  "original_functions_executed": {
+    "0x400dd68c": 16,
+    "0x400dd708": 4,
+    "0x400dd908": 140,
+    "0x400ee1f0": 6232,
+    "0x400fad30": 4,
+    "0x40110924": 3116,
+    "0x40110990": 3116
+  },
+  "modeled_boundaries": {
+    "__adddf3": 3116,
+    "__divdf3": 3116,
+    "__divsf3": 627,
+    "__extendsfdf2": 627,
+    "__floatunsidf": 3116,
+    "__subdf3": 407,
+    "basename": 627,
+    "beginTransmission": 8,
+    "clock_millis": 3743,
+    "delay_ms": 4,
+    "diagnostic_command_registration": 4,
+    "diagnostic_log": 627,
+    "diagnostic_scope": 8,
+    "endTransmission_default_stop": 4,
+    "read": 1040,
+    "requestFrom_default_stop": 140,
+    "write": 12
+  },
+  "original_execution_jsonl_sha256": "964f8080c924bb2edfcceaa8f669bbdc3f9c6ec55a494683478bfb989d7f3d24",
+  "original_execution_report_sha256": "a0c563ead0c621abf2ec64731fd3db00cecd5ccea1a4748fc123c0dd8436cd70",
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-shared"
+  ],
+  "portable_golden_cases": 164,
+  "hardware_tested": false,
+  "full_cpu_or_hardware_emulation": false,
+  "instruction_export_sha256": {
+    "0x400dd68c": "f1b03435cf5ab9c2267469b5f73d985fe975142dd6c78235c8512352fe3eb5b0",
+    "0x400dd708": "1018471108d40d5381176835710792fa1e33413493ef49fe82531640f262838a",
+    "0x400dd908": "e735228da2100298296a018cb045ff06e1f81613a042f7342ec65ac751329c0e",
+    "0x400ee1f0": "4f4aa9a16558bdb75b8c12e54c22ce132083b106683beb6035aedac7075a8264",
+    "0x400fad30": "1914fcabafcdc40da791d169dddf41d7df5269e8c0b88fc91af69633fb4f44ba",
+    "0x40110924": "903a86a0f87f2f4b15d9f89d8e84af4e87d6300313ccd4a6827dd00a1012cb2d",
+    "0x40110990": "cfa53e2f8540cece948486dab1eb8a0f4e1d60befd0c74adc0226fad9ec13566"
+  },
+  "source_sha256": {
+    "src/sensor_acquisition.cpp": "29969474a4a98f393e2f7e8d8045e86c21908b8b39b60c4e806136021a84d6b2",
+    "include/zseries/sensor_acquisition.hpp": "eb21c7067000af5338a735404386ef691a00aec414d5a741529dbc9feb9da61a",
+    "tests/acquisition_bridge.cpp": "27049964ba90534a9aa1cfb656a6643dc28beace5b51cae94c32bfb10d006d0e",
+    "tools/validate_acquisition.py": "3b372c8cd2943b273676153b54ad7e623ccbcd65c7c14a5f4257a877ef7afd24",
+    "tools/ghidra/EmulateAcquisition.java": "0c9e4dd65287e124f0568a5e6cd9518df87c348b5cb757de0ec0fb993cfc6f7b"
+  },
+  "portable_golden_sha256": "b40c111083ca99da1976158aef9c37613ef7859c035121c6550f1b8a47669c37"
+}

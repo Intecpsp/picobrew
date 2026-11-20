@@ -1,0 +1,89 @@
+{
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "sdk_archive_sha256": "9e2bc47fdec6efebfed8f915c8b033183f02c7dc4b19c1d1240cbeb68b4d38d1",
+  "scope": "Unique bounded libgcc instruction windows with explicit relocation masks; not full routine equivalence",
+  "symbols": [
+    {
+      "symbol": "__divdi3",
+      "address": 1075577436,
+      "archive_member": "_divdi3.o",
+      "member_sha256": "d7a0c4fb5f23749ca25b21c964cbae067795b7ea04eb9715a086ceb13b50fe91",
+      "symbol_section_offset": 0,
+      "compared_bytes": 128,
+      "unrelocated_bytes_matched": 107,
+      "masked_relocations": [
+        [
+          30,
+          20
+        ],
+        [
+          7,
+          20
+        ],
+        [
+          33,
+          20
+        ],
+        [
+          64,
+          20
+        ],
+        [
+          67,
+          20
+        ],
+        [
+          70,
+          20
+        ],
+        [
+          76,
+          20
+        ]
+      ]
+    },
+    {
+      "symbol": "__floatdisf",
+      "address": 1075577120,
+      "archive_member": "_floatdisf.o",
+      "member_sha256": "74b28d26a3720d7d23644b5264c0daefc196300e54930114804feac947a967ff",
+      "symbol_section_offset": 16,
+      "compared_bytes": 117,
+      "unrelocated_bytes_matched": 93,
+      "masked_relocations": [
+        [
+          106,
+          20
+        ],
+        [
+          6,
+          20
+        ],
+        [
+          12,
+          20
+        ],
+        [
+          21,
+          20
+        ],
+        [
+          26,
+          20
+        ],
+        [
+          52,
+          20
+        ],
+        [
+          77,
+          20
+        ],
+        [
+          85,
+          20
+        ]
+      ]
+    }
+  ]
+}

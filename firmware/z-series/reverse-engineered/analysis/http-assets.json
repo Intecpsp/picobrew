@@ -1,0 +1,84 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "table_address": "0x3f4426a4",
+  "default_path_address": "0x3f418562",
+  "default_path": "/z.html",
+  "assets": [
+    {
+      "name": "help.html",
+      "content_type": "text/html",
+      "descriptor_address": "0x3f4426a4",
+      "descriptor_sha256": "01547bcf87c7bfd44f622fde1aa21d8db95f5e76a2ad26550a7a5ff7161c90d3",
+      "data_address": "0x3f446ce9",
+      "bytes": 4862,
+      "sha256": "799aaa4467c6320885f1f6b6b402fda63291bf75e5a5a7a840514508cebe49d7"
+    },
+    {
+      "name": "lib.js",
+      "content_type": "text/javascript",
+      "descriptor_address": "0x3f4426b4",
+      "descriptor_sha256": "e0564ad3f98d2492cea6f7f79b779404ca5af81366b29a1e4f144cb33cd580eb",
+      "data_address": "0x3f446807",
+      "bytes": 1250,
+      "sha256": "51846c33bd8fdf9198fb50001ff8799d24f8895b84631b852123d8a79a47aac4"
+    },
+    {
+      "name": "z.css",
+      "content_type": "text/css",
+      "descriptor_address": "0x3f4426c4",
+      "descriptor_sha256": "b7c52298b9eba026a646a4f8f6175d885fc2d3aa765b1f9df46f8d1ba912c74e",
+      "data_address": "0x3f445cdd",
+      "bytes": 2858,
+      "sha256": "8379be315f878ce67d85e76a0f07825de4c68e1ca81a75df25137c94b77749bd"
+    },
+    {
+      "name": "z.html",
+      "content_type": "text/html",
+      "descriptor_address": "0x3f4426d4",
+      "descriptor_sha256": "deda44fa90e60908af2e1f4c535f947cea2bdf085f85567fd59aa91d2bfba50b",
+      "data_address": "0x3f44556e",
+      "bytes": 1903,
+      "sha256": "983e74709409c96259266b68855edbb62c1e9ede03827a39d77065ad0d69ebfa"
+    },
+    {
+      "name": "z.js",
+      "content_type": "text/javascript",
+      "descriptor_address": "0x3f4426e4",
+      "descriptor_sha256": "1b783d20dc6ae008b8b60043123ce231d2b75870615153abdcc860660b378ddd",
+      "data_address": "0x3f44312c",
+      "bytes": 9282,
+      "sha256": "e7c8589f257dc88b3beba111bfee5b76e2ab5543e6f28931bc06ddd43b827409"
+    },
+    {
+      "name": "zstate.css",
+      "content_type": "text/css",
+      "descriptor_address": "0x3f4426f4",
+      "descriptor_sha256": "115847690c5a700d84f6d71a3899c56195ddd9a84032ef3039d86524adf82176",
+      "data_address": "0x3f442f01",
+      "bytes": 555,
+      "sha256": "1c5f02ea845ac28bdd150ea57e6b2f3e802715585793d1d6fa3d7030eccd3788"
+    },
+    {
+      "name": "zstate.html",
+      "content_type": "text/html",
+      "descriptor_address": "0x3f442704",
+      "descriptor_sha256": "7ff8cf67e1ba6e2a3b23f028d9ceb06367a047356eecf13f6808ee5d8a213948",
+      "data_address": "0x3f442bc3",
+      "bytes": 830,
+      "sha256": "ae148337457ca893e980aa5330501c4434b5c2daabfd2111d5f083a7e67877b5"
+    },
+    {
+      "name": "zstate.js",
+      "content_type": "text/javascript",
+      "descriptor_address": "0x3f442714",
+      "descriptor_sha256": "1c261a2050329dee90aaa95673cee4b80058ad5d5cdd338b3a57e9ca8670901e",
+      "data_address": "0x3f442724",
+      "bytes": 1183,
+      "sha256": "731398f1995e55712b1834f35d021d921efd3bccdd0bab437a1dd57d52242def"
+    }
+  ],
+  "generated_source_sha256": "9339a03c9cda948730072c3b29a4ba549a2a30f1d2cbdcc83292e0c2dec69d03",
+  "hardware_tested": false,
+  "scope": "Exact original static resources and route-table metadata; no network or physical device behavior is established."
+}

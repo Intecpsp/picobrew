@@ -1,0 +1,5468 @@
+{
+  "schema_version": 1,
+  "input": "zseries_0_0_119.bin",
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "method": "Indexed lookup tables and unsigned bounds observed in decompiled original functions; entries read directly from original DROM. Guard instructions require independent review.",
+  "behavioral_emulation_complete": false,
+  "hardware_tested": false,
+  "enums": [
+    {
+      "name": "WifiEventType",
+      "table_address": 1061454880,
+      "count": 7,
+      "evidence_function": 1074594904,
+      "evidence_function_sha256": "6382413e113bb3c3408340def73b2e75b7e54ad39dc71de21592be857a64ba37",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 4)",
+      "decompiler_excerpt": "pcVar1 = \"<WifiEventType::INVALID>\";\n  if (*(uint *)(param_1 + 4) < 7) {\n    pcVar1 = (&PTR_s_None_3f411294_0x1b_3f448420)[*(uint *)(param_1 + 4)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Error",
+          "text": "Error",
+          "string_address": 1061233277,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "ScanStarted",
+          "text": "ScanStarted",
+          "string_address": 1061284832,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "ScanCompleted",
+          "text": "ScanCompleted",
+          "string_address": 1061284844,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "AccessPointReady",
+          "text": "AccessPointReady",
+          "string_address": 1061284858,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Connected",
+          "text": "Connected",
+          "string_address": 1061273532,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Disconnecting",
+          "text": "Disconnecting",
+          "string_address": 1061284911,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "ValveLocation",
+      "table_address": 1061454680,
+      "count": 7,
+      "evidence_function": 1074595008,
+      "evidence_function_sha256": "bdc659643a5042998cad6154b0b1686a651c0122862f3a76012466fe178712c1",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 4)",
+      "decompiler_excerpt": "pcVar1 = \"<ValveLocation::INVALID>\";\n  if (*(uint *)(param_1 + 4) < 7) {\n    pcVar1 = (&PTR_s_None_3f411294_0x1b_3f448358)[*(uint *)(param_1 + 4)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Passthrough",
+          "text": "Passthrough",
+          "string_address": 1061281195,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Mash",
+          "text": "Mash",
+          "string_address": 1061281170,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Adjunct1",
+          "text": "Adjunct1",
+          "string_address": 1061284628,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Adjunct2",
+          "text": "Adjunct2",
+          "string_address": 1061284637,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Adjunct3",
+          "text": "Adjunct3",
+          "string_address": 1061284646,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Adjunct4",
+          "text": "Adjunct4",
+          "string_address": 1061284655,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "ZProgramId",
+      "table_address": 1061454708,
+      "count": 29,
+      "evidence_function": 1074595096,
+      "evidence_function_sha256": "b2b3c1fb4efd837630f3acbd434ec25306ab532ced9622775472a7af1bc30eae",
+      "unsigned_bound_guard": "uVar1",
+      "decompiler_excerpt": "pcVar4 = \"<ZProgramId::INVALID>\";\n    if (uVar1 < 0x1d) {\n      pcVar4 = (&PTR_s_None_3f411294_0x1b_3f448374)[uVar1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Rinse",
+          "text": "Rinse",
+          "string_address": 1061271092,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Rack",
+          "text": "Rack",
+          "string_address": 1061271125,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Circulate",
+          "text": "Circulate",
+          "string_address": 1061271135,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "SousVideWithoutKeg",
+          "text": "SousVideWithoutKeg",
+          "string_address": 1061271161,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "SousVideWithKeg",
+          "text": "SousVideWithKeg",
+          "string_address": 1061271185,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "PicoStillManual",
+          "text": "PicoStillManual",
+          "string_address": 1061271230,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Test1",
+          "text": "Test1",
+          "string_address": 1061256298,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Test2",
+          "text": "Test2",
+          "string_address": 1061256445,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "Test3",
+          "text": "Test3",
+          "string_address": 1061256966,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "BrewTest",
+          "text": "BrewTest",
+          "string_address": 1061272355,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "Clean",
+          "text": "Clean",
+          "string_address": 1061200419,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "PicoPaleDemo",
+          "text": "PicoPaleDemo",
+          "string_address": 1061271251,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "ValveTest",
+          "text": "ValveTest",
+          "string_address": 1061272236,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "PumpsTest",
+          "text": "PumpsTest",
+          "string_address": 1061272137,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "AlarmTest",
+          "text": "AlarmTest",
+          "string_address": 1061272152,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "ChillTest",
+          "text": "ChillTest",
+          "string_address": 1061272186,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "KegPumpTest",
+          "text": "KegPumpTest",
+          "string_address": 1061272216,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "WetValveTest",
+          "text": "WetValveTest",
+          "string_address": 1061272233,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "CoffeeColdBrew",
+          "text": "CoffeeColdBrew",
+          "string_address": 1061284664,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "CoffeeHybrid",
+          "text": "CoffeeHybrid",
+          "string_address": 1061284679,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "CoffeeHot",
+          "text": "CoffeeHot",
+          "string_address": 1061284692,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "CoffeeCustom",
+          "text": "CoffeeCustom",
+          "string_address": 1061284702,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "Buffered",
+          "text": "Buffered",
+          "string_address": 1061284715,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "WhirlpoolTest",
+          "text": "WhirlpoolTest",
+          "string_address": 1061272167,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "PicoStillBoilPoint",
+          "text": "PicoStillBoilPoint",
+          "string_address": 1061271206,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "Chill",
+          "text": "Chill",
+          "string_address": 1061270021,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "ManualBrew",
+          "text": "ManualBrew",
+          "string_address": 1061271269,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RuntimeCommandId",
+      "table_address": 1061454628,
+      "count": 13,
+      "evidence_function": 1074595096,
+      "evidence_function_sha256": "b2b3c1fb4efd837630f3acbd434ec25306ab532ced9622775472a7af1bc30eae",
+      "unsigned_bound_guard": "uVar1",
+      "decompiler_excerpt": "pcVar4 = \"<RuntimeCommandId::INVALID>\";\n          if (uVar1 < 0xd) {\n            pcVar4 = (&PTR_s_None_3f411294_0x1b_3f448324)[uVar1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Start",
+          "text": "Start",
+          "string_address": 1061281646,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Stop",
+          "text": "Stop",
+          "string_address": 1061270875,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Pause",
+          "text": "Pause",
+          "string_address": 1061161187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Resume",
+          "text": "Resume",
+          "string_address": 1061268868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Skip",
+          "text": "Skip",
+          "string_address": 1061270972,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "ShowSetupInstructions",
+          "text": "ShowSetupInstructions",
+          "string_address": 1061270977,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "RunPreBrewTests",
+          "text": "RunPreBrewTests",
+          "string_address": 1061270999,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "SetTemperature",
+          "text": "SetTemperature",
+          "string_address": 1061159082,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "SetDuration",
+          "text": "SetDuration",
+          "string_address": 1061159115,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "SetLocation",
+          "text": "SetLocation",
+          "string_address": 1061159138,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "StartManualStep",
+          "text": "StartManualStep",
+          "string_address": 1061159150,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RuntimeStateId",
+      "table_address": 1061454608,
+      "count": 5,
+      "evidence_function": 1074595316,
+      "evidence_function_sha256": "ce58b3f6fbd2af3bc07d809c199149568add24ac364694e2923a52432479e473",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 8)",
+      "decompiler_excerpt": "pcVar2 = \"<RuntimeStateId::INVALID>\";\n    if (*(uint *)(param_1 + 8) < 5) {\n      pcVar2 = (&PTR_s_Off_3f41c15f_0xd_3f448310)[*(uint *)(param_1 + 8)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Off",
+          "text": "Off",
+          "string_address": 1061273964,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061284458,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Running",
+          "text": "Running",
+          "string_address": 1061195278,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Standby",
+          "text": "Standby",
+          "string_address": 1061284620,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RuntimeNotificationType",
+      "table_address": 1061454588,
+      "count": 2,
+      "evidence_function": 1074595316,
+      "evidence_function_sha256": "ce58b3f6fbd2af3bc07d809c199149568add24ac364694e2923a52432479e473",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x10)",
+      "decompiler_excerpt": "pcVar2 = \"<RuntimeNotificationType::INVALID>\";\n    if (*(uint *)(param_1 + 0x10) < 2) {\n      pcVar2 = (&PTR_s_None_3f411294_0x1b_3f4482fc)[*(uint *)(param_1 + 0x10)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "T1Dropped",
+          "text": "T1Dropped",
+          "string_address": 1061284610,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RuntimeEventType",
+      "table_address": 1061454596,
+      "count": 3,
+      "evidence_function": 1074595316,
+      "evidence_function_sha256": "ce58b3f6fbd2af3bc07d809c199149568add24ac364694e2923a52432479e473",
+      "unsigned_bound_guard": "uVar1",
+      "decompiler_excerpt": "pcVar2 = \"<RuntimeEventType::INVALID>\";\n    if (uVar1 < 3) {\n      pcVar2 = (&PTR_s_Transition_3f41e7ea_5_3f448304)[uVar1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Transition",
+          "text": "Transition",
+          "string_address": 1061283823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Update",
+          "text": "Update",
+          "string_address": 1061264657,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Notification",
+          "text": "Notification",
+          "string_address": 1061159267,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "CoreCommandId",
+      "table_address": 1061454232,
+      "count": 55,
+      "evidence_function": 1074595508,
+      "evidence_function_sha256": "5547be37aa84eef51b7d28e63945722a82a26a08d16bd312a5331955d8d9617e",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0xdec)",
+      "decompiler_excerpt": "pcVar5 = \"<CoreCommandId::INVALID>\";\n    if (*(uint *)(param_1 + 0xdec) < 0x37) {\n      pcVar5 = (&PTR_s_None_3f411294_0x1b_3f448198)[*(uint *)(param_1 + 0xdec)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "PowerButton",
+          "text": "PowerButton",
+          "string_address": 1061284301,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "CoffeeProgramLoad",
+          "text": "CoffeeProgramLoad",
+          "string_address": 1061204572,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "MyRecipeListGet",
+          "text": "MyRecipeListGet",
+          "string_address": 1061223960,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "ZKitRecipeListGet",
+          "text": "ZKitRecipeListGet",
+          "string_address": 1061270321,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "ZKitSmartListGet",
+          "text": "ZKitSmartListGet",
+          "string_address": 1061284346,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "ZymaticRecipeLoad",
+          "text": "ZymaticRecipeLoad",
+          "string_address": 1061268502,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "ZymaticRecipeRefLoad",
+          "text": "ZymaticRecipeRefLoad",
+          "string_address": 1061284363,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "BrewPenRecipeLoad",
+          "text": "BrewPenRecipeLoad",
+          "string_address": 1061268520,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "PicoPakRecipeLoad",
+          "text": "PicoPakRecipeLoad",
+          "string_address": 1061268538,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "PicoPakRecipeRefLoad",
+          "text": "PicoPakRecipeRefLoad",
+          "string_address": 1061284384,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "PicoPakShippedListGet",
+          "text": "PicoPakShippedListGet",
+          "string_address": 1061270442,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "PicoPaleDemo",
+          "text": "PicoPaleDemo",
+          "string_address": 1061271251,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "StartProgram",
+          "text": "StartProgram",
+          "string_address": 1061284188,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "StartLoadedProgram",
+          "text": "StartLoadedProgram",
+          "string_address": 1061270816,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "StartSessionOffline",
+          "text": "StartSessionOffline",
+          "string_address": 1061270835,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "StartSessionOnline",
+          "text": "StartSessionOnline",
+          "string_address": 1061262296,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "PicoStillSelected",
+          "text": "PicoStillSelected",
+          "string_address": 1061185645,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "PicoStillCleanedAck",
+          "text": "PicoStillCleanedAck",
+          "string_address": 1061270529,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "PicoStillFanOn",
+          "text": "PicoStillFanOn",
+          "string_address": 1061270549,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "PicoStillFanOff",
+          "text": "PicoStillFanOff",
+          "string_address": 1061270564,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "PicoStillScan",
+          "text": "PicoStillScan",
+          "string_address": 1061270580,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "PicoStillReconnect",
+          "text": "PicoStillReconnect",
+          "string_address": 1061270594,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "T1MonitorActivate",
+          "text": "T1MonitorActivate",
+          "string_address": 1061282808,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "T1MonitorCancel",
+          "text": "T1MonitorCancel",
+          "string_address": 1061282835,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "RuntimeStart",
+          "text": "RuntimeStart",
+          "string_address": 1061270855,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "Stop",
+          "text": "Stop",
+          "string_address": 1061270875,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "Pause",
+          "text": "Pause",
+          "string_address": 1061161187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "Resume",
+          "text": "Resume",
+          "string_address": 1061268868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 29,
+          "identifier": "Skip",
+          "text": "Skip",
+          "string_address": 1061270972,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 30,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 31,
+          "identifier": "ShowSetupInstructions",
+          "text": "ShowSetupInstructions",
+          "string_address": 1061270977,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 32,
+          "identifier": "RunPreBrewTests",
+          "text": "RunPreBrewTests",
+          "string_address": 1061270999,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 33,
+          "identifier": "SetTemperature",
+          "text": "SetTemperature",
+          "string_address": 1061159082,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 34,
+          "identifier": "SetDuration",
+          "text": "SetDuration",
+          "string_address": 1061159115,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 35,
+          "identifier": "SetLocation",
+          "text": "SetLocation",
+          "string_address": 1061159138,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 36,
+          "identifier": "EepromReset",
+          "text": "EepromReset",
+          "string_address": 1061271993,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 37,
+          "identifier": "FactoryReset",
+          "text": "FactoryReset",
+          "string_address": 1061272038,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 38,
+          "identifier": "RefreshRegistrationCode",
+          "text": "RefreshRegistrationCode",
+          "string_address": 1061269251,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 39,
+          "identifier": "DlAndRunProgram",
+          "text": "DlAndRunProgram",
+          "string_address": 1061271280,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 40,
+          "identifier": "EthernetConnect",
+          "text": "EthernetConnect",
+          "string_address": 1061235948,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 41,
+          "identifier": "WiFiScan",
+          "text": "WiFiScan",
+          "string_address": 1061271571,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 42,
+          "identifier": "WiFiConnect",
+          "text": "WiFiConnect",
+          "string_address": 1061235917,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 43,
+          "identifier": "BoilerDetect",
+          "text": "BoilerDetect",
+          "string_address": 1061272067,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 44,
+          "identifier": "SetBoilerTypeBig",
+          "text": "SetBoilerTypeBig",
+          "string_address": 1061202711,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 45,
+          "identifier": "SetBoilerTypeSmall",
+          "text": "SetBoilerTypeSmall",
+          "string_address": 1061272080,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 46,
+          "identifier": "AzureSessionLoad",
+          "text": "AzureSessionLoad",
+          "string_address": 1061236130,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 47,
+          "identifier": "AzureSessionDiscard",
+          "text": "AzureSessionDiscard",
+          "string_address": 1061284405,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 48,
+          "identifier": "AzureWindowTimeout",
+          "text": "AzureWindowTimeout",
+          "string_address": 1061284425,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 49,
+          "identifier": "StandBy",
+          "text": "StandBy",
+          "string_address": 1061269290,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 50,
+          "identifier": "ResumeSession",
+          "text": "ResumeSession",
+          "string_address": 1061284444,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 51,
+          "identifier": "ResumeLoadedProgram",
+          "text": "ResumeLoadedProgram",
+          "string_address": 1061271356,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 52,
+          "identifier": "UseZOffline",
+          "text": "UseZOffline",
+          "string_address": 1061271392,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 53,
+          "identifier": "UseZOnline",
+          "text": "UseZOnline",
+          "string_address": 1061271404,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 54,
+          "identifier": "StartStep",
+          "text": "StartStep",
+          "string_address": 1061185682,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "CoreEventType",
+      "table_address": 1061454160,
+      "count": 15,
+      "evidence_function": 1074595508,
+      "evidence_function_sha256": "5547be37aa84eef51b7d28e63945722a82a26a08d16bd312a5331955d8d9617e",
+      "unsigned_bound_guard": "uVar1",
+      "decompiler_excerpt": "pcVar4 = \"<CoreEventType::INVALID>\";\n      if (uVar1 < 0xf) {\n        pcVar4 = (&PTR_s_StateTransition_3f448150)[uVar1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "StateTransition",
+          "text": "StateTransition",
+          "string_address": 1061283818,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "RegistrationNewToken",
+          "text": "RegistrationNewToken",
+          "string_address": 1061284201,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "RegistrationTokenExpired",
+          "text": "RegistrationTokenExpired",
+          "string_address": 1061284222,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Loading",
+          "text": "Loading",
+          "string_address": 1061282485,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "LoadingError",
+          "text": "LoadingError",
+          "string_address": 1061284247,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "SessionCreationError",
+          "text": "SessionCreationError",
+          "string_address": 1061284260,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "NetworkMissingError",
+          "text": "NetworkMissingError",
+          "string_address": 1061284281,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "ProgramLoaded",
+          "text": "ProgramLoaded",
+          "string_address": 1061284320,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "RecipeRefListLoaded",
+          "text": "RecipeRefListLoaded",
+          "string_address": 1061223829,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "BoilerDetectResult",
+          "text": "BoilerDetectResult",
+          "string_address": 1061159452,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "RinseNeeded",
+          "text": "RinseNeeded",
+          "string_address": 1061236081,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "CleanNeeded",
+          "text": "CleanNeeded",
+          "string_address": 1061236113,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "PowerButton",
+          "text": "PowerButton",
+          "string_address": 1061284301,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "CoreError",
+          "text": "CoreError",
+          "string_address": 1061159401,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "ResumedProgramLoaded",
+          "text": "ResumedProgramLoaded",
+          "string_address": 1061284313,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "BoilerType",
+      "table_address": 1061455008,
+      "count": 3,
+      "evidence_function": 1074595508,
+      "evidence_function_sha256": "5547be37aa84eef51b7d28e63945722a82a26a08d16bd312a5331955d8d9617e",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0xde4)",
+      "decompiler_excerpt": "pcVar4 = \"<BoilerType::INVALID>\";\n    if (*(uint *)(param_1 + 0xde4) < 3) {\n      pcVar4 = (&PTR_s_Big_3f41b1b5_8_3f4484a0)[*(uint *)(param_1 + 0xde4)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Big",
+          "text": "Big",
+          "string_address": 1061269949,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Small",
+          "text": "Small",
+          "string_address": 1061269961,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "HexDetectError",
+      "table_address": 1061454972,
+      "count": 9,
+      "evidence_function": 1074595508,
+      "evidence_function_sha256": "5547be37aa84eef51b7d28e63945722a82a26a08d16bd312a5331955d8d9617e",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0xde0)",
+      "decompiler_excerpt": "pcVar5 = \"<HexDetectError::INVALID>\";\n    if (*(uint *)(param_1 + 0xde0) < 9) {\n      pcVar5 = (&PTR_s_None_3f411294_0x1b_3f44847c)[*(uint *)(param_1 + 0xde0)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "AmbientAboveMax",
+          "text": "AmbientAboveMax",
+          "string_address": 1061284945,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "WortAboveMax",
+          "text": "WortAboveMax",
+          "string_address": 1061284961,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "DrainAboveMax",
+          "text": "DrainAboveMax",
+          "string_address": 1061284974,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "AmbientWortDelta",
+          "text": "AmbientWortDelta",
+          "string_address": 1061284988,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "WortDrainDelta",
+          "text": "WortDrainDelta",
+          "string_address": 1061165312,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "DrainAmbientDelta",
+          "text": "DrainAmbientDelta",
+          "string_address": 1061285005,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "BothHexInvalid",
+          "text": "BothHexInvalid",
+          "string_address": 1061285023,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "BothHexValid",
+          "text": "BothHexValid",
+          "string_address": 1061285038,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "AzureEventType",
+      "table_address": 1061454144,
+      "count": 4,
+      "evidence_function": 1074595692,
+      "evidence_function_sha256": "33cf587d8f742be332614942ed97b8ed6aa8649a2fe291bc76eeffbf957bea9d",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 4)",
+      "decompiler_excerpt": "pcVar1 = \"<AzureEventType::INVALID>\";\n  if (*(uint *)(param_1 + 4) < 4) {\n    pcVar1 = (&PTR_s_None_3f411294_0x1b_3f448140)[*(uint *)(param_1 + 4)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "TimeoutStartProgram",
+          "text": "TimeoutStartProgram",
+          "string_address": 1061284144,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "DisplayStartProgram",
+          "text": "DisplayStartProgram",
+          "string_address": 1061284164,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "ExitStartProgram",
+          "text": "ExitStartProgram",
+          "string_address": 1061284184,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "StillCommandId",
+      "table_address": 1061453896,
+      "count": 9,
+      "evidence_function": 1074595744,
+      "evidence_function_sha256": "93e7a4ddc7e4a3f81f98c01cf3a2ef9a3ae07ba1ad6abf08f730936a8b974c3c",
+      "unsigned_bound_guard": "uVar1",
+      "decompiler_excerpt": "pcVar2 = \"<StillCommandId::INVALID>\";\n    if (uVar1 < 9) {\n      pcVar2 = (&PTR_s_None_3f411294_0x1b_3f448048)[uVar1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Scan",
+          "text": "Scan",
+          "string_address": 1061269441,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Connect",
+          "text": "Connect",
+          "string_address": 1061235921,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Start",
+          "text": "Start",
+          "string_address": 1061281646,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Stop",
+          "text": "Stop",
+          "string_address": 1061270875,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "CleanedAck",
+          "text": "CleanedAck",
+          "string_address": 1061283868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "FanOn",
+          "text": "FanOn",
+          "string_address": 1061270558,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "FanOff",
+          "text": "FanOff",
+          "string_address": 1061270573,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Reconnect",
+          "text": "Reconnect",
+          "string_address": 1061268673,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "StillEventId",
+      "table_address": 1061453888,
+      "count": 2,
+      "evidence_function": 1074595828,
+      "evidence_function_sha256": "d03cc8125dd7f534a13ceecbe39c465860e3b13a4eec85c9b1caed778b58b17e",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 4)",
+      "decompiler_excerpt": "pcVar1 = \"<StillEventId::INVALID>\";\n  if (*(uint *)(param_1 + 4) < 2) {\n    pcVar1 = (&PTR_s_None_3f411294_0x1b_3f448040)[*(uint *)(param_1 + 4)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "StateTransition",
+          "text": "StateTransition",
+          "string_address": 1061283818,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "PicoStillStateId",
+      "table_address": 1061454012,
+      "count": 20,
+      "evidence_function": 1074595828,
+      "evidence_function_sha256": "d03cc8125dd7f534a13ceecbe39c465860e3b13a4eec85c9b1caed778b58b17e",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 8)",
+      "decompiler_excerpt": "pcVar2 = \"<PicoStillStateId::INVALID>\";\n  if (*(uint *)(param_1 + 8) < 0x14) {\n    pcVar2 = (&PTR_s_Unknown_3f40d8b5_0x14_3f4480bc)[*(uint *)(param_1 + 8)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Scanning",
+          "text": "Scanning",
+          "string_address": 1061273298,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "SelectingStill",
+          "text": "SelectingStill",
+          "string_address": 1061283834,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "ConnectingToHomeAP1",
+          "text": "ConnectingToHomeAP1",
+          "string_address": 1061283937,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Authorizing",
+          "text": "Authorizing",
+          "string_address": 1061283849,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "PendingCleanedAck",
+          "text": "PendingCleanedAck",
+          "string_address": 1061283861,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "SendingCleanedAck",
+          "text": "SendingCleanedAck",
+          "string_address": 1061283879,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "ConnectingToStillAP",
+          "text": "ConnectingToStillAP",
+          "string_address": 1061283957,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "PingingOnStillAP",
+          "text": "PingingOnStillAP",
+          "string_address": 1061283977,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "GettingIp",
+          "text": "GettingIp",
+          "string_address": 1061283994,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "Configuring",
+          "text": "Configuring",
+          "string_address": 1061284004,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "ConnectingStillToHomeAP",
+          "text": "ConnectingStillToHomeAP",
+          "string_address": 1061284016,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "ConnectingToHomeAP2",
+          "text": "ConnectingToHomeAP2",
+          "string_address": 1061284040,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "PingingOnHomeAP",
+          "text": "PingingOnHomeAP",
+          "string_address": 1061284060,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "PendingStart",
+          "text": "PendingStart",
+          "string_address": 1061283924,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "Starting",
+          "text": "Starting",
+          "string_address": 1061262166,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "Running",
+          "text": "Running",
+          "string_address": 1061195278,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "Stopping",
+          "text": "Stopping",
+          "string_address": 1061262076,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "Error",
+          "text": "Error",
+          "string_address": 1061233277,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "UiCommand",
+      "table_address": 1061320180,
+      "count": 176,
+      "evidence_function": 1074595892,
+      "evidence_function_sha256": "a70667ca9380e75c0f244909a41e7c5766a0607d4b7229a2a2caea612e08e092",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x54)",
+      "decompiler_excerpt": "pcVar1 = \"<UiCommand::INVALID>\";\n  if (*(uint *)(param_1 + 0x54) < 0xb0) {\n    pcVar1 = (&PTR_s_None_3f411294_0x1b_3f4275f4)[*(uint *)(param_1 + 0x54)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Back",
+          "text": "Back",
+          "string_address": 1061271552,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "BackFirst",
+          "text": "BackFirst",
+          "string_address": 1061270311,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Exit",
+          "text": "Exit",
+          "string_address": 1061271308,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "ZKitRecipeListGet",
+          "text": "ZKitRecipeListGet",
+          "string_address": 1061270321,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "MyRecipeListGet",
+          "text": "MyRecipeListGet",
+          "string_address": 1061223960,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "ZKitRecipeListGetSearch",
+          "text": "ZKitRecipeListGetSearch",
+          "string_address": 1061270339,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "PacksMenu",
+          "text": "PacksMenu",
+          "string_address": 1061270363,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "ZymaticRecipeLoad",
+          "text": "ZymaticRecipeLoad",
+          "string_address": 1061268502,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "BrewPenRecipeLoad",
+          "text": "BrewPenRecipeLoad",
+          "string_address": 1061268520,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "PicoPakRecipeLoad",
+          "text": "PicoPakRecipeLoad",
+          "string_address": 1061268538,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "PicoPakRecipeLoadTweaked",
+          "text": "PicoPakRecipeLoadTweaked",
+          "string_address": 1061270373,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "PicoPakRecipeTweak",
+          "text": "PicoPakRecipeTweak",
+          "string_address": 1061268568,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "PicoPakRecipeTweakAbv",
+          "text": "PicoPakRecipeTweakAbv",
+          "string_address": 1061270398,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "PicoPakRecipeTweakIbu",
+          "text": "PicoPakRecipeTweakIbu",
+          "string_address": 1061270420,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "PicoPakShippedListGet",
+          "text": "PicoPakShippedListGet",
+          "string_address": 1061270442,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "PicoPakRecipeInput",
+          "text": "PicoPakRecipeInput",
+          "string_address": 1061270464,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "ZymaticRecipeInput",
+          "text": "ZymaticRecipeInput",
+          "string_address": 1061223259,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "PicoPaksMenu",
+          "text": "PicoPaksMenu",
+          "string_address": 1061270483,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "ZKitsSmartListMenu",
+          "text": "ZKitsSmartListMenu",
+          "string_address": 1061270496,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "PicoStillMenu",
+          "text": "PicoStillMenu",
+          "string_address": 1061270515,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "PicoStillSelected",
+          "text": "PicoStillSelected",
+          "string_address": 1061185645,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "PicoStillCleanedAck",
+          "text": "PicoStillCleanedAck",
+          "string_address": 1061270529,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "PicoStillFanOn",
+          "text": "PicoStillFanOn",
+          "string_address": 1061270549,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "PicoStillFanOff",
+          "text": "PicoStillFanOff",
+          "string_address": 1061270564,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "PicoStillScan",
+          "text": "PicoStillScan",
+          "string_address": 1061270580,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "PicoStillReconnect",
+          "text": "PicoStillReconnect",
+          "string_address": 1061270594,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "T1MonitorMenu",
+          "text": "T1MonitorMenu",
+          "string_address": 1061270613,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "T1MonitorActivate",
+          "text": "T1MonitorActivate",
+          "string_address": 1061282808,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 29,
+          "identifier": "T1MonitorCancel",
+          "text": "T1MonitorCancel",
+          "string_address": 1061282835,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 30,
+          "identifier": "SousVideMenu",
+          "text": "SousVideMenu",
+          "string_address": 1061270627,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 31,
+          "identifier": "CoffeeMenu",
+          "text": "CoffeeMenu",
+          "string_address": 1061270640,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 32,
+          "identifier": "CoffeeColdBrewTweak",
+          "text": "CoffeeColdBrewTweak",
+          "string_address": 1061270651,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 33,
+          "identifier": "CoffeeHotTweak",
+          "text": "CoffeeHotTweak",
+          "string_address": 1061270671,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 34,
+          "identifier": "CoffeeHybridTweak",
+          "text": "CoffeeHybridTweak",
+          "string_address": 1061270686,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 35,
+          "identifier": "CoffeeCustomTweak",
+          "text": "CoffeeCustomTweak",
+          "string_address": 1061270704,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 36,
+          "identifier": "CoffeeBatchSizeInput",
+          "text": "CoffeeBatchSizeInput",
+          "string_address": 1061270722,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 37,
+          "identifier": "CoffeeIntensityInput",
+          "text": "CoffeeIntensityInput",
+          "string_address": 1061270743,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 38,
+          "identifier": "CoffeeTemperatureInput",
+          "text": "CoffeeTemperatureInput",
+          "string_address": 1061270764,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 39,
+          "identifier": "CoffeeDurationInput",
+          "text": "CoffeeDurationInput",
+          "string_address": 1061270787,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 40,
+          "identifier": "CoffeeProgramLoad",
+          "text": "CoffeeProgramLoad",
+          "string_address": 1061204572,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 41,
+          "identifier": "Utilities",
+          "text": "Utilities",
+          "string_address": 1061268754,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 42,
+          "identifier": "Settings",
+          "text": "Settings",
+          "string_address": 1061269887,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 43,
+          "identifier": "Tests",
+          "text": "Tests",
+          "string_address": 1061236007,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 44,
+          "identifier": "DevTests",
+          "text": "DevTests",
+          "string_address": 1061270807,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 45,
+          "identifier": "About",
+          "text": "About",
+          "string_address": 1061161049,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 46,
+          "identifier": "StartLoadedProgram",
+          "text": "StartLoadedProgram",
+          "string_address": 1061270816,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 47,
+          "identifier": "StartSessionOnline",
+          "text": "StartSessionOnline",
+          "string_address": 1061262296,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 48,
+          "identifier": "StartSessionOffline",
+          "text": "StartSessionOffline",
+          "string_address": 1061270835,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 49,
+          "identifier": "RuntimeStart",
+          "text": "RuntimeStart",
+          "string_address": 1061270855,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 50,
+          "identifier": "ConfirmStop",
+          "text": "ConfirmStop",
+          "string_address": 1061270868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 51,
+          "identifier": "ConfirmFinish",
+          "text": "ConfirmFinish",
+          "string_address": 1061270880,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 52,
+          "identifier": "Stop",
+          "text": "Stop",
+          "string_address": 1061270875,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 53,
+          "identifier": "StopAsCancel",
+          "text": "StopAsCancel",
+          "string_address": 1061270894,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 54,
+          "identifier": "StopAsFinish",
+          "text": "StopAsFinish",
+          "string_address": 1061270907,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 55,
+          "identifier": "Pause",
+          "text": "Pause",
+          "string_address": 1061161187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 56,
+          "identifier": "Resume",
+          "text": "Resume",
+          "string_address": 1061268868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 57,
+          "identifier": "ResumeAsContinue",
+          "text": "ResumeAsContinue",
+          "string_address": 1061270920,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 58,
+          "identifier": "ResumeAsDone",
+          "text": "ResumeAsDone",
+          "string_address": 1061270937,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 59,
+          "identifier": "ResumeAsStart",
+          "text": "ResumeAsStart",
+          "string_address": 1061270950,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 60,
+          "identifier": "ResumeAsSkip",
+          "text": "ResumeAsSkip",
+          "string_address": 1061270964,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 61,
+          "identifier": "Skip",
+          "text": "Skip",
+          "string_address": 1061270972,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 62,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 63,
+          "identifier": "ShowSetupInstructions",
+          "text": "ShowSetupInstructions",
+          "string_address": 1061270977,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 64,
+          "identifier": "RunPreBrewTests",
+          "text": "RunPreBrewTests",
+          "string_address": 1061270999,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 65,
+          "identifier": "SetZeroDelay",
+          "text": "SetZeroDelay",
+          "string_address": 1061271015,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 66,
+          "identifier": "GetDelay",
+          "text": "GetDelay",
+          "string_address": 1061271028,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 67,
+          "identifier": "SilenceAlarm",
+          "text": "SilenceAlarm",
+          "string_address": 1061271037,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 68,
+          "identifier": "AdjustTemp",
+          "text": "AdjustTemp",
+          "string_address": 1061271050,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 69,
+          "identifier": "AdjustTime",
+          "text": "AdjustTime",
+          "string_address": 1061271061,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 70,
+          "identifier": "AdjustLocation",
+          "text": "AdjustLocation",
+          "string_address": 1061271072,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 71,
+          "identifier": "StartRinse",
+          "text": "StartRinse",
+          "string_address": 1061271087,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 72,
+          "identifier": "StartClean",
+          "text": "StartClean",
+          "string_address": 1061271098,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 73,
+          "identifier": "StartDrain",
+          "text": "StartDrain",
+          "string_address": 1061271109,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 74,
+          "identifier": "StartRack",
+          "text": "StartRack",
+          "string_address": 1061271120,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 75,
+          "identifier": "StartCirculate",
+          "text": "StartCirculate",
+          "string_address": 1061271130,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 76,
+          "identifier": "StartChill",
+          "text": "StartChill",
+          "string_address": 1061271145,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 77,
+          "identifier": "StartSousVideWithoutKeg",
+          "text": "StartSousVideWithoutKeg",
+          "string_address": 1061271156,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 78,
+          "identifier": "StartSousVideWithKeg",
+          "text": "StartSousVideWithKeg",
+          "string_address": 1061271180,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 79,
+          "identifier": "StartPicoStillBoilPoint",
+          "text": "StartPicoStillBoilPoint",
+          "string_address": 1061271201,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 80,
+          "identifier": "StartPicoStillManual",
+          "text": "StartPicoStillManual",
+          "string_address": 1061271225,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 81,
+          "identifier": "StartPicoPaleDemo",
+          "text": "StartPicoPaleDemo",
+          "string_address": 1061271246,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 82,
+          "identifier": "StartManualBrew",
+          "text": "StartManualBrew",
+          "string_address": 1061271264,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 83,
+          "identifier": "ShowRuntimeMenu",
+          "text": "ShowRuntimeMenu",
+          "string_address": 1061269235,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 84,
+          "identifier": "RefreshRegistrationCode",
+          "text": "RefreshRegistrationCode",
+          "string_address": 1061269251,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 85,
+          "identifier": "DlAndRunProgram",
+          "text": "DlAndRunProgram",
+          "string_address": 1061271280,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 86,
+          "identifier": "Level",
+          "text": "Level",
+          "string_address": 1061273182,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 87,
+          "identifier": "GroupSessionExit",
+          "text": "GroupSessionExit",
+          "string_address": 1061271296,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 88,
+          "identifier": "StandBy",
+          "text": "StandBy",
+          "string_address": 1061269290,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 89,
+          "identifier": "StandByAsPowerOff",
+          "text": "StandByAsPowerOff",
+          "string_address": 1061271313,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 90,
+          "identifier": "ResumeInterruptedSession",
+          "text": "ResumeInterruptedSession",
+          "string_address": 1061271331,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 91,
+          "identifier": "ResumeLoadedProgram",
+          "text": "ResumeLoadedProgram",
+          "string_address": 1061271356,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 92,
+          "identifier": "UseZOfflineMenu",
+          "text": "UseZOfflineMenu",
+          "string_address": 1061271376,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 93,
+          "identifier": "UseZOffline",
+          "text": "UseZOffline",
+          "string_address": 1061271392,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 94,
+          "identifier": "UseZOnline",
+          "text": "UseZOnline",
+          "string_address": 1061271404,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 95,
+          "identifier": "StepTweak",
+          "text": "StepTweak",
+          "string_address": 1061271415,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 96,
+          "identifier": "StepLocationInput",
+          "text": "StepLocationInput",
+          "string_address": 1061271425,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 97,
+          "identifier": "StepTemperatureInput",
+          "text": "StepTemperatureInput",
+          "string_address": 1061271443,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 98,
+          "identifier": "StepTimeInput",
+          "text": "StepTimeInput",
+          "string_address": 1061271464,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 99,
+          "identifier": "StepDrainInput",
+          "text": "StepDrainInput",
+          "string_address": 1061271478,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 100,
+          "identifier": "StepStart",
+          "text": "StepStart",
+          "string_address": 1061271493,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 101,
+          "identifier": "StepTerminate",
+          "text": "StepTerminate",
+          "string_address": 1061271503,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 102,
+          "identifier": "ConfigureNetwork",
+          "text": "ConfigureNetwork",
+          "string_address": 1061271517,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 103,
+          "identifier": "ConfigureNetworkAsBack",
+          "text": "ConfigureNetworkAsBack",
+          "string_address": 1061271534,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 104,
+          "identifier": "WiFiConnect",
+          "text": "WiFiConnect",
+          "string_address": 1061235917,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 105,
+          "identifier": "WiFiReconnect",
+          "text": "WiFiReconnect",
+          "string_address": 1061271557,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 106,
+          "identifier": "WiFiScan",
+          "text": "WiFiScan",
+          "string_address": 1061271571,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 107,
+          "identifier": "WiFiDetails",
+          "text": "WiFiDetails",
+          "string_address": 1061271580,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 108,
+          "identifier": "WiFiSsidGetKey",
+          "text": "WiFiSsidGetKey",
+          "string_address": 1061269474,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 109,
+          "identifier": "ConfigureEthernet",
+          "text": "ConfigureEthernet",
+          "string_address": 1061271592,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 110,
+          "identifier": "EthernetConnect",
+          "text": "EthernetConnect",
+          "string_address": 1061235948,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 111,
+          "identifier": "ConfigureLanguage",
+          "text": "ConfigureLanguage",
+          "string_address": 1061271610,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 112,
+          "identifier": "SetEnglish",
+          "text": "SetEnglish",
+          "string_address": 1061271628,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 113,
+          "identifier": "SetFrench",
+          "text": "SetFrench",
+          "string_address": 1061271639,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 114,
+          "identifier": "SetSpanish",
+          "text": "SetSpanish",
+          "string_address": 1061271649,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 115,
+          "identifier": "ConfigureUnits",
+          "text": "ConfigureUnits",
+          "string_address": 1061271660,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 116,
+          "identifier": "UnitsSetImperial",
+          "text": "UnitsSetImperial",
+          "string_address": 1061271675,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 117,
+          "identifier": "UnitsSetMetric",
+          "text": "UnitsSetMetric",
+          "string_address": 1061271692,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 118,
+          "identifier": "ConfigureSlideshowDetail",
+          "text": "ConfigureSlideshowDetail",
+          "string_address": 1061271707,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 119,
+          "identifier": "SetDetailedSlideshow",
+          "text": "SetDetailedSlideshow",
+          "string_address": 1061271732,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 120,
+          "identifier": "SetBasicSlideshow",
+          "text": "SetBasicSlideshow",
+          "string_address": 1061271753,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 121,
+          "identifier": "ConfigureSlideshowCycle",
+          "text": "ConfigureSlideshowCycle",
+          "string_address": 1061271771,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 122,
+          "identifier": "SetAutoCycle",
+          "text": "SetAutoCycle",
+          "string_address": 1061271795,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 123,
+          "identifier": "UnsetAutoCycle",
+          "text": "UnsetAutoCycle",
+          "string_address": 1061271808,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 124,
+          "identifier": "SetAutoCycleAsTurnOn",
+          "text": "SetAutoCycleAsTurnOn",
+          "string_address": 1061271823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 125,
+          "identifier": "UnsetAutoCycleAsTurnOff",
+          "text": "UnsetAutoCycleAsTurnOff",
+          "string_address": 1061271844,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 126,
+          "identifier": "ConfigurePicoStill",
+          "text": "ConfigurePicoStill",
+          "string_address": 1061271868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 127,
+          "identifier": "SetStillLoggingEnabled",
+          "text": "SetStillLoggingEnabled",
+          "string_address": 1061271887,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 128,
+          "identifier": "SetStillLoggingDisabled",
+          "text": "SetStillLoggingDisabled",
+          "string_address": 1061271910,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 129,
+          "identifier": "ConfigureAzure",
+          "text": "ConfigureAzure",
+          "string_address": 1061271934,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 130,
+          "identifier": "SetAzureEnabled",
+          "text": "SetAzureEnabled",
+          "string_address": 1061271949,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 131,
+          "identifier": "SetAzureDisabled",
+          "text": "SetAzureDisabled",
+          "string_address": 1061271965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 132,
+          "identifier": "ShowEeprom",
+          "text": "ShowEeprom",
+          "string_address": 1061271982,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 133,
+          "identifier": "EepromReset",
+          "text": "EepromReset",
+          "string_address": 1061271993,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 134,
+          "identifier": "EepromResetMenu",
+          "text": "EepromResetMenu",
+          "string_address": 1061272005,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 135,
+          "identifier": "FactoryResetMenu",
+          "text": "FactoryResetMenu",
+          "string_address": 1061272021,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 136,
+          "identifier": "FactoryReset",
+          "text": "FactoryReset",
+          "string_address": 1061272038,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 137,
+          "identifier": "ConfigureBoiler",
+          "text": "ConfigureBoiler",
+          "string_address": 1061272051,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 138,
+          "identifier": "BoilerDetect",
+          "text": "BoilerDetect",
+          "string_address": 1061272067,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 139,
+          "identifier": "SetBoilerTypeBig",
+          "text": "SetBoilerTypeBig",
+          "string_address": 1061202711,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 140,
+          "identifier": "SetBoilerTypeSmall",
+          "text": "SetBoilerTypeSmall",
+          "string_address": 1061272080,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 141,
+          "identifier": "ShowHardwareState",
+          "text": "ShowHardwareState",
+          "string_address": 1061272099,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 142,
+          "identifier": "StartValveTest",
+          "text": "StartValveTest",
+          "string_address": 1061272117,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 143,
+          "identifier": "StartPumpsTest",
+          "text": "StartPumpsTest",
+          "string_address": 1061272132,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 144,
+          "identifier": "StartAlarmTest",
+          "text": "StartAlarmTest",
+          "string_address": 1061272147,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 145,
+          "identifier": "StartWhirlpoolTest",
+          "text": "StartWhirlpoolTest",
+          "string_address": 1061272162,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 146,
+          "identifier": "StartChillTest",
+          "text": "StartChillTest",
+          "string_address": 1061272181,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 147,
+          "identifier": "StartDrainTest",
+          "text": "StartDrainTest",
+          "string_address": 1061272196,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 148,
+          "identifier": "StartKegPumpTest",
+          "text": "StartKegPumpTest",
+          "string_address": 1061272211,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 149,
+          "identifier": "StartWetValveTest",
+          "text": "StartWetValveTest",
+          "string_address": 1061272228,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 150,
+          "identifier": "InstructionsTest",
+          "text": "InstructionsTest",
+          "string_address": 1061272246,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 151,
+          "identifier": "TitlesTest",
+          "text": "TitlesTest",
+          "string_address": 1061270061,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 152,
+          "identifier": "PauseTests",
+          "text": "PauseTests",
+          "string_address": 1061272263,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 153,
+          "identifier": "PauseTestMenuMessage",
+          "text": "PauseTestMenuMessage",
+          "string_address": 1061272274,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 154,
+          "identifier": "PauseTestMenu",
+          "text": "PauseTestMenu",
+          "string_address": 1061272295,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 155,
+          "identifier": "PauseTestMessage",
+          "text": "PauseTestMessage",
+          "string_address": 1061272309,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 156,
+          "identifier": "PauseTestJustReason",
+          "text": "PauseTestJustReason",
+          "string_address": 1061272326,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 157,
+          "identifier": "SlideshowBrewTest",
+          "text": "SlideshowBrewTest",
+          "string_address": 1061272346,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 158,
+          "identifier": "SlideshowSousVideTest",
+          "text": "SlideshowSousVideTest",
+          "string_address": 1061272364,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 159,
+          "identifier": "TextInputTest",
+          "text": "TextInputTest",
+          "string_address": 1061272386,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 160,
+          "identifier": "NumInputTest",
+          "text": "NumInputTest",
+          "string_address": 1061272400,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 161,
+          "identifier": "RfidInputTest",
+          "text": "RfidInputTest",
+          "string_address": 1061272413,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 162,
+          "identifier": "TempInputTest",
+          "text": "TempInputTest",
+          "string_address": 1061272427,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 163,
+          "identifier": "TimeInputTest",
+          "text": "TimeInputTest",
+          "string_address": 1061272441,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 164,
+          "identifier": "ABVInputTest",
+          "text": "ABVInputTest",
+          "string_address": 1061272455,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 165,
+          "identifier": "LocationInputTest",
+          "text": "LocationInputTest",
+          "string_address": 1061272468,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 166,
+          "identifier": "InputCoffeeBatchSizeTest",
+          "text": "InputCoffeeBatchSizeTest",
+          "string_address": 1061272486,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 167,
+          "identifier": "InputCoffeeIntensityTest",
+          "text": "InputCoffeeIntensityTest",
+          "string_address": 1061272511,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 168,
+          "identifier": "InputCoffeeTempTest",
+          "text": "InputCoffeeTempTest",
+          "string_address": 1061272536,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 169,
+          "identifier": "ScrollTest",
+          "text": "ScrollTest",
+          "string_address": 1061272556,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 170,
+          "identifier": "MenuTest",
+          "text": "MenuTest",
+          "string_address": 1061272567,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 171,
+          "identifier": "MenuLargeTest",
+          "text": "MenuLargeTest",
+          "string_address": 1061272576,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 172,
+          "identifier": "ProgressBarTest",
+          "text": "ProgressBarTest",
+          "string_address": 1061272590,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 173,
+          "identifier": "AsciiFontTest",
+          "text": "AsciiFontTest",
+          "string_address": 1061272606,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 174,
+          "identifier": "DisplayTest",
+          "text": "DisplayTest",
+          "string_address": 1061272620,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 175,
+          "identifier": "ParagraphTest",
+          "text": "ParagraphTest",
+          "string_address": 1061272632,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RecipeKind",
+      "table_address": 1061454128,
+      "count": 4,
+      "evidence_function": 1074598048,
+      "evidence_function_sha256": "47466bab63818bd3d3d60f84bbf5d100a231ce03bde87d088ddce59efe516e00",
+      "unsigned_bound_guard": "(uint)param_1[0x15]",
+      "decompiler_excerpt": "pcVar1 = \"<RecipeKind::INVALID>\";\n  if ((uint)param_1[0x15] < 4) {\n    pcVar1 = (&PTR_s_Zymatic_3f40d5f3_0x23_3f448130)[param_1[0x15]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Zymatic",
+          "text": "Zymatic",
+          "string_address": 1061213718,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "PicoPak",
+          "text": "PicoPak",
+          "string_address": 1061213827,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "BrewPen",
+          "text": "BrewPen",
+          "string_address": 1061213761,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "WiFiStateId",
+      "table_address": 1061454928,
+      "count": 11,
+      "evidence_function": 1074617280,
+      "evidence_function_sha256": "8115146ae162d1e2a9aaa23f9c4fecbb3c0418de37f9cdef2f9f965bd94cd8ed",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar2 = \"<WiFiStateId::INVALID>\";\n  if (param_2 < 0xb) {\n    pcVar2 = (&PTR_s_Booting_3f448450)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061284458,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Scanning",
+          "text": "Scanning",
+          "string_address": 1061273298,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "ScanCompleted",
+          "text": "ScanCompleted",
+          "string_address": 1061284844,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "AccessPoint",
+          "text": "AccessPoint",
+          "string_address": 1061208978,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "AccessPointDisconnecting",
+          "text": "AccessPointDisconnecting",
+          "string_address": 1061284900,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "PoweringUp",
+          "text": "PoweringUp",
+          "string_address": 1061284925,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Connecting",
+          "text": "Connecting",
+          "string_address": 1061273104,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Checking",
+          "text": "Checking",
+          "string_address": 1061284936,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Connected",
+          "text": "Connected",
+          "string_address": 1061273532,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "Disconnecting",
+          "text": "Disconnecting",
+          "string_address": 1061284911,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "MspStateId",
+      "table_address": 1061453872,
+      "count": 4,
+      "evidence_function": 1074618632,
+      "evidence_function_sha256": "32399b19341a7c101f203be0d3a12228d99270e5db6feb132e40ea28b1e58047",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar4 = \"<MspStateId::INVALID>\";\n  if (param_2 < 4) {\n    pcVar4 = (&PTR_s_Unknown_3f40d8b5_0x14_3f448030)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "BootRunning",
+          "text": "BootRunning",
+          "string_address": 1061177951,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "AppRunning",
+          "text": "AppRunning",
+          "string_address": 1061177000,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "BootloaderError",
+          "text": "BootloaderError",
+          "string_address": 1061283802,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "LanguageType",
+      "table_address": 1061455056,
+      "count": 3,
+      "evidence_function": 1074619736,
+      "evidence_function_sha256": "15afd60f8c9ace8c6c77e013301e48b45ea968e3065aacedad75cfa92c68da05",
+      "unsigned_bound_guard": "(uint)param_1[2]",
+      "decompiler_excerpt": "pcVar3 = \"<LanguageType::INVALID>\";\n  if ((uint)param_1[2] < 3) {\n    pcVar3 = (&PTR_s_English_3f4077d4_5_3f4484d0)[param_1[2]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "English",
+          "text": "English",
+          "string_address": 1061189593,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "French",
+          "text": "French",
+          "string_address": 1061189738,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Spanish",
+          "text": "Spanish",
+          "string_address": 1061189844,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "SessionMode",
+      "table_address": 1061455044,
+      "count": 3,
+      "evidence_function": 1074619736,
+      "evidence_function_sha256": "15afd60f8c9ace8c6c77e013301e48b45ea968e3065aacedad75cfa92c68da05",
+      "unsigned_bound_guard": "(uint)param_1[0x1b]",
+      "decompiler_excerpt": "pcVar3 = \"<SessionMode::INVALID>\";\n  if ((uint)param_1[0x1b] < 3) {\n    pcVar3 = (&PTR_s_Unknown_3f40d8b5_0x14_3f4484c4)[param_1[0x1b]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Online",
+          "text": "Online",
+          "string_address": 1061269355,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Offline",
+          "text": "Offline",
+          "string_address": 1061269344,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "BoolOption",
+      "table_address": 1061455032,
+      "count": 3,
+      "evidence_function": 1074619736,
+      "evidence_function_sha256": "15afd60f8c9ace8c6c77e013301e48b45ea968e3065aacedad75cfa92c68da05",
+      "unsigned_bound_guard": "(uint)param_1[0x1c]",
+      "decompiler_excerpt": "pcVar3 = \"<BoolOption::INVALID>\";\n  if ((uint)param_1[0x1c] < 3) {\n    pcVar3 = (&PTR_s_Unknown_3f40d8b5_0x14_3f4484b8)[param_1[0x1c]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "False",
+          "text": "False",
+          "string_address": 1061162641,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "True",
+          "text": "True",
+          "string_address": 1061162636,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "TempSensorType",
+      "table_address": 1061324944,
+      "count": 4,
+      "evidence_function": 1074621120,
+      "evidence_function_sha256": "c723edca8c6e0194daa08df75d24876dd67d59be67a770efe796ab359a276d34",
+      "unsigned_bound_guard": "*param_1",
+      "decompiler_excerpt": "pcVar4 = \"<TempSensorType::INVALID>\";\n    if (*param_1 < 4) {\n      pcVar4 = (&PTR_s_SENSTECH_10_366_3f428890)[*param_1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "SENSTECH_10_366",
+          "text": "SENSTECH_10-366",
+          "string_address": 1061179706,
+          "identifier_from_display_label": true
+        },
+        {
+          "value": 1,
+          "identifier": "SENSTECH_10_364_5",
+          "text": "SENSTECH_10-364&5",
+          "string_address": 1061179683,
+          "identifier_from_display_label": true
+        },
+        {
+          "value": 2,
+          "identifier": "MURATA_NCU18",
+          "text": "MURATA_NCU18",
+          "string_address": 1061179662,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "AET_14015",
+          "text": "AET_14015",
+          "string_address": 1061179728,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "RuntimeStillStateId",
+      "table_address": 1061331256,
+      "count": 9,
+      "evidence_function": 1074623076,
+      "evidence_function_sha256": "db23d246ba9d7777f18375f955ca6e0e7561ea66141761ab5ac0ddca55f73c13",
+      "unsigned_bound_guard": "*param_1",
+      "decompiler_excerpt": "pcVar4 = \"<RuntimeStillStateId::INVALID>\";\n  if (*param_1 < 9) {\n    pcVar4 = (&PTR_s_None_3f411294_0x1b_3f42a138)[*param_1];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Running",
+          "text": "Running",
+          "string_address": 1061195278,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "MeasuringHeatLoss",
+          "text": "MeasuringHeatLoss",
+          "string_address": 1061281426,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "FindingBoilPoint",
+          "text": "FindingBoilPoint",
+          "string_address": 1061281444,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Stabilizing",
+          "text": "Stabilizing",
+          "string_address": 1061279823,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Distilling",
+          "text": "Distilling",
+          "string_address": 1061279835,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "T2OverTemp",
+          "text": "T2OverTemp",
+          "string_address": 1061281461,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "ReleasePressure",
+          "text": "ReleasePressure",
+          "string_address": 1061281472,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "WiFiLevel",
+      "table_address": 1061454908,
+      "count": 5,
+      "evidence_function": 1074634640,
+      "evidence_function_sha256": "f5160a4656993c0d48a73cade6a163e8cef00c6c41eecc8b644166608446eb57",
+      "unsigned_bound_guard": "param_1[2]",
+      "decompiler_excerpt": "pcVar3 = \"<WiFiLevel::INVALID>\";\n  if (param_1[2] < 5) {\n    pcVar3 = (&PTR_DAT_3f44843c)[param_1[2]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Bar0",
+          "text": "Bar0",
+          "string_address": 1061284875,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Bar1",
+          "text": "Bar1",
+          "string_address": 1061284880,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Bar2",
+          "text": "Bar2",
+          "string_address": 1061284885,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Bar3",
+          "text": "Bar3",
+          "string_address": 1061284890,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Bar4",
+          "text": "Bar4",
+          "string_address": 1061284895,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "ZBackendError",
+      "table_address": 1061454092,
+      "count": 4,
+      "evidence_function": 1074636808,
+      "evidence_function_sha256": "2cee464515224ba743e98600f9d8051a27b055d343d970e880fa9ce4069e4a91",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x178)",
+      "decompiler_excerpt": "pcVar3 = \"<ZBackendError::INVALID>\";\n  if (*(uint *)(param_1 + 0x178) < 4) {\n    pcVar3 = (&PTR_s_None_3f411294_0x1b_3f44810c)[*(uint *)(param_1 + 0x178)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "BoilerSNInv",
+          "text": "BoilerSNInv",
+          "string_address": 1061284076,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "BTypeMismatch",
+          "text": "BTypeMismatch",
+          "string_address": 1061284088,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "BUpdateError",
+          "text": "BUpdateError",
+          "string_address": 1061284102,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "SessionType",
+      "table_address": 1061454520,
+      "count": 17,
+      "evidence_function": 1074636808,
+      "evidence_function_sha256": "2cee464515224ba743e98600f9d8051a27b055d343d970e880fa9ce4069e4a91",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x1a0)",
+      "decompiler_excerpt": "pcVar3 = \"<SessionType::INVALID>\";\n  if (*(uint *)(param_1 + 0x1a0) < 0x11) {\n    pcVar3 = (&PTR_s_Rinse_3f41b62f_5_3f4482b8)[*(uint *)(param_1 + 0x1a0)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Rinse",
+          "text": "Rinse",
+          "string_address": 1061271092,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Clean",
+          "text": "Clean",
+          "string_address": 1061200419,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Rack",
+          "text": "Rack",
+          "string_address": 1061271125,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Circulate",
+          "text": "Circulate",
+          "string_address": 1061271135,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Sousvide",
+          "text": "Sousvide",
+          "string_address": 1061284546,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "BrewZymatic",
+          "text": "BrewZymatic",
+          "string_address": 1061284555,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "BrewPicoPak",
+          "text": "BrewPicoPak",
+          "string_address": 1061284567,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "BrewZRecipe",
+          "text": "BrewZRecipe",
+          "string_address": 1061284579,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "BrewDemo",
+          "text": "BrewDemo",
+          "string_address": 1061284591,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "Test",
+          "text": "Test",
+          "string_address": 1061280749,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "PicoStill",
+          "text": "PicoStill",
+          "string_address": 1061276554,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "Coffee",
+          "text": "Coffee",
+          "string_address": 1061249550,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "Chill",
+          "text": "Chill",
+          "string_address": 1061270021,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "ManualBrew",
+          "text": "ManualBrew",
+          "string_address": 1061271269,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "LocalBrew",
+          "text": "LocalBrew",
+          "string_address": 1061284600,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "HttpClientErrorId",
+      "table_address": 1061325012,
+      "count": 16,
+      "evidence_function": 1074639652,
+      "evidence_function_sha256": "1f1bdd35c22377681c61134fb6d44703f29d3e1245e017f3f41b25b3758122a0",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar4 = \"<HttpClientErrorId::INVALID>\";\n  if (param_2 < 0x10) {\n    pcVar4 = (&PTR_s_None_3f411294_0x1b_3f4288d4)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "HttpStatusError",
+          "text": "HttpStatusError",
+          "string_address": 1061280529,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "BrokenInvariant",
+          "text": "BrokenInvariant",
+          "string_address": 1061280545,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "ConnectError",
+          "text": "ConnectError",
+          "string_address": 1061237953,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "SendError",
+          "text": "SendError",
+          "string_address": 1061280561,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "StartFailed",
+          "text": "StartFailed",
+          "string_address": 1061280571,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "InvalidState",
+          "text": "InvalidState",
+          "string_address": 1061280583,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "InvalidArg",
+          "text": "InvalidArg",
+          "string_address": 1061280596,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "InvalidRequest",
+          "text": "InvalidRequest",
+          "string_address": 1061237799,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "SystemClientError",
+          "text": "SystemClientError",
+          "string_address": 1061280607,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "WaitingReplyTimeout",
+          "text": "WaitingReplyTimeout",
+          "string_address": 1061280625,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "ReadError",
+          "text": "ReadError",
+          "string_address": 1061280645,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "ResponseTooBig",
+          "text": "ResponseTooBig",
+          "string_address": 1061280655,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "PrematureClose",
+          "text": "PrematureClose",
+          "string_address": 1061280670,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "ReadingHeadersTimeout",
+          "text": "ReadingHeadersTimeout",
+          "string_address": 1061280685,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "ApplicationError",
+          "text": "ApplicationError",
+          "string_address": 1061280707,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "TempSensorId",
+      "table_address": 1061331240,
+      "count": 4,
+      "evidence_function": 1074649112,
+      "evidence_function_sha256": "5742681127c9382f59913a81766edb7a32b64a2088ffd552a4737759f1fad26c",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar4 = \"<TempSensorId::INVALID>\";\n  if (param_2 < 4) {\n    pcVar4 = (&PTR_DAT_3f42a128)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Hex",
+          "text": "Hex",
+          "string_address": 1061281409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Wort",
+          "text": "Wort",
+          "string_address": 1061281413,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Drain",
+          "text": "Drain",
+          "string_address": 1061270030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Ambient",
+          "text": "Ambient",
+          "string_address": 1061281418,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "ScreenId",
+      "table_address": 1061331544,
+      "count": 103,
+      "evidence_function": 1074652744,
+      "evidence_function_sha256": "29f263a41557faaf0d2a51e75f5764f9fc710675d70f0fa27267524b0b9a1dd2",
+      "unsigned_bound_guard": "param_1[1]",
+      "decompiler_excerpt": "pcVar6 = \"<ScreenId::INVALID>\";\n          if (param_1[1] < 0x67) {\n            pcVar6 = (&PTR_s_None_3f411294_0x1b_3f42a258)[param_1[1]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Registration1",
+          "text": "Registration1",
+          "string_address": 1061282030,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Brew1",
+          "text": "Brew1",
+          "string_address": 1061282044,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Brew2",
+          "text": "Brew2",
+          "string_address": 1061282050,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Brew3",
+          "text": "Brew3",
+          "string_address": 1061282056,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Brew4",
+          "text": "Brew4",
+          "string_address": 1061282062,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Brew5",
+          "text": "Brew5",
+          "string_address": 1061282068,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Brew6",
+          "text": "Brew6",
+          "string_address": 1061282074,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Brew7",
+          "text": "Brew7",
+          "string_address": 1061282080,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Brew8",
+          "text": "Brew8",
+          "string_address": 1061282086,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "SetupInstructionsOffer",
+          "text": "SetupInstructionsOffer",
+          "string_address": 1061282092,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "PreBrewTestsOffer",
+          "text": "PreBrewTestsOffer",
+          "string_address": 1061282115,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "PreBrewTestsCirculation",
+          "text": "PreBrewTestsCirculation",
+          "string_address": 1061282133,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "PreBrewTestsRunning",
+          "text": "PreBrewTestsRunning",
+          "string_address": 1061282157,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "BrewCompleted",
+          "text": "BrewCompleted",
+          "string_address": 1061282233,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "GenericSetup",
+          "text": "GenericSetup",
+          "string_address": 1061282177,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "Pak1",
+          "text": "Pak1",
+          "string_address": 1061282190,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "Pak2",
+          "text": "Pak2",
+          "string_address": 1061282195,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "Pak3",
+          "text": "Pak3",
+          "string_address": 1061282200,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "Pak4",
+          "text": "Pak4",
+          "string_address": 1061282205,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "Pak5",
+          "text": "Pak5",
+          "string_address": 1061282210,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "Pak6",
+          "text": "Pak6",
+          "string_address": 1061282215,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "Pak7",
+          "text": "Pak7",
+          "string_address": 1061282220,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "Pak8",
+          "text": "Pak8",
+          "string_address": 1061282225,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "PakBrewCompleted",
+          "text": "PakBrewCompleted",
+          "string_address": 1061282230,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "Rinse1",
+          "text": "Rinse1",
+          "string_address": 1061282247,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "Rinse2",
+          "text": "Rinse2",
+          "string_address": 1061282254,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "Rinse3",
+          "text": "Rinse3",
+          "string_address": 1061282261,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "Rinse4",
+          "text": "Rinse4",
+          "string_address": 1061282268,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 29,
+          "identifier": "Rinse5",
+          "text": "Rinse5",
+          "string_address": 1061282275,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 30,
+          "identifier": "Rinse6",
+          "text": "Rinse6",
+          "string_address": 1061282282,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 31,
+          "identifier": "Clean1",
+          "text": "Clean1",
+          "string_address": 1061282289,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 32,
+          "identifier": "Clean2",
+          "text": "Clean2",
+          "string_address": 1061282296,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 33,
+          "identifier": "Clean3",
+          "text": "Clean3",
+          "string_address": 1061282303,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 34,
+          "identifier": "Clean4",
+          "text": "Clean4",
+          "string_address": 1061282310,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 35,
+          "identifier": "Clean5",
+          "text": "Clean5",
+          "string_address": 1061282317,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 36,
+          "identifier": "Clean6",
+          "text": "Clean6",
+          "string_address": 1061282324,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 37,
+          "identifier": "Clean7",
+          "text": "Clean7",
+          "string_address": 1061282331,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 38,
+          "identifier": "Clean8",
+          "text": "Clean8",
+          "string_address": 1061282338,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 39,
+          "identifier": "Clean9",
+          "text": "Clean9",
+          "string_address": 1061282345,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 40,
+          "identifier": "Clean10",
+          "text": "Clean10",
+          "string_address": 1061282352,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 41,
+          "identifier": "Drain1",
+          "text": "Drain1",
+          "string_address": 1061282360,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 42,
+          "identifier": "Circulate1",
+          "text": "Circulate1",
+          "string_address": 1061282367,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 43,
+          "identifier": "Chill1",
+          "text": "Chill1",
+          "string_address": 1061282378,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 44,
+          "identifier": "ChillCompleted",
+          "text": "ChillCompleted",
+          "string_address": 1061282385,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 45,
+          "identifier": "Rack1",
+          "text": "Rack1",
+          "string_address": 1061282400,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 46,
+          "identifier": "Rack2",
+          "text": "Rack2",
+          "string_address": 1061282406,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 47,
+          "identifier": "Rack3",
+          "text": "Rack3",
+          "string_address": 1061282412,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 48,
+          "identifier": "Rack4",
+          "text": "Rack4",
+          "string_address": 1061282418,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 49,
+          "identifier": "Rack5",
+          "text": "Rack5",
+          "string_address": 1061282424,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 50,
+          "identifier": "Rack6",
+          "text": "Rack6",
+          "string_address": 1061282430,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 51,
+          "identifier": "Rack7",
+          "text": "Rack7",
+          "string_address": 1061282436,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 52,
+          "identifier": "Rack8",
+          "text": "Rack8",
+          "string_address": 1061282442,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 53,
+          "identifier": "Rack9",
+          "text": "Rack9",
+          "string_address": 1061282448,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 54,
+          "identifier": "ExitConfirm",
+          "text": "ExitConfirm",
+          "string_address": 1061282454,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 55,
+          "identifier": "FinishConfirm",
+          "text": "FinishConfirm",
+          "string_address": 1061282466,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 56,
+          "identifier": "ErrorLoading",
+          "text": "ErrorLoading",
+          "string_address": 1061282480,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 57,
+          "identifier": "ErrorNetwork",
+          "text": "ErrorNetwork",
+          "string_address": 1061282493,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 58,
+          "identifier": "ErrorSession",
+          "text": "ErrorSession",
+          "string_address": 1061282506,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 59,
+          "identifier": "BoilerConfig",
+          "text": "BoilerConfig",
+          "string_address": 1061282519,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 60,
+          "identifier": "SousVide1",
+          "text": "SousVide1",
+          "string_address": 1061282532,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 61,
+          "identifier": "SousVide2",
+          "text": "SousVide2",
+          "string_address": 1061282542,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 62,
+          "identifier": "SousVideK1",
+          "text": "SousVideK1",
+          "string_address": 1061282552,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 63,
+          "identifier": "SousVideK2",
+          "text": "SousVideK2",
+          "string_address": 1061282563,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 64,
+          "identifier": "SousVideK3",
+          "text": "SousVideK3",
+          "string_address": 1061282574,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 65,
+          "identifier": "SousVideK4",
+          "text": "SousVideK4",
+          "string_address": 1061282585,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 66,
+          "identifier": "PicoStill1",
+          "text": "PicoStill1",
+          "string_address": 1061282596,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 67,
+          "identifier": "PicoStill2",
+          "text": "PicoStill2",
+          "string_address": 1061282607,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 68,
+          "identifier": "PicoStill3",
+          "text": "PicoStill3",
+          "string_address": 1061282618,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 69,
+          "identifier": "PicoStill4",
+          "text": "PicoStill4",
+          "string_address": 1061282629,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 70,
+          "identifier": "PicoStill5",
+          "text": "PicoStill5",
+          "string_address": 1061282640,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 71,
+          "identifier": "PicoStill6",
+          "text": "PicoStill6",
+          "string_address": 1061282651,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 72,
+          "identifier": "PicoStill7",
+          "text": "PicoStill7",
+          "string_address": 1061282662,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 73,
+          "identifier": "PicoStillWaitSealed",
+          "text": "PicoStillWaitSealed",
+          "string_address": 1061282673,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 74,
+          "identifier": "PicoStillBoilPointFound",
+          "text": "PicoStillBoilPointFound",
+          "string_address": 1061282693,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 75,
+          "identifier": "PicoStillNotFound",
+          "text": "PicoStillNotFound",
+          "string_address": 1061282717,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 76,
+          "identifier": "PicoStillFound",
+          "text": "PicoStillFound",
+          "string_address": 1061282735,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 77,
+          "identifier": "PicoStillChooseProgram",
+          "text": "PicoStillChooseProgram",
+          "string_address": 1061282750,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 78,
+          "identifier": "PicoStillBoilPointWarning",
+          "text": "PicoStillBoilPointWarning",
+          "string_address": 1061282773,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 79,
+          "identifier": "PicoStillT1MonitorActivate",
+          "text": "PicoStillT1MonitorActivate",
+          "string_address": 1061282799,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 80,
+          "identifier": "PicoStillT1MonitorCancel",
+          "text": "PicoStillT1MonitorCancel",
+          "string_address": 1061282826,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 81,
+          "identifier": "AskSessionLogging",
+          "text": "AskSessionLogging",
+          "string_address": 1061282851,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 82,
+          "identifier": "Coffee1",
+          "text": "Coffee1",
+          "string_address": 1061282869,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 83,
+          "identifier": "Coffee2",
+          "text": "Coffee2",
+          "string_address": 1061282877,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 84,
+          "identifier": "Coffee3",
+          "text": "Coffee3",
+          "string_address": 1061282885,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 85,
+          "identifier": "Coffee4",
+          "text": "Coffee4",
+          "string_address": 1061282893,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 86,
+          "identifier": "Coffee5",
+          "text": "Coffee5",
+          "string_address": 1061282901,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 87,
+          "identifier": "Coffee6",
+          "text": "Coffee6",
+          "string_address": 1061282909,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 88,
+          "identifier": "Coffee7",
+          "text": "Coffee7",
+          "string_address": 1061282917,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 89,
+          "identifier": "CoffeeCompleted1",
+          "text": "CoffeeCompleted1",
+          "string_address": 1061282925,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 90,
+          "identifier": "CoffeeCompleted2",
+          "text": "CoffeeCompleted2",
+          "string_address": 1061282942,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 91,
+          "identifier": "RinseNeeded",
+          "text": "RinseNeeded",
+          "string_address": 1061236081,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 92,
+          "identifier": "CleanNeeded",
+          "text": "CleanNeeded",
+          "string_address": 1061236113,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 93,
+          "identifier": "FanOffAfterCooling",
+          "text": "FanOffAfterCooling",
+          "string_address": 1061282959,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 94,
+          "identifier": "KegTest1",
+          "text": "KegTest1",
+          "string_address": 1061282978,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 95,
+          "identifier": "TestLong",
+          "text": "TestLong",
+          "string_address": 1061282987,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 96,
+          "identifier": "Test2_1",
+          "text": "Test2_1",
+          "string_address": 1061282996,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 97,
+          "identifier": "Test2_2",
+          "text": "Test2_2",
+          "string_address": 1061283004,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 98,
+          "identifier": "SessionInterrupted",
+          "text": "SessionInterrupted",
+          "string_address": 1061283012,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 99,
+          "identifier": "AltitudeAdjustedTempWarning",
+          "text": "AltitudeAdjustedTempWarning",
+          "string_address": 1061283031,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 100,
+          "identifier": "UseZOfflineConfirm",
+          "text": "UseZOfflineConfirm",
+          "string_address": 1061283059,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 101,
+          "identifier": "StepCompleted",
+          "text": "StepCompleted",
+          "string_address": 1061283078,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 102,
+          "identifier": "FactoryResetWarning",
+          "text": "FactoryResetWarning",
+          "string_address": 1061283092,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "PauseReason",
+      "table_address": 1061331292,
+      "count": 18,
+      "evidence_function": 1074653264,
+      "evidence_function_sha256": "d7add757c11b4c3e53f2eb8245fbd8365be1808c4094077c63c8201e38097b85",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0xc)",
+      "decompiler_excerpt": "pcVar4 = \"<PauseReason::INVALID>\";\n  if (*(uint *)(param_1 + 0xc) < 0x12) {\n    pcVar4 = (&PTR_s_None_3f411294_0x1b_3f42a15c)[*(uint *)(param_1 + 0xc)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Program",
+          "text": "Program",
+          "string_address": 1061269330,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "User",
+          "text": "User",
+          "string_address": 1061281880,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "StepFilter",
+          "text": "StepFilter",
+          "string_address": 1061263954,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "TooHot",
+          "text": "TooHot",
+          "string_address": 1061281488,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "TooCold",
+          "text": "TooCold",
+          "string_address": 1061281495,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "MaxHexWortDelta",
+          "text": "MaxHexWortDelta",
+          "string_address": 1061165344,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "MaxWortDrainDelta",
+          "text": "MaxWortDrainDelta",
+          "string_address": 1061165309,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "MaxHexRise",
+          "text": "MaxHexRise",
+          "string_address": 1061165330,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "TempInput",
+          "text": "TempInput",
+          "string_address": 1061267781,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "TimeInputFine",
+          "text": "TimeInputFine",
+          "string_address": 1061281503,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "TimeInputCoarse",
+          "text": "TimeInputCoarse",
+          "string_address": 1061281517,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "PicoStillError",
+          "text": "PicoStillError",
+          "string_address": 1061281533,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "StillPumpOff",
+          "text": "StillPumpOff",
+          "string_address": 1061281548,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "SystemError",
+          "text": "SystemError",
+          "string_address": 1061281561,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "MspError",
+          "text": "MspError",
+          "string_address": 1061281573,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "CannotRun",
+          "text": "CannotRun",
+          "string_address": 1061281582,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "StillT2Overtemp",
+          "text": "StillT2Overtemp",
+          "string_address": 1061281592,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "Unit",
+      "table_address": 1061454824,
+      "count": 9,
+      "evidence_function": 1074654768,
+      "evidence_function_sha256": "cc9e0743b28f7b6e1a33cad33dee78213a8e67dba49d2edb1030e4a0b9ca5ea6",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar5 = \"<Unit::INVALID>\";\n    if (param_2 < 9) {\n      pcVar5 = (&PTR_s_Liter_3f4066d7_0x1b_3f4483e8)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Liter",
+          "text": "Liter",
+          "string_address": 1061185266,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Gallon",
+          "text": "Gallon",
+          "string_address": 1061284724,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Gram",
+          "text": "Gram",
+          "string_address": 1061284731,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Ounce",
+          "text": "Ounce",
+          "string_address": 1061284736,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Celsius",
+          "text": "Celsius",
+          "string_address": 1061230611,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "Fahrenheit",
+          "text": "Fahrenheit",
+          "string_address": 1061284742,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "Second",
+          "text": "Second",
+          "string_address": 1061284753,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Intensity",
+          "text": "Intensity",
+          "string_address": 1061270227,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "AzureState",
+      "table_address": 1061454108,
+      "count": 5,
+      "evidence_function": 1074715024,
+      "evidence_function_sha256": "1d030455730b9de878757657abff89e35ba38b0c4faa75650219c8811ee12001",
+      "unsigned_bound_guard": "**(uint **)(param_1 + 0x724)",
+      "decompiler_excerpt": "pcVar6 = \"<AzureState::INVALID>\";\n    if (**(uint **)(param_1 + 0x724) < 5) {\n      pcVar6 = (&PTR_s_Disabled_3f40e32f_0x20_3f44811c)[**(uint **)(param_1 + 0x724)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Disabled",
+          "text": "Disabled",
+          "string_address": 1061217103,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Connecting",
+          "text": "Connecting",
+          "string_address": 1061273104,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Listening",
+          "text": "Listening",
+          "string_address": 1061217187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "SessionLoaded",
+          "text": "SessionLoaded",
+          "string_address": 1061284115,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "SessionRunning",
+          "text": "SessionRunning",
+          "string_address": 1061284129,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "NetworkType",
+      "table_address": 1061455020,
+      "count": 3,
+      "evidence_function": 1074718940,
+      "evidence_function_sha256": "399ff800389b78659cd8ed95b7ab6085dc2f0801c6279e6759d3813b9d2fd31a",
+      "unsigned_bound_guard": "param_2",
+      "decompiler_excerpt": "pcVar4 = \"<NetworkType::INVALID>\";\n  if (param_2 < 3) {\n    pcVar4 = (&PTR_s_None_3f411294_0x1b_3f4484ac)[param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Ethernet",
+          "text": "Ethernet",
+          "string_address": 1061271601,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "WiFi",
+          "text": "WiFi",
+          "string_address": 1061208966,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "CoreStateId",
+      "table_address": 1061454452,
+      "count": 17,
+      "evidence_function": 1074723876,
+      "evidence_function_sha256": "3f7d240d7d4c882be72d8f3beb4c4462b934192b631935ea6160a88b4de01373",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x734)",
+      "decompiler_excerpt": "pcVar3 = \"<CoreStateId::INVALID>\";\n  if (*(uint *)(param_1 + 0x734) < 0x11) {\n    pcVar3 = (&PTR_s_Off_3f41c15f_0xd_3f448274)[*(uint *)(param_1 + 0x734)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Off",
+          "text": "Off",
+          "string_address": 1061273964,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Booting",
+          "text": "Booting",
+          "string_address": 1061284458,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "ConnectingWiFi",
+          "text": "ConnectingWiFi",
+          "string_address": 1061284468,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "ReConnectingWiFi",
+          "text": "ReConnectingWiFi",
+          "string_address": 1061284466,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "ConnectingEthernet",
+          "text": "ConnectingEthernet",
+          "string_address": 1061284483,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "NeedsNetwork",
+          "text": "NeedsNetwork",
+          "string_address": 1061284502,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "SyncPending",
+          "text": "SyncPending",
+          "string_address": 1061284515,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "Syncing",
+          "text": "Syncing",
+          "string_address": 1061273346,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "Updating",
+          "text": "Updating",
+          "string_address": 1061273354,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Registering",
+          "text": "Registering",
+          "string_address": 1061273273,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "DownloadingProgram",
+          "text": "DownloadingProgram",
+          "string_address": 1061284527,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "StandBy",
+          "text": "StandBy",
+          "string_address": 1061269290,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "Starting",
+          "text": "Starting",
+          "string_address": 1061262166,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "Running",
+          "text": "Running",
+          "string_address": 1061195278,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "Stopping",
+          "text": "Stopping",
+          "string_address": 1061262076,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "Error",
+          "text": "Error",
+          "string_address": 1061233277,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "WifiError",
+      "table_address": 1061454860,
+      "count": 5,
+      "evidence_function": 1074734904,
+      "evidence_function_sha256": "4dee03f2257085721f1f8087f432ddcd6a9f476d4274be6034eea21ee9fcd4c6",
+      "unsigned_bound_guard": "param_3",
+      "decompiler_excerpt": "pcVar4 = \"<WifiError::INVALID>\";\n  if (param_3 < 5) {\n    pcVar4 = (&PTR_s_None_3f411294_0x1b_3f44840c)[param_3];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "WifiSsidNotFound",
+          "text": "WifiSsidNotFound",
+          "string_address": 1061284760,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "WifiConnectFailed",
+          "text": "WifiConnectFailed",
+          "string_address": 1061284777,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "WifiConnectingTimeout",
+          "text": "WifiConnectingTimeout",
+          "string_address": 1061284795,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "WifiNoInternet",
+          "text": "WifiNoInternet",
+          "string_address": 1061284817,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "Command",
+      "table_address": 1061311800,
+      "count": 12,
+      "evidence_function": 1074762876,
+      "evidence_function_sha256": "2eb30952d3cdc94e423079badf40762d77b8e8a2d512d1c9b57d4ea0a9cfda9d",
+      "unsigned_bound_guard": "*param_2",
+      "decompiler_excerpt": "pcVar5 = \"<Command::INVALID>\";\n  if (*param_2 < 0xc) {\n    pcVar5 = (&PTR_DAT_3f425538)[*param_2];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Empty",
+          "text": "",
+          "string_address": 1061460410,
+          "identifier_from_display_label": true
+        },
+        {
+          "value": 1,
+          "identifier": "configure",
+          "text": "configure",
+          "string_address": 1061266651,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "stillip",
+          "text": "stillip",
+          "string_address": 1061266661,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "connecttolan",
+          "text": "connecttolan",
+          "string_address": 1061266669,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "start",
+          "text": "start",
+          "string_address": 1061230990,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "end",
+          "text": "end",
+          "string_address": 1061260932,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "fanon",
+          "text": "fanon",
+          "string_address": 1061266682,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "fanoff",
+          "text": "fanoff",
+          "string_address": 1061266688,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "ping",
+          "text": "ping",
+          "string_address": 1061258654,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "data",
+          "text": "data",
+          "string_address": 1061214832,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "version",
+          "text": "version",
+          "string_address": 1061214806,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "sensors",
+          "text": "sensors",
+          "string_address": 1061214862,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "Layout",
+      "table_address": 1061317024,
+      "count": 23,
+      "evidence_function": 1074801968,
+      "evidence_function_sha256": "65d7b0277abd80436c85af9a8c070c0253d17d9bbb358eb7c89f43ffe403347a",
+      "unsigned_bound_guard": "(uint)param_2[1]",
+      "decompiler_excerpt": "pcVar15 = \"<Layout::INVALID>\";\n  if ((uint)param_2[1] < 0x17) {\n    pcVar15 = (&PTR_s_RuntimeState_3f4269a0)[param_2[1]];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "RuntimeState",
+          "text": "RuntimeState",
+          "string_address": 1061264833,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "RuntimeTransient",
+          "text": "RuntimeTransient",
+          "string_address": 1061267739,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Notification",
+          "text": "Notification",
+          "string_address": 1061159267,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Associate",
+          "text": "Associate",
+          "string_address": 1061267756,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Slideshow",
+          "text": "Slideshow",
+          "string_address": 1061271761,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "StillTransient",
+          "text": "StillTransient",
+          "string_address": 1061267766,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "VScroll",
+          "text": "VScroll",
+          "string_address": 1061267876,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "TempInput",
+          "text": "TempInput",
+          "string_address": 1061267781,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "TextInput",
+          "text": "TextInput",
+          "string_address": 1061267791,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "TimeInput",
+          "text": "TimeInput",
+          "string_address": 1061271468,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "ABVInput",
+          "text": "ABVInput",
+          "string_address": 1061267801,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "LocationInput",
+          "text": "LocationInput",
+          "string_address": 1061271429,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "QuantityInput",
+          "text": "QuantityInput",
+          "string_address": 1061267810,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "Waiting",
+          "text": "Waiting",
+          "string_address": 1061267824,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "Level",
+          "text": "Level",
+          "string_address": 1061273182,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "Progress",
+          "text": "Progress",
+          "string_address": 1061267832,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "Pause",
+          "text": "Pause",
+          "string_address": 1061161187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "Menu",
+          "text": "Menu",
+          "string_address": 1061270635,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "MenuWithImage",
+          "text": "MenuWithImage",
+          "string_address": 1061267841,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "MenuWithText",
+          "text": "MenuWithText",
+          "string_address": 1061267855,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "MenuWithVScroll",
+          "text": "MenuWithVScroll",
+          "string_address": 1061267868,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "Text",
+          "text": "Text",
+          "string_address": 1061264748,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "CoreErrorId",
+      "table_address": 1061454220,
+      "count": 3,
+      "evidence_function": 1074828724,
+      "evidence_function_sha256": "28519d9bd751a2b4dcc659cdf824d6c3e2783d150abe60aa41962faff63391d9",
+      "unsigned_bound_guard": "uStack_28",
+      "decompiler_excerpt": "pcVar5 = \"<CoreErrorId::INVALID>\";\n    if (uStack_28 < 3) {\n      pcVar5 = (&PTR_s_None_3f411294_0x1b_3f44818c)[uStack_28];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "None",
+          "text": "None",
+          "string_address": 1061229231,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "NoIpAddress",
+          "text": "NoIpAddress",
+          "string_address": 1061284334,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "NoInternet",
+          "text": "NoInternet",
+          "string_address": 1061284821,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "HttpMethod",
+      "table_address": 1061311776,
+      "count": 6,
+      "evidence_function": 1074901220,
+      "evidence_function_sha256": "0c1e0467c87593c2fb72cf0f0a7c5dc8a1d68984a3144d27b094c557de6cd764",
+      "unsigned_bound_guard": "*param_3",
+      "decompiler_excerpt": "pcVar6 = \"<HttpMethod::INVALID>\";\n  if (*param_3 < 6) {\n    pcVar6 = (&PTR_s_Unknown_3f40d8b5_0x14_3f425520)[*param_3];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Unknown",
+          "text": "Unknown",
+          "string_address": 1061214409,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "GET",
+          "text": "GET",
+          "string_address": 1061273928,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "POST",
+          "text": "POST",
+          "string_address": 1061237546,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "PUT",
+          "text": "PUT",
+          "string_address": 1061211312,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "DELETE",
+          "text": "DELETE",
+          "string_address": 1061266637,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "UPDATE",
+          "text": "UPDATE",
+          "string_address": 1061266644,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "State",
+      "table_address": 1061324960,
+      "count": 5,
+      "evidence_function": 1074907868,
+      "evidence_function_sha256": "563a901f4937e9e92ece65241eb786dbb7943a6dd3ae8edcbd7ee4da8f8a11cd",
+      "unsigned_bound_guard": "*(uint *)(param_1 + 0x14)",
+      "decompiler_excerpt": "pcVar4 = \"<State::INVALID>\";\n    if (*(uint *)(param_1 + 0x14) < 5) {\n      pcVar4 = (&PTR_s_Idle_3f40bb9d_0x18_3f4288a0)[*(uint *)(param_1 + 0x14)];",
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Idle",
+          "text": "Idle",
+          "string_address": 1061206965,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "Creating",
+          "text": "Creating",
+          "string_address": 1061280403,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "Waiting",
+          "text": "Waiting",
+          "string_address": 1061267824,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "Logging",
+          "text": "Logging",
+          "string_address": 1061282861,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "Ending",
+          "text": "Ending",
+          "string_address": 1061280412,
+          "identifier_from_display_label": false
+        }
+      ]
+    },
+    {
+      "name": "OpCode",
+      "table_address": 1061331956,
+      "count": 58,
+      "evidence_function": 1074653104,
+      "evidence_function_sha256": "ae0802fe55cb6188dad4a67d20300f25960cd88f6ecea641898aebd6b87c9ca4",
+      "unsigned_bound_guard": "*param_1 < 0x3a",
+      "decompiler_excerpt": "pcVar2 = \"<OpCode::INVALID>\";\n  if (*param_1 < 0x3a) {\n    pcVar2 = *(char **)(&DAT_3f42a3f4 + *param_1 * 4);\n  }",
+      "instruction_guard": {
+        "bound_load": "0x400de7f1: movi.n a9, 0x39",
+        "unsigned_invalid_branch": "0x400de7f6: bltu a9, a8, 0x400de801",
+        "indexed_pointer_load": "0x400de7fc..0x400de7ff"
+      },
+      "values": [
+        {
+          "value": 0,
+          "identifier": "Pause",
+          "text": "Pause",
+          "string_address": 1061161187,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 1,
+          "identifier": "StepName",
+          "text": "StepName",
+          "string_address": 1061208232,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 2,
+          "identifier": "ReachTarget",
+          "text": "ReachTarget",
+          "string_address": 1061283112,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 3,
+          "identifier": "HoldFor",
+          "text": "HoldFor",
+          "string_address": 1061283124,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 4,
+          "identifier": "CircFor",
+          "text": "CircFor",
+          "string_address": 1061283132,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 5,
+          "identifier": "DrainFor",
+          "text": "DrainFor",
+          "string_address": 1061283140,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 6,
+          "identifier": "MoveValve",
+          "text": "MoveValve",
+          "string_address": 1061283149,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 7,
+          "identifier": "SetPumps",
+          "text": "SetPumps",
+          "string_address": 1061283159,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 8,
+          "identifier": "NoTarget",
+          "text": "NoTarget",
+          "string_address": 1061283168,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 9,
+          "identifier": "Noop",
+          "text": "Noop",
+          "string_address": 1061283177,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 10,
+          "identifier": "FlagSet",
+          "text": "FlagSet",
+          "string_address": 1061283182,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 11,
+          "identifier": "FlagClear",
+          "text": "FlagClear",
+          "string_address": 1061283190,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 12,
+          "identifier": "SubStepName",
+          "text": "SubStepName",
+          "string_address": 1061283200,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 13,
+          "identifier": "WaitFor",
+          "text": "WaitFor",
+          "string_address": 1061283212,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 14,
+          "identifier": "WaitUser",
+          "text": "WaitUser",
+          "string_address": 1061283220,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 15,
+          "identifier": "WaitTempA",
+          "text": "WaitTempA",
+          "string_address": 1061283229,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 16,
+          "identifier": "WaitTempB",
+          "text": "WaitTempB",
+          "string_address": 1061283239,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 17,
+          "identifier": "WaitTempC",
+          "text": "WaitTempC",
+          "string_address": 1061283249,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 18,
+          "identifier": "WaitTempE",
+          "text": "WaitTempE",
+          "string_address": 1061283259,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 19,
+          "identifier": "GetDelay",
+          "text": "GetDelay",
+          "string_address": 1061271028,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 20,
+          "identifier": "WaitDelay",
+          "text": "WaitDelay",
+          "string_address": 1061283269,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 21,
+          "identifier": "GetStepParams",
+          "text": "GetStepParams",
+          "string_address": 1061283279,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 22,
+          "identifier": "GetTemp",
+          "text": "GetTemp",
+          "string_address": 1061283293,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 23,
+          "identifier": "GetTime",
+          "text": "GetTime",
+          "string_address": 1061283301,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 24,
+          "identifier": "WaitTime",
+          "text": "WaitTime",
+          "string_address": 1061283309,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 25,
+          "identifier": "SetTarget",
+          "text": "SetTarget",
+          "string_address": 1061283318,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 26,
+          "identifier": "SetTime",
+          "text": "SetTime",
+          "string_address": 1061283328,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 27,
+          "identifier": "MspValve",
+          "text": "MspValve",
+          "string_address": 1061283336,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 28,
+          "identifier": "MspPumps",
+          "text": "MspPumps",
+          "string_address": 1061283345,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 29,
+          "identifier": "ValveMode",
+          "text": "ValveMode",
+          "string_address": 1061283354,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 30,
+          "identifier": "SetScreen",
+          "text": "SetScreen",
+          "string_address": 1061283364,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 31,
+          "identifier": "ShowScreen",
+          "text": "ShowScreen",
+          "string_address": 1061283374,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 32,
+          "identifier": "Heater",
+          "text": "Heater",
+          "string_address": 1061214961,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 33,
+          "identifier": "StartPid",
+          "text": "StartPid",
+          "string_address": 1061283385,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 34,
+          "identifier": "StopPid",
+          "text": "StopPid",
+          "string_address": 1061283394,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 35,
+          "identifier": "SetITMin",
+          "text": "SetITMin",
+          "string_address": 1061283402,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 36,
+          "identifier": "SetITMax",
+          "text": "SetITMax",
+          "string_address": 1061283411,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 37,
+          "identifier": "RequireFilter",
+          "text": "RequireFilter",
+          "string_address": 1061283420,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 38,
+          "identifier": "StopPidKD",
+          "text": "StopPidKD",
+          "string_address": 1061283434,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 39,
+          "identifier": "PrepareBrew",
+          "text": "PrepareBrew",
+          "string_address": 1061283444,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 40,
+          "identifier": "CompleteBrew",
+          "text": "CompleteBrew",
+          "string_address": 1061283456,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 41,
+          "identifier": "StillScan",
+          "text": "StillScan",
+          "string_address": 1061270584,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 42,
+          "identifier": "StillStart",
+          "text": "StillStart",
+          "string_address": 1061283469,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 43,
+          "identifier": "StSetTargetHL",
+          "text": "StSetTargetHL",
+          "string_address": 1061283480,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 44,
+          "identifier": "StFindHeatLoss",
+          "text": "StFindHeatLoss",
+          "string_address": 1061283494,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 45,
+          "identifier": "StFindBoilPoint",
+          "text": "StFindBoilPoint",
+          "string_address": 1061283509,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 46,
+          "identifier": "StStabilize",
+          "text": "StStabilize",
+          "string_address": 1061283525,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 47,
+          "identifier": "StDistille",
+          "text": "StDistille",
+          "string_address": 1061283537,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 48,
+          "identifier": "WaitStillReady",
+          "text": "WaitStillReady",
+          "string_address": 1061283548,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 49,
+          "identifier": "WaitSealed",
+          "text": "WaitSealed",
+          "string_address": 1061282682,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 50,
+          "identifier": "WaitVacuum",
+          "text": "WaitVacuum",
+          "string_address": 1061283563,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 51,
+          "identifier": "WaitT3Stable",
+          "text": "WaitT3Stable",
+          "string_address": 1061283574,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 52,
+          "identifier": "WaitT1Rise",
+          "text": "WaitT1Rise",
+          "string_address": 1061283587,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 53,
+          "identifier": "WaitT3Drop",
+          "text": "WaitT3Drop",
+          "string_address": 1061283598,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 54,
+          "identifier": "WaitT2Safety",
+          "text": "WaitT2Safety",
+          "string_address": 1061283609,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 55,
+          "identifier": "WaitPumpOk",
+          "text": "WaitPumpOk",
+          "string_address": 1061283622,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 56,
+          "identifier": "RinseCycle",
+          "text": "RinseCycle",
+          "string_address": 1061283633,
+          "identifier_from_display_label": false
+        },
+        {
+          "value": 57,
+          "identifier": "Setup",
+          "text": "Setup",
+          "string_address": 1061282184,
+          "identifier_from_display_label": false
+        }
+      ]
+    }
+  ]
+}

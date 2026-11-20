@@ -1,0 +1,21 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Z Machine Steps</title>
+    <link rel="stylesheet" href="zstate.css">
+  </head>
+  <body>
+    <div>
+      <div class="options">
+        <button class="space-out" onclick="handleDownloadRequest()">DOWNLOAD DATA</button>
+        <div class="space-out"><span>Active:</span><input id="id-active" type="checkbox" checked onchange="handleActiveChange(event)"></div>
+        <div class="space-out"><span>Interval:</span><input type="number" placeholder="time(s)" oninput="handleIntervalChange(event)" /></div>
+      </div>
+      <div id="z-state-json"></div>
+    </div>
+    <script src="lib.js"></script>
+    <script src="zstate.js"></script>
+  </body>
+</html>

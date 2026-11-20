@@ -1,0 +1,2370 @@
+{
+  "format_reference": "https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/firmware-image-format.html",
+  "hardware_tested": false,
+  "images": [
+    {
+      "application_headers": [
+        {
+          "address": 1061174935,
+          "file": "Assert.h",
+          "file_offset": 16023
+        },
+        {
+          "address": 1061167288,
+          "file": "Azure.h",
+          "file_offset": 8376
+        },
+        {
+          "address": 1061170695,
+          "file": "BMP280.h",
+          "file_offset": 11783
+        },
+        {
+          "address": 1061254414,
+          "file": "BackendState.h",
+          "file_offset": 95502
+        },
+        {
+          "address": 1061205729,
+          "file": "Buffer.h",
+          "file_offset": 46817
+        },
+        {
+          "address": 1061195282,
+          "file": "Button.h",
+          "file_offset": 36370
+        },
+        {
+          "address": 1061162912,
+          "file": "Buzzer.h",
+          "file_offset": 4000
+        },
+        {
+          "address": 1061162132,
+          "file": "CString.h",
+          "file_offset": 3220
+        },
+        {
+          "address": 1061162622,
+          "file": "Core.h",
+          "file_offset": 3710
+        },
+        {
+          "address": 1061162546,
+          "file": "CoreHelpers.h",
+          "file_offset": 3634
+        },
+        {
+          "address": 1061180121,
+          "file": "Display.h",
+          "file_offset": 21209
+        },
+        {
+          "address": 1061168785,
+          "file": "DisplayTypes.h",
+          "file_offset": 9873
+        },
+        {
+          "address": 1061172010,
+          "file": "DownloadBinary.h",
+          "file_offset": 13098
+        },
+        {
+          "address": 1061163704,
+          "file": "Eeprom.h",
+          "file_offset": 4792
+        },
+        {
+          "address": 1061214231,
+          "file": "Encoder.h",
+          "file_offset": 55319
+        },
+        {
+          "address": 1061184345,
+          "file": "Enums.h",
+          "file_offset": 25433
+        },
+        {
+          "address": 1061204400,
+          "file": "EventQ.h",
+          "file_offset": 45488
+        },
+        {
+          "address": 1061197628,
+          "file": "Graphics.h",
+          "file_offset": 38716
+        },
+        {
+          "address": 1061170906,
+          "file": "Head.h",
+          "file_offset": 11994
+        },
+        {
+          "address": 1061165779,
+          "file": "Heater.h",
+          "file_offset": 6867
+        },
+        {
+          "address": 1061213319,
+          "file": "HttpBackend.h",
+          "file_offset": 54407
+        },
+        {
+          "address": 1061161819,
+          "file": "HttpClient.h",
+          "file_offset": 2907
+        },
+        {
+          "address": 1061189151,
+          "file": "HttpParser.h",
+          "file_offset": 30239
+        },
+        {
+          "address": 1061169062,
+          "file": "HttpUpdate.h",
+          "file_offset": 10150
+        },
+        {
+          "address": 1061185249,
+          "file": "ICore.h",
+          "file_offset": 26337
+        },
+        {
+          "address": 1061162017,
+          "file": "IPicoStill.h",
+          "file_offset": 3105
+        },
+        {
+          "address": 1061182475,
+          "file": "IUiManagement.h",
+          "file_offset": 23563
+        },
+        {
+          "address": 1061220652,
+          "file": "IWifi.h",
+          "file_offset": 61740
+        },
+        {
+          "address": 1061199733,
+          "file": "Iter.h",
+          "file_offset": 40821
+        },
+        {
+          "address": 1061238888,
+          "file": "Json.h",
+          "file_offset": 79976
+        },
+        {
+          "address": 1061179712,
+          "file": "LIS3DHTR.h",
+          "file_offset": 20800
+        },
+        {
+          "address": 1061160638,
+          "file": "Localization.h",
+          "file_offset": 1726
+        },
+        {
+          "address": 1061165357,
+          "file": "MAX11613.h",
+          "file_offset": 6445
+        },
+        {
+          "address": 1061175656,
+          "file": "MacAddress.h",
+          "file_offset": 16744
+        },
+        {
+          "address": 1061176635,
+          "file": "Msp.h",
+          "file_offset": 17723
+        },
+        {
+          "address": 1061202660,
+          "file": "NoiseSmoother.h",
+          "file_offset": 43748
+        },
+        {
+          "address": 1061167896,
+          "file": "Out.h",
+          "file_offset": 8984
+        },
+        {
+          "address": 1061173964,
+          "file": "PicoStill.h",
+          "file_offset": 15052
+        },
+        {
+          "address": 1061174312,
+          "file": "Pinger.h",
+          "file_offset": 15400
+        },
+        {
+          "address": 1061166833,
+          "file": "Program.h",
+          "file_offset": 7921
+        },
+        {
+          "address": 1061181243,
+          "file": "ProgramParams.h",
+          "file_offset": 22331
+        },
+        {
+          "address": 1061181022,
+          "file": "Quantity.h",
+          "file_offset": 22110
+        },
+        {
+          "address": 1061166675,
+          "file": "Runtime.h",
+          "file_offset": 7763
+        },
+        {
+          "address": 1061166270,
+          "file": "RuntimeState.h",
+          "file_offset": 7358
+        },
+        {
+          "address": 1061165206,
+          "file": "Safeties.h",
+          "file_offset": 6294
+        },
+        {
+          "address": 1061164982,
+          "file": "SafetiesState.h",
+          "file_offset": 6070
+        },
+        {
+          "address": 1061202945,
+          "file": "SensorsState.h",
+          "file_offset": 44033
+        },
+        {
+          "address": 1061210035,
+          "file": "SerialReader.h",
+          "file_offset": 51123
+        },
+        {
+          "address": 1061166945,
+          "file": "SessionState.h",
+          "file_offset": 8033
+        },
+        {
+          "address": 1061161320,
+          "file": "Shell.h",
+          "file_offset": 2408
+        },
+        {
+          "address": 1061175524,
+          "file": "Stats.h",
+          "file_offset": 16612
+        },
+        {
+          "address": 1061163024,
+          "file": "System.h",
+          "file_offset": 4112
+        },
+        {
+          "address": 1061163187,
+          "file": "SystemState.h",
+          "file_offset": 4275
+        },
+        {
+          "address": 1061175159,
+          "file": "Temperature.h",
+          "file_offset": 16247
+        },
+        {
+          "address": 1061204914,
+          "file": "TextLines.h",
+          "file_offset": 46002
+        },
+        {
+          "address": 1061162715,
+          "file": "Timer.h",
+          "file_offset": 3803
+        },
+        {
+          "address": 1061166049,
+          "file": "UTF8Decode.h",
+          "file_offset": 7137
+        },
+        {
+          "address": 1061182731,
+          "file": "UiAnimatedText.h",
+          "file_offset": 23819
+        },
+        {
+          "address": 1061180678,
+          "file": "UiComponents.h",
+          "file_offset": 21766
+        },
+        {
+          "address": 1061161252,
+          "file": "UiEvents.h",
+          "file_offset": 2340
+        },
+        {
+          "address": 1061168512,
+          "file": "UiManagement.h",
+          "file_offset": 9600
+        },
+        {
+          "address": 1061180584,
+          "file": "UiSlideshow.h",
+          "file_offset": 21672
+        },
+        {
+          "address": 1061162819,
+          "file": "Wifi.h",
+          "file_offset": 3907
+        },
+        {
+          "address": 1061173866,
+          "file": "ZBackend.h",
+          "file_offset": 14954
+        },
+        {
+          "address": 1061201529,
+          "file": "ZClient.h",
+          "file_offset": 42617
+        }
+      ],
+      "build_literals": [
+        {
+          "address": 1061176012,
+          "file_offset": 17100,
+          "text": "109c62acc262a95094ef083f12bcf071bb430299"
+        },
+        {
+          "address": 1061176087,
+          "file_offset": 17175,
+          "text": "Mar 23 2020"
+        },
+        {
+          "address": 1061176135,
+          "file_offset": 17223,
+          "text": "16:38:23"
+        },
+        {
+          "address": 1061176217,
+          "file_offset": 17305,
+          "text": "V8.2.0"
+        },
+        {
+          "address": 1061455296,
+          "file_offset": 296384,
+          "text": "v3.3-beta1-179-ge931fe9f5-dirty"
+        },
+        {
+          "address": 1073481432,
+          "file_offset": 1514712,
+          "text": "11:53:06"
+        },
+        {
+          "address": 1073481444,
+          "file_offset": 1514724,
+          "text": "Dec 17 2018"
+        }
+      ],
+      "enum_type_names": [
+        {
+          "address": 1061158960,
+          "file_offset": 48,
+          "name": "WifiEventType"
+        },
+        {
+          "address": 1061158985,
+          "file_offset": 73,
+          "name": "Unit"
+        },
+        {
+          "address": 1061159007,
+          "file_offset": 95,
+          "name": "ValveLocation"
+        },
+        {
+          "address": 1061159032,
+          "file_offset": 120,
+          "name": "ZProgramId"
+        },
+        {
+          "address": 1061159054,
+          "file_offset": 142,
+          "name": "RuntimeCommandId"
+        },
+        {
+          "address": 1061159166,
+          "file_offset": 254,
+          "name": "RuntimeStateId"
+        },
+        {
+          "address": 1061159192,
+          "file_offset": 280,
+          "name": "RuntimeNotificationType"
+        },
+        {
+          "address": 1061159227,
+          "file_offset": 315,
+          "name": "RuntimeEventType"
+        },
+        {
+          "address": 1061159280,
+          "file_offset": 368,
+          "name": "CoreErrorId"
+        },
+        {
+          "address": 1061159303,
+          "file_offset": 391,
+          "name": "CoreCommandId"
+        },
+        {
+          "address": 1061159328,
+          "file_offset": 416,
+          "name": "BoilerType"
+        },
+        {
+          "address": 1061159350,
+          "file_offset": 438,
+          "name": "HexDetectError"
+        },
+        {
+          "address": 1061159376,
+          "file_offset": 464,
+          "name": "CoreEventType"
+        },
+        {
+          "address": 1061159501,
+          "file_offset": 589,
+          "name": "AzureEventType"
+        },
+        {
+          "address": 1061159527,
+          "file_offset": 615,
+          "name": "StillCommandId"
+        },
+        {
+          "address": 1061159559,
+          "file_offset": 647,
+          "name": "StillEventId"
+        },
+        {
+          "address": 1061159583,
+          "file_offset": 671,
+          "name": "PicoStillStateId"
+        },
+        {
+          "address": 1061159611,
+          "file_offset": 699,
+          "name": "UiCommand"
+        },
+        {
+          "address": 1061159838,
+          "file_offset": 926,
+          "name": "TestEnum"
+        },
+        {
+          "address": 1061159858,
+          "file_offset": 946,
+          "name": "LanguageType"
+        },
+        {
+          "address": 1061159882,
+          "file_offset": 970,
+          "name": "Units"
+        },
+        {
+          "address": 1061159899,
+          "file_offset": 987,
+          "name": "SessionMode"
+        },
+        {
+          "address": 1061159922,
+          "file_offset": 1010,
+          "name": "BoolOption"
+        },
+        {
+          "address": 1061159944,
+          "file_offset": 1032,
+          "name": "NetworkType"
+        },
+        {
+          "address": 1061159967,
+          "file_offset": 1055,
+          "name": "WiFiStateId"
+        },
+        {
+          "address": 1061159990,
+          "file_offset": 1078,
+          "name": "WiFiLevel"
+        },
+        {
+          "address": 1061160011,
+          "file_offset": 1099,
+          "name": "WifiError"
+        },
+        {
+          "address": 1061160032,
+          "file_offset": 1120,
+          "name": "SessionType"
+        },
+        {
+          "address": 1061160055,
+          "file_offset": 1143,
+          "name": "CoreStateId"
+        },
+        {
+          "address": 1061160078,
+          "file_offset": 1166,
+          "name": "RecipeKind"
+        },
+        {
+          "address": 1061160100,
+          "file_offset": 1188,
+          "name": "AzureState"
+        },
+        {
+          "address": 1061160137,
+          "file_offset": 1225,
+          "name": "ZBackendError"
+        },
+        {
+          "address": 1061160162,
+          "file_offset": 1250,
+          "name": "MspStateId"
+        },
+        {
+          "address": 1061160184,
+          "file_offset": 1272,
+          "name": "OpCode"
+        },
+        {
+          "address": 1061160202,
+          "file_offset": 1290,
+          "name": "ScreenId"
+        },
+        {
+          "address": 1061160222,
+          "file_offset": 1310,
+          "name": "PauseReason"
+        },
+        {
+          "address": 1061160245,
+          "file_offset": 1333,
+          "name": "RuntimeStillStateId"
+        },
+        {
+          "address": 1061160276,
+          "file_offset": 1364,
+          "name": "TempSensorId"
+        },
+        {
+          "address": 1061160300,
+          "file_offset": 1388,
+          "name": "ClientClass"
+        },
+        {
+          "address": 1061160323,
+          "file_offset": 1411,
+          "name": "HttpClientErrorId"
+        },
+        {
+          "address": 1061160416,
+          "file_offset": 1504,
+          "name": "StepAction"
+        },
+        {
+          "address": 1061160438,
+          "file_offset": 1526,
+          "name": "RecipeListKind"
+        },
+        {
+          "address": 1061160464,
+          "file_offset": 1552,
+          "name": "LogEventType"
+        },
+        {
+          "address": 1061160488,
+          "file_offset": 1576,
+          "name": "State"
+        },
+        {
+          "address": 1061160505,
+          "file_offset": 1593,
+          "name": "TempSensorType"
+        },
+        {
+          "address": 1061160531,
+          "file_offset": 1619,
+          "name": "InfoScreenType"
+        },
+        {
+          "address": 1061160557,
+          "file_offset": 1645,
+          "name": "QuantityId"
+        },
+        {
+          "address": 1061160579,
+          "file_offset": 1667,
+          "name": "EDirection"
+        },
+        {
+          "address": 1061160601,
+          "file_offset": 1689,
+          "name": "Layout"
+        },
+        {
+          "address": 1061160619,
+          "file_offset": 1707,
+          "name": "Command"
+        },
+        {
+          "address": 1061160867,
+          "file_offset": 1955,
+          "name": "Text_Info"
+        },
+        {
+          "address": 1061160898,
+          "file_offset": 1986,
+          "name": "Text_Common"
+        },
+        {
+          "address": 1061160933,
+          "file_offset": 2021,
+          "name": "Text_Time"
+        },
+        {
+          "address": 1061160964,
+          "file_offset": 2052,
+          "name": "Text_Title"
+        },
+        {
+          "address": 1061160997,
+          "file_offset": 2085,
+          "name": "Text_About"
+        },
+        {
+          "address": 1061161030,
+          "file_offset": 2118,
+          "name": "Text_Azure"
+        },
+        {
+          "address": 1061161063,
+          "file_offset": 2151,
+          "name": "Text_Sessions"
+        },
+        {
+          "address": 1061161102,
+          "file_offset": 2190,
+          "name": "Text_Input"
+        },
+        {
+          "address": 1061161135,
+          "file_offset": 2223,
+          "name": "Text_Pause"
+        },
+        {
+          "address": 1061161168,
+          "file_offset": 2256,
+          "name": "Text_EEPROM"
+        },
+        {
+          "address": 1061161203,
+          "file_offset": 2291,
+          "name": "SlideshowAutoCycle"
+        }
+      ],
+      "filename": "zseries_0_0_116.bin",
+      "function_behaviors_reconstructed_by_this_inventory": false,
+      "original_names_observed": true,
+      "sdk_source_paths": [
+        {
+          "address": 1061429997,
+          "file_offset": 271085,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiAP.cpp"
+        },
+        {
+          "address": 1061430203,
+          "file_offset": 271291,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiClient.cpp"
+        },
+        {
+          "address": 1061430749,
+          "file_offset": 271837,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiGeneric.cpp"
+        },
+        {
+          "address": 1061432505,
+          "file_offset": 273593,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiSTA.cpp"
+        },
+        {
+          "address": 1061433313,
+          "file_offset": 274401,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\ESP32Ethernet\\src\\EthernetClient.cpp"
+        },
+        {
+          "address": 1061433466,
+          "file_offset": 274554,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\ESP32Ethernet\\src\\EthernetClient.h"
+        },
+        {
+          "address": 1061434213,
+          "file_offset": 275301,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\Wire\\src\\Wire.cpp"
+        },
+        {
+          "address": 1061434517,
+          "file_offset": 275605,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFiClientSecure\\src\\WiFiClientSecure.cpp"
+        },
+        {
+          "address": 1061434749,
+          "file_offset": 275837,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFiClientSecure\\src\\ssl_client.cpp"
+        },
+        {
+          "address": 1061435579,
+          "file_offset": 276667,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\EEPROM\\EEPROM.cpp"
+        },
+        {
+          "address": 1061435747,
+          "file_offset": 276835,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\Update\\src\\Updater.cpp"
+        },
+        {
+          "address": 1061436318,
+          "file_offset": 277406,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-i2c.c"
+        },
+        {
+          "address": 1061438217,
+          "file_offset": 279305,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-misc.c"
+        },
+        {
+          "address": 1061438766,
+          "file_offset": 279854,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\HardwareSerial.cpp"
+        },
+        {
+          "address": 1061439141,
+          "file_offset": 280229,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\WString.cpp"
+        },
+        {
+          "address": 1061439289,
+          "file_offset": 280377,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-cpu.c"
+        },
+        {
+          "address": 1061440661,
+          "file_offset": 281749,
+          "path_suffix": "/esp-idf-public/components/bootloader_support/src/bootloader_sha.c"
+        },
+        {
+          "address": 1061440825,
+          "file_offset": 281913,
+          "path_suffix": "/esp-idf-public/components/freertos/event_groups.c"
+        },
+        {
+          "address": 1061441097,
+          "file_offset": 282185,
+          "path_suffix": "/esp-idf-public/components/freertos/port.c"
+        },
+        {
+          "address": 1061441197,
+          "file_offset": 282285,
+          "path_suffix": "/esp-idf-public/components/freertos/portmux_impl.inc.h"
+        },
+        {
+          "address": 1061441585,
+          "file_offset": 282673,
+          "path_suffix": "/esp-idf-public/components/freertos/queue.c"
+        },
+        {
+          "address": 1061442005,
+          "file_offset": 283093,
+          "path_suffix": "/esp-idf-public/components/freertos/tasks.c"
+        },
+        {
+          "address": 1061442717,
+          "file_offset": 283805,
+          "path_suffix": "/esp-idf-public/components/freertos/timers.c"
+        },
+        {
+          "address": 1061443129,
+          "file_offset": 284217,
+          "path_suffix": "/esp-idf-public/components/bt/bt.c"
+        },
+        {
+          "address": 1061443269,
+          "file_offset": 284357,
+          "path_suffix": "/esp-idf-public/components/cxx/cxx_guards.cpp"
+        },
+        {
+          "address": 1061443733,
+          "file_offset": 284821,
+          "path_suffix": "/esp-idf-public/components/vfs/vfs.c"
+        },
+        {
+          "address": 1061445929,
+          "file_offset": 287017,
+          "path_suffix": "/esp-idf-public/components/soc/esp32/rtc_time.c"
+        },
+        {
+          "address": 1061446197,
+          "file_offset": 287285,
+          "path_suffix": "/esp-idf-public/components/tcpip_adapter/tcpip_adapter_lwip.c"
+        },
+        {
+          "address": 1061446981,
+          "file_offset": 288069,
+          "path_suffix": "/esp-idf-public/components/spi_flash/flash_mmap.c"
+        },
+        {
+          "address": 1061447253,
+          "file_offset": 288341,
+          "path_suffix": "/esp-idf-public/components/spi_flash/partition.c"
+        },
+        {
+          "address": 1061447845,
+          "file_offset": 288933,
+          "path_suffix": "/esp-idf-public/components/spi_flash/spi_flash_rom_patch.c"
+        },
+        {
+          "address": 1061448349,
+          "file_offset": 289437,
+          "path_suffix": "/esp-idf-public/components/spi_flash/cache_utils.c"
+        },
+        {
+          "address": 1061448789,
+          "file_offset": 289877,
+          "path_suffix": "/esp-idf-public/components/esp32/clk.c"
+        },
+        {
+          "address": 1061448957,
+          "file_offset": 290045,
+          "path_suffix": "/esp-idf-public/components/esp32/cpu_start.c"
+        },
+        {
+          "address": 1061449389,
+          "file_offset": 290477,
+          "path_suffix": "/esp-idf-public/components/esp32/crosscore_int.c"
+        },
+        {
+          "address": 1061449537,
+          "file_offset": 290625,
+          "path_suffix": "/esp-idf-public/components/esp32/dport_access.c"
+        },
+        {
+          "address": 1061449705,
+          "file_offset": 290793,
+          "path_suffix": "/esp-idf-public/components/esp32/esp_timer.c"
+        },
+        {
+          "address": 1061449913,
+          "file_offset": 291001,
+          "path_suffix": "/esp-idf-public/components/esp32/esp_timer_esp32.c"
+        },
+        {
+          "address": 1061452141,
+          "file_offset": 293229,
+          "path_suffix": "/esp-idf-public/components/esp32/hw_random.c"
+        },
+        {
+          "address": 1061452249,
+          "file_offset": 293337,
+          "path_suffix": "/esp-idf-public/components/esp32/intr_alloc.c"
+        },
+        {
+          "address": 1061453021,
+          "file_offset": 294109,
+          "path_suffix": "/esp-idf-public/components/esp32/ipc.c"
+        },
+        {
+          "address": 1061454765,
+          "file_offset": 295853,
+          "path_suffix": "/esp-idf-public/components/esp32/reset_reason.c"
+        },
+        {
+          "address": 1061455657,
+          "file_offset": 296745,
+          "path_suffix": "/esp-idf-public/components/esp32/task_wdt.c"
+        },
+        {
+          "address": 1061456005,
+          "file_offset": 297093,
+          "path_suffix": "/esp-idf-public/components/esp32/brownout.c"
+        },
+        {
+          "address": 1061460661,
+          "file_offset": 301749,
+          "path_suffix": "/esp-idf-public/components/esp32/ets_timer_legacy.c"
+        },
+        {
+          "address": 1061461009,
+          "file_offset": 302097,
+          "path_suffix": "/esp-idf-public/components/app_update/esp_ota_ops.c"
+        },
+        {
+          "address": 1061461745,
+          "file_offset": 302833,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_types.hpp"
+        },
+        {
+          "address": 1061461865,
+          "file_offset": 302953,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/compressed_enum_table.hpp"
+        },
+        {
+          "address": 1061461977,
+          "file_offset": 303065,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_storage.cpp"
+        },
+        {
+          "address": 1061462849,
+          "file_offset": 303937,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_item_hash_list.cpp"
+        },
+        {
+          "address": 1061463017,
+          "file_offset": 304105,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_page.cpp"
+        },
+        {
+          "address": 1061463181,
+          "file_offset": 304269,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_page.hpp"
+        },
+        {
+          "address": 1061464829,
+          "file_offset": 305917,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_pagemanager.cpp"
+        },
+        {
+          "address": 1061468833,
+          "file_offset": 309921,
+          "path_suffix": "/esp-idf-public/components/heap/heap_caps_init.c"
+        },
+        {
+          "address": 1061469041,
+          "file_offset": 310129,
+          "path_suffix": "/esp-idf-public/components/heap/heap_caps.c"
+        },
+        {
+          "address": 1061501393,
+          "file_offset": 342481,
+          "path_suffix": "/esp-idf-public/components/lwip/apps/ping/ping.c"
+        },
+        {
+          "address": 1061501665,
+          "file_offset": 342753,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/sockets.c"
+        },
+        {
+          "address": 1061502641,
+          "file_offset": 343729,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/tcpip.c"
+        },
+        {
+          "address": 1061502933,
+          "file_offset": 344021,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/dns.c"
+        },
+        {
+          "address": 1061503217,
+          "file_offset": 344305,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/mem.c"
+        },
+        {
+          "address": 1061503405,
+          "file_offset": 344493,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/memp.c"
+        },
+        {
+          "address": 1061504117,
+          "file_offset": 345205,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/netif.c"
+        },
+        {
+          "address": 1061504497,
+          "file_offset": 345585,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/pbuf.c"
+        },
+        {
+          "address": 1061505817,
+          "file_offset": 346905,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/raw.c"
+        },
+        {
+          "address": 1061506017,
+          "file_offset": 347105,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp.c"
+        },
+        {
+          "address": 1061507469,
+          "file_offset": 348557,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp_in.c"
+        },
+        {
+          "address": 1061508477,
+          "file_offset": 349565,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp_out.c"
+        },
+        {
+          "address": 1061509685,
+          "file_offset": 350773,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/timeouts.c"
+        },
+        {
+          "address": 1061509897,
+          "file_offset": 350985,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/udp.c"
+        },
+        {
+          "address": 1061510133,
+          "file_offset": 351221,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/dhcp.c"
+        },
+        {
+          "address": 1061511941,
+          "file_offset": 353029,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/etharp.c"
+        },
+        {
+          "address": 1061512737,
+          "file_offset": 353825,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/icmp.c"
+        },
+        {
+          "address": 1061513029,
+          "file_offset": 354117,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/igmp.c"
+        },
+        {
+          "address": 1061513865,
+          "file_offset": 354953,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/ip4.c"
+        },
+        {
+          "address": 1061514041,
+          "file_offset": 355129,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/ip4_addr.c"
+        },
+        {
+          "address": 1061514261,
+          "file_offset": 355349,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/icmp6.c"
+        },
+        {
+          "address": 1061514373,
+          "file_offset": 355461,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/ip6.c"
+        },
+        {
+          "address": 1061514609,
+          "file_offset": 355697,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/ip6_frag.c"
+        },
+        {
+          "address": 1061514981,
+          "file_offset": 356069,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/nd6.c"
+        },
+        {
+          "address": 1061515161,
+          "file_offset": 356249,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/netif/ethernet.c"
+        },
+        {
+          "address": 1061515449,
+          "file_offset": 356537,
+          "path_suffix": "/esp-idf-public/components/lwip/port/esp32/netif/wlanif.c"
+        },
+        {
+          "address": 1061515709,
+          "file_offset": 356797,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/netif/ppp/ppp.c"
+        },
+        {
+          "address": 1061515973,
+          "file_offset": 357061,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/api_lib.c"
+        },
+        {
+          "address": 1061516777,
+          "file_offset": 357865,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/api_msg.c"
+        },
+        {
+          "address": 1061518285,
+          "file_offset": 359373,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/netbuf.c"
+        },
+        {
+          "address": 1061518709,
+          "file_offset": 359797,
+          "path_suffix": "/esp-idf-public/components/lwip/port/esp32/vfs_lwip.c"
+        },
+        {
+          "address": 1061538153,
+          "file_offset": 379241,
+          "path_suffix": "/esp-idf-public/components/pthread/pthread.c"
+        },
+        {
+          "address": 1061538485,
+          "file_offset": 379573,
+          "path_suffix": "/esp-idf-public/components/pthread/pthread_local_storage.c"
+        },
+        {
+          "address": 1061539873,
+          "file_offset": 380961,
+          "path_suffix": "/esp-idf-public/components/newlib/locks.c"
+        },
+        {
+          "address": 1061540265,
+          "file_offset": 381353,
+          "path_suffix": "/esp-idf-public/components/driver/rtc_module.c"
+        },
+        {
+          "address": 1061555773,
+          "file_offset": 396861,
+          "path_suffix": "/esp-idf-public/components/vfs/vfs_uart.c"
+        },
+        {
+          "address": 1061556173,
+          "file_offset": 397261,
+          "path_suffix": "/esp-idf-public/components/esp32/include/rom/uart.h"
+        },
+        {
+          "address": 1061557693,
+          "file_offset": 398781,
+          "path_suffix": "/esp-idf-public/components/soc/src/memory_layout_utils.c"
+        },
+        {
+          "address": 1061558693,
+          "file_offset": 399781,
+          "path_suffix": "/esp-idf-public/components/driver/uart.c"
+        },
+        {
+          "address": 1061565513,
+          "file_offset": 406601,
+          "path_suffix": "/esp-idf-public/components/esp_ringbuf/ringbuf.c"
+        },
+        {
+          "address": 1073482325,
+          "file_offset": 1515605,
+          "path_suffix": "/esp-idf-public/components/heap/multi_heap_poisoning.c"
+        },
+        {
+          "address": 1073482569,
+          "file_offset": 1515849,
+          "path_suffix": "/esp-idf-public/components/heap/multi_heap.c"
+        }
+      ],
+      "sha256": "27d9e792f6d7e589b41f29d1e3bd42828d3d1a9f315adc100b03fd53d8256097",
+      "version_literals": [
+        {
+          "address": 1061175920,
+          "file_offset": 17008,
+          "text": "0.0.116"
+        }
+      ]
+    },
+    {
+      "application_headers": [
+        {
+          "address": 1061175224,
+          "file": "Assert.h",
+          "file_offset": 16312
+        },
+        {
+          "address": 1061167462,
+          "file": "Azure.h",
+          "file_offset": 8550
+        },
+        {
+          "address": 1061170819,
+          "file": "BMP280.h",
+          "file_offset": 11907
+        },
+        {
+          "address": 1061258672,
+          "file": "BackendState.h",
+          "file_offset": 99760
+        },
+        {
+          "address": 1061205631,
+          "file": "Buffer.h",
+          "file_offset": 46719
+        },
+        {
+          "address": 1061195184,
+          "file": "Button.h",
+          "file_offset": 36272
+        },
+        {
+          "address": 1061163086,
+          "file": "Buzzer.h",
+          "file_offset": 4174
+        },
+        {
+          "address": 1061162157,
+          "file": "CString.h",
+          "file_offset": 3245
+        },
+        {
+          "address": 1061162647,
+          "file": "Core.h",
+          "file_offset": 3735
+        },
+        {
+          "address": 1061162571,
+          "file": "CoreHelpers.h",
+          "file_offset": 3659
+        },
+        {
+          "address": 1061180410,
+          "file": "Display.h",
+          "file_offset": 21498
+        },
+        {
+          "address": 1061168871,
+          "file": "DisplayTypes.h",
+          "file_offset": 9959
+        },
+        {
+          "address": 1061172263,
+          "file": "DownloadBinary.h",
+          "file_offset": 13351
+        },
+        {
+          "address": 1061163878,
+          "file": "Eeprom.h",
+          "file_offset": 4966
+        },
+        {
+          "address": 1061214212,
+          "file": "Encoder.h",
+          "file_offset": 55300
+        },
+        {
+          "address": 1061184634,
+          "file": "Enums.h",
+          "file_offset": 25722
+        },
+        {
+          "address": 1061204302,
+          "file": "EventQ.h",
+          "file_offset": 45390
+        },
+        {
+          "address": 1061197530,
+          "file": "Graphics.h",
+          "file_offset": 38618
+        },
+        {
+          "address": 1061171159,
+          "file": "Head.h",
+          "file_offset": 12247
+        },
+        {
+          "address": 1061165953,
+          "file": "Heater.h",
+          "file_offset": 7041
+        },
+        {
+          "address": 1061213300,
+          "file": "HttpBackend.h",
+          "file_offset": 54388
+        },
+        {
+          "address": 1061161844,
+          "file": "HttpClient.h",
+          "file_offset": 2932
+        },
+        {
+          "address": 1061226976,
+          "file": "HttpParser.h",
+          "file_offset": 68064
+        },
+        {
+          "address": 1061162932,
+          "file": "HttpServer.h",
+          "file_offset": 4020
+        },
+        {
+          "address": 1061169148,
+          "file": "HttpUpdate.h",
+          "file_offset": 10236
+        },
+        {
+          "address": 1061185538,
+          "file": "ICore.h",
+          "file_offset": 26626
+        },
+        {
+          "address": 1061162042,
+          "file": "IPicoStill.h",
+          "file_offset": 3130
+        },
+        {
+          "address": 1061182764,
+          "file": "IUiManagement.h",
+          "file_offset": 23852
+        },
+        {
+          "address": 1061220633,
+          "file": "IWifi.h",
+          "file_offset": 61721
+        },
+        {
+          "address": 1061199635,
+          "file": "Iter.h",
+          "file_offset": 40723
+        },
+        {
+          "address": 1061239644,
+          "file": "Json.h",
+          "file_offset": 80732
+        },
+        {
+          "address": 1061180001,
+          "file": "LIS3DHTR.h",
+          "file_offset": 21089
+        },
+        {
+          "address": 1061160663,
+          "file": "Localization.h",
+          "file_offset": 1751
+        },
+        {
+          "address": 1061165531,
+          "file": "MAX11613.h",
+          "file_offset": 6619
+        },
+        {
+          "address": 1061175945,
+          "file": "MacAddress.h",
+          "file_offset": 17033
+        },
+        {
+          "address": 1061176924,
+          "file": "Msp.h",
+          "file_offset": 18012
+        },
+        {
+          "address": 1061202562,
+          "file": "NoiseSmoother.h",
+          "file_offset": 43650
+        },
+        {
+          "address": 1061167982,
+          "file": "Out.h",
+          "file_offset": 9070
+        },
+        {
+          "address": 1061174299,
+          "file": "PicoStill.h",
+          "file_offset": 15387
+        },
+        {
+          "address": 1061174601,
+          "file": "Pinger.h",
+          "file_offset": 15689
+        },
+        {
+          "address": 1061167007,
+          "file": "Program.h",
+          "file_offset": 8095
+        },
+        {
+          "address": 1061181532,
+          "file": "ProgramParams.h",
+          "file_offset": 22620
+        },
+        {
+          "address": 1061242006,
+          "file": "ProgramParser.h",
+          "file_offset": 83094
+        },
+        {
+          "address": 1061181311,
+          "file": "Quantity.h",
+          "file_offset": 22399
+        },
+        {
+          "address": 1061166849,
+          "file": "Runtime.h",
+          "file_offset": 7937
+        },
+        {
+          "address": 1061166444,
+          "file": "RuntimeState.h",
+          "file_offset": 7532
+        },
+        {
+          "address": 1061165380,
+          "file": "Safeties.h",
+          "file_offset": 6468
+        },
+        {
+          "address": 1061165156,
+          "file": "SafetiesState.h",
+          "file_offset": 6244
+        },
+        {
+          "address": 1061202847,
+          "file": "SensorsState.h",
+          "file_offset": 43935
+        },
+        {
+          "address": 1061211714,
+          "file": "SerialReader.h",
+          "file_offset": 52802
+        },
+        {
+          "address": 1061167119,
+          "file": "SessionState.h",
+          "file_offset": 8207
+        },
+        {
+          "address": 1061161345,
+          "file": "Shell.h",
+          "file_offset": 2433
+        },
+        {
+          "address": 1061175813,
+          "file": "Stats.h",
+          "file_offset": 16901
+        },
+        {
+          "address": 1061163198,
+          "file": "System.h",
+          "file_offset": 4286
+        },
+        {
+          "address": 1061163361,
+          "file": "SystemState.h",
+          "file_offset": 4449
+        },
+        {
+          "address": 1061175448,
+          "file": "Temperature.h",
+          "file_offset": 16536
+        },
+        {
+          "address": 1061204816,
+          "file": "TextLines.h",
+          "file_offset": 45904
+        },
+        {
+          "address": 1061162740,
+          "file": "Timer.h",
+          "file_offset": 3828
+        },
+        {
+          "address": 1061166223,
+          "file": "UTF8Decode.h",
+          "file_offset": 7311
+        },
+        {
+          "address": 1061183020,
+          "file": "UiAnimatedText.h",
+          "file_offset": 24108
+        },
+        {
+          "address": 1061180967,
+          "file": "UiComponents.h",
+          "file_offset": 22055
+        },
+        {
+          "address": 1061161277,
+          "file": "UiEvents.h",
+          "file_offset": 2365
+        },
+        {
+          "address": 1061168598,
+          "file": "UiManagement.h",
+          "file_offset": 9686
+        },
+        {
+          "address": 1061180873,
+          "file": "UiSlideshow.h",
+          "file_offset": 21961
+        },
+        {
+          "address": 1061162844,
+          "file": "Wifi.h",
+          "file_offset": 3932
+        },
+        {
+          "address": 1061174119,
+          "file": "ZBackend.h",
+          "file_offset": 15207
+        },
+        {
+          "address": 1061201431,
+          "file": "ZClient.h",
+          "file_offset": 42519
+        }
+      ],
+      "build_literals": [
+        {
+          "address": 1061176301,
+          "file_offset": 17389,
+          "text": "b6b00f995af567cc3010d27a1002c3789826e245"
+        },
+        {
+          "address": 1061176376,
+          "file_offset": 17464,
+          "text": "Apr 17 2020"
+        },
+        {
+          "address": 1061176424,
+          "file_offset": 17512,
+          "text": "08:34:08"
+        },
+        {
+          "address": 1061176506,
+          "file_offset": 17594,
+          "text": "V8.2.0"
+        },
+        {
+          "address": 1061480448,
+          "file_offset": 321536,
+          "text": "v3.3-beta1-179-ge931fe9f5-dirty"
+        },
+        {
+          "address": 1073481432,
+          "file_offset": 558280,
+          "text": "11:53:06"
+        },
+        {
+          "address": 1073481444,
+          "file_offset": 558292,
+          "text": "Dec 17 2018"
+        }
+      ],
+      "enum_type_names": [
+        {
+          "address": 1061158960,
+          "file_offset": 48,
+          "name": "WifiEventType"
+        },
+        {
+          "address": 1061158985,
+          "file_offset": 73,
+          "name": "Unit"
+        },
+        {
+          "address": 1061159007,
+          "file_offset": 95,
+          "name": "ValveLocation"
+        },
+        {
+          "address": 1061159032,
+          "file_offset": 120,
+          "name": "ZProgramId"
+        },
+        {
+          "address": 1061159054,
+          "file_offset": 142,
+          "name": "RuntimeCommandId"
+        },
+        {
+          "address": 1061159166,
+          "file_offset": 254,
+          "name": "RuntimeStateId"
+        },
+        {
+          "address": 1061159192,
+          "file_offset": 280,
+          "name": "RuntimeNotificationType"
+        },
+        {
+          "address": 1061159227,
+          "file_offset": 315,
+          "name": "RuntimeEventType"
+        },
+        {
+          "address": 1061159280,
+          "file_offset": 368,
+          "name": "CoreErrorId"
+        },
+        {
+          "address": 1061159303,
+          "file_offset": 391,
+          "name": "CoreCommandId"
+        },
+        {
+          "address": 1061159328,
+          "file_offset": 416,
+          "name": "BoilerType"
+        },
+        {
+          "address": 1061159350,
+          "file_offset": 438,
+          "name": "HexDetectError"
+        },
+        {
+          "address": 1061159376,
+          "file_offset": 464,
+          "name": "CoreEventType"
+        },
+        {
+          "address": 1061159501,
+          "file_offset": 589,
+          "name": "AzureEventType"
+        },
+        {
+          "address": 1061159527,
+          "file_offset": 615,
+          "name": "StillCommandId"
+        },
+        {
+          "address": 1061159559,
+          "file_offset": 647,
+          "name": "StillEventId"
+        },
+        {
+          "address": 1061159583,
+          "file_offset": 671,
+          "name": "PicoStillStateId"
+        },
+        {
+          "address": 1061159611,
+          "file_offset": 699,
+          "name": "UiCommand"
+        },
+        {
+          "address": 1061159838,
+          "file_offset": 926,
+          "name": "TestEnum"
+        },
+        {
+          "address": 1061159858,
+          "file_offset": 946,
+          "name": "LanguageType"
+        },
+        {
+          "address": 1061159882,
+          "file_offset": 970,
+          "name": "Units"
+        },
+        {
+          "address": 1061159899,
+          "file_offset": 987,
+          "name": "SessionMode"
+        },
+        {
+          "address": 1061159922,
+          "file_offset": 1010,
+          "name": "BoolOption"
+        },
+        {
+          "address": 1061159944,
+          "file_offset": 1032,
+          "name": "NetworkType"
+        },
+        {
+          "address": 1061159967,
+          "file_offset": 1055,
+          "name": "WiFiStateId"
+        },
+        {
+          "address": 1061159990,
+          "file_offset": 1078,
+          "name": "WiFiLevel"
+        },
+        {
+          "address": 1061160011,
+          "file_offset": 1099,
+          "name": "WifiError"
+        },
+        {
+          "address": 1061160032,
+          "file_offset": 1120,
+          "name": "SessionType"
+        },
+        {
+          "address": 1061160055,
+          "file_offset": 1143,
+          "name": "CoreStateId"
+        },
+        {
+          "address": 1061160078,
+          "file_offset": 1166,
+          "name": "RecipeKind"
+        },
+        {
+          "address": 1061160100,
+          "file_offset": 1188,
+          "name": "AzureState"
+        },
+        {
+          "address": 1061160137,
+          "file_offset": 1225,
+          "name": "ZBackendError"
+        },
+        {
+          "address": 1061160162,
+          "file_offset": 1250,
+          "name": "MspStateId"
+        },
+        {
+          "address": 1061160184,
+          "file_offset": 1272,
+          "name": "OpCode"
+        },
+        {
+          "address": 1061160202,
+          "file_offset": 1290,
+          "name": "ScreenId"
+        },
+        {
+          "address": 1061160222,
+          "file_offset": 1310,
+          "name": "PauseReason"
+        },
+        {
+          "address": 1061160245,
+          "file_offset": 1333,
+          "name": "RuntimeStillStateId"
+        },
+        {
+          "address": 1061160276,
+          "file_offset": 1364,
+          "name": "TempSensorId"
+        },
+        {
+          "address": 1061160300,
+          "file_offset": 1388,
+          "name": "ClientClass"
+        },
+        {
+          "address": 1061160323,
+          "file_offset": 1411,
+          "name": "HttpClientErrorId"
+        },
+        {
+          "address": 1061160399,
+          "file_offset": 1487,
+          "name": "StepType"
+        },
+        {
+          "address": 1061160419,
+          "file_offset": 1507,
+          "name": "StepAction"
+        },
+        {
+          "address": 1061160441,
+          "file_offset": 1529,
+          "name": "RecipeListKind"
+        },
+        {
+          "address": 1061160467,
+          "file_offset": 1555,
+          "name": "LogEventType"
+        },
+        {
+          "address": 1061160491,
+          "file_offset": 1579,
+          "name": "State"
+        },
+        {
+          "address": 1061160508,
+          "file_offset": 1596,
+          "name": "TempSensorType"
+        },
+        {
+          "address": 1061160534,
+          "file_offset": 1622,
+          "name": "InfoScreenType"
+        },
+        {
+          "address": 1061160560,
+          "file_offset": 1648,
+          "name": "QuantityId"
+        },
+        {
+          "address": 1061160582,
+          "file_offset": 1670,
+          "name": "EDirection"
+        },
+        {
+          "address": 1061160604,
+          "file_offset": 1692,
+          "name": "Layout"
+        },
+        {
+          "address": 1061160622,
+          "file_offset": 1710,
+          "name": "Command"
+        },
+        {
+          "address": 1061160641,
+          "file_offset": 1729,
+          "name": "HttpMethod"
+        },
+        {
+          "address": 1061160892,
+          "file_offset": 1980,
+          "name": "Text_Info"
+        },
+        {
+          "address": 1061160923,
+          "file_offset": 2011,
+          "name": "Text_Common"
+        },
+        {
+          "address": 1061160958,
+          "file_offset": 2046,
+          "name": "Text_Time"
+        },
+        {
+          "address": 1061160989,
+          "file_offset": 2077,
+          "name": "Text_Title"
+        },
+        {
+          "address": 1061161022,
+          "file_offset": 2110,
+          "name": "Text_About"
+        },
+        {
+          "address": 1061161055,
+          "file_offset": 2143,
+          "name": "Text_Azure"
+        },
+        {
+          "address": 1061161088,
+          "file_offset": 2176,
+          "name": "Text_Sessions"
+        },
+        {
+          "address": 1061161127,
+          "file_offset": 2215,
+          "name": "Text_Input"
+        },
+        {
+          "address": 1061161160,
+          "file_offset": 2248,
+          "name": "Text_Pause"
+        },
+        {
+          "address": 1061161193,
+          "file_offset": 2281,
+          "name": "Text_EEPROM"
+        },
+        {
+          "address": 1061161228,
+          "file_offset": 2316,
+          "name": "SlideshowAutoCycle"
+        }
+      ],
+      "filename": "zseries_0_0_119.bin",
+      "function_behaviors_reconstructed_by_this_inventory": false,
+      "original_names_observed": true,
+      "sdk_source_paths": [
+        {
+          "address": 1061455113,
+          "file_offset": 296201,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiAP.cpp"
+        },
+        {
+          "address": 1061455319,
+          "file_offset": 296407,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiClient.cpp"
+        },
+        {
+          "address": 1061455865,
+          "file_offset": 296953,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiGeneric.cpp"
+        },
+        {
+          "address": 1061457628,
+          "file_offset": 298716,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFi\\src\\WiFiSTA.cpp"
+        },
+        {
+          "address": 1061458465,
+          "file_offset": 299553,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\ESP32Ethernet\\src\\EthernetClient.cpp"
+        },
+        {
+          "address": 1061458618,
+          "file_offset": 299706,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\ESP32Ethernet\\src\\EthernetClient.h"
+        },
+        {
+          "address": 1061459365,
+          "file_offset": 300453,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\Wire\\src\\Wire.cpp"
+        },
+        {
+          "address": 1061459669,
+          "file_offset": 300757,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFiClientSecure\\src\\WiFiClientSecure.cpp"
+        },
+        {
+          "address": 1061459901,
+          "file_offset": 300989,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\WiFiClientSecure\\src\\ssl_client.cpp"
+        },
+        {
+          "address": 1061460731,
+          "file_offset": 301819,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\EEPROM\\src\\EEPROM.cpp"
+        },
+        {
+          "address": 1061460903,
+          "file_offset": 301991,
+          "path_suffix": "\\hardware\\espressif\\esp32\\libraries\\Update\\src\\Updater.cpp"
+        },
+        {
+          "address": 1061461474,
+          "file_offset": 302562,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-i2c.c"
+        },
+        {
+          "address": 1061463373,
+          "file_offset": 304461,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-misc.c"
+        },
+        {
+          "address": 1061463922,
+          "file_offset": 305010,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\HardwareSerial.cpp"
+        },
+        {
+          "address": 1061464297,
+          "file_offset": 305385,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\WString.cpp"
+        },
+        {
+          "address": 1061464445,
+          "file_offset": 305533,
+          "path_suffix": "\\hardware\\espressif\\esp32\\cores\\esp32\\esp32-hal-cpu.c"
+        },
+        {
+          "address": 1061465817,
+          "file_offset": 306905,
+          "path_suffix": "/esp-idf-public/components/bootloader_support/src/bootloader_sha.c"
+        },
+        {
+          "address": 1061465981,
+          "file_offset": 307069,
+          "path_suffix": "/esp-idf-public/components/freertos/event_groups.c"
+        },
+        {
+          "address": 1061466253,
+          "file_offset": 307341,
+          "path_suffix": "/esp-idf-public/components/freertos/port.c"
+        },
+        {
+          "address": 1061466353,
+          "file_offset": 307441,
+          "path_suffix": "/esp-idf-public/components/freertos/portmux_impl.inc.h"
+        },
+        {
+          "address": 1061466741,
+          "file_offset": 307829,
+          "path_suffix": "/esp-idf-public/components/freertos/queue.c"
+        },
+        {
+          "address": 1061467161,
+          "file_offset": 308249,
+          "path_suffix": "/esp-idf-public/components/freertos/tasks.c"
+        },
+        {
+          "address": 1061467873,
+          "file_offset": 308961,
+          "path_suffix": "/esp-idf-public/components/freertos/timers.c"
+        },
+        {
+          "address": 1061468281,
+          "file_offset": 309369,
+          "path_suffix": "/esp-idf-public/components/bt/bt.c"
+        },
+        {
+          "address": 1061468421,
+          "file_offset": 309509,
+          "path_suffix": "/esp-idf-public/components/cxx/cxx_guards.cpp"
+        },
+        {
+          "address": 1061468885,
+          "file_offset": 309973,
+          "path_suffix": "/esp-idf-public/components/vfs/vfs.c"
+        },
+        {
+          "address": 1061471081,
+          "file_offset": 312169,
+          "path_suffix": "/esp-idf-public/components/soc/esp32/rtc_time.c"
+        },
+        {
+          "address": 1061471349,
+          "file_offset": 312437,
+          "path_suffix": "/esp-idf-public/components/tcpip_adapter/tcpip_adapter_lwip.c"
+        },
+        {
+          "address": 1061472133,
+          "file_offset": 313221,
+          "path_suffix": "/esp-idf-public/components/spi_flash/flash_mmap.c"
+        },
+        {
+          "address": 1061472405,
+          "file_offset": 313493,
+          "path_suffix": "/esp-idf-public/components/spi_flash/partition.c"
+        },
+        {
+          "address": 1061472997,
+          "file_offset": 314085,
+          "path_suffix": "/esp-idf-public/components/spi_flash/spi_flash_rom_patch.c"
+        },
+        {
+          "address": 1061473501,
+          "file_offset": 314589,
+          "path_suffix": "/esp-idf-public/components/spi_flash/cache_utils.c"
+        },
+        {
+          "address": 1061473941,
+          "file_offset": 315029,
+          "path_suffix": "/esp-idf-public/components/esp32/clk.c"
+        },
+        {
+          "address": 1061474109,
+          "file_offset": 315197,
+          "path_suffix": "/esp-idf-public/components/esp32/cpu_start.c"
+        },
+        {
+          "address": 1061474541,
+          "file_offset": 315629,
+          "path_suffix": "/esp-idf-public/components/esp32/crosscore_int.c"
+        },
+        {
+          "address": 1061474689,
+          "file_offset": 315777,
+          "path_suffix": "/esp-idf-public/components/esp32/dport_access.c"
+        },
+        {
+          "address": 1061474857,
+          "file_offset": 315945,
+          "path_suffix": "/esp-idf-public/components/esp32/esp_timer.c"
+        },
+        {
+          "address": 1061475065,
+          "file_offset": 316153,
+          "path_suffix": "/esp-idf-public/components/esp32/esp_timer_esp32.c"
+        },
+        {
+          "address": 1061477293,
+          "file_offset": 318381,
+          "path_suffix": "/esp-idf-public/components/esp32/hw_random.c"
+        },
+        {
+          "address": 1061477401,
+          "file_offset": 318489,
+          "path_suffix": "/esp-idf-public/components/esp32/intr_alloc.c"
+        },
+        {
+          "address": 1061478173,
+          "file_offset": 319261,
+          "path_suffix": "/esp-idf-public/components/esp32/ipc.c"
+        },
+        {
+          "address": 1061479917,
+          "file_offset": 321005,
+          "path_suffix": "/esp-idf-public/components/esp32/reset_reason.c"
+        },
+        {
+          "address": 1061480809,
+          "file_offset": 321897,
+          "path_suffix": "/esp-idf-public/components/esp32/task_wdt.c"
+        },
+        {
+          "address": 1061481157,
+          "file_offset": 322245,
+          "path_suffix": "/esp-idf-public/components/esp32/brownout.c"
+        },
+        {
+          "address": 1061485813,
+          "file_offset": 326901,
+          "path_suffix": "/esp-idf-public/components/esp32/ets_timer_legacy.c"
+        },
+        {
+          "address": 1061486161,
+          "file_offset": 327249,
+          "path_suffix": "/esp-idf-public/components/app_update/esp_ota_ops.c"
+        },
+        {
+          "address": 1061486897,
+          "file_offset": 327985,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_types.hpp"
+        },
+        {
+          "address": 1061487017,
+          "file_offset": 328105,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/compressed_enum_table.hpp"
+        },
+        {
+          "address": 1061487129,
+          "file_offset": 328217,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_storage.cpp"
+        },
+        {
+          "address": 1061488001,
+          "file_offset": 329089,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_item_hash_list.cpp"
+        },
+        {
+          "address": 1061488169,
+          "file_offset": 329257,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_page.cpp"
+        },
+        {
+          "address": 1061488333,
+          "file_offset": 329421,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_page.hpp"
+        },
+        {
+          "address": 1061489981,
+          "file_offset": 331069,
+          "path_suffix": "/esp-idf-public/components/nvs_flash/src/nvs_pagemanager.cpp"
+        },
+        {
+          "address": 1061493985,
+          "file_offset": 335073,
+          "path_suffix": "/esp-idf-public/components/heap/heap_caps_init.c"
+        },
+        {
+          "address": 1061494193,
+          "file_offset": 335281,
+          "path_suffix": "/esp-idf-public/components/heap/heap_caps.c"
+        },
+        {
+          "address": 1061526545,
+          "file_offset": 367633,
+          "path_suffix": "/esp-idf-public/components/lwip/apps/ping/ping.c"
+        },
+        {
+          "address": 1061526817,
+          "file_offset": 367905,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/sockets.c"
+        },
+        {
+          "address": 1061527805,
+          "file_offset": 368893,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/tcpip.c"
+        },
+        {
+          "address": 1061528097,
+          "file_offset": 369185,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/dns.c"
+        },
+        {
+          "address": 1061528381,
+          "file_offset": 369469,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/mem.c"
+        },
+        {
+          "address": 1061528569,
+          "file_offset": 369657,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/memp.c"
+        },
+        {
+          "address": 1061529281,
+          "file_offset": 370369,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/netif.c"
+        },
+        {
+          "address": 1061529661,
+          "file_offset": 370749,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/pbuf.c"
+        },
+        {
+          "address": 1061530981,
+          "file_offset": 372069,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/raw.c"
+        },
+        {
+          "address": 1061531181,
+          "file_offset": 372269,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp.c"
+        },
+        {
+          "address": 1061532685,
+          "file_offset": 373773,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp_in.c"
+        },
+        {
+          "address": 1061533693,
+          "file_offset": 374781,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/tcp_out.c"
+        },
+        {
+          "address": 1061534901,
+          "file_offset": 375989,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/timeouts.c"
+        },
+        {
+          "address": 1061535113,
+          "file_offset": 376201,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/udp.c"
+        },
+        {
+          "address": 1061535349,
+          "file_offset": 376437,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/dhcp.c"
+        },
+        {
+          "address": 1061537157,
+          "file_offset": 378245,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/etharp.c"
+        },
+        {
+          "address": 1061537953,
+          "file_offset": 379041,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/icmp.c"
+        },
+        {
+          "address": 1061538245,
+          "file_offset": 379333,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/igmp.c"
+        },
+        {
+          "address": 1061539081,
+          "file_offset": 380169,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/ip4.c"
+        },
+        {
+          "address": 1061539257,
+          "file_offset": 380345,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv4/ip4_addr.c"
+        },
+        {
+          "address": 1061539477,
+          "file_offset": 380565,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/icmp6.c"
+        },
+        {
+          "address": 1061539589,
+          "file_offset": 380677,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/ip6.c"
+        },
+        {
+          "address": 1061539825,
+          "file_offset": 380913,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/ip6_frag.c"
+        },
+        {
+          "address": 1061540197,
+          "file_offset": 381285,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/core/ipv6/nd6.c"
+        },
+        {
+          "address": 1061540377,
+          "file_offset": 381465,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/netif/ethernet.c"
+        },
+        {
+          "address": 1061540665,
+          "file_offset": 381753,
+          "path_suffix": "/esp-idf-public/components/lwip/port/esp32/netif/wlanif.c"
+        },
+        {
+          "address": 1061540925,
+          "file_offset": 382013,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/netif/ppp/ppp.c"
+        },
+        {
+          "address": 1061541189,
+          "file_offset": 382277,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/api_lib.c"
+        },
+        {
+          "address": 1061541993,
+          "file_offset": 383081,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/api_msg.c"
+        },
+        {
+          "address": 1061543525,
+          "file_offset": 384613,
+          "path_suffix": "/esp-idf-public/components/lwip/lwip/src/api/netbuf.c"
+        },
+        {
+          "address": 1061543949,
+          "file_offset": 385037,
+          "path_suffix": "/esp-idf-public/components/lwip/port/esp32/vfs_lwip.c"
+        },
+        {
+          "address": 1061563393,
+          "file_offset": 404481,
+          "path_suffix": "/esp-idf-public/components/pthread/pthread.c"
+        },
+        {
+          "address": 1061563725,
+          "file_offset": 404813,
+          "path_suffix": "/esp-idf-public/components/pthread/pthread_local_storage.c"
+        },
+        {
+          "address": 1061565113,
+          "file_offset": 406201,
+          "path_suffix": "/esp-idf-public/components/newlib/locks.c"
+        },
+        {
+          "address": 1061565505,
+          "file_offset": 406593,
+          "path_suffix": "/esp-idf-public/components/driver/rtc_module.c"
+        },
+        {
+          "address": 1061581013,
+          "file_offset": 422101,
+          "path_suffix": "/esp-idf-public/components/vfs/vfs_uart.c"
+        },
+        {
+          "address": 1061581413,
+          "file_offset": 422501,
+          "path_suffix": "/esp-idf-public/components/esp32/include/rom/uart.h"
+        },
+        {
+          "address": 1061582933,
+          "file_offset": 424021,
+          "path_suffix": "/esp-idf-public/components/soc/src/memory_layout_utils.c"
+        },
+        {
+          "address": 1061583933,
+          "file_offset": 425021,
+          "path_suffix": "/esp-idf-public/components/driver/uart.c"
+        },
+        {
+          "address": 1061590753,
+          "file_offset": 431841,
+          "path_suffix": "/esp-idf-public/components/esp_ringbuf/ringbuf.c"
+        },
+        {
+          "address": 1073482325,
+          "file_offset": 559173,
+          "path_suffix": "/esp-idf-public/components/heap/multi_heap_poisoning.c"
+        },
+        {
+          "address": 1073482569,
+          "file_offset": 559417,
+          "path_suffix": "/esp-idf-public/components/heap/multi_heap.c"
+        }
+      ],
+      "sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+      "version_literals": [
+        {
+          "address": 1061176209,
+          "file_offset": 17297,
+          "text": "0.0.119"
+        }
+      ]
+    }
+  ],
+  "schema_version": 1,
+  "z1_z2_mapping_established": false
+}

@@ -1,0 +1,73 @@
+{
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "archive_sha256": "e1b092b4258c75c0722b66cb2e221240c8fbb031f7d46eebfe9b2922f8f0874d",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "schema_version": 1,
+  "scope": "Wifi manager and concrete Arduino WiFi adapter compile in the 32-module historical ESP32 archive; no application link, radio execution, boot or hardware qualification.",
+  "compiled_modules": 32,
+  "wifi_sources": [
+    {
+      "source": "src/wifi.cpp",
+      "source_sha256": "df8f3f60a214267744749135d20849f060773b6d7789cdaf815cda3945baa7c2",
+      "object_sha256": "b16930448e1985b8ee654bc161be14296eef3111f63e0e00aed988e0cb6f3996",
+      "object_bytes": 15496
+    },
+    {
+      "source": "platform/esp32/wifi_platform.cpp",
+      "source_sha256": "d2c6207d214f56ea0ef422f13289cff38eab6439a758bbd7f2e66856ba6218fe",
+      "object_sha256": "4dff862ab9be8e4831bd6f42abbaa4d56383768f7145b7bef40dac4f9d44e692",
+      "object_bytes": 8224
+    }
+  ],
+  "wifi_headers_sha256": {
+    "include/zseries/wifi.hpp": "1dd8d76c75288819d85ba4b407af8d1cb1b8dd1194402ce09fa78ee85fff233f",
+    "platform/esp32/wifi_platform.hpp": "eaf55a57772a15888444074ada086e398ce2e5783b5e72c39c142dff092b8b43"
+  }
+}

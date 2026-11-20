@@ -1,0 +1,3 @@
+# Used by shared ELF symbol-matching negative controls in the Z CI workflow.
+# Portable Z original-case tests themselves use the Python standard library.
+pyelftools==0.33

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help</title>
+    <link rel="stylesheet" href="z.css">
+  </head>
+  <body>
+    <div class="navbar">
+      <a href="z.html">Z Program Maker</a>
+      Help
+    </div>
+    
+    <div class="a-center">
+      <h1>Help</h1>
+    </div>
+    
+    <div class="ct-outer" >
+      <div class="ct-inner" >
+
+        <h3>Z Program Maker</h3>
+        
+        <h4>Description</h4>
+        
+        <p>
+          The Z Program Maker is small and simple web page that allows designing programs for the
+          Z. It also provides the ability to directly push programs to the Z, so that you can
+          execute right away the programs you designed. The Z Program Maker page is embedded into
+          the Z firmware along with an HTTP server. To access it, you will need a device, such as a
+          laptop or a mobile phone, connected on the same WiFi network as the Z, as well as a
+          browser running on that device.
+        <p>
+
+        <p>
+          The Z Program Maker also allows you to export programs as JSON files, so that you can
+          archive them as you wish. You can also import programs previously exported by simply drag
+          and dropping JSON files onto the "IMPORT" button. Finally, you can also manually write
+          JSON files and import them provided that they comform to the JSON Format described below.
+        </p>
+
+        <h4>How To Connect</h4>
+        <ul>
+          <li>On the Z, navigate to Settings &gt; Network &gt; WiFi Details</li>
+          <li>Take note of the IP Address (i.e. 192.168.0.123)</li>
+          <li>Grab a device (i.e mobile phone) on the same WiFi network as the Z</li>
+          <li>Open a browser and navigate to the IP address (ie http://192.168.0.123)</li>
+        </ul>
+
+        <h4>How To Use</h4>
+        <p>
+          It is dead simple:
+          <ul>
+            <li>Add steps as desired</li>
+            <li>Click "PUSH TO Z" to push the program to the Z</li>
+            <li>On the Z, just click "Start" when ready to proceed</li>
+          </ul>
+          Please note that the "SAMPLE" button loads a sample program that you can user to try
+          things out or get an idea of how a program looks like.
+        </p>
+
+        <h3>JSON Format</h3>
+        <p>
+          Here is a sample JSON program. All quantities within JSON file are always expressed
+          in metric units (temperatures are in Celsius degrees). Please find detailled description
+          of each fields further down below.
+        </p>
+        
+        <div>
+          <pre><code>
+{
+  "Name": "My Sample Recipe",
+  "IsBeer": true,
+  "UsePicoPakMode": false,
+  "Steps": [
+    {
+      "Name": "Heat Water",
+      "StepType": 1,
+      "Location": 1
+      "Temp": 67.1,
+      "Time": 0,
+      "Drain": 0,
+    },
+    {
+      "Name": "Mash",
+      "StepType": 1,
+      "Location": 2
+      "Temp": 67,
+      "Time": 5400,
+      "Drain": 480,
+    },
+    ...
+  ]
+}
+          </code></pre>
+        </div>
+        
+        Program properties:
+        <ul>
+          <li><span class="p-name">Name</span>: name of the program as it will appear in BrewHouse.</li>
+          <li><span class="p-name">IsBeer</span>: boolean indicating whether or not typical setup beer instruction should be shown on the Z.</li>
+          <li><span class="p-name">UsePicoPakMode</span>: whether or not to use PicoPak Adjunct compartments.</li>
+        </ul>
+        
+        Steps properties:
+        <ul>
+          <li><span class="p-name">Name</span>: name of the step as it will appear in LogHouse.</li>
+          <li><span class="p-name">StepType</span>: number identifying the type of step:
+            <ul>
+              <li>1: Active steps generating heat</li>
+              <li>2: Pause</li>
+            </ul>
+          </li>
+          <li><span class="p-name">Location</span>: number identifying the compartment where to direct the wort/liquid to:
+            <ul>
+              <li>1: Passthrough (i.e. Keg)</li>
+              <li>2: Mash Compartment</li>
+              <li>3: Adjunct Compartment #1</li>
+              <li>4: Adjunct Compartment #2</li>
+              <li>5: Adjunct Compartment #3</li>
+              <li>6: Adjunct Compartment #4</li>
+            </ul>
+          </li>
+          <li><span class="p-name">Temp</span>: target temperature in Celsius.</li>
+          <li><span class="p-name">Time</span>: number of minutes to hold temperature for.</li>
+          <li><span class="p-name">Drain</span>: number of minutes to run the drain pump for at the end of the steps.</li>
+        </ul>
+        
+      </div>
+    </div>
+    
+  </body>
+</html>

@@ -1,0 +1,4876 @@
+{
+  "schema": 1,
+  "input": "zseries_0_0_119.bin",
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "resolver_entry": 1074626040,
+  "buffered_ids": [
+    20,
+    21,
+    22,
+    23,
+    24
+  ],
+  "programs": [
+    {
+      "id": 1,
+      "identifier": "Rinse",
+      "address": 1061325692,
+      "header_sha256": "8d9b1c0c796ce7a9b40f1f3e0b6c2938df8e78db1290aeae1af7d0467fa722de",
+      "session_type": 0,
+      "session_identifier": "Rinse",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279858,
+        "text": "RINSE",
+        "sha256": "3afadd8e76bcc9e649f48165b5f0193b96727642f83db678c886b5fd2ee205f7"
+      },
+      "code_address": 1061330408,
+      "code_sha256": "6d38d81d31774d6707f7cbef643aa1072379edf940c1424f00ff60c12aeea40f",
+      "instructions": [
+        {
+          "address": 1061330408,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32777
+        },
+        {
+          "address": 1061330416,
+          "opcode": 34,
+          "name": "StopPid",
+          "argument": 0
+        },
+        {
+          "address": 1061330424,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 25
+        },
+        {
+          "address": 1061330432,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061330440,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 26
+        },
+        {
+          "address": 1061330448,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 27
+        },
+        {
+          "address": 1061330456,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330464,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330472,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061330480,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 60
+        },
+        {
+          "address": 1061330488,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330496,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330504,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330512,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330520,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330528,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061330536,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330544,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330552,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330560,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061330568,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330576,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330584,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330592,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061330600,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330608,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330616,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330624,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061330632,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330640,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330648,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330656,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061330664,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330672,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330680,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330688,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061330696,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330704,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330712,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330720,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330728,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330736,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330744,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330752,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061330760,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330768,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330776,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330784,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061330792,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330800,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330808,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330816,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061330824,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330832,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330840,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330848,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061330856,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330864,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330872,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330880,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061330888,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330896,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330904,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330912,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061330920,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330928,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330936,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330944,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330952,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330960,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061330968,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061330976,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061330984,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061330992,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331000,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061331008,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061331016,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061331024,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331032,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061331040,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061331048,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061331056,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331064,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061331072,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061331080,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061331088,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331096,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061331104,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061331112,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061331120,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331128,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061331136,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061331144,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 80
+        },
+        {
+          "address": 1061331152,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 10
+        },
+        {
+          "address": 1061331160,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061331168,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        },
+        {
+          "address": 1061331176,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32791
+        },
+        {
+          "address": 1061331184,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 29
+        },
+        {
+          "address": 1061331192,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 30
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 2,
+      "identifier": "Drain",
+      "address": 1061325664,
+      "header_sha256": "18df4528f803a2eaf9a6da8a91397fc3dde28b29ebdc6f72080aa48a9cca11a6",
+      "session_type": 2,
+      "session_identifier": "Drain",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279887,
+        "text": "DRAIN",
+        "sha256": "08bee54933ae8f6257b59eeb920ffe1aba94ebbf5340ac0d5f1498e277f94a15"
+      },
+      "code_address": 1061328592,
+      "code_sha256": "aff5f3ed7288e5ee35a907844be886c3fd38c98815c8b3340c6f952113f74d78",
+      "instructions": [
+        {
+          "address": 1061328592,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061328600,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328608,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 3
+        },
+        {
+          "address": 1061328616,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32782
+        },
+        {
+          "address": 1061328624,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328632,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 41
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 3,
+      "identifier": "Rack",
+      "address": 1061325636,
+      "header_sha256": "6cc43a6105ef52922521fb42a7ec2d1ff4156ec787a221361e156666056e1bb7",
+      "session_type": 3,
+      "session_identifier": "Rack",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279893,
+        "text": "RACK",
+        "sha256": "67bd0e99142868291d5fa3749818c31ae321ea0707023886a897befd8471f3ce"
+      },
+      "code_address": 1061328400,
+      "code_sha256": "aafe21ed2d0de49b06c8ba39ec9043294c21575a3e1f6e6324403b75b52b0d38",
+      "instructions": [
+        {
+          "address": 1061328400,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328408,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 45
+        },
+        {
+          "address": 1061328416,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061328424,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328432,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 46
+        },
+        {
+          "address": 1061328440,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 0
+        },
+        {
+          "address": 1061328448,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 47
+        },
+        {
+          "address": 1061328456,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 48
+        },
+        {
+          "address": 1061328464,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 49
+        },
+        {
+          "address": 1061328472,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 50
+        },
+        {
+          "address": 1061328480,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328488,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 51
+        },
+        {
+          "address": 1061328496,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 0
+        },
+        {
+          "address": 1061328504,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 52
+        },
+        {
+          "address": 1061328512,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32783
+        },
+        {
+          "address": 1061328520,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328528,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 53
+        },
+        {
+          "address": 1061328536,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 4,
+      "identifier": "Circulate",
+      "address": 1061325608,
+      "header_sha256": "2128657c4aa2470ec5fc16dfd5af146ca56ffccfcdd0f78bf3cf7a9ccd098bc8",
+      "session_type": 4,
+      "session_identifier": "Circulate",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279898,
+        "text": "CIRCULATE",
+        "sha256": "27e904e3b74305d0d0413574c56a9c19f3dd0a79c061c49123d72abf782c7616"
+      },
+      "code_address": 1061328352,
+      "code_sha256": "887bf7d9d094055e1113752f14c9e65b5902ac03e6f71be800aa1b258b22b802",
+      "instructions": [
+        {
+          "address": 1061328352,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061328360,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328368,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061328376,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32784
+        },
+        {
+          "address": 1061328384,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061328392,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 42
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 5,
+      "identifier": "SousVideWithoutKeg",
+      "address": 1061325524,
+      "header_sha256": "012b901e68228e9da1a8eed6f8cb2d94cf986962d8e62f3e63599e09bd6e7b1d",
+      "session_type": 5,
+      "session_identifier": "Sousvide",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280838,
+        "text": "SOUSVIDE",
+        "sha256": "2df05a1b9b93167843801d43a91c91d04b6c701fdbe093bd6349fc9172e9deb3"
+      },
+      "code_address": 1061327760,
+      "code_sha256": "a2fa95f283d20a63478f89a8a69759807881dfc6ad07d7731e91cd054462a6b3",
+      "instructions": [
+        {
+          "address": 1061327760,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061327768,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 60
+        },
+        {
+          "address": 1061327776,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 61
+        },
+        {
+          "address": 1061327784,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061327792,
+          "opcode": 26,
+          "name": "SetTime",
+          "argument": 7200
+        },
+        {
+          "address": 1061327800,
+          "opcode": 35,
+          "name": "SetITMin",
+          "argument": 5120
+        },
+        {
+          "address": 1061327808,
+          "opcode": 36,
+          "name": "SetITMax",
+          "argument": 23040
+        },
+        {
+          "address": 1061327816,
+          "opcode": 25,
+          "name": "SetTarget",
+          "argument": 14336
+        },
+        {
+          "address": 1061327824,
+          "opcode": 22,
+          "name": "GetTemp",
+          "argument": 0
+        },
+        {
+          "address": 1061327832,
+          "opcode": 23,
+          "name": "GetTime",
+          "argument": 0
+        },
+        {
+          "address": 1061327840,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061327848,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061327856,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 1
+        },
+        {
+          "address": 1061327864,
+          "opcode": 33,
+          "name": "StartPid",
+          "argument": 0
+        },
+        {
+          "address": 1061327872,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32778
+        },
+        {
+          "address": 1061327880,
+          "opcode": 15,
+          "name": "WaitTempA",
+          "argument": 0
+        },
+        {
+          "address": 1061327888,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32779
+        },
+        {
+          "address": 1061327896,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061327904,
+          "opcode": 24,
+          "name": "WaitTime",
+          "argument": 0
+        },
+        {
+          "address": 1061327912,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061327920,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 6,
+      "identifier": "SousVideWithKeg",
+      "address": 1061325496,
+      "header_sha256": "c12bf6e805a4cbb736c2909e43b9bf2bcb0983c4b78b20dfc077d5a28eb53a50",
+      "session_type": 5,
+      "session_identifier": "Sousvide",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280838,
+        "text": "SOUSVIDE",
+        "sha256": "2df05a1b9b93167843801d43a91c91d04b6c701fdbe093bd6349fc9172e9deb3"
+      },
+      "code_address": 1061327928,
+      "code_sha256": "8baa8d1948e80f148109efcbd87ba578b48f3cc027b9401faf6cd52027040493",
+      "instructions": [
+        {
+          "address": 1061327928,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061327936,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 62
+        },
+        {
+          "address": 1061327944,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 63
+        },
+        {
+          "address": 1061327952,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 64
+        },
+        {
+          "address": 1061327960,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061327968,
+          "opcode": 26,
+          "name": "SetTime",
+          "argument": 7200
+        },
+        {
+          "address": 1061327976,
+          "opcode": 35,
+          "name": "SetITMin",
+          "argument": 5120
+        },
+        {
+          "address": 1061327984,
+          "opcode": 36,
+          "name": "SetITMax",
+          "argument": 23040
+        },
+        {
+          "address": 1061327992,
+          "opcode": 25,
+          "name": "SetTarget",
+          "argument": 14336
+        },
+        {
+          "address": 1061328000,
+          "opcode": 22,
+          "name": "GetTemp",
+          "argument": 0
+        },
+        {
+          "address": 1061328008,
+          "opcode": 23,
+          "name": "GetTime",
+          "argument": 0
+        },
+        {
+          "address": 1061328016,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328024,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061328032,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061328040,
+          "opcode": 33,
+          "name": "StartPid",
+          "argument": 0
+        },
+        {
+          "address": 1061328048,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32778
+        },
+        {
+          "address": 1061328056,
+          "opcode": 12,
+          "name": "SubStepName",
+          "argument": 32785
+        },
+        {
+          "address": 1061328064,
+          "opcode": 15,
+          "name": "WaitTempA",
+          "argument": 0
+        },
+        {
+          "address": 1061328072,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32779
+        },
+        {
+          "address": 1061328080,
+          "opcode": 12,
+          "name": "SubStepName",
+          "argument": 32779
+        },
+        {
+          "address": 1061328088,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061328096,
+          "opcode": 24,
+          "name": "WaitTime",
+          "argument": 0
+        },
+        {
+          "address": 1061328104,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061328112,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 65
+        },
+        {
+          "address": 1061328120,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 3
+        },
+        {
+          "address": 1061328128,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32782
+        },
+        {
+          "address": 1061328136,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328144,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 41
+        },
+        {
+          "address": 1061328152,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 7,
+      "identifier": "PicoStillManual",
+      "address": 1061325468,
+      "header_sha256": "940c27548d366c952c82bfeb42668c7db92e8dc64a6aaf4387d9179cf519ced3",
+      "session_type": 11,
+      "session_identifier": "PicoStill",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061274139,
+        "text": "PICOSTILL",
+        "sha256": "2fc0990bac7dd29c3a9bb20175c0b9ef6927e5d6445353aaae86e0d4b0fa770e"
+      },
+      "code_address": 1061327568,
+      "code_sha256": "f3ac209b8eab14f62b2bfbdedb0d5fb2734e2a04f6d7239873492fbc48f0b57c",
+      "instructions": [
+        {
+          "address": 1061327568,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061327576,
+          "opcode": 10,
+          "name": "FlagSet",
+          "argument": 32
+        },
+        {
+          "address": 1061327584,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061327592,
+          "opcode": 25,
+          "name": "SetTarget",
+          "argument": 14648
+        },
+        {
+          "address": 1061327600,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 66
+        },
+        {
+          "address": 1061327608,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 67
+        },
+        {
+          "address": 1061327616,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061327624,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 68
+        },
+        {
+          "address": 1061327632,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 69
+        },
+        {
+          "address": 1061327640,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 70
+        },
+        {
+          "address": 1061327648,
+          "opcode": 41,
+          "name": "StillScan",
+          "argument": 0
+        },
+        {
+          "address": 1061327656,
+          "opcode": 48,
+          "name": "WaitStillReady",
+          "argument": 0
+        },
+        {
+          "address": 1061327664,
+          "opcode": 22,
+          "name": "GetTemp",
+          "argument": 0
+        },
+        {
+          "address": 1061327672,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 71
+        },
+        {
+          "address": 1061327680,
+          "opcode": 42,
+          "name": "StillStart",
+          "argument": 0
+        },
+        {
+          "address": 1061327688,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32785
+        },
+        {
+          "address": 1061327696,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 5
+        },
+        {
+          "address": 1061327704,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 1
+        },
+        {
+          "address": 1061327712,
+          "opcode": 33,
+          "name": "StartPid",
+          "argument": 0
+        },
+        {
+          "address": 1061327720,
+          "opcode": 15,
+          "name": "WaitTempA",
+          "argument": 0
+        },
+        {
+          "address": 1061327728,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32772
+        },
+        {
+          "address": 1061327736,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 864000
+        },
+        {
+          "address": 1061327744,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061327752,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 8,
+      "identifier": "Test1",
+      "address": 1061325412,
+      "header_sha256": "754b36dcae9e2bce88375131299c1a9908f1adb1f8dff80184682fc7823b1dc3",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280832,
+        "text": "TEST1",
+        "sha256": "942206c3706af73eb486242abcfc8e7fe263d4f138498e0c5135d255ac83ff43"
+      },
+      "code_address": 1061325808,
+      "code_sha256": "f3138d6dd9c3f022a2e4c01ee9a3b5ed05537de09116cc82676c26e6321a03d9",
+      "instructions": [
+        {
+          "address": 1061325808,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32773
+        },
+        {
+          "address": 1061325816,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061325824,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061325832,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061325840,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 3
+        },
+        {
+          "address": 1061325848,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 4
+        },
+        {
+          "address": 1061325856,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 5
+        },
+        {
+          "address": 1061325864,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 6
+        },
+        {
+          "address": 1061325872,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 1
+        },
+        {
+          "address": 1061325880,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061325888,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061325896,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 3
+        },
+        {
+          "address": 1061325904,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 4
+        },
+        {
+          "address": 1061325912,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 5
+        },
+        {
+          "address": 1061325920,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 6
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 9,
+      "identifier": "Test2",
+      "address": 1061325384,
+      "header_sha256": "bd0e9dd01a00b16732303bf565e61e792a2ef6906ee4d8729715e088be4d6a7c",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280826,
+        "text": "TEST2",
+        "sha256": "32b76e6b8a5b489adbe134833bff18770ffe545e6fb620e6ee10d595591cd3a7"
+      },
+      "code_address": 1061325752,
+      "code_sha256": "cd3dcb40f7be6ce345b503bfd6953302a3961ee88f3602529faafa27996d2c8b",
+      "instructions": [
+        {
+          "address": 1061325752,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32773
+        },
+        {
+          "address": 1061325760,
+          "opcode": 22,
+          "name": "GetTemp",
+          "argument": 0
+        },
+        {
+          "address": 1061325768,
+          "opcode": 23,
+          "name": "GetTime",
+          "argument": 0
+        },
+        {
+          "address": 1061325776,
+          "opcode": 24,
+          "name": "WaitTime",
+          "argument": 0
+        },
+        {
+          "address": 1061325784,
+          "opcode": 0,
+          "name": "Pause",
+          "argument": 0
+        },
+        {
+          "address": 1061325792,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 96
+        },
+        {
+          "address": 1061325800,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 97
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 10,
+      "identifier": "Test3",
+      "address": 1061325356,
+      "header_sha256": "35d35807d54bc0bdac1d4be5dfc37fe19da6496afca766b5a8950713249f1d5c",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280820,
+        "text": "TEST3",
+        "sha256": "87ca5ddaeabf5b64c9a577f3d67df6189e7a3b1e0c77f7c194b8ebbd867b913c"
+      },
+      "code_address": 1061325720,
+      "code_sha256": "114f305d299f1140cc775f3b2241d1dc07a1cae33e4c2258a77a1928b3ca9505",
+      "instructions": [
+        {
+          "address": 1061325720,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32773
+        },
+        {
+          "address": 1061325728,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061325736,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 1
+        },
+        {
+          "address": 1061325744,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 30
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 11,
+      "identifier": "BrewTest",
+      "address": 1061325328,
+      "header_sha256": "5624b7fa10b3a6346100479e9cb893f290678b9f42cfaedbbb529b992f114d2e",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280811,
+        "text": "BREWTEST",
+        "sha256": "3a67fafe8d58c6a64e55143c55da45f23f0a6d13f4743de3459ef3a9400c3580"
+      },
+      "code_address": 1061329728,
+      "code_sha256": "ffeeabeba3503aa56ae83335558a2496976ac432f1da3fcd5a03a5f361019349",
+      "instructions": [
+        {
+          "address": 1061329728,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061329736,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 2
+        },
+        {
+          "address": 1061329744,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061329752,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061329760,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061329768,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 16896
+        },
+        {
+          "address": 1061329776,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061329784,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 16896
+        },
+        {
+          "address": 1061329792,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 5400
+        },
+        {
+          "address": 1061329800,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 480
+        },
+        {
+          "address": 1061329808,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061329816,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 24832
+        },
+        {
+          "address": 1061329824,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 3
+        },
+        {
+          "address": 1061329832,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 24832
+        },
+        {
+          "address": 1061329840,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 3000
+        },
+        {
+          "address": 1061329848,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 4
+        },
+        {
+          "address": 1061329856,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 24832
+        },
+        {
+          "address": 1061329864,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 600
+        },
+        {
+          "address": 1061329872,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 300
+        },
+        {
+          "address": 1061329880,
+          "opcode": 0,
+          "name": "Pause",
+          "argument": 0
+        },
+        {
+          "address": 1061329888,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061329896,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 4608
+        },
+        {
+          "address": 1061329904,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 600
+        },
+        {
+          "address": 1061329912,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 600
+        },
+        {
+          "address": 1061329920,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061329928,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 12,
+      "identifier": "Clean",
+      "address": 1061325272,
+      "header_sha256": "271f1be965ca061f4f2f31049bd07e0a1eace1dc92d3fa4de57b5cd05241e33f",
+      "session_type": 1,
+      "session_identifier": "Clean",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279872,
+        "text": "CLEAN",
+        "sha256": "c162d53060306206d627ad8a832fa063d2d1feb1343fcfb617650545ce44b818"
+      },
+      "code_address": 1061328640,
+      "code_sha256": "7b7a88c7af15d469589551fae64b430582c23d90654221092da3c4f79ba1855e",
+      "instructions": [
+        {
+          "address": 1061328640,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328648,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 31
+        },
+        {
+          "address": 1061328656,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 32
+        },
+        {
+          "address": 1061328664,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 33
+        },
+        {
+          "address": 1061328672,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 34
+        },
+        {
+          "address": 1061328680,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061328688,
+          "opcode": 34,
+          "name": "StopPid",
+          "argument": 0
+        },
+        {
+          "address": 1061328696,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061328704,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328712,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061328720,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328728,
+          "opcode": 4,
+          "name": "CircFor",
+          "argument": 60
+        },
+        {
+          "address": 1061328736,
+          "opcode": 18,
+          "name": "WaitTempE",
+          "argument": 0
+        },
+        {
+          "address": 1061328744,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061328752,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328760,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061328768,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328776,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061328784,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 600
+        },
+        {
+          "address": 1061328792,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 3
+        },
+        {
+          "address": 1061328800,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328808,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061328816,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328824,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061328832,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328840,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 4
+        },
+        {
+          "address": 1061328848,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328856,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061328864,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328872,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061328880,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328888,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 5
+        },
+        {
+          "address": 1061328896,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328904,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061328912,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328920,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061328928,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328936,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 6
+        },
+        {
+          "address": 1061328944,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061328952,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061328960,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061328968,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061328976,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328984,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 7
+        },
+        {
+          "address": 1061328992,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329000,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061329008,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329016,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 12515
+        },
+        {
+          "address": 1061329024,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329032,
+          "opcode": 34,
+          "name": "StopPid",
+          "argument": 0
+        },
+        {
+          "address": 1061329040,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 8
+        },
+        {
+          "address": 1061329048,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329056,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061329064,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329072,
+          "opcode": 4,
+          "name": "CircFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329080,
+          "opcode": 18,
+          "name": "WaitTempE",
+          "argument": 0
+        },
+        {
+          "address": 1061329088,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 9
+        },
+        {
+          "address": 1061329096,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329104,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061329112,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329120,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 15360
+        },
+        {
+          "address": 1061329128,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 2100
+        },
+        {
+          "address": 1061329136,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 10
+        },
+        {
+          "address": 1061329144,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329152,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061329160,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329168,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329176,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329184,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 11
+        },
+        {
+          "address": 1061329192,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329200,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061329208,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329216,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329224,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329232,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 12
+        },
+        {
+          "address": 1061329240,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329248,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061329256,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329264,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329272,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329280,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 13
+        },
+        {
+          "address": 1061329288,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329296,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061329304,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329312,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329320,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329328,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 14
+        },
+        {
+          "address": 1061329336,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329344,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061329352,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329360,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329368,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329376,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 15
+        },
+        {
+          "address": 1061329384,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329392,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061329400,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329408,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 23893
+        },
+        {
+          "address": 1061329416,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329424,
+          "opcode": 34,
+          "name": "StopPid",
+          "argument": 0
+        },
+        {
+          "address": 1061329432,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 16
+        },
+        {
+          "address": 1061329440,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329448,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061329456,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329464,
+          "opcode": 4,
+          "name": "CircFor",
+          "argument": 120
+        },
+        {
+          "address": 1061329472,
+          "opcode": 18,
+          "name": "WaitTempE",
+          "argument": 0
+        },
+        {
+          "address": 1061329480,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 17
+        },
+        {
+          "address": 1061329488,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329496,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061329504,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 112
+        },
+        {
+          "address": 1061329512,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 18204
+        },
+        {
+          "address": 1061329520,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 60
+        },
+        {
+          "address": 1061329528,
+          "opcode": 28,
+          "name": "MspPumps",
+          "argument": 64
+        },
+        {
+          "address": 1061329536,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        },
+        {
+          "address": 1061329544,
+          "opcode": 38,
+          "name": "StopPidKD",
+          "argument": 0
+        },
+        {
+          "address": 1061329552,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32791
+        },
+        {
+          "address": 1061329560,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 35
+        },
+        {
+          "address": 1061329568,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 36
+        },
+        {
+          "address": 1061329576,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061329584,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 37
+        },
+        {
+          "address": 1061329592,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 38
+        },
+        {
+          "address": 1061329600,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 39
+        },
+        {
+          "address": 1061329608,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32777
+        },
+        {
+          "address": 1061329616,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329624,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329632,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329640,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329648,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329656,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329664,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329672,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329680,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329688,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329696,
+          "opcode": 56,
+          "name": "RinseCycle",
+          "argument": 0
+        },
+        {
+          "address": 1061329704,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32791
+        },
+        {
+          "address": 1061329712,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 40
+        },
+        {
+          "address": 1061329720,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        }
+      ],
+      "strings_address": 1073470700,
+      "strings_sha256": "feffea82457a20eec94c1c5433a25c86562b5ccc28685f09f92b1a7b1ec90c81",
+      "strings": [
+        {
+          "address": 1061279872,
+          "text": "CLEAN",
+          "sha256": "c162d53060306206d627ad8a832fa063d2d1feb1343fcfb617650545ce44b818"
+        },
+        {
+          "address": 1061281067,
+          "text": "Balance Temps",
+          "sha256": "edaa349e29bc5d70e8722ea1c9c7a4bf67f974ebd9ab6055508176048572765f"
+        },
+        {
+          "address": 1061281081,
+          "text": "120 Passthrough",
+          "sha256": "55836dc0dcf045f5c440d5a49f3f4cf0eba3d3cae0206cf4b68288582ff2204b"
+        },
+        {
+          "address": 1061281097,
+          "text": "120 Adj 1 Z1",
+          "sha256": "ffacd3b411c465902b604a06b897cdf263956ddb764f8a6429c86b7204594630"
+        },
+        {
+          "address": 1061281110,
+          "text": "120 Adj 2 Z2P1",
+          "sha256": "d094aa76e82164ab36dabeefd84c29ba9c584f9365a1ae23af3b180831e19936"
+        },
+        {
+          "address": 1061281125,
+          "text": "120 Adj 3 P2",
+          "sha256": "86f3ee9961abc8c74c9db46304c5e93206d61d5d91c1cde20d025902ff369278"
+        },
+        {
+          "address": 1061281138,
+          "text": "120 Adj 4 ZP3",
+          "sha256": "b3b08d7c57e895d1cecc17881b30aa4b0294b5337af83d18b340f1983f5a8fd7"
+        },
+        {
+          "address": 1061281152,
+          "text": "120 Adj 5 ZP4",
+          "sha256": "55d0f082352da6f9c08cdf703f9eea7091a4f0f3b5cccd5981316d7ecf292e01"
+        },
+        {
+          "address": 1061281166,
+          "text": "120 Mash",
+          "sha256": "269f79c4955de1cf9858ec6aa8cdef8f0f40db9f0834c04b071fc934a8d53865"
+        },
+        {
+          "address": 1061281175,
+          "text": "140 Passthrough",
+          "sha256": "8d732b5ffa751e520741dea19a4d5d7d61758f6cd44ba44de754a47bf69f80f3"
+        },
+        {
+          "address": 1061281191,
+          "text": "200 Passthrough",
+          "sha256": "9662ce69f6fe4c4a1aa353697d169b76b0834d78bf7b2ac7715724988e8981e4"
+        },
+        {
+          "address": 1061281207,
+          "text": "200 Adj 1 Z1",
+          "sha256": "b6d5e5d867114d7a2a13d29c79ade99173379d98a6044ccd8ce2dde0d7384bb8"
+        },
+        {
+          "address": 1061281220,
+          "text": "200 Adj 2 Z2P1",
+          "sha256": "d952b33ec46428b733f26fcd29d0e5624a06c763ef7331f15a6a473d4ea541f2"
+        },
+        {
+          "address": 1061281235,
+          "text": "200 Adj 3 P2",
+          "sha256": "e751a5f13f78fe5ce049ed6ba9461ac6b92d5b3b23e98822cabcc8b28670c399"
+        },
+        {
+          "address": 1061281248,
+          "text": "200 Adj 4 ZP3",
+          "sha256": "b40755aef634bf5954cbada9afb3b93d0bf313fabced34c4a9f6d48a9ad09d20"
+        },
+        {
+          "address": 1061281262,
+          "text": "200 Adj 5 ZP4",
+          "sha256": "0f94ed3452bc351ab91d7dcd9ad1ce59448482c6f42de9666050a485fa771dd8"
+        },
+        {
+          "address": 1061281170,
+          "text": "Mash",
+          "sha256": "db904fde72e9513f163d790549c7db8ec0b0d6b0a14ccf3a776b5b1d7f02ef6e"
+        },
+        {
+          "address": 1061281276,
+          "text": "Cool",
+          "sha256": "c9748b489278204f0d09ac5ed57ca773edec8ee5d74386b4af2926faf13cc1e0"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "identifier": "PicoPaleDemo",
+      "address": 1061325244,
+      "header_sha256": "c08202533a39267adb082b132e092cdd33f9911f1b0847b52531720538abb1dc",
+      "session_type": 9,
+      "session_identifier": "BrewDemo",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280787,
+        "text": "Pico Pale",
+        "sha256": "b7b2f2551e2db80db93932b2547cc9f35a62f24ccea0ff3b48313e149587ca20"
+      },
+      "code_address": 1061330312,
+      "code_sha256": "e0487657ed2cb1053f940bec4c8afbc2ed8abc7743cccddb551993367b872d1a",
+      "instructions": [
+        {
+          "address": 1061330312,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061330320,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061330328,
+          "opcode": 39,
+          "name": "PrepareBrew",
+          "argument": 0
+        },
+        {
+          "address": 1061330336,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061330344,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061330352,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 17066
+        },
+        {
+          "address": 1061330360,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061330368,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330376,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 17066
+        },
+        {
+          "address": 1061330384,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 14400
+        },
+        {
+          "address": 1061330392,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 480
+        },
+        {
+          "address": 1061330400,
+          "opcode": 40,
+          "name": "CompleteBrew",
+          "argument": 0
+        }
+      ],
+      "strings_address": 1073470812,
+      "strings_sha256": "8632f3b3a6a88ad9b93f64567c2081d8d1f88fab940e96f296d83596375990d8",
+      "strings": [
+        {
+          "address": 1061280787,
+          "text": "Pico Pale",
+          "sha256": "b7b2f2551e2db80db93932b2547cc9f35a62f24ccea0ff3b48313e149587ca20"
+        },
+        {
+          "address": 1061281396,
+          "text": "Heat To Mash",
+          "sha256": "6029174f72a3fe852e42dab2f5b9044c711e373769ace245524ed39bae0bf8c0"
+        },
+        {
+          "address": 1061281170,
+          "text": "Mash",
+          "sha256": "db904fde72e9513f163d790549c7db8ec0b0d6b0a14ccf3a776b5b1d7f02ef6e"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "identifier": "ValveTest",
+      "address": 1061325216,
+      "header_sha256": "ebbe8a805eadb9263e893d343b31597b92ec952bbbfba901e6fb59d5fd44e83d",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280743,
+        "text": "Valve Test",
+        "sha256": "249523f338712ec116a7e9c5728e2f12349148b5575abdc52cb4731383a9be0e"
+      },
+      "code_address": 1061327288,
+      "code_sha256": "9eca55f574ea13a1f8038b301fe649367ae018bbd70de5a9c20577120f4b342a",
+      "instructions": [
+        {
+          "address": 1061327288,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327296,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 3
+        },
+        {
+          "address": 1061327304,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327312,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061327320,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 3
+        },
+        {
+          "address": 1061327328,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061327336,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 4
+        },
+        {
+          "address": 1061327344,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061327352,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 5
+        },
+        {
+          "address": 1061327360,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061327368,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 6
+        },
+        {
+          "address": 1061327376,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061327384,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 7
+        },
+        {
+          "address": 1061327392,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061327400,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 8
+        },
+        {
+          "address": 1061327408,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        }
+      ],
+      "strings_address": 1073470664,
+      "strings_sha256": "922e300f93051c3a3eeee4980ea38d48f908e2335b5be9ffa207334a7fdb8cfb",
+      "strings": [
+        {
+          "address": 1061280743,
+          "text": "Valve Test",
+          "sha256": "249523f338712ec116a7e9c5728e2f12349148b5575abdc52cb4731383a9be0e"
+        },
+        {
+          "address": 1061280969,
+          "text": "Testing REST",
+          "sha256": "d1388caffd467910e6ec0cdbe5616f13365db94fef5b7b8df00b90c4ecc61e11"
+        },
+        {
+          "address": 1061280982,
+          "text": "Testing PASS",
+          "sha256": "ae2cbc0374c96f16aee51d9a6f1400023460b8a65d208c81fded89eacd3a9058"
+        },
+        {
+          "address": 1061280995,
+          "text": "Testing MASH",
+          "sha256": "b668896149dc0a3c9fe582b0395d792fbcba70b5dc1543049511531dacef668e"
+        },
+        {
+          "address": 1061281008,
+          "text": "Testing Z1",
+          "sha256": "6fc09721b398699e08a97f9efad7b535a1369a78f38470c5f025e3b0be023d25"
+        },
+        {
+          "address": 1061281019,
+          "text": "Testing Z2P1",
+          "sha256": "b60965ca3334c6e1a549dfb202e38315632a00dfa8ba6526b4e586dcd3f235df"
+        },
+        {
+          "address": 1061281032,
+          "text": "Testing P2",
+          "sha256": "458f0caaa4fc20074fbecaa3b76cc67fca72afe3fd7519f985c3a8f6cb4c5fd3"
+        },
+        {
+          "address": 1061281043,
+          "text": "Testing ZP3",
+          "sha256": "e84e83960f5be3cc679b0119985daf0a2db4a75c20529d0b2abd27e1d5bfcd0d"
+        },
+        {
+          "address": 1061281055,
+          "text": "Testing ZP4",
+          "sha256": "503825af3fa59495eff492d04e6af2de580e8c22d4a31517cea7512d346e2e67"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "identifier": "PumpsTest",
+      "address": 1061325188,
+      "header_sha256": "0ef086df4d95ae4e4c86b36da0983e01517aed4800a5e763e164b7bccd030f7c",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280776,
+        "text": "Pumps Test",
+        "sha256": "ccaa5e0ff042895c1c05a7f72b57475fae273763711171d832a6bca159418d8a"
+      },
+      "code_address": 1061327232,
+      "code_sha256": "98fa7256ffe2435ee67f71def699ec14cfde03cd9ddae09c300faba531265df5",
+      "instructions": [
+        {
+          "address": 1061327232,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061327240,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327248,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061327256,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061327264,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327272,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 1
+        },
+        {
+          "address": 1061327280,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        }
+      ],
+      "strings_address": 1073470652,
+      "strings_sha256": "d1591cf5b9bcae10de381eb3f47e97f4cc2f877e10193dd8004b41f476e1c875",
+      "strings": [
+        {
+          "address": 1061280776,
+          "text": "Pumps Test",
+          "sha256": "ccaa5e0ff042895c1c05a7f72b57475fae273763711171d832a6bca159418d8a"
+        },
+        {
+          "address": 1061280933,
+          "text": "Testing DRAIN PUMP",
+          "sha256": "21cc5af0c6b6be137118e6af1a88c9efa11385c8605d541192024fbd110dfcbb"
+        },
+        {
+          "address": 1061280952,
+          "text": "Testing KEG PUMP",
+          "sha256": "19db6f45b47eeeb21558c0fae50be8a8a7354b9c3fe19d5968a202cebccecfcb"
+        }
+      ]
+    },
+    {
+      "id": 16,
+      "identifier": "AlarmTest",
+      "address": 1061325160,
+      "header_sha256": "1b5b9d59b4dfb020bebf6563ba238aaf1bfd79a19687c0d982b61cfb853fadda",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280765,
+        "text": "Alarm Test",
+        "sha256": "7f4d2e0ed77dabbadb65fb748dad18f074c436c3572880caa482cc719c090f1f"
+      },
+      "code_address": 1061326016,
+      "code_sha256": "b35c194be488b20ad2a2564a46fbf301037f6625ef185287c9c7ff5191ca3904",
+      "instructions": [
+        {
+          "address": 1061326016,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326024,
+          "opcode": 0,
+          "name": "Pause",
+          "argument": 0
+        }
+      ],
+      "strings_address": 1073470632,
+      "strings_sha256": "ef30d9fccce3c1b9718953aba63d4271055ae4624429231e8cade26a1b93702d",
+      "strings": [
+        {
+          "address": 1061280894,
+          "text": "Alarm test",
+          "sha256": "d4c274d779e577e6cfe3a5177aeb2b4690a633c02e73fe3f89bca2b33eb5d20f"
+        },
+        {
+          "address": 1061280905,
+          "text": "Step with pause",
+          "sha256": "7d314e8435c75d0112d9b16e58da63626899fad3f4fb9df2b2761482845138b9"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "identifier": "ChillTest",
+      "address": 1061325132,
+      "header_sha256": "da2be2735d8ed93cda2c55f95fdd69a03263d30b563d76738a4dece1e4aba5e4",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280754,
+        "text": "Chill Test",
+        "sha256": "2d6c329818b7ed99d03bb5293ba5ab822ed3c05928ca7346bfe944d326d6c64a"
+      },
+      "code_address": 1061325928,
+      "code_sha256": "7509329d63eadf4589f676332eb5f4274d721437f71240196224b5ba2dc6f2ea",
+      "instructions": [
+        {
+          "address": 1061325928,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061325936,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061325944,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061325952,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061325960,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061325968,
+          "opcode": 4,
+          "name": "CircFor",
+          "argument": 2
+        },
+        {
+          "address": 1061325976,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061325984,
+          "opcode": 0,
+          "name": "Pause",
+          "argument": 0
+        },
+        {
+          "address": 1061325992,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 3
+        },
+        {
+          "address": 1061326000,
+          "opcode": 4,
+          "name": "CircFor",
+          "argument": 30
+        },
+        {
+          "address": 1061326008,
+          "opcode": 40,
+          "name": "CompleteBrew",
+          "argument": 0
+        }
+      ],
+      "strings_address": 1073470616,
+      "strings_sha256": "ef6c055a6e44e7b62e4c4e36c26ed5fc4d54edb719f2ebcac2340017a993ba3e",
+      "strings": [
+        {
+          "address": 1061280847,
+          "text": "Chill test",
+          "sha256": "5d72662015ad87a8914e893132742b7f0d39b640fb424727b152c4f7c3ab2ac7"
+        },
+        {
+          "address": 1061280858,
+          "text": "Quick step",
+          "sha256": "0a5f518f789398041e17e5dcdf0acd81d90bb1ae44f0fbe47e6a55d1e6b02195"
+        },
+        {
+          "address": 1061280869,
+          "text": "Connect chiller",
+          "sha256": "12aab695be313c3f93aa80b10964e8e9f9a6d707daaa283365c28c5ba7fc0f5e"
+        },
+        {
+          "address": 1061280885,
+          "text": "Chilling",
+          "sha256": "09b7f25889fcc4bce68a7357324b3497393a2551dad92321339517dea58517ee"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "identifier": "KegPumpTest",
+      "address": 1061325300,
+      "header_sha256": "7dff6537aa879bdece3753edf7a8db66d2fafe9944f0e3eda5db6e34c2f86049",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280797,
+        "text": "Keg Pump Test",
+        "sha256": "fe1aa185d8b40f92d16ea124acd04002243be2b215a6fc75d9fee4952c32cf77"
+      },
+      "code_address": 1061328544,
+      "code_sha256": "46fb985e99eb279e7e27111cce80c2b81ea6838d7361095c97148774050f7cba",
+      "instructions": [
+        {
+          "address": 1061328544,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061328552,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328560,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061328568,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32787
+        },
+        {
+          "address": 1061328576,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 1
+        },
+        {
+          "address": 1061328584,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 94
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 19,
+      "identifier": "WetValveTest",
+      "address": 1061325104,
+      "header_sha256": "6876ca39b8f38b3d29d3d52069d636e205e97c5e5b72fca5dfd99c44481a5c5f",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280739,
+        "text": "Wet Valve Test",
+        "sha256": "7e120e3c51f9ad5b9a67c5bd255f844b9f3eedc4bfe89fd6dd475b5c564aaf03"
+      },
+      "code_address": 1061326032,
+      "code_sha256": "bce1e09293dab606ce3ea07bdd883bfb56c0876adc633fbd745f46e265182b6b",
+      "instructions": [
+        {
+          "address": 1061326032,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 0
+        },
+        {
+          "address": 1061326040,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061326048,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326056,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061326064,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326072,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326080,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326088,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326096,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326104,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326112,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061326120,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326128,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326136,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326144,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326152,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326160,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326168,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061326176,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326184,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326192,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326200,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326208,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326216,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326224,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061326232,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326240,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326248,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326256,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326264,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326272,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326280,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061326288,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326296,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326304,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326312,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326320,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326328,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326336,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061326344,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326352,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326360,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326368,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326376,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326384,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326392,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061326400,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326408,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326416,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326424,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326432,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326440,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326448,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061326456,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326464,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326472,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326480,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326488,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326496,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326504,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061326512,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326520,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326528,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326536,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326544,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326552,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326560,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061326568,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326576,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326584,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326592,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326600,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326608,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326616,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061326624,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326632,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326640,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326648,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326656,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326664,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326672,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061326680,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326688,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326696,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326704,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326712,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326720,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326728,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061326736,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326744,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326752,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326760,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326768,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326776,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326784,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061326792,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326800,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326808,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326816,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326824,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326832,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326840,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 2
+        },
+        {
+          "address": 1061326848,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326856,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326864,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326872,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326880,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326888,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326896,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 4
+        },
+        {
+          "address": 1061326904,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326912,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326920,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326928,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326936,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061326944,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061326952,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 5
+        },
+        {
+          "address": 1061326960,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061326968,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061326976,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061326984,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061326992,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327000,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061327008,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 6
+        },
+        {
+          "address": 1061327016,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061327024,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327032,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061327040,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061327048,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327056,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061327064,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 7
+        },
+        {
+          "address": 1061327072,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061327080,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327088,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061327096,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061327104,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327112,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061327120,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 8
+        },
+        {
+          "address": 1061327128,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061327136,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327144,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061327152,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061327160,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327168,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        },
+        {
+          "address": 1061327176,
+          "opcode": 27,
+          "name": "MspValve",
+          "argument": 9
+        },
+        {
+          "address": 1061327184,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061327192,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061327200,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 2
+        },
+        {
+          "address": 1061327208,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061327216,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061327224,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 5
+        }
+      ],
+      "strings_address": 1073470640,
+      "strings_sha256": "184bccd20dee727f2f048a5eb30f2849c323b8453cd6fbe3a7adee77fc535da4",
+      "strings": [
+        {
+          "address": 1061280739,
+          "text": "Wet Valve Test",
+          "sha256": "7e120e3c51f9ad5b9a67c5bd255f844b9f3eedc4bfe89fd6dd475b5c564aaf03"
+        },
+        {
+          "address": 1061280921,
+          "text": "Drain + Keg",
+          "sha256": "eb78828039f3e045a01483a606206188c2b47b916eaf9ef1c679e0e3b98a5e52"
+        },
+        {
+          "address": 1061270030,
+          "text": "Drain",
+          "sha256": "65d3155b80a23bdc88aa273646ddb1ee532109b3187946396cbc25e9435529ef"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "identifier": "WhirlpoolTest",
+      "address": 1061325076,
+      "header_sha256": "e4f5439b429bf22c7fb1a4a5c365fcfae90fc8546f53eba90bb2a0d6c844eca6",
+      "session_type": 10,
+      "session_identifier": "Test",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061280724,
+        "text": "Whirlpool Test",
+        "sha256": "e89394fd24d3451b39f2b3a96f2997dbb007c15298b7098b9a3373b2ff346dd2"
+      },
+      "code_address": 1061329936,
+      "code_sha256": "9c3b627dbadef79e9919a07471981b4f19a3b2883fc5f937fe09e198c3de0088",
+      "instructions": [
+        {
+          "address": 1061329936,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061329944,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 2
+        },
+        {
+          "address": 1061329952,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 3
+        },
+        {
+          "address": 1061329960,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 4
+        },
+        {
+          "address": 1061329968,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 5
+        },
+        {
+          "address": 1061329976,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 6
+        },
+        {
+          "address": 1061329984,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 7
+        },
+        {
+          "address": 1061329992,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 8
+        },
+        {
+          "address": 1061330000,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 9
+        },
+        {
+          "address": 1061330008,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061330016,
+          "opcode": 39,
+          "name": "PrepareBrew",
+          "argument": 0
+        },
+        {
+          "address": 1061330024,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 1
+        },
+        {
+          "address": 1061330032,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061330040,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 17066
+        },
+        {
+          "address": 1061330048,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 2
+        },
+        {
+          "address": 1061330056,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 2
+        },
+        {
+          "address": 1061330064,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 17066
+        },
+        {
+          "address": 1061330072,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 60
+        },
+        {
+          "address": 1061330080,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 480
+        },
+        {
+          "address": 1061330088,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 3
+        },
+        {
+          "address": 1061330096,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061330104,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 24888
+        },
+        {
+          "address": 1061330112,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 4
+        },
+        {
+          "address": 1061330120,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 3
+        },
+        {
+          "address": 1061330128,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 24888
+        },
+        {
+          "address": 1061330136,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 1200
+        },
+        {
+          "address": 1061330144,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 5
+        },
+        {
+          "address": 1061330152,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 4
+        },
+        {
+          "address": 1061330160,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 21760
+        },
+        {
+          "address": 1061330168,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 1200
+        },
+        {
+          "address": 1061330176,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 6
+        },
+        {
+          "address": 1061330184,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 5
+        },
+        {
+          "address": 1061330192,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 18915
+        },
+        {
+          "address": 1061330200,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 1200
+        },
+        {
+          "address": 1061330208,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 7
+        },
+        {
+          "address": 1061330216,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 6
+        },
+        {
+          "address": 1061330224,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 16071
+        },
+        {
+          "address": 1061330232,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 1200
+        },
+        {
+          "address": 1061330240,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 300
+        },
+        {
+          "address": 1061330248,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 8
+        },
+        {
+          "address": 1061330256,
+          "opcode": 0,
+          "name": "Pause",
+          "argument": 0
+        },
+        {
+          "address": 1061330264,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 9
+        },
+        {
+          "address": 1061330272,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061330280,
+          "opcode": 2,
+          "name": "ReachTarget",
+          "argument": 4977
+        },
+        {
+          "address": 1061330288,
+          "opcode": 3,
+          "name": "HoldFor",
+          "argument": 600
+        },
+        {
+          "address": 1061330296,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 600
+        },
+        {
+          "address": 1061330304,
+          "opcode": 40,
+          "name": "CompleteBrew",
+          "argument": 0
+        }
+      ],
+      "strings_address": 1073470772,
+      "strings_sha256": "4c339417b55b693ae36a6e84e770279268d4d21875b6134ac3dd53c141421bbe",
+      "strings": [
+        {
+          "address": 1061281281,
+          "text": "whirlpool test",
+          "sha256": "d33c0145f34be2c2b45d65b26dc33c477bb397251450d20dd55538def89cd085"
+        },
+        {
+          "address": 1061281296,
+          "text": "Heat Water",
+          "sha256": "165a0ded37e319e1312466b8ca9d2e2c1b52d699af83623585bb82d756e0341f"
+        },
+        {
+          "address": 1061281170,
+          "text": "Mash",
+          "sha256": "db904fde72e9513f163d790549c7db8ec0b0d6b0a14ccf3a776b5b1d7f02ef6e"
+        },
+        {
+          "address": 1061281307,
+          "text": "Heat to Boil",
+          "sha256": "ed4d750a7c7631ff9c308976b96b68510559605b1e8535c8f394cf294f5c96ad"
+        },
+        {
+          "address": 1061281320,
+          "text": "Boil Adjunct 1",
+          "sha256": "a3fbe35eaeacb40effdaeea806b08cfb0c241ca72a5c1a4630d38caba9d37673"
+        },
+        {
+          "address": 1061281335,
+          "text": "Boil Adjunct 2",
+          "sha256": "40bc2e55a2d8700b7349305e3196496930bb592803dba678a5993f817eac281c"
+        },
+        {
+          "address": 1061281350,
+          "text": "Boil Adjunct 3",
+          "sha256": "4dd5b8bb068f1444eb69d7e32b2aaf528cc06c5e467b300362d876f9d27f751a"
+        },
+        {
+          "address": 1061281365,
+          "text": "Boil Adjunct 4",
+          "sha256": "0c86db890ddf63b34667697cee507eb72be753270786d16fc02148b6f818cc7e"
+        },
+        {
+          "address": 1061281380,
+          "text": "Connect Chiller",
+          "sha256": "b6ddb9d0e4c8fda96675e94926123063ef26ac2f16afb0886439426e3f9d9f92"
+        },
+        {
+          "address": 1061270021,
+          "text": "Chill",
+          "sha256": "5f1463c98b5d7ac7655d7fb5e7577f2e5430654a0d29ef65534d2e96eaff6024"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "identifier": "PicoStillBoilPoint",
+      "address": 1061325440,
+      "header_sha256": "d0d7cede8751845bf03161c2d161ec8817330aedfe1c8db8fcea385b5c1f786d",
+      "session_type": 11,
+      "session_identifier": "PicoStill",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061274139,
+        "text": "PICOSTILL",
+        "sha256": "2fc0990bac7dd29c3a9bb20175c0b9ef6927e5d6445353aaae86e0d4b0fa770e"
+      },
+      "code_address": 1061327416,
+      "code_sha256": "ed340969aeab52a69e983a691911b795c9510ad3c50f96407a10599b04bf8edf",
+      "instructions": [
+        {
+          "address": 1061327416,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061327424,
+          "opcode": 10,
+          "name": "FlagSet",
+          "argument": 32
+        },
+        {
+          "address": 1061327432,
+          "opcode": 29,
+          "name": "ValveMode",
+          "argument": 0
+        },
+        {
+          "address": 1061327440,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 78
+        },
+        {
+          "address": 1061327448,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 66
+        },
+        {
+          "address": 1061327456,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 67
+        },
+        {
+          "address": 1061327464,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061327472,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 68
+        },
+        {
+          "address": 1061327480,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 69
+        },
+        {
+          "address": 1061327488,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 70
+        },
+        {
+          "address": 1061327496,
+          "opcode": 41,
+          "name": "StillScan",
+          "argument": 0
+        },
+        {
+          "address": 1061327504,
+          "opcode": 48,
+          "name": "WaitStillReady",
+          "argument": 0
+        },
+        {
+          "address": 1061327512,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 71
+        },
+        {
+          "address": 1061327520,
+          "opcode": 42,
+          "name": "StillStart",
+          "argument": 0
+        },
+        {
+          "address": 1061327528,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 5
+        },
+        {
+          "address": 1061327536,
+          "opcode": 44,
+          "name": "StFindHeatLoss",
+          "argument": 0
+        },
+        {
+          "address": 1061327544,
+          "opcode": 45,
+          "name": "StFindBoilPoint",
+          "argument": 0
+        },
+        {
+          "address": 1061327552,
+          "opcode": 46,
+          "name": "StStabilize",
+          "argument": 0
+        },
+        {
+          "address": 1061327560,
+          "opcode": 47,
+          "name": "StDistille",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 27,
+      "identifier": "Chill",
+      "address": 1061325580,
+      "header_sha256": "7436c48fd155bd5ff160de8bf9072234641ef4af51a7af36f0d29f109c1928a1",
+      "session_type": 13,
+      "session_identifier": "Chill",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279982,
+        "text": "CHILL",
+        "sha256": "c0ab31ddeb44704be34e69c364519fc927b56c816a9813f211c60a858a5591ee"
+      },
+      "code_address": 1061328184,
+      "code_sha256": "81e53fa107871095c257d4f992af98239206edd31bb5f9434cbf33682b7476b0",
+      "instructions": [
+        {
+          "address": 1061328184,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32770
+        },
+        {
+          "address": 1061328192,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 43
+        },
+        {
+          "address": 1061328200,
+          "opcode": 35,
+          "name": "SetITMin",
+          "argument": 2560
+        },
+        {
+          "address": 1061328208,
+          "opcode": 36,
+          "name": "SetITMax",
+          "argument": 23040
+        },
+        {
+          "address": 1061328216,
+          "opcode": 25,
+          "name": "SetTarget",
+          "argument": 4835
+        },
+        {
+          "address": 1061328224,
+          "opcode": 22,
+          "name": "GetTemp",
+          "argument": 0
+        },
+        {
+          "address": 1061328232,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 1
+        },
+        {
+          "address": 1061328240,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32784
+        },
+        {
+          "address": 1061328248,
+          "opcode": 6,
+          "name": "MoveValve",
+          "argument": 1
+        },
+        {
+          "address": 1061328256,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 3
+        },
+        {
+          "address": 1061328264,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328272,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32781
+        },
+        {
+          "address": 1061328280,
+          "opcode": 16,
+          "name": "WaitTempB",
+          "argument": 0
+        },
+        {
+          "address": 1061328288,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32784
+        },
+        {
+          "address": 1061328296,
+          "opcode": 13,
+          "name": "WaitFor",
+          "argument": 600
+        },
+        {
+          "address": 1061328304,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 2
+        },
+        {
+          "address": 1061328312,
+          "opcode": 1,
+          "name": "StepName",
+          "argument": 32782
+        },
+        {
+          "address": 1061328320,
+          "opcode": 5,
+          "name": "DrainFor",
+          "argument": 120
+        },
+        {
+          "address": 1061328328,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 0
+        },
+        {
+          "address": 1061328336,
+          "opcode": 37,
+          "name": "RequireFilter",
+          "argument": 0
+        },
+        {
+          "address": 1061328344,
+          "opcode": 31,
+          "name": "ShowScreen",
+          "argument": 44
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    },
+    {
+      "id": 28,
+      "identifier": "ManualBrew",
+      "address": 1061325552,
+      "header_sha256": "09e0e146cedc529007deac078bcaea4458ef8d1dda7a30d185243d59ff86f55a",
+      "session_type": 14,
+      "session_identifier": "ManualBrew",
+      "unique_id": 4294967295,
+      "name": {
+        "address": 1061279988,
+        "text": "MANUAL BREW",
+        "sha256": "33455a5dddd2985110eafc793b60e91e3f39f1bcea73e208ab7676c0a1dafe9e"
+      },
+      "code_address": 1061328160,
+      "code_sha256": "f4a7101bf057f06519145776c3862dc5aab3dc995350bbc2b7e203362269ba16",
+      "instructions": [
+        {
+          "address": 1061328160,
+          "opcode": 57,
+          "name": "Setup",
+          "argument": 532
+        },
+        {
+          "address": 1061328168,
+          "opcode": 7,
+          "name": "SetPumps",
+          "argument": 0
+        },
+        {
+          "address": 1061328176,
+          "opcode": 21,
+          "name": "GetStepParams",
+          "argument": 0
+        }
+      ],
+      "strings_address": 0,
+      "strings_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "strings": []
+    }
+  ]
+}

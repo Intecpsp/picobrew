@@ -1,0 +1,266 @@
+{
+  "format_reference": "https://docs.espressif.com/projects/esptool/en/latest/esp32/advanced-topics/firmware-image-format.html",
+  "hardware_tested": false,
+  "images": [
+    {
+      "appended_sha256": "c07b5aff9251ddcba1387a21873d8079e23a782627e0f3d2895315ae96490028",
+      "architecture": "Xtensa LX6, little-endian",
+      "checksum": 200,
+      "checksum_offset": 1596335,
+      "checksum_verified": true,
+      "chip_id": 0,
+      "digest_verified": true,
+      "entry_address": 1074280728,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "filename": "zseries_0_0_116.bin",
+      "flash_configuration_is_hardware_identification": false,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 79,
+      "format": "Espressif ESP32 application image",
+      "publisher_signature_verified": false,
+      "segments": [
+        {
+          "file_offset": 32,
+          "header_offset": 24,
+          "index": 0,
+          "load_address": 1061158944,
+          "memory_kind": "DROM",
+          "sha256": "9954687e2d8541281411123157e6e02c01014aac6fd61427322aa9292e499cfa",
+          "size_bytes": 521268
+        },
+        {
+          "file_offset": 521308,
+          "header_offset": 521300,
+          "index": 1,
+          "load_address": 1073217536,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 521316,
+          "header_offset": 521308,
+          "index": 2,
+          "load_address": 1073217536,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 521324,
+          "header_offset": 521316,
+          "index": 3,
+          "load_address": 1073470304,
+          "memory_kind": "DRAM",
+          "sha256": "3532c8943ecb0046d768aee729b86ecff0de606990ab975799e4d764e13ace81",
+          "size_bytes": 2980
+        },
+        {
+          "file_offset": 524312,
+          "header_offset": 524304,
+          "index": 4,
+          "load_address": 1074593816,
+          "memory_kind": "IROM",
+          "sha256": "eab5576c2143aefad06a7abf5a0024c00d8db81c95afd18eca6f0d4d2b15d165",
+          "size_bytes": 982244
+        },
+        {
+          "file_offset": 1506564,
+          "header_offset": 1506556,
+          "index": 5,
+          "load_address": 1073473284,
+          "memory_kind": "DRAM",
+          "sha256": "0a4ec7c080bfb71a5c31687d74e42e47178c6aa41d8e54e7f0433e1247f3257a",
+          "size_bytes": 10112
+        },
+        {
+          "file_offset": 1516684,
+          "header_offset": 1516676,
+          "index": 6,
+          "load_address": 1073483396,
+          "memory_kind": "DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 1516692,
+          "header_offset": 1516684,
+          "index": 7,
+          "load_address": 1074266112,
+          "memory_kind": "IRAM",
+          "sha256": "31014c2a0f82f1f3fd0abf6a07c5a4c3f08e4df1983e8c05ada46d1d7f16aff6",
+          "size_bytes": 1024
+        },
+        {
+          "file_offset": 1517724,
+          "header_offset": 1517716,
+          "index": 8,
+          "load_address": 1074267136,
+          "memory_kind": "IRAM",
+          "sha256": "969ccbf699a370d7e4c19cd2c66da4e08948b6b53f56c6c4be07d2c721690aac",
+          "size_bytes": 78572
+        },
+        {
+          "file_offset": 1596304,
+          "header_offset": 1596296,
+          "index": 9,
+          "load_address": 1074528256,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 1596312,
+          "header_offset": 1596304,
+          "index": 10,
+          "load_address": 1342177792,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 1596320,
+          "header_offset": 1596312,
+          "index": 11,
+          "load_address": 1342177792,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        }
+      ],
+      "sha256": "27d9e792f6d7e589b41f29d1e3bd42828d3d1a9f315adc100b03fd53d8256097",
+      "size_bytes": 1596368
+    },
+    {
+      "appended_sha256": "0a5eb823ba6e2ccd29885b377383cf0b0b2d2278015f41c2a2d245f409591712",
+      "architecture": "Xtensa LX6, little-endian",
+      "checksum": 200,
+      "checksum_offset": 1634607,
+      "checksum_verified": true,
+      "chip_id": 0,
+      "digest_verified": true,
+      "entry_address": 1074280728,
+      "extended_header_hex": "ee000000000000000000000000000001",
+      "filename": "zseries_0_0_119.bin",
+      "flash_configuration_is_hardware_identification": false,
+      "flash_mode": 2,
+      "flash_size_frequency_header": 79,
+      "format": "Espressif ESP32 application image",
+      "publisher_signature_verified": false,
+      "segments": [
+        {
+          "file_offset": 32,
+          "header_offset": 24,
+          "index": 0,
+          "load_address": 1061158944,
+          "memory_kind": "DROM",
+          "sha256": "dbd54d02df3416afcdcf4ab274ec8270106229190f7a960f49a0588d33581dfb",
+          "size_bytes": 547096
+        },
+        {
+          "file_offset": 547136,
+          "header_offset": 547128,
+          "index": 1,
+          "load_address": 1073217536,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 547144,
+          "header_offset": 547136,
+          "index": 2,
+          "load_address": 1073217536,
+          "memory_kind": "RTC_DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 547152,
+          "header_offset": 547144,
+          "index": 3,
+          "load_address": 1073470304,
+          "memory_kind": "DRAM",
+          "sha256": "775c959de1691b9a18ade084e4b6f772f63c01b023122374209ed91fc7bd72b7",
+          "size_bytes": 13092
+        },
+        {
+          "file_offset": 560252,
+          "header_offset": 560244,
+          "index": 4,
+          "load_address": 1073483396,
+          "memory_kind": "DRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 560260,
+          "header_offset": 560252,
+          "index": 5,
+          "load_address": 1074266112,
+          "memory_kind": "IRAM",
+          "sha256": "31014c2a0f82f1f3fd0abf6a07c5a4c3f08e4df1983e8c05ada46d1d7f16aff6",
+          "size_bytes": 1024
+        },
+        {
+          "file_offset": 561292,
+          "header_offset": 561284,
+          "index": 6,
+          "load_address": 1074267136,
+          "memory_kind": "IRAM",
+          "sha256": "94e467c143880af2d9934eab12495730c31910022bae86327c762fc9b97cc420",
+          "size_bytes": 28548
+        },
+        {
+          "file_offset": 589848,
+          "header_offset": 589840,
+          "index": 7,
+          "load_address": 1074593816,
+          "memory_kind": "IROM",
+          "sha256": "b9e0390f5b262aabffe132cdbcca7b69409bada2ebdbd4b812b1adb2d8b849c1",
+          "size_bytes": 994696
+        },
+        {
+          "file_offset": 1584552,
+          "header_offset": 1584544,
+          "index": 8,
+          "load_address": 1074295684,
+          "memory_kind": "IRAM",
+          "sha256": "4d3923e3d01e5413021692d49e4141c6b3b6f3e0ed81d01fff480a505f46820f",
+          "size_bytes": 50024
+        },
+        {
+          "file_offset": 1634584,
+          "header_offset": 1634576,
+          "index": 9,
+          "load_address": 1074528256,
+          "memory_kind": "RTC_IRAM",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 1634592,
+          "header_offset": 1634584,
+          "index": 10,
+          "load_address": 1342177792,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        },
+        {
+          "file_offset": 1634600,
+          "header_offset": 1634592,
+          "index": 11,
+          "load_address": 1342177792,
+          "memory_kind": "RTC_DATA",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "size_bytes": 0
+        }
+      ],
+      "sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+      "size_bytes": 1634640
+    }
+  ],
+  "schema_version": 1,
+  "z1_z2_mapping_established": false
+}

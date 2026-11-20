@@ -1,0 +1,4 @@
+# These files are exact original resources, including whitespace and CRLF bytes.
+*.html -text -whitespace
+*.js -text -whitespace
+*.css -text -whitespace

@@ -1,0 +1,37 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "validation_function": "0x400dff64",
+  "temperature_function": "0x400dff0c",
+  "scope": "Original instruction validator and decoder bodies; explicit SDK arithmetic/comparison boundaries; nested decoder modeled and independently executed; ENTRY/RETW transitions excluded",
+  "validation_cases": 29632,
+  "temperature_cases": 1852,
+  "all_results_match": true,
+  "original_invalid_results": 22284,
+  "original_valid_results": 7348,
+  "portable_golden_cases": 1792,
+  "instruction_export_sha256": {
+    "0x400dff64": "252897399584c76c9cfb2507320ba56dbfcb4cd6f4e40a73e0585c113fe2a9be",
+    "0x400dff0c": "223738ab9f3bd783d26fc21f03d59aec4cebb4d96a98892c8589b48a58bea658"
+  },
+  "original_execution_csv_sha256": "6831faf405092c0f9b444af7522c6be17884688e6cc87b8992d093df3eb3af0e",
+  "original_execution_report_sha256": "80d0cb9885f3c37a2c9ec6b8b25f9fa6648f6f8947d4c2779e2155650f715595",
+  "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "native_flags": [
+    "-std=c++11",
+    "-O2",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-fPIC",
+    "-shared"
+  ],
+  "source_sha256": {
+    "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
+    "src/runtime_instruction.cpp": "dfa89bc150e4bb7a6b2a21e9a13ae6a438867cb43c30ebeec9f580663121fc75",
+    "tools/ghidra/EmulateRuntimeInstruction.java": "0868d6e11af01e08e8f07dbc3842b9d3e308bd481ce578dc17b8fb9262c21029",
+    "tools/validate_runtime_instruction.py": "3b8cce093df0006f14edd09f4055f6c810330f3ea667626a9cefa9d2999e022f"
+  },
+  "full_cpu_or_hardware_emulation": false,
+  "hardware_tested": false,
+  "portable_golden_sha256": "6fc94c36724168f3c56d0b7951d67fde7e57652dbc491d13647c8766778f4dad"
+}
