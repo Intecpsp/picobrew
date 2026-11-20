@@ -2098,6 +2098,19 @@ hr,
   align-items: center;
   gap: 15px;
 }
+.assistant-compose-context {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  min-width: 0;
+}
+.assistant-compose-context .badge {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+
 .assistant-compose-footer small {
   color: #a2aa91;
   font-size: $text-small;

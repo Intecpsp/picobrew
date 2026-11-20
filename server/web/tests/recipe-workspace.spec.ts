@@ -31,6 +31,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(page.getByLabel('Catalogue type')).toHaveValue('native-program')
   await page.getByRole('link', { name: 'Create with AI', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Create a recipe with AI.' })).toBeVisible()
+  await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
   await expect(page.getByRole('tablist', { name: 'Assistant task' })).toHaveCount(0)
   await expect(main.getByRole('link', { name: /^Recipes/ })).toHaveAttribute('aria-current', 'page')
   await page.goto('/#/assistant?recipe=studio-porter')
