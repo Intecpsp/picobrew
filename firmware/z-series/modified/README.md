@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.0
+# Pico Z standalone firmware 1.2.1
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -18,6 +18,10 @@ maintenance, Wi-Fi and persisted language/temperature/display preferences.
 The common browser and Hub expose the same advertised capabilities, the actual
 grayscale display and ordered encoder movement/clicks. Local operation and
 startup do not require cloud DNS, registration or an Internet connection.
+Wi-Fi setup scans while the existing connection stays active. The front panel
+lists each visible SSID once and keeps its name and security with the selected
+row. Back returns to the network menu during scanning and from the results.
+A local IPv4 lease establishes connectivity even when cloud DNS is unavailable.
 
 The recipe catalogue retains sixteen recipes with up to fifteen named steps.
 Z recipes use direct native valve locations **1–6**; targets are unheated (`0`)
