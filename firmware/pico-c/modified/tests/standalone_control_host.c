@@ -18,13 +18,25 @@ static struct {
     int pins[40], wifi, open_file;
     size_t file_cursor;
     bool irq_masked, stopping, queue_circulate, stop_on_power, stop_on_poll, stop_in_brew_menu;
-    bool click_on_clock, no_ip, stop_at_menu;
+    bool click_on_clock, choose_last, no_ip, stop_at_menu;
     uint8_t spi_command, rfid_address;
 } sim;
 static struct { char name[40]; uint8_t data[2048]; size_t length; } files[32];
 
 static uint32_t clock_ms(void *c)
-{ (void)c; if (sim.click_on_clock) app.ui.encoder.click_latch=0; return ++sim.now; }
+{
+    (void)c;
+    if (sim.click_on_clock) app.ui.encoder.click_latch=0;
+    /* Allow the OLED redraw to finish between detents. Press only after the
+     * menu has applied the last position on either display controller. */
+    if (sim.choose_last && app.ui.encoder.minimum==3 && sim.now%2048==0) {
+        if (app.ui.encoder.position < app.ui.encoder.maximum-1)
+            ++app.ui.encoder.position;
+        else if (app.ui.encoder.previous_position == app.ui.encoder.position)
+            app.ui.encoder.click_latch=0;
+    }
+    return ++sim.now;
+}
 static void delay_ms(void *c, uint32_t ms) { (void)c; sim.now += ms; }
 static void no_op(void *c) { (void)c; }
 static void pin_mode(void *c, uint8_t p, uint8_t m) { (void)c; (void)p; (void)m; }
@@ -421,11 +433,14 @@ static void test_network_picker_back(void)
 {
     for (unsigned count=0; count<=PICO_WIFI_SCAN_LIMIT; count+=PICO_WIFI_SCAN_LIMIT) {
         initialize(); ready(); pico_display_initialize();
-        sim.scan_size=count; sim.click_on_clock=true;
+        sim.scan_size=count; sim.choose_last=true;
         strcpy(app.settings.wifi_ssid,"saved");
         assert(pico_ui_scan_and_connect_wifi()==PICO_WIFI_BACK);
         assert(!sim.begins && !sim.disconnects && !strcmp(app.settings.wifi_ssid,"saved"));
-        assert(!strcmp(app.ui.menu_labels[0],"Back"));
+        if (count) assert(!strcmp(app.ui.menu_labels[0],"Network 0"));
+        assert(!strcmp(app.ui.menu_labels[count],"Enter WiFi Info"));
+        assert(!strcmp(app.ui.menu_labels[count+1],">Scan again"));
+        assert(!strcmp(app.ui.menu_labels[count+2],"Back"));
     }
 }
 static void test_network_status_failure(void)

@@ -428,13 +428,14 @@ class InstallWireTests(unittest.TestCase):
 
     def test_previous_ota_release_is_approved_only_for_its_model(self):
         for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / "1.3.0.zip"
-            with zipfile.ZipFile(archive) as bundle:
-                old = bundle.read(model + "-standalone.bin")
-            identity = installer._image_metadata(old)
-            for operation in ("install", "install-recovery"):
-                self.assertIn(identity, installer._approved_current_applications(operation, model))
-                self.assertNotIn(identity, installer._approved_current_applications(operation, other))
+            for version in ("1.3.0", "1.3.1"):
+                archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
+                with zipfile.ZipFile(archive) as bundle:
+                    old = bundle.read(model + "-standalone.bin")
+                identity = installer._image_metadata(old)
+                for operation in ("install", "install-recovery"):
+                    self.assertIn(identity, installer._approved_current_applications(operation, model))
+                    self.assertNotIn(identity, installer._approved_current_applications(operation, other))
 
     def test_independent_recovery_bootstrap_keeps_application_selected(self):
         files = dict(self.files)

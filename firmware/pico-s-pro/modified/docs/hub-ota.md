@@ -2,7 +2,7 @@
 
 Open the brewer's **Firmware** view, select the intended version, and choose **Install**. The Hub downloads and verifies the package for that machine. **Check for Updates** refreshes available versions immediately. **Download** saves the selected archive to your computer. Keep the idle brewer powered and reachable at its registered LAN address through both restarts. The view shows the last result after a Hub restart.
 
-The feature is enabled in a normally started Hub. An online Pico running standalone 1.3.0 or 1.3.1 advertises `hub_ota_v1` after checking its installed loader, recovery image, boot record and readable application. The Hub also requires an enabled registration, a unique provisioned API key, a matching firmware-reported model, and ready, idle status. Return the brewer to its top-level main menu before installation. Firmware 1.3.0 reports any open settings screen as busy. The package must support protocol 1. A stored package alone does not establish eligibility.
+The feature is enabled in a normally started Hub. An online Pico running standalone 1.3.x advertises `hub_ota_v1` after checking its installed loader, recovery image, boot record and readable application. The Hub also requires an enabled registration, a unique provisioned API key, a matching firmware-reported model, and ready, idle status. Return the brewer to its top-level main menu before installation. Firmware 1.3.0 reports any open settings screen as busy. The package must support protocol 1. A stored package alone does not establish eligibility.
 
 ## One-time USB setup
 

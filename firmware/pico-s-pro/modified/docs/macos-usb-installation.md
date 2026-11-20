@@ -140,8 +140,8 @@ command needs a fresh programming session using the procedure above.
 
 ## Stage 2: install the pinned standalone candidate
 
-The commands below install the **1.3.1 Pico Pro update**. Approved earlier
-standalone releases, including 1.0.0, 1.1.0, 1.2.0 and 1.3.0, are separately pinned as upgrade
+The commands below install the **1.3.2 Pico Pro update**. Approved earlier
+standalone releases, including 1.0.0, 1.1.0, 1.2.0, 1.3.0 and 1.3.1, are separately pinned as upgrade
 sources. Their bytes must match an allowed source exactly.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after
@@ -199,7 +199,7 @@ of 48 nonmirrored 4 KiB blocks. The writer
 additionally caps application payloads at 188,416 bytes, conservatively below
 the capacity derived from that allocation and the SDK's size-rounding rules.
 This is a derived guard, not a measured `AllocatedLen` value. The packaged
-1.3.1 Pico Pro image passes it; no application-file recreation or relocation is used.
+1.3.2 Pico Pro image passes it; no application-file recreation or relocation is used.
 Every write requires an acknowledged command and successful loader status;
 the tool does not retry an ambiguous write chunk.
 
@@ -241,7 +241,7 @@ startup, network access and physical output behavior remain separate
 checks in [hardware validation](hardware-validation.md).
 
 The expected code path shows the Pico splash, attempts the saved Wi-Fi
-connection, and reaches the regular menu. Standalone 1.3.1 shows `v1.3.1`,
+connection, and reaches the regular menu. Standalone 1.3.2 shows `v1.3.2`,
 using the shared version in `include/picobrew/version.h`. If an old-session
 resume prompt appears, choose Abort for this initial observation.
 
@@ -254,8 +254,8 @@ fallback access point. From a browser on the same network, open:
 http://<pico-ip>/api/v1/health
 ```
 
-After initialization, the 1.3.1 read-only public endpoint should include
-`"firmware_version":"1.3.1"`, `"model":"pico-pro"`, `"api_version":1`,
+After initialization, the 1.3.2 read-only public endpoint should include
+`"firmware_version":"1.3.2"`, `"model":"pico-pro"`, `"api_version":1`,
 `"mode":"standalone"`,
 `"ready":true`, and `"auth_configured":true`. The response's `uptime_ms`
 varies. This is the running-firmware identity check; it requires no API key.
@@ -275,7 +275,7 @@ target appliance still needs physical verification for the installed release.
 
 After changing networks, wait for the connection attempt to complete,
 check **Settings > Network > Status**, and request `/api/v1/health` at the
-new address. Confirm `"firmware_version":"1.3.1"` after this upgrade and compare the address
+new address. Confirm `"firmware_version":"1.3.2"` after this upgrade and compare the address
 with the router's client information. The displayed saved SSID alone does
 not establish that the Pico joined that network or acquired a valid lease.
 
