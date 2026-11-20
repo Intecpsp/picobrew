@@ -287,6 +287,11 @@ func cacheCorrupt() error {
 	return &firmware.Error{Code: "firmware_cache_corrupt", Message: "The saved firmware file is missing or has changed. Remove this package and import it again."}
 }
 
+func isFirmwareCacheCorrupt(err error) bool {
+	var failure *firmware.Error
+	return errors.As(err, &failure) && failure.Code == "firmware_cache_corrupt"
+}
+
 func cacheFull() error {
 	return &firmware.Error{Code: "firmware_cache_full", Message: "The firmware cache holds at most 20 packages. Remove a saved package before adding another."}
 }
@@ -353,6 +358,33 @@ func (s *Server) readFirmwareArchive(id string) ([]byte, error) {
 	return data, nil
 }
 
+// Caller holds the cache publication lock. Publish complete bytes atomically,
+// then read them back through the same private-file checks used for downloads.
+func (s *Server) publishFirmwareArchive(id string, archive []byte) error {
+	staging := filepath.Join(s.firmwareCacheDir(), ".incoming-"+randomID())
+	defer os.Remove(staging)
+	file, err := privatefs.OpenFile(staging, os.O_WRONLY|os.O_CREATE|os.O_EXCL)
+	if err != nil {
+		return err
+	}
+	_, err = file.Write(archive)
+	if err == nil {
+		err = file.Sync()
+	}
+	closeErr := file.Close()
+	if err == nil {
+		err = closeErr
+	}
+	if err == nil {
+		err = os.Rename(staging, filepath.Join(s.firmwareCacheDir(), id+".zip"))
+	}
+	if err != nil {
+		return err
+	}
+	_, err = s.readFirmwareArchive(id)
+	return err
+}
+
 func (s *Server) saveFirmwarePackage(archive []byte, metadata firmware.Candidate, provenance firmware.Provenance) (firmware.Package, bool, error) {
 	s.firmwareMu.Lock()
 	defer s.firmwareMu.Unlock()
@@ -368,7 +400,19 @@ func (s *Server) saveFirmwarePackage(archive []byte, metadata firmware.Candidate
 	id := firmware.Digest(archive)
 	if _, err := s.db.Get(firmwareRecordKind, id, &existing); err == nil {
 		if _, err := s.readFirmwareArchive(id); err != nil {
-			return existing, false, err
+			if provenance.Source != "library" || existing.Candidate != metadata || !isFirmwareCacheCorrupt(err) {
+				return existing, false, err
+			}
+			info, statErr := os.Lstat(filepath.Join(s.firmwareCacheDir(), id+".zip"))
+			if statErr != nil && !errors.Is(statErr, os.ErrNotExist) {
+				return existing, false, statErr
+			}
+			if info != nil && !info.Mode().IsRegular() {
+				return existing, false, cacheCorrupt()
+			}
+			// DownloadRelease verified the chosen catalog digest and all package
+			// contents. Keep the original package record and provenance.
+			return existing, false, s.publishFirmwareArchive(id, archive)
 		}
 		// Duplicate acquisition never upgrades the original source's claims.
 		return existing, false, nil
@@ -415,32 +459,12 @@ func (s *Server) saveFirmwarePackage(archive []byte, metadata firmware.Candidate
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return existing, false, err
 	} else {
-		staging := filepath.Join(dir, ".incoming-"+randomID())
-		defer os.Remove(staging)
-		file, err := privatefs.OpenFile(staging, os.O_WRONLY|os.O_CREATE|os.O_EXCL)
-		if err != nil {
-			return existing, false, err
-		}
-		_, err = file.Write(archive)
-		if err == nil {
-			err = file.Sync()
-		}
-		closeErr := file.Close()
-		if err == nil {
-			err = closeErr
-		}
-		if err == nil {
-			err = os.Rename(staging, destination)
-		}
-		if err != nil {
+		if err := s.publishFirmwareArchive(id, archive); err != nil {
 			return existing, false, err
 		}
 		createdFile = true
 	}
-	// Read back the published bytes before announcing a validated package.
-	if _, err := s.readFirmwareArchive(id); err != nil {
-		return existing, false, err
-	}
+
 	p := firmware.Package{Candidate: metadata, ID: id, PackageBytes: len(archive),
 		CreatedAt: time.Now().UTC(), Validation: "passed", Provenance: provenance}
 	if _, err := s.db.Put(firmwareRecordKind, id, p, 0); err != nil {
@@ -548,7 +572,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			}
 		}
 	}
-	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && !d.identityMismatch
+	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && (!d.identityMismatch || d.awaitingIdentity) && (!d.view.Online || out.InstallSupported)
 	active := d.updatingFirmware
 	d.mu.RUnlock()
 	var receipt firmware.InstallReceipt
@@ -558,12 +582,19 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			receipt.Message = "Hub restarted before it recorded the result. Check the brewer before continuing."
 		}
 		out.LastInstall = &receipt
-		if !active && retryEnabled && !out.InstallSupported && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID) && receipt.State != "installed" && !s.cfg.Demo {
-			out.Model = receipt.Model
-			out.DeviceUID = receipt.UID
-			out.InstallSupported = true
-			out.RetryPackageID = receipt.PackageID
-			out.Reason = "Retry the same package to reconnect to recovery and verify each file again."
+		if !active && retryEnabled && (!out.InstallSupported || pendingTrial(receipt)) && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID) && receipt.State != "installed" && !s.cfg.Demo {
+			matches, err := s.savedFirmwareIdentity(out.DeviceID, receipt.UID)
+			if err != nil {
+				s.storeError(w, err)
+				return
+			}
+			out.InstallSupported = matches
+			if matches {
+				out.Model = receipt.Model
+				out.DeviceUID = receipt.UID
+				out.RetryPackageID = receipt.PackageID
+				out.Reason = "Retry the same firmware package so the Hub can verify the interrupted update."
+			}
 		}
 	} else if !errors.Is(err, store.ErrNotFound) {
 		s.storeError(w, err)

@@ -46,6 +46,7 @@ type runtimeDevice struct {
 	historyMu          sync.Mutex
 	lastHistory        time.Time
 	identityMismatch   bool
+	awaitingIdentity   bool     // No authenticated application identity observed since registration was loaded.
 	keyFingerprint     [32]byte // Private, immutable, and never persisted or returned.
 	hasKeyFingerprint  bool
 	telemetryNext      time.Time

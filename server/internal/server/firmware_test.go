@@ -526,4 +526,145 @@ func TestVersionCheckUsesMetadataAndStagesOnlySelectedArchive(t *testing.T) {
 	if reads != 1 {
 		t.Fatalf("staging twice downloaded %d archives", reads)
 	}
+
+	var original firmware.Package
+	recordVersion, err := s.db.Get(firmwareRecordKind, release.ArchiveSHA256, &original)
+	if err != nil {
+		t.Fatal(err)
+	}
+	cached := filepath.Join(s.firmwareCacheDir(), release.ArchiveSHA256+".zip")
+	corrupt := []byte("damaged cached archive")
+	if err := os.WriteFile(cached, corrupt, 0600); err != nil {
+		t.Fatal(err)
+	}
+	stageURL := h.URL + "/api/v1/firmware/releases/" + release.ArchiveSHA256 + "/stage"
+	files[release.FirmwareVersion+".zip"] = []byte("wrong upstream archive")
+	code, body = request(t, c, "POST", stageURL, csrf, nil, nil)
+	if code != 422 || !bytes.Contains(body, []byte("firmware_package_invalid")) {
+		t.Fatalf("digest mismatch accepted as a repair: %d %s", code, body)
+	}
+	if actual, err := os.ReadFile(cached); err != nil || !bytes.Equal(actual, corrupt) {
+		t.Fatal("invalid download replaced the cache", err)
+	}
+	files[release.FirmwareVersion+".zip"] = archive
+	for _, missing := range []bool{false, true} {
+		if missing {
+			if err := os.Remove(cached); err != nil {
+				t.Fatal(err)
+			}
+		}
+		code, body = request(t, c, "POST", stageURL, csrf, nil, nil)
+		if code != 200 || parseFirmwarePackage(t, body).ID != original.ID {
+			t.Fatalf("repair of missing=%t: %d %s", missing, code, body)
+		}
+		if actual, err := os.ReadFile(cached); err != nil || !bytes.Equal(actual, archive) {
+			t.Fatal("cache repair failed readback", err)
+		}
+		var after firmware.Package
+		if version, err := s.db.Get(firmwareRecordKind, original.ID, &after); err != nil || version != recordVersion || after != original {
+			t.Fatalf("repair changed original metadata or provenance: %+v %v", after, err)
+		}
+	}
+}
+
+type resumeFirmwareAdapter struct {
+	*pairingAdapter
+	stages chan string
+}
+
+func (a *resumeFirmwareAdapter) InstallFirmware(_ context.Context, _ string, _ firmware.UpdatePayload, stage string, _ func(string) error) error {
+	a.stages <- stage
+	return nil
+}
+
+func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *testing.T) {
+	s, h, c, stop := startFirmwareServer(t, newTestDataDir(t))
+	defer stop()
+	csrf := signIn(t, c, h.URL)
+	files := firmwaretest.Files("pico-s")
+	firmwaretest.ChangeReport(files, func(report map[string]any) { report["hub_ota_protocol"] = 1 })
+	code, body := uploadFirmware(t, c, h.URL, csrf, firmwaretest.Archive(files), nil)
+	if code != 201 {
+		t.Fatalf("upload: %d %s", code, body)
+	}
+	original := parseFirmwarePackage(t, body).ID
+	const uid = "brewer-uid"
+	saved := domain.Device{ID: "brewer", Model: "pico-s", ModelSource: "firmware", Enabled: true, Adapter: "pico-standalone"}
+	status := domain.Status{Model: saved.Model, ModelFamily: "pico-s-pro", DeviceUID: uid, Ready: true}
+	caps := domain.Capabilities{Model: saved.Model, ModelFamily: "pico-s-pro", HubOTAV1: true}
+	a := &resumeFirmwareAdapter{pairingAdapter: &pairingAdapter{status: status, caps: caps}, stages: make(chan string, 1)}
+	d := s.attach(saved)
+	d.adapter = a // No saved key in this fixture, so attach starts no poller.
+	if _, err := s.verifiedStatus(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	receipt := firmware.InstallReceipt{PackageID: original, Model: saved.Model, UID: uid, State: "unconfirmed", Stage: "confirming"}
+	version, err := s.db.Put("firmware-install", saved.ID, receipt, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	path := h.URL + "/api/v1/devices/brewer/firmware"
+	checkRetry := func(expected bool) {
+		t.Helper()
+		code, body := request(t, c, "GET", path, "", nil, nil)
+		var machine firmware.MachineFirmware
+		if code != 200 || json.Unmarshal(body, &machine) != nil || machine.InstallSupported != expected ||
+			(expected && (machine.RetryPackageID != original || machine.DeviceUID != uid)) {
+			t.Fatalf("retry available %t: %d %s", expected, code, body)
+		}
+	}
+	install := func(id string) int {
+		t.Helper()
+		code, _ := request(t, c, "POST", path+"/install", csrf, map[string]any{"package_id": id, "device_uid": uid, "confirm": true}, nil)
+		return code
+	}
+	checkRetry(true)
+	if code := install(strings.Repeat("b", 64)); code != 409 {
+		t.Fatalf("different package accepted during trial: %d", code)
+	}
+	var after firmware.InstallReceipt
+	if v, err := s.db.Get("firmware-install", saved.ID, &after); err != nil || v != version || after != receipt {
+		t.Fatalf("rejected package replaced trial checkpoint: %+v, %d, %v", after, v, err)
+	}
+
+	// A positive UID mismatch must block even an exact-package retry.
+	a.status.DeviceUID = "different"
+	if _, err := s.verifiedStatus(context.Background(), d); err == nil {
+		t.Fatal("expected identity mismatch")
+	}
+	checkRetry(false)
+	if code := install(original); code != 409 {
+		t.Fatalf("different brewer accepted: %d", code)
+	}
+
+	// Recreate runtime state as on startup: an offline application in recovery
+	// cannot provide /status. The saved identity and interrupted package survive.
+	restarted := s.attach(saved)
+	restarted.adapter = a
+	a.statusErr = errors.New("application offline")
+	if _, err := s.verifiedStatus(context.Background(), restarted); err == nil {
+		t.Fatal("expected offline application")
+	}
+	if err := s.db.Delete("device-identity", saved.ID); err != nil {
+		t.Fatal(err)
+	}
+	checkRetry(false)
+	if code := install(original); code != 409 {
+		t.Fatalf("missing identity pin accepted: %d", code)
+	}
+	if _, err := s.db.Put("device-identity", saved.ID, deviceIdentity{UID: uid}, 0); err != nil {
+		t.Fatal(err)
+	}
+	checkRetry(true)
+	if code := install(original); code != 202 {
+		t.Fatalf("same package could not resume: %d", code)
+	}
+	select {
+	case stage := <-a.stages:
+		if stage != receipt.Stage {
+			t.Fatalf("lost original stage: %q", stage)
+		}
+	case <-time.After(time.Second):
+		t.Fatal("adapter did not receive retry")
+	}
 }
