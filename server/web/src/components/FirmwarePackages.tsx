@@ -90,7 +90,7 @@ export function MachineFirmwareDialog({
     setVerificationError('')
     setActivity(install ? 'Preparing update…' : 'Downloading…')
     try {
-      if (selected.remote && !machine.packages.some((p) => p.id === id)) {
+      if (selected.remote) {
         const saved = await api<FirmwarePackage>(`/firmware/releases/${id}/stage`, {
           method: 'POST',
         })

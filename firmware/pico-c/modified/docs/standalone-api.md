@@ -53,6 +53,16 @@ foreground service. It rejects unsupported framing and malformed JSON, closes
 responses explicitly and does not run appliance workflows inside request
 handling. Inputs and uncertain writes are tested through the actual C modules.
 
+## Restart the brewer
+
+When authenticated discovery reports `system_restart: true`, send an authenticated
+`POST /api/v1/system/restart` with `Content-Type: application/json` and body `{}`.
+The brewer must be at the main menu with the controller idle, all heating and
+pump outputs off, and the stop latch clear. A busy brewer responds with HTTP
+409. An accepted request returns HTTP 202 and `{"accepted":true}` before the
+controller restarts. Reconnect to the device after it boots. Installed firmware,
+the device key, Wi-Fi credentials, recipes and settings are preserved.
+
 ## Routes
 
 | Route | Purpose |

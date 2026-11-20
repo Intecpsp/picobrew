@@ -79,7 +79,7 @@ struct Application {
         ports.millis=[](void*)->std::uint32_t{return ::millis();};
         ports.http_poll=[](void* p,std::uint32_t now){static_cast<Application*>(p)->http_poll(now);};
         ports.serial_poll=[](void* p){static_cast<Application*>(p)->serial_poll();};
-        ports.lan_ready=[](void*,std::uint32_t network){return network==1?WiFi.status()==WL_CONNECTED:
+        ports.lan_ready=[](void*,std::uint32_t network){return network==1?WiFi.status()==WL_CONNECTED&&static_cast<std::uint32_t>(WiFi.localIP())!=0:
             false;};
         ports.save_network=[](void* p,const char* ssid,const char* password){auto& a=*static_cast<Application*>(p);
             char line[104];const int length=::snprintf(line,sizeof line,"wifi %s\t%s",ssid,password);
@@ -166,7 +166,7 @@ struct Application {
         else {serial_poll();
             // Keep local diagnosis/provisioning reachable after a controller
             // failure without entering the broken acquisition/MSP stages.
-            firmware.core.wifi.tick(now);
+            adapter.tick_wifi(now);
             http_poll(now);esp_task_wdt_reset();
             if(firmware.head.initialized){firmware.observe_head();firmware.head.tick(now);}}
         if(bus.failed())fault("controller-io");

@@ -136,7 +136,7 @@ static int status(void *)
     return WiFi.status();
 #endif
 }
-static int begin(void *, const char *ssid, const uint8_t *password, uint8_t security, bool)
+static int begin(void *, const char *ssid, const uint8_t *password, uint8_t security, uint8_t wep_key_length)
 {
 #if PICO_STANDALONE
     connection_failed = true;
@@ -150,6 +150,7 @@ static int begin(void *, const char *ssid, const uint8_t *password, uint8_t secu
     if (sl_NetCfgSet(SL_IPV4_STA_P2P_CL_DHCP_ENABLE, 1, 1, &dhcp) < 0)
         return WL_CONNECT_FAILED;
 #else
+    (void)wep_key_length;
     if (WiFiClass::_connecting) {
         delay(500);
         return WiFi.status();
@@ -165,7 +166,12 @@ static int begin(void *, const char *ssid, const uint8_t *password, uint8_t secu
     if (security < 7) {
         parameters.Type = security == 5 ? SL_SEC_TYPE_WEP : SL_SEC_TYPE_WPA;
         parameters.Key = reinterpret_cast<signed char *>(const_cast<uint8_t *>(password));
+#if PICO_STANDALONE
+        parameters.KeyLen = security == 5 ? wep_key_length
+                                          : strlen(reinterpret_cast<const char *>(password));
+#else
         parameters.KeyLen = strlen(reinterpret_cast<const char *>(password));
+#endif
     }
     int16_t length = strlen(ssid);
 #if PICO_STANDALONE
@@ -240,6 +246,53 @@ static void dns(void *, PicoIpv4 address)
     WiFi.setDNS(pack(address));
 }
 #endif
+#if PICO_STANDALONE
+/* Keep one radio snapshot for the entire selection, including password entry.
+ * SimpleLink returns octet strings with an explicit length and no terminator. */
+static int scan_wifi(void *, PicoWifiNetwork networks[PICO_WIFI_SCAN_LIMIT])
+{
+    unsigned network_count = 0;
+    _u32 interval = 10;
+    if (!WiFiClass::init() ||
+        sl_WlanPolicySet(SL_POLICY_SCAN, SL_SCAN_POLICY(1),
+                         reinterpret_cast<_u8 *>(&interval), sizeof interval) < 0)
+        return 0;
+    delay(300);
+    Sl_WlanNetworkEntry_t entries[PICO_WIFI_SCAN_LIMIT];
+    int count = sl_WlanGetNetworkList(0, PICO_WIFI_SCAN_LIMIT, entries);
+    sl_WlanPolicySet(SL_POLICY_SCAN, SL_SCAN_POLICY(0), NULL, 0);
+    for (int i = 0; i < count && i < PICO_WIFI_SCAN_LIMIT; ++i) {
+        const Sl_WlanNetworkEntry_t &entry = entries[i];
+        unsigned length = entry.ssid_len;
+        if (!length || length > sizeof entry.ssid || memchr(entry.ssid, 0, length))
+            continue;
+        uint8_t mode;
+        switch (entry.sec_type) {
+        case SL_SCAN_SEC_TYPE_OPEN: mode = 7; break;
+        case SL_SCAN_SEC_TYPE_WEP: mode = 5; break;
+        case SL_SCAN_SEC_TYPE_WPA:
+        case SL_SCAN_SEC_TYPE_WPA2: mode = 2; break;
+        default: continue;
+        }
+        unsigned row = 0;
+        while (row < network_count &&
+               (memcmp(networks[row].name, entry.ssid, length) || networks[row].name[length]))
+            ++row;
+        PicoWifiNetwork &network = networks[row];
+        if (row == network_count) {
+            memcpy(network.name, entry.ssid, length);
+            network.name[length] = 0;
+            ++network_count;
+        } else if (mode > network.security ||
+                   (mode == network.security && entry.rssi <= network.signal)) {
+            continue;
+        }
+        network.security = mode;
+        network.signal = entry.rssi;
+    }
+    return network_count;
+}
+#else
 static int scan(void *)
 {
     return WiFi.scanNetworks();
@@ -256,6 +309,7 @@ static int32_t rssi(void *, unsigned index)
 {
     return WiFi.RSSI(static_cast<uint8_t>(index));
 }
+#endif
 static void mac(void *, uint8_t address[6])
 {
     WiFi.macAddress(address);
@@ -407,7 +461,7 @@ static void ip_configuration(void *, PicoIpv4 *local, PicoIpv4 *dns, PicoIpv4 *g
 {
 #if PICO_STANDALONE
     *local = *dns = *gateway = *mask = PicoIpv4{};
-    if (!WiFiClass::_initialized || status(NULL) != WL_CONNECTED || !WiFiClass::local_IP)
+    if (!WiFiClass::_initialized || WiFi.status() != WL_CONNECTED || !WiFiClass::local_IP)
         return;
 #else
     if (!WiFiClass::_initialized)
@@ -416,7 +470,9 @@ static void ip_configuration(void *, PicoIpv4 *local, PicoIpv4 *dns, PicoIpv4 *g
     SlNetCfgIpV4Args_t config = {};
     _u8 length = sizeof(config);
 #if PICO_STANDALONE
-    if (sl_NetCfgGet(SL_IPV4_STA_P2P_CL_GET_INFO, NULL, &length,
+    *local = unpack(IPAddress(sl_Htonl(WiFiClass::local_IP)));
+    _u8 option = 0;
+    if (sl_NetCfgGet(SL_IPV4_STA_P2P_CL_GET_INFO, &option, &length,
                      reinterpret_cast<_u8 *>(&config)) < 0 || length != sizeof(config) ||
         !config.ipV4 || config.ipV4 != WiFiClass::local_IP)
         return;
@@ -434,7 +490,12 @@ const PicoNetworkPlatform *pico_energia_network_platform()
     static const PicoNetworkPlatform platform = {
         clock_ms,    delay_ms,   serial_write, initialized, initialize, connecting,
         status,      begin,      disconnect,   local_ip,    resolve,    dns,
-        scan,        ssid,       security,     rssi,        mac,        md5,
+#if PICO_STANDALONE
+        scan_wifi,
+#else
+        scan,        ssid,       security,     rssi,
+#endif
+        mac,         md5,
         connect,     connected,  available,    read,        write,      flush,
         stop,        file_begin, file_open,    file_read,   file_write, file_close,
         file_remove, boot_read,  boot_write,   reset,       ping,       ip_configuration,

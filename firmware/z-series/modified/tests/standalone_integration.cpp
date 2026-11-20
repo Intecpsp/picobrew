@@ -19,6 +19,10 @@ struct World {
     std::map<std::string,std::vector<std::uint8_t>> files;
     std::vector<std::vector<std::uint8_t>> frames;
     std::map<unsigned,bool> pins;
+    std::vector<HeadWifiNetwork> access_points;
+    bool reject_network=false;
+    int scan_result=-1;
+    unsigned scan_reads=0;
     std::uint32_t now=10000;
     unsigned writes=0,fail_write=0,alarms=0,locks=0,displays=0,http_polls=0,assertions=0;
     bool filter_missing=false,lan=false,sensor_short=false,sensor_bad_byte=false,sensor_bad_write=false;
@@ -75,7 +79,9 @@ struct World {
         h.alarm=[](void* p,bool){++self(p).alarms;return true;};
         h.check_rinse=[](void*,std::uint32_t,std::uint32_t& result){result=0;return true;};
         h.save_configuration=[](void*){return true;};h.apply_azure_configuration=h.save_configuration;h.discard_remote_session=h.save_configuration;
-        h.scan_network=[](void*,std::uint32_t,HeadWifiNetwork&){return false;};
+        h.scan_network=[](void* p,std::uint32_t index,HeadWifiNetwork& out){
+            auto& w=self(p);++w.scan_reads;if(index>=w.access_points.size())return false;
+            out=w.access_points[index];return true;};
         h.run_display_tests=[](void*){return true;};h.display_test=h.run_display_tests;
         h.random_below=[](void*,std::uint32_t){return std::uint32_t(0);};
         h.scope=[](void*,bool,const char*,const char*,std::uint32_t,const char*){return true;};
@@ -87,7 +93,7 @@ struct World {
         h.display_delay.context=this;h.display_delay.milliseconds=[](void* p,std::uint32_t value){self(p).now+=value;};
         zseries::standalone::Ports ports;ports.context=this;ports.millis=core.ports.millis;ports.storage=storage();
         ports.http_poll=[](void* p,std::uint32_t){++self(p).http_polls;};
-        ports.serial_poll=[](void*){};ports.save_network=[](void*,const char*,const char*){return true;};ports.reconnect_network=[](void*){return true;};
+        ports.serial_poll=[](void*){};ports.save_network=[](void* p,const char*,const char*){return !self(p).reject_network;};ports.reconnect_network=[](void*){return true;};
         ports.lan_ready=[](void* p,std::uint32_t){return self(p).lan;};ports.save_configuration=[](void*){return true;};
         assert(adapter.bind(ports,engine));
         assert(bind_runtime_heater(core.runtime,core.runtime_heater,core.heater,core.temperatures,core.ports.heater_gpio));
@@ -340,6 +346,63 @@ void native_network_menus(){World w;
     assert(w.core.core.transition(CoreStateId::Idle)==CoreFlowResult::Ok);w.head_tick();
     HeadUiEvent event;event.command=UiCommand::ConfigureNetwork;assert(w.head.receive_ui(event));w.head_tick();check();
 }
+void stable_wifi_picker_and_local_lease(){
+    World w;
+    auto& wifi=w.core.wifi;
+    wifi.services.context=&w;
+    wifi.services.millis=[](void* p){return World::self(p).now;};
+    wifi.services.perform=[](void* p,const WifiAction& action,std::uint32_t& value){
+        auto& world=World::self(p);value=0;
+        switch(action.effect){
+        case WifiEffect::Scan:value=static_cast<std::uint32_t>(-1);return true;
+        case WifiEffect::ScanComplete:value=static_cast<std::uint32_t>(world.scan_result);return true;
+        case WifiEffect::Status:value=world.lan?3:6;return true;
+        case WifiEffect::LocalAddress:value=world.lan?0x0200000a:0;return true;
+        case WifiEffect::GatewayAddress:value=world.lan?0x0100000a:0;return true;
+        case WifiEffect::Rssi:case WifiEffect::ResolveHost:case WifiEffect::EmitEvent:return true;
+        default:assert(false);return false;
+        }
+    };
+    wifi.state.id=WiFiStateId::Connecting;wifi.target=WiFiStateId::Connected;
+    std::strcpy(wifi.state.requested.ssid.data(),"saved");
+    w.lan=true;
+    assert(w.adapter.service_stage(CoreTickStage::Wifi,w.now));
+    assert(wifi.state.id==WiFiStateId::Checking&&!wifi.test_host_resolved);
+    assert(w.adapter.service_stage(CoreTickStage::Wifi,w.now));
+    assert(wifi.state.id==WiFiStateId::Connected&&wifi.state.local_address==0x0200000a);
+    const auto select=[&](UiCommand command){HeadUiEvent event;event.command=command;assert(w.head.receive_ui(event));w.head_tick();};
+    select(UiCommand::WiFiScan);
+    assert(w.head.screens.menu_data.count==1);
+    select(UiCommand::ConfigureNetworkAsBack);assert(w.adapter.service_stage(CoreTickStage::Wifi,w.now));
+    assert(w.head.screens.menu_data.count==4&&wifi.target==WiFiStateId::Connected);
+    select(UiCommand::WiFiScan);
+    const auto add=[&](const char* name,bool encrypted,int signal){
+        HeadWifiNetwork ap;std::strcpy(ap.ssid.data(),name);ap.rssi=signal;ap.encrypted=encrypted;w.access_points.push_back(ap);};
+    add("mesh",false,-50);add("Other",true,-45);add("mesh",true,-60);add("",false,-30);
+    add("MESH",false,-40);add("01234567890123456789012345678901",true,-77);
+    add("invalid\tentry",true,-50);
+    w.scan_result=static_cast<int>(w.access_points.size());assert(w.adapter.service_stage(CoreTickStage::Wifi,w.now));
+    const auto& menu=w.head.screens.menu_data;
+    assert(menu.count==5&&menu.items[4].event.command==UiCommand::ConfigureNetworkAsBack);
+    assert(w.scan_reads==7&&std::strstr(menu.items[3].text.data(),"01234567890123456789012345678901"));
+    const HeadUiEvent selected=menu.items[0].event;
+    w.access_points.clear();
+    assert(w.head.receive_ui(selected));w.head_tick();
+    assert(w.scan_reads==7&&w.head.text.state.awaiting_wifi_password);
+    assert(!std::strcmp(w.head.text.state.credentials.ssid.data(),"mesh"));
+    assert(wifi.target==WiFiStateId::Connected&&!std::strcmp(wifi.state.connected.ssid.data(),"saved"));
+    w.lan=false;select(UiCommand::WiFiDetails);assert(!std::strcmp(w.head.screens.state.title.data(),"Wi-Fi offline"));
+    w.lan=true;select(UiCommand::WiFiScan);w.scan_result=0;assert(w.adapter.service_stage(CoreTickStage::Wifi,w.now));
+    assert(menu.count==1&&menu.items[0].event.command==UiCommand::ConfigureNetworkAsBack);
+    select(UiCommand::ConfigureNetworkAsBack);assert(menu.count==4);
+    w.reject_network=true;CoreCommand submitted;submitted.id=CoreCommandId::WiFiConnect;
+    std::strcpy(submitted.credentials.ssid.data(),"new");
+    std::strcpy(submitted.credentials.password.data(),"short");
+    CoreAction join(CoreEffect::WifiConnect);join.credentials=&submitted.credentials;std::uint32_t result=0;
+    assert(w.adapter.service_effect(join,result));
+    assert(!std::strcmp(wifi.state.requested.ssid.data(),"saved")&&!w.core.system_error);
+    assert(menu.count==1&&menu.items[0].event.command==UiCommand::ConfigureNetworkAsBack);
+}
 void rejected_resume_retains_checkpoint(){World before;running_hold(before);World after(&before.files);
     api::Command resume;std::strcpy(resume.name,"resume-interrupted");resume.confirm=true;
     assert(after.adapter.execute(resume).status==202);after.fail_write=1;assert(after.dispatch());
@@ -364,6 +427,7 @@ int main(int argc,char** argv){assert(argc==2);const std::string test=argv[1];
     else if(test=="recovery-corrupt")recovery_corruption_and_discard();else if(test=="recovery-end")recovery_failure_and_terminal_state();
     else if(test=="sensor-fault")sensor_fault_cutoff();else if(test=="coffee-buffer")buffered_coffee();
     else if(test=="standby-start")standby_remote_start();else if(test=="step-indices")recipe_step_indices();
+    else if(test=="wifi-picker")stable_wifi_picker_and_local_lease();
     else if(test=="network-menus")native_network_menus();else if(test=="recovery-rejected")rejected_resume_retains_checkpoint();
     else if(test=="recovery-preflight")recovery_preflight_has_no_diagnostics();else return 2;
 }

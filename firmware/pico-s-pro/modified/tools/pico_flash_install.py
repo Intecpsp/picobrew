@@ -46,14 +46,18 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 8
+INSTALL_REVISION = 9
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 166288
-CANDIDATE_SHA256 = "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832"
+CANDIDATE_SIZE = 166520
+CANDIDATE_SHA256 = "f887663ff2f6e8e4d5936a9c81b2e02cccb5adee89c45050cb2bea9fb4a1e9be"
+RELEASED_1_3_0 = {
+    "pico-s": (166280, "903873fbaa2c6338956c22689afc911c64635dafbc52c0b913e0613d5eff230b"),
+    "pico-pro": (166288, "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832"),
+}
 RELEASED_1_2_0_SIZE = 165344
 RELEASED_1_2_0_SHA256 = '8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8'
 # Previously installed standalone versions are approved upgrade sources,
@@ -87,7 +91,7 @@ KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
 # Updated together with the final firmware candidate, after asset generation.
 # A placeholder deliberately prevents installation of an unreviewed bundle.
-WEB_MANIFEST_SHA256 = '89f1d18f7d7550c90dbb7142428602ce99cc65ce9f46ec242ec047216e11265f'
+WEB_MANIFEST_SHA256 = '32f7b601000a940f8bc860c57c52f7cb8f69240bce702b0890737038761bf6ad'
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
              ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
@@ -241,7 +245,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 166280, "903873fbaa2c6338956c22689afc911c64635dafbc52c0b913e0613d5eff230b"
+        return 166512, "4cc792a016e34becfbebe41a32e752d80358e60be8c0c7571026551619ee0833"
     raise InstallError("Unknown target model")
 
 
@@ -323,9 +327,9 @@ def _approved_current_applications(mode, model="pico-pro"):
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
                            (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
-                           candidate_identity(model)))
+                           RELEASED_1_3_0[model], candidate_identity(model)))
     if mode == "install-recovery":
-        identities = [candidate_identity(model)]
+        identities = [RELEASED_1_3_0[model], candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 

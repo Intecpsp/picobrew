@@ -1,6 +1,7 @@
 #include "zseries/standalone.hpp"
 #include <algorithm>
 #include <cmath>
+#include <cstdio>
 #include <cstring>
 
 namespace zseries { namespace standalone {
@@ -72,7 +73,7 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.0";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.1";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
@@ -325,12 +326,50 @@ bool Adapter::offline_policy(std::uint32_t now){
         return core_.core.transition(CoreStateId::Idle)==CoreFlowResult::Ok;
     return true;
 }
+bool Adapter::tick_wifi(std::uint32_t now){
+    // An intervening native instruction or alarm owns its new screen.
+    if(page_==Page::Scanning&&head_.screens.state.reset_time!=scan_started_)page_=Page::Original;
+    if(page_==Page::Scanning){
+        auto& io=core_.wifi.services;
+        std::uint32_t count=0;
+        const bool ok=io.perform(io.context,WifiAction(WifiEffect::ScanComplete),count);
+        if(!ok||now-scan_started_>=15000)
+            show_wifi_results(-2);
+        else if(static_cast<std::int32_t>(count)!=-1)
+            show_wifi_results(static_cast<std::int32_t>(count));
+    }
+    auto& wifi=core_.wifi;
+    // The OEM Checking state requires a vendor hostname to resolve. This
+    // profile supplies a LAN service and qualifies the active station lease.
+    if(wifi.state.id==WiFiStateId::Checking&&!wifi.state.requested.internet_expected){
+        if(wifi.target!=WiFiStateId::Connected)
+            return wifi.transition(WiFiStateId::Disconnecting)==WifiResult::Ok;
+        if(ports_.lan_ready(ports_.context,1)){
+            auto& io=wifi.services;
+            if(!io.perform(io.context,WifiAction(WifiEffect::LocalAddress),wifi.state.local_address))return false;
+            if(wifi.state.local_address){
+                wifi.state.local_address_present=true;
+                if(!io.perform(io.context,WifiAction(WifiEffect::GatewayAddress),wifi.state.gateway_address))return false;
+                return wifi.transition(WiFiStateId::Connected)==WifiResult::Ok;
+            }
+        }
+        if(now-wifi.state_date>=wifi.connecting_timeout_ms)
+            return wifi.fail(now,WifiError::WifiConnectingTimeout)==WifiResult::Ok;
+        return true;
+    }
+    return wifi.tick(now)==WifiResult::Ok;
+}
 bool Adapter::service_stage(CoreTickStage stage,std::uint32_t now){
     switch(stage){
     // These remote services are intentionally replaced/disabled in this profile.
     case CoreTickStage::FirmwareUpdate:case CoreTickStage::BinaryDownload:
     case CoreTickStage::ZBackend:case CoreTickStage::HttpBackend:
     case CoreTickStage::Registration:case CoreTickStage::ProgramDownload:case CoreTickStage::SessionLogger:return true;
+    case CoreTickStage::Wifi:{
+        const bool ok=tick_wifi(now);
+        core_.refresh_observed();
+        return ok;
+    }
     case CoreTickStage::Azure:return offline_policy(now);
     case CoreTickStage::HttpServer:ports_.http_poll(ports_.context,now);return true;
     case CoreTickStage::SerialCommand:ports_.serial_poll(ports_.context);return true;
@@ -345,7 +384,11 @@ bool Adapter::service_effect(const CoreAction& action,std::uint32_t& result){
     switch(action.effect){
     case CoreEffect::SetNetwork:core_.network=action.argument&&ports_.lan_ready(ports_.context,action.argument)?action.argument:0;result=action.argument?core_.network!=0:1;return true;
     case CoreEffect::WifiConnect:{
-        if(!action.credentials||!ports_.save_network(ports_.context,action.credentials->ssid.data(),action.credentials->password.data()))return false;
+        if(!action.credentials)return false;
+        if(!ports_.save_network(ports_.context,action.credentials->ssid.data(),action.credentials->password.data())){
+            if(engine_)engine_->event("network-error","Wi-Fi settings could not be saved");
+            return network_message(text("Wi-Fi settings rejected","Wi-Fi no guardado","Wi-Fi non enregistre"));
+        }
         WifiCredentials credentials;credentials.ssid=action.credentials->ssid;credentials.password=action.credentials->password;
         credentials.internet_expected=false;core_.wifi.connect(credentials);return true;
     }
@@ -406,6 +449,11 @@ bool Adapter::start_effect(const CoreAction& action,std::uint32_t& result,std::u
 }
 bool Adapter::handle_ui(const HeadUiAction& action){
     if(action.effect==HeadUiEffect::NetworkConfiguration)return show_network();
+    if(action.effect==HeadUiEffect::DispatchCoreCommand&&action.first==static_cast<std::uint32_t>(CoreCommandId::WiFiScan))
+        return start_wifi_scan();
+    if(action.effect==HeadUiEffect::WifiKey)return action.event&&select_wifi(*action.event);
+    if(action.effect==HeadUiEffect::WifiDetails&&(!ports_.lan_ready(ports_.context,1)||core_.wifi.state.id!=WiFiStateId::Connected))
+        return network_message(text("Wi-Fi offline","Wi-Fi desconectado","Wi-Fi deconnecte"));
     if(action.effect==HeadUiEffect::ConnectWifi)return ports_.reconnect_network(ports_.context)&&show_network();
     if(action.effect==HeadUiEffect::SetImperial||action.effect==HeadUiEffect::SetLanguage||action.effect==HeadUiEffect::SetSlideshowDetail){
         if(!engine_||core_.core.state.id!=CoreStateId::Idle||core_.runtime.state.id!=RuntimeStateId::Standby)return false;
@@ -441,6 +489,74 @@ bool Adapter::show_network(){
     for(auto command:{UiCommand::WiFiScan,UiCommand::WiFiReconnect,UiCommand::WiFiDetails,UiCommand::Exit})
         if(!screen.menu_data.append(command))return false;
     page_=Page::Original;return screen.menu_screen("Wi-Fi")==HeadScreenResult::Ok;
+}
+bool Adapter::network_message(const char* title){
+    auto& screen=head_.screens;
+    screen.clear_data();
+    return screen.menu_data.append(UiCommand::ConfigureNetworkAsBack,text("Back","Atras","Retour"))&&
+           screen.menu_screen(title)==HeadScreenResult::Ok;
+}
+bool Adapter::start_wifi_scan(){
+    // A foreground scan must not change the manager's connection target.
+    auto& io=core_.wifi.services;
+    WifiAction action(WifiEffect::Scan);action.argument=1;action.fourth=300;
+    std::uint32_t count=0;
+    scanned_count_=0;
+    if(!io.perform||!io.perform(io.context,action,count))return show_wifi_results(-2);
+    if(static_cast<std::int32_t>(count)!=-1)return show_wifi_results(static_cast<std::int32_t>(count));
+    if(!network_message(text("Searching...","Buscando...","Recherche...")))return false;
+    scan_started_=head_.screens.state.reset_time;
+    page_=Page::Scanning;
+    return true;
+}
+bool Adapter::show_wifi_results(std::int32_t count){
+    scanned_count_=0;
+    page_=Page::Networks;
+    auto& screen=head_.screens;
+    screen.clear_data();
+    for(std::int32_t i=0;i<count&&i<256;++i){
+        HeadWifiNetwork ap;
+        if(!head_.services.scan_network||!head_.services.scan_network(head_.services.context,i,ap))
+            return network_message(text("Scan failed","Error de escaneo","Echec recherche"));
+        if(ap.rssi < -84 || !ap.ssid[0] || ap.ssid.back())continue;
+        // UART and OLED share the same provisioning grammar.
+        const auto end=std::find(ap.ssid.begin(),ap.ssid.end(),'\0');
+        if(std::any_of(ap.ssid.begin(),end,[](unsigned char byte){return byte<32||byte==127;}))continue;
+        std::size_t row=0;
+        while(row<scanned_count_ && std::strcmp(scanned_[row].ssid.data(),ap.ssid.data()))++row;
+        if(row==scanned_count_){
+            if(scanned_count_==scanned_.size())continue;
+            ++scanned_count_;
+        } else if((scanned_[row].encrypted&&!ap.encrypted)||
+                  (scanned_[row].encrypted==ap.encrypted&&scanned_[row].rssi>=ap.rssi))continue;
+        scanned_[row]=ap;
+    }
+    for(std::size_t i=0;i<scanned_count_;++i){
+        const auto& ap=scanned_[i];
+        HeadUiEvent event;event.command=UiCommand::WiFiSsidGetKey;event.flags=1;event.index=i;
+        char label[52];
+        ::snprintf(label,sizeof label,"%s%s%s",ap.encrypted?"\xc2\x82 ":"",ap.rssi<-75?"[weak] ":"",ap.ssid.data());
+        if(!screen.menu_data.append(event,label))return false;
+    }
+    if(!scanned_count_)return network_message(count<0?text("Scan failed","Error de escaneo","Echec recherche"):
+                                                text("No networks","Sin redes","Aucun reseau"));
+    return screen.menu_data.append(UiCommand::ConfigureNetworkAsBack,text("Back","Atras","Retour"))&&
+           screen.menu_screen(ui_localized_text(UiTextCategory::TextTitle,57,screen.language))==HeadScreenResult::Ok;
+}
+bool Adapter::select_wifi(const HeadUiEvent& event){
+    if(page_!=Page::Networks||!(event.flags&1)||event.index>=scanned_count_)return true;
+    page_=Page::Original;
+    const auto& ap=scanned_[event.index];
+    auto& editor=head_.text.state;
+    editor.credentials.ssid=ap.ssid;editor.credentials.password.fill(0);
+    editor.awaiting_wifi_password=ap.encrypted;
+    if(!ap.encrypted){
+        CoreCommand command;command.id=CoreCommandId::WiFiConnect;command.credentials=editor.credentials;
+        return head_.services.post_core&&head_.services.post_core(head_.services.context,HeadUiCoreEnvelope(command,nullptr));
+    }
+    HeadScreenRequest request;request.screen.layout=8;request.screen.input_kind=2;
+    request.title=ui_localized_text(UiTextCategory::TextTitle,28,head_.screens.language);
+    return head_.screens.show(request)==HeadScreenResult::Ok;
 }
 bool Adapter::show_recovery(bool discard){
     auto& screen=head_.screens;screen.clear_data();HeadUiEvent confirm,back;
@@ -501,6 +617,11 @@ bool Adapter::show_recipes(){
     page_=Page::Recipes;return screen.menu_screen(count?text("Local recipes","Recetas locales","Recettes locales"):text("No local recipes","Sin recetas","Aucune recette"))==HeadScreenResult::Ok;
 }
 bool Adapter::handle_head(HeadEventKind kind){
+    // Background station scans are independent from the explicit picker.
+    if(kind==HeadEventKind::Wifi&&head_.wifi_events.pending&&
+       (head_.wifi_events.value.type==WifiEventType::ScanStarted||head_.wifi_events.value.type==WifiEventType::ScanCompleted)){
+        CoreWifiEvent event;head_.wifi_events.take(event);return true;
+    }
     if(kind==HeadEventKind::UiCommand&&head_.ui_events.pending){const auto event=head_.ui_events.value;const auto id=static_cast<std::uint32_t>(event.command);
         if(id>=LocalRecipes&&id<=LocalDiscardConfirmed){HeadUiEvent consumed;head_.ui_events.take(consumed);
             // Match HeadUiCommands::handle's shared menu-command prologue.
@@ -518,7 +639,7 @@ bool Adapter::handle_head(HeadEventKind kind){
             if(result.ok())result=load_recipe(recipe,false);
             if(!result.ok()){engine_->event("recipe-error",result.error?result.error:"load_failed");return show_recipes();}return true;
         }
-        page_=Page::Original;
+        if(event.command!=UiCommand::WiFiSsidGetKey)page_=Page::Original;
         if(event.command==UiCommand::Settings||event.command==UiCommand::ConfigureAzure||event.command==UiCommand::SetAzureEnabled||event.command==UiCommand::SetAzureDisabled||
            event.command==UiCommand::ConfigureEthernet||event.command==UiCommand::EthernetConnect){
             HeadUiEvent consumed;head_.ui_events.take(consumed);

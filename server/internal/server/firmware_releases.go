@@ -198,7 +198,7 @@ func (s *Server) stageRelease(w http.ResponseWriter, r *http.Request) {
 		s.json(w, 200, saved)
 		return
 	}
-	if !errors.Is(err, store.ErrNotFound) {
+	if !errors.Is(err, store.ErrNotFound) && !isFirmwareCacheCorrupt(err) {
 		s.firmwareError(w, err)
 		return
 	}

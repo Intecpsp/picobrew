@@ -3,13 +3,13 @@ package server
 import (
 	"context"
 	"errors"
-	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 	"net/http"
 	"time"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
 func otaEligible(v domain.DeviceView) bool {
@@ -17,6 +17,21 @@ func otaEligible(v domain.DeviceView) bool {
 		v.ModelSource == "firmware" && v.ModelError == "" && v.Capabilities != nil && v.Capabilities.HubOTAV1 &&
 		(v.Capabilities.Model == "pico-s" || v.Capabilities.Model == "pico-pro") &&
 		v.Status != nil && v.Status.Ready && !v.Status.Busy && !v.Status.Stopped && v.Status.DeviceUID != ""
+}
+
+// Selecting and confirming are persisted before the respective boot mutations.
+// A lost reply can leave the current application in trial mode.
+func pendingTrial(receipt firmware.InstallReceipt) bool {
+	return receipt.State != "installed" && (receipt.Stage == "selecting" || receipt.Stage == "confirming")
+}
+
+func (s *Server) savedFirmwareIdentity(id, uid string) (bool, error) {
+	var pin deviceIdentity
+	_, err := s.db.Get("device-identity", id, &pin)
+	if errors.Is(err, store.ErrNotFound) {
+		return false, nil
+	}
+	return err == nil && uid != "" && pin.UID == uid, err
 }
 
 func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
@@ -68,23 +83,39 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 	}
 	d.mu.RLock()
 	view := d.view
-	mismatch := d.identityMismatch
+	mismatch, awaitingIdentity := d.identityMismatch, d.awaitingIdentity
 	d.mu.RUnlock()
-	if mismatch || !view.Enabled || view.KeyReused || view.Adapter != "pico-standalone" {
+	if !view.Enabled || view.KeyReused || view.Adapter != "pico-standalone" {
 		s.fail(w, 409, "ota_unavailable", "Use an enabled physical brewer with a unique key")
 		return
 	}
 	var prior firmware.InstallReceipt
-	_, err := s.db.Get("firmware-install", view.ID, &prior)
+	priorVersion, err := s.db.Get("firmware-install", view.ID, &prior)
 	if err != nil && !errors.Is(err, store.ErrNotFound) {
 		s.storeError(w, err)
 		return
 	}
 	resume := prior.PackageID == in.PackageID && prior.UID == in.UID && prior.State != "installed"
+	if mismatch && !(resume && awaitingIdentity) {
+		s.fail(w, 409, "ota_unavailable", "The registered brewer identity could not be verified")
+		return
+	}
+	if pendingTrial(prior) && !resume {
+		s.fail(w, 409, "trial_pending", "Finish verifying the previous firmware package before installing another version")
+		return
+	}
 	model := prior.Model
 	if resume {
-		if err := s.pinIdentity(d, in.UID); err != nil {
-			s.deviceError(w, err)
+		// A restarted Hub can find the brewer in recovery, which has no normal
+		// status endpoint. Require the original persisted pin; the adapter
+		// independently verifies the live application or recovery identity.
+		matches, err := s.savedFirmwareIdentity(view.ID, in.UID)
+		if err != nil {
+			s.storeError(w, err)
+			return
+		}
+		if !matches {
+			s.fail(w, 409, "identity_mismatch", "The update does not match the registered brewer identity")
 			return
 		}
 	} else {
@@ -132,7 +163,7 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	receipt.Stage = previousStage
-	version, err := s.db.Put("firmware-install", view.ID, receipt, -1)
+	version, err := s.db.Put("firmware-install", view.ID, receipt, priorVersion)
 	if err != nil {
 		s.storeError(w, err)
 		return

@@ -15,6 +15,7 @@ import logging
 import os
 from pathlib import Path
 import struct
+import zipfile
 import sys
 import tempfile
 import unittest
@@ -379,7 +380,9 @@ class InstallWireTests(unittest.TestCase):
         transcript = io.StringIO()
         port_class = backup.USBSerialPort
         def short_timeout_port(raw):
-            port = port_class(raw)
+            # Queued fixture bytes are immediately available. Advance simulated
+            # time only when a read waits on an empty endpoint.
+            port = port_class(raw, clock=lambda: fake.idle_seconds)
             port.timeout = 0.02
             return port
         with mock.patch.object(probe, "CH340USBTransport", return_value=fake) as transport_factory, \
@@ -402,7 +405,6 @@ class InstallWireTests(unittest.TestCase):
                 self.assertNotIn(representation, text)
 
     def test_pinned_s_target_upgrades_version_one_then_provisions_recovery(self):
-        import zipfile
         root = Path(installer.__file__).resolve().parents[1]
         with zipfile.ZipFile(root / "releases/pico-s-pro/1.0.0.zip") as archive:
             installed = archive.read("pico-s-pro-standalone.bin")
@@ -423,6 +425,16 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(recovery.files[installer.RECOVERY_NAME], installer.RECOVERY_FILE.read_bytes())
         self.assertEqual(recovery.files[APP_NAME], packaged.read_bytes())
         self.assertEqual(recovery.files[KEY_NAME], KEY)
+
+    def test_previous_ota_release_is_approved_only_for_its_model(self):
+        for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
+            archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / "1.3.0.zip"
+            with zipfile.ZipFile(archive) as bundle:
+                old = bundle.read(model + "-standalone.bin")
+            identity = installer._image_metadata(old)
+            for operation in ("install", "install-recovery"):
+                self.assertIn(identity, installer._approved_current_applications(operation, model))
+                self.assertNotIn(identity, installer._approved_current_applications(operation, other))
 
     def test_independent_recovery_bootstrap_keeps_application_selected(self):
         files = dict(self.files)
@@ -1106,7 +1118,7 @@ class InstallWireTests(unittest.TestCase):
         if mode == "install":
             payloads[APP_NAME] = self.candidate
             payloads.update(self.web_payloads)
-        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, payloads, journal,
+        connection = installer.build_connection(cc, probe, backup.USBSerialPort(fake, clock=lambda: fake.idle_seconds), HELPER, mode, payloads, journal,
                                                web_manifest=self.web_manifest if mode == "install" else None)
         connection.helper_sent = len(HELPER)
         connection.helper_executed = True
@@ -1146,7 +1158,7 @@ class InstallWireTests(unittest.TestCase):
                              ("provision-key", {KEY_NAME: bytearray(KEY)})):
             with self.subTest(mode=mode):
                 with self.assertRaises(installer.InstallError):
-                    installer.build_connection(cc, probe, backup.USBSerialPort(fake), HELPER, mode, values, MemoryJournal())
+                    installer.build_connection(cc, probe, backup.USBSerialPort(fake, clock=lambda: fake.idle_seconds), HELPER, mode, values, MemoryJournal())
         self.assertEqual(fake.trace, [])
 
     def test_browser_registration_and_application_sequence_are_guarded(self):

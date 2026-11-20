@@ -16,7 +16,7 @@ from native_host import compiler, library_name, pic_flags, shared_flags, load_li
 
 SOURCES = [ROOT / name for name in (
     'tests/standalone/local_api_host.c', 'src/local_api.c', 'src/local_store.c',
-    'src/local_history.c', 'src/local_telemetry.c')]
+    'src/local_history.c', 'src/local_telemetry.c', 'src/http_server.c')]
 
 
 def archive_report(display):
@@ -59,7 +59,7 @@ class MachineIdentity(unittest.TestCase):
                             self.assertEqual({key: data[key] for key in ('model', 'model_name', 'model_family')},
                                              {'model': 'pico-c', 'model_name': 'Pico C', 'model_family': 'pico-c'})
                         if route in ('/api/v1', '/api/v1/health'):
-                            self.assertEqual(data['firmware_version'], '1.2.0')
+                            self.assertEqual(data['firmware_version'], '1.2.1')
                             self.assertEqual(data['api_version'], 1)
                         if route == '/api/v1':
                             self.assertIs(data['firmware_update'], False)

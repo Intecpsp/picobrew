@@ -39,7 +39,7 @@ func (s *Server) attach(d domain.Device) *runtimeDevice {
 		}
 	}
 	ctx, cancel := context.WithCancel(s.ctx)
-	rt := &runtimeDevice{view: domain.DeviceView{Device: d}, adapter: a, cancel: cancel, identityMismatch: d.Adapter == "pico-standalone"}
+	rt := &runtimeDevice{view: domain.DeviceView{Device: d}, adapter: a, cancel: cancel, identityMismatch: d.Adapter == "pico-standalone", awaitingIdentity: d.Adapter == "pico-standalone"}
 	if rt.view.ModelSource == "" {
 		if d.Model != "" {
 			rt.view.ModelSource = "manual"
@@ -201,6 +201,9 @@ func (s *Server) verifiedStatus(ctx context.Context, d *runtimeDevice) (domain.S
 	now := time.Now().UTC()
 	d.mu.Lock()
 	defer d.mu.Unlock()
+	if identityVerified || identityFailure {
+		d.awaitingIdentity = false
+	}
 	if e != nil {
 		d.view.Online = false
 		d.telemetryReconnect = false

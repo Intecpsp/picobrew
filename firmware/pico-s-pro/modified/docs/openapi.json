@@ -809,6 +809,66 @@
           }
         }
       }
+    },
+    "/api/v1/system/restart": {
+      "post": {
+        "operationId": "restartSystem",
+        "summary": "Restart the idle brewer",
+        "description": "Requires the system_restart capability, the main menu, idle controls and inactive outputs. Firmware and saved settings remain installed. Reconnect after the brewer starts.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {},
+                "additionalProperties": false
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Restart accepted",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "accepted": {
+                      "type": "boolean",
+                      "enum": [
+                        true
+                      ]
+                    }
+                  },
+                  "required": [
+                    "accepted"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "405": {
+            "$ref": "#/components/responses/MethodNotAllowed"
+          },
+          "409": {
+            "description": "Brewer unavailable for restart"
+          },
+          "503": {
+            "$ref": "#/components/responses/Unavailable"
+          }
+        },
+        "tags": [
+          "Appliance"
+        ]
+      }
     }
   },
   "components": {
@@ -1276,6 +1336,10 @@
             "enum": [
               8
             ]
+          },
+          "system_restart": {
+            "type": "boolean",
+            "description": "Supports authenticated restart from the idle main menu."
           }
         },
         "required": [
@@ -1298,7 +1362,8 @@
           "telemetry_forwarding",
           "zero_minute_steps",
           "restore_default_recipes",
-          "starter_recipe_count"
+          "starter_recipe_count",
+          "system_restart"
         ]
       },
       "Status": {

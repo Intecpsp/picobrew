@@ -117,7 +117,7 @@ describe('Hub firmware packages', () => {
           device_uid: 'test-uid',
           current_version: '1.3.0',
           install_supported: true,
-          packages: [],
+          packages: [uploaded],
         })
       if (String(url).endsWith('/firmware/updates'))
         return json({ releases: [older, release], notices: [] })

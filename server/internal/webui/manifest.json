@@ -79,8 +79,8 @@
     },
     {
       "path": "src/components/FirmwarePackages.tsx",
-      "bytes": 10344,
-      "sha256": "021e37232a046cbb8818098bb4c8c5a500f73d8267aa29bde8362af64f50f31d"
+      "bytes": 10298,
+      "sha256": "79375a9e307ff60ffdc2428335e8905c7366e3f5dfbb568fda28070e4ed28695"
     },
     {
       "path": "src/components/HistorySamples.tsx",
@@ -285,21 +285,21 @@
   ],
   "archive": {
     "path": "bundle.zip",
-    "bytes": 2694169,
-    "sha256": "4a4295ae268c4b79c5c0568771d97b85b5a44fbf2c98ec9de6c921f6391fbfd7"
+    "bytes": 2694147,
+    "sha256": "e58de892e89d90fc42cc97ae3185f5c50b6eed01db55c8d4cbdb3ccddde6e30c"
   },
   "file_count": 225,
-  "uncompressed_bytes": 5728269,
+  "uncompressed_bytes": 5728238,
   "files": [
     {
-      "path": "assets/Assistant-CON_j4yq.js",
+      "path": "assets/Assistant-B9OHYfq2.js",
       "bytes": 8175,
-      "sha256": "c2d0ba4d1260bbfb360279e33830a243c7984f5f1e0efbf76e9febf70d9263d8"
+      "sha256": "617a51089293cac1fcd9c198e5086d7288f00ac2d767f303b4a2c1b1726a1829"
     },
     {
-      "path": "assets/Catalog-C3Bmlk5Y.js",
+      "path": "assets/Catalog-CFWDs0dy.js",
       "bytes": 375025,
-      "sha256": "d57b56d4404e235754afe68749323477459646901696ea9b81d0cf0bdfd9cacc"
+      "sha256": "fc6c8dbb8d30c02cb2fce40a85bc8355e9ff895028ec0d45572c9aa065a176ba"
     },
     {
       "path": "assets/Catalog-CTPNDXgn.css",
@@ -307,84 +307,84 @@
       "sha256": "c7be2482aae1647da1c47c61dd37fd285a86df80e70af1dcb13f48323ae3cdb6"
     },
     {
-      "path": "assets/Charts-Cm1NAsb8.js",
+      "path": "assets/Charts-BITbbNcq.js",
       "bytes": 434396,
-      "sha256": "18429cdd894a2113cd7f836fb5e41c3325630a124c5622cded6e83578a8581d4"
+      "sha256": "d7e4f72a8bb8e240b51ef1e0830181cdb407e35c18a6401f0c0aa00bd99e4162"
     },
     {
-      "path": "assets/Explorer-DjMkHWBp.js",
+      "path": "assets/Explorer-CCwv_XjL.js",
       "bytes": 7860,
-      "sha256": "6a83966b004de16af26ed8091bbcd5ac9cff50c2105ff155f5684775ef3a256c"
+      "sha256": "78c4c5f4cadeb8a7c2fc02063b1bcbfa94363bb259f32e1f5030a300cd9e1323"
     },
     {
-      "path": "assets/FirmwarePackages-DqwrPDdJ.js",
-      "bytes": 13037,
-      "sha256": "7bdeee2528ef66c1c650f7b03a2cf972823d85a0b5d172a1d25237cf6f033be9"
+      "path": "assets/FirmwarePackages-DHpdbi_9.js",
+      "bytes": 13006,
+      "sha256": "c38f5daafe4bc111550315097d007710f454c404d42af0d34290b835a78db958"
     },
     {
-      "path": "assets/Fleet-ww4g_bHa.js",
+      "path": "assets/Fleet-blYA26Ve.js",
       "bytes": 10040,
-      "sha256": "9e0ecf04d9e23dd4f571ccee63aaf97863556d4d5bbb4f9c011d1698dcc11852"
+      "sha256": "51e23d457bd0d295182b0a74e4879170b2d2f317c5086797de1ad8e32ab7f58a"
     },
     {
-      "path": "assets/History-D2RUZ4XZ.js",
+      "path": "assets/History-tTIe4usg.js",
       "bytes": 13576,
-      "sha256": "24a4e05520681066d8308c956368b5a0b82ff4aead9c87399285a9a675221cd0"
+      "sha256": "cddfb53e2cae7fe4310e692c3b468d3115644a27476923ff89cb86768532e5b1"
     },
     {
-      "path": "assets/Machine-Cmth1A8K.js",
+      "path": "assets/Machine-CKIfhM1h.js",
       "bytes": 34878,
-      "sha256": "973dca301ac90cc184768dc6a03f7b2013fdd6a4bff2f75f62e7308100c2ab6c"
+      "sha256": "e02dbaf1a7280038dbf664847bab54f013b7e838b176252471e2d9e0f2d14dd9"
     },
     {
-      "path": "assets/PDFGuide-DlLj5dgL.js",
+      "path": "assets/PDFGuide-Bm6y22Su.js",
       "bytes": 503515,
-      "sha256": "d15a95cf91e1cfa2f7f53c02cf6a7be8a812b7a04cff57b06f5f5ef7f3e1bc8d"
+      "sha256": "cc0ce5c8e0c6607b67f989fb35340165349f2020e4f0b559969e590861db0d72"
     },
     {
-      "path": "assets/Program-DDHtjwuC.js",
+      "path": "assets/Program-CvDE7LA5.js",
       "bytes": 5714,
-      "sha256": "e8a0b2b1d0992395e799a17a01cb8c1d73f0d247258e6656ac32c6454a36446b"
+      "sha256": "ea75d6976d796850576291a6546a844fa4ccb3111b92730f0b5bec621ebd6855"
     },
     {
-      "path": "assets/Recipes-DGmRW3pi.js",
+      "path": "assets/Recipes-tQDriugU.js",
       "bytes": 37805,
-      "sha256": "336a708415e11eb0f136039ab913d2b71bbaf0114158fe38c4ddf7cc04185672"
+      "sha256": "bd3dba4571ee4b5ef3b5a789560ed971ec33c592f207d4504013ea928fcc95b2"
     },
     {
-      "path": "assets/Settings-DsdZkt9z.js",
+      "path": "assets/Settings-BGySV6at.js",
       "bytes": 19472,
-      "sha256": "f79f2243686372dd5f76cae55a11e70c0a19630a8c9b52a23885f30006db7086"
+      "sha256": "19fe8820b915a176dc690728952379a903362a8f88cf06a3b2be4b626bbd569b"
     },
     {
-      "path": "assets/TransferDialog-E3djIlWx.js",
+      "path": "assets/TransferDialog-Crd2B1XX.js",
       "bytes": 8742,
-      "sha256": "4238d2b74147347d733284207e59abe9f8f81e19da49d57290e164c97f1ba8bb"
+      "sha256": "a67f6ebf9201eec1500a6a1c113977ad5eb37056ae8e5cb99c20ce252da13188"
     },
     {
-      "path": "assets/capabilities-CxchvBBO.js",
+      "path": "assets/capabilities-g5zSat3p.js",
       "bytes": 1207,
-      "sha256": "f23ce2f42818b16281f8890e525697ad0604aebf54cfe4e391176a9c4c0c56b1"
+      "sha256": "4888b9b4691340d10e687b39b0d075a12731c301325b9054014620aedc64c665"
     },
     {
-      "path": "assets/clock-3-D5Av5mxZ.js",
+      "path": "assets/clock-3-DauTo992.js",
       "bytes": 198,
-      "sha256": "5b863e8cac9ecf071369d82722a43ed682760ce2d1eb88c51533efce03a3adeb"
+      "sha256": "280fc2a07a67627d49c573fe0e8be033cf6f22a74dc6b520e75f122f85da56f3"
     },
     {
-      "path": "assets/copy-r6_K-iAO.js",
+      "path": "assets/copy-CtJ3ClcF.js",
       "bytes": 265,
-      "sha256": "73f0312aba7425ae6d10ba22df1edc6c3aa10c87eafe0ced9b121d8c536d9145"
+      "sha256": "b903b88d4fe2e2800a41cad5a167d72d257a94d9f877e69e83bd20d46158cf96"
     },
     {
-      "path": "assets/flask-conical-NW1K8qKq.js",
+      "path": "assets/flask-conical-zru9DJWA.js",
       "bytes": 331,
-      "sha256": "bb6c47f92a1393175874ca8434ed844147b5911e3d10cb752fa109936f124694"
+      "sha256": "0fd66bf9b931be6beb36cf2c0f496b5dc7fdc3dbec02d5e76fe73e6b98ce634b"
     },
     {
-      "path": "assets/index-CaWmfP7c.js",
+      "path": "assets/index-DSmNN1NF.js",
       "bytes": 248965,
-      "sha256": "b84c20776648feffb027d61164b8cfcc0ea860a471d9baaf0d3808b42d606a53"
+      "sha256": "21367cc38cdefbcce960f779fa1d41de7f4d1fdd76d9c34e3e2d23dde2c60a29"
     },
     {
       "path": "assets/index-cST6jLjF.css",
@@ -397,9 +397,9 @@
       "sha256": "b4c8353ded0d88d2e2009574a29eb4e0c3ff7e942ecdf51ef5f71566a9667f31"
     },
     {
-      "path": "assets/play-BH5znpy9.js",
+      "path": "assets/play-DP-xSciJ.js",
       "bytes": 219,
-      "sha256": "48c2ebc397234c616bbc6acd6ea955b451c9525ad387bce5f5e7490b3b75c85c"
+      "sha256": "7797fb50b03eb287d504b5d43e46faa0ef6c50114dbf7b6ea040db0ba8d74a5f"
     },
     {
       "path": "assets/recipeDisplay-BX_0iFyu.js",
@@ -407,29 +407,29 @@
       "sha256": "a8c14b11772ce2a34f9522e13135b65b1ecd28088de948b2ab063394b301cf12"
     },
     {
-      "path": "assets/refresh-cw-q8PMg_3N.js",
+      "path": "assets/refresh-cw-DxeQf-kC.js",
       "bytes": 554,
-      "sha256": "dc2be5f87a0b9d055c576b6a8e07a896a0b92ad84cebb3f7ecd5c0c93f6ab688"
+      "sha256": "dd6feaa3194a5687eaad72f0a161cc2a494b390565f4a2a29aa73f60e77695d4"
     },
     {
-      "path": "assets/save-BgJRxQum.js",
+      "path": "assets/save-DNE8ZIQ3.js",
       "bytes": 356,
-      "sha256": "cc0b294da4e7697813f770ad9d16e26f4dc251bb158972d1c7e295a9a3084d36"
+      "sha256": "8f6d80641a03a4247cb80ea4702bbf1331b9850f5ba8779ea97552a1bcf13235"
     },
     {
-      "path": "assets/trash-CdYgjh5E.js",
+      "path": "assets/trash-CZLaupIl.js",
       "bytes": 375,
-      "sha256": "dc28f6339d8cac28613531a1c001b22bd252d94b669fc53baf23d58291f6e9ec"
+      "sha256": "b7057541ec8818e4e91486485077718bf7abc3036958eadd5fd7b7bf8c1a6706"
     },
     {
-      "path": "assets/utils-BlAEprJt.js",
+      "path": "assets/utils-DRgkNL2j.js",
       "bytes": 3050,
-      "sha256": "13a17fa138e910d0a7e5d9bb4c31ff7caa347313911e8a1b4d22110179962e51"
+      "sha256": "cc5ff12f150b048947817e58ae7ea3c68bfb0a21a05970f86537344ebf4e61af"
     },
     {
       "path": "index.html",
       "bytes": 519,
-      "sha256": "cfd4ee84a931c6e27307b0c2cc321009c06f81335650d74f8e7026ed377ec52a"
+      "sha256": "9d9b4bdaf51acf6698272180042778b2c8fc9735c58a73ffb3a5423543f3e77f"
     },
     {
       "path": "third-party-licenses.md",

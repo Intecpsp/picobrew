@@ -20,7 +20,7 @@ from native_host import (compiler, library_name, pic_flags, shared_flags, load_l
                          close_library, executable_name, sanitizer_flags, runtime_environment)
 TEMP = tempfile.TemporaryDirectory(prefix="picobrew-local-api-")
 LIBRARY = Path(TEMP.name) / library_name("api")
-SOURCES = [ROOT / "tests/standalone/local_api_host.c", ROOT / "src/local_api.c", ROOT / "src/local_store.c", ROOT / "src/local_history.c", ROOT / "src/local_telemetry.c"]
+SOURCES = [ROOT / "tests/standalone/local_api_host.c", ROOT / "src/local_api.c", ROOT / "src/local_store.c", ROOT / "src/local_history.c", ROOT / "src/local_telemetry.c", ROOT / "src/http_server.c"]
 subprocess.run([compiler(), "-std=c11", "-Wall", "-Wextra", "-Werror", *pic_flags(), *shared_flags(), "-O1", "-g",
                 "-I" + str(ROOT / "include"), *map(str, SOURCES), "-o", str(LIBRARY)], check=True)
 LIB = load_library(LIBRARY)
@@ -31,6 +31,8 @@ LIB.test_session.argtypes = [ctypes.c_void_p, ctypes.c_size_t]
 LIB.test_corrupt.argtypes = [ctypes.c_char_p, ctypes.c_uint]
 LIB.test_load_recipe.argtypes = [ctypes.c_char_p]
 LIB.test_event.argtypes = [ctypes.c_char_p, ctypes.c_char_p]
+LIB.test_http_request.argtypes = [ctypes.c_char_p, ctypes.c_char_p, ctypes.c_void_p, ctypes.c_size_t]
+LIB.test_restart_state.argtypes = [ctypes.c_uint, ctypes.c_bool, ctypes.c_int]
 LIB.test_history_start.argtypes = [ctypes.c_char_p]
 LIB.test_history_advance.argtypes = [ctypes.c_uint, ctypes.c_uint]
 
@@ -72,6 +74,58 @@ class LocalApi(unittest.TestCase):
         self.assertEqual(request("POST", path + "/enter", identity)[0], 200)
         self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
 
+    def test_authenticated_restart_through_http(self):
+        path = "/api/v1/system/restart"
+        key = "ab" * 32
+        def wire(method="POST", body="{}", auth=key, configured=key):
+            header = f"{method} {path} HTTP/1.1\r\nHost: pico\r\n"
+            if auth:
+                header += f"Authorization: Bearer {auth}\r\n"
+            if method == "POST":
+                header += f"Content-Type: application/json\r\nContent-Length: {len(body)}\r\n"
+            request_bytes = (header + "\r\n" + body).encode()
+            result = ctypes.create_string_buffer(2048)
+            self.assertEqual(LIB.test_http_request(configured.encode(), request_bytes, result, len(result)), 1)
+            header, data = result.value.split(b"\r\n\r\n", 1)
+            return int(header.split()[1]), json.loads(data)
+
+        self.assertTrue(request("GET", "/api/v1")[1]["system_restart"])
+        LIB.test_restart_state(4, False, -1)
+        self.assertEqual(wire(configured="")[0], 503)
+        self.assertEqual(wire(auth="")[0], 401)
+        self.assertEqual(wire(auth="0" * 64)[0], 401)
+        self.assertEqual(wire("GET", "")[0], 405)
+        for invalid in ["", "null", "[]", '{"clear":true}', "{} trailing"]:
+            self.assertEqual(wire(body=invalid)[0], 400)
+        LIB.test_ready(0)
+        self.assertEqual(wire()[0], 409)
+        LIB.test_ready(1)
+        LIB.test_busy(1)
+        self.assertEqual(wire()[0], 409)
+        LIB.test_busy(0)
+        for state in [(0, False, -1), (4, True, -1), *((4, False, p) for p in (5, 8, 24, 27))]:
+            LIB.test_restart_state(*state)
+            self.assertEqual(wire()[0], 409)
+        LIB.test_restart_state(4, False, -1)
+        request("POST", "/api/v1/commands", {"command":"stop"})
+        self.assertEqual(wire()[0], 409)
+        request("POST", "/api/v1/commands", {"command":"clear-stop"})
+        LIB.test_ota_enable(1)
+        self.assertEqual(wire()[0], 409)
+        LIB.test_ota_enable(0)
+        self.assertEqual(LIB.test_restart_pending(), 0)
+        settings_data = {"language":"fr","detailed_status":True,"temperature_unit":"C"}
+        self.assertEqual(request("PATCH", "/api/v1/settings", settings_data)[0], 200)
+        writes = LIB.test_write_count()
+        self.assertEqual(wire(), (202, {"accepted":True}))
+        self.assertEqual(LIB.test_restart_pending(), 1)
+        self.assertEqual(wire()[0], 409)
+        self.assertEqual(LIB.test_write_count(), writes)
+        LIB.test_reset(0)
+        self.assertEqual(LIB.test_restart_pending(), 0)
+        self.assertEqual(LIB.test_load_settings(), 1)
+        self.assertEqual(request("GET", "/api/v1/settings"), (200, settings_data))
+
     def test_discovery_health_status_and_screen(self):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
@@ -79,7 +133,7 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["zero_minute_steps"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.3.0")
+        self.assertEqual(data["firmware_version"], "1.3.1")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]

@@ -14,7 +14,7 @@ static PicoLocalApi api;
 static struct {
     uint32_t now;
     unsigned polls, begins, disconnects, removals, energized_after_stop;
-    unsigned address_reads;
+    unsigned address_reads, scan_size;
     int pins[40], wifi, open_file;
     size_t file_cursor;
     bool irq_masked, stopping, queue_circulate, stop_on_power, stop_on_poll, stop_in_brew_menu;
@@ -128,15 +128,24 @@ static int file_remove(void *c, const char *name)
     (void)c; ++sim.removals; int i=find_file(name); if (i>=0) memset(&files[i],0,sizeof files[i]); return 0;
 }
 static bool yes(void *c) { (void)c; return true; }
+static int scan_wifi(void *c, PicoWifiNetwork rows[PICO_WIFI_SCAN_LIMIT])
+{
+    (void)c;
+    for (unsigned i=0; i<sim.scan_size; ++i) {
+        snprintf(rows[i].name,sizeof rows[i].name,"Network %u",i);
+        rows[i].security=7;
+    }
+    return (int)sim.scan_size;
+}
 static int wifi_status(void *c) { (void)c; return sim.wifi; }
-static int wifi_begin(void *c, const char *s, const uint8_t *p, uint8_t sec, bool binary)
+static int wifi_begin(void *c, const char *s, const uint8_t *p, uint8_t sec, uint8_t binary)
 { (void)c; (void)s; (void)p; (void)sec; (void)binary; ++sim.begins; return sim.wifi; }
 static void disconnect(void *c) { (void)c; ++sim.disconnects; }
 static PicoIpv4 ip(void *c) { (void)c; return (PicoIpv4){{192,168,1,42}}; }
 static void ip_config(void *c, PicoIpv4 *local, PicoIpv4 *dns_ip, PicoIpv4 *gateway, PicoIpv4 *mask)
 {
     (void)c; ++sim.address_reads;
-    *local=*dns_ip=*gateway=*mask=sim.no_ip ? (PicoIpv4){{0}} : ip(NULL);
+    *local=*dns_ip=*gateway=*mask=sim.no_ip || sim.wifi!=3 ? (PicoIpv4){{0}} : ip(NULL);
 }
 static int dns(void *c, const char *h, PicoIpv4 *a)
 { (void)c; (void)h; (void)a; assert(!"Unexpected DNS request"); return -1; }
@@ -150,7 +159,7 @@ static bool md5(void *c, const uint8_t *data, size_t length, uint8_t digest[16],
 static void reset_mcu(void *c) { (void)c; assert(!"Unexpected firmware activation/reset"); }
 static const PicoNetworkPlatform network = {.millis=clock_ms, .delay_ms=delay_ms,
     .serial_write=serial, .wifi_initialize=yes, .wifi_initialized=yes, .wifi_connecting=yes,
-    .wifi_status=wifi_status, .wifi_begin=wifi_begin, .wifi_disconnect=disconnect, .local_ip=ip,
+    .scan_wifi=scan_wifi, .wifi_status=wifi_status, .wifi_begin=wifi_begin, .wifi_disconnect=disconnect, .local_ip=ip,
     .resolve_host=dns, .set_dns=set_dns, .client_connect=connect_client,
     .client_connected=disconnected, .mac_address=mac, .md5=md5, .file_begin=no_op,
     .file_open=file_open, .file_read=file_read, .file_write=file_write,
@@ -380,26 +389,39 @@ static void test_bounded_wifi(void)
     assert(pico_network_check_status(&app.network,false,true)==1);
     puts("PASS: WiFi CONNECTING is bounded and local connectivity requires no DNS");
 }
+static void test_network_picker_back(void)
+{
+    for (unsigned count=0; count<=PICO_WIFI_SCAN_LIMIT; count+=PICO_WIFI_SCAN_LIMIT) {
+        initialize(); ready(); pico_display_initialize();
+        sim.scan_size=count; sim.click_on_clock=true;
+        strcpy(app.settings.wifi_ssid,"saved");
+        assert(pico_ui_scan_and_connect_wifi()==PICO_WIFI_BACK);
+        assert(!sim.begins && !sim.disconnects && !strcmp(app.settings.wifi_ssid,"saved"));
+        assert(!strcmp(app.ui.menu_labels[0],"Back"));
+    }
+}
 static void test_network_status_failure(void)
 {
     uint8_t expected[PICO_FRAMEBUFFER_SIZE];
     initialize(); ready(); pico_display_initialize();
-    pico_display_clear(); pico_screen_wifi_connection_failed();
+    pico_display_clear(); pico_display_center_text(3, "Connecting...");
     memcpy(expected,app.ui.display.framebuffer,sizeof expected);
     sim.click_on_clock=true;
     pico_ui_show_network_addresses();
-    assert(sim.address_reads==0 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
+    assert(!sim.begins && !sim.disconnects && sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
     initialize(); ready(); pico_display_initialize();
+    pico_display_clear(); pico_display_center_text(3, "Waiting for IP");
+    memcpy(expected,app.ui.display.framebuffer,sizeof expected);
     sim.wifi=3;sim.no_ip=true;sim.click_on_clock=true;
     pico_ui_show_network_addresses();
-    assert(sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
-    puts("PASS: network status reports connection failure instead of displaying stale or absent addresses");
+    assert(!sim.begins && !sim.disconnects && sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
+    puts("PASS: network status distinguishes association and DHCP without starting a connection");
 }
 int main(void)
 {
     setvbuf(stdout,NULL,_IOLBF,0);
     test_boot_and_offline_adapters(); test_guards_and_queue();
     test_checkpoint_restore_is_explicit_and_recipe_bound();
-    test_stop_unwinds_workflows(); test_bounded_wifi(); test_network_status_failure();
+    test_stop_unwinds_workflows(); test_bounded_wifi(); test_network_picker_back(); test_network_status_failure();
     puts("Standalone control integration tests passed."); return 0;
 }

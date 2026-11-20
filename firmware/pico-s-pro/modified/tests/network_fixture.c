@@ -37,7 +37,7 @@ B(fixture_initialized, void *c)
 B(fixture_initialize, void *c)
 B(fixture_connecting, void *c)
 I(fixture_status, void *c)
-I(fixture_begin, void *c, const char *s, const uint8_t *p, uint8_t security, bool binary)
+I(fixture_begin, void *c, const char *s, const uint8_t *p, uint8_t security, uint8_t binary)
 V(fixture_disconnect, void *c)
 PicoIpv4 fixture_local(void *c)
 {

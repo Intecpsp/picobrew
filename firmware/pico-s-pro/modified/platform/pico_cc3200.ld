@@ -33,10 +33,11 @@ SECTIONS
     .data : AT(__init_data) {
         _data = .; *(.data*) . = ALIGN(8); _edata = .;
     } > SRAM
-    /* ResetISR clears from _bss to _ebss. Use the space before the aligned
-       DMA table for the standalone API state, which needs only word alignment. */
+    /* ResetISR clears this region through _ebss. These word-aligned objects
+       fit before the 1 KiB-aligned DMA table in the standalone application. */
     .api_bss (NOLOAD) : {
         . = ALIGN(8); _bss = .; *(.pico_api_bss)
+        *(.bss.Serial) *(.pico_telemetry_bss)
     } > SRAM
     .bss (NOLOAD) : {
         /* The SDK DMA table requires 1024-byte alignment. Put it at the

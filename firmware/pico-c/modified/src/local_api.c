@@ -202,7 +202,7 @@ static int discovery(Writer *w)
             "\"settings\",\"stop\",\"clear-stop\",\"encoder\"],\"dedicated_pause_resume\":false,"
             "\"front_panel\":true,\"events_persistent\":false,\"history_persistent\":true,"
             "\"history_capacity_records\":4224,\"history_capacity_sessions\":8,"
-            "\"telemetry_forwarding\":true,"
+            "\"telemetry_forwarding\":true,\"system_restart\":true,"
             "\"firmware_update\":false,"
             "\"recipe_labels\":\"printable ASCII\",");
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
@@ -631,6 +631,30 @@ static int telemetry(Writer *w, const char *method, const char *body, size_t len
 bad:
     return error(w, 400, "invalid_telemetry", "Use enabled, an IPv4 address or hostname, and port 1-65535");
 }
+static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
+                          const char *body, size_t length)
+{
+    if (strcmp(method, "POST"))
+        return error(w, 405, "method_not_allowed", "Use POST for restart");
+    Json j = {body, body + length, true};
+    if (!token(&j, '{') || !token(&j, '}') || !done(&j))
+        return error(w, 400, "invalid_request", "Send an empty JSON object");
+    PicoApplication *a = api->application;
+    if (api->restart_pending || !pico_local_control_is_ready() || pico_local_control_busy() ||
+        pico_local_control_stopped() || a->state.control_signals.enabled ||
+        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
+        return error(w, 409, "busy", "Restart requires an idle brewer");
+    static const uint8_t outputs[] = {
+        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
+    };
+    for (unsigned i = 0; i < sizeof outputs; ++i)
+        if (a->hardware->digital_read(a->hardware_context, outputs[i]))
+            return error(w, 409, "busy", "An output is active");
+    text(w, "{\"accepted\":true}");
+    if (w->ok) api->restart_pending = true;
+    return 202;
+}
+
 int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *path,
                           const char *body, size_t length, char *response, size_t capacity,
                           size_t *response_length)
@@ -651,6 +675,8 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
         error(&w, 405, "method_not_allowed", "Use GET for health");
     else if (!strcmp(path, "/api/v1")) result = get ? discovery(&w) :
         error(&w, 405, "method_not_allowed", "Use GET for discovery");
+    else if (!strcmp(path, "/api/v1/system/restart"))
+        result = restart_system(api, &w, method, body, length);
     else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET for status");
     else if (!strcmp(path, "/api/v1/display")) result = get ? display(api, &w) :

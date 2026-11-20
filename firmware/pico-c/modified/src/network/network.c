@@ -131,15 +131,41 @@ size_t pico_network_url_encode(const char *input, char *output, size_t capacity)
     return used;
 }
 
+#if PICO_STANDALONE
+static int hex_digit(uint8_t digit)
+{
+    if (digit >= '0' && digit <= '9')
+        return digit - '0';
+    digit |= 0x20;
+    return digit >= 'a' && digit <= 'f' ? digit - 'a' + 10 : -1;
+}
+#endif
+
 int pico_network_connect_access_point(PicoNetwork *n)
 {
     pico_network_log(n, "I", "WIFI", "connectToApInternal");
     PicoSettings *s = n->settings;
     if (s->wifi_security == 5) {
+#if PICO_STANDALONE
+        const uint8_t *key = (const uint8_t *)s->wifi_password;
+        size_t length = strlen(s->wifi_password);
+        uint8_t decoded[13];
+        if (length == 10 || length == 26) {
+            length /= 2;
+            for (size_t i = 0; i < length; ++i) {
+                int high = hex_digit(key[2 * i]), low = hex_digit(key[2 * i + 1]);
+                if (high < 0 || low < 0)
+                    return -1;
+                decoded[i] = (uint8_t)((high << 4) | low);
+            }
+            key = decoded;
+        } else if (length != 5 && length != 13) {
+            return -1;
+        }
+        return n->platform->wifi_begin(n->platform_context, s->wifi_ssid, key, 5, (uint8_t)length);
+#else
         pico_network_log(n, "I", "WIFI", s->wifi_ssid);
-#if !PICO_STANDALONE
         pico_network_log(n, "I", "WIFI", s->wifi_password);
-#endif
         int status = n->platform->wifi_begin(n->platform_context, s->wifi_ssid,
                                              (const uint8_t *)s->wifi_password, 5, false);
         if (status != 3) {
@@ -158,6 +184,7 @@ int pico_network_connect_access_point(PicoNetwork *n)
             status = n->platform->wifi_begin(n->platform_context, s->wifi_ssid, decoded, 5, true);
         }
         return status;
+#endif
     }
     return n->platform->wifi_begin(n->platform_context, s->wifi_ssid,
                                    (const uint8_t *)s->wifi_password, s->wifi_security, false);
@@ -171,7 +198,9 @@ bool pico_network_connect_stored(PicoNetwork *n)
     for (unsigned attempt = 0; attempt < 2; ++attempt) {
         if (pico_local_cancelled())
             return false;
-        pico_network_connect_access_point(n);
+        /* Invalid key syntax is rejected before switching the active network. */
+        if (pico_network_connect_access_point(n) < 0)
+            return false;
         uint32_t started = net_now(n);
         bool associated = false;
         for (;;) {

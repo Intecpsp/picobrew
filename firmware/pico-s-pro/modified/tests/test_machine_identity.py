@@ -15,7 +15,7 @@ from native_host import compiler, library_name, pic_flags, shared_flags, load_li
 
 SOURCES = [ROOT / name for name in (
     'tests/standalone/local_api_host.c', 'src/local_api.c', 'src/local_store.c',
-    'src/local_history.c', 'src/local_telemetry.c')]
+    'src/local_history.c', 'src/local_telemetry.c', 'src/http_server.c')]
 
 
 class MachineIdentity(unittest.TestCase):
@@ -40,7 +40,7 @@ class MachineIdentity(unittest.TestCase):
                         self.assertEqual({key: data[key] for key in ('model', 'model_name', 'model_family')},
                                          {'model': model, 'model_name': name, 'model_family': 'pico-s-pro'})
                         if route != '/api/v1/status':
-                            self.assertEqual(data['firmware_version'], '1.3.0')
+                            self.assertEqual(data['firmware_version'], '1.3.1')
                             self.assertEqual(data['api_version'], 1)
                 finally:
                     close_library(library)

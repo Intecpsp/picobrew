@@ -36,10 +36,11 @@ public:
     bool stop(const char* reason);
     bool show_home();
     bool show_recipes();
+    bool tick_wifi(std::uint32_t now);
     bool service_stage(oem::CoreTickStage, std::uint32_t);
     bool service_effect(const oem::CoreAction&, std::uint32_t&);
 private:
-    enum class Page { Home, Recipes, Original };
+    enum class Page { Home, Recipes, Original, Scanning, Networks };
     oem::CoreApplication& core_;
     oem::HeadApplication& head_;
     Ports ports_;
@@ -80,6 +81,13 @@ private:
     bool clear_stop();
     bool show_settings();
     bool show_network();
+    bool start_wifi_scan();
+    bool show_wifi_results(std::int32_t count);
+    bool select_wifi(const oem::HeadUiEvent&);
+    bool network_message(const char* title);
+    std::array<oem::HeadWifiNetwork,31> scanned_{};
+    std::size_t scanned_count_ = 0;
+    std::uint32_t scan_started_ = 0;
     bool show_recovery(bool discard);
     api::Result resume_interrupted(bool confirmed);
     api::Result discard_interrupted();

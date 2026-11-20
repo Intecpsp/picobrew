@@ -25,7 +25,7 @@ void pico_ui_draw_menu_items(uint32_t item_count, int selected_row, int first_ro
             pico_graphics_bitmap(&pico_ui_active->display, 0, y,
                                  (const uint8_t *)"\x1f?\x7f\x7f\x7f\x7f?\x1f", 8, 8, 1);
             pico_graphics_text_color(&pico_ui_active->display, 0);
-            pico_display_center_text(display_row, pico_ui_active->menu_labels[0] + index * 0x16);
+            pico_display_center_text(display_row, pico_ui_active->menu_labels[index]);
             pico_graphics_text_color(&pico_ui_active->display, 1);
             if (item_count == 1) {
                 bitmap = pico_ui_bitmap_footer_single;
@@ -36,7 +36,7 @@ void pico_ui_draw_menu_items(uint32_t item_count, int selected_row, int first_ro
         } else {
             display_row = (short)first_row + display_row;
             pico_graphics_fill_rectangle(&pico_ui_active->display, 0, display_row * 8, 0x80, 8, 0);
-            pico_display_center_text(display_row, pico_ui_active->menu_labels[0] + index * 0x16);
+            pico_display_center_text(display_row, pico_ui_active->menu_labels[index]);
         }
     }
     return;
