@@ -535,7 +535,7 @@ bool Adapter::show_wifi_results(std::int32_t count){
         const auto& ap=scanned_[i];
         HeadUiEvent event;event.command=UiCommand::WiFiSsidGetKey;event.flags=1;event.index=i;
         char label[52];
-        std::snprintf(label,sizeof label,"%s%s%s",ap.encrypted?"\xc2\x82 ":"",ap.rssi<-75?"[weak] ":"",ap.ssid.data());
+        ::snprintf(label,sizeof label,"%s%s%s",ap.encrypted?"\xc2\x82 ":"",ap.rssi<-75?"[weak] ":"",ap.ssid.data());
         if(!screen.menu_data.append(event,label))return false;
     }
     if(!scanned_count_)return network_message(count<0?text("Scan failed","Error de escaneo","Echec recherche"):
