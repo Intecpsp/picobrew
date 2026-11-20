@@ -11,7 +11,8 @@ model scope.
 |---|---|---|
 | Fleet | Persistent machine registry, simultaneous independent polling, connection status, live browser stream | One owner; no team roles or remote-site agent |
 | Pico S/Pro | Adapter for the standalone API v1: OLED, dial, programs, stop latch, recipes, preferences, history and forwarding | Requires that firmware; protocol-tested with local HTTP fixtures, not newly tested on a physical brewer in this project |
-| Z / Zymatic / Pico C | Recipe planning profiles, quantity adaptation and export; simulated operation for demos | Custom firmware ports and live Hub compatibility remain to be implemented |
+| Pico C | Standalone C API adapter, automatic identity/telemetry pairing, explicit OLED geometry, recipes/history and controller-scoped packages | Requires the reconstructed C standalone firmware; native/host tested, physical installation and brewing unverified; no OTA installer |
+| Z / Zymatic | Recipe planning profiles, quantity adaptation and export; simulated operation for demos | Custom firmware ports and live Hub compatibility remain to be implemented |
 | Recipe library | CRUD, revision conflict protection, archived revisions, ingredient plans and distinct native-program editor | Program-only records have no inferred ingredients, batch volume or efficiency; full ingredient/style databases are not included |
 | Community catalogue | Recipes → Browse all: 5,216 curated entries, rounded display quantities, expandable sources/credits, 88 bundled image/text assets, rendered guides and independent library copies | Original measurements and records are preserved; optional PDF manuals require local installation |
 | Brewing details | Water chemistry, fermentation/carbonation metadata, mash and boil attributes | Metadata does not imply a connected fermenter or automatic addition hardware |
@@ -24,7 +25,7 @@ model scope.
 | AI monitoring | Opt-in at start or during a live brew; exact-session consent, contextual questions, five-minute observations saved with that brew | Advisory; no low-level control or live recipe/temperature overrides; consent does not carry into the next brew |
 | AI analysis | Analysis in the selected journal entry, saved results and JSON export, downsampled bounded context | No invented measurements; raw archive/export remains available; a removed machine does not remove archived analysis |
 | Shopping list | Aggregate selected recipes by ingredient and unit | Inventory purchasing, supplier integrations and stock deduction are absent |
-| Machine identity | Read compile-time S/Pro model after authenticated UID verification; explicit fallback for older firmware | Reported identity describes the installed build, not independent hardware detection |
+| Machine identity | Read compile-time C/S/Pro model and explicit C display variant after authenticated UID verification; explicit fallback for older firmware | Reported identity describes the installed build, not independent hardware detection; C package applicability also requires a separate UID-bound controller observation |
 | Telemetry forwarding | Automatic Hub connection on pairing; persistent advanced manual override in the Hub; ingest known-UID unsigned observations | Unsigned forwarding is not authoritative status or a control channel |
 | Data | SQLite persistence, encrypted credentials, portable nonsecret ZIP, full-directory recovery instructions | No browser upload/restore of a full encrypted data directory |
 | API | Authenticated REST endpoints, OpenAPI schemas/catalog, in-app explorer, SSE | Hub authentication differs from the appliance's bearer-key API |

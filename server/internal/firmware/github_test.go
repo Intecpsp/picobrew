@@ -73,6 +73,9 @@ func TestGitHubCatalogPinsOneCommitAndImportUsesSameValidator(t *testing.T) {
 				}
 			}
 		}
+		if strings.Contains(r.URL.Path, "/firmware/pico-c/") {
+			return githubResponse(http.StatusNotFound, nil), nil
+		}
 		t.Fatalf("unexpected URL %s", r.URL)
 		return nil, errors.New("unexpected request")
 	})}}
@@ -80,7 +83,7 @@ func TestGitHubCatalogPinsOneCommitAndImportUsesSameValidator(t *testing.T) {
 	if err != nil || catalog.Commit != commit || catalog.Ref != "" || len(catalog.Packages) != 2 {
 		t.Fatalf("catalog: %+v, %v", catalog, err)
 	}
-	if len(requests) != 4 {
+	if len(requests) != 6 {
 		t.Fatalf("unexpected catalog requests: %v", requests)
 	}
 	archive, candidate, err := client.Import(context.Background(), "owner/repo", commit, "pico-pro")
@@ -88,7 +91,7 @@ func TestGitHubCatalogPinsOneCommitAndImportUsesSameValidator(t *testing.T) {
 		t.Fatalf("import: %+v, %v", candidate, err)
 	}
 	validated, err := ValidateArchive(archive)
-	if err != nil || validated != candidate || len(requests) != 12 {
+	if err != nil || validated != candidate || len(requests) != 14 {
 		t.Fatalf("import was not fully validated: %+v, %v; requests=%d", validated, err, len(requests))
 	}
 	sets["pico-pro"]["pico-pro-standalone.bin"][20] ^= 1

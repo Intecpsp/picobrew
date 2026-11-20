@@ -16,6 +16,7 @@ import (
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
@@ -137,9 +138,10 @@ func (s *Server) firmwareGitHubCatalog(w http.ResponseWriter, r *http.Request) {
 
 func (s *Server) firmwareGitHubImport(w http.ResponseWriter, r *http.Request) {
 	var in struct {
-		Repository string `json:"repository"`
-		Commit     string `json:"commit"`
-		Model      string `json:"model"`
+		Repository     string `json:"repository"`
+		Commit         string `json:"commit"`
+		Model          string `json:"model"`
+		DisplayVariant string `json:"display_variant"`
 	}
 	if !s.decode(w, r, &in) {
 		return
@@ -149,8 +151,8 @@ func (s *Server) firmwareGitHubImport(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
-	if !firmware.ValidCommit(in.Commit) || !firmware.ValidModel(in.Model) {
-		s.fail(w, 400, "firmware_github_selection", "Choose a supported model and a full 40-character GitHub commit")
+	if !firmware.ValidCommit(in.Commit) || !firmware.ValidVariant(in.Model, in.DisplayVariant) {
+		s.fail(w, 400, "firmware_github_selection", "Choose a supported model, an explicit C display variant and a full 40-character GitHub commit")
 		return
 	}
 	if !s.beginFirmwareWork(w) {
@@ -167,7 +169,7 @@ func (s *Server) firmwareGitHubImport(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
-	archive, metadata, err := s.firmwareGitHub.Import(r.Context(), repository, in.Commit, in.Model)
+	archive, metadata, err := s.firmwareGitHub.Import(r.Context(), repository, in.Commit, in.Model, in.DisplayVariant)
 	if err != nil {
 		s.firmwareError(w, err)
 		return
@@ -534,12 +536,29 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 		out.Reason = "Simulators do not receive firmware."
 	} else if !d.identityMismatch && d.view.Capabilities != nil {
 		out.CurrentVersion = d.view.Capabilities.FirmwareVersion
+		_, modelError := device.ReportedModel(*d.view.Capabilities)
 		if d.view.ModelSource == "firmware" && d.view.ModelError == "" &&
-			firmware.ValidModel(d.view.Capabilities.Model) && d.view.Status != nil {
+			modelError == nil && firmware.ValidModel(d.view.Capabilities.Model) && d.view.Status != nil && validateStatusModel(*d.view.Status, *d.view.Capabilities) == nil {
 			out.Model = d.view.Capabilities.Model
+			out.DisplayVariant = d.view.Capabilities.DisplayVariant
+			out.DeviceUID = d.view.Status.DeviceUID
 		}
 	}
 	d.mu.RUnlock()
+	if out.Model == "pico-c" {
+		verified, err := s.verifiedFirmwareDisplay(out.DeviceID, out.DeviceUID)
+		if err != nil {
+			s.storeError(w, err)
+			return
+		}
+		out.VerifiedDisplayVariant = verified
+		out.HardwareVerificationRequired = verified == "" || verified != out.DisplayVariant
+		if verified == "" {
+			out.Reason += " Verify the C display controller once before packages are marked as matching."
+		} else if verified != out.DisplayVariant {
+			out.Reason += " The firmware-reported display differs from the independently verified controller."
+		}
+	}
 	if out.Model != "" {
 		s.firmwareMu.Lock()
 		packages, err := s.listFirmwarePackages()
@@ -549,7 +568,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range packages {
-			if p.Model == out.Model {
+			if p.Model == out.Model && (out.Model != "pico-c" || !out.HardwareVerificationRequired && p.DisplayVariant == out.DisplayVariant) {
 				out.Packages = append(out.Packages, p)
 			}
 		}

@@ -22,7 +22,7 @@ var nativeID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,20}$`)
 var stepKinds = map[string]bool{"mash": true, "mash-out": true, "boil": true, "hop": true, "heat": true, "hold": true, "rest": true, "unheated": true, "cool": true, "fermentation": true}
 
 // Profiles returns independent planning defaults, not hardware calibration.
-// Only S/Pro running the standalone REST firmware have a control adapter. The Z
+// C/S/Pro running the standalone REST firmware have a control adapter. The Z
 // entry describes one brewing module, not a combined Z2/Z4 program.
 func Profiles() []domain.Profile {
 	const assumptions = "70% efficiency is a planning assumption; replace it with measured efficiency. Locations must be supplied and checked against the actual machine."
@@ -48,8 +48,8 @@ func Profiles() []domain.Profile {
 			Sources: []domain.ProfileSource{picoSource},
 		},
 		{
-			ID: "pico-c", Name: "Pico C (planning only)", BatchLiters: 5, Efficiency: 50,
-			MaxTargetC: 100, Notes: picoAssumptions + " No hub control adapter is implemented for C firmware.",
+			ID: "pico-c", Name: "Pico C (standalone)", BatchLiters: 5, Efficiency: 50,
+			MaxSteps: 15, MaxTargetC: 100, ControlSupported: true, Notes: picoAssumptions,
 			Sources: []domain.ProfileSource{picoSource, {
 				Label:       "PicoBrew: Pico C specifications",
 				URL:         "https://picobrew.com/store/products/picoc",

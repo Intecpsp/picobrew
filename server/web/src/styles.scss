@@ -1278,7 +1278,7 @@ hr,
   image-rendering: pixelated;
   image-rendering: crisp-edges;
   width: min(100%, 384px);
-  aspect-ratio: 2;
+  aspect-ratio: auto;
   height: auto;
   max-height: 220px;
   object-fit: contain;

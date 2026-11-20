@@ -23,7 +23,7 @@ var endpoints = []endpoint{
 	{"GET", "/telemetry/receiver", "Prove that an inferred receiver reaches this Hub instance", nil},
 	{"GET", "/auth/session", "Read owner session and CSRF token", nil}, {"POST", "/auth/setup", "Create the first owner account", map[string]any{"token": "server-printed-setup-token", "password": "a-long-private-password"}}, {"POST", "/auth/login", "Sign in", map[string]any{"password": "your-password"}}, {"POST", "/auth/logout", "Sign out", map[string]any{}},
 	{"GET", "/devices", "List fleet status", nil}, {"POST", "/devices", "Register a machine", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "api_key": "64-hex-character-device-key", "location": "Brew room"}},
-	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer (rotate 180 degrees)", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read the saved live-data receiver settings", nil}, {"PUT", "/devices/{id}/telemetry", "Save live-data receiver settings and apply them when the machine is available", map[string]any{"enabled": true, "host": "192.168.1.20", "port": 8080}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
+	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer and display geometry", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read the saved live-data receiver settings", nil}, {"PUT", "/devices/{id}/telemetry", "Save live-data receiver settings and apply them when the machine is available", map[string]any{"enabled": true, "host": "192.168.1.20", "port": 8080}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
 	{"GET", "/profiles", "List planning and control capabilities by model", nil}, {"GET", "/recipes", "List shared recipes", nil}, {"POST", "/recipes", "Create a recipe", map[string]any{"name": "New recipe", "batch_liters": 5, "efficiency": 55, "ingredients": []any{}, "steps": []any{map[string]any{"name": "Mash", "kind": "mash", "target_c": 67, "minutes": 60, "location": 0, "drain_minutes": 0}}}}, {"GET", "/recipes/{id}", "Read a recipe", nil}, {"PUT", "/recipes/{id}", "Save a recipe using its current revision", map[string]any{"revision": 1}}, {"DELETE", "/recipes/{id}", "Remove a recipe from the library", nil}, {"POST", "/recipes/import", "Import JSON or BeerXML", map[string]any{"format": "beerxml", "data": "<RECIPES>...</RECIPES>"}}, {"POST", "/recipes/{id}/adapt", "Preview a machine-specific recipe adaptation", map[string]any{"profile_id": "pico-pro", "batch_liters": 5}}, {"GET", "/recipes/{id}/export", "Export recipe as JSON or BeerXML (?format=)", nil}, {"GET", "/recipes/{id}/revisions", "Read saved recipe revisions", nil},
 	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
 	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional subscription or API-key access", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
@@ -59,6 +59,7 @@ var endpoints = []endpoint{
 	{"DELETE", "/firmware/packages/{packageID}", "Remove a firmware package from the Hub", nil},
 	{"GET", "/firmware/packages/{packageID}/download", "Download the package after verifying its cached archive hash", nil},
 	{"GET", "/devices/{id}/firmware", "Read model-scoped firmware packages and installation availability", nil},
+	{"PUT", "/devices/{id}/firmware/hardware", "Record an independently verified C display controller for this pinned appliance", map[string]any{"device_uid": "authenticated-device-uid", "display_variant": "ssd1325"}},
 }
 
 func (s *Server) openapi(w http.ResponseWriter, r *http.Request) {
@@ -207,7 +208,7 @@ func buildSchemas() schemaMap {
 	r.values["Telemetry"] = schemaMap{"type": "object", "properties": schemaMap{"enabled": boolSchema(), "host": stringSchema(), "port": schemaMap{"type": "integer", "minimum": 1, "maximum": 65535}, "state": stringSchema()}, "additionalProperties": true}
 	r.values["Login"] = schemaObject(schemaMap{"password": schemaMap{"type": "string", "maxLength": 256, "writeOnly": true}}, "password")
 	r.values["Setup"] = schemaObject(schemaMap{"password": schemaMap{"type": "string", "minLength": 12, "maxLength": 256, "writeOnly": true}, "token": schemaMap{"type": "string", "writeOnly": true}}, "password", "token")
-	r.values["DeviceInput"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 100}, "model": schemaMap{"type": "string", "enum": []string{"", "auto", "pico-pro", "pico-s", "pico-c", "z", "zymatic"}, "description": "Omit/empty for automatic physical firmware identification. Simulator requires an explicit profile. Manual S/Pro selection supports older firmware that does not report a model."}, "adapter": schemaMap{"type": "string", "enum": []string{"pico-standalone", "simulator"}}, "base_url": schemaMap{"type": "string", "description": "Explicit appliance HTTP base URL; required for pico-standalone. Control is currently supported only for S/Pro standalone firmware."}, "api_key": schemaMap{"type": "string", "writeOnly": true, "description": "Standalone firmware key; omit/leave blank on update to preserve the stored key."}, "location": stringSchema(), "enabled": boolSchema()}, "name", "adapter")
+	r.values["DeviceInput"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 100}, "model": schemaMap{"type": "string", "enum": []string{"", "auto", "pico-pro", "pico-s", "pico-c", "z", "zymatic"}, "description": "Omit/empty for automatic physical firmware identification. Simulator requires an explicit profile. Manual S/Pro selection supports older firmware that does not report a model."}, "adapter": schemaMap{"type": "string", "enum": []string{"pico-standalone", "simulator"}}, "base_url": schemaMap{"type": "string", "description": "Explicit appliance HTTP base URL; required for pico-standalone. Control is supported for C/S/Pro standalone firmware."}, "api_key": schemaMap{"type": "string", "writeOnly": true, "description": "Standalone firmware key; omit/leave blank on update to preserve the stored key."}, "location": stringSchema(), "enabled": boolSchema()}, "name", "adapter")
 	recipeProps := schemaMap{}
 	for k, v := range r.properties("Recipe") {
 		recipeProps[k] = v
@@ -294,18 +295,22 @@ func buildSchemas() schemaMap {
 func addFirmwareSchemas(values schemaMap) {
 	hash := schemaMap{"type": "string", "pattern": "^[0-9a-f]{64}$"}
 	commit := schemaMap{"type": "string", "pattern": "^[0-9a-f]{40}$"}
-	model := schemaMap{"type": "string", "enum": []string{"pico-s", "pico-pro"}}
+	model := schemaMap{"type": "string", "enum": []string{"pico-s", "pico-pro", "pico-c"}}
+	displayVariant := schemaMap{"type": "string", "enum": []string{"ssd1325", "ssd1309"}, "description": "Required for C firmware. A compiled display identity is not physical hardware detection."}
 	sourceProperties := schemaMap{
 		"repository": schemaMap{"type": "string", "maxLength": 300, "description": "Public GitHub owner/repository; an exact GitHub repository HTTPS URL is also accepted on save. Defaults to jeffreydwalter/picobrew-pico-pro-firmware."},
 		"ref":        schemaMap{"type": "string", "maxLength": 200, "default": "", "description": "Branch, tag, or commit; empty uses the repository's default branch."},
 	}
 	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
 	values["FirmwareSettingsInput"] = schemaObject(sourceProperties, "repository")
-	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model}, "repository", "commit", "model")
+	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model, "display_variant": displayVariant}, "repository", "commit", "model")
+	values["FirmwareHardwareInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant}, "device_uid", "display_variant")
+	values["FirmwareHardware"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant, "verified_at": schemaMap{"type": "string", "format": "date-time"}}, "device_uid", "display_variant", "verified_at")
 	values["FirmwareUploadInput"] = schemaObject(schemaMap{"file": schemaMap{"type": "string", "format": "binary", "description": "Complete firmware ZIP, at most 2 MiB, with the report, model image, browser manifest and five matching gzip assets."}}, "file")
 	candidate := schemaMap{
 		"model":            model,
-		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro"}},
+		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro", "pico-c"}},
+		"display_variant":  displayVariant,
 		"firmware_version": stringSchema(),
 		"binary_sha256":    hash,
 		"binary_bytes":     schemaMap{"type": "integer", "minimum": 16, "maximum": 188416},
@@ -329,12 +334,16 @@ func addFirmwareSchemas(values schemaMap) {
 	values["FirmwarePackage"] = schemaObject(properties, append(required, "id", "package_bytes", "created_at", "validation", "provenance")...)
 	values["FirmwareCatalog"] = schemaObject(schemaMap{"repository": stringSchema(), "ref": stringSchema(), "commit": commit, "packages": schemaArray(schemaRef("FirmwareCandidate"))}, "repository", "ref", "commit", "packages")
 	values["MachineFirmware"] = schemaObject(schemaMap{
-		"device_id":         stringSchema(),
-		"model":             stringSchema(),
-		"current_version":   stringSchema(),
-		"install_supported": schemaMap{"type": "boolean", "enum": []bool{false}, "description": "Network installation is not implemented in this Hub version. Package acquisition never changes machine firmware."},
-		"reason":            stringSchema(),
-		"packages":          schemaArray(schemaRef("FirmwarePackage")),
+		"device_id":                      stringSchema(),
+		"model":                          stringSchema(),
+		"current_version":                stringSchema(),
+		"display_variant":                displayVariant,
+		"verified_display_variant":       displayVariant,
+		"device_uid":                     stringSchema(),
+		"hardware_verification_required": boolSchema(),
+		"install_supported":              schemaMap{"type": "boolean", "enum": []bool{false}, "description": "Network installation is not implemented in this Hub version. Package acquisition never changes machine firmware."},
+		"reason":                         stringSchema(),
+		"packages":                       schemaArray(schemaRef("FirmwarePackage")),
 	}, "device_id", "model", "current_version", "install_supported", "reason", "packages")
 }
 
@@ -438,6 +447,8 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "FirmwareSettingsInput"
 	case "/firmware/github/import":
 		name = "FirmwareImportInput"
+	case "/devices/{id}/firmware/hardware":
+		name = "FirmwareHardwareInput"
 	}
 	if name != "" {
 		return schemaRef(name), true
@@ -583,6 +594,8 @@ func successResponses(e endpoint) schemaMap {
 		}
 	case "/devices/{id}/firmware":
 		schema = schemaRef("MachineFirmware")
+	case "/devices/{id}/firmware/hardware":
+		schema = schemaRef("FirmwareHardware")
 	}
 	content := schemaMap{"application/json": schemaMap{"schema": schema}}
 	switch e.path {

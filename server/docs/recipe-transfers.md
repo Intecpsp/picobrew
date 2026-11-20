@@ -30,7 +30,7 @@ reports its advertised capacity, occupied and available slots, new entries,
 proposed updates, identical programs and skipped entries. It never deletes an
 installed recipe. Matching IDs are preserved unless the update option is enabled.
 
-Pico S/Pro standalone firmware provides 16 recipe slots with up to 15 steps per
+Pico C/S/Pro standalone firmware provides 16 recipe slots with up to 15 steps per
 program. The Hub reads the device's advertised limits rather than assuming other
 models use these values. Maintenance programs use the same source-model and
 capacity rules. The archived Zymatic cleaning programs cannot be sent to a Pico;

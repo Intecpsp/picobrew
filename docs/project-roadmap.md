@@ -22,7 +22,7 @@ the same fleet, recipe and brew-history workflows across supported machines.
 | Machine or archive | Firmware state | Live Hub operation |
 | --- | --- | --- |
 | Pico S/Pro | Verified original application image; exact 396-file pre-v1.x reconstruction; modified 1.1.0 firmware implemented. Earlier builds have device installation/runtime evidence; 1.1.0 installation and a complete brew remain physically unverified. | Implemented through the S/Pro REST adapter |
-| Pico C | Both upstream 0.1.34 images preserved; reconstruction and custom firmware unimplemented | Recipe planning only |
+| Pico C | Both upstream 0.1.34 images preserved; OEM C reconstruction and standalone 1.2.0 source builds for explicit SSD1325/SSD1309 variants are implemented. Native/host software tests pass; physical installation, brewing and OTA recovery qualification remain outstanding. | C API adapter, model/variant discovery, telemetry, geometry-aware display and variant-scoped package management implemented |
 | Z1 and Z2 | Separate development directories; reconstruction and custom firmware unimplemented | Generic Z planning profile only; no model-specific live adapter |
 | Z-series archive | Two upstream images preserved in their original shared family grouping; compatibility with individual Z models unverified | No archive-derived live support |
 | Zymatic | Reconstruction and custom firmware unimplemented; no image in the pinned upstream archive | Recipe planning only |

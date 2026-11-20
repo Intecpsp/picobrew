@@ -30,17 +30,25 @@ type Adapter interface {
 // ReportedModel validates a firmware build identity. It does not establish
 // physical hardware compatibility. An empty identity denotes older firmware
 // and must never be interpreted as a particular S/Pro model.
+func SupportedModel(model string) bool {
+	return model == "pico-s" || model == "pico-pro" || model == "pico-c"
+}
+
 func ReportedModel(c domain.Capabilities) (string, error) {
 	if c.Model == "" {
-		if c.ModelName != "" || c.ModelFamily != "" {
+		if c.ModelName != "" || c.ModelFamily != "" || c.DisplayVariant != "" {
 			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware reported an incomplete machine model identity"}
 		}
 		return "", nil
 	}
-	if c.Model != "pico-s" && c.Model != "pico-pro" {
+	if !SupportedModel(c.Model) {
 		return "", &Error{StatusCode: 409, Code: "unsupported_model", Message: "The firmware reports a machine model that this Hub cannot control"}
 	}
-	if c.ModelFamily != "" && c.ModelFamily != "pico-s-pro" {
+	if c.Model == "pico-c" {
+		if c.ModelFamily != "pico-c" || (c.DisplayVariant != "ssd1325" && c.DisplayVariant != "ssd1309") {
+			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "Pico C firmware must report its C family and an explicit supported display variant"}
+		}
+	} else if c.ModelFamily != "" && c.ModelFamily != "pico-s-pro" {
 		return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware model and model family are inconsistent"}
 	}
 	return c.Model, nil

@@ -47,7 +47,7 @@ func TestAdaptScalesWithExplicitMappingsWithoutMutatingSource(t *testing.T) {
 }
 
 func TestUnsupportedModelsCannotBePromotedToControl(t *testing.T) {
-	for _, p := range recipe.Profiles()[2:] {
+	for _, p := range recipe.Profiles()[3:] {
 		p.ControlSupported = true // a caller cannot manufacture an adapter this way.
 		plan, err := recipe.Adapt(source(), p, 5)
 		if err != nil {
@@ -223,5 +223,21 @@ func TestCanonicalValidationAndNativeBoundaryValues(t *testing.T) {
 	machine.Steps[0].TargetF = 59
 	if _, err := recipe.NativeJSON(machine); err == nil {
 		t.Fatal("native gap 1–59F accepted")
+	}
+}
+
+func TestCStandaloneProfileProducesExplicitReviewedNativePlan(t *testing.T) {
+	var profile domain.Profile
+	for _, candidate := range recipe.Profiles() {
+		if candidate.ID == "pico-c" {
+			profile = candidate
+		}
+	}
+	if !profile.ControlSupported || profile.MaxSteps != 15 {
+		t.Fatalf("C source target missing native limits: %+v", profile)
+	}
+	plan, err := recipe.Adapt(source(), profile, 5)
+	if err != nil || !plan.CanDeploy || plan.MachineRecipe == nil {
+		t.Fatalf("C plan %+v %v", plan, err)
 	}
 }

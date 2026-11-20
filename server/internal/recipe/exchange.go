@@ -79,7 +79,7 @@ func Export(r domain.Recipe, format string) ([]byte, error) {
 			return nil, errors.New("native JSON export requires an explicit native program; adapt a canonical recipe for a specific machine first")
 		}
 		if !strings.HasPrefix(r.SourceModel, "pico") {
-			return nil, errors.New("standalone native JSON export supports Pico S/Pro routing only; use canonical JSON to retain this source model's program")
+			return nil, errors.New("standalone native JSON export supports Pico C/S/Pro routing only; use canonical JSON to retain this source model's program")
 		}
 		data, err = NativeJSON(*r.NativeProgram)
 	case "xml", "beerxml", "application/xml", "text/xml":

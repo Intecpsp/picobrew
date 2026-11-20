@@ -53,9 +53,18 @@ type loadSegment struct {
 }
 
 type report struct {
-	Profile               string          `json:"profile"`
-	Model                 string          `json:"model"`
-	ModelFamily           string          `json:"model_family"`
+	Profile         string `json:"profile"`
+	Model           string `json:"model"`
+	ModelFamily     string `json:"model_family"`
+	DisplayVariant  string `json:"display_variant"`
+	FirmwareUpdate  *bool  `json:"firmware_update"`
+	DisplayGeometry struct {
+		Width         int  `json:"width"`
+		Height        int  `json:"height"`
+		Rotation      *int `json:"rotation"`
+		StorageBytes  int  `json:"storage_bytes"`
+		TransferBytes int  `json:"transfer_bytes"`
+	} `json:"display_geometry"`
 	FirmwareVersion       string          `json:"firmware_version"`
 	BinarySHA256          string          `json:"binary_sha256"`
 	BrowserManifestSHA256 string          `json:"browser_manifest_sha256"`
@@ -105,7 +114,23 @@ func Digest(data []byte) string {
 
 func ValidID(value string) bool     { return digestPattern.MatchString(value) }
 func ValidCommit(value string) bool { return commitPattern.MatchString(value) }
-func ValidModel(value string) bool  { return value == "pico-s" || value == "pico-pro" }
+func ValidModel(value string) bool {
+	return value == "pico-s" || value == "pico-pro" || value == "pico-c"
+}
+
+func ValidVariant(model, variant string) bool {
+	if model == "pico-c" {
+		return variant == "ssd1325" || variant == "ssd1309"
+	}
+	return ValidModel(model) && variant == ""
+}
+
+func modelFamily(model string) string {
+	if model == "pico-c" {
+		return "pico-c"
+	}
+	return "pico-s-pro"
+}
 
 // checkJSON rejects duplicate object members and excessive nesting before the
 // typed decoder is used. This prevents different consumers from interpreting
@@ -268,11 +293,22 @@ func parseReport(data []byte) (report, error) {
 	if len(data) == 0 || len(data) > MaxReportBytes || decodeJSON(data, &r, false) != nil {
 		return r, invalid("The firmware report is missing, oversized or invalid JSON")
 	}
-	if !ValidModel(r.Model) || r.ModelFamily != "pico-s-pro" || r.Profile != "standalone" ||
+	if !ValidModel(r.Model) || !ValidVariant(r.Model, r.DisplayVariant) || r.ModelFamily != modelFamily(r.Model) || r.Profile != "standalone" ||
 		!versionPattern.MatchString(r.FirmwareVersion) || !ValidID(r.BinarySHA256) ||
 		!ValidID(r.BrowserManifestSHA256) || r.Files.Binary != r.Model+"-standalone.bin" ||
 		r.SDKLinkPassed == nil || !*r.SDKLinkPassed || r.APIKeyEmbedded == nil || *r.APIKeyEmbedded {
-		return r, invalid("The report must describe a supported S/Pro standalone image without an embedded API key")
+		return r, invalid("The report must describe a supported C/S/Pro standalone image with an explicit C display variant and no embedded API key")
+	}
+	if r.Model == "pico-c" {
+		height, rotation := 64, 2
+		if r.DisplayVariant == "ssd1309" {
+			height, rotation = 32, 0
+		}
+		g := r.DisplayGeometry
+		if g.Width != 128 || g.Height != height || g.Rotation == nil || *g.Rotation != rotation ||
+			g.StorageBytes != 1024 || g.TransferBytes != 1024 || r.FirmwareUpdate == nil || *r.FirmwareUpdate {
+			return r, invalid("The C display geometry or installer capability is inconsistent with this package")
+		}
 	}
 	if err := validateLayout(r.ImageLayout, nil); err != nil {
 		return r, err
@@ -284,7 +320,7 @@ func parseReport(data []byte) (report, error) {
 }
 
 func candidate(r report) Candidate {
-	return Candidate{Model: r.Model, ModelFamily: r.ModelFamily, FirmwareVersion: r.FirmwareVersion,
+	return Candidate{Model: r.Model, ModelFamily: r.ModelFamily, DisplayVariant: r.DisplayVariant, FirmwareVersion: r.FirmwareVersion,
 		BinarySHA256: r.BinarySHA256, BinaryBytes: r.ImageLayout.BinaryBytes}
 }
 
@@ -326,7 +362,7 @@ func fileLimit(name string) int {
 	switch name {
 	case "firmware-report.json":
 		return MaxReportBytes
-	case "pico-s-standalone.bin", "pico-pro-standalone.bin":
+	case "pico-s-standalone.bin", "pico-pro-standalone.bin", "pico-c-standalone.bin":
 		return MaxBinaryBytes
 	case "web/manifest.json":
 		return MaxManifestBytes

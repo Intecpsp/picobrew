@@ -27,6 +27,7 @@ type Settings struct {
 type Candidate struct {
 	Model           string `json:"model"`
 	ModelFamily     string `json:"model_family"`
+	DisplayVariant  string `json:"display_variant,omitempty"`
 	FirmwareVersion string `json:"firmware_version"`
 	BinarySHA256    string `json:"binary_sha256"`
 	BinaryBytes     int    `json:"binary_bytes"`
@@ -57,12 +58,16 @@ type Package struct {
 }
 
 type MachineFirmware struct {
-	DeviceID         string    `json:"device_id"`
-	Model            string    `json:"model"`
-	CurrentVersion   string    `json:"current_version"`
-	InstallSupported bool      `json:"install_supported"`
-	Reason           string    `json:"reason"`
-	Packages         []Package `json:"packages"`
+	DeviceID                     string    `json:"device_id"`
+	Model                        string    `json:"model"`
+	CurrentVersion               string    `json:"current_version"`
+	DisplayVariant               string    `json:"display_variant,omitempty"`
+	VerifiedDisplayVariant       string    `json:"verified_display_variant,omitempty"`
+	DeviceUID                    string    `json:"device_uid,omitempty"`
+	HardwareVerificationRequired bool      `json:"hardware_verification_required,omitempty"`
+	InstallSupported             bool      `json:"install_supported"`
+	Reason                       string    `json:"reason"`
+	Packages                     []Package `json:"packages"`
 }
 
 // Error contains a bounded, user-facing diagnostic, without a remote response

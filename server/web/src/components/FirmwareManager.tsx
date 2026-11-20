@@ -2,8 +2,18 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { Download, RefreshCw, Upload } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
-import type { FirmwareCatalog, FirmwarePackage, FirmwareSettings } from '../types'
-import { FirmwareDetails, FirmwarePackageCard, firmwareModelName } from './FirmwarePackages'
+import type {
+  FirmwareCandidate,
+  FirmwareCatalog,
+  FirmwarePackage,
+  FirmwareSettings,
+} from '../types'
+import {
+  FirmwareDetails,
+  FirmwarePackageCard,
+  firmwareCandidateName,
+  firmwareModelName,
+} from './FirmwarePackages'
 import { Button, Confirm, ErrorBanner, Field, Loading } from './ui'
 
 const defaultSource: FirmwareSettings = {
@@ -110,14 +120,20 @@ export function FirmwareManager() {
       ...(current || []).filter((existing) => existing.id !== item.id),
     ])
   }
-  async function fetchPackage(model: string) {
+  async function fetchPackage(candidate: FirmwareCandidate) {
     if (!catalog || importing || packages.loading) return
-    setImporting(model)
+    const { model, display_variant } = candidate
+    setImporting(model + ':' + (display_variant || ''))
     setGithubError('')
     try {
       const item = await api<FirmwarePackage>('/firmware/github/import', {
         method: 'POST',
-        body: { repository: catalog.repository, commit: catalog.commit, model },
+        body: {
+          repository: catalog.repository,
+          commit: catalog.commit,
+          model,
+          ...(display_variant ? { display_variant } : {}),
+        },
       })
       addPackage(item)
       hub.notify('Firmware package saved to the Hub.')
@@ -239,18 +255,21 @@ export function FirmwareManager() {
             catalog.packages.map((item) => (
               <article
                 className="firmware-package"
-                key={item.model}
-                aria-label={`${firmwareModelName(item.model)} ${item.firmware_version}`}
+                key={item.model + ':' + (item.display_variant || '')}
+                aria-label={`${firmwareCandidateName(item)} ${item.firmware_version}`}
               >
                 <h4>
-                  {firmwareModelName(item.model)} <span>{item.firmware_version}</span>
+                  {firmwareCandidateName(item)} <span>{item.firmware_version}</span>
                 </h4>
                 <FirmwareDetails item={item} />
                 <Button
                   disabled={!!importing || packages.loading}
-                  onClick={() => void fetchPackage(item.model)}
+                  onClick={() => void fetchPackage(item)}
                 >
-                  <Download size={16} /> {importing === item.model ? 'Fetching…' : 'Fetch to Hub'}
+                  <Download size={16} />{' '}
+                  {importing === item.model + ':' + (item.display_variant || '')
+                    ? 'Fetching…'
+                    : 'Fetch to Hub'}
                 </Button>
               </article>
             ))

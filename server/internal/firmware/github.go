@@ -245,13 +245,17 @@ func (g *GitHub) resolve(ctx context.Context, settings Settings) (string, error)
 	return commit.SHA, nil
 }
 
-func rawPath(repository, commit, model, name string) string {
-	const root = "/firmware/pico-s-pro/modified/firmware/"
+func rawPath(repository, commit, model, name string, display ...string) string {
+	root := "/firmware/" + modelFamily(model) + "/modified/firmware/"
 	base := "https://raw.githubusercontent.com/" + repository + "/" + commit + root
 	if strings.HasPrefix(name, "web/") {
 		return base + name
 	}
-	return base + "standalone/" + model + "/" + name
+	variant := ""
+	if model == "pico-c" && len(display) == 1 {
+		variant = display[0] + "/"
+	}
+	return base + "standalone/" + model + "/" + variant + name
 }
 
 // Catalog resolves the saved ref once. Every report is then read at that same
@@ -268,8 +272,9 @@ func (g *GitHub) Catalog(ctx context.Context, settings Settings) (Catalog, error
 		return Catalog{}, err
 	}
 	out := Catalog{Repository: settings.Repository, Ref: settings.Ref, Commit: commit, Packages: []Candidate{}}
-	for _, model := range []string{"pico-s", "pico-pro"} {
-		data, err := g.get(ctx, rawPath(settings.Repository, commit, model, "firmware-report.json"), MaxReportBytes)
+	for _, selection := range []struct{ model, display string }{{"pico-s", ""}, {"pico-pro", ""}, {"pico-c", "ssd1325"}, {"pico-c", "ssd1309"}} {
+		model := selection.model
+		data, err := g.get(ctx, rawPath(settings.Repository, commit, model, "firmware-report.json", selection.display), MaxReportBytes)
 		if err != nil {
 			var failure *Error
 			if errors.As(err, &failure) && failure.Code == "firmware_github_not_found" {
@@ -281,8 +286,8 @@ func (g *GitHub) Catalog(ctx context.Context, settings Settings) (Catalog, error
 		if err != nil {
 			return Catalog{}, err
 		}
-		if r.Model != model {
-			return Catalog{}, invalid("A GitHub report declares a different model from its package path")
+		if r.Model != model || r.DisplayVariant != selection.display {
+			return Catalog{}, invalid("A GitHub report declares a different model or display variant from its package path")
 		}
 		out.Packages = append(out.Packages, candidate(r))
 	}
@@ -292,20 +297,24 @@ func (g *GitHub) Catalog(ctx context.Context, settings Settings) (Catalog, error
 // Import trusts only repository/commit/model selectors. Version, hash, paths
 // and provenance are derived from the retrieved bytes and fixed repository
 // layout. An upload and a GitHub import pass through the same final validator.
-func (g *GitHub) Import(ctx context.Context, repository, commit, model string) ([]byte, Candidate, error) {
+func (g *GitHub) Import(ctx context.Context, repository, commit, model string, display ...string) ([]byte, Candidate, error) {
 	var empty Candidate
 	repository, err := NormalizeRepository(repository)
 	if err != nil {
 		return nil, empty, err
 	}
-	if !ValidCommit(commit) || !ValidModel(model) {
-		return nil, empty, &Error{Code: "firmware_github_selection", Message: "Choose a supported model and a full 40-character GitHub commit"}
+	variant := ""
+	if len(display) == 1 {
+		variant = display[0]
+	}
+	if !ValidCommit(commit) || !ValidModel(model) || len(display) > 1 || !ValidVariant(model, variant) {
+		return nil, empty, &Error{Code: "firmware_github_selection", Message: "Choose a supported model, an explicit C display variant and a full 40-character GitHub commit"}
 	}
 	ctx, cancel := context.WithTimeout(ctx, 60*time.Second)
 	defer cancel()
 	files := make(map[string][]byte, 8)
 	for _, name := range archiveNames(model) {
-		data, err := g.get(ctx, rawPath(repository, commit, model, name), fileLimit(name))
+		data, err := g.get(ctx, rawPath(repository, commit, model, name, variant), fileLimit(name))
 		if err != nil {
 			return nil, empty, err
 		}
@@ -316,8 +325,8 @@ func (g *GitHub) Import(ctx context.Context, repository, commit, model string) (
 			if err != nil {
 				return nil, empty, err
 			}
-			if r.Model != model {
-				return nil, empty, invalid("The GitHub firmware report does not match the selected model")
+			if r.Model != model || r.DisplayVariant != variant {
+				return nil, empty, invalid("The GitHub firmware report does not match the selected model and display variant")
 			}
 		}
 	}

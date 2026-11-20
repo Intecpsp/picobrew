@@ -328,8 +328,8 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	if in.Model == "auto" {
 		in.Model = ""
 	}
-	if in.Adapter == "pico-standalone" && in.Model != "" && in.Model != "pico-pro" && in.Model != "pico-s" {
-		s.fail(w, 400, "unsupported_model", "Standalone control is currently available for Pico S and Pro")
+	if in.Adapter == "pico-standalone" && in.Model != "" && !device.SupportedModel(in.Model) {
+		s.fail(w, 400, "unsupported_model", "Standalone control is currently available for Pico C, S and Pro")
 		return
 	}
 	if _, ok := s.selectProfile(in.Model); !ok && !(in.Adapter == "pico-standalone" && in.Model == "") {

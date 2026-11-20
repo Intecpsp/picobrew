@@ -1,0 +1,385 @@
+{
+  "schema_version": 1,
+  "firmware_version": "1.2.0",
+  "recorded_at": "2026-11-20T02:00:28.287179+00:00",
+  "scope": "Software-built and simulated C standalone candidates; this record does not qualify physical installation or brewing.",
+  "oem_base_commit": "faf70ae",
+  "oem_source_snapshot_sha256": "e1d747afcb2efa75c7d4656e8d4efef7a1b5d99f10f03bd09ad08fcd86cdbbef",
+  "application_snapshot": {
+    "file_count": 100,
+    "sha256": "82f94fb5afec8788445e6f08e72e0c9ffaf3708944b8690074e0f1248c3714ca",
+    "method": "SHA-256 of sorted '<file-sha256>  <path-relative-to-modified>\\n' records for every src/include/platform file",
+    "files": {
+      "include/pico_c/actuators.h": "8b0dfcbd02891730efc575a8f0791865b114bce6b4a6e46ef49e44d6088c7b41",
+      "include/pico_c/application.h": "5f230cf0d9d957a0738469de7b016c8ebe2bbf6b850fd5cdfa0f92ea091eac96",
+      "include/pico_c/config.h": "9ca786622c4e102354c334354ba733a31f90577b55d2502012d730efc1611e43",
+      "include/pico_c/control.h": "58392ea454c4111faee7c5889fc131248ebefe3f8eabaff41cde785e2296be63",
+      "include/pico_c/device.h": "5b01330383926d39019022c3515c19af8fd21537637b7af2b2c5eeab7494c7e7",
+      "include/pico_c/energia_cc3200.h": "57b039506a09b55796a4dc5711b3cec2ae95af089baa1207bab0045f8fe11a22",
+      "include/pico_c/energia_history.h": "27c6a6655f71b55d03d556b49e47558b45c75d706cacc3ebd3b00fb22b5a20d6",
+      "include/pico_c/energia_http_server.h": "ed80e7c3d12796ef3aa5ff4622d0a1dcbb0ed341453a29d49b50fa7d47b3173b",
+      "include/pico_c/energia_network.h": "ccb9d74cbda92d41e21c113f05ce73898ee3ec4835430578a18ec00cd98f42a9",
+      "include/pico_c/energia_telemetry.h": "106863ea8bd47aefe7934e1b94d578539a9e2a19b0ea5cf3268267fb6bdb99be",
+      "include/pico_c/http_server.h": "c4174ee50cb5e595bc1e5e69281a998c31a6240e83f3a6f6ee7b59b476412e57",
+      "include/pico_c/local_api.h": "283b9586c2824fc8669e5bc65e8901ba877c39b157e15cad96ff70ef59d032ac",
+      "include/pico_c/local_control.h": "582600f872f6c8daf5a50825abb9bbe4ce76032173bf686f74f4c27455743a7c",
+      "include/pico_c/local_history.h": "fe031c9f6363587d94554e8013c62f64b14c2761a154594f2d5531b6b42056d8",
+      "include/pico_c/local_store.h": "2904f1476ddefb09d759f818b206fb3db794035e563504ed21d33fa7707e5697",
+      "include/pico_c/local_telemetry.h": "696537b3f42a4573223d37e96296bc757178e59b5553f9c36025d2ff933970d9",
+      "include/pico_c/model.h": "283ba3c435c5daea7d0e3fe279097a0a809f305736ebebe5c0e684db16fea1d8",
+      "include/pico_c/network.h": "81990de8a4ca07ebe437e118d438a12f4e55d8e429439466c4cf9e6c75cc3de6",
+      "include/pico_c/phase.h": "66d7b528cce1dc7c854fd7e6507a6c3f79d424a8e64f4822c18a5f1e94efe789",
+      "include/pico_c/pico_http_client.h": "72565dcac21f83955eb3fa1bf45b768bb6cc988c0e25d343b9506ccf833d3eca",
+      "include/pico_c/pid.h": "362aa8a4125b081e6279fdc6ef685263185460a8d34023aa61a1ba3bc0b5d6d0",
+      "include/pico_c/recipe.h": "5952d7f313d2fbd5327d2802506071b6cfb6f7bf88eb2bf9b487e2d39b02fad3",
+      "include/pico_c/recovered.h": "4f35c050b19d1aa1fe440e33e2d1b735a5d0020922256c7b04dab66da67ac3f4",
+      "include/pico_c/rfid.h": "7d8722d6be946e60d87bb0e7ad40b5ad768de5048ccea15cc71d92d205b42ef6",
+      "include/pico_c/sensors.h": "099474230091572d23aa5cc4e54a924662a19c9fdc44deb44d4f837f8c2030c7",
+      "include/pico_c/state.h": "b01d913717e85d0a0b01d22851e42b6b853fc63eaf074184e203ff93a60e6727",
+      "include/pico_c/text.h": "4591094fac916ae38d1a4687693af60cda838f8bdba280fd4f0e9eb7581051fd",
+      "include/pico_c/ui.h": "9afd10202740a62431e78cdfdaa6166b885217bed29de7e76ff2969d59a1821b",
+      "include/pico_c/version.h": "785d35a41376403924f8979e33c8266b8fae7bdfbf6778529e6c5b319a6f17b1",
+      "include/pico_c/web_assets.h": "2df2291a1941e65969b48af9b4e17005c32508bcb431dce86b43a531636c9d21",
+      "platform/energia_cc3200.cpp": "722afafe17019c350bde5700f839e3ff4c74233d80671fa1c82950f9c6a9ea26",
+      "platform/energia_history.cpp": "2b48f900f2fb97262878c84eb444d2da948883c9d7379b5cac6d551e8b8a1d87",
+      "platform/energia_http_server.cpp": "128345af321e2d25aac9cf158ea9e18d134ecfddf1e39a85ec5072b3cc3025e7",
+      "platform/energia_network.cpp": "90db40c561816617b7c62b9dfe38e3b5981d2fbf5de9b261e9a08c2e76389fca",
+      "platform/energia_runtime_compat.c": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
+      "platform/energia_telemetry.cpp": "91e8ae8d919550e9c605e3c12ad1aaa10be0c5418b102729bece2820ad8301be",
+      "platform/firmware_main.cpp": "28cbc53c076670343e0eaace42a0be1e2ec543dc3c233dc3c45a7d8833de8a71",
+      "platform/pico_cc3200.ld": "30a3b65e70af348ba27000143ae9b457a6c10674e554e47b3bda17d551d7fb15",
+      "platform/pico_http_client.cpp": "fa04603a4b1e696a5c6e0778c041b9d7e5de896299acaae6447b35e263e03533",
+      "src/actuators.c": "0cf7d70ae6052a3fbaafa2fff25e9c83133f430efc8bb0da8ef857fd4b72bc6b",
+      "src/application.c": "541df89e36c85dfd8233f782f981fca618808013fc2fe8ca1205ba8f2ee3705d",
+      "src/control.c": "a5bca05e99d27a230bcaa730c5d85721b9cad118aeba55ede8075825349a0f77",
+      "src/device.c": "52d2ec9831259b357ada46607b167697f863dec7900defab8187cbd532c0aeb3",
+      "src/encoder.c": "63511492b2c214bcddc0c449ab3c9684362fc6346778cf54594d408cb9145cae",
+      "src/http_server.c": "c4ab88d5edc31ca09939220f56b43709dced7b24653fbdd2437217b1b571e96a",
+      "src/local_api.c": "2c7fd4ac200e7b17c9f87cf78ee00ea68d71b879457d1b99b3507e47b3a538ec",
+      "src/local_control.c": "e0b10022ed46992335d36a14bd40d5fe33ede27c40d42d8f5ac3e23cce3c492a",
+      "src/local_history.c": "ad9500a91b3309265006cadebec1ede7aad20caf93912d60317ed759c9571a27",
+      "src/local_starter_recipes.inc": "5de924b9763ceb0dc9a260a9582b703596ed7ffe9652616462926377070bd36e",
+      "src/local_store.c": "f803bd07b64799317f9df325169c249064687ea0f4f8d46507b6304e806e0725",
+      "src/local_telemetry.c": "663a17ff37896c2e5f019bb3ee08727a4a61ff9c1d7f44a14108644d69fa5b41",
+      "src/local_web_assets.c": "258e1fe5308ddc859e77298a7f97d4280a076fd23130a136c9ff6b66bd263cf4",
+      "src/network/api.c": "d5afc69c41b586852237a841efafc7a13cff2f6d07a8ac800366a5946e4ab040",
+      "src/network/network.c": "73c652f82cd47339aa60f6aaa315c02b00d5bf5a0603a034a3dece647ad9601a",
+      "src/network/network_internal.h": "e20f107a5c7b8f039d42baf7f52ba6e9ad816501ee30f9eb459bfd713f9d7993",
+      "src/network/still_network.c": "10bcfdd78f7508c13df06ccdc97e11552ce9240c2ed83710c4ea087cea2cd13f",
+      "src/network/storage.c": "0fc8eea4f7297e40a54866670c7ab145181e8889641380714d86f81cd3779cce",
+      "src/network/text.c": "4124d72c7d42e84cd9fdceb076b2b3ccc2b51725d83ea4547422c75fde8f0a6b",
+      "src/network/update.c": "abeaeb2444a2c4e23860576a0f89c8b7fb0a9aa452b0d06dad3f199063333686",
+      "src/network_parse.c": "6bdff53f716413aaf05796413c7647085db5f842ac909d26cb939b312768aeca",
+      "src/phase.c": "a5d9177d7c8f16cbb690fc79051dc76baaa477e779ecca5e7b6b43c3b9c9c49f",
+      "src/pid.c": "561225e44bf6e9943e4e2f1c8ae6847a847d6739585120e2f0bf24b13e3d36fc",
+      "src/recipe.c": "31ad761199f4608e047c44953c97e1b9ffea01417f9044cec36922c426edbc72",
+      "src/recipe_data.inc": "139df167c4d11f4d5775b744cfdda56bcd3ed72fcab5b7e9b24c10b3fa522be0",
+      "src/recipe_programs.c": "5e44364588226bb8a88684b58d8c14e2ce3919e8a055bdf0e838703b8af52141",
+      "src/recipe_utilities.c": "f1632282705e4944dc99a509b6e26de27566eeeca77f3a4609cf017ab592b82f",
+      "src/rfid.c": "f1eb85c0dc73e5b5e264e87728246882b476fe81e9e1d0ac53afd32d68e1237c",
+      "src/sensors.c": "9c5904ecdb1293862bb2414cc93b3ca1c023a5a92f26b84c4e1105ffa716b414",
+      "src/state.c": "6c3664bf8e692e43eb453c84d4456f453d2f66efef438b14e7e0acb98c2faf0b",
+      "src/ui/action_tables.c": "4bc63c018e36d8dc20727b5551dd3c3733fd52f9e4e39305a168c18736fe522f",
+      "src/ui/actions.c": "c455a9b9e7ca79dc7f16c3080ada59dfbe2440f8f4aa8f393b181bfcf5129fec",
+      "src/ui/assets.c": "5cc85b58d3e1b9fe73490dd24eb0dbc522d2926368df4179533f88fe3f32848a",
+      "src/ui/context.c": "a056460b361e6905a81ee88d6fd3cedd1945dadfdb35177c51c0e3c4ee7f1424",
+      "src/ui/diagnostics.c": "72a772760d38a713c3791bf82b475af89328659b9118975e2022686463fb31dd",
+      "src/ui/display_driver.c": "855ae32cdb1ac64180c1284715e88fa00b7a5a1ca680c6679f0a32b57a98a916",
+      "src/ui/display_helpers.c": "bebf491db5a71585c11925bfebad2b1a74951ffad8c84415dbddd8448c43a335",
+      "src/ui/display_values.c": "6bca72ae84a83428a299480d6afc2f6f4ed2fd38fb57fddbbf299714305d8425",
+      "src/ui/encoder.c": "2d1dbb24fdf53df9ee260d60b9917c97fe2c0844c5d80577a7190acb218aecec",
+      "src/ui/encoder_editor.c": "ead377b5da28cd02db91404deb9c4bdd3a009829483704d0a155544251cdde0a",
+      "src/ui/error_text.inc": "2129c16b774df659ae04828d8d92c3a0efeb1fd40f4b9bb6f510bba32a4641a4",
+      "src/ui/first_rinse_prompt.c": "b2f6d352c3582eec4c814ac7f499481df783859f4207f233f920dc91d51ebd80",
+      "src/ui/graphics.c": "fd440f85a6afaf536029b9189f89be0a3bc76c21a6c6b0a14ca6ac1c0675d45a",
+      "src/ui/instruction_screens.c": "b7a2c4878ff16a504f2c91e527087df41968635ab7e70d42bd995587f075752a",
+      "src/ui/menu_control.c": "b270e9e0b522f3a306f398f5704943f8ea2e6e925b5cca66d1091c7c86ad6219",
+      "src/ui/menu_render.c": "061d1f7acf72ae7ada63c8da09672d0301b96bda40c243d355f2c516abcfe2df",
+      "src/ui/menus.c": "d7bae49e8171772e5e8cb045e257e6a1a072da84b114119d4dbb3fe6389fb0dc",
+      "src/ui/pages.c": "701e82a30ebb907d91c3b540ee286f3274d0a9735a4445992a13407fac744807",
+      "src/ui/screens.c": "a247147895e0056120ff1da678d26948631dda2dacf26227adf2115643c5db72",
+      "src/ui/scrolling.c": "538e64954467e5ecdcb76552c6af6c50c2052a379f1e42230ec8aa5d62da12f9",
+      "src/ui/scrolling_prompt.c": "caea180cb5c4198cb2d849a458392f05f8e95f72efda86c69d84cad78215e6f6",
+      "src/ui/still_ui.c": "2b01cbf944edaa1176cdc37b26ee7b81385d496de6139c46a31268d03a09af92",
+      "src/ui/strings.c": "8df7c88b53f46f25ef9e1177af4979350516ab7e4e211d84c379eae4d150ddab",
+      "src/ui/translations.c": "8323783bc88831791c36be2d233d48dcded340041a7e376773287f8760987a97",
+      "src/ui/ui_assets.h": "83ad984993c72a0c3783acffbf96dc79895b347eabefc3b986af72ca43a8b1c7",
+      "src/ui/ui_internal.h": "191797ac939409a64ba6be42bd8ed05d8c82f983149ee5002963be7778b385eb",
+      "src/ui/ui_program_menus.c": "73b223c5d9187feafa0b7e81b44772ed2f6561661d5b019d07a0226e6df582e0",
+      "src/ui/ui_screens.c": "5543b0fa731b3a4e51f6f8754a7c0df70d9f4bbdad308c125d21a162b4a971b9",
+      "src/ui/ui_workflows.c": "78377087735fea1b7f522cfd9f4963d2c4b7a090ab91a679b85ce782f067058f",
+      "src/ui/workflow_adapters.c": "dce0e20667f55ef74283967c8e6a016254456de63bf01374b69edd76b296aa14",
+      "src/ui/workflow_text.inc": "8b82dc59dd2212bc7ddd4d841e0eac35f9de6cbcdc98b58959a20bc2e8c8e7df"
+    }
+  },
+  "native_builds": [
+    {
+      "display_variant": "ssd1325",
+      "committed_directory": "firmware/pico-c/modified/firmware/standalone/pico-c/ssd1325",
+      "build_directory": "firmware/pico-c/modified/build/standalone/pico-c/ssd1325/firmware",
+      "model": "pico-c",
+      "geometry": {
+        "width": 128,
+        "height": 64,
+        "rotation": 2,
+        "storage_bytes": 1024,
+        "transfer_bytes": 1024
+      },
+      "application_c_source_files": 54,
+      "sdk_translation_units": 53,
+      "image_layout": {
+        "binary_bytes": 162152,
+        "bss_bytes": 46776,
+        "heap_bytes": 32768,
+        "sdk_stack_bytes": 32768,
+        "unallocated_ram_bytes": 3400,
+        "undefined_symbols": [],
+        "test_symbols": []
+      },
+      "artifacts": {
+        "pico-c-standalone.bin": {
+          "bytes": 162152,
+          "sha256": "6c0d5d86e8ecea3e889ddee1c0a8ef816d2a37ed133a504ab107b82935310753"
+        },
+        "pico-c-standalone.elf": {
+          "bytes": 1702592,
+          "sha256": "0bb96980b0c192acf5fcd9663c7054f92b30043f9c4591a9797e2b0ab4ad73f0"
+        },
+        "pico-c-standalone.map": {
+          "bytes": 1186182,
+          "sha256": "94c68845296a52c526c32702b2533e23846451bf96b21428cf771be16404e386"
+        },
+        "firmware-report.json": {
+          "bytes": 36107,
+          "sha256": "2f2135ee5395e3b4cc6939f5482cd8322ee27a39550edf7f008b166a63fa89af"
+        },
+        "pico-c-ssd1325-standalone-1.2.0.zip": {
+          "bytes": 223680,
+          "sha256": "71aa20bf10ed1237f7b2c21ae1c48fed09709ef9208369abe181d98d5809fa4c"
+        }
+      },
+      "current_application_input_hashes_verified": 100
+    },
+    {
+      "display_variant": "ssd1309",
+      "committed_directory": "firmware/pico-c/modified/firmware/standalone/pico-c/ssd1309",
+      "build_directory": "firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware",
+      "model": "pico-c",
+      "geometry": {
+        "width": 128,
+        "height": 32,
+        "rotation": 0,
+        "storage_bytes": 1024,
+        "transfer_bytes": 1024
+      },
+      "application_c_source_files": 54,
+      "sdk_translation_units": 53,
+      "image_layout": {
+        "binary_bytes": 162064,
+        "bss_bytes": 46776,
+        "heap_bytes": 32768,
+        "sdk_stack_bytes": 32768,
+        "unallocated_ram_bytes": 3400,
+        "undefined_symbols": [],
+        "test_symbols": []
+      },
+      "artifacts": {
+        "pico-c-standalone.bin": {
+          "bytes": 162064,
+          "sha256": "0ff778141225f8e0463d2c3cd07113b0c2240c0338734ad37265a243f302cb9b"
+        },
+        "pico-c-standalone.elf": {
+          "bytes": 1701764,
+          "sha256": "69649a0216ab5375c5a8a46c039c0db0acef6ffdda62550cebddf25e8a69ea1e"
+        },
+        "pico-c-standalone.map": {
+          "bytes": 1185976,
+          "sha256": "3734678fcffeb681cb0a755868e539f45f99e73a74cf553340b8c8cee7ef3d73"
+        },
+        "firmware-report.json": {
+          "bytes": 36107,
+          "sha256": "5de413acbcc03b8d0596a58f5742c05813dd74c808c0db2c708c30c3c7a0376d"
+        },
+        "pico-c-ssd1309-standalone-1.2.0.zip": {
+          "bytes": 223592,
+          "sha256": "8112b047724e03c8d2d9b47e7262df99307cf1268d39c665809048c8951738dd"
+        }
+      },
+      "current_application_input_hashes_verified": 100
+    }
+  ],
+  "build_commands": [
+    "python tools/build_firmware.py --standalone --model pico-c --display ssd1325 --arm-prefix \"$PICOBREW_ARM_PREFIX\" --sdk-root \"$PICOBREW_SDK\"",
+    "python tools/build_firmware.py --standalone --model pico-c --display ssd1309 --arm-prefix \"$PICOBREW_ARM_PREFIX\" --sdk-root \"$PICOBREW_SDK\""
+  ],
+  "firmware_checks": [
+    {
+      "command": "python tools/generate_starter_recipes.py --check",
+      "result": "passed",
+      "coverage": "starter recipe generation"
+    },
+    {
+      "command": "python tools/generate_api_explorer.py --check",
+      "result": "passed",
+      "coverage": "16 API explorer operations"
+    },
+    {
+      "command": "python tools/embed_web.py --check",
+      "result": "passed",
+      "coverage": "5 gzip assets, 21957 payload bytes, 8 flash blocks"
+    },
+    {
+      "command": "python tests/test_http_server.py",
+      "result": "passed",
+      "coverage": "1111 HTTP transport cases and 16 asset cases"
+    },
+    {
+      "command": "python tests/test_energia_http_server.py",
+      "result": "passed",
+      "coverage": "38 native HTTP cases against simulated SimpleLink"
+    },
+    {
+      "command": "python tests/test_energia_wifi.py",
+      "result": "passed",
+      "coverage": "6 WiFi callback, lease and failure-boundary groups"
+    },
+    {
+      "command": "python tests/test_local_api.py",
+      "result": "passed",
+      "coverage": "21 tests plus 21000 generated input trials"
+    },
+    {
+      "command": "python tests/test_local_history.py",
+      "result": "passed",
+      "coverage": "20 history tests"
+    },
+    {
+      "command": "python tests/test_local_telemetry.py",
+      "result": "passed",
+      "coverage": "16 live-data tests"
+    },
+    {
+      "command": "python tests/test_telemetry_receiver.py",
+      "result": "passed",
+      "coverage": "13 receiver and identity tests"
+    },
+    {
+      "command": "python tests/test_machine_identity.py",
+      "result": "passed",
+      "coverage": "4 model/controller, required-target and archive-integrity tests"
+    },
+    {
+      "command": "python tests/test_standalone_control.py --display both",
+      "result": "passed",
+      "coverage": "3 sanitizer-backed executables per controller; queued command, independent physical click, Stop priority, C drain, scrolling and editor cancellation"
+    },
+    {
+      "command": "python tests/test_standalone_control_arm.py",
+      "result": "passed",
+      "coverage": "ARM IPSR/PRIMASK and timer/Stop boundary execution"
+    },
+    {
+      "command": "python tests/test_native_storage.py --elf build/standalone/pico-c/ssd1325/firmware/pico-c-standalone.elf",
+      "result": "passed",
+      "coverage": "5 actual linked ARM storage-bridge scenarios with simulated SimpleLink"
+    },
+    {
+      "command": "python tests/test_native_storage.py --elf build/standalone/pico-c/ssd1309/firmware/pico-c-standalone.elf",
+      "result": "passed",
+      "coverage": "5 actual linked ARM storage-bridge scenarios with simulated SimpleLink"
+    },
+    {
+      "command": "python tests/test_hub_firmware_package.py",
+      "result": "passed",
+      "coverage": "11 deterministic-package, corruption, identity, geometry and credential-exclusion tests"
+    },
+    {
+      "command": "python tools/verify_firmware_package.py --model pico-c --display ssd1325",
+      "result": "passed",
+      "coverage": "committed candidate matches native image, current source hashes, metadata and browser assets"
+    },
+    {
+      "command": "python tools/verify_firmware_package.py --model pico-c --display ssd1309",
+      "result": "passed",
+      "coverage": "committed candidate matches native image, current source hashes, metadata and browser assets"
+    }
+  ],
+  "hub_and_repository_checks": [
+    {
+      "directory": ".",
+      "command": "make verify-imports",
+      "result": "passed",
+      "coverage": "27 preserved upstream files, 396 archived S/Pro source files and original device image"
+    },
+    {
+      "directory": ".",
+      "command": "python tools/test_firmware_models.py",
+      "result": "passed",
+      "coverage": "7 model-router tests"
+    },
+    {
+      "directory": "server",
+      "command": "go test ./internal/device ./internal/firmware ./internal/recipe ./internal/server -count=1",
+      "result": "passed"
+    },
+    {
+      "directory": "server",
+      "command": "go test -race ./...",
+      "result": "passed"
+    },
+    {
+      "directory": "server/web",
+      "command": "npm test -- --reporter=dot",
+      "result": "passed",
+      "tests": 124,
+      "test_files": 18
+    },
+    {
+      "directory": "server/web",
+      "command": "npm run check:bundle",
+      "result": "passed",
+      "bundle_sha256": "269b0d0359fe4f0ba34228c79f017343bab103877db88660bac9f85dc04b5935"
+    },
+    {
+      "directory": ".",
+      "command": "git diff --check",
+      "result": "passed"
+    }
+  ],
+  "browser_integration": {
+    "result": "not run locally; browser launch blocked",
+    "reason": "Chromium ProcessSingleton socket creation failed with Operation not permitted before any browser test ran.",
+    "ci_workflow": ".github/workflows/pico-c-standalone.yml",
+    "ci_commands": [
+      "make web-test PYTHON=python"
+    ],
+    "ci_result": "pending"
+  },
+  "physical_qualification": {
+    "flashed": false,
+    "usb_installation_flow_qualified": false,
+    "oled_checked": false,
+    "heating_pump_rfid_checked": false,
+    "brewing_checked": false,
+    "power_loss_recovery_checked": false
+  },
+  "firmware_installation": {
+    "device_capability": false,
+    "hub_install_supported": false,
+    "scope": "Package validation/upload/pinned GitHub download implemented; safe in-place installation and a qualified initial C bootstrap are outstanding."
+  },
+  "hardware_identity": "Model and controller fields describe the compiled image. Hub C package applicability separately requires an owner-recorded controller observation bound to the authenticated appliance UID; ordinary connection, telemetry and package browsing do not.",
+  "remaining_limits": [
+    "Physical controller and board mapping must be independently verified before installing either C candidate.",
+    "C retains the OEM SSD1309 32-row logical viewport and 1024-byte transfer; no assumption that it has the SSD1325 geometry.",
+    "RAM slack is 3400 bytes beyond reserved 32768-byte heap and 32768-byte SDK stack; real high-water measurements remain outstanding.",
+    "Desktop/mobile browser acceptance must run in CI before merge.",
+    "No safe OTA installer is implemented or advertised in this revision."
+  ],
+  "root_staged_diff_check": {
+    "command": "git diff --cached --check",
+    "result": "one nonfunctional inherited whitespace warning",
+    "path": "firmware/pico-c/modified/src/ui/menu_control.c",
+    "detail": "Extra blank line at EOF is retained from the frozen OEM-derived source snapshot. Earlier git diff --check covered tracked changes only; all application bytes and build hashes remain unchanged."
+  }
+}

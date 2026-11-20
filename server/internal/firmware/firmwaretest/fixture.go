@@ -87,6 +87,25 @@ func Files(model string) map[string][]byte {
 	return out
 }
 
+// CFiles keeps controller identity explicit even in nonexecutable fixtures.
+func CFiles(display string) map[string][]byte {
+	files := Files("pico-c")
+	var report map[string]any
+	if err := json.Unmarshal(files["firmware-report.json"], &report); err != nil {
+		panic(err)
+	}
+	height, rotation := 64, 2
+	if display == "ssd1309" {
+		height, rotation = 32, 0
+	}
+	report["model_family"], report["display_variant"], report["firmware_update"] = "pico-c", display, false
+	report["display_geometry"] = map[string]int{"width": 128, "height": height, "rotation": rotation, "storage_bytes": 1024, "transfer_bytes": 1024}
+	copy(files["pico-c-standalone.bin"][128:], []byte(display))
+	report["binary_sha256"] = Digest(files["pico-c-standalone.bin"])
+	files["firmware-report.json"] = JSON(report)
+	return files
+}
+
 func Archive(files map[string][]byte) []byte {
 	var out bytes.Buffer
 	z := zip.NewWriter(&out)

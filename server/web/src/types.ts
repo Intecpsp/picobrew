@@ -6,6 +6,10 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
+  model?: string
+  model_name?: string
+  model_family?: string
+  display_variant?: string
   uptime_ms: number
   ready: boolean
   device_uid: string
@@ -30,6 +34,10 @@ export interface DeviceStatus {
   encoder: { position: number; min: number; max: number }
 }
 export interface Capabilities {
+  model?: string
+  model_name?: string
+  model_family?: string
+  display_variant?: string
   api_version: number
   firmware_version: string
   commands: string[]
@@ -73,6 +81,10 @@ export interface Device {
 export interface Display {
   width: number
   height: number
+  rotation?: number
+  display_variant?: string
+  storage_bytes?: number
+  transfer_bytes?: number
   format: string
   data: string
 }
@@ -247,6 +259,7 @@ export interface FirmwareSettings {
 export interface FirmwareCandidate {
   model: string
   model_family: string
+  display_variant?: string
   firmware_version: string
   binary_sha256: string
   binary_bytes: number
@@ -270,6 +283,10 @@ export interface MachineFirmware {
   device_id: string
   model: string
   current_version: string
+  display_variant?: string
+  verified_display_variant?: string
+  device_uid?: string
+  hardware_verification_required?: boolean
   install_supported: false
   reason: string
   packages: FirmwarePackage[]

@@ -8,8 +8,9 @@ GO_TEST_FLAGS ?=
 NPM ?= npm
 MACHINE ?=
 MODEL ?=
+DISPLAY_VARIANT ?=
 ARCHIVE_MACHINE := $(if $(strip $(MACHINE)),$(MACHINE),pico-s-pro)
-MODEL_ARGS = --machine "$(MACHINE)" --model "$(MODEL)" --make "$(MAKE)" --python "$(PYTHON)"
+MODEL_ARGS = --machine "$(MACHINE)" --model "$(MODEL)" --display "$(DISPLAY_VARIANT)" --make "$(MAKE)" --python "$(PYTHON)"
 
 .DEFAULT_GOAL := help
 .PHONY: help firmware firmware-package firmware-models firmware-test firmware-usb-test firmware-browser-test firmware-bootstrap oem recovery server server-start server-test server-run server-demo verify-imports
@@ -18,6 +19,7 @@ help:
 	@echo make server-start - build and run the Hub
 	@echo make firmware / firmware-test MODEL=pico-pro or MODEL=pico-s
 	@echo make firmware-package MODEL=pico-s - build and package a Hub upload ZIP
+	@echo make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325 or DISPLAY_VARIANT=ssd1309
 	@echo make firmware-models / oem / recovery MACHINE=pico-s-pro
 	@echo make server / server-test / server-run / server-demo
 	@echo make verify-imports

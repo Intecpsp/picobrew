@@ -56,9 +56,19 @@ def resolve_model(model="", machine=""):
     return selected
 
 
-def make_command(action, selected, make="make", python=sys.executable):
-    return [make, "-C", str(ROOT / "firmware" / selected["family"] / "modified"),
-            TARGETS[action], f"MODEL={selected['id']}", f"PYTHON={python}"]
+def make_command(action, selected, make="make", python=sys.executable, display=""):
+    variants = selected.get("display_variants", [])
+    if display and display not in variants:
+        raise ValueError("The selected model does not support that display variant")
+    if variants and action in ("build", "package") and display not in variants:
+        raise ValueError("Pico C requires DISPLAY_VARIANT=ssd1325 or DISPLAY_VARIANT=ssd1309 after verifying the physical controller")
+    if selected['id'] == 'pico-c' and action == 'usb-test':
+        raise ValueError("Pico C has no qualified USB installation/recovery tool yet")
+    command = [make, "-C", str(ROOT / "firmware" / selected["family"] / "modified"),
+               TARGETS[action], f"MODEL={selected['id']}", f"PYTHON={python}"]
+    if display:
+        command.append(f"DISPLAY_VARIANT={display}")
+    return command
 
 
 def main(argv=None):
@@ -66,6 +76,7 @@ def main(argv=None):
     parser.add_argument("action", choices=[*TARGETS, "list"])
     parser.add_argument("--model", default="", help="Product model; defaults to pico-pro")
     parser.add_argument("--machine", default="", help="Product model or source family directory")
+    parser.add_argument("--display", default="", help="Verified controller variant; required for C images")
     parser.add_argument("--make", default="make", help="GNU Make executable")
     parser.add_argument("--python", default=sys.executable, help="Python executable for component tools")
     args = parser.parse_args(argv)
@@ -76,7 +87,7 @@ def main(argv=None):
                 print(f"{entry['id']}: {entry['name']} ({entry['family']}; {state})")
             return 0
         selected = resolve_model(args.model, args.machine)
-        return subprocess.run(make_command(args.action, selected, args.make, args.python),
+        return subprocess.run(make_command(args.action, selected, args.make, args.python, args.display),
                               cwd=ROOT, check=False).returncode
     except (ValueError, OSError) as error:
         print(f"Firmware build: {error}", file=sys.stderr)

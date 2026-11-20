@@ -90,11 +90,14 @@ Pico Pro and Pico S share source but produce separate, model-labelled images in
 reports its selected model to the Hub and uses it in the device display. The
 legacy family-only command defaults to Pico Pro; select `MODEL=pico-s` for an S.
 
-Only S/Pro currently has implemented source builds. Its packaged images are in
+S/Pro has implemented source builds. Its packaged images are in
 `firmware/pico-s-pro/modified/firmware/standalone/<model>/` and shared browser
-assets are in `firmware/pico-s-pro/modified/firmware/web/`. The [model registry
-and identity contract](docs/machine-identity.md) reserve identifiers for the
-other families without claiming working ports. Start with the
+assets are in `firmware/pico-s-pro/modified/firmware/web/`. [Pico C](firmware/pico-c/modified/README.md)
+now has recovered C-based standalone builds for explicit SSD1325/SSD1309 variants:
+`make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325` (or `ssd1309`). Both C images
+are software-tested; physical installation and brewing remain unverified. The
+[model registry and identity contract](docs/machine-identity.md) retain planned
+identifiers for other families. Start with the
 [S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
 entry points. No build or test target flashes a brewer.
 
@@ -145,8 +148,9 @@ supported installation or physical recovery validation.
 The goal is custom standalone firmware for Pico C, S/Pro, Z1, Z2, Zymatic and
 other supported machines, using the S/Pro REST API and browser experience as
 the common contract. Each brewer owns its control loop and local operation;
-the Hub is optional. Current live support is S/Pro. Other source directories
-are explicit placeholders, not completed ports.
+the Hub is optional. S/Pro and C have implemented standalone source builds and
+Hub adapters. C physical installation/brewing validation remains outstanding;
+the other families are tracked separately and are not claimed as completed ports.
 
 The Hub includes the previously requested offline recipe catalogue and assets.
 No historical Python Zymatic server or unrelated community application is

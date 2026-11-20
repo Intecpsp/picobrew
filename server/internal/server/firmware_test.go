@@ -434,7 +434,7 @@ func TestMachineFirmwareIsReadOnlyAndAvailableForUnreadyMachines(t *testing.T) {
 		{"missing-key", "pico-standalone", false, "", "pending", false, 0},
 		{"legacy-manual", "pico-standalone", true, "", "manual", false, 0},
 		{"wrong-uid", "pico-standalone", true, "pico-pro", "firmware", true, 0},
-		{"unsupported", "pico-standalone", true, "pico-c", "firmware", false, 0},
+		{"unsupported", "pico-standalone", true, "z", "firmware", false, 0},
 		{"simulator", "simulator", true, "pico-pro", "firmware", false, 0},
 	} {
 		d := &runtimeDevice{cancel: func() {}, identityMismatch: test.mismatch,
