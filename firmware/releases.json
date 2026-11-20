@@ -198,6 +198,50 @@
       "archive_sha256": "5e3512134711b482b8325d42675ba03962e8bfd0291e1ead5c5e6f55e59f7659",
       "binary_sha256": "086c97669520ea8939eb111a30ddf6d487612a6396fc62887955eadf920f38b4",
       "binary_bytes": 1636848
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.2",
+      "kind": "standalone",
+      "source_commit": "c0032322fefb71de319419617445b40a0aaa0df8",
+      "archive_sha256": "b8e1d3a72644797f8fdfe3517744c4453255ccdae7d74356cca2e45696f42a3f",
+      "binary_sha256": "4b3bc5d6122f696b0866d7e73607bef574208cbcc031009f7a4ccf3df5c858a4",
+      "binary_bytes": 166520,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.2",
+      "kind": "standalone",
+      "source_commit": "c0032322fefb71de319419617445b40a0aaa0df8",
+      "archive_sha256": "0c4180765aaba255b89e01b17de43ea0b1be29862bdbca2dfbc0064d6227422d",
+      "binary_sha256": "b0cb331a7b9890c61ab7b66e0ef698da8fbedc026ad563082e24c2741a0b1f90",
+      "binary_bytes": 166528,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.2",
+      "kind": "standalone",
+      "source_commit": "c0032322fefb71de319419617445b40a0aaa0df8",
+      "archive_sha256": "34bf0f1fc92b7497ad4bc3bac8fd694b3464c2339821509ae1846b404208cd36",
+      "binary_sha256": "c17f98e705e7d6c8ae21c297fe2c00ee987c770ebb29e063b63c84680860d943",
+      "binary_bytes": 162488,
+      "display_variant": "ssd1325"
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.2",
+      "kind": "standalone",
+      "source_commit": "c0032322fefb71de319419617445b40a0aaa0df8",
+      "archive_sha256": "37af4019aa82ed9a8c43bf7589d665ffb9b49023f7dfa48c2a0ff8da7eaebae4",
+      "binary_sha256": "49172d22ae8973748f9639398d13c388a46a311836780fc999f6f20545724632",
+      "binary_bytes": 162408,
+      "display_variant": "ssd1309"
     }
   ]
 }
