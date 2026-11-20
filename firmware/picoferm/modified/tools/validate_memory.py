@@ -79,9 +79,13 @@ def native_build(sdk,i386,output):
         objects.append(obj);sdk_sources.append(source)
     for source in (COMMON/'src/http_server.c',sdk/'cores/esp8266/umm_malloc/umm_malloc.c'):
         obj=output/(source.stem+'.o')
-        run(['gcc','-std=c99',*flags,'-Wno-unused-parameter','-Wno-sign-compare','-Wno-unused-but-set-variable','-c',source,'-o',obj])
+        warnings=['-Wno-unused-parameter','-Wno-sign-compare','-Wno-unused-but-set-variable']
+        if source.is_relative_to(sdk):
+            # The pinned allocator copies its flash-resident format literals to RAM before printf.
+            warnings.append('-Wno-error=format-security')
+            sdk_sources.append(source)
+        run(['gcc','-std=c99',*flags,*warnings,'-c',source,'-o',obj])
         objects.append(obj)
-        if source.is_relative_to(sdk):sdk_sources.append(source)
     sources=[ROOT/'tests/memory_native.cpp',ROOT/'src/standalone.cpp',ROOT/'src/calibration_store.cpp',ROOT/'src/bounded_acquisition.cpp',
         OEM/'src/hardware.cpp',OEM/'src/core.cpp',COMMON/'platform/esp8266/storage.cpp']
     sources+=[COMMON/('src/'+n+'.cpp') for n in ('engine','api','values','records','history','history_records','telemetry','provisioning','verified_storage')]
