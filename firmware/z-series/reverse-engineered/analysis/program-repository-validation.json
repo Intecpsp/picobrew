@@ -115,7 +115,7 @@
     "process_timeout_seconds": 900,
     "instruction_budget_per_case": 500000
   },
-  "scope": "Original Xtensa Program/Buffer/Writer/Resolver instructions, static DROM programs, reviewed ENTRY/CALL8/RETW register windows and sequential MEMW; explicit pinned SDK scalar math, reviewed coffee snprintf formats, ROM memory/string and diagnostic services",
+  "scope": "Original Xtensa Program/Buffer/Writer/Resolver instructions, static DROM programs, reviewed ENTRY/CALL8/RETW register windows and sequential MEMW; explicit pinned SDK scalar math, reviewed coffee snprintf formats, ROM memory/string and diagnostic services. 538 cases complete within the stated service boundaries; 131 cases compare only the prefix before the returning OEM assertion helper at 0x400db014. Post-assertion continuation is not compared for those prefixes.",
   "hardware_tested": false,
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
@@ -167,5 +167,30 @@
     "all_23_builtin_programs_selected_and_stack_loaded_through_original_runtime": true,
     "shared_buffer_for_ids_20_to_24": true,
     "original_runtime_cases_replayed_after_estimator_extraction": 5792
+  },
+  "assertion_coverage": {
+    "total_cases": 669,
+    "completed_without_assertion_stop": 538,
+    "assertion_stopped_prefix_cases": 131,
+    "stop_address": "0x400db014",
+    "original_helper_returns": true,
+    "post_assertion_continuation_compared": false,
+    "count_method": "Count nonzero cases[*].assertion in the retained fixture.",
+    "assertion_line_counts": {
+      "0x2b": 12,
+      "0x7d": 12,
+      "0x153": 14,
+      "0x16d": 6,
+      "0x16e": 1,
+      "0x1c1": 29,
+      "0x1d4": 2,
+      "0x1fc": 10,
+      "0x1fd": 10,
+      "0x272": 10,
+      "0x278": 14,
+      "0x63b": 5,
+      "0x67b": 6
+    },
+    "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
   }
 }

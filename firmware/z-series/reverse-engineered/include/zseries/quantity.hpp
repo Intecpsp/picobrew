@@ -12,7 +12,7 @@ struct Quantity {
 // are consequently compatible in the original firmware as well.
 bool quantity_units_compatible(Unit from, Unit to) noexcept;
 
-// False replaces the original Quantity.h:0x7d fatal assertion. On that path,
-// result is zero, as in the OEM fallback if its assertion were to return.
+// False reports the original returning Quantity.h:0x7d assertion. The OEM
+// continues with a zero result on that path; callers choose their error policy.
 bool quantity_in(const Quantity&, Unit to, double& result) noexcept;
 }} // namespace zseries::oem

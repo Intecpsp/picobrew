@@ -1,0 +1,83 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/local_http_application.cpp",
+      "source_sha256": "57204e0b7951470b723549ac1cce388509cf1b1f881afb2aabd5132fa02e7ee5",
+      "object_sha256": "0d27404e2883008dc9b335c495487d8bed76a8d86a9b7a2ad267c1fa66e6b064",
+      "object_bytes": 8420
+    },
+    {
+      "source": "platform/esp32/local_http_platform.cpp",
+      "source_sha256": "acafc77959f2ebc4e5ba376627aefe700e821c38be92d9bbaeb125f917042d52",
+      "object_sha256": "02eb377d47af40e55ea34f936350a97302fe497b95ad4dd46e53d1b2505c0d27",
+      "object_bytes": 9044
+    }
+  ],
+  "archive_sha256": "820dde95af029e3a4d4485b7ddcc5ff7a5de543d4eb9f3eb00e12449057335c6",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Concrete incoming HTTP application and WiFiServer/WiFiClient adapter compiled against pinned historical SDK; full application lifecycle and hardware behavior remain unqualified.",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "owned_header_sha256": {
+    "include/zseries/local_http_application.hpp": "27df3a29bbed07d4a024f85843ada07df1ebcd234b21d1e06ae58652aa469197",
+    "include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
+    "include/zseries/local_http_state.hpp": "98749c2026b41d1c0b80be7e69f85795c6a0ecfa9de5d2035c39e74b5f8da058",
+    "include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/local_http_platform.hpp": "c02c1623af6c9f067ff6a5fb3d1272f7842d533fc879c8b8f035053d440450ac"
+  }
+}

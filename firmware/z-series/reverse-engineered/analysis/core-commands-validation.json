@@ -172,7 +172,7 @@
     "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
   },
   "accepted_dependency_reports_sha256": {
-    "program-repository-validation.json": "fc6e33f613ea89a43874d63fe6c309b3df8cab47a60eaf1826e048b8deab5113",
+    "program-repository-validation.json": "fc4f25a8c39f9b0b955dc9ea57aceaa1b8fb3f92f2d2f7f9ac38d4eb18c67ec3",
     "heater-validation.json": "168f195d8df51edf501fcfc4670895d8575505a8bab2ee4346b43a7eed49045c",
     "temperature-validation.json": "5aa3a4354e4576acb15d8534e2962ed96f1c9c2b03b3d64ce9d516287a3040b9",
     "hex-detection-validation.json": "7d41387b5f6a81785fa780904b722b8b325cfed8af90d3f61fbee90d56335ea5"

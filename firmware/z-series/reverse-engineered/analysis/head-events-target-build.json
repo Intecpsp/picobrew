@@ -51,8 +51,8 @@
     {
       "source": "src/core_flow.cpp",
       "source_sha256": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449",
-      "object_sha256": "bffb173d777feebba449ab827adc1b65e2d49bd202bb236240f90bb8333b9d9d",
-      "object_bytes": 21344
+      "object_sha256": "0d579a161a80c2cf26fe282c9f6fd98bebfa5c119276e28105cc089b5470715d",
+      "object_bytes": 21404
     },
     {
       "source": "src/core_startup.cpp",
@@ -223,7 +223,7 @@
       "object_bytes": 54672
     }
   ],
-  "archive_sha256": "89c0cefa395866c066d612a16b2c18b978dff2f3979b947ca960cba9b5e3c6d4",
+  "archive_sha256": "b319118222aee78930474695e7c32daedea26c3189d8a20978bae4b09927531b",
   "complete_application_linked": false,
   "hardware_tested": false,
   "scope": "Target object compilation of owned source against the evidenced historical SDK; no application entry point, partition selection, firmware packaging, or installation",
@@ -254,7 +254,7 @@
     "include/zseries/auxiliary_sensors.hpp": "fa832d9268da5df2039671bd834b41d0b08c63575e3128653abe5e8c248d7dd2",
     "include/zseries/core_commands.hpp": "cf8469a0e19bed4a8d29448315704f77ce7dd5045493270fd2f13a7b781a24d5",
     "include/zseries/core_control_state.hpp": "bc86aa2e63ee2344e21f7cca8ec558f2f42c82a2d7a3eff9884dd24ba3d6d502",
-    "include/zseries/core_flow.hpp": "5882362d744fb5612d31e72300ac90d836ba7d28bfcbdfa9b5f22b7fb09d9fc0",
+    "include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
     "include/zseries/core_startup.hpp": "7062a7f1aa7fc4a12fc1e188f1c43d51374f3808a049f8aeeff2080dbe544193",
     "include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
     "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
@@ -272,7 +272,7 @@
     "include/zseries/program_repository.hpp": "78fafe3ab9fc805aae72d229044d9744050773e4c0e69900fb64d5a533d4de29",
     "include/zseries/program_runtime.hpp": "db716d54517f753c63e34a6881bf3b7c358b4289a32e56a4e0703f238cd3ef81",
     "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
-    "include/zseries/quantity.hpp": "a73eef8d3a2cb8a3b03e9b345441e564eb96b80ed53c7fb7d6633dd62af52ff6",
+    "include/zseries/quantity.hpp": "17a78490378c14295478e4368cea2bdd324f1c97f5d65780aff4f2e6064cda04",
     "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
     "include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
     "include/zseries/sensor_acquisition.hpp": "eb21c7067000af5338a735404386ef691a00aec414d5a741529dbc9feb9da61a",
@@ -282,5 +282,11 @@
   "platform_header_sha256": {
     "platform/esp32/display_platform.hpp": "ce0798074651299483bacfba3525a8b18352836951774b2d8255131992da830b",
     "platform/esp32/esp32_platform.hpp": "8c38382ea7851d5f1d57f2d09e46f9d888b7a20bf67c20fc3199a2ebb9fdf4e8"
+  },
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "772de3fbba5dfe6754ccf9c950f5508c041dccb199f2aa89a1c1e2c350264935",
+    "compiled_modules": 59,
+    "scope": "These selected source, header and object identities were refreshed from the complete integrated object build; archive_sha256, where present, identifies that 59-module archive."
   }
 }

@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 228,
+  "ticks": 596,
+  "all_results_match": true,
+  "hardware_tested": false,
+  "compiler": "c++ (Debian 14.2.0-19) 14.2.0",
+  "source_sha256": {
+    "include/zseries/system_tick.hpp": "d486f835ceebc83e5c44372898a882cfd248a6450f864848df7e412f57fd53fb",
+    "src/system_tick.cpp": "7008b0484ae6eea99b1b316dc33d3190d9e1593e5acc548b9385f909de9515bc",
+    "tests/system_tick_bridge.cpp": "870096d1ad398d7beda4241b9e5e6a845592eccbc26cf6fae72e1737e118899b",
+    "tools/validate_system_tick.py": "98f94ac60f34495acc8a2cff49b19e21d39ae2bece0b1ed7a3213f99e6a0537c",
+    "tools/ghidra/EmulateSystemTick.java": "bd4cd7400d845f3eec3b7b25888fb1282043c0975fac48fe53036dc4cdc8db4f",
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+  },
+  "golden_fixture_sha256": "1b609af3529ab2822b1c92edb2627396e8bad6c05b7f6fd8c2fc3737df504903",
+  "original_execution_jsonl_sha256": "e4fd216734c0837e6220c4337b1c62c3a9093b3bdb52a4d4d502fc56f3fde5a9",
+  "scope": "Original System::tick and returning assertion-helper instructions, including its global counter increment and continuation. Watchdog, clock, compiler arithmetic, diagnostic formatting and delay are explicit boundaries. Exact integer state, double bits, assertion counter and ordered watchdog/clock/log/delay arguments are compared. No full Core, real watchdog, interrupt or hardware execution claim.",
+  "original_functions_executed": {
+    "0x400db014": 14,
+    "0x400e5e2c": 596
+  },
+  "modeled_boundaries": {
+    "__adddf3": 596,
+    "__divsf3": 121,
+    "__extendsfdf2": 121,
+    "__floatunsidf": 596,
+    "__muldf3": 1192,
+    "delay": 14,
+    "diagnostic_basename": 121,
+    "diagnostic_log": 121,
+    "diagnostic_millis": 121,
+    "esp_task_wdt_reset": 596
+  },
+  "original_instruction_sha256": {
+    "0x400db014": "e6e6f2f962eea736bab8b7eaf8359cdee456e5163ea56e53ce50bc6c5ae3dc46",
+    "0x400e5e2c": "02390d52f40e18036bc0eeb5b08412d7b9c7730e0e534f24902056831cf159ec"
+  }
+}

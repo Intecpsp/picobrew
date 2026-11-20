@@ -37,7 +37,7 @@ function bytes, generator hashes, and fixture hash.
 | `0x400d2030` | CRC of bootloader command/address/data bytes |
 | `0x400d6108` | Delay, then change the controller state ID |
 | `0x400d6164` | CRC of the embedded controller image's application range |
-| `0x400dbcec` | Require the application state and an idle valve, except for state queries |
+| `0x400dbcec` | Check the application state and an idle valve, except for state queries |
 | `0x400dbd2c` | Request bytes; yield until the requested count is available |
 | `0x400dbd94` | Read and decode a fixed nine-byte application response |
 | `0x400dc050`, `0x400dc0a4` | Basic application command, without/with the state guard |
@@ -102,11 +102,13 @@ The portable structure omits the original C++ vtable and ABI padding. Its two
 unresolved bytes remain `status_byte_2` and `status_byte_3` rather than receiving
 speculative hardware names.
 
-The command guard requires `AppRunning` (`2`). While the valve-moving flag is
-set, only state query `0xfd` is permitted. Valve positions must be `1..9` and
+The portable command guard requires `AppRunning` (`2`). While the valve-moving
+flag is set, only state query `0xfd` is permitted. Valve positions must be `1..9` and
 produce commands `0x14 + position`. The moving flag is set **after** processing
 the command response. Increment/decrement commands `0x1f`/`0x20` use the same
-post-response flag behavior.
+post-response flag behavior. Invalid guard/position cases are compared only
+through the original assertion call; the historical fixture does not follow
+the returning helper into any subsequent OEM command behavior.
 
 ## Bootloader packets and image handling
 
@@ -130,7 +132,9 @@ command/address/data body, excluding the framing bytes and the CRC itself.
 Programming increments the full 32-bit source address, but only its low 24
 bits go onto the wire. It stops at the first nonzero result, with no retry.
 Erasing sends 30 descending addresses: `0xfbff`, `0xf9ff`, through `0xc1ff`,
-one per 512-byte segment. It stops at the first error, where the OEM asserts.
+one per 512-byte segment. The portable erase operation stops at the first error,
+where the OEM calls its assertion helper. The historical fixture ends there
+and does not compare the remaining OEM erase behavior.
 
 The descriptor at `0x3f425ddc` contains four segments for the production MSP
 application, whose expected version is `1.0`. The descriptor at `0x3f425578`
@@ -166,12 +170,16 @@ Two less desirable OEM behaviors are deliberately preserved as evidence:
   behavior has not been silently repaired in this reconstruction.
 - During setup, the OEM logs a programming failure or a failed second boot
   version probe and still tries to start/read the app. The typed reconstruction
-  retains that sequence. An erase failure corresponds to a fatal OEM assertion
-  and stops the reconstructed operation.
+  retains that sequence. An erase failure reaches an OEM assertion site and
+  stops the reconstructed operation; the historical comparison does not follow
+  the OEM past that call.
 
-The portable interface returns explicit negative results where the OEM calls
-its fatal assertion helper. This is an intentional API adaptation, not a claim
-that the OEM returned these values. Tests map these boundaries to the captured
+The portable interface returns explicit negative results at selected OEM
+assertion calls. The actual helper at `0x400db014` logs, increments a diagnostic
+counter, delays 200 ms, and returns. The historical harness throws before
+executing it, so these cases compare execution prefixes. Neither the typed
+negative result nor the harness stop establishes that the OEM terminated or
+returned that value. Tests map these boundaries to the captured
 assertion lines (`0x70`, `0x75`, `0x340`, `0xff`, `0x2f0`, `0x2f1`). Buffer-capacity
 validation is likewise a new portable API boundary. Valid command sequences,
 wire bytes, state writes, and I/O order are compared directly with original
@@ -190,8 +198,14 @@ I2C, delay, clock, and diagnostic callbacks. It is **not a full CPU or periphera
 emulator**. Startup cases reuse the embedded-image CRC results only after both
 images were independently executed through the original CRC routines.
 
-There are **5,553 captured cases**, compared with compiled C in 13 native test
-groups: all 256 input bytes for eight CRC seeds; all response types and status
+There are **5,553 captured comparisons**: **3,741 complete within the stated
+service boundaries and 1,812 stop at an assertion call**. The prefixes comprise
+1,791 command guards, 3 erase cases, 15 valve cases, and 3 setup cases. They do
+not compare the assertion helper's effects or subsequent OEM execution. See
+[assertion-coverage.md](assertion-coverage.md) for the counting method.
+
+The fixture is compared with compiled C in 13 native test groups: all 256 input
+bytes for eight CRC seeds; all response types and status
 flag values; all application commands for each supported value width; command
 guards; bootloader packets; chunk/address/error boundaries; erase stop points;
 valve validation; polling boundaries; both image CRCs; and 11 startup/update

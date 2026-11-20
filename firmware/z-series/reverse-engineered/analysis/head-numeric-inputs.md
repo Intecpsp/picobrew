@@ -42,18 +42,24 @@ does not imply that an occupied original drop-new mailbox accepted the value.
 The pointer passed to a command callback is valid only for that call.
 
 Invalid quantity IDs return `InvalidQuantity` and retain the original assertion
-line instead of terminating the host process. This is a deliberate bounded
-repair. Diagnostic formatting and full screen drawing remain service
-boundaries. The module does not claim complete Head assembly, concurrent event
-delivery, a linked application image or physical device operation.
+line. This is a deliberate bounded guard that ends the owned handler at the
+assertion site. The OEM helper at `0x400db014` logs, increments a diagnostic
+counter, delays 200 ms, and returns. The historical oracle throws before
+executing that helper, so it does not compare subsequent handler or screen
+effects on invalid quantity paths. Diagnostic formatting and full screen drawing
+remain service boundaries. The module does not claim complete Head assembly,
+concurrent event delivery, a linked application image or physical device operation.
 
 ## Verification
 
-**1,637 deterministic cases** execute the original handlers, mailbox readers,
+**1,637 deterministic comparisons** execute the original handlers, mailbox readers,
 CoreCommand constructors, duration-post helper and coffee-program predicate.
-Comparisons check exact input bits, CoreCommand payload fields, all selected
-and retained parameter fields, edited/pending flags, assertion boundaries and
-ordered screen operations. Coverage includes every program ID, quantity IDs
+Of these, **1,403 complete within the stated service boundaries** and **234 stop
+at an assertion call**: 210 at manual quantity line `0x2ba` and 24 at coffee
+quantity line `0x349`. Those 234 are compared execution prefixes, not completed
+OEM handler traces. Comparisons check exact input bits, CoreCommand payload fields,
+all selected and retained parameter fields, edited/pending flags, assertion
+boundaries and ordered screen operations. Coverage includes every program ID, quantity IDs
 inside and outside each branch, all manual edited-flag combinations, unusual
 float/double bit patterns, signed input extrema and the competing ABV/IBU
 flags.
@@ -62,6 +68,9 @@ The accepted fixture and report are
 `tests/fixtures/head-numeric-original.json` and
 `analysis/head-numeric-validation.json`. They bind the preserved image hash,
 executed original instruction ranges, fixture generator and validated source.
+The historical `fatal_assertion` boundary label is retained in those byte-pinned
+artifacts; it describes the old harness stop, not the returning OEM helper.
+See [assertion-coverage.md](assertion-coverage.md) for the shared evidence scope.
 
 ```sh
 python3 tests/run_head_numeric_emulation.py \

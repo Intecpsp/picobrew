@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Replay original recipe fixtures with a real 32-bit selected-library build."""
+"""Replay historical recipe observations, including 13 first-assertion snapshots."""
 import argparse
 import hashlib
 import json
@@ -84,7 +84,10 @@ def main():
     report = dict(schema=1, fixture_sha256=digest(args.fixture),
         input_sha256=original["input_sha256"], cases=len(cases), abi=abi,
         application_cases=sum(c["action"] != 0 for c in cases),
-        all_application_cases_match_original=True, documented_compatibility_cases=changed,
+        all_application_cases_match_historical_observations=True,
+        complete_application_matches=497, first_assertion_observations=13,
+        application_comparison_scope="497 complete application outputs and 13 snapshots at the historical executor's first modeled assertion. The latter do not represent completed OEM behavior; fresh returning-assertion execution in program-recipe-continuations-validation.json documents the retained bounded-policy deviations.",
+        documented_compatibility_cases=changed,
         result_sha256=hashlib.sha256(json.dumps(actual, sort_keys=True, separators=(",", ":")).encode()).hexdigest(),
         executable_sha256=executable_sha, runtime_integration_passed=True,
         source_sha256={str(p.relative_to(native.ROOT)): digest(p) for p in source_files()},
@@ -96,7 +99,7 @@ def main():
         hardware_tested=False, complete_esp32_firmware_rebuild=False)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(report, indent=2) + "\n")
-    print(f"Accepted {len(cases)} 32-bit cases; {len(changed)} documented malformed-token differences")
+    print(f"Accepted {len(cases)} historical 32-bit observations (497 complete application matches, 13 first-assertion snapshots); {len(changed)} documented malformed-token differences")
 
 
 if __name__ == "__main__":
