@@ -1,11 +1,10 @@
-# Guarded Pico Pro writes from macOS
+# Guarded Pico S/Pro writes from macOS
 
 `tools/pico_flash_install.py` provides separate key provisioning, application
 installation and stock restoration operations. It is restricted to one pinned
-Pico Pro installation profile. Separate Pico S firmware builds do not expand
-that profile or authorize writes to another appliance.
+appliance backup and layout, historically labeled Pico Pro. Use the explicit `--model pico-s` for the owner-identified Pico S. See the [tested two-stage Pico S procedure](hub-ota.md).
 
-The current 1.3.0 packages have not been physically installed or brewed with.
+The Pico S application and recovery passed USB installation and readback. Physical brewing and interlock qualification remain pending.
 Stock restoration and interrupted-write recovery remain physically unverified.
 Successful readback alone does not establish safe boot or output behavior.
 

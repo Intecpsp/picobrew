@@ -17,13 +17,11 @@ The earlier package upload and single-revision acquisition APIs remain available
 - `firmware/pico-s-pro/modified/firmware/web/manifest.json` and its five gzip
   payloads.
 
-Only implemented Pico S and Pico Pro standalone packages are accepted. Other
-models require their own implemented package format and validation limits;
-renaming an image does not create support for a different machine.
+The standalone package API accepts Pico S, Pico Pro, and both supported Pico C display variants. Reference and historical builds use the version catalog.
 
 ## Upload a package
 
-Choose **Upload firmware package** and select a ZIP containing exactly these
+The package upload API accepts a ZIP containing exactly these
 eight files, without an outer directory:
 
 | ZIP path | Contents |
@@ -83,7 +81,7 @@ match compares declared package and machine model information.
 
 An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
-The first installation on older firmware requires USB. The bootstrap tool currently supports one pinned Pico Pro profile. See the [setup, recovery and physical validation limits](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
+The first installation on older firmware requires USB. The bootstrap tool supports one pinned appliance layout and an explicit Pico S application target. See the [setup, recovery and physical validation limits](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
 
 ## Storage and API
 

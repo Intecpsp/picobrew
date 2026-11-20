@@ -374,7 +374,7 @@ class InstallWireTests(unittest.TestCase):
             argv += ["--firmware", str(self.candidate_path)]
         return argv
 
-    def run_main(self, fake, mode="provision-key", output=None):
+    def run_main(self, fake, mode="provision-key", output=None, model=None):
         output = output or self.output_path()
         transcript = io.StringIO()
         port_class = backup.USBSerialPort
@@ -386,7 +386,7 @@ class InstallWireTests(unittest.TestCase):
              mock.patch.object(backup, "QueuedUSBReceive", PassthroughReceive), \
              mock.patch.object(backup, "USBSerialPort", side_effect=short_timeout_port), \
              contextlib.redirect_stdout(transcript), contextlib.redirect_stderr(transcript):
-            result = installer.main(self.cli(mode, output))
+            result = installer.main(self.cli(mode, output) + (["--model", model] if model else []))
         manifest = json.loads(output.read_text()) if output.exists() else None
         self.assert_protected_unchanged(fake, recovery=mode=="install-recovery")
         self.assert_secrets_absent(transcript.getvalue())
@@ -400,6 +400,29 @@ class InstallWireTests(unittest.TestCase):
             for representation in (secret.strip().decode(), secret.hex(), secret.strip().hex(),
                                    hashlib.sha256(secret).hexdigest(), hashlib.sha256(secret.strip()).hexdigest()):
                 self.assertNotIn(representation, text)
+
+    def test_pinned_s_target_upgrades_version_one_then_provisions_recovery(self):
+        import zipfile
+        root = Path(installer.__file__).resolve().parents[1]
+        with zipfile.ZipFile(root / "releases/pico-s-pro/1.0.0.zip") as archive:
+            installed = archive.read("pico-s-pro-standalone.bin")
+        packaged = root / "firmware/standalone/pico-s/pico-s-standalone.bin"
+        with self.assertRaises(installer.InstallError):
+            installer.load_candidate(packaged, "pico-pro")
+        self.candidate_path.write_bytes(installer.load_candidate(packaged, "pico-s"))
+        files = {**self.files, APP_NAME: installed, KEY_NAME: KEY}
+        fake = FakeInstallUSB(files)
+        with mock.patch.object(installer, "RELEASED_1_0_0_SHA256", hashlib.sha256(installed).hexdigest()):
+            result, report, _, _ = self.run_main(fake, "install", model="pico-s")
+        self.assertEqual(result, 0, report)
+        self.assertEqual(fake.files[APP_NAME], packaged.read_bytes())
+        recovery = FakeInstallUSB(fake.files)
+        recovery.writable_names = (installer.RECOVERY_NAME,)
+        result, report, _, _ = self.run_main(recovery, "install-recovery", model="pico-s")
+        self.assertEqual(result, 0, report)
+        self.assertEqual(recovery.files[installer.RECOVERY_NAME], installer.RECOVERY_FILE.read_bytes())
+        self.assertEqual(recovery.files[APP_NAME], packaged.read_bytes())
+        self.assertEqual(recovery.files[KEY_NAME], KEY)
 
     def test_independent_recovery_bootstrap_keeps_application_selected(self):
         files = dict(self.files)
