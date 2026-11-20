@@ -121,8 +121,24 @@ static void socket_service(void*) {
 }
 extern "C" uint32_t sl_Htonl(uint32_t x) {return __builtin_bswap32(x);}
 extern "C" int sl_WlanPolicySet(int type,int policy,const void*,int) {
+    if (type==SL_POLICY_SCAN) return 0;
     assert(type==SL_POLICY_CONNECTION); calls.push_back("policy:"+std::to_string(policy));
     return policy_error;
+}
+static std::vector<Sl_WlanNetworkEntry_t> radio;
+static unsigned scan_reads;
+extern "C" int sl_WlanGetNetworkList(unsigned char start, unsigned char count, Sl_WlanNetworkEntry_t *out) {
+    assert(!start && count==20 && radio.size()<=count);
+    ++scan_reads;
+    for (size_t i=0;i<radio.size();++i) out[i]=radio[i];
+    return static_cast<int>(radio.size());
+}
+static Sl_WlanNetworkEntry_t ap(const std::string& name, uint8_t mode, int8_t signal) {
+    Sl_WlanNetworkEntry_t row={};
+    assert(name.size()<=sizeof row.ssid);
+    memcpy(row.ssid,name.data(),name.size());
+    row.ssid_len=name.size(); row.sec_type=mode; row.rssi=signal;
+    return row;
 }
 extern "C" int sl_WlanDisconnect() {
     calls.push_back("disconnect");
@@ -144,9 +160,16 @@ extern "C" int sl_NetCfgGet(int id,void*,unsigned char* length,unsigned char* by
     SlNetCfgIpV4Args_t value={config_address,0xffffff00,0x0a000101,0x01010101};
     memcpy(bytes,&value,sizeof(value));return get_error;
 }
+static unsigned expected_security;
+static std::string expected_key;
+static void verify_station_key(const SlSecParams_t *parameters) {
+    assert(parameters->Type == expected_security);
+    assert(parameters->KeyLen == expected_key.size());
+    assert(!memcmp(parameters->Key, expected_key.data(), parameters->KeyLen));
+}
 extern "C" int sl_WlanConnect(const signed char* name,int size,const void*,const SlSecParams_t* security,const void*) {
     assert(std::string(reinterpret_cast<const char*>(name),size)=="new-network");
-    assert(security->Type==SL_SEC_TYPE_WPA);
+    verify_station_key(security);
     assert(WiFiClass::_connecting && WiFiClass::local_IP==0);
     if(require_offline_before_join) assert(!old_socket_open && offline_polls>0);
     ++joins;calls.push_back("join");
@@ -161,7 +184,8 @@ extern "C" int sl_WlanConnect(const signed char* name,int size,const void*,const
     }
     return 0;
 }
-extern "C" int sl_WlanProfileAdd(const signed char* name,int size,const void*,const SlSecParams_t*,const void*,int,int) {
+extern "C" int sl_WlanProfileAdd(const signed char* name,int size,const void*,const SlSecParams_t* security,const void*,int,int) {
+    verify_station_key(security);
     assert(std::string(reinterpret_cast<const char*>(name),size)=="new-network");
     calls.push_back("save-profile");return profile_error;
 }
@@ -187,6 +211,7 @@ static void setup() {
     test_platform={};settings={};network={};
     strcpy(settings.wifi_ssid,"new-network");strcpy(settings.wifi_password,"private-password");
     settings.wifi_security=2;
+    expected_security=SL_SEC_TYPE_WPA; expected_key=settings.wifi_password;
     test_platform.millis=clock_ms;test_platform.delay_ms=delay_ms;test_platform.serial_write=silent;
     test_platform.wifi_begin=begin;test_platform.wifi_status=status;
     test_platform.wifi_connecting=connecting;test_platform.wifi_disconnect=disconnect;
@@ -201,6 +226,24 @@ static void expect_no_addresses() {
 }
 int main() {
     setup();
+    const std::string full(32,'x');
+    radio={ap("Mesh",0,-10),ap(full,2,-40),ap("Mesh",2,-75),ap("mesh",2,-55),
+           ap("Mesh",2,-30),ap("",0,-10),ap(std::string("x\0y",3),2,-50)};
+    PicoWifiNetwork rows[PICO_WIFI_SCAN_LIMIT];
+    assert(scan_wifi(NULL,rows)==3);
+    assert(scan_reads==1 && calls.empty()); // browsing leaves the connection policy alone
+    radio.clear();
+    assert(!strcmp(rows[0].name,"Mesh") && rows[0].security==2 && rows[0].signal==-30);
+    assert(full==rows[1].name && !strcmp(rows[2].name,"mesh"));
+    assert(scan_wifi(NULL,rows)==0 && scan_reads==2);
+    SlWlanEvent_t maximum={};
+    maximum.Event=SL_WLAN_CONNECT_EVENT;
+    maximum.EventData.STAandP2PModeWlanConnected.ssid_len=32;
+    memset(maximum.EventData.STAandP2PModeWlanConnected.ssid_name,'x',32);
+    SimpleLinkWlanEventHandler(&maximum);
+    assert(WiFiClass::WiFi_status==WL_CONNECTED && strlen(WiFiClass::connected_ssid)==31);
+    puts("PASS: stable full-length SSIDs, mesh duplicates, security pairing, bounded association cache");
+    setup();
     /* The old IP event can arrive while disconnect is pending. */
     pending.push_back({5,3,old_address});
     assert(pico_network_connect_stored(&network));
@@ -212,8 +255,13 @@ int main() {
     ip_configuration(NULL,&ip,&dns,&gate,&mask);
     assert(ip.octet[0]==10 && ip.octet[1]==0 && ip.octet[2]==1 && ip.octet[3]==143);
     assert(dns.octet[0]==1 && gate.octet[3]==1 && mask.octet[3]==0);
-    config_address=old_address;expect_no_addresses();
-    config_address=new_address;get_error=-1;expect_no_addresses();
+    for (int error=0;error<2;++error) {
+        config_address=error?new_address:old_address;get_error=-error;
+        ip_configuration(NULL,&ip,&dns,&gate,&mask);
+        assert(ip.octet[0]==10 && ip.octet[3]==143);
+        assert(pico_network_ipv4_is_zero(dns) && pico_network_ipv4_is_zero(gate) &&
+               pico_network_ipv4_is_zero(mask));
+    }
     puts("PASS: new SSID, late old lease, fresh DHCP, offline socket-service poll and address validation");
 
     setup();now=50;pico_local_service();
@@ -242,7 +290,11 @@ int main() {
     setup();profile_error=-1;
     assert(!pico_network_connect_stored(&network) && joins==2 && WiFiClass::local_IP==0);
     setup();policy_error=-1;
-    assert(!pico_network_connect_stored(&network) && joins==0);expect_no_addresses();
+    assert(!pico_network_connect_stored(&network) && joins==0);
+    // The rejected join left the original association intact. Status must
+    // still show the address at which the local HTTP server is answering.
+    ip_configuration(NULL,&ip,&dns,&gate,&mask);
+    assert(ip.octet[0]==192 && ip.octet[3]==50);
     setup();disconnect_timeout=true;
     assert(!pico_network_connect_stored(&network) && joins==0 && now<13000);expect_no_addresses();
     setup();disconnect_error=SL_ERROR_WIFI_ALREADY_DISCONNECTED;
@@ -258,5 +310,22 @@ int main() {
     assert(WiFiClass::local_IP==0);
     ip_event(new_address);assert(WiFiClass::local_IP==new_address);
     puts("PASS: cancellation disconnects; actual SDK callbacks clear leases and reject late/IPv6 events");
+    const struct { const char *text; std::string bytes; } wep_cases[] = {
+        {"abcde", "abcde"}, {"123456789abcd", "123456789abcd"},
+        {"0041aB00fF", std::string("\x00\x41\xab\x00\xff", 5)},
+        {"000102030405060708090a0b0c", std::string("\x00\x01\x02\x03\x04\x05\x06\x07\x08\x09\x0a\x0b\x0c", 13)}
+    };
+    for (const auto &item : wep_cases) {
+        setup();
+        settings.wifi_security=5; strcpy(settings.wifi_password,item.text);
+        expected_security=SL_SEC_TYPE_WEP; expected_key=item.bytes;
+        assert(pico_network_connect_stored(&network) && joins==1 && profile_deletes==1);
+    }
+    for (const char *invalid : {"", "abcdef", "gg01020304", "0123456789012345678901234z"}) {
+        setup();
+        settings.wifi_security=5; strcpy(settings.wifi_password,invalid);
+        assert(!pico_network_connect_stored(&network) && calls.empty());
+    }
+    puts("PASS: valid ASCII and hex WEP keys join and persist exact bytes once; invalid keys preserve the link");
     return 0;
 }

@@ -8,12 +8,20 @@ void pico_menu_populate_from_menu(const PicoMenu *menu, uint32_t language, uint3
 {
     pico_menu_populate_action_labels(menu->actions, menu->count, language, status_selector);
 }
+#if PICO_STANDALONE
+static void select_network(const PicoWifiNetwork *row)
+{
+    PicoNetwork *n = pico_ui_active->network;
+    n->settings->wifi_security = row->security;
+    ui_copy(n->settings->wifi_ssid, sizeof n->settings->wifi_ssid, row->name);
+#else
 void pico_ui_select_scanned_network(uint32_t index)
 {
     PicoNetwork *n = pico_ui_active->network;
     n->settings->wifi_security = n->platform->scan_security(n->platform_context, index);
     ui_copy(n->settings->wifi_ssid, sizeof n->settings->wifi_ssid,
             n->platform->scan_ssid(n->platform_context, index));
+#endif
     n->settings->wifi_password[0] = 0;
     if (n->settings->wifi_security != 7)
         pico_ui_enter_wifi_password();
@@ -77,29 +85,47 @@ uint32_t pico_ui_scan_and_connect_wifi(void)
     for (;;) {
         pico_display_clear();
         pico_screen_wifi_searching();
+#if PICO_STANDALONE
+        PicoWifiNetwork networks[PICO_WIFI_SCAN_LIMIT];
+        int count = n->platform->scan_wifi(n->platform_context, networks);
+#else
         int count = n->platform->scan_networks(n->platform_context);
+#endif
         pico_display_stop_scrolling();
+#if !PICO_STANDALONE
         if ((count & 255) == 0) {
             pico_screen_wifi_no_signal();
             pico_ui_wait_for_continue();
             pico_display_stop_scrolling();
             return 0;
         }
-        /* The OLED menu owns 22 labels. Reserve two slots for manual/rescan and
-         * bound SDK error/oversized results instead of corrupting adjacent RAM. */
+#endif
+        /* The radio supplies at most twenty networks. */
         if (count < 0)
             count = 0;
         if (count > 20)
             count = 20;
-        for (int i = 0; i < count; i++)
+#if PICO_STANDALONE
+        pico_label_back(pico_ui_active->menu_labels[0]);
+        for (int i = 0; i < count; ++i)
+            ui_copy(pico_ui_active->menu_labels[i + 1], sizeof pico_ui_active->menu_labels[0],
+                    networks[i].name);
+        ++count;
+#else
+        for (int i = 0; i < count; ++i)
             ui_copy(pico_ui_active->menu_labels[i], 22,
                     n->platform->scan_ssid(n->platform_context, (unsigned)i));
+#endif
         pico_menu_append_wifi_search_actions(&count);
         pico_display_clear();
         pico_ui_draw_choose_network();
         uint32_t selected = pico_menu_choose(3, (unsigned)count & 255, 0);
         if (pico_local_cancelled() || selected >= (uint32_t)count)
             return 0;
+#if PICO_STANDALONE
+        if (selected == 0)
+            return PICO_WIFI_BACK;
+#endif
         if (selected == (uint32_t)count - 1) {
             pico_display_clear();
             continue;
@@ -107,7 +133,11 @@ uint32_t pico_ui_scan_and_connect_wifi(void)
         if (selected == (uint32_t)count - 2)
             pico_ui_enter_manual_network();
         else
+#if PICO_STANDALONE
+            select_network(&networks[selected - 1]);
+#else
             pico_ui_select_scanned_network(selected);
+#endif
         if (pico_local_cancelled())
             return 0;
         pico_display_clear();
@@ -136,17 +166,32 @@ void pico_ui_network_menu(void)
         pico_display_clear();
         pico_ui_draw_network_heading();
         switch (pico_menu_choose(3, count, 0)) {
-        case 0:
+        case 0: {
             pico_display_clear();
+#if !PICO_STANDALONE
             pico_ui_active->network->platform->wifi_disconnect(
                 pico_ui_active->network->platform_context);
-            if (pico_ui_scan_and_connect_wifi()) {
+#endif
+            uint32_t result = pico_ui_scan_and_connect_wifi();
+            if (result == PICO_WIFI_BACK)
+                break;
+            if (result == 1) {
                 pico_screen_wifi_connected();
+#if PICO_STANDALONE
+                if (!pico_storage_save_wifi(pico_ui_active->network)) {
+                    pico_display_clear();
+                    pico_display_center_text(0, "WiFi not saved");
+                    pico_display_flush();
+                    pico_display_wait_for_click();
+                }
+#else
                 pico_storage_save_wifi(pico_ui_active->network);
+#endif
             } else
                 pico_screen_wifi_connection_failed();
             ui_delay(1000);
             break;
+        }
         case 1:
             pico_diagnostic_wifi();
             break;

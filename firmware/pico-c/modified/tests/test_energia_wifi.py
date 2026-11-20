@@ -22,6 +22,12 @@ SIMPLELINK = r'''
 typedef uint8_t _u8; typedef int32_t _i32; typedef uint32_t _u32;
 #define SL_ERROR_WIFI_ALREADY_DISCONNECTED (-129)
 #define SL_ERROR_WIFI_NOT_CONNECTED (-59)
+#define SL_SCAN_SEC_TYPE_OPEN 0
+#define SL_SCAN_SEC_TYPE_WEP 1
+#define SL_SCAN_SEC_TYPE_WPA 2
+#define SL_SCAN_SEC_TYPE_WPA2 3
+#define SL_POLICY_SCAN 0x20
+#define SL_SCAN_POLICY(enable) (enable)
 #define SL_POLICY_CONNECTION 0x10
 #define SL_CONNECTION_POLICY(a,b,c,d,e) ((a)|((b)<<1)|((c)<<2)|((d)<<3)|((e)<<4))
 #define SL_IPV4_STA_P2P_CL_DHCP_ENABLE 1
@@ -60,6 +66,8 @@ typedef struct {
 extern "C" {
 #endif
 int sl_WlanPolicySet(int,int,const void*,int);
+typedef struct { uint8_t ssid[32],ssid_len,sec_type,bssid[6]; int8_t rssi,reserved[3]; } Sl_WlanNetworkEntry_t;
+int sl_WlanGetNetworkList(unsigned char,unsigned char,Sl_WlanNetworkEntry_t*);
 int sl_WlanDisconnect(void);
 int sl_WlanProfileDel(int);
 int sl_WlanConnect(const signed char*,int,const void*,const SlSecParams_t*,const void*);

@@ -104,26 +104,26 @@ void pico_menu_append_wifi_search_actions(int *option_count)
     row_index = *option_count;
     if (pico_ui_active->network->settings->language == '\x01') {
         *option_count = row_index + 1;
-        strcpy(pico_ui_active->menu_labels[0] + row_index * 0x16, "Ingresar info WiFi");
+        strcpy(pico_ui_active->menu_labels[row_index], "Ingresar info WiFi");
         row_index = *option_count;
         search_again_label = ">Busque nuevamente<";
         *option_count = row_index + 1;
-        destination = pico_ui_active->menu_labels[0] + row_index * 0x16;
+        destination = pico_ui_active->menu_labels[row_index];
     } else {
         is_french = pico_ui_active->network->settings->language == '\x02';
         *option_count = row_index + 1;
         if (is_french) {
-            strcpy(pico_ui_active->menu_labels[0] + row_index * 0x16, "Entrez les info WiFi");
+            strcpy(pico_ui_active->menu_labels[row_index], "Entrez les info WiFi");
             row_index = *option_count;
             search_again_label = ">Chercher de nouveau<";
             *option_count = row_index + 1;
-            destination = pico_ui_active->menu_labels[0] + row_index * 0x16;
+            destination = pico_ui_active->menu_labels[row_index];
         } else {
-            strcpy(pico_ui_active->menu_labels[0] + row_index * 0x16, "> Enter WiFi Info <");
+            strcpy(pico_ui_active->menu_labels[row_index], "> Enter WiFi Info <");
             row_index = *option_count;
             search_again_label = "> Search again <";
             *option_count = row_index + 1;
-            destination = pico_ui_active->menu_labels[0] + row_index * 0x16;
+            destination = pico_ui_active->menu_labels[row_index];
         }
     }
     strcpy(destination, search_again_label);
@@ -252,7 +252,7 @@ void pico_menu_set_load_more_label(int row_index)
     } else {
         label = ">Load More<";
     }
-    strcpy(pico_ui_active->menu_labels[0] + row_index * 0x16, label);
+    strcpy(pico_ui_active->menu_labels[row_index], label);
     return;
 }
 

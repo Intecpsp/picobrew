@@ -203,13 +203,22 @@ bool pico_still_choose_access_point(PicoNetwork *n)
 {
     char identifiers[22][22];
     size_t count = 0;
+#if PICO_STANDALONE
+    PicoWifiNetwork rows[PICO_WIFI_SCAN_LIMIT];
+    int networks = n->platform->scan_wifi(n->platform_context, rows);
+#else
     int networks = n->platform->scan_networks(n->platform_context);
+#endif
     if (networks < 1) {
         still_error(n, "No Wifi Network");
         return false;
     }
     for (int i = 0; i < networks; ++i) {
+#if PICO_STANDALONE
+        const char *ssid = rows[i].name;
+#else
         const char *ssid = n->platform->scan_ssid(n->platform_context, (unsigned)i);
+#endif
         net_line(n, ssid);
         if (strncmp(ssid, "PicoStill_", 10))
             continue;

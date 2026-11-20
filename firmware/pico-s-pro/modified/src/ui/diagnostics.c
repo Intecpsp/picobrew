@@ -354,15 +354,7 @@ void pico_ui_show_network_addresses(void)
 {
     PicoNetwork *n = pico_ui_active->network;
     pico_display_clear();
-#if PICO_STANDALONE
-    if (n->platform->wifi_status(n->platform_context) != 3 &&
-        !pico_network_ensure_connection(n)) {
-        pico_screen_wifi_connection_failed();
-        pico_display_flush();
-        pico_display_wait_for_click();
-        return;
-    }
-#else
+#if !PICO_STANDALONE
     if (n->platform->wifi_status(n->platform_context) != 3)
         pico_network_ensure_connection(n);
 #endif
@@ -372,7 +364,12 @@ void pico_ui_show_network_addresses(void)
 #if PICO_STANDALONE
     if (pico_network_ipv4_is_zero(addresses[0])) {
         pico_display_clear();
-        pico_screen_wifi_connection_failed();
+        const char *message = "WiFi disconnected";
+        if (n->platform->wifi_status(n->platform_context) == 3)
+            message = "Waiting for IP";
+        else if (n->platform->wifi_connecting(n->platform_context))
+            message = "Connecting...";
+        pico_display_center_text(3, message);
         pico_display_flush();
         pico_display_wait_for_click();
         return;
@@ -385,7 +382,12 @@ void pico_ui_show_network_addresses(void)
     static const char *labels[] = {"  IP: ", " DNS: ", "Gate: ", "Mask: "};
     for (unsigned i = 0; i < 4; i++) {
         char line[28];
-        snprintf(line, sizeof line, "%s%u.%u.%u.%u", labels[i], addresses[i].octet[0],
+#if PICO_STANDALONE
+        if (pico_network_ipv4_is_zero(addresses[i]))
+            snprintf(line, sizeof line, "%s-", labels[i]);
+        else
+#endif
+            snprintf(line, sizeof line, "%s%u.%u.%u.%u", labels[i], addresses[i].octet[0],
                  addresses[i].octet[1], addresses[i].octet[2], addresses[i].octet[3]);
         pico_display_text_at_cell(i + 4, 0, line);
     }

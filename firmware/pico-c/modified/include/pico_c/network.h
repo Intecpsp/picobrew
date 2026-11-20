@@ -19,6 +19,15 @@ typedef struct PicoIpv4 {
     uint8_t octet[4];
 } PicoIpv4;
 
+#if PICO_STANDALONE
+enum { PICO_WIFI_SCAN_LIMIT = 20 };
+typedef struct PicoWifiNetwork {
+    char name[33];
+    uint8_t security;
+    int8_t signal;
+} PicoWifiNetwork;
+#endif
+
 typedef struct PicoSettings {
     char wifi_ssid[34];
     char wifi_password[65];
@@ -61,16 +70,21 @@ typedef struct PicoNetworkPlatform {
     bool (*wifi_initialize)(void *context);
     bool (*wifi_connecting)(void *context);
     int (*wifi_status)(void *context);
+    /* Standalone supplies an explicit length for decoded WEP keys, which may contain NUL. */
     int (*wifi_begin)(void *context, const char *ssid, const uint8_t *password, uint8_t security,
-                      bool binary_wep);
+                      uint8_t wep_key_length);
     void (*wifi_disconnect)(void *context);
     PicoIpv4 (*local_ip)(void *context);
     int (*resolve_host)(void *context, const char *host, PicoIpv4 *address);
     void (*set_dns)(void *context, PicoIpv4 address);
+#if PICO_STANDALONE
+    int (*scan_wifi)(void *context, PicoWifiNetwork networks[PICO_WIFI_SCAN_LIMIT]);
+#else
     int (*scan_networks)(void *context);
     const char *(*scan_ssid)(void *context, unsigned index);
     uint8_t (*scan_security)(void *context, unsigned index);
     int32_t (*scan_rssi)(void *context, unsigned index);
+#endif
     void (*mac_address)(void *context, uint8_t mac[6]);
     bool (*md5)(void *context, const uint8_t *data, size_t length, uint8_t digest[16],
                 uint32_t started_ms);

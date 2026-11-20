@@ -100,7 +100,7 @@ typedef struct PicoUi {
     void *service_context;
     PicoDisplay display;
     PicoEncoder encoder;
-    char menu_labels[PICO_MENU_CAPACITY][PICO_MENU_LABEL_LENGTH];
+    char menu_labels[PICO_MENU_CAPACITY + PICO_STANDALONE][PICO_MENU_LABEL_LENGTH];
 } PicoUi;
 
 /* The original appliance has one OLED and one rotary encoder. This explicit
@@ -385,6 +385,7 @@ bool pico_ui_confirm_screen(void (*draw_screen)(void));
 int pico_ui_confirm_thermal_recovery(int controller_status);
 int pico_ui_confirm_continue_or_abort(void);
 void pico_ui_enter_manual_network(void);
+enum { PICO_WIFI_BACK = 2 };
 uint32_t pico_ui_scan_and_connect_wifi(void);
 int pico_ui_adjust_recipe(PicoRecipe *recipe);
 void pico_ui_start_descale(void);

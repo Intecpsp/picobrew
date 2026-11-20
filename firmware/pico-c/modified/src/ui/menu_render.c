@@ -22,9 +22,9 @@ void pico_ui_draw_menu_items_direction(uint32_t count, int selected, int first,
     int index = selected - first;
     if (index < 0)
         index = 0;
-    /* Explicit bound for a malformed caller; normal OEM menu range is0..21. */
-    if (index >= PICO_MENU_CAPACITY)
-        index = PICO_MENU_CAPACITY - 1;
+    const int capacity = sizeof pico_ui_active->menu_labels / sizeof pico_ui_active->menu_labels[0];
+    if (index >= capacity)
+        index = capacity - 1;
     label(pico_ui_active->menu_labels[index]);
     PicoDisplay *d = &pico_ui_active->display;
     if (direction) {

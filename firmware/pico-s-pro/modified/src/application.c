@@ -745,7 +745,7 @@ static bool still_start_once(void *c)
 static bool choose_wifi(void *c)
 {
     (void)c;
-    return pico_ui_scan_and_connect_wifi() != 0;
+    return pico_ui_scan_and_connect_wifi() == 1;
 }
 static void diagnose_wifi(void *c)
 {
