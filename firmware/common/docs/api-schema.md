@@ -1,0 +1,159 @@
+# Shared standalone API contract
+
+The shared engine uses the existing Pico S/Pro HTTP transport and API version 1.
+S/Pro and C keep their current implementation and wire compatibility. New Z,
+PicoStill and PicoFerm adapters use `picobrew/device_services.hpp`; advertised
+features describe implemented adapters, not a promise inferred from a model.
+
+## Transport and discovery
+
+The browser assets and `GET /api/v1/health` are public. Other API routes require
+the device's 64 lowercase hexadecimal bearer key. Missing provisioning returns
+503 `api_key_not_provisioned`; incorrect credentials return 401 `unauthorized`.
+No default key, wildcard CORS, cloud account or external browser dependency is
+introduced. HTTP requests and responses retain a bounded 4096-byte arena.
+
+`GET /api/v1` keeps `api_version`, `firmware_version`, `mode`, `model`,
+`model_name`, `model_family`, `commands`, `front_panel`, `history_persistent`,
+`events_persistent`, `telemetry_forwarding`, `dedicated_pause_resume`, recipe
+capacities and history capacities. It also supplies `capabilities` with boolean
+`recipes`, `brewing`, `heating`, `pump`, `fans`, `temperature`, `pressure`,
+`battery`, `calibration`, `fermentation`, and `front_panel` members. Clients
+must tolerate the older S/Pro/C response without this additional object.
+`settings_fields` lists the supported preference names. `command_fields` maps
+each advertised command to its `allowed` and `required` argument-name arrays.
+
+Initial new model identities are `z-series` / `Pico Z` / `z-series`,
+`picostill` / `PicoStill` / `picostill`, and
+`picoferm` / `PicoFerm` / `picoferm`. Z1/Z2 identity must not be guessed.
+An unavailable optional capability has no active route and returns 404.
+
+## Status and readings
+
+`GET /api/v1/status` retains identity, device UID, uptime, readiness, busy/stop
+state, stop reason, command, numeric device state/phase/controller status,
+compartment, wort/thermoblock/target temperatures, step timing/name/count,
+recipe name, session ID, optional filter state and encoder bounds. It adds a
+human-readable `state`, optional `temperature_f`, `pressure_kpa`, `battery_v`,
+and arrays `sensors` and `actuators`. Unsupported or invalid readings are null;
+NaN/infinity are never JSON numbers. Temperature is Fahrenheit on the wire,
+independent of the browser's display preference. Milliseconds wrap at 32 bits.
+
+Each sensor has `id`, `label`, `kind`, `unit`, and `value`. Kinds are
+`temperature`, `pressure`, `voltage`, `battery`, `speed`, or `other`. Units are
+`F`, `kPa`, `V`, `%`, `rpm`, or `raw`. Unestablished pressure calibration/units
+must remain an explicitly raw sensor and `pressure_kpa:null`. Still preserves
+four named temperature channels and its actual pressure reading; no channel is
+silently discarded. Each actuator has `id`, `label`, `kind` (`pump`, `fan`, or
+`heater`), `enabled`, normalized-percent `level`, and `rpm`; unknown values are
+null. A reported actuator does not itself grant a direct-control command.
+
+`recovery` is null when the device has no interrupted-brew checkpoint feature.
+Otherwise it contains `available`, `valid`, `recipe_name`, `step_name`,
+`current_step`, `step_seconds`, and `elapsed_seconds`. A valid available
+checkpoint has a nonempty recipe name. Preparation checkpoints may have an empty
+step name and `current_step:-1`; zero remaining seconds can describe preparation
+or an untimed phase. Names are at most 31 printable ASCII bytes, current step is
+-1..255, remaining seconds are 0..2147483647 and elapsed seconds are 0..4294967295.
+Malformed metadata produces an explicit invalid-snapshot error, not a resumable
+button. An invalid stored checkpoint uses `valid:false`, even when
+`available:false`, and remains visible for explicit discard.
+
+## Commands, recipes and preferences
+
+`POST /api/v1/commands` accepts `command` plus only the arguments advertised for
+that command. The common typed argument vocabulary is `recipe_id`, `delta`,
+`click`, `channel`, `level`, `enabled`, `value`, `duration_seconds`, and `confirm`.
+Unknown/duplicate fields and nonfinite numbers are rejected. Integer fields
+require integers; delta is -100..100, level is 0..100 percent, channel is a
+nonnegative device channel index, and duration is an unsigned number of seconds.
+The adapter enforces actual device bounds and allowed states. Commands must
+copy borrowed input before returning 202. Stop latches inhibition synchronously;
+foreground cancellation may then continue. The browser never automatically
+accepts preparation prompts or starts a session while pairing.
+
+Still commands are `start` (native manual mode), `essential-oils`, `clean`,
+`stop`, `set-pump` with `enabled`, and `set-fan` with channel 1/2, level 0..100
+and optional `enabled`. Original fan, temperature and pressure interlocks stay
+in the execution path. Ferm commands are `start`, `stop`, `calibrate`, `sample`,
+and `set-sampling-interval` with integer `value` 60..86400 seconds (default 300).
+Ferm calibration requires `confirm:true` after the browser displays the native
+depressurization prerequisite. This is an explicit action, never a default.
+
+Devices that implement interrupted-brew recovery advertise `resume-interrupted`
+with `confirm` allowed and required, and `discard-interrupted` with no arguments.
+Resuming requires `confirm:true` after the user reviews the water, vessel and
+filter. Saved progress can lag the interruption by up to 30 seconds. Resumption
+uses the saved remaining step time and can return to native preparation prompts.
+Loading metadata, connecting a browser, importing history or restarting the
+device never activates outputs. A pending or invalid checkpoint must be resolved
+before starting another recipe. The adapter rechecks checkpoint/state validity
+when executing either command. Existing live-session `pause`/`resume` commands
+remain separate. Discard removes the checkpoint only after an explicit user
+action; clients do not add a device `confirm` argument when none is advertised.
+
+The common engine owns a persistent 16-record recipe catalogue with 15 steps
+per recipe. The existing S/Pro schema and bounds apply: IDs 1..20 ASCII
+alphanumerics/underscore/hyphen, names 1..31 printable ASCII, step names 1..21,
+locations 1..6, target 0 or 60..212 F, active minutes 0..599 and drain minutes
+0..120. An adapter must additionally validate the native conversion. Locations
+keep device-specific recovered meaning; they are not interchangeable physical
+compartments across models. `zero_minute_steps` is explicitly advertised.
+The common engine exposes catalogue reads to the local front panel and passes
+the full selected recipe to the adapter's brew command. Mutations require an
+idle device and verified persistent writes. Defaults are offered only when an
+adapter provides a reviewed, attributed starter set; no Z defaults are inferred
+from S/Pro compartment numbers. Accessories do not advertise recipe capacity.
+
+Settings use the existing `temperature_unit` (`F`/`C`), `language`
+(`en`/`es`/`fr`) and `detailed_status` fields, only where advertised. PATCH is a
+nonempty subset and preserves unrelated fields. Common persistence validates
+before saving; application failures return an explicit error, never a success
+claim. No Wi-Fi credentials, API key or calibration values are exposed as
+ordinary preferences.
+
+## Display pages
+
+Existing S/Pro/C display responses remain unchanged. The new adapter response
+adds `rotation`, `offset`, `total_bytes`, `next_offset`, and `revision` to
+`width`, `height`, `format`, and hexadecimal `data`. A page contains at most
+1024 raw bytes. `GET /api/v1/display` returns metadata and page zero; additional
+pages use `GET /api/v1/display/<offset>?revision=<revision>`. Numeric syntax and
+page boundaries are checked; a changed generation returns 409 `display_changed`
+and the client retries the complete image. A framebuffer copy may be frozen
+for a paged read, but metadata and bytes must refer to the same revision.
+
+Z uses width 128, height 64, format `row-gray4-msb-hex`, rotation 0, total 4096
+bytes. Byte `y*64+floor(x/2)` holds even x in the high nibble and odd x in the
+low nibble. Values 0..15 map to grayscale. `page-lsb-hex` retains the existing
+monochrome packing; apply the advertised rotation (legacy S/Pro assumes 180).
+Devices without a physical display return 404 and have no encoder control.
+
+## Events, history and Hub forwarding
+
+Events retain the existing bounded eight-entry volatile ring and fields
+`sequence`, `uptime_ms`, `kind`, and `detail`. History is device-owned and
+persistent: eight sessions with an explicitly advertised bounded record pool,
+samples at the captured device interval plus state changes, explicit truncation/storage errors,
+restart recovery and paged export. The first eleven history columns retain
+their S/Pro names/order. Additional columns may include `temperature_f`,
+`pressure_kpa`, `battery_v`, followed by each named sensor/actuator reading;
+`fields` defines exact sample order. Clients must index by field name and must
+not assume accessory records represent brewing or heating. Session identity is
+allocated from a persistent device counter; unverified/corrupt storage does
+not silently reset it. An interrupted session is recorded, never auto-started.
+
+Discovery reports `history_sample_interval_ms`; each retained session reports
+its own `sample_interval_ms`. The default is 15000 ms. Sensor devices may declare
+a stable interval from 15000 to 86400000 ms; PicoFerm uses its configured acquisition
+interval, default 300000 ms. Old session metadata retains the original interval
+after a later setting change. History has 4224 records across eight sessions,
+returns up to 32 rows that fit the 4096-byte response arena, and uses `next_offset`
+as the authoritative page continuation. A full record pool or exhausted 32-bit
+elapsed-time range reports truncation rather than silently wrapping history.
+
+`GET`/`PUT /api/v1/telemetry` keeps the existing enabled/host/port configuration
+and delivery counters. Forwarding is optional, defaults off, contains no device
+key, and uses the existing versioned Hub status envelope. Device operation and
+history continue without the Hub. Slow/unreachable networks are bounded and
+must not block actuator/sensor service. No firmware OTA route is implied.

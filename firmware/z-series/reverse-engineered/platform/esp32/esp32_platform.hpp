@@ -32,9 +32,9 @@ struct System {
     BusPresence controller;
 
     System();
-    // Original 0x40112f88 bus/partition/watchdog operations. The result exposes
-    // SDK watchdog failures instead of invoking the original assertion loop.
-    esp_err_t setup();
+    // Original 0x40112f04 scans both buses. Full setup is assembled by
+    // system_setup_platform.hpp, including returning assertions and commands.
+    void scan_buses();
 };
 
 HeaterIo gpio() noexcept;

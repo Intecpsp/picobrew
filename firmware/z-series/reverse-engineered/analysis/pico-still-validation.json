@@ -8,15 +8,16 @@
   "original_execution_jsonl_sha256": "e7a8a4b3f31b002618a3f0a28724f2ade1aaa0cd1e199eae288aad35a16a1d7d",
   "input_cases_sha256": "a215294a0a265c8bd0eb2feec5b08e776742431ef8cd38ebe6905a6a94b342c2",
   "source_sha256": {
-    "include/zseries/pico_still.hpp": "4f87a7a7008b97d83c37f2098e6a6e64a4539773f757fc700026c1ac15802ea0",
-    "src/pico_still.cpp": "7779feb364ed238ed4dd0e41d569ae9bab8d4042f0e26fcd0258423bdacf7b02",
-    "tests/pico_still_bridge.cpp": "d055f6f10158b7f313ebbd5e00f6248439bb54432985935a3283429c81262a0c",
-    "tests/test_pico_still.py": "0547c78ae0351afb3c5fea66292ba070cdbe834b5a44e76a479c102dbed9c053",
-    "tools/validate_pico_still.py": "0076222d87edd92c9a5430309fc0f19225b7cc6307d2cf0ef1c1f1a9533d0d21",
+    "include/zseries/pico_still.hpp": "8da2ef9bbbe65762ba02935492b582762f3662c848850c9682a6877ff2be46fd",
+    "src/pico_still.cpp": "f024972394b87694a0baccd0b44429e2fcf3490de7d953be5eafbd7b68d0b330",
+    "tests/pico_still_bridge.cpp": "2ec935f35a07a6d19129f55d985db550d72bf24a06151e856c6f6aafcac0b3e2",
+    "tests/test_pico_still.py": "e6815edfbffa2557d2f905db7e29092570b2b17954ede5b51701e38dc595f7a0",
+    "tools/validate_pico_still.py": "51ddbbc4813c0bdf130e81448c6c247b6a9b4acf3cb56dc283fc6d20318b8831",
     "tools/ghidra/EmulatePicoStill.java": "a1adfe2f3f1695a230ae33f50a7107195f32be183faaf7b3db54cfabd753da72",
-    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78",
+    "include/zseries/still_diagnostics.hpp": "8517bac0adab1b3ce978b9767c0114ea965f8dbbf19d58620e173ce654c17530"
   },
-  "scope": "Original PicoStill setup/tick, 20-state controller, command/Wi-Fi mailbox priority, scan filtering, retries and response polling; explicit outgoing HTTP/client, cloud authorization, runtime gate, SDK scan strings, event delivery and diagnostic boundaries.",
+  "scope": "Original PicoStill setup/tick, 20-state controller, command/Wi-Fi mailbox priority, scan filtering, retries and response polling; explicit outgoing HTTP/client, cloud authorization, runtime gate, SDK scan strings, event delivery and diagnostic boundaries. The legacy standalone API without diagnostic callbacks remains covered here; complete returning assertions, diagnostics, counters and clocks are separately verified in still-continuation-validation.json.",
   "original_functions_executed": {
     "0x400d0e60": 19,
     "0x400d0e90": 382,

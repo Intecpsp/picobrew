@@ -1,0 +1,27 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 4,
+  "original_functions": 10,
+  "original_thermistor_calls": 32656,
+  "returning_assertions": 7,
+  "all_results_match": true,
+  "source_sha256": {
+    "include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "src/eeprom.cpp": "cc6043665a62b871f44f5aadf182713328c6a38c531b8784a0c9dd8529c7879c",
+    "include/zseries/hardware_console_tests.hpp": "a49f9dd4a24778691801fb2a47ab39a2821f4d37e7a6ba0f9d1eb4c250177b57",
+    "src/hardware_console_tests.cpp": "60954cd57b25819ac44d6b0bb8c7468ba78a41aaed94c3db8be1313e579377a3",
+    "tests/hardware_console_bridge.cpp": "5b133dcc3d50191f75a6b0842e851efe2fc3cef398119a757202281e7cfc2806",
+    "tests/hardware_console_cases.py": "c5b72602b8067921a499fcc79549aabf4d1cf6bed6cc6955318ca43ca5659acb",
+    "tests/hardware_console_native.py": "04e1a0cfb6f067f1a443108df03b9b317b47834a48db42b9d07a5f9dfe9675e4",
+    "tests/test_hardware_console.py": "579d02663c79ea77f83052889b943ffbcaa69c5c13755b48106e7f4c27683ef8",
+    "tests/ghidra/EmulateHardwareConsoleTests.java": "0b902ac43db034392692ce151d4388048b1ec624bf9abccdf2081ca2cda0eb3b",
+    "tests/ghidra/SlideshowExecution.java": "574a57c81e391fe4f87f7a37d5389e531743c3eb188bd53b0a3ff65816e58489",
+    "tools/validate_hardware_console.py": "0dd0e2f05976cb8253f1628a7f47d7e6ec8a71c36bef0f5b8b1ae9a787b9c96f",
+    "tests/fixtures/hardware-console-inputs.json.gz": "a5a8f2cc15a5f40b724651840e4b6029fdc52ac147fc88d6918dbb6e2611b367",
+    "tests/fixtures/hardware-console-original.json.gz": "07ac996e82d80e7ce53a39bd1d2a4bacadaea9dff53ba6fdbaec039bb8952370"
+  },
+  "scope": "Original EEPROM diagnostic 400dd2e0 and MAX11613 diagnostic 400ddee0 execute through return, including their full data/thermistor callees and ScopeLogger constructor/destructor. Every diagnostic event, final assertion counter and wrapping clock is compared. OEM assertion helper 400db014 executes, updates its counter and delays 200 ms before returning. ROM primitives, prescribed clock/stack high-water, soft float, finite positive log, formatted diagnostic capture, SDK task watchdog reset and scope text rendering are explicit environmental boundaries. No EEPROM flash or ADC bus access is performed by these original diagnostic bodies.",
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

@@ -45,29 +45,36 @@
     "-fno-exceptions",
     "-fno-rtti"
   ],
-  "archive_sha256": "d7e75b2e7ae566319b264398f720b427aff4bd8ccae8077f1c7e9f379993eeed",
+  "archive_sha256": "d7738a789b8de427a7cfd63d03205973829c1a59d528cdb8ab0217576175663e",
   "complete_application_linked": false,
   "hardware_tested": false,
-  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
   "schema_version": 1,
-  "scope": "StillClient protocol and PicoStill sample/statistics source compile in the 35-module historical ESP32 archive; outgoing HTTP remains required. No application link or hardware execution.",
-  "compiled_modules": 35,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "compiled_modules": 127,
   "still_client_sources": [
     {
       "source": "src/pico_still_sensors.cpp",
-      "source_sha256": "27dfdcf296030571e9497e8c63a01ade587ad4e7eb44a98cd4def4ea9d29e6a0",
-      "object_sha256": "401df67d43a0f48b09bf080cce69eb423aa5297066646f5c54f72b9150920c1a",
-      "object_bytes": 11104
+      "source_sha256": "b00dab43d7bb2c55399677a35816171dbca554b812387f73ea78d8d889a902bb",
+      "object_sha256": "5c7f2872352f506e2f26c0d13c05ca2cf3c8282df301aa41fd6ebd6830abd245",
+      "object_bytes": 19896
     },
     {
       "source": "src/still_client.cpp",
-      "source_sha256": "845329f80bed7caa208b8c7fd5c59f261849cf72e7da4ff3c28e47f7ecb30138",
-      "object_sha256": "54c9d00e6ae61e2744a58352334ce999af7badec7d382e1d404d5945c3969503",
-      "object_bytes": 17924
+      "source_sha256": "fac4d74b33dfb5791b83130de8216d757225d5c88c9e9aa00d3e2f09ed4bfdb1",
+      "object_sha256": "1ffb47a1a95c4a7a8a1eaafa27a3532f2af42ff6e272c1c8f95ca1005b338fcc",
+      "object_bytes": 29612
     }
   ],
   "still_client_headers_sha256": {
-    "include/zseries/still_client.hpp": "6f2b3b38ec80694527509464556ea4596d15372ec05b901796b080c53fd77e24",
-    "include/zseries/pico_still_sensors.hpp": "98e83b575d3d4c764256c1e659927a19ae1832f9dcc5e61b5e02a12f0861697e"
+    "include/zseries/still_client.hpp": "88196189c7289b42bae61509db92d16bf0126b6ba0ddc9c4495865705c07b767",
+    "include/zseries/pico_still_sensors.hpp": "b02523527c74186fd3cec2aaff596cf056f5d702b0d85a377885e190b8785d41"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 2
   }
 }

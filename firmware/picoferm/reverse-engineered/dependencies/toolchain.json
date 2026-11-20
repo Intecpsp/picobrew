@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "url": "https://github.com/esp8266/Arduino/releases/download/2.3.0/linux64-xtensa-lx106-elf-gb404fb9.tgz",
+  "archive_sha256": "46f057fbd8b320889a26167daf325038912096d09940b2a95489db92431473b7",
+  "archive_size_bytes": 30262903,
+  "package_index": "https://arduino.esp8266.com/stable/package_esp8266com_index.json",
+  "identity_sha256": {
+    "bin/xtensa-lx106-elf-g++": "9090ec97ab7bc6d9cd3a1cb47b5899e05ecce8f83a7300efb868e491367bb5ec",
+    "bin/xtensa-lx106-elf-ar": "b2ea96a4a53533c7a0867c86942b5773ee1c83e0ca2bd227b673c2af71b48bac"
+  },
+  "license": "GCC/toolchain licenses in upstream package; compiler used as build dependency",
+  "scope": "Public reference dependency, not evidence of every original vendor build option."
+}

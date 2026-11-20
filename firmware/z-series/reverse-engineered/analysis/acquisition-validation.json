@@ -60,8 +60,8 @@
     "0x40110990": "cfa53e2f8540cece948486dab1eb8a0f4e1d60befd0c74adc0226fad9ec13566"
   },
   "source_sha256": {
-    "src/sensor_acquisition.cpp": "29969474a4a98f393e2f7e8d8045e86c21908b8b39b60c4e806136021a84d6b2",
-    "include/zseries/sensor_acquisition.hpp": "eb21c7067000af5338a735404386ef691a00aec414d5a741529dbc9feb9da61a",
+    "src/sensor_acquisition.cpp": "dd3d7eb81bebb945e0e1606b7844579e723e25bf2a922ca9e5767867b7a988b4",
+    "include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
     "tests/acquisition_bridge.cpp": "27049964ba90534a9aa1cfb656a6643dc28beace5b51cae94c32bfb10d006d0e",
     "tools/validate_acquisition.py": "3b372c8cd2943b273676153b54ad7e623ccbcd65c7c14a5f4257a877ef7afd24",
     "tools/ghidra/EmulateAcquisition.java": "0c9e4dd65287e124f0568a5e6cd9518df87c348b5cb757de0ec0fb993cfc6f7b"

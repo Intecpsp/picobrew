@@ -30,7 +30,7 @@
     "-fno-rtti"
   ],
   "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
-  "build_script_sha256": "017a14ce55ea71dcecafc446246a888898b79bc7be759dfc98c3a65583a633a3",
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
   "complete_application_linked": false,
   "hardware_tested": false,
   "sources": [
@@ -45,11 +45,12 @@
     "include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
     "include/zseries/local_http.hpp": "3b7ecb1b8be47079b0dfe2cc7a904420e2e46156c6c01f58c4fb12c2267fc0d5"
   },
-  "scope": "Target compilation of recovered incoming connection framing and response-header source; no application link or physical network execution.",
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
   "integration_revalidation": {
     "report": "integration-target-build.json",
-    "report_sha256": "772de3fbba5dfe6754ccf9c950f5508c041dccb199f2aa89a1c1e2c350264935",
-    "compiled_modules": 59,
-    "scope": "These selected source, header and object identities were refreshed from the complete integrated object build; archive_sha256, where present, identifies that 59-module archive."
-  }
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 1
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8"
 }

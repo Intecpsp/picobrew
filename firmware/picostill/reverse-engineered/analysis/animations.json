@@ -1,0 +1,241 @@
+{
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "table_address": 1061235152,
+  "evidence_function": 1074617788,
+  "records": [
+    {
+      "index": 0,
+      "repeat": 1,
+      "address": 1061231708,
+      "text": ""
+    },
+    {
+      "index": 1,
+      "repeat": 1,
+      "address": 1061233354,
+      "text": "ryg"
+    },
+    {
+      "index": 2,
+      "repeat": 1,
+      "address": 1061233377,
+      "text": "g"
+    },
+    {
+      "index": 3,
+      "repeat": 1,
+      "address": 1061234510,
+      "text": "y"
+    },
+    {
+      "index": 4,
+      "repeat": 1,
+      "address": 1061228062,
+      "text": "r"
+    },
+    {
+      "index": 5,
+      "repeat": 0,
+      "address": 1061233381,
+      "text": "g."
+    },
+    {
+      "index": 6,
+      "repeat": 0,
+      "address": 1061233358,
+      "text": "y."
+    },
+    {
+      "index": 7,
+      "repeat": 0,
+      "address": 1061233361,
+      "text": "r."
+    },
+    {
+      "index": 8,
+      "repeat": 0,
+      "address": 1061233366,
+      "text": "g-"
+    },
+    {
+      "index": 9,
+      "repeat": 0,
+      "address": 1061233491,
+      "text": "y-"
+    },
+    {
+      "index": 10,
+      "repeat": 0,
+      "address": 1061233608,
+      "text": "r-"
+    },
+    {
+      "index": 11,
+      "repeat": 0,
+      "address": 1061233364,
+      "text": "ryg-"
+    },
+    {
+      "index": 12,
+      "repeat": 0,
+      "address": 1061233369,
+      "text": "r.ry.yg.g"
+    },
+    {
+      "index": 13,
+      "repeat": 0,
+      "address": 1061233379,
+      "text": "ryg."
+    },
+    {
+      "index": 14,
+      "repeat": 1,
+      "address": 1061233384,
+      "text": "gy"
+    },
+    {
+      "index": 15,
+      "repeat": 0,
+      "address": 1061233491,
+      "text": "y-"
+    },
+    {
+      "index": 16,
+      "repeat": 1,
+      "address": 1061233377,
+      "text": "g"
+    },
+    {
+      "index": 17,
+      "repeat": 0,
+      "address": 1061233381,
+      "text": "g."
+    },
+    {
+      "index": 18,
+      "repeat": 1,
+      "address": 1061234510,
+      "text": "y"
+    },
+    {
+      "index": 19,
+      "repeat": 1,
+      "address": 1061228062,
+      "text": "r"
+    },
+    {
+      "index": 20,
+      "repeat": 0,
+      "address": 1061233387,
+      "text": "r-r-y.y.-"
+    },
+    {
+      "index": 21,
+      "repeat": 0,
+      "address": 1061233397,
+      "text": "r-r-y.y.y.y.-"
+    },
+    {
+      "index": 22,
+      "repeat": 0,
+      "address": 1061233411,
+      "text": "r-r-y.y.y.y.y.y.-"
+    },
+    {
+      "index": 23,
+      "repeat": 0,
+      "address": 1061233429,
+      "text": "r-r-y.y.y.y.y.y.y.y.-"
+    },
+    {
+      "index": 24,
+      "repeat": 0,
+      "address": 1061233451,
+      "text": "ry-"
+    },
+    {
+      "index": 25,
+      "repeat": 0,
+      "address": 1061233361,
+      "text": "r."
+    },
+    {
+      "index": 26,
+      "repeat": 0,
+      "address": 1061233608,
+      "text": "r-"
+    },
+    {
+      "index": 27,
+      "repeat": 0,
+      "address": 1061233455,
+      "text": "ry-ry-y.y.y.y.y.y.y.y.-"
+    },
+    {
+      "index": 28,
+      "repeat": 0,
+      "address": 1061233479,
+      "text": "ry-ry-y-----y-"
+    },
+    {
+      "index": 29,
+      "repeat": 0,
+      "address": 1061233494,
+      "text": "ry-ry-y-y-y-y-y-y-y-y.-"
+    },
+    {
+      "index": 30,
+      "repeat": 0,
+      "address": 1061233518,
+      "text": "ry-ry-r-----r-"
+    },
+    {
+      "index": 31,
+      "repeat": 0,
+      "address": 1061233533,
+      "text": "ry-ry-r.r.r.r.r.r.r.r.-"
+    },
+    {
+      "index": 32,
+      "repeat": 0,
+      "address": 1061233533,
+      "text": "ry-ry-r.r.r.r.r.r.r.r.-"
+    },
+    {
+      "index": 33,
+      "repeat": 0,
+      "address": 1061233557,
+      "text": "ry-ry-y.y.y.y.y.y.y.y-r-----r-"
+    },
+    {
+      "index": 34,
+      "repeat": 0,
+      "address": 1061233588,
+      "text": "ry-ry-y-----y-r-----r-"
+    },
+    {
+      "index": 35,
+      "repeat": 0,
+      "address": 1061233611,
+      "text": "ry-ry-y-y-y-y-y-y-y-y-r-----r-"
+    },
+    {
+      "index": 36,
+      "repeat": 0,
+      "address": 1061233642,
+      "text": "ry-ry-y.y.y.y.y.y.y.y.r.r.r.r.r.r.r.r.-"
+    },
+    {
+      "index": 37,
+      "repeat": 0,
+      "address": 1061233682,
+      "text": "ry-ry-y-----y-r.r.r.r.r.r.r.r.-"
+    },
+    {
+      "index": 38,
+      "repeat": 0,
+      "address": 1061233714,
+      "text": "ry-ry-y-y-y-y-y-y-y-y-r.r.r.r.r.r.r.r.-"
+    }
+  ]
+}

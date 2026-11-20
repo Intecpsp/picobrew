@@ -1,6 +1,7 @@
 // Original Z119 MAX11613 transaction and temperature acquisition pipeline.
 #pragma once
 #include "zseries/heater.hpp"
+#include "zseries/console.hpp"
 #include <array>
 #include <cstddef>
 #include <cstdint>
@@ -23,7 +24,7 @@ struct I2cTransport {
 
 enum class AcquisitionResult {
     Ok, MissingTransport, InvalidBoiler, ShortReply, ReadFailure,
-    InvalidClock, InvalidSample, InvalidSmootherState
+    InvalidClock, InvalidSample, InvalidSmootherState, DiagnosticFailure
 };
 
 struct Max11613 {
@@ -38,7 +39,11 @@ struct Max11613 {
 // There is no endTransmission call after the first byte. Preserve this
 // observed transaction ordering instead of assuming that 0x80 was sent.
 AcquisitionResult max11613_setup(Max11613&, BoilerType, const I2cTransport&) noexcept;
-AcquisitionResult max11613_poll(Max11613&, const I2cTransport&) noexcept;
+// A production diagnostic sink executes the original returning assertions
+// and permits all four channels to finish. Without a sink, invalid byte and
+// zero-timestamp inputs retain the legacy guarded, data-only boundary.
+AcquisitionResult max11613_poll(Max11613&, const I2cTransport&,
+                               const ConsoleServices* = nullptr) noexcept;
 
 struct NoiseSmoother {
     std::array<double, 10> samples{};
@@ -53,7 +58,8 @@ struct NoiseSmoother {
 // Original 0x40110990/0x40110924: ten-sample running average; reset aggregate
 // state after a gap strictly greater than 2000 ms. Old ring bytes remain.
 AcquisitionResult smooth_temperature(NoiseSmoother&, double celsius,
-                                     std::uint32_t clock_ms) noexcept;
+                                     std::uint32_t clock_ms,
+                                     const ConsoleServices* = nullptr) noexcept;
 
 struct TemperatureAcquisition {
     Max11613 adc;
@@ -71,6 +77,7 @@ struct AcquisitionClock {
 // Invalid channels retain previous published values/times for stale checks.
 AcquisitionResult acquire_temperatures(TemperatureAcquisition&, HeaterSensors&,
                                       std::uint32_t tick_ms, const I2cTransport&,
-                                      const AcquisitionClock&) noexcept;
+                                      const AcquisitionClock&,
+                                      const ConsoleServices* = nullptr) noexcept;
 
 }} // namespace zseries::oem

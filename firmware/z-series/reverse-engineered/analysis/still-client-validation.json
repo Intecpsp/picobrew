@@ -8,17 +8,18 @@
   "original_execution_jsonl_sha256": "2779e169d5a76883540f769d79c0287069f40d3a374c591363688231dc73571a",
   "input_cases_sha256": "333fd6f2a59734a0e24550129cfc1e1095def5028ce071e4a18018bd9576e8a2",
   "source_sha256": {
-    "include/zseries/still_client.hpp": "6f2b3b38ec80694527509464556ea4596d15372ec05b901796b080c53fd77e24",
-    "src/still_client.cpp": "845329f80bed7caa208b8c7fd5c59f261849cf72e7da4ff3c28e47f7ecb30138",
-    "include/zseries/pico_still_sensors.hpp": "98e83b575d3d4c764256c1e659927a19ae1832f9dcc5e61b5e02a12f0861697e",
-    "src/pico_still_sensors.cpp": "27dfdcf296030571e9497e8c63a01ade587ad4e7eb44a98cd4def4ea9d29e6a0",
-    "tests/still_client_bridge.cpp": "e68fd071d8c55377724dd9947fa54edd6c2c789fedadbb05cb4156bd2a42b122",
+    "include/zseries/still_client.hpp": "88196189c7289b42bae61509db92d16bf0126b6ba0ddc9c4495865705c07b767",
+    "src/still_client.cpp": "fac4d74b33dfb5791b83130de8216d757225d5c88c9e9aa00d3e2f09ed4bfdb1",
+    "include/zseries/pico_still_sensors.hpp": "b02523527c74186fd3cec2aaff596cf056f5d702b0d85a377885e190b8785d41",
+    "src/pico_still_sensors.cpp": "b00dab43d7bb2c55399677a35816171dbca554b812387f73ea78d8d889a902bb",
+    "tests/still_client_bridge.cpp": "e74b09bd8476e43711fe7734797d864ad96b4414cfa795e2f5e46d178dd844fa",
     "tests/test_still_client.py": "61456b266e6bbaab215025a112279af94596d7d51c944676fb18eb5204c57350",
     "tools/validate_still_client.py": "765c290133cc116668a04f33d91253d00ff7dd4c8497da88b9898acccc336eae",
     "tools/ghidra/EmulateStillClient.java": "9d6d081a45d693b5292c72e8de0a9988cf00c3ea1b69eceebce16983e7981daa",
-    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
+    "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78",
+    "include/zseries/still_diagnostics.hpp": "8517bac0adab1b3ce978b9767c0114ea965f8dbbf19d58620e173ce654c17530"
   },
-  "scope": "Original StillClient reset/URI/commands/form encoding/HTTP callbacks, PicoStill sensor CSV decoding, sample speeds, timed snapshots and rolling statistics. Explicit outgoing HTTP exchange, libc decimal atof/hex formatting, ROM memory, arithmetic and diagnostics boundaries; no live socket or hardware execution.",
+  "scope": "Original StillClient reset/URI/commands/form encoding/HTTP callbacks, PicoStill sensor CSV decoding, sample speeds, timed snapshots and rolling statistics. Explicit outgoing HTTP exchange, libc decimal atof/hex formatting, ROM memory, arithmetic and diagnostics boundaries; no live socket or hardware execution. The legacy standalone API without diagnostic callbacks remains covered here; complete returning assertions, diagnostics, counters and clocks are separately verified in still-continuation-validation.json.",
   "original_functions_executed": {
     "0x400d0df8": 7839,
     "0x400d0e60": 422,

@@ -33,11 +33,15 @@ export function deviceState(device: Device) {
     ? 'Offline'
     : device.status?.stopped
       ? 'Stopped'
-      : device.status?.busy
-        ? 'Brewing'
-        : device.status?.ready
-          ? 'Ready'
-          : 'Connected'
+      : device.status?.state
+        ? device.status.state.replace(/[_-]/g, ' ').replace(/^./, (c) => c.toUpperCase())
+        : device.status?.busy
+          ? ['picoferm', 'picostill'].includes(device.model)
+            ? 'Session active'
+            : 'Brewing'
+          : device.status?.ready
+            ? 'Ready'
+            : 'Connected'
 }
 export function deviceModelLabel(device: Pick<Device, 'model' | 'model_error' | 'enabled'>) {
   const names: Record<string, string> = {
@@ -45,6 +49,9 @@ export function deviceModelLabel(device: Pick<Device, 'model' | 'model_error' | 
     'pico-pro': 'Pico Pro',
     'pico-c': 'Pico C',
     z: 'Pico Z',
+    'z-series': 'Pico Z',
+    picoferm: 'PicoFerm',
+    picostill: 'PicoStill',
     zymatic: 'Zymatic',
   }
   return device.model

@@ -1,4 +1,6 @@
 #include "zseries/quantity.hpp"
+#include "zseries/console.hpp"
+#include <cstdio>
 
 namespace zseries { namespace oem {
 bool quantity_units_compatible(Unit from, Unit to) noexcept {
@@ -8,8 +10,13 @@ bool quantity_units_compatible(Unit from, Unit to) noexcept {
            (a - 4u < 2 && b - 4u < 2);
 }
 
-bool quantity_in(const Quantity& quantity, Unit to, double& result) noexcept {
-    if (!quantity_units_compatible(quantity.unit, to)) { result = 0; return false; }
+bool quantity_in(const Quantity& quantity, Unit to, double& result,const ConsoleServices* diagnostics) noexcept {
+    if (!quantity_units_compatible(quantity.unit, to)) {
+        result = 0;
+        if(!diagnostics||!diagnostics->assertion||!diagnostics->assertion(diagnostics->context,"Quantity.h",0x7d,"areCompatible(_unit, unit)"))return false;
+        char message[128];::snprintf(message,sizeof(message),"getValueAs(%s) incompatible with %s",to_string(to),to_string(quantity.unit));
+        return diagnostics->log&&diagnostics->log(diagnostics->context,ConsoleLevel::Error,"QTY","Quantity.h",0x85,message);
+    }
     if (quantity.unit == to) { result = quantity.value; return true; }
     switch (quantity.unit) {
         case Unit::Liter: result = quantity.value / 3.78541; break;

@@ -1,5 +1,6 @@
 #include "zseries/program_runtime.hpp"
 #include <cmath>
+#include <cstdio>
 #include <limits>
 
 namespace zseries { namespace oem {
@@ -26,15 +27,33 @@ bool left_blocking(OpCode instruction) noexcept {
 #define Z_RUNTIME_TRY(expression) do { const RuntimeResult result = (expression); \
     if (result != RuntimeResult::Ok) return result; } while (false)
 
-// 0x400d742c and 0x400daf04. This is a T1-drop watch, not an elapsed-time timer.
-void ProgramRuntime::update_t1_drop_watch() noexcept {
-    TemperatureDropWatch& watch = state.t1_drop_watch;
-    if (!watch.enabled) return;
-    if (watch.maximum < observed.scalar_958) watch.maximum = observed.scalar_958;
-    else if (watch.maximum - observed.scalar_958 > watch.threshold && !watch.triggered)
-        watch.triggered = true;
+namespace {
+RuntimeResult drop_log(const ConsoleServices* diagnostics,std::uint32_t line,const char* message) noexcept {
+    if(!diagnostics)return RuntimeResult::Ok;
+    if(!diagnostics->log)return RuntimeResult::MissingService;
+    return diagnostics->log(diagnostics->context,ConsoleLevel::Warning,"DMON","Runtime.h",line,message)?RuntimeResult::Ok:RuntimeResult::ServiceFailure;
 }
-void ProgramRuntime::reset_t1_drop_watch() noexcept { state.t1_drop_watch.enabled = false; }
+}
+// Original400daf64/400d742c/400daf04 share the production and console monitor.
+RuntimeResult drop_watch_start(TemperatureDropWatch& watch,double threshold,const ConsoleServices* diagnostics) noexcept {
+    if(watch.enabled)return RuntimeResult::Ok;
+    char message[64];::snprintf(message,sizeof(message),"start() %5.1f",threshold);Z_RUNTIME_TRY(drop_log(diagnostics,0xde,message));
+    watch.enabled=true;watch.triggered=false;watch.maximum=0;watch.threshold=threshold;return RuntimeResult::Ok;
+}
+RuntimeResult drop_watch_update(TemperatureDropWatch& watch,double value,const ConsoleServices* diagnostics) noexcept {
+    if(!watch.enabled)return RuntimeResult::Ok;
+    char message[64];
+    if(watch.maximum<value){watch.maximum=value;::snprintf(message,sizeof(message),"Max updated %5.1f",watch.maximum);return drop_log(diagnostics,0xf7,message);}
+    if(watch.maximum-value>watch.threshold&&!watch.triggered){watch.triggered=true;::snprintf(message,sizeof(message),"T dropped %5.1f",value);return drop_log(diagnostics,0xfa,message);}
+    return RuntimeResult::Ok;
+}
+RuntimeResult drop_watch_stop(TemperatureDropWatch& watch,const ConsoleServices* diagnostics) noexcept {
+    if(!watch.enabled)return RuntimeResult::Ok;
+    Z_RUNTIME_TRY(drop_log(diagnostics,0xe9,"stop()"));watch.enabled=false;return RuntimeResult::Ok;
+}
+RuntimeResult ProgramRuntime::start_t1_drop_watch(double threshold) noexcept {return drop_watch_start(state.t1_drop_watch,threshold,diagnostics());}
+RuntimeResult ProgramRuntime::update_t1_drop_watch() noexcept {return drop_watch_update(state.t1_drop_watch,observed.scalar_958,diagnostics());}
+RuntimeResult ProgramRuntime::reset_t1_drop_watch() noexcept {return drop_watch_stop(state.t1_drop_watch,diagnostics());}
 
 // 0x400d20ac: precedence is significant when multiple conditions are present.
 std::uint32_t ProgramRuntime::pause_reason(RuntimeCommandId command) const noexcept {
@@ -69,7 +88,7 @@ RuntimeResult ProgramRuntime::select_program(std::uint32_t id, bool& selected) {
     state.flag_b6 = id == 28 || id == 5 || id == 6;
     state.flag_b7 = id == 28 || id == 5 || id == 26 || id == 6 || id == 7;
     state.estimated_heating_rate = heating_rate;
-    program_load_result = stack.load(program);
+    program_load_result = stack.load(program,diagnostics());
     selected = true;
     return RuntimeResult::Ok;
 }
@@ -129,7 +148,7 @@ void ProgramRuntime::update_total_time() noexcept {
 RuntimeResult ProgramRuntime::update_remaining_time(std::uint32_t now) {
     const std::uint32_t duration = instruction_duration_ms(state.instruction);
     if (state.instruction_date && duration) {
-        if (now < state.instruction_date) { assertion_line = 0x564; return RuntimeResult::ClockWentBackwards; }
+        if (now < state.instruction_date) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x564,"now >= iStartDate",RuntimeResult::ClockWentBackwards)); }
         const std::uint32_t elapsed = now - state.instruction_date;
         state.instruction_left_seconds = elapsed < duration ? (duration - elapsed) / 1000 : 0;
     } else {
@@ -164,9 +183,9 @@ RuntimeResult ProgramRuntime::defer(const RuntimeCommand& command) {
 // The OEM truncates to integer Fahrenheit before converting back to Celsius.
 RuntimeResult ProgramRuntime::push_manual_step(const ManualStepParameters& manual) {
     double hold = 0, drain = 0, fahrenheit = 0;
-    if (!quantity_in(manual.hold, Unit::Second, hold) ||
-        !quantity_in(manual.drain, Unit::Second, drain) ||
-        !quantity_in(manual.temperature, Unit::Fahrenheit, fahrenheit)) {
+    if (!quantity_in(manual.hold, Unit::Second, hold,diagnostics()) ||
+        !quantity_in(manual.drain, Unit::Second, drain,diagnostics()) ||
+        !quantity_in(manual.temperature, Unit::Fahrenheit, fahrenheit,diagnostics())) {
         assertion_line = 0x7d; return RuntimeResult::IncompatibleQuantity;
     }
     if (!std::isfinite(hold) || !std::isfinite(drain) || !std::isfinite(fahrenheit) ||
@@ -180,13 +199,17 @@ RuntimeResult ProgramRuntime::push_manual_step(const ManualStepParameters& manua
     Z_RUNTIME_TRY(push(OpCode::DrainFor, static_cast<std::uint32_t>(static_cast<std::int32_t>(drain))));
     Z_RUNTIME_TRY(push(OpCode::HoldFor, static_cast<std::uint32_t>(static_cast<std::int32_t>(hold))));
     const double fixed = (static_cast<double>(static_cast<std::int32_t>(fahrenheit) - 32) / 1.8) * 256;
-    if (fixed < 0 || fixed >= 4294967296.0) return RuntimeResult::InvalidNumericDomain;
-    Z_RUNTIME_TRY(push(OpCode::ReachTarget, static_cast<std::uint32_t>(fixed)));
+    if (!diagnostics() && (fixed < 0 || fixed >= 4294967296.0)) return RuntimeResult::InvalidNumericDomain;
+    // Original __fixunsdfsi retains negative in-range truncation modulo 2^32,
+    // saturates positive overflow to UINT32_MAX and negative overflow to INT_MIN.
+    const auto fixed_integer=fixed>=4294967296.0?0xffffffffu:fixed<=-2147483648.0?0x80000000u:
+        static_cast<std::uint32_t>(static_cast<std::int64_t>(fixed));
+    Z_RUNTIME_TRY(push(OpCode::ReachTarget, fixed_integer));
     if (static_cast<std::int32_t>(manual.location) > 6) {
-        assertion_line = 0x16; return RuntimeResult::InvalidValveLocation;
+        Z_RUNTIME_TRY(record_assertion("Enums.h",0x16,"e < EClass::_EnumCount",RuntimeResult::InvalidValveLocation));
     }
     if (static_cast<std::int32_t>(manual.location) < 0) {
-        assertion_line = 0x18; return RuntimeResult::InvalidValveLocation;
+        Z_RUNTIME_TRY(record_assertion("Enums.h",0x18,"ret >= 0",RuntimeResult::InvalidValveLocation));
     }
     Z_RUNTIME_TRY(push(OpCode::MoveValve, manual.location));
     Z_RUNTIME_TRY(push(OpCode::RequireFilter, 1));
@@ -198,7 +221,7 @@ RuntimeResult ProgramRuntime::push_manual_step(const ManualStepParameters& manua
 // services. All command decisions and expansion sequences are reconstructed here.
 RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& command) {
     assertion_line = 0;
-    update_t1_drop_watch();
+    Z_RUNTIME_TRY(update_t1_drop_watch());
     Z_RUNTIME_TRY(update_remaining_time(now));
     switch (state.id) {
         case RuntimeStateId::Off: return transition(RuntimeStateId::Booting);
@@ -212,7 +235,7 @@ RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& comm
                 Z_RUNTIME_TRY(select_program(command.program_id, selected));
                 return selected ? transition(RuntimeStateId::Running) : RuntimeResult::Ok;
             }
-            if (now < state.state_date) { assertion_line = 0x2d2; return RuntimeResult::ClockWentBackwards; }
+            if (now < state.state_date) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x2d2,"_rtState.date <= now",RuntimeResult::ClockWentBackwards)); }
             if (now - state.state_date >= 2000 && observed.hex_temperature <= 50 &&
                 observed.wort_temperature <= 50 && observed.drain_temperature <= 50)
                 return transition(RuntimeStateId::Standby);
@@ -225,7 +248,7 @@ RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& comm
             return RuntimeResult::Ok;
         default:
             if (static_cast<std::uint32_t>(state.id) == 5) return RuntimeResult::Ok;
-            if (state.id != RuntimeStateId::Running) { assertion_line = 0x561; return RuntimeResult::InvalidRuntimeState; }
+            if (state.id != RuntimeStateId::Running) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x561,"RuntimeStateId::Running == _rtState.stateId",RuntimeResult::InvalidRuntimeState)); }
     }
     Z_RUNTIME_TRY(update_fan(50));
     bool complete = false;
@@ -256,8 +279,8 @@ RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& comm
                 case RuntimeCommandId::Drain:
                     if (!state.paused) Z_RUNTIME_TRY(push_resume(now, complete));
                     else {
-                        if (!state.pause_reason) { assertion_line = 0x591; return RuntimeResult::InvalidRuntimeState; }
-                        if (state.pause_reason > 17) { assertion_line = 0x592; return RuntimeResult::InvalidRuntimeState; }
+                        if (!state.pause_reason) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x591,"_rtState.pauseReason > PauseReason::None",RuntimeResult::InvalidRuntimeState)); }
+                        if (state.pause_reason > 17) { Z_RUNTIME_TRY(record_assertion("Runtime.h",0x592,"_rtState.pauseReason < PauseReason::_EnumCount",RuntimeResult::InvalidRuntimeState)); }
                         Z_RUNTIME_TRY(push(OpCode::WaitUser, state.pause_reason));
                         if (saved_substep_reference) Z_RUNTIME_TRY(push(OpCode::SubStepName, saved_substep_reference));
                         if (saved_step_reference) Z_RUNTIME_TRY(push(OpCode::StepName, saved_step_reference));
@@ -284,8 +307,8 @@ RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& comm
                 case RuntimeCommandId::SetLocation:
                     state.manual.location = command.location;
                     Z_RUNTIME_TRY(save_pending(now));
-                    if (static_cast<std::int32_t>(command.location) > 6) { assertion_line = 0x16; return RuntimeResult::InvalidValveLocation; }
-                    if (static_cast<std::int32_t>(command.location) < 0) { assertion_line = 0x18; return RuntimeResult::InvalidValveLocation; }
+                    if (static_cast<std::int32_t>(command.location) > 6) { Z_RUNTIME_TRY(record_assertion("Enums.h",0x16,"e < EClass::_EnumCount",RuntimeResult::InvalidValveLocation)); }
+                    if (static_cast<std::int32_t>(command.location) < 0) { Z_RUNTIME_TRY(record_assertion("Enums.h",0x18,"ret >= 0",RuntimeResult::InvalidValveLocation)); }
                     Z_RUNTIME_TRY(push(OpCode::MoveValve, command.location)); advance = true; break;
                 case RuntimeCommandId::ShowSetupInstructions:
                     Z_RUNTIME_TRY(push_setup_instructions(state.flags)); advance = true; break;
@@ -313,7 +336,7 @@ RuntimeResult ProgramRuntime::tick(std::uint32_t now, const RuntimeCommand& comm
     Z_RUNTIME_TRY(progress_still(now, advance ? state.instruction.opcode : OpCode::Noop, still_interrupted));
     if (!advance && !still_interrupted) {
         if (state.t1_drop_watch.enabled && state.t1_drop_watch.triggered) {
-            reset_t1_drop_watch();
+            Z_RUNTIME_TRY(reset_t1_drop_watch());
             if (!services.event) return RuntimeResult::MissingService;
             services.event(services.context, RuntimeEventType::Notification, 1, 0);
         }

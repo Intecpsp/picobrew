@@ -120,8 +120,8 @@
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
   "validated_source_sha256": {
-    "include/zseries/eeprom.hpp": "b6827377c269161f9e1989f1af457b126bb181f2535ec4a8c9b8fac4a6df77bd",
-    "src/eeprom.cpp": "59b953aa70cfbcee0f3e63eb1c10e731fecac15087bda84d9241d5b191d2f14f",
+    "include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "src/eeprom.cpp": "cc6043665a62b871f44f5aadf182713328c6a38c531b8784a0c9dd8529c7879c",
     "tests/test_eeprom.py": "23d57be8a146ef92a077cc9ede4bff55da1ffb07efb57bdd5715ef81549606fa"
   },
   "case_groups": {

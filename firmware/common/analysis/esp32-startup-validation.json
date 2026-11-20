@@ -1,0 +1,42 @@
+{
+  "schema_version": 1,
+  "native_checks": 45,
+  "pinned_target_compiled": true,
+  "hardware_tested": false,
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "flags": [
+    "-std=gnu++11",
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-fno-exceptions",
+    "-fno-rtti",
+    "-mlongcalls",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "object_sha256": "9dc9359de5898d04dffeda3b53931686240407e4f07b1dfc16c4c0d0a1280306",
+  "oem_sdk_init_source_sha256": "63f0a87d562a88899ffc5ce9571b5c4ba5a2527243af1835a94a8e136aaed4ab",
+  "scope": "Preserve pinned CPU/PSRAM/log/NVS-init/BT/init/initVariant order; return exact NVS status without erase or retry. Caller must inhibit appliance startup on any error.",
+  "inputs": {
+    "platform/esp32/startup.cpp": "63efe0ff463f7e44bf019bb8b23a4f31057c6121a9c91fbe55e05afb1993c443",
+    "platform/esp32/startup.hpp": "99db24ebff5a41267c18425adede2a8ec6dede2fd6e09b1c8c120b52a93832a8",
+    "tests/startup_native.cpp": "c1988eb0592f91b6b09e728ecdeb94b1e366643023bc50f8e1e56a6809c383b5",
+    "tests/test_esp32_startup.py": "1b60bd572300d0ab74edc5f6f6826253a49455517d3b4797b1ddf1be57e1cc26",
+    "tools/validate_esp32_startup.py": "7c629ccc97248b147c0863b12beed6bde74ea9bb67727babf2ae7cf941c038b0",
+    "tests/startup_shim/Arduino.h": "41fd92f950a60237d9f7a8b843cd894f0c47f6844b314c11563259b94e5acc58",
+    "tests/startup_shim/esp_bt.h": "9d369917d912e6c26571c4895ec78bc7491fe71ec99d0729694b865f051431d5",
+    "tests/startup_shim/esp_log.h": "13f15fbe909c18ff7b7b293ae981fb328ceaa5c5ea4aef7573704313038c07c7",
+    "tests/startup_shim/nvs_flash.h": "788833265507336898911694d39508d5b28ddd1a958fff3033243c1be785b77b",
+    "tests/startup_shim/sdkconfig.h": "48b853c013813f35d168d81bff6aad2d408dfc4b5af75fc15d26b757b9419307"
+  }
+}

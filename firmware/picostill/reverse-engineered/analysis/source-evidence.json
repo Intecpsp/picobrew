@@ -1,0 +1,3011 @@
+{
+  "schema_version": 1,
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "functions": [
+    {
+      "name": "Hardware::capture_into",
+      "entry": 1074603824,
+      "ranges": [
+        {
+          "start": 1074603824,
+          "size_bytes": 146,
+          "sha256": "68e5ff1f36251636fda7131d5faa6b09f958b8dcaf7b1d150f85c30fb70fcbcb"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "wifi_status_label",
+      "entry": 1074603992,
+      "ranges": [
+        {
+          "start": 1074603992,
+          "size_bytes": 27,
+          "sha256": "35c735bbb9653a53ae03f624a2e5725d02ca24dc05cb7075465c73477045ffe2"
+        },
+        {
+          "start": 1074604020,
+          "size_bytes": 36,
+          "sha256": "af71b031f9bacc0d0734d2afbd4cb2c6fff791a76ceb03ddc15ba2fcfe2f7a5d"
+        },
+        {
+          "start": 1074604057,
+          "size_bytes": 7,
+          "sha256": "bc67ca23d7241aaf83e4135b9b22bf7d3afef76edc5a9e5c6d77fb0fa915355c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 24
+    },
+    {
+      "name": "HTTP end_headers",
+      "entry": 1074604064,
+      "ranges": [
+        {
+          "start": 1074604064,
+          "size_bytes": 23,
+          "sha256": "0403b54452d636c93633454bbf0ac24726b44d63da30a86f6a6af60e596f218a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 8
+    },
+    {
+      "name": "sensor_connections_match",
+      "entry": 1074604088,
+      "ranges": [
+        {
+          "start": 1074604088,
+          "size_bytes": 51,
+          "sha256": "d7c998582edc0fb97fd2121b0099da5c6e77547d8587c1b7226de236a9dc1afd"
+        },
+        {
+          "start": 1074604140,
+          "size_bytes": 90,
+          "sha256": "a9def51c517c8c7ca5345a5cd325e0e3a6197f657ccc6c2eceb5c1ff38cefdb0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "updater header value substring",
+      "entry": 1074604232,
+      "ranges": [
+        {
+          "start": 1074604232,
+          "size_bytes": 46,
+          "sha256": "08cc09e8fd0451f044a8a9f3cf5ae1a1d912fecefbd64539991480943fe48614"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 16
+    },
+    {
+      "name": "Application::restart",
+      "entry": 1074604644,
+      "ranges": [
+        {
+          "start": 1074604644,
+          "size_bytes": 27,
+          "sha256": "31f45f4ef74f3f05e1c380ccde6884e40270a727d51e822ee7802b002b8ec226"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 9
+    },
+    {
+      "name": "Application::request_stop",
+      "entry": 1074604824,
+      "ranges": [
+        {
+          "start": 1074604824,
+          "size_bytes": 27,
+          "sha256": "65d23278f4d9719850d3be94c118ac61382cfbc96ecc70dbe6b82b33567c3035"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 9
+    },
+    {
+      "name": "string_equal",
+      "entry": 1074604916,
+      "ranges": [
+        {
+          "start": 1074604916,
+          "size_bytes": 44,
+          "sha256": "896cdd9631551f766a45f9eaa68edc5035e7ac47c4985043f5690cd0fc86f0fb"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "string_starts_with",
+      "entry": 1074604984,
+      "ranges": [
+        {
+          "start": 1074604984,
+          "size_bytes": 54,
+          "sha256": "3a051219bcea77e9685b85d3b45b5da234e0c288b502d0cc1792e4e6183c45de"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 21
+    },
+    {
+      "name": "parse_request_line, URI length <= 255",
+      "entry": 1074605040,
+      "ranges": [
+        {
+          "start": 1074605040,
+          "size_bytes": 27,
+          "sha256": "b0a1e40aef5cbfc3c365576200a7ffdb5804e9134c533040ebcc3b87de698692"
+        },
+        {
+          "start": 1074605068,
+          "size_bytes": 62,
+          "sha256": "ee4a75ec7e0c3f5a68c0dd6460dee65a925111b0bdad561cf7cb7fab4b7a9cf3"
+        },
+        {
+          "start": 1074605133,
+          "size_bytes": 13,
+          "sha256": "b708e864730e913e6aad3ed2b8939a234c6aacbb461cd7a3d353da25a96f7911"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 40
+    },
+    {
+      "name": "string_boolean",
+      "entry": 1074605148,
+      "ranges": [
+        {
+          "start": 1074605148,
+          "size_bytes": 50,
+          "sha256": "932ab91367564d2a2887482e02dc0aa3a989f56cfe8645fb05941fd266629120"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 19
+    },
+    {
+      "name": "ApplicationReports::snapshot_report",
+      "entry": 1074605200,
+      "ranges": [
+        {
+          "start": 1074605200,
+          "size_bytes": 246,
+          "sha256": "f48297a627c1a750b2bf3c1724a4170903e8123013026e29f8a9d6bdcddcaed8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 95
+    },
+    {
+      "name": "ApplicationReports::full_test_report",
+      "entry": 1074605448,
+      "ranges": [
+        {
+          "start": 1074605448,
+          "size_bytes": 180,
+          "sha256": "0a2db1ff1f6909a0c8c1aec0dc9779d5955be135ef3c9a9133f5fbd76ce191b0"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 73
+    },
+    {
+      "name": "Fan::setup",
+      "entry": 1074605628,
+      "ranges": [
+        {
+          "start": 1074605628,
+          "size_bytes": 38,
+          "sha256": "49f9d65b8962daa4468b2c61a68f9016a98845b87117f8b4bd03bc54579ac822"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "Fan::set",
+      "entry": 1074605668,
+      "ranges": [
+        {
+          "start": 1074605668,
+          "size_bytes": 75,
+          "sha256": "30723189fe94f0536631178609d8755136b6d00a009e714edb1786ab507dba8a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 28
+    },
+    {
+      "name": "Hardware::enabled",
+      "entry": 1074605744,
+      "ranges": [
+        {
+          "start": 1074605744,
+          "size_bytes": 19,
+          "sha256": "f29fdde929b80b34c6ccfb8d2f70349a43c1ef56f605a3226145e22d37851ef8"
+        },
+        {
+          "start": 1074605764,
+          "size_bytes": 14,
+          "sha256": "eaee17bf2938bdd23368eb72fa7b698e27645a884652dd67c2be8ba6fd568ec8"
+        },
+        {
+          "start": 1074605781,
+          "size_bytes": 15,
+          "sha256": "874260f92a996f5b6cef4a70912831ef05980e77d956b2a92b77f6c7502a91c4"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "OutputPin::set",
+      "entry": 1074605796,
+      "ranges": [
+        {
+          "start": 1074605796,
+          "size_bytes": 25,
+          "sha256": "5600388a581a3aa4fe688c9c6ff3e3d7f77ceba6270cbc40937f1feb354adc5c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 9
+    },
+    {
+      "name": "FanBank::set_power",
+      "entry": 1074605824,
+      "ranges": [
+        {
+          "start": 1074605824,
+          "size_bytes": 51,
+          "sha256": "02d1de14ddca2d0a42d1d8dabf324742dee39f109cab9d76bec8230659e8c748"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "FanBank::set_first",
+      "entry": 1074605876,
+      "ranges": [
+        {
+          "start": 1074605876,
+          "size_bytes": 50,
+          "sha256": "ae61b2eeb7efa9c57d0a7944d354ae45eee5be392f48ed74497ba47c57039171"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "OutputPin::set_pump",
+      "entry": 1074605928,
+      "ranges": [
+        {
+          "start": 1074605928,
+          "size_bytes": 36,
+          "sha256": "c0b1de07c9cff941f60140a250f8080de7bfa9d853a93272766fe0c4eb884def"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "AdcReader::clear",
+      "entry": 1074605980,
+      "ranges": [
+        {
+          "start": 1074605980,
+          "size_bytes": 31,
+          "sha256": "750a56dc26ed9b834af9af9c360ea9ea89ea9fddd5f6d9221d6fcf760791437c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 12
+    },
+    {
+      "name": "Sensors::reset_metrics",
+      "entry": 1074606012,
+      "ranges": [
+        {
+          "start": 1074606012,
+          "size_bytes": 39,
+          "sha256": "0da808a0b00c29df34d6cea68af444c39dbaa66715dedba634a2938935134356"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 16
+    },
+    {
+      "name": "Hardware::sensors_ready",
+      "entry": 1074606052,
+      "ranges": [
+        {
+          "start": 1074606052,
+          "size_bytes": 18,
+          "sha256": "263b362873ed4456d2deaad7ebb3f481925630fa1cc031c39b38d993bf874e97"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 7
+    },
+    {
+      "name": "Hardware::enable_sensors_internal",
+      "entry": 1074606072,
+      "ranges": [
+        {
+          "start": 1074606072,
+          "size_bytes": 62,
+          "sha256": "892ad03277270ef94512e5e2c05cf5fc712f1d189d3544b975ea4aa7fb0e4625"
+        },
+        {
+          "start": 1074606137,
+          "size_bytes": 35,
+          "sha256": "1b45f17af42c095c761e0cdd8103352bae50d30b0f7d6ae67b020d95d46cee71"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 34
+    },
+    {
+      "name": "Hardware::enable_sensors",
+      "entry": 1074606308,
+      "ranges": [
+        {
+          "start": 1074606308,
+          "size_bytes": 39,
+          "sha256": "16714e24edc98d2f71a504df0b34670c5427a596911d39205d21a9c17eda7b58"
+        },
+        {
+          "start": 1074606348,
+          "size_bytes": 5,
+          "sha256": "175b0f89eeade40622ae3e0f40641a4d8db4d05959a4fd82743d111576969aaa"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 15
+    },
+    {
+      "name": "ConnectionTest::finish",
+      "entry": 1074606372,
+      "ranges": [
+        {
+          "start": 1074606372,
+          "size_bytes": 109,
+          "sha256": "2a1d9f729f82e5de880dc27489a8f514ba30d497ce2335fd120c2803df6a5b77"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 43
+    },
+    {
+      "name": "ConnectionTest::tick",
+      "entry": 1074606484,
+      "ranges": [
+        {
+          "start": 1074606484,
+          "size_bytes": 122,
+          "sha256": "44f206d782e653920ac51766ecbba02444a050231d61496bb86cdc9786a9a9e2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 48
+    },
+    {
+      "name": "PinTest::tick",
+      "entry": 1074606608,
+      "ranges": [
+        {
+          "start": 1074606608,
+          "size_bytes": 147,
+          "sha256": "7a32e86eb3dfa7fe442068d98ecfa6eee03f8e209d2b2d5d633a8d0a4d49a165"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 55
+    },
+    {
+      "name": "Leds::set_all",
+      "entry": 1074606756,
+      "ranges": [
+        {
+          "start": 1074606756,
+          "size_bytes": 32,
+          "sha256": "198c4c9b2ca1c8b27524c48ac56665844eb0fa46a6f3939dac31c0fd6f6a3ef5"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Leds::toggle",
+      "entry": 1074606788,
+      "ranges": [
+        {
+          "start": 1074606788,
+          "size_bytes": 29,
+          "sha256": "cb6c16bba6a0e5b464fd87d9fd97abb0093f754c03384e7fd5cd735215ed953c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Leds::setup",
+      "entry": 1074606820,
+      "ranges": [
+        {
+          "start": 1074606820,
+          "size_bytes": 38,
+          "sha256": "1a24007ee6d35dd614c39c9131a6c2e50a171bb3d03aad9d04f54e1aa765927b"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "Machine::report_eeprom",
+      "entry": 1074606880,
+      "ranges": [
+        {
+          "start": 1074606880,
+          "size_bytes": 46,
+          "sha256": "c8e5834b346356cee3a6c4e7efad7354270efb15564cc423ff745fa89965dc18"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    },
+    {
+      "name": "CredentialStorage::begin",
+      "entry": 1074606928,
+      "ranges": [
+        {
+          "start": 1074606928,
+          "size_bytes": 163,
+          "sha256": "d46ac12346a93a402110c90b95a23e37a5863ae0e9d36d17307a1b2d1ec27f04"
+        },
+        {
+          "start": 1074607092,
+          "size_bytes": 39,
+          "sha256": "56a13f45214d11b75ee664043acab2c6a33044cd3be62ca0a5e1842e483cf9d7"
+        },
+        {
+          "start": 1074607132,
+          "size_bytes": 46,
+          "sha256": "01b6567ad206c8d19abd1df535824e8f7005419c3e128ab18f05023195222b64"
+        },
+        {
+          "start": 1074607180,
+          "size_bytes": 93,
+          "sha256": "9d21d5b080cf4e6e2a10e709f3068846f52a303796c796a99626cb6eaa8a9cc5"
+        },
+        {
+          "start": 1074607274,
+          "size_bytes": 136,
+          "sha256": "1677df1d97960af523805cf6bae5ee3cd21e5c1ef9162d6382ad576841a9fda2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 185
+    },
+    {
+      "name": "CredentialStorage::save",
+      "entry": 1074607412,
+      "ranges": [
+        {
+          "start": 1074607412,
+          "size_bytes": 75,
+          "sha256": "a872f9913c21ab1f40ace7182f6ea47c8e9ff0519f8c60e2eedcd2771915fc1d"
+        },
+        {
+          "start": 1074607489,
+          "size_bytes": 5,
+          "sha256": "413baf44ef8871a3e2934f10aeecd1c62b834475ecc79cee7028fa33c20116ba"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 31
+    },
+    {
+      "name": "parse_http",
+      "entry": 1074607536,
+      "ranges": [
+        {
+          "start": 1074607536,
+          "size_bytes": 232,
+          "sha256": "a5251efd71596b038f1e58ac45ca0e5deb06e82809046d627716d46b21ad3411"
+        },
+        {
+          "start": 1074607769,
+          "size_bytes": 150,
+          "sha256": "d23de51c6ec39027a047c5f959a4feac647402dcc08031069d53e984f687d7cb"
+        },
+        {
+          "start": 1074607920,
+          "size_bytes": 13,
+          "sha256": "94de7cf2673dc58eb85ee96bca7bb9a3bf641a096ea35ba2d0897cf97188a070"
+        },
+        {
+          "start": 1074607934,
+          "size_bytes": 46,
+          "sha256": "ba922862308190e30120deb5fd53a9bfb8bb4e648f113baa2e9c8b0a1342b255"
+        },
+        {
+          "start": 1074607981,
+          "size_bytes": 53,
+          "sha256": "f5f81fa8ebadbd10c4fe900b946a00e1ea14aa379cca4568e763b53130631273"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 189
+    },
+    {
+      "name": "UpdateParameters::report",
+      "entry": 1074608036,
+      "ranges": [
+        {
+          "start": 1074608036,
+          "size_bytes": 46,
+          "sha256": "852f80a653aef3831439b23aa9d529b997bea0e57d8e1c73a01c972dc7efc0ed"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    },
+    {
+      "name": "HTTP JSON key",
+      "entry": 1074608084,
+      "ranges": [
+        {
+          "start": 1074608084,
+          "size_bytes": 30,
+          "sha256": "c9432e21aecef03a6f7d92150ee5a0ae802dbe0bc2ceca4267c341f28ce77915"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "HTTP boolean_field",
+      "entry": 1074608116,
+      "ranges": [
+        {
+          "start": 1074608116,
+          "size_bytes": 44,
+          "sha256": "b67016af9bcfb162bfd8ee8b240d19b688c1b578e7a22509d361823e870c466a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    },
+    {
+      "name": "HTTP decimal_field",
+      "entry": 1074608160,
+      "ranges": [
+        {
+          "start": 1074608160,
+          "size_bytes": 56,
+          "sha256": "0eb6c91da6527fee5234d2bef85e322e07d0ffc186b0e699e8cf511e7777ef21"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 22
+    },
+    {
+      "name": "HTTP string field",
+      "entry": 1074608216,
+      "ranges": [
+        {
+          "start": 1074608216,
+          "size_bytes": 36,
+          "sha256": "e4e3f81c550f8ba22f74b740903780aaf1e0e91f9a856b4bce2c683131ebc804"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 15
+    },
+    {
+      "name": "HTTP quoted JavaScript field",
+      "entry": 1074608252,
+      "ranges": [
+        {
+          "start": 1074608252,
+          "size_bytes": 54,
+          "sha256": "8c39023a222e212b36533b44c5fb0f27fc8fa2789799cad293e1267be61a4570"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 21
+    },
+    {
+      "name": "HTTP unquoted JavaScript field",
+      "entry": 1074608308,
+      "ranges": [
+        {
+          "start": 1074608308,
+          "size_bytes": 38,
+          "sha256": "b9b1f221ffdb53b6cec88646bc25613478bbe2aa861ea28b703bc2dbe2f9c2b8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 14
+    },
+    {
+      "name": "HTTP boolean JavaScript field",
+      "entry": 1074608348,
+      "ranges": [
+        {
+          "start": 1074608348,
+          "size_bytes": 26,
+          "sha256": "c58df3f64e56a97dd649552045d4b8d27cd28af1c6dfd51d3e2a5b3e043d279e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 10
+    },
+    {
+      "name": "HttpServer::write_browser_state",
+      "entry": 1074608376,
+      "ranges": [
+        {
+          "start": 1074608376,
+          "size_bytes": 119,
+          "sha256": "d9df69c2b7186624bf2ce39f05349b11030ef80e32a5f97f4a8b958bad1d88e8"
+        },
+        {
+          "start": 1074608496,
+          "size_bytes": 47,
+          "sha256": "faba9d7d460422eac6203384df0ce8579bba6ddb6f326aaf650219fab9c272ef"
+        },
+        {
+          "start": 1074608545,
+          "size_bytes": 117,
+          "sha256": "dad2a5a788a18a96160e4602be92943116d8cb59c890a651eb7e0ba46c6fd0d7"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 113
+    },
+    {
+      "name": "HttpServer::write_state",
+      "entry": 1074608664,
+      "ranges": [
+        {
+          "start": 1074608664,
+          "size_bytes": 119,
+          "sha256": "89d3a4c77e4a628c6c185db031a47fec644c19f81457537cc4af028dfb4211b9"
+        },
+        {
+          "start": 1074608785,
+          "size_bytes": 177,
+          "sha256": "8c09fce66ada1aeab5c78e3dd571bd1d9f930c2e16369b329af188688f5ce8f3"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 122
+    },
+    {
+      "name": "HttpServer::write_scan_options",
+      "entry": 1074608964,
+      "ranges": [
+        {
+          "start": 1074608964,
+          "size_bytes": 111,
+          "sha256": "e81753588d4f45363bc3c11099841871f87a5c3b84f6de8d051550d82df9140b"
+        },
+        {
+          "start": 1074609076,
+          "size_bytes": 15,
+          "sha256": "57ab29b6124a82e2acb38e4da58d55a6dcd4ba5260cc08fef1c8d4a14e6767cd"
+        },
+        {
+          "start": 1074609093,
+          "size_bytes": 27,
+          "sha256": "1eb44eb22b161c0cacc3cd39b7dcbcb6afcac2a602d3391d872f00c3f0954aad"
+        },
+        {
+          "start": 1074609136,
+          "size_bytes": 8,
+          "sha256": "641b6fad4fcd7bbba63047fa56108e03ef5330712ac982e3ec3b83496e879c5e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 60
+    },
+    {
+      "name": "HttpServer::write_page, data",
+      "entry": 1074609144,
+      "ranges": [
+        {
+          "start": 1074609144,
+          "size_bytes": 133,
+          "sha256": "80cdb01a0df17a600d156ded374fe552f9c6793b465baf6cbdd894298fd78cea"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "HttpServer::write_page, Wi-Fi",
+      "entry": 1074609280,
+      "ranges": [
+        {
+          "start": 1074609280,
+          "size_bytes": 153,
+          "sha256": "0994c213f64ae9dcba423167e9a2cee9402b985ad3d4a7eba2dbe4b6b815b8f1"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 57
+    },
+    {
+      "name": "HttpServer::write_factory_result, count <= 200",
+      "entry": 1074609436,
+      "ranges": [
+        {
+          "start": 1074609436,
+          "size_bytes": 464,
+          "sha256": "f872e44e554b492a940a9af422a7ec76fb4de1c95aefd29ca37f112a67d910b8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 190
+    },
+    {
+      "name": "Machine::sleep",
+      "entry": 1074609900,
+      "ranges": [
+        {
+          "start": 1074609900,
+          "size_bytes": 30,
+          "sha256": "6f13ff1f47bb514527474a2eeda35fb12e957fd00e63fcffbcae93ee8263c3da"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Machine::factory_reset",
+      "entry": 1074609932,
+      "ranges": [
+        {
+          "start": 1074609932,
+          "size_bytes": 60,
+          "sha256": "b9b017cf49d983d49362dad5aa2a949fb97abe2108729e21728c06577af311b8"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 21
+    },
+    {
+      "name": "Machine::report_info",
+      "entry": 1074609992,
+      "ranges": [
+        {
+          "start": 1074609992,
+          "size_bytes": 276,
+          "sha256": "5fc244429a29f6e0b71122a439379189190c4334d501562eb01d7dfd7713553f"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 103
+    },
+    {
+      "name": "Diagnostics::check",
+      "entry": 1074610268,
+      "ranges": [
+        {
+          "start": 1074610268,
+          "size_bytes": 23,
+          "sha256": "90fba66967e90ba9b684fd95525e9762e6e4fa1b2352d21b4c9e394305883846"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 8
+    },
+    {
+      "name": "thermistor_kelvin",
+      "entry": 1074610292,
+      "ranges": [
+        {
+          "start": 1074610292,
+          "size_bytes": 188,
+          "sha256": "3486bd0a92507c80147a3f62c58aa94a6d96960ea13e942fc3d529d5f16b2669"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 77
+    },
+    {
+      "name": "CredentialStorage::initialize",
+      "entry": 1074610480,
+      "ranges": [
+        {
+          "start": 1074610480,
+          "size_bytes": 33,
+          "sha256": "83e7ba06eb70e69d76db198c7791788fae036492c81ca1c6103885aae0626fc0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 12
+    },
+    {
+      "name": "FanMetrics::running_fast_enough",
+      "entry": 1074610516,
+      "ranges": [
+        {
+          "start": 1074610516,
+          "size_bytes": 42,
+          "sha256": "8b6cb374329b4b15cd85eb0d711b350718f2b199cca103496eb7a409e8f1c5bb"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 15
+    },
+    {
+      "name": "fans_have_issue",
+      "entry": 1074610560,
+      "ranges": [
+        {
+          "start": 1074610560,
+          "size_bytes": 34,
+          "sha256": "f8cba4c7e55cf43df0a8e53998f850c764cef7afd171d2d2490234b6a2a1134e"
+        },
+        {
+          "start": 1074610597,
+          "size_bytes": 25,
+          "sha256": "e844b363725c7d5386c4a0746edfd5acb2ca961981add8faabece8b4debc57b4"
+        },
+        {
+          "start": 1074610625,
+          "size_bytes": 10,
+          "sha256": "db5107fe72814704fe33343e96f438cb6e1ef05b0b8805ec3c198074527267e8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 26
+    },
+    {
+      "name": "Hardware::fans_issue",
+      "entry": 1074610636,
+      "ranges": [
+        {
+          "start": 1074610636,
+          "size_bytes": 13,
+          "sha256": "62541a155de5441e3ef7f4aa9f83a7e10a0356dbd9f0547beea6e6f7b8ba0831"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 5
+    },
+    {
+      "name": "SensorMetrics::read_success_rates_good",
+      "entry": 1074610692,
+      "ranges": [
+        {
+          "start": 1074610692,
+          "size_bytes": 101,
+          "sha256": "f8e711443f92da61d9dd93ab64564876f2c25df716705e9e5a44193e70918e0e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 35
+    },
+    {
+      "name": "SensorMetrics::values_in_range",
+      "entry": 1074610796,
+      "ranges": [
+        {
+          "start": 1074610796,
+          "size_bytes": 177,
+          "sha256": "7b0badd744deeb6dc9b0986361696177bbc93711a267644f774bc2bdb589d1a8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 64
+    },
+    {
+      "name": "Hardware::sensors_in_range",
+      "entry": 1074610976,
+      "ranges": [
+        {
+          "start": 1074610976,
+          "size_bytes": 18,
+          "sha256": "2e9f0a3e56e1d69447057a2e0d8d026255a4ed60c70acc554a729e31b983d5f2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 6
+    },
+    {
+      "name": "Hardware::check_error",
+      "entry": 1074610996,
+      "ranges": [
+        {
+          "start": 1074610996,
+          "size_bytes": 58,
+          "sha256": "d43d709b0e399a5fb0352ebba89b781885d1cb0b407d9ca93fda601255be26f5"
+        },
+        {
+          "start": 1074611055,
+          "size_bytes": 20,
+          "sha256": "d5db2795bc83182b7dbf8e01b74206c0b94ea6091e7f3747a1cd1de0d5083973"
+        },
+        {
+          "start": 1074611077,
+          "size_bytes": 48,
+          "sha256": "8ea4b00b31f05f2209aaa4a3c9005cc077d8250ce083a4aca9b00455281f2191"
+        },
+        {
+          "start": 1074611128,
+          "size_bytes": 19,
+          "sha256": "42036b6eacdac1fc169f8029dae142062fc48a7e8450876712a056775b96605c"
+        },
+        {
+          "start": 1074611150,
+          "size_bytes": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 53
+    },
+    {
+      "name": "Button::set_state",
+      "entry": 1074611152,
+      "ranges": [
+        {
+          "start": 1074611152,
+          "size_bytes": 42,
+          "sha256": "7922fd777a57851e612cd605d9de227ec818c50dad584652a984827fbb3a2184"
+        },
+        {
+          "start": 1074611196,
+          "size_bytes": 11,
+          "sha256": "35edd08182b5ec54c604e0cdccdc28d3171c45cdfff63ff87e1f8830c309074f"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 21
+    },
+    {
+      "name": "Button::emit",
+      "entry": 1074611208,
+      "ranges": [
+        {
+          "start": 1074611208,
+          "size_bytes": 30,
+          "sha256": "e6dbaa890e26c6b290817eb365e0b291f5fb2cb42fddbb28d9627ac30a547f1d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "Button::on_edge",
+      "entry": 1074611240,
+      "ranges": [
+        {
+          "start": 1074611240,
+          "size_bytes": 48,
+          "sha256": "6ba320d016cee3432285b0e234be98cbefa872bb8266947bb52270753ea98718"
+        },
+        {
+          "start": 1074611289,
+          "size_bytes": 11,
+          "sha256": "6cf6c01d74ed68f36b8fbec255ea112c5fdf684a7784d1f5cf2817620b1dc99a"
+        },
+        {
+          "start": 1074611303,
+          "size_bytes": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 24
+    },
+    {
+      "name": "Button::poll",
+      "entry": 1074611308,
+      "ranges": [
+        {
+          "start": 1074611308,
+          "size_bytes": 95,
+          "sha256": "4c0306f8ca09f078175b566ae316b822c278c67f47e74f906acd53e462caedea"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 35
+    },
+    {
+      "name": "Backend::reset",
+      "entry": 1074611404,
+      "ranges": [
+        {
+          "start": 1074611404,
+          "size_bytes": 42,
+          "sha256": "805dc64780341010562e1636ee5b233db6d23f3f8954ea7c9a3414533af4dfd4"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 15
+    },
+    {
+      "name": "report/console bounded append",
+      "entry": 1074611448,
+      "ranges": [
+        {
+          "start": 1074611448,
+          "size_bytes": 59,
+          "sha256": "cd02987eb3b1399c9daeeb654fa01c102b8566acb49fa56918e19eba488cbcf2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 22
+    },
+    {
+      "name": "Backend::complete",
+      "entry": 1074611508,
+      "ranges": [
+        {
+          "start": 1074611508,
+          "size_bytes": 95,
+          "sha256": "e87703869497b8dd35c30fa647d485b6d9870c42ada6b03ff6cdd07bab899b26"
+        },
+        {
+          "start": 1074611605,
+          "size_bytes": 45,
+          "sha256": "ac3c514abee33b901697b5ca06d65cc31162d6387cfac0960bb97dda6f7fa2ce"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "Leds bounded buffer append",
+      "entry": 1074611652,
+      "ranges": [
+        {
+          "start": 1074611652,
+          "size_bytes": 59,
+          "sha256": "204893d6e22e82d86c849538bb5335b8c2a8f6b07f79d3d8c8aa71844d175b58"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 22
+    },
+    {
+      "name": "Diagnostics::require",
+      "entry": 1074611832,
+      "ranges": [
+        {
+          "start": 1074611832,
+          "size_bytes": 62,
+          "sha256": "cb24979a10b6395638701efbebc938aadea6a7f88bdc0d42e85e2a903199f6c8"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 23
+    },
+    {
+      "name": "exponential_moving_average",
+      "entry": 1074611896,
+      "ranges": [
+        {
+          "start": 1074611896,
+          "size_bytes": 136,
+          "sha256": "4cc9c18a4f46fc7d04c7893ecdf02bcaa6ac39369814c88c3c60f6d72a08f403"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 56
+    },
+    {
+      "name": "Fan::sample",
+      "entry": 1074612032,
+      "ranges": [
+        {
+          "start": 1074612032,
+          "size_bytes": 238,
+          "sha256": "40b8bf33eb28d1333933daf34e438107bbeee9ad23fff3b204b14771d2b7c93a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 92
+    },
+    {
+      "name": "CredentialStorage::load",
+      "entry": 1074612272,
+      "ranges": [
+        {
+          "start": 1074612272,
+          "size_bytes": 46,
+          "sha256": "42965a008dacc73e59114795d80d3ef8464b779d576f9da1a07de1df71baec38"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    },
+    {
+      "name": "bounded_copy, nonzero capacity and non-null pointer domain",
+      "entry": 1074612320,
+      "ranges": [
+        {
+          "start": 1074612320,
+          "size_bytes": 35,
+          "sha256": "cc70ae559771bcd7a14e7a1b8a3e4af1e910ceab711e7b4a41dabe8bff429f81"
+        },
+        {
+          "start": 1074612357,
+          "size_bytes": 43,
+          "sha256": "04aba9a2d5591e01eb455f2940dc644720aee0e154066ee7d19d15bcf20ae3a9"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 29
+    },
+    {
+      "name": "DeviceData::set_uid, literal MAC domain",
+      "entry": 1074612400,
+      "ranges": [
+        {
+          "start": 1074612400,
+          "size_bytes": 68,
+          "sha256": "15cd978533192d56633ee14de4d6f65168de0b823894310754ed35e0f48ed23b"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 26
+    },
+    {
+      "name": "hex_digit",
+      "entry": 1074612468,
+      "ranges": [
+        {
+          "start": 1074612468,
+          "size_bytes": 28,
+          "sha256": "d181d53ebf694432f0e94c4882c09bd71d566a3b3343229cebe197581582c1b8"
+        },
+        {
+          "start": 1074612499,
+          "size_bytes": 11,
+          "sha256": "ca74570675f3582083b73632f9b08c0074eb54f29b8512538e818de45672d7f5"
+        },
+        {
+          "start": 1074612512,
+          "size_bytes": 8,
+          "sha256": "1401ad817a7ca630269be2bab236ce2c85535af2728ba21a16102509b28c3ff0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    },
+    {
+      "name": "encode_hex, sufficient capacity domain",
+      "entry": 1074612520,
+      "ranges": [
+        {
+          "start": 1074612520,
+          "size_bytes": 90,
+          "sha256": "cc00bc31304840cc9aae728d02d8bada51be9658703a9362159a3f62baf827b2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 32
+    },
+    {
+      "name": "DeviceData::update_token",
+      "entry": 1074612612,
+      "ranges": [
+        {
+          "start": 1074612612,
+          "size_bytes": 38,
+          "sha256": "89e7d3a574f49464e2956fc28f03883903de0a01956e3bd332cbd0d3c04a1bdb"
+        },
+        {
+          "start": 1074612652,
+          "size_bytes": 52,
+          "sha256": "a4f473c67f680e422368f69600629f3759a438c6d5255ce4b7de3b0f912d923e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 35
+    },
+    {
+      "name": "DeviceData::set_ssid",
+      "entry": 1074612704,
+      "ranges": [
+        {
+          "start": 1074612704,
+          "size_bytes": 22,
+          "sha256": "a49546d38f417f02f1ed53b08f5d9170cd496942ee8ad84eafe1451985637309"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 8
+    },
+    {
+      "name": "DeviceData::set_password",
+      "entry": 1074612728,
+      "ranges": [
+        {
+          "start": 1074612728,
+          "size_bytes": 24,
+          "sha256": "81390e25b395d8167b0c570d3178c7b95e6f0def188631bd003c8e454aef4684"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 9
+    },
+    {
+      "name": "ApplicationDevice::configure",
+      "entry": 1074612752,
+      "ranges": [
+        {
+          "start": 1074612752,
+          "size_bytes": 87,
+          "sha256": "4171726f3bd53ca5820154b126ccebf0cf623ca7c6e9fce8f986471ed7161fdd"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 33
+    },
+    {
+      "name": "PumpTest::set_state",
+      "entry": 1074612840,
+      "ranges": [
+        {
+          "start": 1074612840,
+          "size_bytes": 47,
+          "sha256": "b235c095c7923ab8891dbda5529e1be955a45ff7c2ed8d74258042756725c9c8"
+        },
+        {
+          "start": 1074612888,
+          "size_bytes": 23,
+          "sha256": "50cb3ff3f21f28f981b74c1857e7396baae57f0845c6cede78b6c931112fd13d"
+        },
+        {
+          "start": 1074612912,
+          "size_bytes": 64,
+          "sha256": "e420e816239dc41f2afdb3e84b1e7fc04482ff40c2ce3998e1c28e5476491f0e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 51
+    },
+    {
+      "name": "PumpTest::tick",
+      "entry": 1074612976,
+      "ranges": [
+        {
+          "start": 1074612976,
+          "size_bytes": 86,
+          "sha256": "5c6a2708c58ae49090446a7bd0e06d4d71b694863432fcfcf1d4ea0cb817f3e7"
+        },
+        {
+          "start": 1074613065,
+          "size_bytes": 165,
+          "sha256": "582d736c914c8b35a2e92f2eda2f618fc158ac9a9b04424ce313688a3ab1b3c6"
+        },
+        {
+          "start": 1074613233,
+          "size_bytes": 63,
+          "sha256": "275fa0df38a67c66211f2e07d503b560851ed071f5e388700df5cf3089d9b3a0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 119
+    },
+    {
+      "name": "Application::queue_wifi",
+      "entry": 1074613296,
+      "ranges": [
+        {
+          "start": 1074613296,
+          "size_bytes": 102,
+          "sha256": "06cf01ff679b687a9a14e858c5c461494200640dd32e390995d496d779a68124"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 37
+    },
+    {
+      "name": "Application::queue_button",
+      "entry": 1074613400,
+      "ranges": [
+        {
+          "start": 1074613400,
+          "size_bytes": 71,
+          "sha256": "604153023c261cba95c32bfb5f8b7761c3c0b0ca82b87931f753588c9ecf7639"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 27
+    },
+    {
+      "name": "url_decode, nonzero capacity domain",
+      "entry": 1074613536,
+      "ranges": [
+        {
+          "start": 1074613536,
+          "size_bytes": 144,
+          "sha256": "65ac11c607e7ee4fcd879896406c8b9a1f6344051b411209560379821dedd154"
+        },
+        {
+          "start": 1074613682,
+          "size_bytes": 19,
+          "sha256": "c1bef7d2fd893b9ebc364c33ffbed9d5f14412d8bf4c3c5d509fb05746441d28"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 63
+    },
+    {
+      "name": "parse_wifi_form, terminated body domain",
+      "entry": 1074613704,
+      "ranges": [
+        {
+          "start": 1074613704,
+          "size_bytes": 162,
+          "sha256": "7ff67acc984a4cdd1a5ea24913507947667dd517333f4760d70599cb91119ac7"
+        },
+        {
+          "start": 1074613868,
+          "size_bytes": 32,
+          "sha256": "1a93f117d032bb0f45854c603c3fc85f441176a5948304e79ac47c6e5b480532"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 73
+    },
+    {
+      "name": "embedded string self-test vectors",
+      "entry": 1074613900,
+      "ranges": [
+        {
+          "start": 1074613900,
+          "size_bytes": 147,
+          "sha256": "e70b765b0ae6b3da9e71da89d5e90fade70d70f583ff192f4365100b524233dd"
+        },
+        {
+          "start": 1074614048,
+          "size_bytes": 420,
+          "sha256": "fb18381d2063298947ca7eed3e5e8e53a84c4f74f0eff3af8377751bd36d0d7e"
+        },
+        {
+          "start": 1074614470,
+          "size_bytes": 13,
+          "sha256": "67843805b9d6e3a4c97a39697815aa6c0f932d91a53a3abd3e4b32bacded512e"
+        },
+        {
+          "start": 1074614484,
+          "size_bytes": 19,
+          "sha256": "7ea9a095038b9e967805f5b597414fe1dd6ef732f8f95e5830b1e320b96483c0"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 210
+    },
+    {
+      "name": "DeviceData::initialize",
+      "entry": 1074614504,
+      "ranges": [
+        {
+          "start": 1074614504,
+          "size_bytes": 214,
+          "sha256": "39fc1491a64938f31d3617f34b4f64ee22aa15a851190a020e7b6254923c0cc2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 85
+    },
+    {
+      "name": "embedded identity self-test vectors",
+      "entry": 1074614720,
+      "ranges": [
+        {
+          "start": 1074614720,
+          "size_bytes": 594,
+          "sha256": "b0cc752f02eac535f8c66a01750fc09cb27b1df46abc814c1ecdc29ff2cfb1bb"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 216
+    },
+    {
+      "name": "embedded request parser self-test vectors",
+      "entry": 1074615316,
+      "ranges": [
+        {
+          "start": 1074615316,
+          "size_bytes": 239,
+          "sha256": "1af71fe5de1a54abc30ee4a4a8d65b56d153eb25724135809d207f01b48c3e59"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 85
+    },
+    {
+      "name": "embedded moving average self-test vector",
+      "entry": 1074615556,
+      "ranges": [
+        {
+          "start": 1074615556,
+          "size_bytes": 70,
+          "sha256": "8f4c2d089db82de52b2f7d52007da4024954a4a4a230d5352c1591c60eddec3a"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 26
+    },
+    {
+      "name": "error_animation",
+      "entry": 1074615628,
+      "ranges": [
+        {
+          "start": 1074615628,
+          "size_bytes": 23,
+          "sha256": "8713d80814d6679754d1de95194a13ae827f67550256115b6defce1606b25cc6"
+        },
+        {
+          "start": 1074615653,
+          "size_bytes": 90,
+          "sha256": "187a2d23ed2e06f5996a6c09984c0b403e35d984e962e958af5f393b1539787c"
+        },
+        {
+          "start": 1074615745,
+          "size_bytes": 14,
+          "sha256": "96013d83e1be2f0c6b09ba2b10107c131487bc1af4b1c08405d6b675a9b0d6af"
+        },
+        {
+          "start": 1074615762,
+          "size_bytes": 4,
+          "sha256": "c0b09730197e594b15f07e10e83089c9f7b2db14350a6fe72a2b008850a7ac35"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 59
+    },
+    {
+      "name": "embedded NVS save/load/restore self-test",
+      "entry": 1074615768,
+      "ranges": [
+        {
+          "start": 1074615768,
+          "size_bytes": 294,
+          "sha256": "93c7e095e1900629cef47f99bbde2e3384e893e941cef4c8f6c638f44d41fba6"
+        },
+        {
+          "start": 1074616086,
+          "size_bytes": 29,
+          "sha256": "6e5b154735e62e0552182199bbe454236d0050076e2e810c31df44a4ddbb2008"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 115
+    },
+    {
+      "name": "latch_first_error",
+      "entry": 1074616116,
+      "ranges": [
+        {
+          "start": 1074616116,
+          "size_bytes": 32,
+          "sha256": "9f74cd3be42c4f0ebc8521eacdba43d38b2a54d3a4d43754abb72ac9696baf70"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 12
+    },
+    {
+      "name": "embedded sensor threshold self-test vectors",
+      "entry": 1074616232,
+      "ranges": [
+        {
+          "start": 1074616232,
+          "size_bytes": 282,
+          "sha256": "92ce49cfea3f2929253e10dcf8b06d6d04f26b7faf4b4181b219c4c9dab239e0"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 96
+    },
+    {
+      "name": "128-byte report/console buffer clear",
+      "entry": 1074616516,
+      "ranges": [
+        {
+          "start": 1074616516,
+          "size_bytes": 29,
+          "sha256": "027beac779c5085b406d0517241063d93539ace1c6a872ce024f8b402f64d9a2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "report/console append guard",
+      "entry": 1074616548,
+      "ranges": [
+        {
+          "start": 1074616548,
+          "size_bytes": 22,
+          "sha256": "4cc9d44e86a8ebe300010b7f0e6d0091aa020a3663ad5649193fefa64066dc11"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 8
+    },
+    {
+      "name": "report/console string append",
+      "entry": 1074616572,
+      "ranges": [
+        {
+          "start": 1074616572,
+          "size_bytes": 27,
+          "sha256": "95fe64c98b1fc8427e81be21df68ec5ddcd4ee8d5941565ad4c218cd44faf63d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 10
+    },
+    {
+      "name": "Machine::queue_console",
+      "entry": 1074616600,
+      "ranges": [
+        {
+          "start": 1074616600,
+          "size_bytes": 19,
+          "sha256": "7f7edbabcb41c7e64c8792828d99d41e23884069f04daa88582c3852ade2c281"
+        },
+        {
+          "start": 1074616621,
+          "size_bytes": 10,
+          "sha256": "4fab0a220f233b2b58d51f1b23f4e70a15430fda25fb3cc4962f7ab95af53c68"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "ApplicationReports::controller_changed",
+      "entry": 1074616632,
+      "ranges": [
+        {
+          "start": 1074616632,
+          "size_bytes": 444,
+          "sha256": "f62f354e642e8267c3d58894f40dc5264c20092406dc63536e541a510380952d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 172
+    },
+    {
+      "name": "backend request bounded append",
+      "entry": 1074617088,
+      "ranges": [
+        {
+          "start": 1074617088,
+          "size_bytes": 63,
+          "sha256": "85673e086d43757a4181499957550e2f33ff50dcbe403108765e3c3d3f96aa84"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 24
+    },
+    {
+      "name": "backend request string append",
+      "entry": 1074617152,
+      "ranges": [
+        {
+          "start": 1074617152,
+          "size_bytes": 27,
+          "sha256": "5ca6559256db85cb7e07cca88beb1dd80228fe77c66cf4abbbfe2e4d1638844c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 10
+    },
+    {
+      "name": "backend request prefix",
+      "entry": 1074617180,
+      "ranges": [
+        {
+          "start": 1074617180,
+          "size_bytes": 102,
+          "sha256": "9dd6b3768f02bf59a5ef5fc1792c95cbcc12820924c7d4bb71831324fddfc24d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 39
+    },
+    {
+      "name": "Leds::clear_program",
+      "entry": 1074617284,
+      "ranges": [
+        {
+          "start": 1074617284,
+          "size_bytes": 28,
+          "sha256": "03d5e07715bafd1fe197e80f20b4e93f18d50af7c65943ddc321a0a3365b168d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Leds::poll",
+      "entry": 1074617312,
+      "ranges": [
+        {
+          "start": 1074617312,
+          "size_bytes": 25,
+          "sha256": "b96accb51b59dff7e807748752baea616a6ec4e51650e2a14703578f7ad21dd7"
+        },
+        {
+          "start": 1074617340,
+          "size_bytes": 75,
+          "sha256": "3ffcf685843b8fa6e335dd4ccdef1ec41fc14da1197592751b493871afae2644"
+        },
+        {
+          "start": 1074617416,
+          "size_bytes": 39,
+          "sha256": "00b2246857b2ec98d3820c58d7d54d327db5036a5530f47fba7e2b6414bfb360"
+        },
+        {
+          "start": 1074617456,
+          "size_bytes": 82,
+          "sha256": "130fd72c70be23e07d7456a0aa3130b74efab88965f6661ad74f4e92e41c3b2e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 79
+    },
+    {
+      "name": "Leds string append",
+      "entry": 1074617540,
+      "ranges": [
+        {
+          "start": 1074617540,
+          "size_bytes": 26,
+          "sha256": "ce54a8d835ba642c786e6c125e5b68aa493382b16864c0baf398e12979c24766"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Leds::start(text, repeat)",
+      "entry": 1074617568,
+      "ranges": [
+        {
+          "start": 1074617568,
+          "size_bytes": 96,
+          "sha256": "0e56ecb29017b870c44819fa51fba1c9c32a1ada355f3b60ce7c356f0c2102d7"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 35
+    },
+    {
+      "name": "Machine::test_leds",
+      "entry": 1074617664,
+      "ranges": [
+        {
+          "start": 1074617664,
+          "size_bytes": 91,
+          "sha256": "4972198e44a77527a788c2235aaaa961377248345dabf872dae7bff181ccfe9f"
+        },
+        {
+          "start": 1074617757,
+          "size_bytes": 29,
+          "sha256": "bf3e008cffb1c49deaf940a131905460e962b9bd46f25de0c3741fddadf102e8"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 42
+    },
+    {
+      "name": "Leds::start(Animation), valid enum domain",
+      "entry": 1074617788,
+      "ranges": [
+        {
+          "start": 1074617788,
+          "size_bytes": 50,
+          "sha256": "8fc4ca6d34bddb8e72373b9c6d8e43f61e31129093ab896279850750a9eff8d0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "Application::select_menu, valid new index domain",
+      "entry": 1074617840,
+      "ranges": [
+        {
+          "start": 1074617840,
+          "size_bytes": 44,
+          "sha256": "ba321f8f201ea86efba7b5ea74568796f4f3b6ee88ff06d161e2cb2bf35fb232"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 16
+    },
+    {
+      "name": "UpdateParameters::parse, bounded URL domain",
+      "entry": 1074617884,
+      "ranges": [
+        {
+          "start": 1074617884,
+          "size_bytes": 135,
+          "sha256": "d61902fd0b9458817e91e39fba60f81689d81d132419d555ae4bac94abdab13c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 49
+    },
+    {
+      "name": "embedded updater URL self-test vectors",
+      "entry": 1074618020,
+      "ranges": [
+        {
+          "start": 1074618020,
+          "size_bytes": 147,
+          "sha256": "7b9eeed39c977d845c655d631bf438d8869d55c2baca5fe60ce9f2d6d004180f"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 52
+    },
+    {
+      "name": "WifiStatus::connect",
+      "entry": 1074618168,
+      "ranges": [
+        {
+          "start": 1074618168,
+          "size_bytes": 46,
+          "sha256": "4b9ed5d17153799b8f7fe8e7cb327b14aca87de50be3b33a0bd60e16984232e4"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 18
+    },
+    {
+      "name": "embedded pressure point self-test output",
+      "entry": 1074618216,
+      "ranges": [
+        {
+          "start": 1074618216,
+          "size_bytes": 31,
+          "sha256": "194113d4ac617045e623446a28a021951166e62503c4996000fd285312656ca7"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 12
+    },
+    {
+      "name": "Backend::fail",
+      "entry": 1074618248,
+      "ranges": [
+        {
+          "start": 1074618248,
+          "size_bytes": 26,
+          "sha256": "bd80cbcc20a2b9553ca6fc80bfe3239f29af161e4401bca2e61d3398e99ab514"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 9
+    },
+    {
+      "name": "Wifi::set_state",
+      "entry": 1074618276,
+      "ranges": [
+        {
+          "start": 1074618276,
+          "size_bytes": 161,
+          "sha256": "6c2afa18c2a4a2813b7b960f7afe24503683028cf25b16acba5ab46f646de337"
+        },
+        {
+          "start": 1074618439,
+          "size_bytes": 453,
+          "sha256": "113571cd8abf761feeb6ba1af06314d2fbdf2a5dbd78b8247994d50baddcc778"
+        },
+        {
+          "start": 1074618895,
+          "size_bytes": 147,
+          "sha256": "b682ec9915be7cbdd17ed7d11b4e7adf2bc611476a69f7e574ad9a966e420d8a"
+        },
+        {
+          "start": 1074619043,
+          "size_bytes": 176,
+          "sha256": "9795fabfcc41b71952269fe9910ee5a8eaa1707aa6fb69c2a53975d709bc549a"
+        },
+        {
+          "start": 1074619257,
+          "size_bytes": 19,
+          "sha256": "67386d58ad6d57f183b47b6162ccf220d87238cf841a658d3c1aab86d3584365"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 360
+    },
+    {
+      "name": "Wifi::fail",
+      "entry": 1074619276,
+      "ranges": [
+        {
+          "start": 1074619276,
+          "size_bytes": 35,
+          "sha256": "97665e33457adde315d1d0a7fa29140401e618590d243a38477a065d3d8c1a42"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 16
+    },
+    {
+      "name": "Wifi::poll",
+      "entry": 1074619312,
+      "ranges": [
+        {
+          "start": 1074619312,
+          "size_bytes": 64,
+          "sha256": "66a3d59b9320b12416ad0b854937682760e630a9114b3ec47bb39ed85f46eb65"
+        },
+        {
+          "start": 1074619378,
+          "size_bytes": 57,
+          "sha256": "56dd0e5f011b550b8e5fb65c48558c048d08cb9eb0ad02b7b789bdbd06c857df"
+        },
+        {
+          "start": 1074619436,
+          "size_bytes": 65,
+          "sha256": "ffa60ee099a0b3a07fb57ed9c98679799d0186016c5ba10f51e5791f69d82e2e"
+        },
+        {
+          "start": 1074619502,
+          "size_bytes": 81,
+          "sha256": "3c7fc2b6a55f810b79cb1097f1a1acc1810b011cc8ed5dbafdfb681fe7075e85"
+        },
+        {
+          "start": 1074619584,
+          "size_bytes": 19,
+          "sha256": "a2c412e2e61cd647a219b4e9edcf66fbb8b14f9fc2c47030b5857c74a81d7e93"
+        },
+        {
+          "start": 1074619604,
+          "size_bytes": 88,
+          "sha256": "6c78bf2af52c46c28d022165684d523c232a331cc2f38903d47f8964d6a6d7ca"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 142
+    },
+    {
+      "name": "embedded buffer self-test vectors",
+      "entry": 1074619896,
+      "ranges": [
+        {
+          "start": 1074619896,
+          "size_bytes": 451,
+          "sha256": "938005619e6f555d1846585ee11a0eba715e8f4b4ce62a334d3b88e6a36b8cf2"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 165
+    },
+    {
+      "name": "Machine::self_tests runner",
+      "entry": 1074620348,
+      "ranges": [
+        {
+          "start": 1074620348,
+          "size_bytes": 264,
+          "sha256": "8a2ecafd2b0a3988466a848fb9f782262e10f1ee386563443ab86c6eeacf6560"
+        }
+      ],
+      "validation": "recovered embedded vectors execute owned code in native integration test; no differential execution of the original self-test runner",
+      "original_instruction_count": 101
+    },
+    {
+      "name": "PressureReader::read",
+      "entry": 1074620612,
+      "ranges": [
+        {
+          "start": 1074620612,
+          "size_bytes": 159,
+          "sha256": "53e18c493646e99cf9f756943cf422fc79ee672b0056a533ccbba0025b6a85e1"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 60
+    },
+    {
+      "name": "Sensors::sample_pressure",
+      "entry": 1074620772,
+      "ranges": [
+        {
+          "start": 1074620772,
+          "size_bytes": 163,
+          "sha256": "5f8d6f62e7feb80192cbbbd817e61ab2b4fb5436d93f7bf0519f8ea905285728"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 59
+    },
+    {
+      "name": "Controller::set_state",
+      "entry": 1074620936,
+      "ranges": [
+        {
+          "start": 1074620936,
+          "size_bytes": 169,
+          "sha256": "adf47e9e17649cbce9338d1458a34b7cce40d6b0f49f1875e97a7ec1546b1e4d"
+        },
+        {
+          "start": 1074621106,
+          "size_bytes": 293,
+          "sha256": "a025a0a87e6dd436f270fc204262af78875fd848c44570fa16b8b7509ea80e18"
+        },
+        {
+          "start": 1074621401,
+          "size_bytes": 90,
+          "sha256": "f6eb045b550916eecd7c9a436c7223314a3da85cf89ddf0cd21995829a1d9dea"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 201
+    },
+    {
+      "name": "Controller::start",
+      "entry": 1074621492,
+      "ranges": [
+        {
+          "start": 1074621492,
+          "size_bytes": 59,
+          "sha256": "fe2edc5f6ef192bffb4ef3b54c27c24f4d607630f143c86b007c066e70a52a36"
+        },
+        {
+          "start": 1074621552,
+          "size_bytes": 33,
+          "sha256": "c05f8976e8d7c117eaa105b47ae680e49385a22344df63f41c0e0369cea4b581"
+        },
+        {
+          "start": 1074621586,
+          "size_bytes": 80,
+          "sha256": "57b0538537123ba17be4ce00b204bda91fc343cd48b54e1490fc8edd8fd3b8ed"
+        },
+        {
+          "start": 1074621667,
+          "size_bytes": 12,
+          "sha256": "a6d4480bb1d40ad3fb85b5e3a00f637e7d9e57fa59cc1f00c15777f4c88020ff"
+        },
+        {
+          "start": 1074621680,
+          "size_bytes": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 70
+    },
+    {
+      "name": "Controller::stop",
+      "entry": 1074621684,
+      "ranges": [
+        {
+          "start": 1074621684,
+          "size_bytes": 85,
+          "sha256": "9181921dce061deb4de19ee1b39eadaad4dd6707b5931f94fb55f4aebf3d4cb2"
+        },
+        {
+          "start": 1074621772,
+          "size_bytes": 135,
+          "sha256": "76febd26ff3499fea0a4eba4fd9cf940b052155017b605552578c1c264de65e4"
+        },
+        {
+          "start": 1074621908,
+          "size_bytes": 31,
+          "sha256": "61fa1d61dfc373a479ec95751d827dae248523958d15a288ef1e32895f1835c4"
+        },
+        {
+          "start": 1074621940,
+          "size_bytes": 9,
+          "sha256": "d3d6304b132a98b006bfc0311d069bae0afe9df4cd5ac59da47831e894fd7e5d"
+        },
+        {
+          "start": 1074621952,
+          "size_bytes": 211,
+          "sha256": "49d9da5a34f9f74b2370435bdfcb4fb03ae095cc7d431c296b18a9539cd781c0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 173
+    },
+    {
+      "name": "ADC 12-bit word read",
+      "entry": 1074622164,
+      "ranges": [
+        {
+          "start": 1074622164,
+          "size_bytes": 29,
+          "sha256": "ad59fe4cf0ce3d3beb41bf80dfcf34f2f88ae435f51f96291ae09067caf10dc0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 10
+    },
+    {
+      "name": "AdcReader::read",
+      "entry": 1074622196,
+      "ranges": [
+        {
+          "start": 1074622196,
+          "size_bytes": 136,
+          "sha256": "ed2de96b1058cdcf9926f7d1a3670893a4cf3e04dbfcf03701f9a3a05595cdc9"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 48
+    },
+    {
+      "name": "Sensors::sample_temperatures",
+      "entry": 1074622332,
+      "ranges": [
+        {
+          "start": 1074622332,
+          "size_bytes": 619,
+          "sha256": "9e06ddacc88aaf0f3ce33a89976c6a85da15ecc33c2edcfe8b00baa24b750285"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 223
+    },
+    {
+      "name": "Hardware::poll",
+      "entry": 1074622952,
+      "ranges": [
+        {
+          "start": 1074622952,
+          "size_bytes": 115,
+          "sha256": "0323baf6c98495fbd26689b6b4630fab14075885a665ae7abced8b03c2c2c6f9"
+        },
+        {
+          "start": 1074623068,
+          "size_bytes": 42,
+          "sha256": "91ec1a1939315865d203915e84801ece6a6ead0d630755f72bffa0807f2e7b66"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 55
+    },
+    {
+      "name": "Controller::poll",
+      "entry": 1074623112,
+      "ranges": [
+        {
+          "start": 1074623112,
+          "size_bytes": 151,
+          "sha256": "c9c53ad036a16af0257a54a8167ac6aedb59f3ed1176334635913e11bf7d7de0"
+        },
+        {
+          "start": 1074623264,
+          "size_bytes": 27,
+          "sha256": "f94ddfe3697ac0e7bb51905c6965f5f104570826454632c82728983773b03ef0"
+        },
+        {
+          "start": 1074623294,
+          "size_bytes": 19,
+          "sha256": "975cf1a73ae2e5982c716ad12cf8ff02d013049ff662fb51128ab90ae6ad3520"
+        },
+        {
+          "start": 1074623316,
+          "size_bytes": 167,
+          "sha256": "66ff8f2b8bc0806ee96376a14c23af72b7b5ddb371278f9778c8c43ee63c4209"
+        },
+        {
+          "start": 1074623485,
+          "size_bytes": 79,
+          "sha256": "0c08732212ca2e75455f6fcd84cf46e4cc3d9aab6be4573c08774b9409e955be"
+        },
+        {
+          "start": 1074623565,
+          "size_bytes": 37,
+          "sha256": "e6373ef8447b0618919628aede8bbfcdbd5c9f7f0ed5ae26df230480f2f3540d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 176
+    },
+    {
+      "name": "ArduinoPorts::initialize_hardware",
+      "entry": 1074623604,
+      "ranges": [
+        {
+          "start": 1074623604,
+          "size_bytes": 155,
+          "sha256": "c8916ba07eab49b092dad43c50339cbb663642b36febec6075ffd70a47cb8fb5"
+        }
+      ],
+      "validation": "reviewed original setup order and target compilation; no setup replay or physical test",
+      "original_instruction_count": 58
+    },
+    {
+      "name": "Machine::setup",
+      "entry": 1074623760,
+      "ranges": [
+        {
+          "start": 1074623760,
+          "size_bytes": 279,
+          "sha256": "a8b60413cb8c5fa86a1ce8c68a4e640ea5633be546f9fd16a039a99863b89502"
+        }
+      ],
+      "validation": "original application boot ordering and data/LED/credential effects compared; hardware setup, NVS wrapper and OS calls are explicit boundaries",
+      "original_instruction_count": 106
+    },
+    {
+      "name": "ESP32 setup",
+      "entry": 1074624040,
+      "ranges": [
+        {
+          "start": 1074624040,
+          "size_bytes": 36,
+          "sha256": "4f6055a73880872b7329529d9a48cde8a26c6dde927c163ccd1a1702d8afb493"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "Machine::receive_console",
+      "entry": 1074624076,
+      "ranges": [
+        {
+          "start": 1074624076,
+          "size_bytes": 22,
+          "sha256": "d958ae783cc5168363c111e234a8dec9e65ea6b2c30987a06866b40733e1d1e9"
+        },
+        {
+          "start": 1074624101,
+          "size_bytes": 44,
+          "sha256": "a883bca36c38e9108fe74b966f0b184deaf677ccb345da93c5e8e0195757cd3e"
+        },
+        {
+          "start": 1074624146,
+          "size_bytes": 65,
+          "sha256": "2474d3dc3e5309b3d3f3e6f340cd6431d68b0bbf0c968f115bb3fa180791a427"
+        },
+        {
+          "start": 1074624212,
+          "size_bytes": 11,
+          "sha256": "3e926e39ab98d2909230a5ce08d7277ef4c92c2719669816c544da9ba85bca91"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "Backend::poll",
+      "entry": 1074624224,
+      "ranges": [
+        {
+          "start": 1074624224,
+          "size_bytes": 124,
+          "sha256": "8e01d1c0482090be60fc2f50f2fbfb15755380c067afe35b4b2210aeda12bf20"
+        },
+        {
+          "start": 1074624349,
+          "size_bytes": 63,
+          "sha256": "dd95bd76b5f4a68783df65c31ad8d04881d5b5d6ac329aca932054846be48fd9"
+        },
+        {
+          "start": 1074624413,
+          "size_bytes": 75,
+          "sha256": "540a5953e182c36528cb1556eb591d951a18fdecb6b59f9021919ef1eecd017b"
+        },
+        {
+          "start": 1074624490,
+          "size_bytes": 32,
+          "sha256": "ec32d6950cae9c5f78c28545c37ba8e22f32823ce7e89080d0056b25f414794d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 110
+    },
+    {
+      "name": "HttpServer::poll and dispatch",
+      "entry": 1074624524,
+      "ranges": [
+        {
+          "start": 1074624524,
+          "size_bytes": 54,
+          "sha256": "bb6fdd0da6b24cecddaa609bbfe03a783538cf0614780ce99eb7ea6e7cad6160"
+        },
+        {
+          "start": 1074624580,
+          "size_bytes": 35,
+          "sha256": "584e767c5e1a20b75d00a876de5fbde7104156c3108f9a4d1db5bccd73f098c9"
+        },
+        {
+          "start": 1074624617,
+          "size_bytes": 61,
+          "sha256": "3fa9597770e51fbf2f2c04f6fc6fc6ead4250820c9ef593a9115c1a698fbf76e"
+        },
+        {
+          "start": 1074624681,
+          "size_bytes": 122,
+          "sha256": "e9e52ed1b215146c4298c761f561f8f95dccba35d494e2acef9c94ceb64e88f1"
+        },
+        {
+          "start": 1074624805,
+          "size_bytes": 198,
+          "sha256": "9f0ee50a6bfef53c8d411cbff08cb98d460c2aa04d9262983d8cda9acdb2c5a2"
+        },
+        {
+          "start": 1074625005,
+          "size_bytes": 255,
+          "sha256": "7c2307981b2264b4108eb50be843d26396f1eaf4f354ca7a8632fa676489180f"
+        },
+        {
+          "start": 1074625261,
+          "size_bytes": 150,
+          "sha256": "afda9f88eb4c6ecc0d081cfcba295333c88bcce2177ea678e88eebb40aa5d1fb"
+        },
+        {
+          "start": 1074625413,
+          "size_bytes": 87,
+          "sha256": "6591dcf50f27b28a9ccfcd999558725284921dfb484621e6b67bfe035cb3fb1f"
+        },
+        {
+          "start": 1074625501,
+          "size_bytes": 158,
+          "sha256": "d6c51b016507219d3a2c8f7450fec73c355ed49a881a657a32b7f5422aa70357"
+        },
+        {
+          "start": 1074625661,
+          "size_bytes": 150,
+          "sha256": "0d3661e89c746634ec4b8e87f4cc776ef0778bb15d3e48c5347f134fb01bc216"
+        },
+        {
+          "start": 1074625813,
+          "size_bytes": 178,
+          "sha256": "01054dab6f7f7fc3bed4c0e482ebf6412d63c95f8e4505f8acda08069eb5ad01"
+        },
+        {
+          "start": 1074625993,
+          "size_bytes": 115,
+          "sha256": "cdadf86ac5b3273784dee5f5fd62a85d96688444877fbb97a17c13823bd1c986"
+        },
+        {
+          "start": 1074626109,
+          "size_bytes": 55,
+          "sha256": "6bc2b77ef321663eb04bb634efb8de21cca431efca93b75745fc57aefad2f0a8"
+        },
+        {
+          "start": 1074626165,
+          "size_bytes": 55,
+          "sha256": "c3559f97235f5c6a6b88d8a902706c1fbbba25da79477c7e0fc87f94a42ed16b"
+        },
+        {
+          "start": 1074626221,
+          "size_bytes": 55,
+          "sha256": "41abcc0b58c124a45cd3245c201cb2cc8bf64accf2d21f918fb27fa976376881"
+        },
+        {
+          "start": 1074626277,
+          "size_bytes": 91,
+          "sha256": "e0d541744d59c032082f09cb2a2adc1aaa787868167bd76a8f3907a3df5760a1"
+        },
+        {
+          "start": 1074626369,
+          "size_bytes": 90,
+          "sha256": "a3ba1f4f8686109a682f40ca5cd70aef6b067f45b31db69e85a30a42764a680f"
+        },
+        {
+          "start": 1074626460,
+          "size_bytes": 23,
+          "sha256": "ff6ebe99853227eb8e21250f47d9aec172312432ee7824e3e65f372f58335ddb"
+        },
+        {
+          "start": 1074626489,
+          "size_bytes": 103,
+          "sha256": "a99ad53adee7d0ac9169596cacb258e1ffec8c16a1fc3a62d930d73c6be3a40c"
+        },
+        {
+          "start": 1074626593,
+          "size_bytes": 91,
+          "sha256": "7e24778ef0cbfb7cc5c213b261636d98e883fa134733281de078644629fcc8fb"
+        },
+        {
+          "start": 1074626685,
+          "size_bytes": 131,
+          "sha256": "bfe3f242873ad906727b42b52551a894a32352d77304d2adecc9c198d4ae5d12"
+        },
+        {
+          "start": 1074626817,
+          "size_bytes": 118,
+          "sha256": "111552f344b430c75e4d46a0c68b216121f75ded969d39d76463bb7568b6d938"
+        },
+        {
+          "start": 1074626937,
+          "size_bytes": 82,
+          "sha256": "93b63fa0ddaad056ec3fd34bd3a48cb65cd29622efaaecae2965d05c4fd7c2e3"
+        },
+        {
+          "start": 1074627021,
+          "size_bytes": 82,
+          "sha256": "c2c969dc7df54f1002bc04930dd5dfeb1794d030cfe38b743f7dc978b4ad1178"
+        },
+        {
+          "start": 1074627105,
+          "size_bytes": 83,
+          "sha256": "beaa8f7c9b758c926d660cb27b85da4edca66cb6adcac4945812af27f55ae8c0"
+        },
+        {
+          "start": 1074627230,
+          "size_bytes": 60,
+          "sha256": "f8bcb031d50300b74e8d72f38a52e8d93ee8d8ff5a4b31115603a0b44a457d7e"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 995
+    },
+    {
+      "name": "board_thermistor: calibration stores within static initializer",
+      "entry": 1074628232,
+      "ranges": [
+        {
+          "start": 1074628232,
+          "size_bytes": 192,
+          "sha256": "967f095bb970cb95e6a156eb44b3391a4b5cda08206f542171ea9342c19273a5"
+        }
+      ],
+      "validation": "original calibration-store execution; unrelated IP/application constructors are explicit external boundaries",
+      "original_instruction_count": 70
+    },
+    {
+      "name": "Backend::send",
+      "entry": 1074628464,
+      "ranges": [
+        {
+          "start": 1074628464,
+          "size_bytes": 194,
+          "sha256": "30fb1a8d0b2ea554db40234d4d97eec629c7de6c6808d1f45ea9a58698a12feb"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 74
+    },
+    {
+      "name": "Backend::sync",
+      "entry": 1074628660,
+      "ranges": [
+        {
+          "start": 1074628660,
+          "size_bytes": 47,
+          "sha256": "907add7be2e92b5ada75c5f4fe20acbb473b537702a4c7045070212c2d4f9be3"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 19
+    },
+    {
+      "name": "Backend::request_firmware",
+      "entry": 1074628708,
+      "ranges": [
+        {
+          "start": 1074628708,
+          "size_bytes": 28,
+          "sha256": "e6edc03ecf3419298ad7fbfc8b49c7ba121b961455419998435d08f403791a2f"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 10
+    },
+    {
+      "name": "FirmwareUpdate::begin",
+      "entry": 1074628736,
+      "ranges": [
+        {
+          "start": 1074628736,
+          "size_bytes": 67,
+          "sha256": "66f2e045eeea32e23087f31350043664c6d716899f54c9afc91a6eae2f88f8d0"
+        },
+        {
+          "start": 1074628805,
+          "size_bytes": 134,
+          "sha256": "727a64be09e4008463a07e03351cac0d0cb1b0e385c73c0d0fc0843ee19df5b7"
+        },
+        {
+          "start": 1074628969,
+          "size_bytes": 18,
+          "sha256": "1d1cc0a75a2014d34a62d4d69071af15bbc7de2d9b959ee5e3c62c79053c7e8a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 77
+    },
+    {
+      "name": "Machine::start_firmware_update",
+      "entry": 1074628988,
+      "ranges": [
+        {
+          "start": 1074628988,
+          "size_bytes": 36,
+          "sha256": "cf713bb9cacc814f30c53b101629eb08bba9a01f718eb7c576ec1c25f655dbc6"
+        },
+        {
+          "start": 1074629025,
+          "size_bytes": 93,
+          "sha256": "047acb1eda10fd3b869fb4c6e5f840fb97be6168d6c3573f8a65c92f51eafae2"
+        }
+      ],
+      "validation": "original no-address rejection compared; valid-address wrapper reviewed and linked to independently compared updater implementation",
+      "original_instruction_count": 45
+    },
+    {
+      "name": "Machine::dispatch_console",
+      "entry": 1074629120,
+      "ranges": [
+        {
+          "start": 1074629120,
+          "size_bytes": 93,
+          "sha256": "239d8c8273a41c3e9238085bd52543996b96aecf1a2ca50a59f484dc18294336"
+        },
+        {
+          "start": 1074629215,
+          "size_bytes": 90,
+          "sha256": "100e49c743331b3568e1c6f9dfd498cd0dfd5c82993c5609d940df9d0c0763d4"
+        },
+        {
+          "start": 1074629308,
+          "size_bytes": 54,
+          "sha256": "35992191386b801cec0d28a451e010f954936958645ec22c3569dd658bb36dca"
+        },
+        {
+          "start": 1074629365,
+          "size_bytes": 18,
+          "sha256": "c63f5d79a0c4fd6e03bb7651db462b0c427ed3130f1627ca52f25807f3954c1a"
+        },
+        {
+          "start": 1074629384,
+          "size_bytes": 23,
+          "sha256": "b8361e3bcb2b2f85e80d99c2d21778fc03028a5389dc9c35c37c02b61871eb2d"
+        },
+        {
+          "start": 1074629409,
+          "size_bytes": 22,
+          "sha256": "aae55fd3a5a3f2d72c1f4df31466cc3d8b42b0c92cc1429ffefc4f0baf1fe1fe"
+        },
+        {
+          "start": 1074629433,
+          "size_bytes": 74,
+          "sha256": "1cc307b8e665cfce322becacdb0322debff97be95b02424a21dbb1678496c7e9"
+        },
+        {
+          "start": 1074629508,
+          "size_bytes": 119,
+          "sha256": "75b89336f3cf8a329577b689565e59155effd51e365aeae97dbfb41039d04ff0"
+        },
+        {
+          "start": 1074629628,
+          "size_bytes": 66,
+          "sha256": "aece24ecfa2b22e24c78776f093eed8e4a18a20f188adb2eb141870e9927a97c"
+        },
+        {
+          "start": 1074629696,
+          "size_bytes": 30,
+          "sha256": "e0cbcfb82ab1af2377e5a3b2ea41ba4fe3668f55826398016ac7f339ce6a9d02"
+        },
+        {
+          "start": 1074629728,
+          "size_bytes": 26,
+          "sha256": "0b8b02c303b273e73b3c89889af58cf0abc97278b83aec3265f7f339fd4ef8ac"
+        },
+        {
+          "start": 1074629757,
+          "size_bytes": 94,
+          "sha256": "67d243985644511df9f2874247197444dfc56495bf111f5efc1d891dae72cae1"
+        },
+        {
+          "start": 1074629852,
+          "size_bytes": 21,
+          "sha256": "0108ca9b8e0cabceee45b70a0ea29c816a75f3beddc3ed8ed97f13b6bf38b823"
+        },
+        {
+          "start": 1074629876,
+          "size_bytes": 162,
+          "sha256": "62061c8ab02b2675f103e16ec52f2d64e5697f1cc46df9a0573d9d88681916e4"
+        },
+        {
+          "start": 1074630041,
+          "size_bytes": 26,
+          "sha256": "b8858fd1c29b063c65964eb74bec645d33616a6f163bf419b31ef4bf2a012f46"
+        },
+        {
+          "start": 1074630068,
+          "size_bytes": 63,
+          "sha256": "a36a495ffa3879650cc418984639743714f3e0dad227898c71fc29e54769260a"
+        },
+        {
+          "start": 1074630132,
+          "size_bytes": 59,
+          "sha256": "b9dc5401b27a4951fdd0d099eb821c0487476703c156d78551ccdf61b6cd59b0"
+        },
+        {
+          "start": 1074630193,
+          "size_bytes": 49,
+          "sha256": "bfce0d23b391423690b4f8c738a8619835013fbdf165c69818de05645a739812"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 398
+    },
+    {
+      "name": "Application::set_state",
+      "entry": 1074630244,
+      "ranges": [
+        {
+          "start": 1074630244,
+          "size_bytes": 51,
+          "sha256": "44ed83fb36f88e2d25a92b4e0388d5ca9ffcbc9fb2aa712b42a29d4ae697e981"
+        },
+        {
+          "start": 1074630297,
+          "size_bytes": 61,
+          "sha256": "fcef045bd9ccc82cf379d36c6e85e98817ddf4130b9e3cc17391ecfcf076c32b"
+        },
+        {
+          "start": 1074630360,
+          "size_bytes": 131,
+          "sha256": "d762dfc7171bb8414df620ef44e7eef7ed5affcae8299afc498a71ec9383ad83"
+        },
+        {
+          "start": 1074630492,
+          "size_bytes": 23,
+          "sha256": "699586bef4042f5190b1f9a4f7138c3412f9e100f76f9f1817bf7b8738b56cf5"
+        },
+        {
+          "start": 1074630516,
+          "size_bytes": 16,
+          "sha256": "5c7e229a3c96d85e91916d05fe7243510ecc277e26b21d16b8c368a5e0e0c68e"
+        },
+        {
+          "start": 1074630534,
+          "size_bytes": 41,
+          "sha256": "8bac892b6ccccbde628abe393f816fea9fca9efb31353a6569826fa9e76afaa1"
+        },
+        {
+          "start": 1074630578,
+          "size_bytes": 85,
+          "sha256": "208de46e58bb17306fd283b1cc363d11dadf79001fc85b816eb54f1f5a528bdf"
+        },
+        {
+          "start": 1074630665,
+          "size_bytes": 49,
+          "sha256": "e2e6f717eca66bd31993225dc0129d400498527f55840b83db273156d55e485d"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 165
+    },
+    {
+      "name": "Application::handle_button",
+      "entry": 1074630716,
+      "ranges": [
+        {
+          "start": 1074630716,
+          "size_bytes": 26,
+          "sha256": "28c1858bf2a317a3d65ce051a2a0621c0c254e2a86de087c631e0d50b93a8093"
+        },
+        {
+          "start": 1074630745,
+          "size_bytes": 13,
+          "sha256": "b17434076ad8453e82be0c848555661ad01c097ccb22b9d9fdd61dd738327a45"
+        },
+        {
+          "start": 1074630759,
+          "size_bytes": 20,
+          "sha256": "77495e5971f6edfa94b71eae5caf69d9d0a0572f0bc4e4ccbb91d2fa192b980c"
+        },
+        {
+          "start": 1074630780,
+          "size_bytes": 14,
+          "sha256": "79aeea3fcc9ee6dec74d062f641c66a29eab4bcf4ca2752bb23d5efc5e2cf358"
+        },
+        {
+          "start": 1074630797,
+          "size_bytes": 53,
+          "sha256": "fd3e57dc8b272c0dbb971c25d6e3a90948353a9fec28f51c80491ef3912c7696"
+        },
+        {
+          "start": 1074630852,
+          "size_bytes": 92,
+          "sha256": "7a5fb1b0e320340f7a038f7f95af9917e163c12bf4981356807def442dd26ed0"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 81
+    },
+    {
+      "name": "Application::handle_wifi",
+      "entry": 1074630944,
+      "ranges": [
+        {
+          "start": 1074630944,
+          "size_bytes": 123,
+          "sha256": "5e1895a8248546a41ff8016def56ef1aaaa5a991501ac345bd21e40a0c7f3fbd"
+        },
+        {
+          "start": 1074631068,
+          "size_bytes": 12,
+          "sha256": "798b2c2c90c9530b5e6424a3679c855fbce442e507f10c902c295b478b0bb452"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 50
+    },
+    {
+      "name": "FirmwareUpdate::poll",
+      "entry": 1074631080,
+      "ranges": [
+        {
+          "start": 1074631080,
+          "size_bytes": 90,
+          "sha256": "300bfd3cfe3f314e319ebb776d994fec1e7a5a2d9c0d75f833323b8f684cdc20"
+        },
+        {
+          "start": 1074631172,
+          "size_bytes": 59,
+          "sha256": "e29f3980cfc1fa45357237fc8b0c7f93bc5a54754f3e98752263a0abc21b8f4c"
+        },
+        {
+          "start": 1074631233,
+          "size_bytes": 97,
+          "sha256": "53e8cbce1fbba277fb7f023ec927b94faa21a79a348e775f2b51d6e51193f980"
+        },
+        {
+          "start": 1074631332,
+          "size_bytes": 300,
+          "sha256": "5b97e3ae19a212525be5ed459d22a5b35b4ba096aa8d5ae5e7309e1b6ac84f65"
+        },
+        {
+          "start": 1074631634,
+          "size_bytes": 100,
+          "sha256": "b99fc02ec2a6c90867869c0ff2ece6a01dd823671ae04515731390f7e7fd9be3"
+        },
+        {
+          "start": 1074631737,
+          "size_bytes": 102,
+          "sha256": "5847bc541013d41e77d0e5a9430443a0d19dd92d354a8cfd626cd374e13b42ad"
+        },
+        {
+          "start": 1074631841,
+          "size_bytes": 66,
+          "sha256": "713e3e0778a12f20a721639ac3eeb3cef65d25bd72c2e4cb882e7370d304027c"
+        },
+        {
+          "start": 1074631908,
+          "size_bytes": 35,
+          "sha256": "848822aeff576eb46007f6e4c7b739a8a145dd37dde59c3fc4505d1f5d6f7c4f"
+        },
+        {
+          "start": 1074631944,
+          "size_bytes": 79,
+          "sha256": "c01ce6eb09349cc256c9fac641ba180b7d2a15656c061cd9ea6ed11046cbc366"
+        },
+        {
+          "start": 1074632116,
+          "size_bytes": 22,
+          "sha256": "00d758413ad2d45a2892488188c9ec63c819547b2265c11a9bebfe6f23eab9c9"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 337
+    },
+    {
+      "name": "Application::poll and state advancement",
+      "entry": 1074632140,
+      "ranges": [
+        {
+          "start": 1074632140,
+          "size_bytes": 110,
+          "sha256": "2349a6c624ffc9fcb3daf9445ac49f093b21c99f7c960e621fc92f8d152097f7"
+        },
+        {
+          "start": 1074632252,
+          "size_bytes": 67,
+          "sha256": "6a167611cb2e9cca094bcb7b1285d7df3fa94e53f3c1b475c713985bb1ca9be1"
+        },
+        {
+          "start": 1074632320,
+          "size_bytes": 86,
+          "sha256": "b6c78391dd3b9bff6fbab36f84d04c4aa0aae1a6f07a590f171a5904dcf3fe18"
+        },
+        {
+          "start": 1074632408,
+          "size_bytes": 48,
+          "sha256": "5e0daab2b656550e3f91e3558dc461679df7bc6421f0d3ba7c39cfc8f132a6d2"
+        },
+        {
+          "start": 1074632457,
+          "size_bytes": 204,
+          "sha256": "952fb7e931a217a0dfde868575c6f9240a683407bb050feec8364985f79e9ef1"
+        },
+        {
+          "start": 1074632664,
+          "size_bytes": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 187
+    },
+    {
+      "name": "ESP32 loop",
+      "entry": 1074632668,
+      "ranges": [
+        {
+          "start": 1074632668,
+          "size_bytes": 14,
+          "sha256": "48fef825b9d1c2026aa299e6edca29facfc61e04a717d4526cd34f8ed21e0d97"
+        }
+      ],
+      "validation": "reviewed original instructions, concrete application wiring and complete SDK link; no direct original comparison for this wrapper",
+      "original_instruction_count": 5
+    },
+    {
+      "name": "Hardware::fans_ready",
+      "entry": 1075093300,
+      "ranges": [
+        {
+          "start": 1075093300,
+          "size_bytes": 28,
+          "sha256": "d5fef378dbaef131871de927f139efa793a74b4f2b98abf3da4794ad200b4fbc"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "Application::request_program",
+      "entry": 1075093420,
+      "ranges": [
+        {
+          "start": 1075093420,
+          "size_bytes": 18,
+          "sha256": "640162558fbbb876b4557dbb1b86dd3490f723784d12bfa4fa06974b09a40a79"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 7
+    },
+    {
+      "name": "string_equal non-null loop",
+      "entry": 1075093488,
+      "ranges": [
+        {
+          "start": 1075093488,
+          "size_bytes": 36,
+          "sha256": "b66a169da87010b24544886b9b42093ee5d24976e1e18e2d9ba32680a4c1aff2"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 14
+    },
+    {
+      "name": "string_starts_with non-null loop",
+      "entry": 1075093524,
+      "ranges": [
+        {
+          "start": 1075093524,
+          "size_bytes": 33,
+          "sha256": "9a38babb399996297370b78e9f268567503ee7f3da4958ef692814627b4aabb1"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "find_character",
+      "entry": 1075093588,
+      "ranges": [
+        {
+          "start": 1075093588,
+          "size_bytes": 23,
+          "sha256": "6e32a7cb55b8c5c79013ad3580e00fc1e267875bde2efffb25c6123c74f0c286"
+        },
+        {
+          "start": 1075093612,
+          "size_bytes": 8,
+          "sha256": "e4f3da36bd4c167f45006ee1107cc5019e054479f6f2af433b289a2839f15d35"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 13
+    },
+    {
+      "name": "FanBank::second_enabled",
+      "entry": 1075093620,
+      "ranges": [
+        {
+          "start": 1075093620,
+          "size_bytes": 16,
+          "sha256": "7c69d239a80bf2e0eff8f8c2ae47541b1a8daca55f1f57023f9f894ecbc0638c"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 6
+    },
+    {
+      "name": "SensorMetrics::sampling_threshold_met",
+      "entry": 1075093636,
+      "ranges": [
+        {
+          "start": 1075093636,
+          "size_bytes": 26,
+          "sha256": "11d96bf4219de9ce31bf56557e35aab563303e56060185e9739c7b306cdbb05b"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 11
+    },
+    {
+      "name": "safe_to_resume_pump",
+      "entry": 1075093664,
+      "ranges": [
+        {
+          "start": 1075093664,
+          "size_bytes": 46,
+          "sha256": "6782b2bdf86f7d1e9ce0fe7cfbe82613ddeac0713688b239b523e617fcdadef9"
+        }
+      ],
+      "validation": "original instruction comparisons",
+      "original_instruction_count": 17
+    }
+  ],
+  "files": {
+    "src/core.cpp": "c46ff14fbb449f52a3711ced487a7f7c1d3d5b34ff250609230736360c9b9f56",
+    "include/picostill/core.hpp": "d19983e75abfba118a7b18a0b6b8f37711fc5f86f6c0072ec6f358e90399542a",
+    "tools/ghidra/PicoStillExecution.java": "4b412555ab4bfe93bbc7d76e09c1e04f08eebb6a15110445df2f4e2c82d02d6c",
+    "tools/ghidra/EmulatePicoStillCore.java": "d419fbc3742b06a5d03393985f0f8b421562621293cc7a147ecc1dc68970ddd9",
+    "tools/core_cases.py": "34da2dd51d943c698d572e5b66527228105b257627fcec32d2dae5b160848d3a",
+    "tests/fixtures/core-inputs.json": "58e3d39e4ac0e3ed7d3e3d5886d9785a1bb8cecaccce4d9748d1dd715fa672f9",
+    "tests/fixtures/core-original.json": "aa934433929a45e80ac50ffe555f8fd92bf14c5a0cf63b112c1ce4d9f6c36568",
+    "src/hardware.cpp": "0d52963890edd5c750d1ce656b57ad85f517743b6e696d5de248cccfe6b4132f",
+    "src/animations.cpp": "9d2dfa182c747045da9631118d8e9022ea5d11d3fc90f2bdd28449d11b07c79a",
+    "include/picostill/hardware.hpp": "5cc48d3c3c148b624c1c022198c62851877f6db669eb1a18f9f0bf882d361e75",
+    "tools/hardware_cases.py": "786a90269360ca75117994bc62d5b2ec3a58840d4c5b3dd569f56c5718447b76",
+    "tools/recover_animations.py": "739d8ddf9af65843224fca96792bde47b6f2acdc5377da3f677d00a8161153b4",
+    "tools/ghidra/EmulatePicoStillHardware.java": "23259d04e4aea8f27aaef2ede51c60751361ec5bf78fbdfd01c6559642d82490",
+    "tests/fixtures/hardware-inputs.json.gz": "88b2364971cac637c0a9477097e2d0f5ace496ed8b2e9ed45550409b68eb2279",
+    "tests/fixtures/hardware-original.json.gz": "185f70d1155b57f8deb1f843554a3d27ad6257ede65cc47b81d7a415841abf6d",
+    "src/sensors.cpp": "2e6fbd24b1ac583c761d0d289310a68f74f77b70378dfdfbf84a4cd9a7d41be8",
+    "include/picostill/sensors.hpp": "503d8f8696582803a9c435e8fe88646cd6ce66553ee9a7417b380abde23b8dbc",
+    "tools/sensor_cases.py": "3f44a47e208bc860561706e3f3ac788302bf7857ea8aba732fa8eb5f59d21767",
+    "tools/ghidra/EmulatePicoStillSensors.java": "1610dc71a69d66502a1bc53291820d8564fce520d869aa412dd8d8c10acda5d4",
+    "tests/fixtures/sensors-inputs.json.gz": "8f1c1e3fd19fa0749ccfb83c8d243d97599050720f403d52400cfdb23d93980a",
+    "tests/fixtures/sensors-original.json.gz": "2d76e6fdc72634198c918c3c3bfd324e780978e8e4b3ff02bf89acca90e5a1cf",
+    "platform/esp32/arduino_ports.hpp": "dadbf98a61f72e422ff9bff7233b150a5b14160eafa68ee6dac22b797a9f73cd",
+    "platform/esp32/arduino_ports.cpp": "2ed0280f5ee6f707c1352ee6a3b2156209a622c9c050d7dd087a74745ae10d7a",
+    "src/controller.cpp": "1c8e0a74696fd69959eb26dcaf271ebb52e947a36ed5cd29b5d7e55cb2bc64b4",
+    "include/picostill/controller.hpp": "cba826b9d540a8a94d76139c448bb8d606e9c6726eda1e815ed65ab0b98d8e80",
+    "tools/controller_cases.py": "71c9af144cb8cb7f84ed7891e7a5e9c9b88faa94d46d91ed3d1b5a9a1f0c0a8d",
+    "tools/ghidra/EmulatePicoStillController.java": "bfcd43f1ef1ab155e2d99ef8c9d4543d9760243bb5989f1eb2f046a700720ca2",
+    "tests/fixtures/controller-inputs.json.gz": "ef94455d287c5aaa6ebe00e6829b5b43a2d6fc61732825f0a06dea7afb6d4112",
+    "tests/fixtures/controller-original.json.gz": "e0e5029f551960c2ea164eb133fea0eb9da92f0ce6be7e88b0b5f8ac22b2cdf8",
+    "src/application.cpp": "695a26db58c8f386a3bdae39c6da5a5b7476654b04ee5b010acbc6145c90ce44",
+    "include/picostill/application.hpp": "9a37ec6ec9ba18c7314bc9071d2bdbad904b61596a86ff8dc17cc9c7a04c6c70",
+    "tools/application_cases.py": "a9f9a753cc63ca932271279a185e99d085b8e993bb6b3ade53f2e4e88e10631a",
+    "tools/ghidra/EmulatePicoStillApplication.java": "f6a087dd3ed073e2aaffc0525e47d9aad8bc79794de97fa5298b0f00881e7bd6",
+    "tests/fixtures/application-inputs.json.gz": "0f2a875ce2eaa6e37c5f705c72ee841248962347a17350ec79db387b1cad56c2",
+    "tests/fixtures/application-original.json.gz": "a9f7ccb70817201af4ac9320e930d5291f31d99a0c74380c3560c9091aeb6f2d",
+    "tests/application_bridge.cpp": "c387d0c46e38518e721dc1a2c4d0c4652cd7bf7886a123daf1447b52a29833cb",
+    "tests/controller_bridge.cpp": "2bad14952990e0ce5550f15cf79a4ff41a23baa46d58af6a37c62a3fb85c745d",
+    "tests/test_application.py": "8afe5c2dbd24460f38e1c2f2dbe43de6e1f0cb0c085542aa2259b65dfe09b006",
+    "src/storage.cpp": "fefe0da285f695cf398881011c38a71f6f6240c647f30f4b18ccc695f1373dee",
+    "include/picostill/storage.hpp": "329b6dd02e0d02b1eeb5f6643165455a9ecd1bb226fb7dac34c947d62807256d",
+    "platform/esp32/nvs_ports.cpp": "f26b2daa5cec68dc7bc00ed923a7389028d7f928e8c1ef3cc358780a8a523823",
+    "platform/esp32/nvs_ports.hpp": "e04e7dc1ae8453dd920fbad22984b94e0104214326709068eea01e0f6fa0a961",
+    "tools/storage_cases.py": "c8d376ec6997e0283848e27c1dc3bf6f8e503840fe8c7084cba96bf385525656",
+    "tools/ghidra/EmulatePicoStillStorage.java": "f443ffaf310a45151cbf33fd976a0f5266c22c8a9421b0859d667ccfb8636c51",
+    "tests/fixtures/storage-inputs.json.gz": "2e6b965f7882ffe26337f8c2e4f3601578bd0a71ead205c9229d01b34f4673fb",
+    "tests/fixtures/storage-original.json.gz": "ffe6622a86a5d054d42f70f94c21f0a1a67c3377701fe841a4e500c0a077e075",
+    "tests/storage_bridge.cpp": "158295cb95f0b5fb71ae8d8ce42958757beb4a4f9ccb1b8e0dca78dbb5e3c73a",
+    "tests/test_storage.py": "3eff2724dd1bbb678cb298ddec2debd35f8c321ae84c681784eb2b0a71a4d176",
+    "src/wifi.cpp": "3b0590ca95f72db2b57e9418c1f164b9c25442ec03b1e18aeea7981878501194",
+    "include/picostill/wifi.hpp": "ce8b250609812f1973a83316f1d9a88aa563c46d37adb57300685a1eaddd74d6",
+    "platform/esp32/wifi_ports.cpp": "b8ffe040e99b8bf4988503cd1cedc0884e6e1b09c6f69f2dee45ddde7fe9f327",
+    "platform/esp32/wifi_ports.hpp": "2c54861e660129679b246c9a639fb3780f176ad946953c52ed33e32590497a9d",
+    "tools/wifi_cases.py": "6bad635fc37fde98ee44bf8d84f9133c86eb86e9e8911557705380448c42046f",
+    "tools/ghidra/EmulatePicoStillWifi.java": "4d64234e9182fcbde7f88e787b0e48e28c7cdd9e51a1a236eae83592ab6f87f9",
+    "tests/fixtures/wifi-inputs.json.gz": "d10ab6ea391727e789deacf6486376b156951ad4b4d2a25021d7d33c21151189",
+    "tests/fixtures/wifi-original.json.gz": "ee5012b61d659a0b8f347bec73a147759fbbe99fd0c8be0e78c7ac66613a9ef4",
+    "tests/wifi_bridge.cpp": "3196ed2a0516626b82356652d3d51d3583d379129eea33410eebd013d8df0322",
+    "tests/test_wifi.py": "9dd364d3fd8a54c6d0d5e447102cbe58ea1e8f2c411707e27b4ea3ab3d2eff44",
+    "src/http.cpp": "2d6e3bfd127576052a738e562f1a1d1cbf32aaae9c8ee25c77cb9ab905e83d75",
+    "include/picostill/http.hpp": "104af08cb660c4f589e7596142547fbbb8686ed0a53a56632dfbf9de5bbb6851",
+    "platform/esp32/http_ports.cpp": "4da296947ab370509890775c97ac5f79377d2a3260cf9b6b12b345a730d33fa6",
+    "platform/esp32/http_ports.hpp": "45036cfe2bde1c099ab6f5a44f633c84905c9b05407d86361770c51416fc6df5",
+    "tools/http_cases.py": "9117d558574a42ef1943eb9b59fddb79c86cd3d04f5445f2d306654a3e1ff6d3",
+    "tools/ghidra/EmulatePicoStillHttp.java": "82dc65e3a2a44752c49ab89fce8205b67d4e49b396f237462d7a14d1043a12e2",
+    "tests/fixtures/http-inputs.json.gz": "77af600568bbd6c33444fd27f7af2ff1362157088e724bba4222e4325184107c",
+    "tests/fixtures/http-original.json.gz": "04f4d563226262872358a1feb339c400bfd738711e4aa8bbf3bc4856fddbf7b0",
+    "tests/http_bridge.cpp": "f56feff456901e3772831ccad1847a733a09524ecd29aecc042a346568b79fe6",
+    "tests/test_http.py": "981f68f01a05d1057797dd5925f0446d905d82345fec3469c587f73b71ecb130",
+    "src/http_server.cpp": "116352508ff8220f35b89f1884e16701f74482db770428d0a31e61eadc5edb51",
+    "include/picostill/http_server.hpp": "d90f01db27c60e2a6586271cc9fbb6c030a9726c9e7a71752898b7cfd31b84d7",
+    "src/web_data.cpp": "406f2910a485e6512093c8ef82eee571f44de6c6def4db169cd3e22337eb48c3",
+    "src/web_wifi.cpp": "a3d93c6100b6226ed8cff5fdaa79a7dde7c425325c7ab800e63469f68c48e2a0",
+    "include/picostill/web_assets.hpp": "a88188af3916074125944c68194173d4e13840e2c47801ada95f40a3a93a7098",
+    "tools/recover_web.py": "de2459b6f9199e9552a47eaf85e8e240fb2ceda720f72063dd85bd1d5211a6ae",
+    "tools/http_server_cases.py": "3604ee95dd3d23d127130b956cf96fbed75b567c722acb6d5cd88f4c34a66d41",
+    "tools/ghidra/EmulatePicoStillHttpServer.java": "d23114b5a8cba8fd930bc74edb5b86b97ee7bf7e19a273b5aa3eeb7e4a815904",
+    "tests/fixtures/http-server-inputs.json.gz": "e6f40968178356c177eadae9270857d2e783d88c52f1c3df7ffbac663b5909c2",
+    "tests/fixtures/http-server-original.json.gz": "c8f24a7884e7bc4bf89c81d5bbfbccdc94758b8034990c9ca7577366bcccb58a",
+    "tests/http_server_bridge.cpp": "86eb126d21337163a1ed885974f3e82f945f85c6e5b2107bebabb5f2f45ff874",
+    "tests/test_http_server.py": "edc17d0544431e0b96d273dcc44d47a95559b1753036a9252c96b44e8cdb31d8",
+    "tools/data_cases.py": "98d7c91ee8107e4878c5d7e331a469903dbae23f2815b1a8fd34f220ab2fb0b2",
+    "tests/data_bridge.cpp": "903c82d947d285c7749ae58d80e8b3cd0d7b0fc3deadfebf295e7b9001d62975",
+    "tests/test_data.py": "1c5cd4a1f24ca73f27e71ec4178d37f9537c315e4325a162dd20fdfe53523e13",
+    "tests/fixtures/data-inputs.json.gz": "02c4a518e201629e5646ac1bc3de975244c5c803d683033177517e0204bd35b9",
+    "tests/fixtures/data-original.json.gz": "8b2b1eeddfee5aaea7dc4511077aeb33cc75671fd3910227328e9da443101fa3",
+    "tools/backend_cases.py": "02e189b1cbdb809e8c9bbd63e0a85e2bf7d416cb7f8a79388da233a94c7a1b4f",
+    "tests/backend_bridge.cpp": "47136d7896c239b0db1456d64590c7168e6d158120cdc7961452c66b85c8c5e7",
+    "tests/test_backend.py": "07d80077603b24ed41826bde6fe5d5b0e7aafac5e5891f8a488102bef856c26c",
+    "tests/fixtures/backend-inputs.json.gz": "41c939f4664c23cf611ff691fe0205aa567e3f20806b8acca413e4805efb6a2f",
+    "tests/fixtures/backend-original.json.gz": "b84a2ad9032c65f3f57f449608fcea064cec4487bfed596e1dd690111ce96225",
+    "tools/update_cases.py": "98a0acf2b40107274162e42578d016d10e9e711c89413bdffb2a8acb891001a2",
+    "tests/update_bridge.cpp": "6aa1e882ce23448611c92c3e1d14ff1c98897f55665527d64799bddf157d015e",
+    "tests/test_update.py": "e14e0b5cdec3a8d0e30510cf336a4875a860e2c7ff831248e026228b142bac83",
+    "tests/fixtures/update-inputs.json.gz": "1e3caddf8a0b1b2706ad80226c190f37fa212a60945a599aa8f933e08471f53d",
+    "tests/fixtures/update-original.json.gz": "ba0cb629f4b1af879ef8e9957e5af3a54f985fc20155cdf7a1593b5c02c5a81c",
+    "tools/machine_cases.py": "8f876156371ea03386909d2e4f71e2710f23a60019e64416f586d3b05ed8c48c",
+    "tests/machine_bridge.cpp": "16dd6aaf79e5fe22e7980e1030ecc89a89e082f2ebb7d902b0b9d8c0eebc5234",
+    "tests/test_machine.py": "88120611775bef662c9b05738753deb01995ac2bf131914a5adb7e12c4e48a0d",
+    "tests/fixtures/machine-inputs.json.gz": "09ef4a3a0c34690653d4fca1162ea3a60171da94bf61e3a4b4bae7d95e41df58",
+    "tests/fixtures/machine-original.json.gz": "a3b8c529d45393216fd6a901116148704dec38cfe1c4b375f6bea767cceac1fb",
+    "tools/ghidra/EmulatePicoStillData.java": "69a516146713a8f041f266e0f473f9b47e3c49e58ea20b5f64df892f7b4cff99",
+    "tools/ghidra/EmulatePicoStillBackend.java": "97a6ee4ff92f7aee0772452b15fc75c10ad081a3c831fe1a8a8cc1fac17e93c5",
+    "tools/ghidra/EmulatePicoStillUpdate.java": "dba3f6e9d48dc6ef5200242292f7888bf1e9acd8892f552e6d01256b3a695aae",
+    "tools/ghidra/EmulatePicoStillMachine.java": "3781f9be146aed2c7ba9ebbdb2f2bee24ab50b2cb6642ab7e1c2d32f416de7fb",
+    "src/data.cpp": "81b5e81a11727b7e3377a61e15b2abe83f211b8775841c1ae05a38770260db6b",
+    "include/picostill/data.hpp": "249898462dbaad799a0bfc975000c033186ff28f9197c0c067a11eed3cafaa86",
+    "src/device.cpp": "b908e46624a3ea85d48a72a3b74cac33533b989ea91860d2d0bf043a70e963cc",
+    "include/picostill/device.hpp": "4753a40e3462da23e6b539461ac5048533f5b1262ca1873217602bb22a32d77a",
+    "src/reports.cpp": "a8a39c376b0d0ce8240d10982f370d239c3a0ed3e619441a3c213be4802a02a8",
+    "include/picostill/reports.hpp": "96639342750acda7c6aef7169a1ab4b9e06993320f31fbd75933d3a50b7f7c60",
+    "src/backend.cpp": "cc4e93d2fbdbda57dc9dede2b81735faa3e719d4b412c6c9be6c9c2c7b6eec2e",
+    "include/picostill/backend.hpp": "960ca19371c27c405d10e8fefdfd8e41aa2d35cf44298e7e570e4b8019c3171e",
+    "src/update.cpp": "e464e9bbd8b6c476669c41205e5c34df77aeb59128bd4f8e3a4cc174d2708b63",
+    "include/picostill/update.hpp": "b55df241742eb955e76a24d59762512b2ccb62a2450ed343d70e2423d4278304",
+    "src/machine.cpp": "0a9bbe3281855d395f32a4eb41678881019810cea35b481c7b3e64f8be1022a7",
+    "include/picostill/machine.hpp": "d81a67a047fda765c717a45d952d27e48067daf9beff717536df986181bcd133",
+    "src/self_tests.cpp": "e632023bca89e3952280546101d35248047ce418fc84bfa7f030776c1d2578d8",
+    "include/picostill/transport.hpp": "6a325848db01808d7126846acc92f25a94ab988a2ffdba7051697d246cb2911d",
+    "platform/esp32/application_main.cpp": "d3964188ddb4faf7b13945e1b72745308061821c7bea56d8e20b7853284516e7",
+    "platform/esp32/outbound_ports.hpp": "2af91099ebc07a95b78164f762e6c1f1fa3fb21ee1a87b5e27798320c96f610e",
+    "platform/esp32/outbound_ports.cpp": "0e4dedb68aad8b9d94b844cb1d38efcaa12aedc73f92104c5f14020781bd8af6",
+    "platform/esp32/system_ports.hpp": "952972eaed8f9645cc7535be29ccb5d1edb5b5b0407ceb91fc721ea0ad4fa478",
+    "platform/esp32/system_ports.cpp": "5deec95649c4a555cb7939455eb99f48c27c5f10ba31e0f82d082dbee7570c7d",
+    "tools/build_esp32_objects.py": "f3124d876248c963fa62bcbff93654ab1176021cb5bb405eaef1f7165ca7d54d",
+    "tools/link_esp32_application.py": "f71e5b757b5e026d8b9f21b57416075fa7823af3e7af0604820f1c907260b7cb",
+    "analysis/esp32-application-link.json": "1481a294b6564266a51141ddcb6ed4318812b21e02129e51b02dd16639b57983"
+  },
+  "scope": "Recovered complete PicoStill application composition: hardware/controller, application states, NVS credentials, identity, Wi-Fi, HTTP routes/browser, backend requests, updater, console and boot. Original instruction comparisons cover the listed entries with explicit boundaries; wrapper/self-test limits are recorded per entry. Concrete ESP32 adapters and original SDK main link as a complete ELF. No physical installation, board or flash-layout qualification.",
+  "application_reconstruction_implemented": true,
+  "reconstruction_complete": false,
+  "complete_application_linked": true,
+  "hardware_tested": false,
+  "outstanding": [
+    "Modified authenticated v1 API, standalone browser and Hub integration",
+    "Direct original comparison of destructive system wrappers and embedded self-test runner",
+    "Physical flashing/boot/actuator and recovery qualification"
+  ]
+}

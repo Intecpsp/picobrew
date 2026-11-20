@@ -1,6 +1,7 @@
 // Original Z119 LIS3DHTR and BMP280 sensor services.
 #pragma once
 #include "zseries/sensor_acquisition.hpp"
+#include "zseries/console.hpp"
 #include <array>
 #include <cstdint>
 
@@ -13,7 +14,8 @@ constexpr std::uint8_t OriginalBmp280Address = 0x76;
 // values, as the original did; these bits make that result visible to Core.
 enum AuxiliaryStatus : std::uint32_t {
     AuxiliaryOk = 0, AuxiliaryMissingService = 1, AuxiliaryTransmitFailure = 2,
-    AuxiliaryShortReply = 4, AuxiliaryWrongId = 8, AuxiliaryZeroDivisor = 16
+    AuxiliaryShortReply = 4, AuxiliaryWrongId = 8, AuxiliaryZeroDivisor = 16,
+    AuxiliaryDiagnosticFailure = 32
 };
 
 struct AuxiliarySensors {
@@ -49,15 +51,17 @@ struct Bmp280 {
 std::uint32_t read_auxiliary_register(std::uint8_t address, std::uint8_t reg,
                                      std::uint8_t* destination, std::uint8_t count,
                                      const I2cTransport&) noexcept;
-std::uint32_t lis3dhtr_setup(Lis3dhtr&, const I2cTransport&) noexcept;
+// Production composition supplies the real returning diagnostic helper.
+// A null sink retains the data-only API used by earlier calculation clients.
+std::uint32_t lis3dhtr_setup(Lis3dhtr&, const I2cTransport&, const ConsoleServices* = nullptr) noexcept;
 std::uint32_t lis3dhtr_tick(Lis3dhtr&, AuxiliarySensors&, const I2cTransport&) noexcept;
 std::uint32_t bmp280_read_calibration(Bmp280&, const I2cTransport&) noexcept;
-std::uint32_t bmp280_setup(Bmp280&, const I2cTransport&) noexcept;
+std::uint32_t bmp280_setup(Bmp280&, const I2cTransport&, const ConsoleServices* = nullptr) noexcept;
 
 // Original 0x400d91ac reuses byte[0] >> 4 as the low nibble, ignoring byte[2].
 // This OEM defect is preserved; corrected firmware must change it explicitly.
 std::uint32_t original_bmp280_raw(const std::uint8_t bytes[3]) noexcept;
 double bmp280_compensate(Bmp280&, bool& zero_divisor) noexcept;
 std::uint32_t bmp280_tick(Bmp280&, AuxiliarySensors&, HeaterSensors&,
-                         const I2cTransport&, const AcquisitionClock&) noexcept;
+                         const I2cTransport&, const AcquisitionClock&, const ConsoleServices* = nullptr) noexcept;
 }} // namespace zseries::oem

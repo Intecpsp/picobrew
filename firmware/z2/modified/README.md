@@ -1,5 +1,10 @@
-# PicoBrew Z2: custom firmware
+# PicoBrew Z2: Standalone firmware
 
-This directory reserves the machine-specific source location. No custom firmware
-source has been recovered or implemented for this target in this repository yet.
-OEM archive availability does not establish build or hardware support.
+The shared Z standalone source, common API/browser, local recipe controller and
+reference image/package build are implemented under
+[`z-series/modified`](../../z-series/modified/README.md).
+
+The preserved Z images do not establish which physical Z2 revisions use
+that application or its flash layout. This directory reserves the model-specific
+location until the original device identity, wiring and layout are established.
+The generic `z-series` build is not relabeled as a qualified Z2 image.

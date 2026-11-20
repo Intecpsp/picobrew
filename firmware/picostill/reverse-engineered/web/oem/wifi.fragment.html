@@ -1,0 +1,93 @@
+<!-- HEADER -->
+
+<h1 id="product">PicoStill</h1>
+<table id="version" border="0" align="center"><tr><th>Firmware Version: </th><td id=versionNumber>0.0.x</td></tr></table>
+
+<!-- NETWORK INFO -->
+<div id="network-info">
+<h3></h3>  <!-- empty header for line -->
+
+<table id="router-ip-table"><tbody>
+  <tr>
+    <th><label>Network:</label></th>
+    <td id="network-ssid"></td>
+  </tr>
+  <tr>
+    <th><label>PicoStill Ip:</label></th>
+    <td id="router-ip"></td>
+  </tr>
+  <tr>
+    <th hidden><label>Copy IP:</label></th> <!-- Make not hidden when figure out the copy method -->
+    <td class="stillButton" onclick="copyToClipboard('#router-ip')" hidden>Copy IP to Clipboard</td>
+  </tr>
+  <tr id="need-connect-to-wifi">
+    <th><label>Connect to Wifi:</label></th>
+    <td id="connect-btn" class="stillButton" onclick="sendConnectToLan()">Connect</td>
+  </tr>
+
+</tbody></table>
+
+<p id="connectingToLanWarning" hidden>PicoStill is disconnecting from your browser. You will see it disappear from your available wifi networks. Please reconnect to your home network and go to the provided IP address.</p>
+
+</div>  <!-- network-info -->
+
+<!-- NETWORK SETUP -->
+<div id="network-setup">
+<h3 id="wifiSetupHeader">Wi-Fi Setup</h3>
+<p>
+  Now that you are connected to your PicoStill, enter your home Wi-Fi network name (SSID)
+  and password in the fields below to allow your PicoStill to connect to your network.
+</p>
+
+<h3 id="usageAssuranceHeader">Why does your PicoStill need Wi-Fi connectivity?</h3>
+
+<p id="usageAssurance">
+PicoStill uses Wi-Fi for registration, updates, crash reports, and to provide you with control access.  PicoStill will NOT send or share your session data.
+</p>
+
+<iframe width="0" height="0" border="0" name="ssidFormPostFrame" id="ssidFormPostFrame" hidden></iframe>
+
+<form method="post" action="configure" target="ssidFormPostFrame">
+<table><tbody>
+  <tr>
+    <td><label>SSID</label></td>
+    <td><select id="ssid" name="ssid">
+    </select></td>
+  </tr>
+  <tr>
+    <td><label>Password</label></td>
+    <td><input type="password" id="pass" name="pass" placeholder="Password"></td>
+  </tr>
+  <tr>
+    <td colspan="2"><label><input type="checkbox" id="enable-show" onclick="showPassChecked()">Show Password</label></td>
+  </tr>
+</tbody></table>
+<button class="stillButton" id="submit" type="submit" onclick="showNoConfirmationWarning()">Submit</button>
+</form>
+<p id="noConfirmationWarning" hidden>PicoStill will disconnect from your browser to confirm your Wi-Fi credentials. Your PicoStill's LED will show a solid green light if credentials are correct. It will blink red then yellow if they were incorrect. This may take a few minutes.</p>
+
+</div>  <!-- network-setup -->
+
+<!-- FACTORY RESET -->
+<div id="factory-reset">
+<h3>Factory Reset</h3>
+<p>Factory resetting your PicoStill will delete your wifi credentials and cancel any ongoing session. If you are sure you want to reset, type "reset" in the box below (case does not matter) and click Submit.</p>
+
+<table>
+    <tr><td>
+        <input type="text" id="reset-input" placeholder="Type here">
+    </td></tr>
+    <tr><td>
+        <button id="reset-btn" class="stillButton" onclick="factoryReset()">Submit</button>
+    </td></tr>
+</table>
+
+<p id="resetting-text" hidden>Your PicoStill is being reset to factory settings. It will restart in a moment.</p>
+
+</div>  <!-- factory-reset -->
+
+<!-- links -->
+<div id="page-links" hidden>
+<h3></h3>
+<a href="data-page">Go to Data Page</a>
+</div> <!-- links -->

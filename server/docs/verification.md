@@ -1,5 +1,53 @@
 # Verification record
 
+## Interrupted-brew recovery — local checks, 20 November 2026
+
+- Authenticated device/server Go tests passed, including bounded optional recovery
+  metadata, preparation checkpoints, explicit resume confirmation and a discard
+  request with no extra device arguments.
+- All 129 frontend tests in 19 suites passed. TypeScript and the production build
+  passed. The deterministic bundle contains 228 files, 2,696,433 ZIP bytes and
+  SHA-256 `1cb5688235c6f0a3544f3daa3fbacf65c277f028ec6216323b38b09643103252`.
+- Six Chromium family cases passed at 1280/390-pixel widths. The Z cases exercise
+  preparation recovery, cancellation without a command, confirmed resume, invalid
+  checkpoint discard when `available:false`, inhibited new programs and mobile
+  layout. Accessory controls and history remain covered by the same suite.
+- The subsequent cadence integration passed the affected Go device/server suites
+  and TypeScript/production bundle checks. It preserves per-session sampling
+  intervals in imports and JSON exports, rejects invalid bounds and invalidates
+  a cached prefix when that metadata changes. The shared device browser separately
+  passed all six real-browser cases including an older-session JSON download
+  whose cadence differs from the newest inventory entry.
+
+The Hub uses its embedded website and ordinary authenticated/idempotent command
+path. These local fixtures do not start or contact a physical brewer and do not
+establish physical recovery behavior or a remote CI result.
+
+## Generic Z and accessory integration — local checks, 20 November 2026
+
+- Go 1.26.0: all package tests passed. The affected device, server and recipe
+  packages also passed the race detector.
+- Frontend: all 129 tests in 19 suites passed; TypeScript and the production
+  bundle build passed. The deterministic bundle checker verified 228 files,
+  2,695,907 ZIP bytes and SHA-256
+  `1957b1433fc280c7fd5ee968b726958ff67648ccb8763d0c38adcd8309532dd5`.
+- Chrome for Testing Headless Shell 158.0.8127.36: twelve browser cases passed.
+  Six exercise PicoFerm, PicoStill and generic Z at 1280/390-pixel widths, two
+  preserve machine identity/receiver behavior, and four preserve both Pico C
+  display variants and package workflows at desktop/mobile widths.
+- The family cases exercise calibration cancellation and confirmation, explicit
+  false pump settings, fan channel/level, sampling interval, grayscale pixels,
+  advertised Z commands, per-session history fields, unit labels and the absence
+  of recipe/front-panel requests for accessories.
+- The Go-only startup fixture built an isolated server without firmware or
+  frontend source and without Node/npm on PATH. Initial startup and restart
+  served the embedded website, drained an accepted write on terminal interrupt,
+  closed the listener/stream and reopened the same persisted recipe.
+
+These are local protocol, browser and executable checks with fixtures. No
+appliance was contacted or flashed. They do not establish physical qualification
+or a successful remote CI run. See [family controls](family-devices.md).
+
 ## Independent server layout — local checks
 
 The Hub lives in `jeffreydwalter/picobrew-pico-pro-firmware/server` and uses

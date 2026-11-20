@@ -6,12 +6,19 @@ independent in-memory simulator. A Z, Zymatic or Pico C **simulator** does not
 establish support for controlling that model's stock firmware. There is no stock
 PicoBrew cloud-protocol adapter in this package.
 
-## Physical Pico S / Pro connection
+## Physical standalone connection
 
 `NewPico(baseURL, key)` accepts an explicitly configured HTTP or HTTPS endpoint
 and the device's 64-character hexadecimal API key. Discovery requires API version
 1 and `mode: "standalone"`; commands must also be advertised by that device.
 Firmware semantic versions are reported independently of the API version.
+
+The adapter accepts authenticated C/S/Pro, generic `z-series`, `picostill` and
+`picoferm` identities. It verifies matching model/family and device UID rather
+than treating an accessory as a brewer. Nested capability flags override legacy
+defaults; the original C/S/Pro discovery shape remains supported. Command
+descriptors supply allowed/required fields, and settings advertise their own
+field subset. Explicit false and zero arguments are preserved.
 
 The endpoint must be a host with an optional port, without a username, password,
 path, query or fragment. Private LAN addresses are supported. Loopback,
@@ -34,7 +41,7 @@ server certificate through the normal system trust store.
 | --- | --- |
 | Discover | `GET /api/v1`; API version, capacities, command support |
 | Status | `GET /api/v1/status`; temperatures remain Fahrenheit regardless of display preference |
-| Display | `GET /api/v1/display`; 128 × 64, 1,024 framebuffer bytes encoded as 2,048 hexadecimal characters |
+| Display | `GET /api/v1/display`; legacy mono geometry or revision-pinned Z grayscale pages, assembled under the same request lock |
 | Recipes | `GET /api/v1/recipes`, then each full recipe; this happens only on an explicit inventory request |
 | PutRecipe | `PUT /api/v1/recipes/{id}`, followed by exact GET readback under the same serialization lock |
 | DeleteRecipe | `DELETE /api/v1/recipes/{id}`; succeeds on 204, with the firmware enforcing idle-state rules |
@@ -47,13 +54,29 @@ server certificate through the normal system trust store.
 `PutRecipe` returning nil means readback matched the complete intended native
 recipe, including its ID. It does not start a brew. A successful command means the
 firmware accepted the command; preparation prompts and physical interlocks still
-apply. Dedicated pause/resume commands and arbitrary actuator or temperature
-overrides are not implemented by this firmware. The stop command latches heating
-and pumping off; clearing that latch does not resume the interrupted operation.
+apply. Dedicated pause/resume and accessory actuator controls are available only
+when explicitly advertised. Stop-latch behavior belongs to the device; clearing
+a supported latch does not resume an interrupted operation.
+
+Optional `status.recovery` metadata preserves an interrupted brew's recipe,
+step, saved remaining time and elapsed time. Absent/null metadata grants no
+recovery feature. Preparation checkpoints may use step -1 and an empty step name.
+Invalid checkpoints stay visible for discard even when `available:false`.
+Metadata is bounded before it reaches the Hub UI. Only an advertised
+`resume-interrupted` command with `confirm:true` can request resumption;
+`discard-interrupted` sends no extra device arguments. The Hub displays the
+water/vessel/filter review and the possible 30-second progress lag, and never
+resumes on discovery, status refresh or history import. Both actions use the
+existing explicit confirmation and command-receipt path.
 
 For display rendering, raw pixel `(x, y)` is bit `y & 7` of byte
 `x + (y / 8) * 128`. Rotate the decoded framebuffer 180 degrees for the upright
-front-panel view. This transformation belongs to the presentation layer.
+front-panel view unless an explicit rotation is supplied. This transformation
+belongs to the presentation layer. Z uses row-major four-bit grayscale, with
+even x in the high nibble and odd x in the low nibble; its 4,096 bytes arrive in
+four pages pinned to one revision. A display revision conflict retries the
+whole frame at most twice. No malformed or partial frame is returned. Devices
+without `front_panel` do not receive display requests.
 
 ### Mutation outcomes
 
@@ -72,10 +95,12 @@ The physical recorder retains up to eight brew entries with a shared capacity of
 `PersistedRecordCount` describes the committed subset. History IDs are numeric
 32-bit IDs and must not be confused with the string `Status.SessionID`.
 
-Pages contain at most 32 rows and 11 fixed fields: elapsed milliseconds; wort,
+Pages contain at most 32 rows and start with 11 fixed fields: elapsed milliseconds; wort,
 thermoblock and target temperatures; step seconds; phase; controller status;
 compartment; current step; flags; and device state. Unavailable temperatures are
-null. The adapter validates page identity, continuation, field counts, numeric
+null. New firmware appends normalized readings and named sensor/actuator fields.
+Each page carries that session's stored field names and metadata; the current
+catalogue cannot overwrite an older session's schema. The adapter validates page identity, continuation, field counts, numeric
 bounds and ordering within the page. Raw state codes are preserved. It does not
 invent wall-clock timestamps: the appliance's stored records provide elapsed
 time, not a trustworthy brew start time.
@@ -83,7 +108,10 @@ time, not a trustworthy brew start time.
 The recorder can change while pages are read. A removed history ID produces 409;
 the caller must compare metadata before and after a download, retain partial
 data honestly and retry a fresh snapshot later. The hub's history synchronizer
-implements that policy. Old brews can disappear before reconnection, and a
+implements that policy and saves the schema with the archived session. A fully
+verified append-only import can reuse its existing prefix; a changed ring origin
+forces a fresh read. Every named channel survives JSON and CSV export. Old
+brews can disappear before reconnection, and a
 restart can lose an uncommitted tail. Already missing samples cannot be recovered
 from this API. Exporting or archiving history does not delete it on the device.
 

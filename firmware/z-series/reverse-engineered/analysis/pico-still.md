@@ -114,3 +114,31 @@ domain. External scan callbacks must provide a terminated SDK-sized SSID.
 These checks cover the controller at the documented boundaries. They do not
 execute live sockets, cloud authorization, Still sensor parsing, radio hardware
 or the complete original application, and do not qualify a physical machine.
+
+## Complete diagnostic continuation
+
+`still-continuation-validation.json` extends the controller evidence to 2,288
+complete OEM executions. The shared client/parser cohort brings the combined
+proof to 6,480 cases, 62 actual original function bodies, 1,866 real returning
+assertions and 4,557 exact diagnostic messages. All service calls, messages,
+state values, final counters and wrapping clocks are compared in order. The
+original assertion helper at `0x400db014` runs its own counter update and the
+explicit SDK delay boundary advances time by 200 ms before execution resumes.
+Mapped OEM bytes and the pinned analysis tools are verified independently.
+
+`PicoStillServices::diagnostics` binds the application's real assertion and log
+callbacks. State changes now preserve the original redundant/invalid-state
+messages, retry diagnostics, scan truncation/list-limit warnings, and ignored
+command/Wi-Fi assertions and messages. A completely empty diagnostic service
+retains the earlier value-only standalone API. A partially bound or failing
+service returns `MissingService` or `ServiceFailure`; it is not treated as a
+successful assertion or log operation. The original out-of-range selection
+pointer arithmetic remains an explicitly rejected input in the portable API.
+
+Reproduce the native comparison with
+`python firmware/z-series/reverse-engineered/tools/validate_still_continuation.py --write-report`.
+The companion `tests/run_still_continuation_emulation.py` regenerates the original
+fixtures from a supplied verified Ghidra project, JDK and Ghidra installation.
+`still-continuation-target-build.json` records compilation of the five affected
+sources with the pinned ESP32 compiler; physical devices and live networks are
+outside this evidence.

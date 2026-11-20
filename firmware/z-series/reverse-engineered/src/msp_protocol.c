@@ -3,7 +3,53 @@
  * function lost the hardware LOOP instruction: all eight iterations below
  * are verified from original instructions at 0x400d200e..0x400d2028. */
 #include "zseries/msp_protocol.h"
+#include <stdio.h>
 #include <string.h>
+
+static int diagnostic_assert(struct z_msp_client *client, uint32_t line,
+                             const char *expression, int guarded_result)
+{
+    const struct z_msp_diagnostics *services = client->diagnostics;
+    if (services == NULL) return guarded_result;
+    if (services->assertion == NULL) return Z_MSP_MISSING_DIAGNOSTIC;
+    return services->assertion(services->context, "Msp.h", line, expression) ?
+        Z_MSP_OK : Z_MSP_DIAGNOSTIC_FAILED;
+}
+
+static int diagnostic_log(struct z_msp_client *client, unsigned level,
+                          const char *tag, const char *file, uint32_t line,
+                          const char *message)
+{
+    const struct z_msp_diagnostics *services = client->diagnostics;
+    if (services == NULL) return Z_MSP_OK;
+    if (services->log == NULL) return Z_MSP_MISSING_DIAGNOSTIC;
+    return services->log(services->context, level, tag, file, line, message) ?
+        Z_MSP_OK : Z_MSP_DIAGNOSTIC_FAILED;
+}
+
+static int trace(struct z_msp_client *client, bool begin, uint32_t line,
+                 const char *name)
+{
+    const struct z_msp_diagnostics *services = client->diagnostics;
+    if (services == NULL) return Z_MSP_OK;
+    if (services->trace == NULL) return Z_MSP_MISSING_DIAGNOSTIC;
+    return services->trace(services->context, begin, "BSL", "Msp.h", line, name) ?
+        Z_MSP_OK : Z_MSP_DIAGNOSTIC_FAILED;
+}
+
+static int trace_end(struct z_msp_client *client, uint32_t line,
+                     const char *name, int result)
+{
+    int closed = trace(client, false, line, name);
+    return closed == Z_MSP_OK ? result : closed;
+}
+
+static int require_boot(struct z_msp_client *client)
+{
+    return client->state->id == Z_MSP_BOOT_RUNNING ? Z_MSP_OK :
+        diagnostic_assert(client, 0x7a, "_mspState.id == MspStateId::BootRunning",
+                          Z_MSP_WRONG_STATE);
+}
 
 static uint32_t read_le32(const uint8_t *bytes)
 {
@@ -179,24 +225,76 @@ static void delay(struct z_msp_client *client, uint32_t milliseconds)
     client->transport.delay_ms(client->transport.context, milliseconds);
 }
 
-static void send_unchecked(struct z_msp_client *client, uint8_t command,
+static int receive_application(struct z_msp_client *client)
+{
+    uint8_t *response = client->response;
+    struct z_msp_state *state = client->state;
+    client->transport.receive(client->transport.context, client->address, response, 9);
+    if (client->diagnostics == NULL) {
+        z_msp_apply_response(state, response);
+        return Z_MSP_OK;
+    }
+    int result;
+    char message[128];
+#define MSP_RESPONSE_LOG(level,tag,file,line,text) do { result = diagnostic_log(client,level,tag,file,line,text); if (result != Z_MSP_OK) return result; } while (false)
+    if (response[0] == 0x51) {
+        MSP_RESPONSE_LOG(0, "MSP", "Msp.h", 0x114, "BOOT appears to be running");
+    } else if (response[0] == 1) {
+        MSP_RESPONSE_LOG(0, "MSP", "Msp.h", 0x116, "APP  appears to be running");
+        state->version_major = response[1];state->version_minor = response[2];
+        (void)snprintf(message, sizeof(message), "APP_VERSION_MAJ = %u", response[1]);
+        MSP_RESPONSE_LOG(0, "MSPA", NULL, 0, message);
+        (void)snprintf(message, sizeof(message), "APP_VERSION_MIN = %u", response[2]);
+        MSP_RESPONSE_LOG(0, "MSPA", NULL, 0, message);
+    } else if (response[0] == 2) {
+        const uint32_t errors = read_le32(response + 5);
+        if (errors != state->errors) {
+            (void)snprintf(message, sizeof(message), "Errors 0x%x", (unsigned)errors);
+            MSP_RESPONSE_LOG(2, "MSP", "Msp.h", 0x126, message);
+        }
+        if (state->last_flags != response[1]) {
+            (void)snprintf(message, sizeof(message), "Pumps/Fans/Use state changed 0x%x -> 0x%x", state->last_flags, response[1]);
+            MSP_RESPONSE_LOG(0, "MSP", "Msp.h", 0x12b, message);
+            if ((state->last_flags & 1) != (response[1] & 1)) {
+                MSP_RESPONSE_LOG(0, "MSPA", NULL, 0, (response[1] & 1) ? "MSP_BARE_PCB = True" : "MSP_BARE_PCB = False");
+            }
+            state->last_flags = response[1];
+        }
+        z_msp_apply_response(state, response);
+    } else if (response[0] != 0) {
+        (void)snprintf(message, sizeof(message), "Ignoring response 0x%x", response[0]);
+        MSP_RESPONSE_LOG(1, "MSP", "Msp.h", 0x13f, message);
+        (void)snprintf(message, sizeof(message), "0x  %02x %02x %02x %02x %02x %02x %02x %02x",
+            response[1], response[2], response[3], response[4], response[5], response[6], response[7], response[8]);
+        MSP_RESPONSE_LOG(1, "MSP", "Msp.h", 0x148, message);
+    }
+#undef MSP_RESPONSE_LOG
+    return Z_MSP_OK;
+}
+
+static int send_unchecked(struct z_msp_client *client, uint8_t command,
                            uint32_t value, unsigned value_bytes)
 {
     uint8_t frame[9];
     size_t count = z_msp_app_frame(frame, sizeof(frame), command, value, value_bytes);
     transmit(client, frame, count);
     delay(client, client->response_delay);
-    client->transport.receive(client->transport.context, client->address, client->response, 9);
-    z_msp_apply_response(client->state, client->response);
+    return receive_application(client);
 }
 
 int z_msp_send(struct z_msp_client *client, uint8_t command, uint32_t value, unsigned value_bytes)
 {
-    int result = z_msp_command_allowed(client->state, command);
-    if (result != Z_MSP_OK) return result;
+    int result;
+    if (client->state->id != Z_MSP_APP_RUNNING) {
+        result = diagnostic_assert(client, 0x70, "_mspState.id == MspStateId::AppRunning", Z_MSP_WRONG_STATE);
+        if (result != Z_MSP_OK) return result;
+    }
+    if (command != Z_MSP_STATE_GET && client->state->moving_valve) {
+        result = diagnostic_assert(client, 0x75, "cmd == COMMAND_STATE_GET || !_mspState.isMovingValve", Z_MSP_VALVE_BUSY);
+        if (result != Z_MSP_OK) return result;
+    }
     if (value_bytes != 0 && value_bytes != 1 && value_bytes != 4) return Z_MSP_INVALID_ARGUMENT;
-    send_unchecked(client, command, value, value_bytes);
-    return Z_MSP_OK;
+    return send_unchecked(client, command, value, value_bytes);
 }
 
 /* 0x400dc1c4 uses a strict unsigned deadline comparison. Rollover behavior is
@@ -213,7 +311,10 @@ int z_msp_poll(struct z_msp_client *client, uint32_t now)
 /* 0x400dc984: mark movement only after the command's response is processed. */
 int z_msp_move_valve(struct z_msp_client *client, uint8_t position)
 {
-    if (position < 1 || position > 9) return Z_MSP_INVALID_POSITION;
+    if (position < 1 || position > 9) {
+        int result = diagnostic_assert(client, 0x340, "IS_VALID_VALVE_POSITION(position)", Z_MSP_INVALID_POSITION);
+        if (result != Z_MSP_OK) return result;
+    }
     int result = z_msp_send(client, (uint8_t)(Z_MSP_VALVE_BASE + position), 0, 0);
     if (result == Z_MSP_OK) client->state->moving_valve = 1;
     return result;
@@ -228,16 +329,26 @@ int z_msp_step_valve(struct z_msp_client *client, bool increment)
 }
 
 /* 0x400d6108 delays before writing the new state ID. */
-static void transition(struct z_msp_client *client, uint32_t id)
+static const char *state_name(uint32_t id)
 {
+    static const char *names[] = {"Unknown", "BootRunning", "AppRunning", "BootloaderError"};
+    return id < 4 ? names[id] : "<MspStateId::INVALID>";
+}
+static int transition(struct z_msp_client *client, uint32_t id)
+{
+    char message[96];
+    (void)snprintf(message, sizeof(message), "TRANSITION = %s -> %s", state_name(client->state->id), state_name(id));
+    int result = diagnostic_log(client, 0, "MSP", NULL, 0, message);
+    if (result != Z_MSP_OK) return result;
     delay(client, client->transition_delay);
     client->state->id = id;
+    return Z_MSP_OK;
 }
 
 int z_msp_switch_to_boot(struct z_msp_client *client)
 {
     int result = z_msp_send(client, Z_MSP_ENTER_BOOT, 0, 0);
-    if (result == Z_MSP_OK) transition(client, Z_MSP_BOOT_RUNNING);
+    if (result == Z_MSP_OK) result = transition(client, Z_MSP_BOOT_RUNNING);
     return result;
 }
 
@@ -257,71 +368,106 @@ int z_msp_bsl_command(struct z_msp_client *client, uint8_t command)
 
 int z_msp_start_app(struct z_msp_client *client)
 {
-    if (client->state->id != Z_MSP_BOOT_RUNNING) return Z_MSP_WRONG_STATE;
-    (void)z_msp_bsl_command(client, Z_MSP_BSL_START_APP);
-    transition(client, Z_MSP_APP_RUNNING);
-    return Z_MSP_OK;
+    int result = require_boot(client);
+    if (result != Z_MSP_OK) return result;
+    result = z_msp_bsl_command(client, Z_MSP_BSL_START_APP);
+    if (result != Z_MSP_OK) {
+        result = diagnostic_assert(client, 0x357, "res == BSL_RES_OK", result);
+        if (result != Z_MSP_OK) return result;
+    }
+    return transition(client, Z_MSP_APP_RUNNING);
 }
 
 int z_msp_get_version(struct z_msp_client *client)
 {
-    /* The OEM warns, but does not assert, when response type is not 1. */
-    return z_msp_send(client, Z_MSP_VERSION_GET, 0, 0);
+    int result = z_msp_send(client, Z_MSP_VERSION_GET, 0, 0);
+    if (result != Z_MSP_OK) return result;
+    return client->response[0] == 1 ? Z_MSP_OK :
+        diagnostic_log(client, 1, "MSP", "Msp.h", 0x365, "Cannot get APP version");
 }
 
 /* 0x400dc630: stop at the first nonzero controller result; no retry. */
 int z_msp_program_segment(struct z_msp_client *client, uint32_t address,
                           const uint8_t *bytes, uint32_t count)
 {
+    int result = trace(client, true, 0xcb, "BSL_programMemorySegment");
+    if (result != Z_MSP_OK) return result;
     while (count != 0) {
         uint8_t frame[24];
         uint32_t chunk = count > 16 ? 16 : count;
         size_t frame_size = z_msp_bsl_program_frame(frame, sizeof(frame), address, bytes, chunk);
         transmit(client, frame, frame_size);
-        int result = bsl_response(client);
-        if (result != 0) return result;
+        result = bsl_response(client);
+        if (result != 0) break;
         address += chunk;
         bytes += chunk;
         count -= chunk;
     }
-    return Z_MSP_OK;
+    return trace_end(client, 0xcb, "BSL_programMemorySegment", result);
 }
 
 /* 0x400dcaa8: 30 descending 512-byte segments, from 0xfbff to 0xc1ff.
- * Nonzero result corresponds to the original fatal assertion at line 0xff. */
+ * Nonzero result invokes the returning assertion at line 0xff, then the
+ * original result remains available to the caller after the scope closes. */
 int z_msp_erase_app(struct z_msp_client *client)
 {
+    int result = trace(client, true, 0xf9, "erase");
+    if (result != Z_MSP_OK) return result;
     for (uint32_t address = 0xfbff; address > 0xc000; address = (address - 0x200) & 0xffff) {
         uint8_t frame[8];
         transmit(client, frame, z_msp_bsl_erase_frame(frame, sizeof(frame), address));
-        int result = bsl_response(client);
-        if (result != 0) return Z_MSP_ERASE_FAILED;
+        result = bsl_response(client);
+        if (result != 0) break;
     }
-    return Z_MSP_OK;
+    if (result != 0) {
+        int diagnostic = diagnostic_assert(client, 0xff, "res == BSL_RES_OK", Z_MSP_ERASE_FAILED);
+        if (diagnostic != Z_MSP_OK) result = diagnostic;
+    }
+    return trace_end(client, 0xf9, "erase", result);
 }
 
 /* 0x400dcb84: controller boot version high nibble must be 0xa. */
 int z_msp_update(struct z_msp_client *client, const struct z_msp_image *image)
 {
-    if (client->state->id != Z_MSP_BOOT_RUNNING) return Z_MSP_WRONG_STATE;
-    int result = z_msp_bsl_command(client, Z_MSP_BSL_VERSION);
-    if ((result & 0xf0) != 0xa0) return Z_MSP_BAD_BOOT_VERSION;
-    result = z_msp_erase_app(client);
+    int result = trace(client, true, 0x375, "update");
     if (result != Z_MSP_OK) return result;
+    result = require_boot(client);
+    if (result != Z_MSP_OK) goto finished;
+    result = z_msp_bsl_command(client, Z_MSP_BSL_VERSION);
+    if ((result & 0xf0) != 0xa0) {
+        result = client->diagnostics == NULL ? Z_MSP_BAD_BOOT_VERSION :
+            diagnostic_log(client, 2, "MSP", "Msp.h", 0x37a, "Unexpected boot loader version");
+        goto finished;
+    }
+    result = z_msp_erase_app(client);
+    if (result != Z_MSP_OK) {
+        if (client->diagnostics != NULL && result > 0) {
+            char message[32];(void)snprintf(message, sizeof(message), "RESPONSE 0x%x", (unsigned)result);
+            result = diagnostic_log(client, 2, "BSL", "Msp.h", 0x37f, message);
+        }
+        goto finished;
+    }
     for (uint32_t i = 0; i < image->segment_count; ++i) {
         const struct z_msp_segment *segment = &image->segments[i];
         result = z_msp_program_segment(client, segment->address, segment->bytes, segment->size);
-        if (result != Z_MSP_OK) return result;
+        if (result != Z_MSP_OK) {
+            if (client->diagnostics != NULL && result > 0) {
+                char message[32];(void)snprintf(message, sizeof(message), "RESPONSE 0x%x", (unsigned)result);
+                result = diagnostic_log(client, 2, "BSL", "Msp.h", 0x383, message);
+            }
+            break;
+        }
     }
-    return Z_MSP_OK;
+finished:
+    return trace_end(client, 0x375, "update", result);
 }
 
 /* 0x400dcdc0: this OEM routine expects the embedded MSP app 1.0 with CRC 0x5fdb.
  * It can program that auxiliary controller; it is not ESP32 OTA functionality. */
-int z_msp_setup(struct z_msp_client *client, const struct z_msp_image *image)
+static int setup_guarded(struct z_msp_client *client, const struct z_msp_image *image)
 {
     if (z_msp_image_crc(image) != 0x5fdb) return Z_MSP_BAD_IMAGE_CRC;
-    send_unchecked(client, Z_MSP_VERSION_GET, 0, 0);
+    (void)send_unchecked(client, Z_MSP_VERSION_GET, 0, 0);
     bool boot = z_msp_is_boot_response(client->response);
     bool app = !boot && client->response[0] == 1;
     if (!boot && !app) {
@@ -352,4 +498,62 @@ int z_msp_setup(struct z_msp_client *client, const struct z_msp_image *image)
     }
     return client->state->version_major == 1 && client->state->version_minor == 0 ?
         Z_MSP_OK : Z_MSP_BAD_APP_VERSION;
+}
+
+int z_msp_setup(struct z_msp_client *client, const struct z_msp_image *image)
+{
+    if (client->diagnostics == NULL) return setup_guarded(client, image);
+    int result = trace(client, true, 0x29a, "_setupMsp");
+    if (result != Z_MSP_OK) return result;
+    bool boot, app, update_required;
+#define MSP_SETUP_CALL(expression) do { result = (expression); if (result != Z_MSP_OK) goto finished; } while (false)
+    if (z_msp_image_crc(image) != 0x5fdb) {
+        MSP_SETUP_CALL(diagnostic_assert(client, 0x1eb, "crc == bcrc", Z_MSP_BAD_IMAGE_CRC));
+    }
+    MSP_SETUP_CALL(send_unchecked(client, Z_MSP_VERSION_GET, 0, 0));
+    boot = z_msp_is_boot_response(client->response);
+    app = !boot && client->response[0] == 1;
+    MSP_SETUP_CALL(diagnostic_log(client, 0, "MSP", NULL, 0, boot ? "bootRunning = True" : "bootRunning = False"));
+    MSP_SETUP_CALL(diagnostic_log(client, 0, "MSP", NULL, 0, app ? "appRunning = True" : "appRunning = False"));
+    if (!boot && !app) {
+        MSP_SETUP_CALL(diagnostic_log(client, 2, "MSP", "Msp.h", 0x2ba, "Could not figure out what MSP is currently running"));
+        if (client->state->id != Z_MSP_UNKNOWN) {
+            MSP_SETUP_CALL(diagnostic_assert(client, 0x2bd, "_mspState.id == MspStateId::Unknown", Z_MSP_WRONG_STATE));
+        }
+        goto finished;
+    }
+    MSP_SETUP_CALL(transition(client, boot ? Z_MSP_BOOT_RUNNING : Z_MSP_APP_RUNNING));
+    if (app) MSP_SETUP_CALL(z_msp_switch_to_boot(client));
+    result = z_msp_bsl_command(client, Z_MSP_BSL_VERSION);
+    if ((result & 0xf0) != 0xa0) {
+        MSP_SETUP_CALL(diagnostic_log(client, 2, "MSP", "Msp.h", 0x2cf, "Bootloader running on MSP has incompatible version"));
+        MSP_SETUP_CALL(transition(client, Z_MSP_BOOTLOADER_ERROR));
+        goto finished;
+    }
+    MSP_SETUP_CALL(z_msp_start_app(client));
+    MSP_SETUP_CALL(z_msp_get_version(client));
+    if (z_msp_is_boot_response(client->response) || client->response[0] != 1) {
+        MSP_SETUP_CALL(diagnostic_log(client, 1, "MSP", "Msp.h", 0x2e1,
+            "Could not start the app and get its version (MSP presumably never flashed)"));
+        update_required = true;
+    } else if (!z_msp_is_expected_version(client->response)) {
+        MSP_SETUP_CALL(diagnostic_log(client, 0, "MSP", "Msp.h", 0x2e4, "App Version mismatch"));
+        update_required = true;
+    } else update_required = false;
+    MSP_SETUP_CALL(diagnostic_log(client, 0, "MSP", NULL, 0, update_required ? "updateRequired = True" : "updateRequired = False"));
+    if (update_required) {
+        MSP_SETUP_CALL(z_msp_switch_to_boot(client));
+        MSP_SETUP_CALL(z_msp_update(client, image));
+        MSP_SETUP_CALL(z_msp_start_app(client));
+        MSP_SETUP_CALL(z_msp_get_version(client));
+    }
+    if (client->state->version_major != 1) {
+        MSP_SETUP_CALL(diagnostic_assert(client, 0x2f0, "_mspState.versionMaj == APP_VERSION_MAJ", Z_MSP_BAD_APP_VERSION));
+    }
+    if (client->state->version_minor != 0) {
+        MSP_SETUP_CALL(diagnostic_assert(client, 0x2f1, "_mspState.versionMin == APP_VERSION_MIN", Z_MSP_BAD_APP_VERSION));
+    }
+finished:
+#undef MSP_SETUP_CALL
+    return trace_end(client, 0x29a, "_setupMsp", result);
 }

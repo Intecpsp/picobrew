@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ArrowRight, Check, RefreshCw, Send } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
+import { supports } from '../lib/capabilities'
 import { isNative, kindLabel } from '../lib/programs'
 import type { BulkDeployment, Recipe } from '../types'
 import { Badge, Button, Empty, ErrorBanner, Field, Modal } from './ui'
@@ -42,7 +43,11 @@ export function TransferDialog({
     initialDeviceID ||
       hub.devices.find(
         (device) =>
-          device.online && device.status?.ready && !device.status?.busy && !device.status?.stopped
+          supports(device.capabilities, 'recipes') &&
+          device.online &&
+          device.status?.ready &&
+          !device.status?.busy &&
+          !device.status?.stopped
       )?.id ||
       ''
   )
@@ -57,7 +62,11 @@ export function TransferDialog({
   const [readingReceipt, setReadingReceipt] = useState(false)
   const target = hub.devices.find((device) => device.id === deviceID)
   const ready =
-    target?.online && target.status?.ready && !target.status.busy && !target.status.stopped
+    supports(target?.capabilities, 'recipes') &&
+    target?.online &&
+    target.status?.ready &&
+    !target.status.busy &&
+    !target.status.stopped
   const visible = recipes.filter((recipe) =>
     `${recipe.name} ${kindLabel(recipe.kind)}`.toLowerCase().includes(query.toLowerCase())
   )
@@ -212,12 +221,14 @@ export function TransferDialog({
               onChange={(event) => setDeviceID(event.target.value)}
             >
               <option value="">Choose a machine</option>
-              {hub.devices.map((device) => (
-                <option key={device.id} value={device.id}>
-                  {device.name}
-                  {device.online ? '' : ' (offline)'}
-                </option>
-              ))}
+              {hub.devices
+                .filter((device) => supports(device.capabilities, 'recipes'))
+                .map((device) => (
+                  <option key={device.id} value={device.id}>
+                    {device.name}
+                    {device.online ? '' : ' (offline)'}
+                  </option>
+                ))}
             </select>
           </Field>
           {target && !ready && (

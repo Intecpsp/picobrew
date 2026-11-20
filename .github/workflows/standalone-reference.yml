@@ -1,0 +1,122 @@
+name: Z and accessory standalone firmware
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  application:
+    name: Complete application and reference package / ${{ matrix.model }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        model: [z-series, picostill, picoferm]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install pinned offline image converter dependency
+        run: python -m pip install -r firmware/common/requirements-build.txt
+      - name: Acquire exact compiler and SDK archives
+        run: make firmware-bootstrap MODEL=${{ matrix.model }} PYTHON=python
+      - name: Verify the complete recovered accessory application
+        if: matrix.model != 'z-series'
+        run: make -C firmware/${{ matrix.model }}/reverse-engineered verify PYTHON=python
+      - name: Compile and link the recovered PicoFerm SDK owner
+        if: matrix.model == 'picoferm'
+        run: |
+          python firmware/picoferm/reverse-engineered/tools/build_esp8266_objects.py \
+            --toolchain firmware/common/build/dependencies/xtensa-lx106-elf \
+            --arduino firmware/common/build/dependencies/esp8266-2.4.1
+          python firmware/picoferm/reverse-engineered/tools/link_esp8266_application.py \
+            --toolchain firmware/common/build/dependencies/xtensa-lx106-elf \
+            --arduino firmware/common/build/dependencies/esp8266-2.4.1
+      - name: Compile and link the recovered PicoStill SDK owner
+        if: matrix.model == 'picostill'
+        run: |
+          python firmware/picostill/reverse-engineered/tools/build_esp32_objects.py \
+            --toolchain firmware/common/build/dependencies/xtensa-esp32-elf \
+            --arduino firmware/common/build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1
+          python firmware/picostill/reverse-engineered/tools/link_esp32_application.py \
+            --toolchain firmware/common/build/dependencies/xtensa-esp32-elf \
+            --arduino firmware/common/build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1
+      - name: Exercise the actual modified controller and persistent engine
+        run: make firmware-test MODEL=${{ matrix.model }} PYTHON=python
+      - name: Build full application and verify reference image package
+        run: make firmware-package MODEL=${{ matrix.model }} PYTHON=python
+      - name: Install 32-bit allocator replay toolchain
+        if: matrix.model == 'picoferm'
+        run: sudo apt-get update && sudo apt-get install -y gcc-multilib g++-multilib
+      - name: Replay the complete Ferm controller within its target heap budget
+        if: matrix.model == 'picoferm'
+        run: >-
+          python firmware/picoferm/modified/tools/validate_memory.py
+          --toolchain firmware/common/build/dependencies/xtensa-lx106-elf
+          --arduino firmware/common/build/dependencies/esp8266-2.4.1
+          --build-dir firmware/picoferm/modified/build/reference
+          --write-report
+      - name: Verify unchanged OEM imports
+        run: make verify-imports PYTHON=python
+      - name: Retain reviewable image, ELF, map and manifests
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.model }}-reference-package
+          path: |
+            firmware/${{ matrix.model }}/modified/build/package/
+            firmware/${{ matrix.model }}/modified/build/reference/*.elf
+            firmware/${{ matrix.model }}/modified/build/reference/*.map
+            firmware/${{ matrix.model }}/modified/build/reference/*.json
+            firmware/${{ matrix.model }}/modified/build/reference/link/*.elf
+            firmware/${{ matrix.model }}/modified/build/reference/link/*.map
+            firmware/${{ matrix.model }}/modified/build/reference/link/*.json
+            firmware/${{ matrix.model }}/modified/analysis/memory-validation.json
+            firmware/${{ matrix.model }}/reverse-engineered/build/application/*.elf
+            firmware/${{ matrix.model }}/reverse-engineered/build/application/*.map
+            firmware/${{ matrix.model }}/reverse-engineered/build/application/*.json
+          if-no-files-found: error
+  shared-services:
+    name: Shared persistence, transports and embedded browser
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.22.2'
+      - name: Install pinned browser and image dependencies
+        run: |
+          python -m pip install -r firmware/common/requirements-build.txt -r firmware/pico-c/modified/requirements-web-test.txt
+          python -m playwright install --with-deps chromium
+      - name: Acquire both filesystem ABI references
+        run: make firmware-bootstrap MODEL=z-series PYTHON=python
+      - name: Verify shared engine, SDK adapters and real SPIFFS remounts
+        env:
+          PICO_ESP8266_SDK: ${{ github.workspace }}/firmware/common/build/dependencies/esp8266-2.4.1
+          ESP8266_ARDUINO: ${{ github.workspace }}/firmware/common/build/dependencies/esp8266-2.4.1
+          PICO_ESP32_SDK: ${{ github.workspace }}/firmware/common/build/dependencies/arduino-esp32-9a7946e6859130146e56231c27a4aa177d9175a1
+        run: python -m unittest discover -s firmware/common/tests -v
+      - name: Exercise common browser protocol and actual desktop/mobile pages
+        env:
+          WEB_TEST_OUTPUT: ${{ github.workspace }}/firmware/common/build/browser-results
+        run: |
+          node --test firmware/common/tests/web.test.cjs
+          python firmware/common/tests/web_browser.py
+      - name: Retain browser evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: common-standalone-browser
+          path: firmware/common/build/browser-results/
+          if-no-files-found: error
+
+# These jobs build and inspect files only. No firmware is flashed, and success
+# does not establish a physical device layout or brewing qualification.

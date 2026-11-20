@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 2363,
+  "original_functions": 21,
+  "returning_assertions": 391,
+  "all_results_match": true,
+  "event_records": 12469,
+  "source_sha256": {
+    "include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "src/eeprom.cpp": "cc6043665a62b871f44f5aadf182713328c6a38c531b8784a0c9dd8529c7879c",
+    "tests/eeprom_cases.py": "3acd1583faa9fa76d36676a5d180ed64b42a04cba8025d2246184cdeb274b4a5",
+    "tests/eeprom_continuation_cases.py": "3ef7c8c0434b929b5c441c00e9d83f8be3149c1ab7313469af402938a479694c",
+    "tests/eeprom_continuation_bridge.cpp": "0a7b61eafbb9bd8fee9285aad7f42e9301498e61202e88a8e56f1038bb20fd81",
+    "tests/eeprom_continuation_native.py": "c2fd5f66fb9b0238e7de23f554de6fd2ad3700633b42fd4188cb640393153142",
+    "tests/test_eeprom_continuation.py": "d8ac0a78421fba4b0a99d1c46844a3442d57aef0e54ba9bceabc33b5ed76011b",
+    "tests/ghidra/EmulateEepromContinuation.java": "c74544208552493f1ae7bd7c39695e36ad11a271ea63959e560c8c2b5d05ffcd",
+    "tests/ghidra/SlideshowExecution.java": "574a57c81e391fe4f87f7a37d5389e531743c3eb188bd53b0a3ff65816e58489",
+    "tools/validate_eeprom_continuation.py": "1a8672d4ae2917cb86af42d83d11f884c5b730c2e024f4ca3c08e93bf10f28c6",
+    "tests/fixtures/eeprom-continuation-inputs.json.gz": "525aaaa8764b2e1fadb9729f39f538832378942d2885d7b6e222a7ac9de3e5bc",
+    "tests/fixtures/eeprom-continuation-original.json.gz": "fa743d64436e30ed97ed6a7bdcf5fa89a8b5a6a6eddf088e097b2e26073be8d0"
+  },
+  "scope": "All original EEPROM data/lifecycle cases execute through return, including real returning assertions, report/normalization logs and subsequent get/read/write/reset/commit/registration behavior. Data/cache bytes, dirty/initialized state, assertion site/counter, wrapping clock and ordered diagnostics/storage events match. Original mapped bytes are verified before execution; only ROM memory/string, SDK begin/commit/cache sizing, console registration, diagnostic text capture and clock/delay/soft-float services are boundaries.",
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

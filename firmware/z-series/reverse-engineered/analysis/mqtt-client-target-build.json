@@ -1,0 +1,202 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/mqtt_client.cpp",
+      "source_sha256": "172297bf8c7da535e73f08af60e5d240134f9e88fa7054561e19cb0bf6156e33",
+      "object_sha256": "91adc9174ab69aaa64094c89176f68d786fd5d5f0840f470fae4acf35f903315",
+      "object_bytes": 14068
+    },
+    {
+      "source": "platform/esp32/azure_mqtt_platform.cpp",
+      "source_sha256": "1e3cd89a9fffdbb461a2689a03b808930751a5f9ab2bca4c02e0137e0b10422d",
+      "object_sha256": "3aebcd705ce22039df1306ba9763c9eef2e4a669d17fe0034ed5ae500e1608c6",
+      "object_bytes": 24920
+    }
+  ],
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "ethernet2_dependency": {
+    "schema_version": 1,
+    "repository": "adafruit/Ethernet2",
+    "commit": "0bab6349fb5b42fce2d5442bbed093279184b548",
+    "tree": "ecd6a8a865f3818fa1e5d9b52a4c876e14c5e337",
+    "directory": "Ethernet2-0bab6349fb5b42fce2d5442bbed093279184b548",
+    "source_url": "https://github.com/adafruit/Ethernet2/tree/0bab6349fb5b42fce2d5442bbed093279184b548",
+    "raw_base": "https://raw.githubusercontent.com/adafruit/Ethernet2/0bab6349fb5b42fce2d5442bbed093279184b548/",
+    "scope": "Explicit rebuild dependency, not a proven exact revision of the original ESP32Ethernet fork. W5500 socket count, buffers, SPI framing and initialization match recovered original instructions. Tracked adapter preserves original SPI instance and DHCP timeouts; owned Ethernet TLS/client policy is separate.",
+    "license": "GPL-2.0-or-later or LGPL-2.1-or-later; retain source notices and license.txt",
+    "files": {
+      "README.md": {
+        "bytes": 1109,
+        "sha256": "94dbdf0a7111fd8e0c98065909553a9539c81c80acc2f6ac4abcb8ef1353536f"
+      },
+      "library.properties": {
+        "bytes": 578,
+        "sha256": "8754b36963dd33fd402f3274aa5ebe3ebc3382afd7c6ae86440321c454950266"
+      },
+      "license.txt": {
+        "bytes": 39985,
+        "sha256": "7b529afa0c997ed6c143377ca89ac384e7ff717fbd42afbb599da79d9033b158"
+      },
+      "src/Dhcp.cpp": {
+        "bytes": 15427,
+        "sha256": "151d12e0e165a097204e3606336f3f478b92169cf1b36e448fd1bae490c01c0a"
+      },
+      "src/Dhcp.h": {
+        "bytes": 4211,
+        "sha256": "305627544876a05be2a46ef0a7733755148cd3ec2c16f2307e5030e8826b217f"
+      },
+      "src/Dns.cpp": {
+        "bytes": 13421,
+        "sha256": "c73eefd169b26cca17178bdfb626e7ad75842de42ceef3625b21033601b415c1"
+      },
+      "src/Dns.h": {
+        "bytes": 1253,
+        "sha256": "59892c76c9c77d04015a10889419c17874c2efd5c8dd9f16d91978c630915580"
+      },
+      "src/Ethernet2.cpp": {
+        "bytes": 5691,
+        "sha256": "6d48bb2a0d2f8cf9963a096d04b604a457b3f5683cc91f039892b126e4f49596"
+      },
+      "src/Ethernet2.h": {
+        "bytes": 2156,
+        "sha256": "c53e2b11b248fff6f5a0bdbc1b84c585663e48e3ea2f344cd2ded6760454e570"
+      },
+      "src/EthernetClient.cpp": {
+        "bytes": 3512,
+        "sha256": "13c64ecc43fc83dff29f8d4b6c321662e0dd6e20432c22580cb6e08023710bb8"
+      },
+      "src/EthernetClient.h": {
+        "bytes": 939,
+        "sha256": "361bb035428d8d6302bcaca2c0eab1088b350078ba35c2700c11ba54bee75757"
+      },
+      "src/EthernetServer.cpp": {
+        "bytes": 1860,
+        "sha256": "3e9ec1cb93e0725fc78652f9de2774d407798611a2f96b2c76a1acd857a6a855"
+      },
+      "src/EthernetServer.h": {
+        "bytes": 392,
+        "sha256": "c4e2b3b96240c5ad8c15cc051efc668c7df300ce38bdba447c4d266e330176a8"
+      },
+      "src/EthernetUdp2.cpp": {
+        "bytes": 5363,
+        "sha256": "20a561b4b506f6ace210be3715f45d18461740d605ae3a20c40604680242f21e"
+      },
+      "src/EthernetUdp2.h": {
+        "bytes": 4935,
+        "sha256": "96dc01218c899b72912aa6fe14051834e60abefa9667592fed8027237a6c1dd0"
+      },
+      "src/Twitter.cpp": {
+        "bytes": 1992,
+        "sha256": "4ddf61f90033a1bc3c2ad71556741a180771a151474dafea67863993eb4149a3"
+      },
+      "src/Twitter.h": {
+        "bytes": 1124,
+        "sha256": "02e833f674e398fcc0fe861bfc2fb21414cd554ddc7267dea36f4379a8c47db8"
+      },
+      "src/util.h": {
+        "bytes": 330,
+        "sha256": "b9bf659fd5c9a29567bebc69da78f76b3c7038e3f351648ee25f685e1e8c768e"
+      },
+      "src/utility/socket.cpp": {
+        "bytes": 9314,
+        "sha256": "1c53e5ce117dfcb1f2773a1306c21390504f0d79de3bce4a1afd0ce83b5ca3e2"
+      },
+      "src/utility/socket.h": {
+        "bytes": 2188,
+        "sha256": "66612bf601b67ebc9b446b46ee09e1151fb7914c1d2ccbc743ce19688809f1b9"
+      },
+      "src/utility/util.h": {
+        "bytes": 364,
+        "sha256": "3878552a9e4cd66df0febd57d8715a072af685e95143cf08a6e580221c2299a5"
+      },
+      "src/utility/w5500.cpp": {
+        "bytes": 4228,
+        "sha256": "94301fee2b7298aa812c84e02470b9da078d12f2aff353ad29f1afd50f9db379"
+      },
+      "src/utility/w5500.h": {
+        "bytes": 14362,
+        "sha256": "8ab9dcbd513df7fffe9533a8b241bba36b4bca7f235dd5278a9e8f3be01a7c08"
+      }
+    }
+  },
+  "ethernet2_adapter_sha256": "f1b8aa379041e97e3a476c29366dabd7b7e34aa975cb89d51051c3ec4eed4897",
+  "ethernet2_objects": {
+    "ethernet2_src_Dhcp.cpp.o": "0ef7618a993724d8da89586c5ddabb2b9afd8ad35e9e6f03c165605b871dd707",
+    "ethernet2_src_Dns.cpp.o": "33102f705665f5df6ff3c9879cc4c4c90bd41a4ce7df33566f71185897df78fe",
+    "ethernet2_src_Ethernet2.cpp.o": "44588cd989939fc8d4b00fe41be94ab9910758c92d619df198804662d867f8c2",
+    "ethernet2_src_EthernetClient.cpp.o": "1f40775b977bd26e489816eda5f5a9a2d0e7335c20fa32e7379265ac66342071",
+    "ethernet2_src_EthernetServer.cpp.o": "2e54207127c620797735b249db93860e111e43db91f4ceb969f312dbdf2ffd88",
+    "ethernet2_src_EthernetUdp2.cpp.o": "211fed3311e010f08761d646dde5719144e3b2629b99429d85191f684b36eab2",
+    "ethernet2_src_Twitter.cpp.o": "37680d5d63c2588853916c40c197c682a4d81cffe4d5cc161ce6ec62e6840b8d",
+    "ethernet2_src_utility_socket.cpp.o": "33d93864c88a36181f4285fe527147cd7368fb1393915fd7bc14bd1635525d6c",
+    "ethernet2_src_utility_w5500.cpp.o": "898c2ef07a21ec9e86d0d8d356018833ed8c15169e8fce68ffedda601d71e33d"
+  },
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "owned_header_sha256": {
+    "include/zseries/mqtt_client.hpp": "90b5c08a4199ac5b30df7ad8c05b868f17d15b9b3cba86eac6a6ca037bb6db45"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/azure_mqtt_platform.hpp": "0eb05d640ec063566018cd1b99ca3607db67ed8352d503069af87a1d3d479669"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 2
+  }
+}

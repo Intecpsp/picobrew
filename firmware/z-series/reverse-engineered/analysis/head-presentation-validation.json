@@ -1,0 +1,29 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 71,
+  "original_functions": 42,
+  "all_framebuffers_match": true,
+  "all_state_results_match": true,
+  "returning_assertions": 4,
+  "source_sha256": {
+    "include/zseries/head_presentation.hpp": "63a8f64d99b84cb09413164d760a07e544a05cfa608d399a2f06f5d6ba3e2f23",
+    "include/zseries/head_hardware.hpp": "8aec6c777797e1042d9e77446f884551ee00a0d3a14ab61459a2d88f49b69f8d",
+    "include/zseries/head_still_display.hpp": "1431dd92b58595bbba112e614db8c98c0ed02f0220fe49eb14429d788cfb0802",
+    "src/head_presentation.cpp": "3a94de67afc7321bfbb0df61352813f7183e7e26c5d8bb0436c929c13689e516",
+    "src/head_hardware.cpp": "5a2022ef5b924badc6ca72e2477322550deb858e91dc5cfc20eb1c02d0684e76",
+    "src/head_still_display.cpp": "b49f481cbf522cb1e67feee92cb8a0b00752048e4665f0c08cbf54d3eba732b0",
+    "tests/head_presentation_bridge.cpp": "af0ebe7da1e864f286974f4f76aeb65311443d47e07eed20526890dd7d85c005",
+    "tests/head_presentation_cases.py": "92a5fba10e2823755a3c6e4490e82fb75ff9e02905d9d18c568eaec6cd0f0557",
+    "tests/head_presentation_native.py": "06db217c3a9f55b9205a4cec50062c00077f5763a8f8d4cb2dd53008bde5dcda",
+    "tests/test_head_presentation.py": "cee604f723d87f931cf25a72372fbcd07f88c82ecab703b67fcd80e7b7bbfb74",
+    "tests/ghidra/EmulateHeadPresentation.java": "96429f76deaff1bfef8bbc888612aec9d8dc93bbcf5fcf4eb3fbe6f14d18f19f",
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493",
+    "tools/validate_head_presentation.py": "b288813814300684720f36d22bdbc3424c9e5dacb7f245955ade99a66b37c470",
+    "tests/fixtures/head-presentation-inputs.json.gz": "ac12692da1ef7555b2995c2f2eb8716563d31f6e8495a0b7b7a77db190f0caee",
+    "tests/fixtures/head-presentation-original.json.gz": "8c70910931efec33168f7fcc476567b8f6dbac6d50151c9b8a09319e667f5c74"
+  },
+  "scope": "Original Hardware/T1 monitor400f0ab4 and Still transient400f1774 plus their Graphics/TextLines/display/UTF8/font/bitmap callees execute through return. Constructor fields, ROM primitives, fixed-point snprintf/vsnprintf, soft float, clock/log/delay and Xtensa windowed ABI are explicit fixture boundaries. All4096 framebuffer bytes, dirty/last assertion/counter/clock are compared.",
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

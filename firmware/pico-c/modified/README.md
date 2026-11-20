@@ -112,9 +112,12 @@ IPSR/PRIMASK guards and filter trip. Browser tests serve the real portable C API
 with simulated flash/I/O and include the SSD1309 viewport on desktop/mobile.
 
 See [standalone validation](analysis/standalone-validation.json) for the checked
-artifact identities and the difference between local and CI evidence. Local
-Chromium startup was denied by workspace socket permissions; CI must run and
-retain its browser screenshots before claiming a browser pass.
+artifact identities and the difference between local and CI evidence. All 18
+local browser cases passed with Chrome for Testing 158.0.8127.36, covering
+desktop/mobile workflows, the SSD1309 viewport and history/export isolation.
+The report records the checked source and screenshot hashes. Remote CI remains
+pending; the local browser result does not qualify physical installation or
+brewing.
 
 ## Source and API documentation
 

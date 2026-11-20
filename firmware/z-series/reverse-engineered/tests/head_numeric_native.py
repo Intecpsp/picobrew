@@ -23,13 +23,13 @@ def load_native(directory):
 def run(native, item):
     state = (ctypes.c_uint32 * 49)(*item["state"])
     value = (ctypes.c_uint32 * 4)(*item["value"])
-    result, output = (ctypes.c_uint32 * 51)(), (ctypes.c_uint32 * 24)()
+    result, output = (ctypes.c_uint32 * 52)(), (ctypes.c_uint32 * 24)()
     status = native.head_numeric_test(item["operation"], state, value, result, output)
-    if status not in (0, 3):
+    if status != 0:
         raise ValueError("Native Head numeric service failed: " + str(status))
-    return dict(state=list(result[:49]), assertion_line=result[49],
+    return dict(state=list(result[:49]), assertion_line=result[49], assertion_count=result[51],
                 effects=[list(output[i:i + 6]) for i in range(0, result[50], 6)])
 
 
 def compared(original):
-    return {key: original[key] for key in ("state", "assertion_line", "effects")}
+    return {key: original[key] for key in ("state", "assertion_line", "assertion_count", "effects")}

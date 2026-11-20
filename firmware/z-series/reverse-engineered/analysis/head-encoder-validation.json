@@ -118,13 +118,13 @@
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
   "validated_source_sha256": {
-    "include/zseries/head_encoder.hpp": "3aaf5fcbaf19e23ba3d80428b12d5fadd5211200fa8c4503b3d01109df84d853",
-    "src/head_encoder.cpp": "db3a615d0ba65172b8c392f1520ffaaeae965a4ab1b5ba4f3fe9a384eec18f4e",
+    "include/zseries/head_encoder.hpp": "6e740312c6c5f8e5789b18ae4a42807caedbf543082050d4d14f79a97e7037c8",
+    "src/head_encoder.cpp": "cb54120f03efd603272f8f1b331596e300d3036204ca749be37e705a5d73ab02",
     "include/zseries/head_flow.hpp": "e1c446688590f00da33b7e8651c9f10c19d513795f5868e666a4d3fa1494f5e9",
     "src/head_flow.cpp": "cd831c3df0f993d9eda73c9133790f59737a240acbe92a23a81fc660520fd16b",
-    "tests/head_encoder_bridge.cpp": "b4a9b774480483c990a1932eacb10172abe804232cedac8c140f94b05a178011",
+    "tests/head_encoder_bridge.cpp": "d67480de1c7a7f586c92481b1106ac4e4b6fa6a9669e857137d89402d017b136",
     "tests/head_encoder_native.py": "44b07c1cb9a2d978871890a26d05daa885d42c3c35e359cde8a085981a14787d",
-    "tests/test_head_encoder.py": "dc487b88da14864f99be043f2cc58351db827fa37c16eff0b815208a86a9c81a",
+    "tests/test_head_encoder.py": "d0084dd5be562908dedf2ff34b960b426f4076f79c9850179676a4c9d5882fa6",
     "tools/validate_head_encoder.py": "876be3cff7f1b4327abdf0cedda964304c1cc9463371b605be4778eb790bff73"
   },
   "native_validation": {

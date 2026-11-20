@@ -62,11 +62,15 @@ using namespace zseries::oem;
 static bool fail(void*,HeadEncoderEffect,std::uint32_t,std::uint32_t){return false;}
 int main(){
     HeadEncoder head;
+    assert(head.rotate(0)==HeadEncoderResult::MissingService);
+    unsigned assertion_count=0;head.services.context=&assertion_count;
+    head.services.assertion=[](void* p,std::uint32_t){++*static_cast<unsigned*>(p);return true;};
     assert(head.rotate(0)==HeadEncoderResult::Ok&&head.state.assertion_line==0x2c2);
     head.state.slideshow.enabled=true;
     assert(head.rotate(1)==HeadEncoderResult::InvalidState);
     head.state.slideshow.enabled=false;head.state.character.enabled=true;head.state.character.count=3;
     assert(head.rotate(5)==HeadEncoderResult::InvalidSelection&&head.state.assertion_line==0x481);
+    assert(assertion_count==2);
     assert(head.rotate(1)==HeadEncoderResult::MissingService);
     head.services.perform=fail;
     assert(head.rotate(1)==HeadEncoderResult::ServiceFailure);

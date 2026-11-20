@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"errors"
 	"net/http"
+	"reflect"
 	"sort"
 	"strings"
 	"time"
@@ -329,10 +330,10 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		in.Model = ""
 	}
 	if in.Adapter == "pico-standalone" && in.Model != "" && !device.SupportedModel(in.Model) {
-		s.fail(w, 400, "unsupported_model", "Standalone control is currently available for Pico C, S and Pro")
+		s.fail(w, 400, "unsupported_model", "This model does not expose a supported standalone control adapter")
 		return
 	}
-	if _, ok := s.selectProfile(in.Model); !ok && !(in.Adapter == "pico-standalone" && in.Model == "") {
+	if _, ok := s.selectProfile(in.Model); !ok && !(in.Adapter == "pico-standalone" && (in.Model == "" || device.SupportedModel(in.Model))) {
 		s.fail(w, 400, "model", "Choose a supported machine profile")
 		return
 	}
@@ -626,10 +627,20 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 	d.mu.RLock()
 	view := d.view
 	d.mu.RUnlock()
+	if view.Capabilities != nil {
+		if descriptor, ok := view.Capabilities.CommandFields[in.Command.Command]; ok {
+			for _, field := range descriptor.Allowed {
+				if field == "confirm" {
+					value := in.Confirm
+					in.Command.Confirm = &value
+				}
+			}
+		}
+	}
 	receiptID := view.ID + ":" + key
 	var prior commandReceipt
 	if _, e := s.db.Get("command", receiptID, &prior); e == nil {
-		if prior.Command != in.Command || prior.AIMonitor != in.AIMonitor {
+		if !reflect.DeepEqual(prior.Command, in.Command) || prior.AIMonitor != in.AIMonitor {
 			s.fail(w, 409, "idempotency_conflict", "This key belongs to a different command")
 			return
 		}

@@ -5,13 +5,13 @@
 namespace zseries { namespace oem {
 namespace {
 
-double bounded(double value, double minimum, double maximum) noexcept {
+ZSERIES_HEATER_IRAM double bounded(double value, double minimum, double maximum) noexcept {
     if (value > maximum) return maximum;
     if (value < minimum) return minimum;
     return value;
 }
 
-void refresh_safety(const HeaterSensors& sensors, ThermalSafety& state,
+ZSERIES_HEATER_IRAM void refresh_safety(const HeaterSensors& sensors, ThermalSafety& state,
                     const ThermalLimits& limits, std::uint32_t now) noexcept {
     state.too_hot = state.too_cold = state.too_old = 0;
     for (std::size_t index = 0; index < sensors.temperatures.size(); ++index) {
@@ -25,6 +25,14 @@ void refresh_safety(const HeaterSensors& sensors, ThermalSafety& state,
         if (age > limit.maximum_age_ms) state.too_old |= bit;
     }
 }
+
+struct ControlGuard {
+    const HeaterSynchronization& synchronization;
+    explicit ControlGuard(const HeaterSynchronization& value):synchronization(value){
+        if(synchronization.enter&&synchronization.leave)synchronization.enter(synchronization.context);
+    }
+    ~ControlGuard(){if(synchronization.enter&&synchronization.leave)synchronization.leave(synchronization.context);}
+};
 
 } // namespace
 
@@ -90,6 +98,7 @@ void pid_compute(PidState& pid, double input, double target, double& output) noe
 }
 
 bool heater_configure_boiler(HeaterController& heater, BoilerType boiler) noexcept {
+    ControlGuard guard(heater.synchronization);
     switch (boiler) {
         case BoilerType::Big: return pid_set_tunings(heater.pid, 34.0, 13.0, 3.0);
         case BoilerType::Small: return pid_set_tunings(heater.pid, 30.0, 10.0, 0.0);
@@ -107,18 +116,21 @@ bool heater_initialize_outputs(HeaterController& heater, const HeaterIo& io) noe
 
 bool heater_enable(HeaterController& heater, const HeaterIo& io, bool enabled) noexcept {
     if (!io.write_pin) return false;
+    ControlGuard guard(heater.synchronization);
     heater.state.enabled = enabled;
     io.write_pin(io.context, OriginalHeaterEnablePin, enabled);
     return true;
 }
 
 void heater_start(HeaterController& heater, double wort_celsius) noexcept {
+    ControlGuard guard(heater.synchronization);
     heater.state.started = true;
     pid_set_mode(heater.pid, true, wort_celsius, heater.state.output_ticks);
 }
 
 bool heater_stop(HeaterController& heater, const HeaterIo& io, double wort_celsius) noexcept {
     if (!io.write_pin) return false;
+    ControlGuard guard(heater.synchronization);
     heater.state.output_ticks = 0.0;
     heater.state.started = false;
     io.write_pin(io.context, heater.output_pin, false);
@@ -128,6 +140,7 @@ bool heater_stop(HeaterController& heater, const HeaterIo& io, double wort_celsi
 
 bool heater_set_target(HeaterController& heater, double requested, double boil) noexcept {
     if (!std::isfinite(requested) || !std::isfinite(boil)) return false;
+    ControlGuard guard(heater.synchronization);
     const double maximum = boil - 2.0;
     if (requested <= maximum) {
         heater.state.target_excess = 0.0;

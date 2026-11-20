@@ -1,44 +1,146 @@
 {
   "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
-  "cases": 617,
-  "scope": "Original LIS3DHTR/BMP280 setup and tick, nested register-read and calibration bodies; explicit TwoWire, compiler arithmetic, clock and diagnostic boundaries; register windows adapted at ENTRY/RETW",
+  "cases": 641,
+  "scope": "Original LIS3DHTR/BMP280 setup and tick, nested register-read/calibration and actual returning assertion helper; compare clock, counter, delay, exact diagnostic text identities, transaction/state and binary64 results. TwoWire, compiler arithmetic, clock, printf/basename and SDK delay are explicit boundaries; register windows adapted at ENTRY/RETW.",
   "original_functions_executed": {
     "0x400d16b0": 292,
     "0x400d1720": 271,
-    "0x400d183c": 638,
-    "0x400d1898": 30,
+    "0x400d183c": 686,
+    "0x400d1898": 54,
     "0x400d91ac": 294,
+    "0x400db014": 32,
     "0x400de078": 22,
-    "0x400de10c": 22
+    "0x400de10c": 46
   },
   "modeled_boundaries": {
+    "SDK_delay": 32,
     "__adddf3": 1103,
     "__divdf3": 810,
     "__divdi3": 289,
-    "__divsf3": 4,
-    "__extendsfdf2": 293,
+    "__divsf3": 60,
+    "__extendsfdf2": 349,
     "__floatdisf": 289,
     "__floatsidf": 810,
     "__muldf3": 1913,
     "__subdf3": 293,
-    "basename": 24,
-    "beginTransmission": 1106,
-    "clock_millis": 297,
-    "diagnostic_log": 4,
-    "endTransmission_default_stop": 1106,
-    "read": 3526,
-    "requestFrom_default_stop": 842,
-    "returning_assertion_diagnostic": 20,
-    "single_thread_memw": 120,
-    "write": 1282
+    "basename": 60,
+    "beginTransmission": 1178,
+    "clock_millis": 353,
+    "diagnostic_log": 60,
+    "endTransmission_default_stop": 1178,
+    "read": 3550,
+    "requestFrom_default_stop": 878,
+    "single_thread_memw": 216,
+    "write": 1378
   },
   "full_cpu_or_hardware_emulation": false,
   "hardware_tested": false,
+  "original_functions": [
+    {
+      "address": "0x400d16b0",
+      "calls": 292,
+      "ranges": [
+        {
+          "address": 1074599600,
+          "size": 85,
+          "sha256": "cf5460c970a91b61749b072e7001f6395ed6f4d70e977dbed760ffcfd460a6ae"
+        },
+        {
+          "address": 1074599686,
+          "size": 6,
+          "sha256": "3b7aba071f106af808e4740d69fe561db3ab54eef4ec1a83f28e4fe9215d0103"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1720",
+      "calls": 271,
+      "ranges": [
+        {
+          "address": 1074599712,
+          "size": 284,
+          "sha256": "0522eda9c132750fda4b346f5b20c839fceefeb1257a53cf8663a184add56914"
+        }
+      ]
+    },
+    {
+      "address": "0x400d183c",
+      "calls": 686,
+      "ranges": [
+        {
+          "address": 1074599996,
+          "size": 85,
+          "sha256": "80223797e551d99e918e15095a9c037c31850d8bd12d41b8e8741032c4eb3ddd"
+        },
+        {
+          "address": 1074600082,
+          "size": 6,
+          "sha256": "3b7aba071f106af808e4740d69fe561db3ab54eef4ec1a83f28e4fe9215d0103"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1898",
+      "calls": 54,
+      "ranges": [
+        {
+          "address": 1074600088,
+          "size": 239,
+          "sha256": "85403919149753dc3808bf566d53cc8399e6564f2811d9acde0e928601e748d3"
+        }
+      ]
+    },
+    {
+      "address": "0x400d91ac",
+      "calls": 294,
+      "ranges": [
+        {
+          "address": 1074631084,
+          "size": 840,
+          "sha256": "1dc29d1065daf522974c5b945d8be0646189479cf9a4b9c80e9a29ce12f44382"
+        }
+      ]
+    },
+    {
+      "address": "0x400db014",
+      "calls": 32,
+      "ranges": [
+        {
+          "address": 1074638868,
+          "size": 58,
+          "sha256": "1b17275bd5a7c784b0c7cb71cea3746d3b1c337e73ef59f4d40bea8696ba9042"
+        }
+      ]
+    },
+    {
+      "address": "0x400de078",
+      "calls": 22,
+      "ranges": [
+        {
+          "address": 1074651256,
+          "size": 140,
+          "sha256": "7c00fa827c9564bfe201c1398c6d393948d8572d6076aa77c2460ed65f4ccc9e"
+        }
+      ]
+    },
+    {
+      "address": "0x400de10c",
+      "calls": 46,
+      "ranges": [
+        {
+          "address": 1074651404,
+          "size": 156,
+          "sha256": "1be3fb400985181ffccc74fd7d20fe60d4a07370577315ade93a69b8ac04011d"
+        }
+      ]
+    }
+  ],
+  "input_file_sha256": "420de09bfb23f0855b49948fc1b0083c8bfee056c915c92d0d945c421de84214",
   "all_results_match": true,
-  "binary64_comparisons": 3085,
-  "exact_binary64_matches": 3085,
+  "binary64_comparisons": 3205,
+  "exact_binary64_matches": 3205,
   "maximum_absolute_error": 0.0,
-  "portable_golden_cases": 129,
+  "portable_golden_cases": 641,
   "native_compiler": "c++ (Debian 14.2.0-19) 14.2.0",
   "native_flags": [
     "-std=c++11",
@@ -48,25 +150,21 @@
     "-fno-fast-math",
     "-ffp-contract=off"
   ],
-  "original_execution_jsonl_sha256": "0bc931fed83fc2bce160123b6aef4537dfdf3ec66d59a18244e0f956284086f9",
-  "original_execution_report_sha256": "047aa2883df9d19cc331e58c1cee0ffe868e4f595affe58fe32da73f87603e1b",
-  "instruction_export_sha256": {
-    "0x400d16b0": "fd7c6f88b68529696c9633eeb77bb88631cf892d982983859ad8f8eb79d6dcf5",
-    "0x400d1720": "83676bee2892fc6f00a019c8410e11b830c6b3832ddb277203d4b9423c676908",
-    "0x400d183c": "a90799604a7a149120d1565453550ac474344aa74a419d0ce858a96c53acfb65",
-    "0x400d1898": "26be12d3ce8ddc8033ec4f0936a0e1e4591f4591d1c4d27edaa442f25ffc6fa0",
-    "0x400d91ac": "d5dd812ba028007aae5661dd39c096c190589ba31efdd55950c5de84d2fbf27e",
-    "0x400de078": "ccb369ea2245e4b8d73218f43c33c20cdf1db940ebc84118b0a6b8c130b0d1e2",
-    "0x400de10c": "8b23c94df6b77458316c88f55373cc3a27d2b44daa785877a4b10675c764515a"
-  },
+  "original_execution_jsonl_sha256": "5950456dc9a4bf0b6380c9319dcc3d5238703102888a4312c1cfd7c8559bff1c",
+  "original_execution_report_sha256": "b7c270f9aa1d042cdef410d2a82cac1ac63206fea88e061ebf01b6ae4b7cf210",
   "source_sha256": {
-    "include/zseries/auxiliary_sensors.hpp": "fa832d9268da5df2039671bd834b41d0b08c63575e3128653abe5e8c248d7dd2",
-    "src/auxiliary_sensors.cpp": "49b7eb780c6de6e45de013bd982f6c9023ebbb5bea9bbc03cd310546749328ae",
-    "tests/auxiliary_sensors_bridge.cpp": "0f9ea5a21fb8fe62d0a29f54fe204d085383b1c09b7045184a6141279b887977",
-    "tools/validate_auxiliary_sensors.py": "90eeec41d925c334d2ab3e564d8b9b14c2a60646e9e4ba491420b0a46436b3c2",
-    "tools/ghidra/EmulateAuxiliarySensors.java": "9341b98de1a5b505406f238893417d6cb5d326a267d61445cd087f1fa072b742",
+    "include/zseries/auxiliary_sensors.hpp": "597bfb86960bbd1e4c7eb5a36959c0f30ac56b05a71f7110b477274f4a8660b6",
+    "src/auxiliary_sensors.cpp": "86570930f5a96b6de1052fa9da617b6f6a10fb12e39fae7af3507d727c29a2ad",
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "src/diagnostics.cpp": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "tests/test_auxiliary_sensors.py": "6e84f6c1cfb52f506d360eebc88690ea19047b6a76335e6327a89aa062c63e67",
+    "tests/auxiliary_sensors_bridge.cpp": "04b0845311b9b3f980eca09cdc39101855236e86fcceec3175a5fbefc39c2cce",
+    "tools/validate_auxiliary_sensors.py": "ed5cd65becf67e6be25d79005c80f481fcb661b4b43143fb4bb3afbbc3f5689d",
+    "tools/ghidra/EmulateAuxiliarySensors.java": "0f4388dcc06ab6b8eaa940e701228549b6b863960280390626190d6f44857c71",
     "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78",
     "analysis/auxiliary-math-symbols.json": "caa88d67a8707e58766f62eae90f11fd0da5599034895002711db9fe80597843"
   },
-  "portable_golden_sha256": "f8cc243389527bd78a8d86af887883bb85ce7e2fbbf726d8d466b9b4a60b8945"
+  "fixture_sha256": "0a515a7459300fa486e6caf64e31434555dca153049c967de94a0d8b8161448b",
+  "portable_golden_sha256": "27f2e103385ca2c1a68b0494cec0c130d1fd109bf69878a09e10719f21ae1ff3"
 }

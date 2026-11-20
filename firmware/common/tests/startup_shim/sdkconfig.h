@@ -1,0 +1,4 @@
+#pragma once
+#define CONFIG_SPIRAM_SUPPORT 1
+#define CONFIG_BT_ENABLED 1
+#define CONFIG_LOG_DEFAULT_LEVEL 3

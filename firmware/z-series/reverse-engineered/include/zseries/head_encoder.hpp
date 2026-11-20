@@ -48,6 +48,7 @@ struct HeadEncoderServices {
     // operation, including its selection state and presentation. They are
     // explicit boundaries here, not successful default drawing stubs.
     bool (*perform)(void*, HeadEncoderEffect, std::uint32_t, std::uint32_t) = nullptr;
+    bool (*assertion)(void*,std::uint32_t line) = nullptr;
 };
 struct HeadEncoderState {
     EncoderMenu menu;
@@ -72,6 +73,7 @@ public:
     // 0x400fdd0c: payload after consumption; original input direction is reversed.
     HeadEncoderResult rotate(std::int32_t input_delta);
 private:
+    HeadEncoderResult assertion(std::uint32_t);
     HeadEncoderResult effect(HeadEncoderEffect, std::uint32_t = 0, std::uint32_t = 0);
     HeadEncoderResult reset(HeadTimer&);
 };

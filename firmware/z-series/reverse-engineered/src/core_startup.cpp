@@ -25,7 +25,7 @@ const CoreStageEvidence stages[] = {
     {CoreSetupStage::SerialLogger, 0x14f58, 0x400fae40, "SerialLogger"},
     {CoreSetupStage::SessionLogger, 0x1513c, 0x400fb46c, "ZSessionLogger"},
     {CoreSetupStage::Azure, 0x15160, 0x4010dd9c, "Azure"},
-    {CoreSetupStage::TimerMonitor, 0x158b8, 0x400f71b0, "TimerMonitor"},
+    {CoreSetupStage::Pinger, 0x158b8, 0x400f71b0, "Pinger"},
     {CoreSetupStage::Diagnostics, 0, 0x4011038c, "Core diagnostics"},
     {CoreSetupStage::Information, 0, 0x400efc24, "Core information"},
 };
@@ -35,6 +35,7 @@ bool available(const CoreStartupServices& services, const HeaterIo& io,
     return services.setup_component && services.read_boiler_type &&
         services.start_periodic_software_timer && services.begin_hardware_timer &&
         services.attach_timer_interrupt && services.write_timer_alarm && services.enable_timer_alarm &&
+        services.register_heater_commands && services.register_adc_commands && services.assertion &&
         io.configure_output && io.write_pin && adc.begin_transmission && adc.write &&
         adc.end_transmission && adc.delay_ms;
 }
@@ -72,17 +73,20 @@ CoreStartupResult setup_core_controls(TemperatureAcquisition& acquisition, Heate
     if (!services.read_boiler_type(services.context, boiler)) return CoreStartupResult::InvalidBoiler;
     const auto adc_result = max11613_setup(acquisition.adc, boiler, adc);
     if (adc_result != AcquisitionResult::Ok) return CoreStartupResult::AdcFailure;
+    if (!services.register_adc_commands(services.context)) return CoreStartupResult::ComponentFailure;
     if (!setup(CoreSetupStage::Accelerometer) || !setup(CoreSetupStage::Pressure)) return CoreStartupResult::ComponentFailure;
     if (!heater_initialize_outputs(heater, io)) return CoreStartupResult::HeaterFailure;
+    if (!services.register_heater_commands(services.context)) return CoreStartupResult::ComponentFailure;
     if (!services.read_boiler_type(services.context, boiler)) return CoreStartupResult::InvalidBoiler;
     if (!pid_set_output_limits(heater.pid, 0, 100, heater.state.output_ticks)) return CoreStartupResult::HeaterFailure;
     pid_set_direction(heater.pid, false);
     if (!heater_configure_boiler(heater, boiler)) return CoreStartupResult::InvalidBoiler;
     for (std::size_t i = static_cast<std::size_t>(CoreSetupStage::PicoStill);
-            i <= static_cast<std::size_t>(CoreSetupStage::TimerMonitor); ++i)
+            i <= static_cast<std::size_t>(CoreSetupStage::Pinger); ++i)
         if (!setup(static_cast<CoreSetupStage>(i))) return CoreStartupResult::ComponentFailure;
     if (!services.start_periodic_software_timer(services.context, 1000, 1,
-                                                CoreTimerCallback::Buzzer, 10, handles.buzzer))
+                                                CoreTimerCallback::Buzzer, 10, handles.buzzer) &&
+        !services.assertion(services.context, 0x557, "res == pdPASS"))
         return CoreStartupResult::SoftwareTimerFailure;
     handles.heater_second = services.begin_hardware_timer(services.context, 0, 80, true);
     handles.heater_fast = services.begin_hardware_timer(services.context, 1, 80, true);

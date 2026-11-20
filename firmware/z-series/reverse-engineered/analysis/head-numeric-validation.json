@@ -2,7 +2,7 @@
   "schema_version": 1,
   "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
   "cases": 1637,
-  "fixture_sha256": "7ed970bf9f80c495582e79548c3baf8bd5ffb511e5985efc7c6d3148be4dd568",
+  "fixture_sha256": "cc16f93eb936e58fb0b75b36973b8c58e95b3b02c5175b9e0df06038eddfd56e",
   "tools": {
     "archives": {
       "ghidra": {
@@ -103,7 +103,7 @@
     }
   },
   "generator_files": {
-    "tests/ghidra/EmulateHeadNumeric.java": "84844e2b5e8d3d3c2cf0ef4478d07f6a3017f6e0681b6c6c21daaca509e3b45a",
+    "tests/ghidra/EmulateHeadNumeric.java": "f22a7725f353268a9ffb10da8447b88d22656093e2ea7f80c2b7ccd92c6efdaa",
     "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78",
     "tests/run_head_numeric_emulation.py": "d4c9f14f54857ed29b15aca81e3904540a9afe2abba0a4406a5804042141e65a",
     "tests/head_numeric_cases.py": "6e8900ac61d113b0ea998b82581561be018be4b5d1b9ab8537d286974d6f0790"
@@ -118,37 +118,25 @@
   "full_cpu_emulation": false,
   "complete_esp32_firmware_rebuild": false,
   "validated_source_sha256": {
-    "include/zseries/head_numeric_inputs.hpp": "f0225507f4574d2d84e921bb6d8185290e57e5ab134b5c36ae199870a538fca5",
-    "src/head_numeric_inputs.cpp": "72cb1d7b9254101da69979c2e5ca2bfe6854bcac7fb635d7ccfe7844a51f9bca",
+    "include/zseries/head_numeric_inputs.hpp": "9144efbbd423f6507ea6e04c335431b270132b5d7e5edd0b1fc8f7585575d840",
+    "src/head_numeric_inputs.cpp": "62059322396ba950f9354337606ca76952850a8cde673ca6bf2c4a72db80b2fd",
     "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
-    "tests/head_numeric_bridge.cpp": "e81dbe359f2adb505a0c5676f3578993f5521591bf644b590d82df3a3230f99b",
-    "tests/head_numeric_native.py": "ff3867382a5bc1facd395c34ed3c59a57f962cda2cd388e8f0abb1a73a0790f8",
-    "tests/test_head_numeric.py": "7624860d2273fe5b27bda2c7ac939a5400aee760308280ffad46dda6f999b2a5",
-    "tools/validate_head_numeric.py": "749d51c4c988b0e1770af1d8f80d653f87a5e318d44ac62640b1663bc189f184"
+    "tests/head_numeric_bridge.cpp": "dfb06f6a0d4a6c68a0936568beb0e37957609a44cb0297a493177f66fd22ea5b",
+    "tests/head_numeric_native.py": "40b611ceffea189f4ea5d2ee4e1261f43094678587e9607489f6df53b19a8682",
+    "tests/test_head_numeric.py": "de1f439b7a5e4a85bc46c30cd72208febcc1d55f4cf5d16c32c52d81a0483ee1",
+    "tools/validate_head_numeric.py": "6ee6596082f69ad1a11bbafb3baeea60e6793396bcd19cffe5a93fa8bbc6b857"
   },
   "native_validation": {
     "all_results_match": true,
     "cases": 1637,
-    "scope": "Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion boundaries and ordered screen operations after the event is consumed. 1403 cases complete within the stated service boundaries; 234 cases compare only the prefix before the returning OEM assertion helper at 0x400db014. Post-assertion continuation is not compared for those prefixes."
+    "scope": "Exact input bits, CoreCommand payload fields, parameter updates, flags, assertion line/counter, ordered assertion/delay and subsequent screen operations after the event is consumed"
   },
   "remaining_scope": [
     "Core command delivery and screen presentation are required services, with no default successful no-op.",
     "The source handler API accepts an already consumed event; original one-slot mailbox consumption executes in the oracle and is separately retained as evidence.",
-    "Invalid quantity IDs return InvalidQuantity at the original assertion site; the historical fixture stops before the returning helper and does not compare later OEM handler or screen behavior.",
+    "Invalid quantity IDs execute the returning diagnostic callback and continue to the unchanged manual or coffee editor, matching the original helper and continuation.",
     "Physical display/actuator behavior, concurrent event delivery and a complete linked application remain unverified."
   ],
-  "assertion_coverage": {
-    "total_cases": 1637,
-    "completed_without_assertion_stop": 1403,
-    "assertion_stopped_prefix_cases": 234,
-    "stop_address": "0x400db014",
-    "original_helper_returns": true,
-    "post_assertion_continuation_compared": false,
-    "count_method": "Count nonzero cases[*].assertion_line in the retained fixture.",
-    "assertion_line_counts": {
-      "0x2ba": 210,
-      "0x349": 24
-    },
-    "scope_note": "Assertion cases capture the prefix before the helper executes. They do not compare its diagnostic/counter/delay effects or the caller's subsequent execution. Existing typed guards are bounded API behavior; historical fixtures, generator identities and source hashes are unchanged."
-  }
+  "compressed_fixture_sha256": "b168b4025fb44d33d0514ba1f5769565bea9be7517dddc3effd25dbb890a6883",
+  "fixture_encoding": "gzip with mtime=0; decompressed bytes retain fixture_sha256"
 }

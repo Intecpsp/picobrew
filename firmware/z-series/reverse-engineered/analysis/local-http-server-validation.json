@@ -10,7 +10,7 @@
     "tests/local_http_server_bridge.cpp": "f934889e51656b400edebaab8b4f998ff200e2938e500b5c6544210345d839e9",
     "tools/validate_local_http_server.py": "893455318fea61878bc002303bcc10dec62e9f6987cc1c03594a20c014127b8d",
     "tools/ghidra/EmulateLocalHttpServer.java": "3e1491c5759d2509adc7bebe207c046f7b40d08f5762e663fbcd2a6521ce8cf0",
-    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493"
   },
   "golden_fixture_sha256": "6cd156e18db0585459502653ea3f2bd37ee4396bf8ed58eb15d0c7998b57dd69",
   "hardware_tested": false,
@@ -96,5 +96,17 @@
     "0x401bf3d4": "238da1e110723430d45c5e9725237458464bdd6c99ba94a567680007c07578ae",
     "0x401bf3ec": "3cddcda9c2b119fed6e1a242f630193e8daa50e27f846b5f37a9bd3158bfecbd",
     "0x401c0088": "a4d61642c26240216d739cf89a4df3b1fd6f2546862db43a130832bcd1f51582"
+  },
+  "movsp_harness_replay": {
+    "all_results_match": true,
+    "cases": 169,
+    "original_execution_jsonl_sha256": "ae815936ec11a393ed95443c01c8253f7c4e8ff77e1abf383e4f989b0b639ceb",
+    "boundary": "Windowed ABI stack move; CPU window spill and underflow exceptions remain outside the harness."
+  },
+  "trunc_s_harness_replay": {
+    "all_results_match": true,
+    "cases": 169,
+    "original_execution_jsonl_sha256": "ae815936ec11a393ed95443c01c8253f7c4e8ff77e1abf383e4f989b0b639ceb",
+    "boundary": "Finite signed TRUNC.S uses the mathematical power-of-two scale; nonfinite values, overflow and CPU exceptions remain outside the harness."
   }
 }

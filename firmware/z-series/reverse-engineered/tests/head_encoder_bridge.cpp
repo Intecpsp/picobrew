@@ -19,7 +19,7 @@ extern "C" unsigned head_encoder_test(const std::uint32_t* in,std::uint32_t delt
     for(auto& q:s.quantities){q.enabled=in[i++];q.wrap=in[i++];q.selected=sign(in[i++]);q.count=sign(in[i++]);}
     s.diagnostic_line=in[i++];s.combined.selected=in[i++];s.combined.paragraph_count=in[i++];s.combined.menu_count=in[i++];
     s.transient_timer.active=in[i++];s.transient_timer.duration=in[i++];s.transient_timer.deadline=in[i++];s.display_dirty=in[i++];
-    Context context{clock,effects,0};encoder.services.context=&context;encoder.services.perform=perform;encoder.services.millis=millis;
+    Context context{clock,effects,0};encoder.services.context=&context;encoder.services.perform=perform;encoder.services.millis=millis;encoder.services.assertion=[](void*,std::uint32_t){return true;};
     auto status=encoder.rotate(sign(delta));i=0;
     result[i++]=s.combined.enabled;result[i++]=s.menu.enabled;result[i++]=s.menu.selected;result[i++]=s.menu.count;result[i++]=s.menu.visible_rows;result[i++]=s.menu.selection_row;result[i++]=s.menu.scroll_offset;
     result[i++]=s.slideshow.enabled;result[i++]=s.slideshow.selected;result[i++]=s.slideshow.count;result[i++]=s.slideshow.timer.active;result[i++]=s.slideshow.timer.duration;result[i++]=s.slideshow.timer.deadline;

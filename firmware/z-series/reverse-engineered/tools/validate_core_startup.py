@@ -49,23 +49,23 @@ def main():
     args = parser.parse_args()
     original = json.loads(args.original.read_text())
     if (original["input_sha256"] != IMAGE_SHA or original["function"] != "0x40113078" or
-            digest(ROOT.parent / "oem/upstream/zseries_0_0_119.bin") != IMAGE_SHA or len(original["cases"]) != 2):
+            digest(ROOT.parent / "oem/upstream/zseries_0_0_119.bin") != IMAGE_SHA or len(original["cases"]) != 4):
         raise SystemExit("Original startup identity mismatch")
     with tempfile.TemporaryDirectory(prefix="zseries-startup-") as directory:
         native, compiler = load_native(directory)
         for item in original["cases"]:
-            result, events = invoke(native, item["boiler"])
+            result, events = invoke(native, item["boiler"], fail_stage=-1 if item["timer_start"] else -2)
             if result != 0 or events != item["events"]:
                 raise AssertionError(f"Startup trace mismatch: boiler {item['boiler']}; native {events}; original {item['events']}")
     report = {"schema_version": 1, "input_sha256": IMAGE_SHA, "function": "0x40113078", "scope": original["scope"],
-              "cases": 2, "all_results_match": True, "events_compared": sum(len(item["events"]) for item in original["cases"]),
+              "cases": 4, "all_results_match": True, "events_compared": sum(len(item["events"]) for item in original["cases"]),
               "native_compiler": compiler, "native_flags": FLAGS, "hardware_tested": False, "full_cpu_or_hardware_emulation": False}
     if args.write_evidence:
         if not args.export:
             parser.error("--write-evidence requires --export")
         report["instruction_export_sha256"] = digest(args.export / "instructions/fn_40113078.json")
         report["source_sha256"] = {path: digest(ROOT / path) for path in ("include/zseries/core_startup.hpp", "src/core_startup.cpp",
-                                  "tests/core_startup_bridge.cpp", "tools/validate_core_startup.py", "tools/ghidra/EmulateCoreStartup.java")}
+                                  "tests/core_startup_bridge.cpp", "tools/validate_core_startup.py", "tools/ghidra/EmulateCoreStartup.java", "tools/ghidra/Z119Execution.java")}
         fixture = ROOT / "tests/fixtures/core-startup-original.json"
         fixture.write_text(json.dumps(original, indent=2) + "\n")
         report["portable_golden_sha256"] = digest(fixture)

@@ -1,0 +1,4696 @@
+{
+  "input_sha256": "99ac1244a17b72dab51af1f61ed461cee5e85e050c898fc84518fcaeedadc7fc",
+  "cases_input_sha256": "58e3d39e4ac0e3ed7d3e3d5886d9785a1bb8cecaccce4d9748d1dd715fa672f9",
+  "cases": [
+    {
+      "id": "ema-0000",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0001",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0002",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0003",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0004",
+      "double_bits": "7ff0000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0005",
+      "double_bits": "7ff0000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0006",
+      "double_bits": "c048000000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0007",
+      "double_bits": "c053f33333333333",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0008",
+      "double_bits": "403f400000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0009",
+      "double_bits": "bfe199999999999a",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0010",
+      "double_bits": "4060800000000000",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0011",
+      "double_bits": "40590ccccccccccd",
+      "results": [],
+      "assertion_count": 1,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "ema-0012",
+      "double_bits": "4030000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0013",
+      "double_bits": "3fb999999999999a",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0014",
+      "double_bits": "4030000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0015",
+      "double_bits": "3fb999999999999a",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0016",
+      "double_bits": "4030000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0017",
+      "double_bits": "3fb999999999999a",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0018",
+      "double_bits": "4042aaaaaaaaaaab",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0019",
+      "double_bits": "403abbbbbbbbbbbd",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0020",
+      "double_bits": "4025d55555555555",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0021",
+      "double_bits": "3fd4444444444444",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0022",
+      "double_bits": "c036aaaaaaaaaaac",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0023",
+      "double_bits": "c040a22222222222",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0024",
+      "double_bits": "4050000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0025",
+      "double_bits": "404e033333333333",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0026",
+      "double_bits": "4012400000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0027",
+      "double_bits": "3fe2cccccccccccd",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0028",
+      "double_bits": "c051c00000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0029",
+      "double_bits": "c052be6666666666",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0030",
+      "double_bits": "405379b47582192e",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0031",
+      "double_bits": "405358574ab39ea3",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0032",
+      "double_bits": "3ff4000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0033",
+      "double_bits": "3fe7516a98c2ba55",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0034",
+      "double_bits": "c0580c9714fbcda4",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0035",
+      "double_bits": "c0582df43fca482f",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0036",
+      "double_bits": "4054000000400000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0037",
+      "double_bits": "40540000004fe666",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0038",
+      "double_bits": "3fe7fffff8600000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0039",
+      "double_bits": "3fe8000000533333",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0040",
+      "double_bits": "c059000000740000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0041",
+      "double_bits": "c05900000064199a",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "ema-0042",
+      "double_bits": "c048000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": [
+        "assertion:MathHelpers.h:56:numSamples \u003e 0",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "thermistor-0043",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0044",
+      "double_bits": "8000000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:adc !\u003d 0"
+      ]
+    },
+    {
+      "id": "thermistor-0045",
+      "double_bits": "408759bd15edbb23",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0046",
+      "double_bits": "407f9c637b7ab726",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0047",
+      "double_bits": "407f5ddf9e3d3908",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0048",
+      "double_bits": "4074605f1f7d0a0a",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0049",
+      "double_bits": "4072a23770accae1",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0050",
+      "double_bits": "4065e93482f31c77",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0051",
+      "double_bits": "0000000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0052",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "thermistor-0053",
+      "double_bits": "fff8000000000000",
+      "results": [],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0054",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0055",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0056",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0057",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0058",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0059",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0060",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0061",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0062",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0063",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0064",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0065",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0066",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0067",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0068",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0069",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0070",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0071",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0072",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0073",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0074",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0075",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0076",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0077",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0078",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0079",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0080",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0081",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0082",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0083",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0084",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0085",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0086",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0087",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0088",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0089",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0090",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0091",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0092",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0093",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0094",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0095",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0096",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0097",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0098",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0099",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0100",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0101",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0102",
+      "results": [
+        0,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0103",
+      "results": [
+        0,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isSamplingThresholdMet()",
+        "message:ERR ASSERT ",
+        "message:SENSOR METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "sensors-0104",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0105",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0106",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0107",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0108",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0109",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0110",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0111",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0112",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0113",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0114",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0115",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0116",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0117",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0118",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0119",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0120",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0121",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0122",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0123",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0124",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0125",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0126",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0127",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0128",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0129",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0130",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0131",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0132",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0133",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0134",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0135",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0136",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0137",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0138",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0139",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0140",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0141",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0142",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0143",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0144",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0145",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0146",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0147",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0148",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0149",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0150",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0151",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0152",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0153",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0154",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0155",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0156",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0157",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0158",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0159",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0160",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0161",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0162",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0163",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0164",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0165",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0166",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0167",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0168",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0169",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0170",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0171",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0172",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0173",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0174",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0175",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0176",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0177",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0178",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0179",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0180",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0181",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0182",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0183",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0184",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0185",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0186",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0187",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0188",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0189",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0190",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0191",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0192",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0193",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0194",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0195",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0196",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0197",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0198",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0199",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0200",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0201",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0202",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0203",
+      "results": [
+        1,
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0204",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0205",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0206",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0207",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0208",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0209",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0210",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0211",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0212",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0213",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0214",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0215",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0216",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0217",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0218",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0219",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0220",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0221",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0222",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0223",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0224",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0225",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0226",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0227",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0228",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0229",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0230",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0231",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0232",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0233",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0234",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0235",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0236",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0237",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0238",
+      "results": [
+        1,
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0239",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0240",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0241",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0242",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "sensors-0243",
+      "results": [
+        1,
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0244",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0245",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0246",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0247",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0248",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0249",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0250",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0251",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0252",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0253",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0254",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0255",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0256",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0257",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0258",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0259",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0260",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0261",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0262",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0263",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0264",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0265",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0266",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0267",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0268",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0269",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0270",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0271",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0272",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0273",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0274",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0275",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0276",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0277",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0278",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0279",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0280",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0281",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0282",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0283",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0284",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0285",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0286",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0287",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0288",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0289",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0290",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0291",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0292",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0293",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0294",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0295",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0296",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0297",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0298",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0299",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0300",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0301",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0302",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0303",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0304",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0305",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0306",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0307",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0308",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0309",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0310",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0311",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0312",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0313",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0314",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0315",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0316",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0317",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0318",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0319",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0320",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0321",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0322",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0323",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0324",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0325",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0326",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0327",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0328",
+      "results": [
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0329",
+      "results": [
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0330",
+      "results": [
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0331",
+      "results": [
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0332",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0333",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0334",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0335",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0336",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0337",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0338",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0339",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0340",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0341",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0342",
+      "results": [
+        0,
+        0
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0343",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0344",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:FAN METRIC isSamplingThresholdMet()"
+      ]
+    },
+    {
+      "id": "fan-0345",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0346",
+      "results": [
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0347",
+      "results": [
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0348",
+      "results": [
+        1,
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0349",
+      "results": [
+        1,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0350",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "fan-0351",
+      "results": [
+        0,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0352",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0353",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0354",
+      "results": [
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0355",
+      "results": [
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0356",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0357",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0358",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0359",
+      "results": [
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0360",
+      "results": [
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0361",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0362",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0363",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0364",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0365",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0366",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0367",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0368",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0369",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0370",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0371",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0372",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0373",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0374",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0375",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0376",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0377",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0378",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0379",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0380",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "pump-0381",
+      "results": [
+        0
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0382",
+      "results": [
+        10,
+        0
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:258:error !\u003d StillError::None",
+        "delay:200",
+        "message:Unmapped StillError"
+      ]
+    },
+    {
+      "id": "errors-0383",
+      "results": [
+        10,
+        5
+      ],
+      "assertion_count": 2,
+      "events": [
+        "assertion:PicoStill.h:258:error !\u003d StillError::None",
+        "delay:200",
+        "message:Unmapped StillError",
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0384",
+      "results": [
+        19,
+        1
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0385",
+      "results": [
+        19,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0386",
+      "results": [
+        20,
+        2
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0387",
+      "results": [
+        20,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0388",
+      "results": [
+        21,
+        3
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0389",
+      "results": [
+        21,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0390",
+      "results": [
+        22,
+        4
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0391",
+      "results": [
+        22,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0392",
+      "results": [
+        23,
+        5
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0393",
+      "results": [
+        23,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0394",
+      "results": [
+        24,
+        6
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0395",
+      "results": [
+        24,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0396",
+      "results": [
+        25,
+        7
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0397",
+      "results": [
+        25,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0398",
+      "results": [
+        26,
+        8
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0399",
+      "results": [
+        26,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0400",
+      "results": [
+        27,
+        9
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0401",
+      "results": [
+        27,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0402",
+      "results": [
+        28,
+        10
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0403",
+      "results": [
+        28,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0404",
+      "results": [
+        29,
+        11
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0405",
+      "results": [
+        29,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0406",
+      "results": [
+        30,
+        12
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0407",
+      "results": [
+        30,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0408",
+      "results": [
+        31,
+        13
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0409",
+      "results": [
+        31,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0410",
+      "results": [
+        32,
+        14
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0411",
+      "results": [
+        32,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0412",
+      "results": [
+        33,
+        15
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0413",
+      "results": [
+        33,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0414",
+      "results": [
+        34,
+        16
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0415",
+      "results": [
+        34,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0416",
+      "results": [
+        35,
+        17
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0417",
+      "results": [
+        35,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0418",
+      "results": [
+        36,
+        18
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0419",
+      "results": [
+        36,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0420",
+      "results": [
+        37,
+        19
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0421",
+      "results": [
+        37,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0422",
+      "results": [
+        38,
+        20
+      ],
+      "assertion_count": 0,
+      "events": []
+    },
+    {
+      "id": "errors-0423",
+      "results": [
+        38,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0424",
+      "results": [
+        10,
+        21
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:Unmapped StillError"
+      ]
+    },
+    {
+      "id": "errors-0425",
+      "results": [
+        10,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "message:Unmapped StillError",
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0426",
+      "results": [
+        10,
+        22
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:Unmapped StillError"
+      ]
+    },
+    {
+      "id": "errors-0427",
+      "results": [
+        10,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "message:Unmapped StillError",
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0428",
+      "results": [
+        10,
+        4294967295
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:Unmapped StillError"
+      ]
+    },
+    {
+      "id": "errors-0429",
+      "results": [
+        10,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "message:Unmapped StillError",
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "errors-0430",
+      "results": [
+        10,
+        5
+      ],
+      "assertion_count": 1,
+      "events": [
+        "assertion:PicoStill.h:258:error !\u003d StillError::None",
+        "delay:200",
+        "message:Unmapped StillError",
+        "assertion:PicoStill.h:297:_error \u003d\u003d StillError::None",
+        "delay:200"
+      ]
+    },
+    {
+      "id": "button-0431",
+      "results": [
+        0,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0432",
+      "results": [
+        1,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0433",
+      "results": [
+        0,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:101",
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0434",
+      "results": [
+        1,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:101",
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0435",
+      "results": [
+        0,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isPressed EventPending",
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0436",
+      "results": [
+        1,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "message:ERR ASSERT ",
+        "message:isPressed EventPending",
+        "clock:102",
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0437",
+      "results": [
+        0,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0438",
+      "results": [
+        1,
+        0,
+        0,
+        103
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:103"
+      ]
+    },
+    {
+      "id": "button-0439",
+      "results": [
+        0,
+        0,
+        0,
+        5101
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:100",
+        "gpio:0",
+        "clock:100",
+        "clock:5100",
+        "gpio:0",
+        "clock:5101",
+        "gpio:0",
+        "button:1:1",
+        "clock:5101",
+        "clock:5200",
+        "gpio:1"
+      ]
+    },
+    {
+      "id": "button-0440",
+      "results": [
+        0,
+        0,
+        0,
+        401
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:100",
+        "gpio:0",
+        "clock:100",
+        "clock:200",
+        "gpio:1",
+        "clock:200",
+        "clock:400",
+        "gpio:1",
+        "clock:401",
+        "gpio:1",
+        "button:0:1",
+        "clock:401"
+      ]
+    },
+    {
+      "id": "button-0441",
+      "results": [
+        0,
+        0,
+        0,
+        411
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:100",
+        "gpio:0",
+        "clock:100",
+        "clock:110",
+        "gpio:1",
+        "clock:110",
+        "clock:200",
+        "gpio:0",
+        "clock:200",
+        "clock:210",
+        "gpio:1",
+        "clock:210",
+        "clock:411",
+        "gpio:1",
+        "button:0:2",
+        "clock:411"
+      ]
+    },
+    {
+      "id": "button-0442",
+      "results": [
+        0,
+        0,
+        0,
+        4294967282
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:4294967281",
+        "clock:4294967282",
+        "gpio:0",
+        "button:1:0",
+        "clock:4294967282",
+        "clock:100",
+        "gpio:1"
+      ]
+    },
+    {
+      "id": "button-0443",
+      "results": [
+        1,
+        0,
+        0,
+        4294967041
+      ],
+      "assertion_count": 0,
+      "events": [
+        "clock:4294967041",
+        "gpio:0",
+        "button:1:2",
+        "clock:4294967041"
+      ]
+    }
+  ],
+  "original_functions_executed": {
+    "0x400d405c": 937,
+    "0x400d4074": 11,
+    "0x400d4154": 224,
+    "0x400d4180": 108,
+    "0x400d4204": 330,
+    "0x400d426c": 190,
+    "0x400d43d0": 29,
+    "0x400d4408": 5,
+    "0x400d4428": 26,
+    "0x400d446c": 16,
+    "0x400d4678": 41,
+    "0x400d46b8": 43,
+    "0x400d554c": 49,
+    "0x400d5734": 49,
+    "0x4014a084": 1040,
+    "0x4014a0a0": 30
+  },
+  "modeled_boundaries": {
+    "Arduino_delay": 41,
+    "Arduino_digitalRead": 16,
+    "ROM_adddf3": 59,
+    "ROM_divdf3": 70,
+    "ROM_divsf3": 41,
+    "ROM_extendsfdf2": 52,
+    "ROM_floatsidf": 48,
+    "ROM_muldf3": 118,
+    "ROM_subdf3": 48,
+    "assertion_diagnostic_format_output": 41,
+    "button_event_sink": 5,
+    "diagnostic_basename": 41,
+    "diagnostic_millis": 41,
+    "diagnostic_output": 287,
+    "functional_millis": 45,
+    "libm_log": 11
+  },
+  "scope": "Original Xtensa instruction bodies including both returning assertion helpers; counted assertions update OEM RAM and execute the delay call. Explicit ROM/libm arithmetic, diagnostic output, GPIO, clock, delay and button event boundaries. Window prologue/return adapted, one thread only.",
+  "hardware_tested": false,
+  "full_cpu_emulation": false
+}

@@ -1,6 +1,11 @@
 #include "zseries/head_network_events.hpp"
 namespace zseries { namespace oem {
 #define HEAD_NET_TRY(expression) do{const auto result=(expression);if(result!=HeadNetworkResult::Ok)return result;}while(false)
+HeadNetworkResult HeadNetworkEvents::assertion(std::uint32_t line) {
+    assertion_line=line;
+    if(!services.assertion)return HeadNetworkResult::MissingService;
+    return services.assertion(services.context,line)?HeadNetworkResult::Ok:HeadNetworkResult::ServiceFailure;
+}
 HeadNetworkResult HeadNetworkEvents::perform(const HeadNetworkAction& action) {
     if(!services.perform)return HeadNetworkResult::MissingService;
     return services.perform(services.context,action)?HeadNetworkResult::Ok:HeadNetworkResult::ServiceFailure;
@@ -57,11 +62,11 @@ HeadNetworkResult HeadNetworkEvents::group_session(const HeadAzureEvent& event) 
         HEAD_NET_TRY(effect(HeadNetworkEffect::AppendCommand,static_cast<std::uint32_t>(UiCommand::CoffeeProgramLoad)));
         parameters.id=event.program;
         double value;
-        if(!quantity_in(event.parameters.water,Unit::Liter,value))assertion_line=0x7d;
+        if(!quantity_in(event.parameters.water,Unit::Liter,value))HEAD_NET_TRY(assertion(0x7d));
         parameters.water={value,Unit::Liter};
         parameters.intensity={event.parameters.intensity.value,Unit::Intensity};
         parameters.time={event.parameters.time.value,Unit::Second};
-        if(!quantity_in(event.parameters.temperature,Unit::Fahrenheit,value))assertion_line=0x7d;
+        if(!quantity_in(event.parameters.temperature,Unit::Fahrenheit,value))HEAD_NET_TRY(assertion(0x7d));
         parameters.temperature={value,Unit::Fahrenheit};
     }else HEAD_NET_TRY(effect(HeadNetworkEffect::AppendCommand,static_cast<std::uint32_t>(UiCommand::GroupSessionExit)));
     HeadNetworkAction action(HeadNetworkEffect::GroupSessionScreen);

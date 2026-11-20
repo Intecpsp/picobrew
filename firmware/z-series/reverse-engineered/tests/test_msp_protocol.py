@@ -59,7 +59,8 @@ class Transport(C.Structure):
 class Client(C.Structure):
     _fields_ = [("state", C.POINTER(State)), ("transport", Transport), ("address", U8),
                 ("response", U8 * 9), ("next_poll", U32), ("poll_interval", U32),
-                ("transition_delay", U32), ("response_delay", U32), ("last_bsl_response", U8)]
+                ("transition_delay", U32), ("response_delay", U32), ("last_bsl_response", U8),
+                ("diagnostics", C.c_void_p)]
 
 
 class Segment(C.Structure):

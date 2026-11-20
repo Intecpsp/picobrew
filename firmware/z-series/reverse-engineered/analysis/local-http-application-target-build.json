@@ -43,10 +43,10 @@
       "object_bytes": 9044
     }
   ],
-  "archive_sha256": "820dde95af029e3a4d4485b7ddcc5ff7a5de543d4eb9f3eb00e12449057335c6",
+  "archive_sha256": "d7738a789b8de427a7cfd63d03205973829c1a59d528cdb8ab0217576175663e",
   "complete_application_linked": false,
   "hardware_tested": false,
-  "scope": "Concrete incoming HTTP application and WiFiServer/WiFiClient adapter compiled against pinned historical SDK; full application lifecycle and hardware behavior remain unqualified.",
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
   "sdk_identity_sha256": {
     "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
     "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
@@ -69,7 +69,7 @@
     "source_file_count": 135,
     "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
   },
-  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
   "owned_header_sha256": {
     "include/zseries/local_http_application.hpp": "27df3a29bbed07d4a024f85843ada07df1ebcd234b21d1e06ae58652aa469197",
     "include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
@@ -79,5 +79,12 @@
   },
   "platform_header_sha256": {
     "platform/esp32/local_http_platform.hpp": "c02c1623af6c9f067ff6a5fb3d1272f7842d533fc879c8b8f035053d440450ac"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 2
   }
 }

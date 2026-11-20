@@ -12,7 +12,7 @@
     "tests/display_effects_bridge.cpp": "17a403de3cb4ea700d210e24a6ebc236fe2dcedecdc44e46f285ebad9c24acc9",
     "tools/validate_display_effects.py": "aec9400f97622b3e645601268c91f0fca182bff6ee219bb15946feec5a5eaea8",
     "tools/ghidra/EmulateDisplayEffects.java": "a86406ae3230118909bc2f5f10286fb9ab3a28b65074b5dcadde4103b4238b66",
-    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493"
   },
   "hardware_tested": false,
   "scope": "Original gradient, caret, animation and slide instructions, including nested geometry, drawing and transfer-buffer reversal; GPIO/SPI/libc/delay boundaries recorded explicitly",
@@ -71,5 +71,17 @@
     "0x401bf5c4": "9d5c40bb4137bd85f5231e6cc39bdb3842ffd83a16b2d311db1928b4fc7bfea3",
     "0x401bf5f4": "acc308e0e27f88b69cc592ad35dea6a56c94d1ce999a8944dfdad60c93e4ced2"
   },
-  "golden_fixture_sha256": "ccb7c26352ffb382bdde43d9bde42dddb43bd2aa0c70890f44a789e8dba5deeb"
+  "golden_fixture_sha256": "ccb7c26352ffb382bdde43d9bde42dddb43bd2aa0c70890f44a789e8dba5deeb",
+  "movsp_harness_replay": {
+    "all_results_match": true,
+    "cases": 989,
+    "original_execution_jsonl_sha256": "8fde7209b36074a357bcdc762b8afd410ca30900a61193593888c845ae606058",
+    "boundary": "Windowed ABI stack move; CPU window spill and underflow exceptions remain outside the harness."
+  },
+  "trunc_s_harness_replay": {
+    "all_results_match": true,
+    "cases": 989,
+    "original_execution_jsonl_sha256": "8fde7209b36074a357bcdc762b8afd410ca30900a61193593888c845ae606058",
+    "boundary": "Finite signed TRUNC.S uses the mathematical power-of-two scale; nonfinite values, overflow and CPU exceptions remain outside the harness."
+  }
 }

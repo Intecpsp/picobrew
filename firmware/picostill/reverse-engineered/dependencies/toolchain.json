@@ -1,0 +1,13 @@
+{
+  "name": "xtensa-esp32-elf",
+  "version": "GCC 5.2.0 / crosstool-ng 1.22.0-80-g6c4433a",
+  "archive": "xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz",
+  "directory": "xtensa-esp32-elf",
+  "url": "https://dl.espressif.com/dl/xtensa-esp32-elf-linux64-1.22.0-80-g6c4433a-5.2.0.tar.gz",
+  "archive_bytes": 44219107,
+  "archive_sha256": "3fe96c151d46c1d4e5edc6ed690851b8e53634041114bad04729bc16b0445156",
+  "identity_sha256": {
+    "bin/xtensa-esp32-elf-g++": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a"
+  },
+  "scope": "Development compiler for ESP32 target object validation; compiler identity alone does not prove the lost OEM build configuration."
+}

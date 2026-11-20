@@ -1,0 +1,383 @@
+{
+  "schema_version": 1,
+  "complete_application_linked": true,
+  "hardware_tested": false,
+  "flash_image_produced": false,
+  "installation_qualified": false,
+  "elf_sha256": "f0e1343d7dc9b490f8a4cd699c7ee5a039f5d2c4089b5c08cc5c27cf139e199c",
+  "map_sha256": "6897d31a55283051bb3789bf4e10b4243c15c39aacd5330ecbfbc356bebea147",
+  "sdk_archive_sha256": "cc8aa5f11154037a9e209f235547d35c418dff781ec4f99cf84b92ad8a3f707c",
+  "sdk_objects": [
+    {
+      "source": "cores/esp8266/Esp-version.cpp",
+      "source_sha256": "6c0cda633bb234c4d94ffa6817c10c65cb30653bf36a066245a64cbc3a65773f",
+      "object_sha256": "fb9bf22572e9cc62aa950ebd9db72fab6aa6d06d25cdd7902b4f34313210b95f"
+    },
+    {
+      "source": "cores/esp8266/Esp.cpp",
+      "source_sha256": "289b03bbe0f76e938269dc8732ef57a847e3e237c85d9aae991813ca7677fdb5",
+      "object_sha256": "336f2c63dd7b96981a4ab7d423501d21a79b03440d4bf0d8e852bc5c96f5fedb"
+    },
+    {
+      "source": "cores/esp8266/FS.cpp",
+      "source_sha256": "47fe9d6fdb9f475991c42527855fcfca077606f981fbee166f36fd354d58c66a",
+      "object_sha256": "eb77b11be63aceb45f1e5dd26cff3dddace220a31b4127571fe2bf93a7e59dba"
+    },
+    {
+      "source": "cores/esp8266/FunctionalInterrupt.cpp",
+      "source_sha256": "a363614ff3bfb3d4bf082cdda5f5697807b35d645f3ce33b8901a115bcc9dcdc",
+      "object_sha256": "d320cd53894f8c0eaac1c2e7b0bba070f345d0ad709d2436ef35dba7d881d31e"
+    },
+    {
+      "source": "cores/esp8266/HardwareSerial.cpp",
+      "source_sha256": "6572aef98bc9f5612bed42b82956e4c9ab172b7eaac47f4d02faffeec6fe0eda",
+      "object_sha256": "b194b819367e0c1d3fbf043d587849774d44624d05267d106a4b427147e90328"
+    },
+    {
+      "source": "cores/esp8266/IPAddress.cpp",
+      "source_sha256": "273fbe16110c2e81298d87a5bfcbff23616f0fbf2ea62bbd472b08b29404aa9d",
+      "object_sha256": "5ecfa29afb0a35a33873b9d5cf171304e461a90fccb80637d1e4e93768ba237e"
+    },
+    {
+      "source": "cores/esp8266/MD5Builder.cpp",
+      "source_sha256": "93abc7466394c2ca20140774fe99e96b28cb0cde54ddf33a3fa9e530dbbce806",
+      "object_sha256": "f372aadd13d38719c21bc8da43edf25825c02c48abf25726fab5a5cfaff3d845"
+    },
+    {
+      "source": "cores/esp8266/Print.cpp",
+      "source_sha256": "be5ed31b9b50a39dab53db208cf44b5d27fdf22afd06c50068cdb67bee337b12",
+      "object_sha256": "f14897fa6fb4242a17aa264f7f657e68fe352f071868cb6ff6909dcd8bdd24bf"
+    },
+    {
+      "source": "cores/esp8266/Schedule.cpp",
+      "source_sha256": "89fcbc0b751e865c66e74cafc842758d90af8d432d7d9bbcbdcc3d240d75a940",
+      "object_sha256": "d5d6daf07e8fd8d666b521595224979d816add3c8d630acd338d62e9e4ba4942"
+    },
+    {
+      "source": "cores/esp8266/Stream.cpp",
+      "source_sha256": "8b2121a54fb9a8cd54448a65f5eb926187539f81092b3ce58a437da1d733bc98",
+      "object_sha256": "b5ef357dc7a225f55e82ba14f6bd8bf3c6a72dbd0fac25f063763feb13a9cdc3"
+    },
+    {
+      "source": "cores/esp8266/StreamString.cpp",
+      "source_sha256": "390203a7d705925f1911fa01b3bfe5ec7f27bfe84fba5feeab43dc8d09fef8ca",
+      "object_sha256": "96a50581a4c44e1c6162059c5ca50f8fed82f8dd3686788a859a0bc5ed16c46c"
+    },
+    {
+      "source": "cores/esp8266/Tone.cpp",
+      "source_sha256": "26561fc84eb788f888d56e25f6e62277eacfc6ff53d405729dc02dfbbec439c4",
+      "object_sha256": "4c69f9e4d77dbcab2df05e5c7e502d638c7d798ce6f76f9cbc389f171c0ae539"
+    },
+    {
+      "source": "cores/esp8266/Updater.cpp",
+      "source_sha256": "26540d960b3ffb40027c7aac86165b1515c49b3fae30a3666d186fa5172cf8b4",
+      "object_sha256": "eb3d1e438e7d668176fd3db6c8f05df4d72fb125a860d81420cce42a7cd16f29"
+    },
+    {
+      "source": "cores/esp8266/WMath.cpp",
+      "source_sha256": "d0e68763915bd4ed2fc895475d2ba26ae702d5eeaffa01cd6f470a4b7423af1a",
+      "object_sha256": "0b5a41257cd38984d84e5a08632d806b00dc6d47d3e3aa833a584c57974b6f64"
+    },
+    {
+      "source": "cores/esp8266/WString.cpp",
+      "source_sha256": "93434fdc3befa955e753c34b14bbccadb070eb4ce3d898f2962cd517b27e71eb",
+      "object_sha256": "88cdedf3c3fefc1f19a4b24dcb6d4c9a6b7ea02170f932cee2775226a08a57d7"
+    },
+    {
+      "source": "cores/esp8266/abi.cpp",
+      "source_sha256": "aaaafe40314ed224a195e895c658a89820fe2ab3bceae48920bdd5df0262ba33",
+      "object_sha256": "d49712c537c415fc09e3ba845a085d543502a1d72ff3bc5c39c3a09250c07114"
+    },
+    {
+      "source": "cores/esp8266/base64.cpp",
+      "source_sha256": "553fe5a988bbde1ae5c5e40c10176ec77395dacef617c890ff0e83e63d801380",
+      "object_sha256": "5b54dfc182c3204b6182acb036ed2dd9b58042c59c10edc8504ab217a955fc8a"
+    },
+    {
+      "source": "cores/esp8266/cbuf.cpp",
+      "source_sha256": "94e7bfc25fc18525b892022c0be66ab23e093324363eb02646e84781bdbe9898",
+      "object_sha256": "9e50d542c2f79dee571c20db2632c5945f3ec333003790d1691f6fb5c8e5920d"
+    },
+    {
+      "source": "cores/esp8266/cont.S",
+      "source_sha256": "d5c833639ffddb08f15a68323413ef6d3813272b685bc8ef65405f98be03c49d",
+      "object_sha256": "1368e4a93c1334c56cc5f1ae71d9a25eb61a4f4bf711d1972df186659be3fe35"
+    },
+    {
+      "source": "cores/esp8266/cont_util.c",
+      "source_sha256": "b7fa4eda88117f5a8f2355e577729660df60f7bd9316861772ff33838939d4b0",
+      "object_sha256": "c025dc606f0caf5071062da7cb34dd7a2a2d130e0b2455fe9ab1d7258bc4543f"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_eboot_command.c",
+      "source_sha256": "586648e8e5bb1e10361275d375ac0080d08dbf200d40f6a7791fada8ea2f9179",
+      "object_sha256": "b9a2fa64ebb42e8110454ece383f2b35226f84eaa1313c0da45cda6d68d8d28f"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_flash_utils.c",
+      "source_sha256": "dbe6652b835a4bff89f8879bc7ae45a35761f1d33b543f8a3c3b4866d89a5fee",
+      "object_sha256": "9cd69cb38516256a1aab663a6e6aec957cffce0da0b4cb1e5b02ccf7ff94590e"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_i2s.c",
+      "source_sha256": "58b4042a1bfdb97bb385d04538fba6db7b11aae5d687a968d9b2b7732dd66bb9",
+      "object_sha256": "f90ef8fb39d6f527d67e7a845b71fbbc5454cf69a87b61eccb8c8b197c8fa5e6"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_main.cpp",
+      "source_sha256": "8111043411dcd29010d75a4e3ff1c9f839a0e6dfebc355ddada3ac10f3fce1a8",
+      "object_sha256": "c52a5cedde54311eab079ed2e15aa7acaf7aaed45920e8559c29e474ed34860f"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_noniso.c",
+      "source_sha256": "756f3407f3bdfaa83fb34a69487cc9223c42ae88efa4c8a46111b2f00c0ae956",
+      "object_sha256": "7ccdedfd96ee76c939307c28abd0c27728b26e14764904a41b7ff16827f72296"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_phy.c",
+      "source_sha256": "8fd41558a2f70389b8835e89560def59c4f74bb59c75239e3853d8fd04e81cfc",
+      "object_sha256": "96b4dc56f3bfef8e5a48c57103f24f29396f3d581e5a0e9f490b8c3e2fd88e00"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_postmortem.c",
+      "source_sha256": "5e8a5fd44809bff905e855b75ba88c6977973f124b5afa8f4ddb635e9296def0",
+      "object_sha256": "598f7be9c5a2642dde620c418b883a0df34b5679d9124e0959ea4d7ef38d5027"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_si2c.c",
+      "source_sha256": "4a085ff600b065961830faa7d1c44ad92e3e985e3f4a5e98109174afffeaac60",
+      "object_sha256": "ea0feecdbef4288a068dcbedbd4b6a4a39ccad6332d9b78bab3a3a495ce31199"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_timer.c",
+      "source_sha256": "1ca8ab73746eb739f92d9edd2d9583c834810970af58a063e9e5b80ff764ee16",
+      "object_sha256": "1c8a7e54205b1d2d2c3583753449a707971741da272dd3203b859e98669598f1"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring.c",
+      "source_sha256": "26cfe1e14d4f0d9a2fb3b1ff912eec75e4565f826bb437d0bed5fae391e78e8a",
+      "object_sha256": "24f39f0fdb465dbe097a399f465dcbb43253b295915cb0f90bf71a5d0dfcb194"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring_analog.c",
+      "source_sha256": "45596a4e81209b1fd8e2b3d2019a913487a3649ef03faa35b0cd1cd6b8839b2b",
+      "object_sha256": "0da5e86c730e9c32fdeb207b84a15be26c21f90b7a8dd10c95605a157c32edfa"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring_digital.c",
+      "source_sha256": "d97a1fbc2e96718a79cf737bd29099531c6140349211cd1206850f007a82407f",
+      "object_sha256": "354282df84be36d321bbbb167c6e810b03e17fffe8a03325281cd3aa52583a88"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring_pulse.c",
+      "source_sha256": "c4aeab07c6bfe3b3aadb622bcf901aafd4d042a4049f80b71cb218c621b9c54c",
+      "object_sha256": "32a580e96d14a3887987edc8302b433df44c1e19d34d7977d1e1e9db65a79be8"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring_pwm.c",
+      "source_sha256": "9be4338108ec19ae97b0837095c886dccc1a9b468187aa0d4018219b60a348ca",
+      "object_sha256": "0d58793f83ee166446fc9fa95f9a33a1eebdd807673492925f99a33366bf9879"
+    },
+    {
+      "source": "cores/esp8266/core_esp8266_wiring_shift.c",
+      "source_sha256": "50566d70ad6eeaf3fde5a0e37c5b6150cda00c52786c7fdc322d51db59181d5f",
+      "object_sha256": "03057ae92e381b23df6a6075c33743749c1ec53032d80deaabf9c0fad597290c"
+    },
+    {
+      "source": "cores/esp8266/debug.cpp",
+      "source_sha256": "efd3f9cef96a262d6762f1aca02aa40721da38c4b688b341e5142aac59e6abeb",
+      "object_sha256": "b27c65bfc2f544bdc0f5ccf7225cfc604f19733615f0e84d797727fb5be00566"
+    },
+    {
+      "source": "cores/esp8266/heap.c",
+      "source_sha256": "c264e11910ae814a442280a41aefb4753dda2e21bde85f30f3465d235f827dda",
+      "object_sha256": "0e6a13a8948e50a1642324086d89121453b9e447845fc47c93ca3dc79105c692"
+    },
+    {
+      "source": "cores/esp8266/libb64/cdecode.c",
+      "source_sha256": "7a22a924a30854f597ae1554b7b2b125eb5c3bce7eca7350fb7c85e7702c20c7",
+      "object_sha256": "579b72466ab4adf9354260739be2bac89d2d870aef8b35e76a6518a248f81d2c"
+    },
+    {
+      "source": "cores/esp8266/libb64/cencode.c",
+      "source_sha256": "e0f562b6ddf9131db801f158558a6c781fabbce596216d93e0676f8d3aa9ea96",
+      "object_sha256": "0a1c8bc91e602216615dcb5115a788b6d08b94a27e66336f00c9f53a41b859da"
+    },
+    {
+      "source": "cores/esp8266/libc_replacements.c",
+      "source_sha256": "cdcf141bc9fecbb5dcd49e278d642fb6caf0e5a1aab732e46dbd5a6c799a3a0a",
+      "object_sha256": "bf8126503ba558e0f2165435144c9c89a873298806376a6672bf1423832daf45"
+    },
+    {
+      "source": "cores/esp8266/pgmspace.cpp",
+      "source_sha256": "81ed6bd08538edc5be768b99be1d8abc07d5731356b118be71326ac91c7f3f3c",
+      "object_sha256": "d7db0556aaa87da504db76afedc05ca878e63f7895a5c54e6f935ed9c925f341"
+    },
+    {
+      "source": "cores/esp8266/sntp-lwip2.c",
+      "source_sha256": "ac852be61941c6ea39783f2620d8712f97a530d56623175676fdff07d29dea07",
+      "object_sha256": "1a7e4cf565f3c79ccaa9bb3140cf67173bf8ed3ac927b620fe5dc6e046593048"
+    },
+    {
+      "source": "cores/esp8266/spiffs/spiffs_cache.c",
+      "source_sha256": "40f88098e41c943bd53805e2f6b4804112ce1eaf931fa92adb2afc8a0493b3f1",
+      "object_sha256": "55ae61154f69c3bf3283b6749ba4419b06a9bd6a16af38380b8fed5ab93a218b"
+    },
+    {
+      "source": "cores/esp8266/spiffs/spiffs_check.c",
+      "source_sha256": "64e6ef56cb2e8fac4315b1dbbc317a0ac0f83b4a1a9589d8426dd4ab60797882",
+      "object_sha256": "e9bc8d880c4a8632660dcece16313eadc3798cfe5de88dd0f2bdbb88f181d39b"
+    },
+    {
+      "source": "cores/esp8266/spiffs/spiffs_gc.c",
+      "source_sha256": "74eeeb674469a5e5e98fef11b86b39ddafba7d94125de6103b881cb87eca7516",
+      "object_sha256": "a99487ee9d6980bfd7369c6acf2c09822261e7a79ff73ef6902a5386aadf4708"
+    },
+    {
+      "source": "cores/esp8266/spiffs/spiffs_hydrogen.c",
+      "source_sha256": "53c0add000910baf555a9e07d19d52676a175eeb4475cf92221ee9c2afbf7f48",
+      "object_sha256": "3585d54a59a7b107369264712dcd618e7951a9a72e05022c8d155653e4be6564"
+    },
+    {
+      "source": "cores/esp8266/spiffs/spiffs_nucleus.c",
+      "source_sha256": "1c98d0e5659d4ee76215eb9ae0e34e239de5ff7640a1426fa1c8082c5e094c36",
+      "object_sha256": "d5b057734e9673441bb8426d61edda05645c5f0797de024a45aa0b525f69a5d1"
+    },
+    {
+      "source": "cores/esp8266/spiffs_api.cpp",
+      "source_sha256": "ea67dd7ad148efe072a1395478e971cf66a7158cd8c70e95ec3b3548b7ee91ef",
+      "object_sha256": "f27511086067dfd25e29cfb4b2b814cc334c351f9e703ce2822d54cb9bef3561"
+    },
+    {
+      "source": "cores/esp8266/spiffs_hal.cpp",
+      "source_sha256": "7076357a8d428dcb5dbfefaf14b3f18e02c406a38f5dac7cf850ba2728ddb101",
+      "object_sha256": "4bf16847f93d6f0d657832f36d004eb6a43cf901f71cce5166feca288a1a8190"
+    },
+    {
+      "source": "cores/esp8266/time.c",
+      "source_sha256": "c9b86dd3b362b160fc3c821980e66b51a5f80ae1aec5a5790e0dd9dc7122f100",
+      "object_sha256": "ce8e423aae2c369a8da3e0fb0622d5d9801e8539bbee7a4605dcf29a50033ad0"
+    },
+    {
+      "source": "cores/esp8266/uart.c",
+      "source_sha256": "ca4299dce3e8b07a4ba0e529316096ed61e224c1949bc99f34774c91faa69836",
+      "object_sha256": "2e4035e76041f438311287d9024e653560b45d16c6c0f6332ede665ba97de171"
+    },
+    {
+      "source": "cores/esp8266/umm_malloc/umm_malloc.c",
+      "source_sha256": "58da2d62bcf199438d5d1a05a65ec58dba4eff66b512f78f3e203c929452b547",
+      "object_sha256": "2ba84a917ed8553d04232cc08aa25fe90e880f20537d889de4ef69390b1d5d1b"
+    },
+    {
+      "source": "libraries/Wire/Wire.cpp",
+      "source_sha256": "df063e656a4cdf78eb97082f856755215f70ec1ad6d6fc33ab5a58d717123b19",
+      "object_sha256": "f23ed01c1dd534f3a37bcebfdca730f04ca632b2614299c80ce94b84e522bd5c"
+    },
+    {
+      "source": "libraries/EEPROM/EEPROM.cpp",
+      "source_sha256": "85c5c92d0a4b08aec9d056f59b906e345e7e1cdd483ea25d525e844f2ae9a467",
+      "object_sha256": "31e1e8fcbb1232b89817e729ba8313aa12f76fbe0cfa79ddbf77b6b5060c27ad"
+    },
+    {
+      "source": "libraries/DNSServer/src/DNSServer.cpp",
+      "source_sha256": "b835a304e826e40204e20178cb5136e5872ffcd668ef5c3904321d732740d43e",
+      "object_sha256": "5d264e71fbc6c41d3dcab07adc471b8f1259fae6ea54c9db4d828e3e50ba0b15"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFi.cpp",
+      "source_sha256": "ec14d2d820dcc94fffcb0be22727ec96b9295e946a5531dbcac2171e28d5fd7b",
+      "object_sha256": "01d84af1909fa9f148eb140c90dc699e2f30100b3fc52416f6e74aa76e7b0714"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFiAP.cpp",
+      "source_sha256": "9d20c2d83e6ee59e5404bc6767e56471eb873a6a4dc0416f0af761698659fd2c",
+      "object_sha256": "dbde5f5f4a8c3fd8e0cf26036103826957b97d52375a592b07ad1b62fe5b9a7f"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFiGeneric.cpp",
+      "source_sha256": "8bc1b1237008cfb6f02c2787a3570c6537b9e9d96a47b1de0a20d0df0fe87018",
+      "object_sha256": "74cb085835e51db0e056aaa2fdb83ce4be899ffb8b8791d21d36be60e374b84f"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFiMulti.cpp",
+      "source_sha256": "d51a1ae56f397b6b85266a40385ddf1588574cf42c17d38d100f7f60ea04f0ff",
+      "object_sha256": "2abbaee33b48cea05229e44679ca4bf61f5984904a73cb10cfe358413e2f540d"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFiSTA.cpp",
+      "source_sha256": "49b4438dfd209ec109a1094aaf38786e734e5298f89a7a6ba0dcebf1b78e653e",
+      "object_sha256": "d0576fbb1d4034eb053b6714ad76bf83889b2fba4aab7fcc93f7e2201b38044f"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/ESP8266WiFiScan.cpp",
+      "source_sha256": "a0cd392825b5e45e915c9e3996e7472090168c9cd345658c1edabc758cb4c23e",
+      "object_sha256": "ee8875384087fe21878f4c21146432b48dae0fe981c25215bd299ef75aea64e4"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/WiFiClient.cpp",
+      "source_sha256": "906dccd2d8e49a461bae3d25309b9c9f702a76ff5ab0ece2b53039bb6f394e4f",
+      "object_sha256": "70f19bfa7bba9ef86720dcc53be3fab11c6ad34200ed14271085d63aa692afa9"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/WiFiClientSecure.cpp",
+      "source_sha256": "c713e3ae8a5eb643551ad048e585a538196115c8985edfb63a3d4d5c67c14b04",
+      "object_sha256": "2b4fc906062f923e3a3778b1083efa9693459f4f97764946fc762e044dadfa3b"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/WiFiServer.cpp",
+      "source_sha256": "c54f8d525abcf5c99fa7fa51e3ccb86ea487d3b1c253ddc5dc72050ee39945c1",
+      "object_sha256": "dce13702682d1cc212cc00100d1eb4f50f41155b44c4666fad60d4024067230b"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/WiFiServerSecure.cpp",
+      "source_sha256": "63eb660bfdd718acda36f700bf616433591ae91ea16fb103a4edc7bafa248797",
+      "object_sha256": "53685b54af008e3b339bb0dddaead28a65456641b2d50dbdf67c655b8dd7df8e"
+    },
+    {
+      "source": "libraries/ESP8266WiFi/src/WiFiUdp.cpp",
+      "source_sha256": "b74427217a314c734686b91a3c648f92c4f53f5c19206123c2516c7dae4b40c7",
+      "object_sha256": "b1ba9b2d2858aa29c7b7dc320becf36f10966d327d4d3db698a6d00937278606"
+    },
+    {
+      "source": "libraries/ESP8266httpUpdate/src/ESP8266httpUpdate.cpp",
+      "source_sha256": "98f3fb58dcfbd2f8b8e040bb3e64185daae57718969f2f1e946549e4b84694f4",
+      "object_sha256": "389cfbafb6085bfbd53282aba38fb72e1dd3029418bef316a3beab0ff43c7853"
+    },
+    {
+      "source": "libraries/ESP8266HTTPClient/src/ESP8266HTTPClient.cpp",
+      "source_sha256": "7414c685a45defccb63b30f99949e4fcf5a33b391e1f123c36a1b2bcb03389a5",
+      "object_sha256": "6749d92358358059943468f6eb77684f14ded2033de343ea9c3b5fb2209904dd"
+    }
+  ],
+  "required_application_symbols": {
+    "loop_task(ETSEventTag*)::__func__": "0x3ffe880a",
+    "user_init_flag": "0x3ffea2fc",
+    "loop_wrapper()::setup_done": "0x3ffefd78",
+    "call_user_start": "0x40100004",
+    "call_user_start_local": "0x40100200",
+    "loop_task(ETSEventTag*)": "0x40202e24",
+    "loop_wrapper()": "0x40202eb8",
+    "user_init": "0x40202fa8",
+    "setup": "0x402036dc",
+    "loop": "0x402036f4",
+    "picoferm::oem::Application::setup()": "0x40204d44",
+    "picoferm::oem::Application::poll()": "0x402050d4",
+    "picoferm::oem::Backend::poll()": "0x40205cc0",
+    "picoferm::oem::Application::dispatch_console()::{lambda(char const*)#2}::operator()(char const*) const": "0x40205de8",
+    "picoferm::oem::Application::dispatch_console()::{lambda(char const*)#1}::operator()(char const*) const": "0x40205e18",
+    "picoferm::oem::Application::dispatch_console()": "0x40205ef0",
+    "picoferm::oem::HttpServer::poll()": "0x402089b8",
+    "picoferm::oem::Wifi::poll()": "0x402098c4"
+  },
+  "compiler": "xtensa-lx106-elf-g++ (crosstool-NG 1.20.0) 4.8.2",
+  "reconstructed_object_report_sha256": "79e99e6160d7452f2d795a0f76a4e28d4144023a49930d8678243588c91031d9",
+  "build_script_sha256": "75f0f1eb3670e6651e7f259566d41197c23460980c1d0a5e17d757081d7942ba",
+  "sdk_main_sha256": "8111043411dcd29010d75a4e3ff1c9f839a0e6dfebc355ddada3ac10f3fce1a8",
+  "original_linker_scripts": {
+    "eagle.flash.2m.ld": "2fd3ad6c55a34c7709c25e4009f1179a61a973e3f5bd5d6fc85dbaccfa7164a1",
+    "eagle.app.v6.common.ld": "e40f0ba1cde04b22f6717cbbed51482154cfbf25bbe01ef529247f19022d946e",
+    "eagle.rom.addr.v6.ld": "9c8aad792d44774fe06495a9dc33592a7816eba7e9139d23b3cf695792a264a6"
+  },
+  "size": "text\t   data\t    bss\t    dec\t    hex\tfilename\n 311548\t   8872\t  33408\t 353828\t  56624\t/workspace/scratch/ae8953cf8f3f/family-parity-completion/firmware/picoferm/reverse-engineered/build/application/picoferm-application.elf",
+  "scope": "Complete recovered PicoFerm owner and original SDK startup/loop with EEPROM/Wire/Wi-Fi/Client/DNS/update/serial/sleep bindings. SDK 2-MiB layout is a reference matching the image header, not a verified device backup. No flash package, hardware or installation qualification."
+}

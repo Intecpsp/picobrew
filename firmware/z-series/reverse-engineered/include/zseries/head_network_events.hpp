@@ -22,6 +22,7 @@ struct HeadNetworkAction {
 struct HeadNetworkServices {
     void* context=nullptr;
     bool (*perform)(void*,const HeadNetworkAction&)=nullptr;
+    bool (*assertion)(void*,std::uint32_t line)=nullptr;
 };
 enum class HeadNetworkResult { Ok, MissingService, ServiceFailure, InvalidQuantity };
 class HeadNetworkEvents {
@@ -36,6 +37,7 @@ public:
     HeadNetworkResult wifi(const CoreWifiEvent&); // 0x401094c8
     HeadNetworkResult azure(const HeadAzureEvent&); // 0x40105fbc and 0x40105e50
 private:
+    HeadNetworkResult assertion(std::uint32_t);
     HeadNetworkResult perform(const HeadNetworkAction&);
     HeadNetworkResult effect(HeadNetworkEffect,std::uint32_t=0);
     HeadNetworkResult group_session(const HeadAzureEvent&);

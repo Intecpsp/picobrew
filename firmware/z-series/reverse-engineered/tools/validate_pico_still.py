@@ -64,7 +64,7 @@ def input_cases():
 def load_native(directory):
     compiler=shlex.split(os.environ.get('CXX','c++'));path=Path(directory)/'pico_still.so'
     subprocess.run(compiler+['-std=c++11','-O2','-Wall','-Wextra','-Werror','-fPIC','-shared','-I',str(ROOT/'include'),str(ROOT/'src/pico_still.cpp'),
-        str(ROOT/'src/eeprom.cpp'),str(ROOT/'tests/pico_still_bridge.cpp'),'-o',str(path)],check=True)
+        str(ROOT/'src/eeprom.cpp'),str(ROOT/'src/enums.cpp'),str(ROOT/'tests/pico_still_bridge.cpp'),'-o',str(path)],check=True)
     native=ctypes.CDLL(str(path));u32=ctypes.POINTER(ctypes.c_uint32);native.pico_still_test.argtypes=[ctypes.c_uint,u32,u32,ctypes.c_size_t];native.pico_still_test.restype=ctypes.c_int
     return native,subprocess.check_output(compiler+['--version'],text=True).splitlines()[0]
 def native_case(native,item):

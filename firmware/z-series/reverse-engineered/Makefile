@@ -9,6 +9,9 @@ CFLAGS += -std=c11 -O2 -Wall -Wextra -Werror -pedantic
 CPP_SOURCES := $(wildcard src/*.cpp)
 C_SOURCES := $(wildcard src/*.c)
 OBJECTS := $(patsubst src/%.cpp,build/%.o,$(CPP_SOURCES)) $(patsubst src/%.c,build/%.o,$(C_SOURCES))
+OWNED_INCLUDES := $(wildcard include/zseries/*.hpp include/zseries/*.h src/*.inc)
+JSON_SOURCES := $(wildcard adapters/arduinojson/*.cpp)
+JSON_OBJECTS := $(patsubst adapters/arduinojson/%.cpp,build/json_%.o,$(JSON_SOURCES))
 
 .PHONY: all analyze test verify clean json-adapter verify-json-dependency
 
@@ -25,14 +28,14 @@ json-adapter: build/libzseries_oem_json.a
 verify-json-dependency:
 	"$(PYTHON)" -c 'import sys; sys.path.insert(0,"tools"); from acquire_arduinojson import verify_source; verify_source(sys.argv[1])' "$(ARDUINOJSON_DIR)"
 
-build/program_recipe_json.o: adapters/arduinojson/program_recipe_json.cpp $(wildcard include/zseries/*.hpp) | verify-json-dependency
+build/json_%.o: adapters/arduinojson/%.cpp $(OWNED_INCLUDES) | verify-json-dependency
 	@mkdir -p build
 	"$(CXX)" $(CPPFLAGS) $(CXXFLAGS) -I"$(ARDUINOJSON_DIR)/src" -c $< -o $@
 
-build/libzseries_oem_json.a: $(OBJECTS) build/program_recipe_json.o
+build/libzseries_oem_json.a: $(OBJECTS) $(JSON_OBJECTS)
 	"$(AR)" rcs $@ $^
 
-build/%.o: src/%.cpp $(wildcard include/zseries/*.hpp)
+build/%.o: src/%.cpp $(OWNED_INCLUDES)
 	@mkdir -p build
 	"$(CXX)" $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
@@ -50,6 +53,7 @@ test:
 verify: all test
 	"$(PYTHON)" tools/analyze_images.py --check
 	"$(PYTHON)" tools/recover_enums.py --check
+	"$(PYTHON)" tools/recover_msp_images.py --check
 
 clean:
 	rm -f build/*.o build/libzseries_oem.a build/libzseries_oem_json.a

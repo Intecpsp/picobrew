@@ -11,7 +11,7 @@
     "tests/local_http_state_bridge.cpp": "190fac92f1904fa38447365dd4cdc7b7f72b6b896503e8a46e375629c14603f7",
     "tools/validate_local_http_state.py": "124316a94d8b84e60dbe956b85f1e76a3618f137ad8ccd36b027379479dc2c72",
     "tools/ghidra/EmulateLocalHttpState.java": "a86005611e0c5bedc4b9a026f6e0ada53147a29f4ae5c0f850c1a7713dec2a8f",
-    "tools/ghidra/DisplayExecution.java": "2e48995bd34dda413858ed6870d3f95112047a7d73684105b9a581109be5d873"
+    "tools/ghidra/DisplayExecution.java": "a83a2c26523c40c58f153d551c5c1acf30dff2fe18277f0314e3104647681493"
   },
   "golden_fixture_sha256": "68745658165d9c1406be4ae02cf42604f61881424a2f255efac5f514334315e9",
   "original_execution_jsonl_sha256": "4209c194a5fdf77eb7b7a63866819627398b6f841fcf78290582396e3f2cd083",
@@ -106,5 +106,17 @@
     "0x401bf724": "7bb6e8235a60ba45e235d27c3ba052894fe0f2df9d49ea6d28f56370a5afe7ba",
     "0x401bf7c0": "0ed37dd25bc688bef8b49d7bc4da3821eac75dd59199d57d428564abf6bda354",
     "0x401bfab4": "e2c12e053c450c8d7267ddb1f3de1bab72646f4601f7cae200c08c670c67d1b3"
+  },
+  "movsp_harness_replay": {
+    "all_results_match": true,
+    "cases": 80,
+    "original_execution_jsonl_sha256": "4209c194a5fdf77eb7b7a63866819627398b6f841fcf78290582396e3f2cd083",
+    "boundary": "Windowed ABI stack move; CPU window spill and underflow exceptions remain outside the harness."
+  },
+  "trunc_s_harness_replay": {
+    "all_results_match": true,
+    "cases": 80,
+    "original_execution_jsonl_sha256": "4209c194a5fdf77eb7b7a63866819627398b6f841fcf78290582396e3f2cd083",
+    "boundary": "Finite signed TRUNC.S uses the mathematical power-of-two scale; nonfinite values, overflow and CPU exceptions remain outside the harness."
   }
 }

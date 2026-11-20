@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "input_sha256": "08c34af891036494ae81d6f29e7495a475f67be977aa4effd3adde6fee4e9532",
+  "language_id": "Xtensa:LE:32:default",
+  "compiler_spec": "default",
+  "thumb": false,
+  "segments": [
+    {
+      "name": "segment_0_iram",
+      "offset": 16,
+      "address": 1074851840,
+      "size": 1384,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_1_irom",
+      "offset": 4112,
+      "address": 1075843088,
+      "size": 278976,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_2_iram",
+      "offset": 283096,
+      "address": 1074790400,
+      "size": 29432,
+      "read": true,
+      "write": false,
+      "execute": true
+    },
+    {
+      "name": "segment_3_dram",
+      "offset": 312536,
+      "address": 1073643520,
+      "size": 1300,
+      "read": true,
+      "write": true,
+      "execute": false
+    },
+    {
+      "name": "segment_4_dram",
+      "offset": 313844,
+      "address": 1073644832,
+      "size": 8688,
+      "read": true,
+      "write": true,
+      "execute": false
+    }
+  ],
+  "entry_points": [
+    1074852508,
+    1074790404
+  ],
+  "labels": []
+}

@@ -11,7 +11,9 @@ The canonical identifiers are recorded in [`firmware/models.json`](../firmware/m
 | `pico-pro` | Pico Pro | `pico-s-pro` | Implemented |
 | `pico-s` | Pico S | `pico-s-pro` | Implemented |
 | `pico-c` | Pico C | `pico-c` | Implemented; explicit SSD1325/SSD1309 target; physical qualification outstanding |
-| `z` | PicoBrew Z | `z-series` | Planned; archived Z packages are not yet mapped to individual variants |
+| `z-series` | Pico Z | `z-series` | Complete source/reference image build; physical Z1/Z2 mapping unassigned |
+| `picostill` | PicoStill | `picostill` | Complete standalone accessory source/reference package |
+| `picoferm` | PicoFerm | `picoferm` | Complete standalone sensor source/reference package |
 | `zymatic` | PicoBrew Zymatic | `zymatic` | Planned |
 
 The root build router accepts a model through `MODEL` or `MACHINE`:
@@ -21,6 +23,9 @@ make firmware MODEL=pico-s
 make firmware MODEL=pico-pro
 make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325
 make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1309
+make firmware MODEL=z-series
+make firmware MODEL=picostill
+make firmware MODEL=picoferm
 make firmware MACHINE=pico-s
 make firmware-test MODEL=pico-s
 make firmware-models
@@ -31,6 +36,13 @@ command, and a command without either selection, default to `pico-pro`.
 Conflicting selections and unimplemented product models fail before invoking
 the component build. Selecting a different model never relabels an S/Pro image
 as a Pico C, Z, or Zymatic image.
+
+The previously reserved `MODEL=z` spelling is accepted as an alias for the
+generic `z-series` build. `MODEL=z1` and `MODEL=z2` are not enabled by that alias.
+Original device backups are needed to establish those physical mappings.
+The ESP32/ESP8266 reference builds use the hash-pinned Linux x86-64 toolchains
+and explicit package layouts described in each component. Their USB test route
+is unavailable because a qualified installer has not been established.
 
 Within the S/Pro component, use `make standalone MODEL=pico-s` or
 `python tools/build_firmware.py --standalone --model pico-s`. Build outputs are

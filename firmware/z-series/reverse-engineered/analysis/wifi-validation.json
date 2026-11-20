@@ -17,7 +17,7 @@
     "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78",
     "platform/esp32/wifi_platform.hpp": "eaf55a57772a15888444074ada086e398ce2e5783b5e72c39c142dff092b8b43",
     "platform/esp32/wifi_platform.cpp": "d2c6207d214f56ea0ef422f13289cff38eab6439a758bbd7f2e66856ba6218fe",
-    "tools/build_esp32_objects.py": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7"
+    "tools/build_esp32_objects.py": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5"
   },
   "scope": "Original Wifi state transitions, tick, target/credential selection, failure/backoff and setup ordering; explicit Arduino radio/DNS/IPAddress, event-delivery, diagnostic and console-registration boundaries. No radio, RTOS, hardware or complete network backend execution.",
   "original_functions_executed": {

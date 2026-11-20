@@ -1,8 +1,16 @@
 #include "zseries/program_recipe.hpp"
 #include <cmath>
+#include <cstdio>
+#include <cstdarg>
 
 namespace zseries { namespace oem {
 namespace {
+bool recipe_log(const ConsoleServices* services,ConsoleLevel level,const char* tag,std::uint32_t line,const char* format,...){
+    if(!services)return true;
+    if(!services->log)return false;
+    char text[512];va_list args;va_start(args,format);const int count=::vsnprintf(text,sizeof text,format,args);va_end(args);
+    return count>=0&&static_cast<std::size_t>(count)<sizeof text&&services->log(services->context,level,tag,line?"HttpBackend.h":nullptr,line,text);
+}
 void push(ProgramBuffer& buffer, OpCode opcode, std::uint32_t argument = 0) noexcept {
     // Original append logs capacity exhaustion and leaves the full buffer intact.
     (void)buffer.append({opcode, argument});
@@ -100,13 +108,29 @@ ProgramBuildResult build_local_recipe(ProgramBuffer& buffer, const LocalRecipe& 
 
 ProgramBuildResult build_http_recipe(ProgramBuffer& buffer, const HttpRecipe& recipe, HttpRecipeFormat format,
         SessionType type, std::uint32_t id, const ProgramParameters& parameters,
-        const RecipeEnvironment& environment) noexcept {
+        const RecipeEnvironment& environment,const ConsoleServices* diagnostics) noexcept {
+#define RECIPE_LOG(level,tag,line,...) do{if(!recipe_log(diagnostics,ConsoleLevel::level,tag,line,__VA_ARGS__))return ProgramBuildResult::DiagnosticFailure;}while(false)
     const bool pico = format == HttpRecipeFormat::PicoPak;
     const double maximum = environment.estimated_boil_celsius - 2;
+    const char* name=recipe.name?recipe.name:"(null)";
+    if(pico){
+        RECIPE_LOG(Info,"JSON",0,"name = %s",name);
+        RECIPE_LOG(Info,"JSON",0,"steps.size() = %u",static_cast<unsigned>(recipe.step_count));
+        RECIPE_LOG(Warning,"JSON",0x1eb,"Tweaking Target = (%d,%d)  Tweak = (%d,%d)",recipe.pico_abv,recipe.pico_ibu,parameters.abv,parameters.ibu);
+        if(recipe.pico_abv!=-1&&(recipe.pico_abv<1||recipe.pico_abv>9))RECIPE_LOG(Error,"JSON",0x1ee,"Recipe has invalid target Abv");
+    }else{
+        RECIPE_LOG(Info,"JSON",0x180,"name = %s",name);
+        RECIPE_LOG(Info,"JSON",0x181,"typeCode = %s",recipe.type_code&&*recipe.type_code?recipe.type_code:"<None>");
+        RECIPE_LOG(Info,"JSON",0x182,"isBeer = %s",recipe.is_beer?"true":"false");
+        RECIPE_LOG(Info,"JSON",0x183,"steps.size() = %u",static_cast<unsigned>(recipe.step_count));
+        RECIPE_LOG(Info,"JSON",0x184,"StartWater = %5.2f",recipe.start_water_liters);
+    }
     const ProgramBuildResult started = buffer.start(type, id, recipe.name);
     if (started != ProgramBuildResult::Ok) return started;
     std::uint32_t flags = pico ? 0x111u : recipe.is_beer ? 0x210u : 0x100u;
-    if (parameters.resumed_session) flags |= 0x400u;
+    if (parameters.resumed_session){
+        RECIPE_LOG(Warning,"HBE",pico?0x1f7:0x18f,"p.isResumedSession");flags |= 0x400u;
+    }
     else {
         // 0x40114344 scans the original numeric Fahrenheit values, before
         // integer conversion, per-valve capping, and individual step handling.
@@ -130,20 +154,37 @@ ProgramBuildResult build_http_recipe(ProgramBuffer& buffer, const HttpRecipe& re
         std::int32_t fahrenheit = 0;
         double celsius = step.temperature_fahrenheit > 0 ?
             static_cast<double>(subtract(step.temperature_fahrenheit, 32)) / 1.8 : 0;
+        const char* step_name=step.name?step.name:"(null)";
+        if(pico)RECIPE_LOG(Info,"JSON",0x20b,"Step #%u %-20s %3dF (%3.2fC) %d %04dm %04dm min=%d max=%d",static_cast<unsigned>(index),step_name,step.temperature_fahrenheit,celsius,location,step.minutes,step.drain_minutes,step.minimum_minutes,step.maximum_minutes);
+        else RECIPE_LOG(Info,"JSON",0x1a1,"Step #%u %-20s %3dF (%3.2fC) %d %04dm %04dm",static_cast<unsigned>(index),step_name,step.temperature_fahrenheit,celsius,location,step.minutes,step.drain_minutes);
+        if(pico&&(location<1||location>6))RECIPE_LOG(Warning,"HBE",0x168,"IS_VALID_MOVEVALVE_ARG(loc) false %d",location);
+        if(!pico&&(location<0||location>6))RECIPE_LOG(Warning,"HBE",0x15e,"IS_VALID_ZYMATIC_LOCATION(loc) false %d",location);
         if (!capped_fahrenheit(step.temperature_fahrenheit, valve, fahrenheit)) return ProgramBuildResult::InvalidNumericDomain;
-        if (fahrenheit != step.temperature_fahrenheit) celsius = static_cast<double>(subtract(fahrenheit, 32)) / 1.8;
+        if (fahrenheit != step.temperature_fahrenheit){
+            const double capped=static_cast<double>(subtract(fahrenheit,32))/1.8;
+            RECIPE_LOG(Warning,"JSON",pico?0x213:0x1a9,"Step #%u %-20s Temp %3dF (%3.2fC) capped to %3dF (%3.2fC)",static_cast<unsigned>(index),step_name,step.temperature_fahrenheit,celsius,fahrenheit,capped);celsius=capped;
+        }
         std::int32_t minutes = step.minutes;
+        const char* tweak="<none>";
         if (pico && step.minimum_minutes >= 0 && step.maximum_minutes >= 0) {
-            if (recipe.pico_abv >= 1 && recipe.pico_abv <= 9 && abv != recipe.pico_abv && location == 2)
+            if (recipe.pico_abv >= 1 && recipe.pico_abv <= 9 && abv != recipe.pico_abv && location == 2){
+                tweak=abv<recipe.pico_abv?"ABV < target":"ABV > target";
                 if (!adjusted_minutes(recipe.pico_abv, abv, step, minutes)) return ProgramBuildResult::InvalidNumericDomain;
-            if (recipe.pico_ibu >= 1 && recipe.pico_ibu <= 9 && ibu != recipe.pico_ibu && location >= 3 && location <= 6)
+            }
+            if (recipe.pico_ibu >= 1 && recipe.pico_ibu <= 9 && ibu != recipe.pico_ibu && location >= 3 && location <= 6){
+                tweak=ibu<recipe.pico_ibu?"IBU < target":"IBU > target";
                 if (!adjusted_minutes(recipe.pico_ibu, ibu, step, minutes)) return ProgramBuildResult::InvalidNumericDomain;
+            }
+            if(minutes!=step.minutes)RECIPE_LOG(Warning,"JSON",0x237,"%s, time adjusted from %d to %d",tweak,step.minutes,minutes);
         }
         std::int32_t extra = 0;
         if (celsius > maximum) {
+            std::int32_t maximum_f=0;if(!signed_integer(maximum*1.8+32,maximum_f))return ProgramBuildResult::InvalidNumericDomain;
+            RECIPE_LOG(Warning,"JSON",pico?0x23f:0x1b0,"Step #%u %-20s Temp adjusted from %3dF (%3.2fC) to %3dF (%3.2fC)",static_cast<unsigned>(index),step_name,fahrenheit,celsius,maximum_f,maximum);
             if (minutes > 10) {
                 if (!signed_integer((celsius - maximum) * 162, extra)) return ProgramBuildResult::InvalidNumericDomain;
                 added_seconds += static_cast<std::uint32_t>(extra);
+                RECIPE_LOG(Warning,"JSON",pico?0x246:0x1b7,"Step #%u %-20s Time increased by %dsec",static_cast<unsigned>(index),step_name,extra);
             }
             celsius = maximum;
             if (!signed_integer((maximum - 32) / 1.8, fahrenheit)) return ProgramBuildResult::InvalidNumericDomain;
@@ -152,7 +193,10 @@ ProgramBuildResult build_http_recipe(ProgramBuffer& buffer, const HttpRecipe& re
         if (named == ProgramBuildResult::EmptyString) return named;
         push(buffer, OpCode::StepName, static_cast<std::uint32_t>(index) + 1u);
         if (pico ? step.action == 1 : location == 6) { push(buffer, OpCode::Pause); continue; }
-        if (pico && (step.action != 0 || location < 1 || location > 6)) continue;
+        if (pico && (step.action != 0 || location < 1 || location > 6)){
+            if(step.action==0)RECIPE_LOG(Error,"HBE",0x252,"IS_VALID_MOVEVALVE_ARG(loc) false %d",location);
+            continue;
+        }
         push(buffer, OpCode::MoveValve, static_cast<std::uint32_t>(valve));
         if (fahrenheit > 0) push(buffer, OpCode::ReachTarget, unsigned_integer(celsius * 256));
         if (minutes > 0) push(buffer, OpCode::HoldFor,
@@ -163,6 +207,7 @@ ProgramBuildResult build_http_recipe(ProgramBuffer& buffer, const HttpRecipe& re
     ProgramParameters metadata;
     if (pico) metadata = parameters;
     metadata.water = {pico ? 6.81 : recipe.start_water_liters, Unit::Liter};
-    return finish_program(buffer, metadata, environment.pressure_pascal, maximum, added_seconds);
+    return finish_program(buffer, metadata, environment.pressure_pascal, maximum, added_seconds,diagnostics);
+#undef RECIPE_LOG
 }
 }} // namespace zseries::oem

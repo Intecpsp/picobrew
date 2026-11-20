@@ -10,12 +10,14 @@ import (
 	"io"
 	"net/http"
 	"os"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
@@ -23,6 +25,7 @@ import (
 type historyImport struct {
 	Session     domain.HistorySession `json:"session"`
 	SampleCount int                   `json:"sample_count"`
+	WindowCount int                   `json:"window_count,omitempty"`
 }
 
 func (s *Server) pullHistory(ctx context.Context, d *runtimeDevice) error {
@@ -83,6 +86,9 @@ func historyDuration(ms int64) (time.Duration, error) {
 // mergeHistoryBrew changes only device-owned fields. Re-read and compare-and-swap
 // after network work so concurrent edits to notes/rating/recipe links survive.
 func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession, complete bool) (domain.Brew, error) {
+	if h.SampleIntervalMS != 0 && (h.SampleIntervalMS < 15000 || h.SampleIntervalMS > 86400000) {
+		return domain.Brew{}, errors.New("invalid history sampling interval")
+	}
 	duration, err := historyDuration(h.DurationMS)
 	if err != nil {
 		return domain.Brew{}, err
@@ -108,13 +114,14 @@ func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession,
 			b.Source = "simulation"
 		}
 		b.DurationMS, b.GapCount = h.DurationMS, h.GapCount
+		b.SampleIntervalMS = h.SampleIntervalMS
 		b.Truncated = h.Truncated || h.StorageError || !complete
 		b.DeviceName = device.Name
 		b.SampleCount, err = s.db.SampleCount(id)
 		if err != nil {
 			return b, err
 		}
-		if version > 0 && before == b {
+		if version > 0 && reflect.DeepEqual(before, b) {
 			return b, nil
 		}
 		if _, err = s.db.Put("brew", id, b, version); errors.Is(err, store.ErrConflict) {
@@ -197,6 +204,11 @@ func (s *Server) pullHistorySession(ctx context.Context, d *runtimeDevice, devic
 	if readErr != nil || mergeErr != nil {
 		return errors.Join(readErr, mergeErr)
 	}
+	if len(final.SampleFields) > 11 && count == h.RecordCount {
+		if _, err = s.db.Put("history-progress", id, historyImport{Session: h, SampleCount: final.SampleCount, WindowCount: count}, -1); err != nil {
+			return err
+		}
+	}
 	if terminal && complete {
 		_, err = s.db.Put("history-sync", id, historyImport{Session: finalDescription, SampleCount: final.SampleCount}, -1)
 	}
@@ -213,6 +225,7 @@ func historyAppendOnly(before, after domain.HistorySession) bool {
 	firstUnchanged := before.FirstElapsedMS == after.FirstElapsedMS || before.RecordCount == 0
 	return after.Available && before.ID == after.ID && before.Command == after.Command &&
 		before.RecipeName == after.RecipeName && firstUnchanged &&
+		before.SampleIntervalMS == after.SampleIntervalMS &&
 		before.RecoveredAfterRestart == after.RecoveredAfterRestart &&
 		after.DurationMS >= before.DurationMS && after.RecordCount >= before.RecordCount &&
 		after.PersistedRecordCount >= before.PersistedRecordCount && after.GapCount >= before.GapCount &&
@@ -224,7 +237,45 @@ func (s *Server) readHistoryPages(ctx context.Context, d *runtimeDevice, h domai
 	// brew records. Re-read that window; an old offset can silently skip new rows.
 	offset := 0
 	seen := map[int64]struct{}{}
-	for pages := 0; pages < 133; pages++ {
+	var schema *domain.History
+	pageLimit := 133
+	if _, ok := d.adapter.(device.HistorySchemaReader); ok {
+		pageLimit = 4225
+	}
+	// New small-memory devices return only a few records per page. Reuse an
+	// already verified append-only prefix; a changed ring origin, count or local
+	// storage falls back to a full read. The catalog is checked again below.
+	if len(b.SampleFields) > 11 {
+		var previous historyImport
+		_, err := s.db.Get("history-progress", b.ID, &previous)
+		if err != nil && !errors.Is(err, store.ErrNotFound) {
+			return 0, err
+		}
+		if err == nil && previous.WindowCount > 0 && previous.WindowCount == previous.Session.RecordCount && previous.WindowCount <= h.RecordCount && previous.SampleCount == b.SampleCount && historyAppendOnly(previous.Session, h) {
+			stored, err := s.db.Samples(b.ID)
+			if err != nil {
+				return 0, err
+			}
+			for _, sample := range stored {
+				if sample.ElapsedMS >= h.FirstElapsedMS {
+					seen[sample.ElapsedMS] = struct{}{}
+				}
+			}
+			if len(seen) == previous.WindowCount {
+				offset = previous.WindowCount
+				schema = &domain.History{Fields: b.SampleFields, FieldMetadata: b.FieldMetadata}
+			} else {
+				seen = map[int64]struct{}{}
+			}
+		}
+		if err := s.db.Delete("history-progress", b.ID); err != nil {
+			return len(seen), err
+		}
+		if offset == h.RecordCount && offset > 0 {
+			return len(seen), nil
+		}
+	}
+	for pages := 0; pages < pageLimit; pages++ {
 		if err := ctx.Err(); err != nil {
 			return len(seen), err
 		}
@@ -234,7 +285,24 @@ func (s *Server) readHistoryPages(ctx context.Context, d *runtimeDevice, h domai
 		if identityMismatch {
 			return len(seen), errors.New("machine identity changed; history import was stopped")
 		}
-		samples, next, err := d.adapter.HistoryPage(ctx, h.ID, offset)
+		var samples []domain.Sample
+		var next *int
+		var err error
+		if reader, ok := d.adapter.(device.HistorySchemaReader); ok {
+			var page domain.HistoryPage
+			page, err = reader.HistoryPageWithSchema(ctx, h.ID, offset)
+			samples, next = page.Samples, page.Next
+			current := &domain.History{Fields: page.Fields, FieldMetadata: page.FieldMetadata}
+			if err == nil && schema != nil && !reflect.DeepEqual(schema, current) {
+				err = errors.New("history channel schema changed between pages; partial samples retained for retry")
+			}
+			if err == nil && schema == nil {
+				schema = current
+				err = s.saveHistorySchema(b.DeviceID, h.ID, *schema)
+			}
+		} else {
+			samples, next, err = d.adapter.HistoryPage(ctx, h.ID, offset)
+		}
 		if err != nil {
 			return len(seen), err
 		}
@@ -373,13 +441,26 @@ func (s *Server) exportBrew(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-Disposition", `attachment; filename="brew-`+b.ID+`.csv"`)
 		out := csv.NewWriter(w)
 		defer out.Flush()
-		_ = out.Write([]string{"elapsed_ms", "observed_at", "wort_f", "thermoblock_f", "target_f", "step_seconds", "phase", "controller_status", "compartment", "current_step", "flags", "device_state", "source"})
+		columns := []string{"elapsed_ms", "observed_at", "wort_f", "thermoblock_f", "target_f", "step_seconds", "phase", "controller_status", "compartment", "current_step", "flags", "device_state", "source"}
+		extra := []string{}
+		if len(b.SampleFields) > 11 {
+			extra = b.SampleFields[11:]
+		}
+		_ = out.Write(append(columns, extra...))
 		for _, v := range b.Samples {
 			at := ""
 			if v.ObservedAt != nil {
 				at = v.ObservedAt.Format(time.RFC3339Nano)
 			}
-			_ = out.Write([]string{strconv.FormatInt(v.ElapsedMS, 10), at, number(v.WortF), number(v.ThermoblockF), number(v.TargetF), strconv.Itoa(v.StepSeconds), strconv.Itoa(v.Phase), strconv.Itoa(v.ControllerStatus), strconv.Itoa(v.Compartment), strconv.Itoa(v.CurrentStep), strconv.Itoa(v.Flags), strconv.Itoa(v.DeviceState), v.Source})
+			row := []string{strconv.FormatInt(v.ElapsedMS, 10), at, number(v.WortF), number(v.ThermoblockF), number(v.TargetF), strconv.Itoa(v.StepSeconds), strconv.Itoa(v.Phase), strconv.Itoa(v.ControllerStatus), strconv.Itoa(v.Compartment), strconv.Itoa(v.CurrentStep), strconv.Itoa(v.Flags), strconv.Itoa(v.DeviceState), v.Source}
+			for _, field := range extra {
+				value := ""
+				if reading := additionalSampleValue(v, field); reading != nil {
+					value = strconv.FormatFloat(*reading, 'g', -1, 64)
+				}
+				row = append(row, value)
+			}
+			_ = out.Write(row)
 		}
 		return
 	}

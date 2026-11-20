@@ -18,6 +18,8 @@ struct HeadNumericServices {
     // the original drop-new mailbox operation was serviced, not necessarily
     // that an occupied mailbox accepted a new value.
     bool (*perform)(void*, HeadNumericEffect, const CoreCommand*) = nullptr;
+    // Returning OEM diagnostic, including the shared counter and 200 ms delay.
+    bool (*assertion)(void*,std::uint32_t line) = nullptr;
 };
 struct HeadNumericState {
     // byte_00 is the original active-manual-editor flag in this Head object.
@@ -38,6 +40,7 @@ public:
     HeadNumericResult quantity(HeadQuantityId, Quantity); // 0x40107bb8
     HeadNumericResult strength(std::int32_t);             // 0x401077f8
 private:
+    HeadNumericResult assertion(std::uint32_t line);
     HeadNumericResult effect(HeadNumericEffect, const CoreCommand* = nullptr);
 };
 

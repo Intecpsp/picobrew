@@ -160,20 +160,20 @@
     "0x401bf4e8": "1315569dd94d22c01ec59917eeba376e750350b61a82f87f87bfcd6e6b5374c6"
   },
   "source_sha256": {
-    "include/zseries/core_commands.hpp": "cf8469a0e19bed4a8d29448315704f77ce7dd5045493270fd2f13a7b781a24d5",
+    "include/zseries/core_commands.hpp": "db47789c16bef8e3123b4966aa4df79dd7a63cf8ee236e4370d15a334401f21b",
     "src/core_commands.cpp": "bf455c576b8f005a1866353140b978ced1fc21c1b636ef3f53f27ba9d9d6955b",
     "include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
     "src/core_flow.cpp": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449",
     "tests/core_commands_bridge.cpp": "e4754260cb8483a7ecfda742519f4bd9d8a5eb94dfc4f35b0874edc10310ae9f",
     "tests/core_flow_fixture.hpp": "5457089783bf6c8d28f184c39298915125b8b051c902f536053a5020e66db00c",
-    "tools/validate_core_commands.py": "857d8028c949161e1dfd7327b851360e68947a7c4a31a4799b9f693496f783ad",
+    "tools/validate_core_commands.py": "c617d08d3c44ed622d1d15248adfc262e4d9491a182483e16df27c490024a72e",
     "tools/ghidra/EmulateCoreCommands.java": "8c1c21f2f0ef38b35d6229dfacb9d6763ea405650dbec68a70fbafe8ae5ec868",
     "tools/ghidra/EmulateCoreFlow.java": "a2141e591328bf96858ab83d2064bc8ebcbd61a82fad87185a26f522f1834d1e",
     "tools/ghidra/Z119Execution.java": "4ef4324619d8e98d0030870d60d97fe289dd72c31d46416f045476f8b6421a78"
   },
   "accepted_dependency_reports_sha256": {
-    "program-repository-validation.json": "fc4f25a8c39f9b0b955dc9ea57aceaa1b8fb3f92f2d2f7f9ac38d4eb18c67ec3",
-    "heater-validation.json": "168f195d8df51edf501fcfc4670895d8575505a8bab2ee4346b43a7eed49045c",
+    "program-repository-validation.json": "9672ffa072aed2234711ce141079a16834786b9b1aadea00d863a1b90c2c164e",
+    "heater-validation.json": "ea4e39b2b55a3cfdc0ba2f3a7812179753c6363f8fc968cc4650c69d6a92163e",
     "temperature-validation.json": "5aa3a4354e4576acb15d8534e2962ed96f1c9c2b03b3d64ce9d516287a3040b9",
     "hex-detection-validation.json": "7d41387b5f6a81785fa780904b722b8b325cfed8af90d3f61fbee90d56335ea5"
   },

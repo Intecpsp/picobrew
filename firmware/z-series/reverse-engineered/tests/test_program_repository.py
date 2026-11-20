@@ -136,7 +136,7 @@ class ProgramRepositoryTests(unittest.TestCase):
         flags = ["-O2", "-Wall", "-Wextra", "-Werror", "-pedantic", "-fPIC", "-I", str(ROOT / "include")]
         subprocess.run(shlex.split(os.environ.get("CC", "cc")) + ["-std=c11"] + flags +
             ["-c", str(ROOT / "src/msp_protocol.c"), "-o", str(build / "msp.o")], check=True, capture_output=True, text=True)
-        sources = ["program_repository", "program_catalog", "program_writer", "program_runtime", "program_runtime_execution", "runtime_instruction", "quantity"]
+        sources = ["program_diagnostics", "enums", "program_repository", "program_catalog", "program_writer", "program_runtime", "program_runtime_execution", "runtime_instruction", "quantity"]
         subprocess.run(shlex.split(os.environ.get("CXX", "c++")) + ["-std=c++11", "-fno-fast-math", "-ffp-contract=off"] + flags + ["-shared", str(bridge)] +
             [str(ROOT / f"src/{name}.cpp") for name in sources] + [str(build / "msp.o"), "-o", str(build / "repository.so")], check=True, capture_output=True, text=True)
         cls.native = ctypes.CDLL(str(build / "repository.so"))

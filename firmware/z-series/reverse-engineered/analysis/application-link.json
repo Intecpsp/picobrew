@@ -1,0 +1,1022 @@
+{
+  "schema_version": 1,
+  "profile": "oem",
+  "entry_sha256": "262be67c487cc0932d1590b5e28c2ec5772aff8aeb0d5ffff12e48658779d46d",
+  "elf_sha256": "1ef24a041b1d63d564412fd30299c9009a757faeec12aecef283dbcd39d698be",
+  "map_sha256": "f54ee238eff6fd166cba030cd4d373453642f8524655b4982ec6f79074a6d726",
+  "sdk_archive_sha256": "14f34c134f61b25b6f0a40b649a6e1397110076fb88e3aac216370911b00cfbd",
+  "sdk_objects": [
+    {
+      "source": "cores/esp32/Esp.cpp",
+      "source_sha256": "163f5389b952e28f4dcd248b9a0a268f096b32c5d823c374cef869e0d6620040",
+      "object_sha256": "04580572d991cff5c19e0fe46db9017329915f9ded466cb8876ad0f3f6021836"
+    },
+    {
+      "source": "cores/esp32/FunctionalInterrupt.cpp",
+      "source_sha256": "412ba67dbf8a31d14e4d9e20a6544162a47046ca91d8fbc6b486878c8e6825b2",
+      "object_sha256": "11f354c79be93b947b48ec8cd1a99b2f33cfab8063bc1e625bf42651068c160b"
+    },
+    {
+      "source": "cores/esp32/HardwareSerial.cpp",
+      "source_sha256": "2c80c76728e1d8790d75b6fbef7ef4bd9214160e53c5bd9eae3eae89ef8e2fbb",
+      "object_sha256": "220ce33f7c3d6e3039add8c1f4984a58e5bbb7154390c3d0cad6addda9538fc7"
+    },
+    {
+      "source": "cores/esp32/IPAddress.cpp",
+      "source_sha256": "7876a1a39d7aa7306f5645f21995a723f81a7aeb188aac1e51f6619807150eba",
+      "object_sha256": "f281407d03f736b107607696718437ebd9453757fb471153a400171c9b297a79"
+    },
+    {
+      "source": "cores/esp32/IPv6Address.cpp",
+      "source_sha256": "6ff292917ec18f4d247944808671e7d80b3ec00dc481ae062292f387b767bb1d",
+      "object_sha256": "ce4e21d2380879d5225e18fde137c65c021a6cdb5933b2b95c5054a5e299506c"
+    },
+    {
+      "source": "cores/esp32/MD5Builder.cpp",
+      "source_sha256": "7eed105f1839269993b9f1181bd28af4e64b187b4e6ae7e8e673e1ea950466b9",
+      "object_sha256": "f0b5398cc7f24a00647106f4ab24397f1de606eba5378c08710ed866c76b030e"
+    },
+    {
+      "source": "cores/esp32/Print.cpp",
+      "source_sha256": "05851981efaedf6f9178c66f86292e1f2442f86b00e9a59cbedaad71f71b7393",
+      "object_sha256": "7239855d6c90d4151a4299857dbc7e74a6a19a7a6f057d3bbc3de2b8824a7648"
+    },
+    {
+      "source": "cores/esp32/Stream.cpp",
+      "source_sha256": "45bf8af958f0a754b4606e8a1e8fd176289a07df44995d727a6bfa906522e61f",
+      "object_sha256": "4c352c3d50b2ca981c2629135b4447ed92e04c0fc49f0f63630ef60a94734336"
+    },
+    {
+      "source": "cores/esp32/StreamString.cpp",
+      "source_sha256": "3ea9025d9c67cf516386fdab088cf45c2914faa1271668d86546e8cf729ee609",
+      "object_sha256": "27dc28c0dea657a41c7090f8203cb01bff4c12b428ff6a00ccfe720104989cd3"
+    },
+    {
+      "source": "cores/esp32/WMath.cpp",
+      "source_sha256": "104f6de96aece9f02364e1c0c99a77f8e7521271d43a417de90889fddcae16fb",
+      "object_sha256": "86f0ba38d0bc0d05832be79f60e1bda154d4b462e291229113363ad8067d19d5"
+    },
+    {
+      "source": "cores/esp32/WString.cpp",
+      "source_sha256": "5ecdddf816a03169cd2453162529046c347c48175ff74d343e645a13fad5def8",
+      "object_sha256": "392c8f44985e6f635577313ef6f4923c7158faa39bcb27efbbc0f4d3733223c8"
+    },
+    {
+      "source": "cores/esp32/base64.cpp",
+      "source_sha256": "581d44263fc36101c607898975923972630ad1d93369b13cc50046f16b631b69",
+      "object_sha256": "db1bbc5734ad20c90c2ffe36a3317d845bd2f67b93841eabbdc05fefe7a5852c"
+    },
+    {
+      "source": "cores/esp32/cbuf.cpp",
+      "source_sha256": "754ac3778d299eb9996bf76f7fe9c7a39bdafe7c049f8d0d10bf7e89c844b308",
+      "object_sha256": "b97b4430c4b6bb44263d0c2ca453581c19ac21527b1802d88a67f91aa75ed7bb"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-adc.c",
+      "source_sha256": "021e6f49b109eea2d4b39d58d47afc790a8253615cd41a1eaf82ed077b90b48d",
+      "object_sha256": "395d0f9fdfce4a8f2913e29c1da2e24728cebb5d6a577e8259f9ba1c47dcdd6b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-bt.c",
+      "source_sha256": "a051d28c21f589c8d3e64ab415837d8e32f8e4a767bcfdb0561732c065cf0a97",
+      "object_sha256": "67b59b2ad6fa0d1b8bbee4de5282af6addd015249c8b21873d8c84729bcef919"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-cpu.c",
+      "source_sha256": "4e21cbe7e5f0024ad4d61370307587a2c72384cc79798c08b52b3933076114e1",
+      "object_sha256": "c2acc6c1afad71738d31d7c7db36afe6b04ab3fe0f8491ae35676552754ef93b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-dac.c",
+      "source_sha256": "e66abe5a546ede634ab20cc93b151d98cee7da8a5ff46c229d64fd7392ec608d",
+      "object_sha256": "2867008e8111b769a1a1a25d5ae6b3febbbdb2d54340b40c411d5f995e3f43e9"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-gpio.c",
+      "source_sha256": "d9003f03c5e25f753475473f65cc1919f509cb19d47ae305c89f8119dec0d1db",
+      "object_sha256": "e8b922b0c89a85e4ff91e4b0598bb0c781544cce6fa9ed3dc3434e5c638e4890"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-i2c.c",
+      "source_sha256": "0ab5d4caceff84cc14142530dd0858ffe68511891ac5aa5dffc6e5656c450733",
+      "object_sha256": "a033b565fbbb7cca38c6cae6bdc7db807bd83188cb2f875f6130e46e9567a53b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-ledc.c",
+      "source_sha256": "c86d2fcb36ab3ee56043d42fd47c9e188ffd9c7d6148279432dbdeb1c24ed579",
+      "object_sha256": "2401ac42cd6fb588d816d9293f2cc38f3044771c30cfd3b6ece320f64e028110"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-matrix.c",
+      "source_sha256": "eb8b3e41615544a72def5da08ec0eb2b0ed7aa96247404ed5cf3fac215cecf7b",
+      "object_sha256": "cdb54dcdbccee71068b99f10461f246016f879e76ea0f37d8eb4c12d142dfabe"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-misc.c",
+      "source_sha256": "63f0a87d562a88899ffc5ce9571b5c4ba5a2527243af1835a94a8e136aaed4ab",
+      "object_sha256": "09d7850cba4d69a6f41958842e54abaf69b3ca83205737871137124ecced2744"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-psram.c",
+      "source_sha256": "cc11473353967334eca0d8dcf7d0b56350feb8f0053e0d798f0d04dca520c664",
+      "object_sha256": "f31be4c49f068c6870204a911b68df23949178b26e617da6ac026338ce76cfaf"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-rmt.c",
+      "source_sha256": "a744a62234a30ffcb9f0e623085a497299af03964f1aba714fd2f2d8e82c5759",
+      "object_sha256": "b015fa893200abb837b2a187e8923a33ae032f902178f0ef4a0eb851187d02e9"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-sigmadelta.c",
+      "source_sha256": "ba32a4a731851e1dcda959a71347a8a7c621d171ecb5132937cd07722e8c87eb",
+      "object_sha256": "be7715070e506e322b98df1ef9b8bb924118aaedd56fade24c8447f3a4acef37"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-spi.c",
+      "source_sha256": "8a92b8e096ffecb94b995880bcd2bea80c7297d740eab9702b6bf08f5e9a4fdc",
+      "object_sha256": "ccfd5e4c75dd67f8376fabbf46e8e504b16bb715e81fb88d1b01bd2171e2a22b"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-time.c",
+      "source_sha256": "d681675f0fbd84b5adc88365f977beedab2d812e2efd79e91b1ac966a6fe62a4",
+      "object_sha256": "cfa93068f22dc82f0cfabfec7813566c69e4e178b6e16ff69a31b9ec22a3ec16"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-timer.c",
+      "source_sha256": "fb38dfd7d04ef6c7d90d225210525701377983cd6c6d5e06648caa2005e7e7cb",
+      "object_sha256": "4bf313b2de60eb7f6c94e7d35362d3e76bc67dd0e59c013fcdeb097d1c180b73"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-touch.c",
+      "source_sha256": "3a969b1c92797e70e4df7ce6ed3bc49c6f9d8d55833052e2b24c012e27a5df65",
+      "object_sha256": "841df235e25611bce35871424205c46f33f2d52823797111fceee93e0f507224"
+    },
+    {
+      "source": "cores/esp32/esp32-hal-uart.c",
+      "source_sha256": "7b98775bfbbf2287c3a26c7fc487a2a1a6b7a3734ee4148590e927f93d5c1a93",
+      "object_sha256": "963cfa1af6a53ad776166235be45530f0027f95d16023d2c857374867d160f91"
+    },
+    {
+      "source": "cores/esp32/stdlib_noniso.c",
+      "source_sha256": "756f3407f3bdfaa83fb34a69487cc9223c42ae88efa4c8a46111b2f00c0ae956",
+      "object_sha256": "e31a313a46728b05d9966e0392391914771674b8d3b924f7b92cb86b32893e2d"
+    },
+    {
+      "source": "cores/esp32/wiring_pulse.c",
+      "source_sha256": "afae5c27ca0fc234080c8e0ce3f3cb36a936dabfbb7182ffa1d0c0334aab9e25",
+      "object_sha256": "b5e5391acb037953e1a3f752fd9887d41b37d8cc7233df35395d54fac22eabbb"
+    },
+    {
+      "source": "cores/esp32/wiring_shift.c",
+      "source_sha256": "8a53aaf3dab5d70c5a209bd58dae8845dbbc1af4fd84725b8ace79c09093f3da",
+      "object_sha256": "c539ac54634a9dc6e018035915ca139efee4024bd754b2c9af72f71b7ca2d0bb"
+    },
+    {
+      "source": "libraries/Wire/src/Wire.cpp",
+      "source_sha256": "0624f16f6e73452256d7a6a73095809107407ee3b2afd1687b9f1400e6c23e2e",
+      "object_sha256": "dfeb6bd9f3cf414fb17b893d2a0008d63a2021c2fa7f1f6af6eaeff4a33c323b"
+    },
+    {
+      "source": "libraries/SPI/src/SPI.cpp",
+      "source_sha256": "8012826c0382f6b7b68e16f828c93076a362f94d7bb37d5f066ef1bd87023f7a",
+      "object_sha256": "87f9d21321c5a385201429a9f6212cb2e6efdfea490fbae61f61d72f04498423"
+    },
+    {
+      "source": "libraries/WiFi/src/ETH.cpp",
+      "source_sha256": "14404191bdc0f9f7a533217da8c3f7489e433c4cca69d108f5f02e2885e2a0c7",
+      "object_sha256": "74f2b0a633f51d83d6a98f7aabe3bd8d88baabae0080573aefe0d58c048272b3"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFi.cpp",
+      "source_sha256": "181b228f7165a2405a3b8c093436d119320b7b8d8f8f8f117915021dec5eeabc",
+      "object_sha256": "72a9682dcb88ce5ac37ad1d2d006d82d20895407fa4bef647da219ce2a69e619"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiAP.cpp",
+      "source_sha256": "6ceb9e779fc28ce0dd423230ac3e600ed363a63ad05611f3c2874d776c6f1bc2",
+      "object_sha256": "4a834e41b5382dcf184725790aef9b6ee9963d462320f06972109942e4b9da88"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiClient.cpp",
+      "source_sha256": "9ef3382a5795a8392396ec192f1538314e2f9ed3f65fee291ac933389cae190f",
+      "object_sha256": "cb0809c64c5b646882bacec38dea61cb0e0742d17a6854831505840e2f1d6822"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiGeneric.cpp",
+      "source_sha256": "7b02f4ac558cb54c54de9287c513a0f28cba3c46390aa2fa6fc0eb80ccf601ff",
+      "object_sha256": "6130f939581c255ed93f817f9c9969d443debe2a232ef73675acabc79807a6a9"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiMulti.cpp",
+      "source_sha256": "6680aad05cf364ba05f77ceff23a44fff3da8fdbba2c65a075e5f1e1f5ef296c",
+      "object_sha256": "f0756b6bb730ac24e5e1753d2dffafc16afaac8399a138f8d8249e3244b04e3d"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiSTA.cpp",
+      "source_sha256": "5dc5466a8e71436e787d0e6a6b534827e4f3d1dd9c38b319e7ac4dc1fa44afbb",
+      "object_sha256": "8ae8588b363608fa794005be15444dd76ee507e25679b41fac3f2586e5db2b45"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiScan.cpp",
+      "source_sha256": "ec8e9367dc60f13bd2ac9c4669a0876b732f56f0191a2119c7b3eebe9b355ecc",
+      "object_sha256": "c77453fd5b0e9ec2dcba306e5469ece0343a03f3965dd8c18819046378fe4bd4"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiServer.cpp",
+      "source_sha256": "6a925b747f9493b1b446a57234547f6d361a70053299365d7c7b6eba89952c1d",
+      "object_sha256": "3f140d657c6e5631fd023bfff51b84d1607b4f1e9be28a9d7fad6d1936e89755"
+    },
+    {
+      "source": "libraries/WiFi/src/WiFiUdp.cpp",
+      "source_sha256": "bb94fb6de526d7ac8d09913ce8264e88ec6658bcb1f19b362de4ebc44a010c5a",
+      "object_sha256": "5c94580ed9be2b8903074c587aca21f74aa5aa96e84ee0c5f2410b30d6e06f18"
+    },
+    {
+      "source": "libraries/WiFiClientSecure/src/WiFiClientSecure.cpp",
+      "source_sha256": "e4538992778b9e4954509a08299a2ebca1fb02a873b70917c19a80429e927404",
+      "object_sha256": "468f78504ee01090954305f20837ebabb1ff7a93c3d2298e906daeb064baacb2"
+    },
+    {
+      "source": "libraries/WiFiClientSecure/src/ssl_client.cpp",
+      "source_sha256": "4f94fb44c29e8de79c1b4d08f164be65845815ce1cd2e5c42a85a77561a25a50",
+      "object_sha256": "7dbe0c025c1de425087c3998f9be64bff073b76329bc39629bf4571e5ed75898"
+    },
+    {
+      "source": "libraries/Update/src/Updater.cpp",
+      "source_sha256": "6d9d1658dce75bbf9fcc3936bb7287e7fae8c9a76aeba0a8d56c7fcea3fd9198",
+      "object_sha256": "a962800c6affba5870365f46f83a9f7356078e1c282fd544056f162d63791da3"
+    },
+    {
+      "source": "libraries/EEPROM/EEPROM.cpp",
+      "source_sha256": "4123b740e59cecfefae91b59452d455c4781da9f64f68cb529c41e0cb73d8766",
+      "object_sha256": "56c15f2e3217bdea93461642c7d76c918590d1a011b7e5236cc130afb5d05a55"
+    },
+    {
+      "source": "libraries/FS/src/FS.cpp",
+      "source_sha256": "f9a46df10d249fd5f7bbfcc36949aa3cecbe7a603de8dd32c94a81179b6ff5da",
+      "object_sha256": "ab638890c351dab489d0051d33de299bd73b19822098088f8502e2365bf21464"
+    },
+    {
+      "source": "libraries/FS/src/vfs_api.cpp",
+      "source_sha256": "6caf2e82f518839b91ee1f6ecf028ab4785e461c06f1ec9cb1989d44f4916531",
+      "object_sha256": "31b2648543b37e1086e020445709be2fee9f8c67163803abcb21faec1198aded"
+    }
+  ],
+  "extra_sources": [],
+  "extra_header_sha256": {},
+  "owned_stack_frames": [
+    {
+      "function": "application_main.cpp:3:17:void app_main()",
+      "bytes": 32,
+      "allocation": "static"
+    },
+    {
+      "function": "application_main.cpp:8:1:cpp)",
+      "bytes": 32,
+      "allocation": "static"
+    },
+    {
+      "function": "application_main.cpp:8:1:cpp)",
+      "bytes": 32,
+      "allocation": "static"
+    }
+  ],
+  "reconstructed_object_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "reconstructed_sources": [
+    {
+      "source": "firmware/z-series/reverse-engineered/src/application_console.cpp",
+      "source_sha256": "cd73f5e1b259e85c6c8e5e497c4fcb163539f40817eb283507d9d06a328e7087"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/auxiliary_sensors.cpp",
+      "source_sha256": "86570930f5a96b6de1052fa9da617b6f6a10fb12e39fae7af3507d727c29a2ad"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/azure.cpp",
+      "source_sha256": "51092318a4caa73dfca91b9f340e4fa5f52f458669b97cda835899dd62c54c96"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/azure_console_tests.cpp",
+      "source_sha256": "c01fe6cee9e7cffb7842540d3a19adff2956ae4fc1e6ac58c9541f9f909867a3"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/backend_console.cpp",
+      "source_sha256": "09c39d586df940adab2bf40a6b3c6cea7a02b6497bfb547890ec6bd042eadcd2"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/backend_console_tests.cpp",
+      "source_sha256": "02e9831988f8b85a00374477347fbecd83feedef0b666a0c53199ba815350ebb"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/backend_diagnostics.cpp",
+      "source_sha256": "45b4b89db0320572a6386b1271486bbf3ae4d7cfde67f97087c7dee099c6840e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/basic_console_tests.cpp",
+      "source_sha256": "bf0fbd8d668b3ecfec418e58a130df82a68069ef8d2d8e74214e06008eb8f6f5"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/binary_download_console_tests.cpp",
+      "source_sha256": "c6cd290a45211fbe5b4ac5b967a8233112709016df3685adc52326909e32681c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/buzzer.cpp",
+      "source_sha256": "325217303425edea9396408690ba276f5861ddd4d3d70884cff71babe39abbb8"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/console.cpp",
+      "source_sha256": "99b28dc15d368f3371d6f78923610112fcd187e3f0656d88c80cda56e924d824"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/console_test_support.cpp",
+      "source_sha256": "493bab7cff9d278eb2a3d5e1fd8f04bceedb118bf4af30412f860a257e27923f"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_application.cpp",
+      "source_sha256": "e78e955a314bc7e8c523c41d96631191741f74ffa5b5d7ff49e7221541b0228c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_commands.cpp",
+      "source_sha256": "bf455c576b8f005a1866353140b978ced1fc21c1b636ef3f53f27ba9d9d6955b"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_console_tests.cpp",
+      "source_sha256": "e30d7398d15c7de6b30d7bb9713841524c5baf0951c159842c720e010e6eeeaf"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_control_state.cpp",
+      "source_sha256": "8b02c46df064667cde35b90bcb4b2b438c95dc58e766665b02cae7974ddaf001"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_csv.cpp",
+      "source_sha256": "c2ec89094f401ca89c257e3a5b6949badc7a5180ee0b5eb8b33c97cf22a613b9"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_flow.cpp",
+      "source_sha256": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_helpers.cpp",
+      "source_sha256": "a8ac0f1bddb14a5a1d2927b808857601713961bba963e919528a3b63b2c51591"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/core_startup.cpp",
+      "source_sha256": "689215f3b9d9b7321fb1bc5f861884fb61d96a028fff75e763cfc118ecc3ff1d"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/diagnostics.cpp",
+      "source_sha256": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/display.cpp",
+      "source_sha256": "0f92a8cccaee3fa0195ee983faf3f111fb128490f7b95e4f1b417cafc088c888"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/display_console.cpp",
+      "source_sha256": "0c212ac27b9e3ac228e2268dcb5bed0f00fd24f6a7d3d4ab89a06dc9f87dae1f"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/display_effects.cpp",
+      "source_sha256": "f88fa5aebc708678f27c768bdaf1b3caf9dbc54fe3bfbf0a846de87a58af543e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/display_fonts.cpp",
+      "source_sha256": "7b93fe8aebea9be365631da0ae120fc00b29eaf6ca296e6cec612e02f1d9114b"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/display_text.cpp",
+      "source_sha256": "1bbf504231346f3cdddd3725bcf7cad272cf7affa091feeb813acf7d849072d7"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/eeprom.cpp",
+      "source_sha256": "cc6043665a62b871f44f5aadf182713328c6a38c531b8784a0c9dd8529c7879c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/enums.cpp",
+      "source_sha256": "fce5148e7b40c06fa898ad7ee979e46c83416e7b940b16d3336a29cbf66a49c1"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/hardware_console_tests.cpp",
+      "source_sha256": "60954cd57b25819ac44d6b0bb8c7468ba78a41aaed94c3db8be1313e579377a3"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_application.cpp",
+      "source_sha256": "92722bfb026dcb00e7888d7942702f1af945abda9e63e5273fa73acf2f18c1d0"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_character.cpp",
+      "source_sha256": "257fd64aeccb26c823f5e3f4a5321b0f72a98c89472998044419145e536b9281"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_core_events.cpp",
+      "source_sha256": "76aa9a94747c7edc68d794922368e25378719fee240d4fcdca0f2367a8f47804"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_diagnostics.cpp",
+      "source_sha256": "d3b7aab8ace20e6bb0aaea3e4e149f2229fdd9e79b31ff2c8b2062f50d98694b"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_dynamic.cpp",
+      "source_sha256": "39f41900825f37cb9086e850ab679557346f2e29037eee20fb88de1cc65066ee"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_encoder.cpp",
+      "source_sha256": "cb54120f03efd603272f8f1b331596e300d3036204ca749be37e705a5d73ab02"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_events.cpp",
+      "source_sha256": "8968ea7c271cf5904bca1b4c829d673eca96a1c6415347a51f2f977d859555b4"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_flow.cpp",
+      "source_sha256": "cd831c3df0f993d9eda73c9133790f59737a240acbe92a23a81fc660520fd16b"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_hardware.cpp",
+      "source_sha256": "5a2022ef5b924badc6ca72e2477322550deb858e91dc5cfc20eb1c02d0684e76"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_menu.cpp",
+      "source_sha256": "8264fe3573bae9125eac634f3d60e439c1063e19d4c88602de284b40134602ac"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_network_events.cpp",
+      "source_sha256": "3ea700ccea190595966eb384e9eb81c04659132920cfd728f51b677ed6b69e64"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_numeric_inputs.cpp",
+      "source_sha256": "62059322396ba950f9354337606ca76952850a8cde673ca6bf2c4a72db80b2fd"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_paragraph.cpp",
+      "source_sha256": "cbf14e60b469ab2287c9bb62f07590741eefa65f5ee2c99fe49b46130c0957e5"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_presentation.cpp",
+      "source_sha256": "3a94de67afc7321bfbb0df61352813f7183e7e26c5d8bb0436c929c13689e516"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_presentations.cpp",
+      "source_sha256": "224cb874d138893e777da40f97ad5e1fc93a137f6de0328f59163c81bd8cbe11"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_quantity.cpp",
+      "source_sha256": "254471d51970603c998fcb69fa9e06d31dae4e0ac0ffa5c646951bc3fb17d489"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_remote_session.cpp",
+      "source_sha256": "ca77640fee2572c760b7b5189d408c48f354845c96b65909ac358ebc96684f7e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_screens.cpp",
+      "source_sha256": "cd994e87592cfeaf9c66629bb5dfe83a7782d9c077d9d76bc6c94131994c33ab"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_slideshow.cpp",
+      "source_sha256": "5fc4fb8c3a81cd8d126f2666b7bf47fb1fada11d899d7007dcb5a29be0e4d0c3"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_still_display.cpp",
+      "source_sha256": "b49f481cbf522cb1e67feee92cb8a0b00752048e4665f0c08cbf54d3eba732b0"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_text_input.cpp",
+      "source_sha256": "2d3b3a3d9c5260634ede8611403c6a78222145c31c162fb7250f2e7a405c96df"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_ui_commands.cpp",
+      "source_sha256": "d012457273d0fee92f201d8de70e999aa9a3be7029af80123749ecce73affeb6"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/head_widgets.cpp",
+      "source_sha256": "6e27a97221a9dcd5c679568d6101d90fc0f6aeaa006c865c1beae317bb9ff09a"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/heater.cpp",
+      "source_sha256": "df6731fa1f61b61ef09a43ae429c6b4f42105717320416a8cf68991f1964387e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/hex_detection.cpp",
+      "source_sha256": "fc7bacd53991a8cae60dc1ac4019815404d2fb44884edc2d8afaabcb7a5d6d65"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_assets.cpp",
+      "source_sha256": "9339a03c9cda948730072c3b29a4ba549a2a30f1d2cbdcc83292e0c2dec69d03"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_backend.cpp",
+      "source_sha256": "47fdd415cf2c9a9558a046358a0d8a4c3f5e481611ee657bc0d829cc7f964707"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_backend_console_network.cpp",
+      "source_sha256": "02ff30a4344e88137175927757ebadf605b878385e69d1aa9a5ddc92f53b9f54"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_client.cpp",
+      "source_sha256": "4c644121b73c9b920f8cebfa4a00d5f387767409b0201b9d4aa71d2a64d56f19"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_client_console_tests.cpp",
+      "source_sha256": "9f3111b0a6ddd9ffe9fa25e6bb07591feebcea02ed9e544b07eadd3aaf20d4a6"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/http_download.cpp",
+      "source_sha256": "77924395751c0a2b0f7bd197b89ee40eb50ce3a8795d85f96ce563e424e8ef58"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/local_http.cpp",
+      "source_sha256": "9d765b9957b7240a29a8d14d6a41c73b73f39c236977a7a8de0554094b2be53d"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/local_http_application.cpp",
+      "source_sha256": "57204e0b7951470b723549ac1cce388509cf1b1f881afb2aabd5132fa02e7ee5"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/local_http_server.cpp",
+      "source_sha256": "4cf51bbd3e5e0954172365aceb7628bdb20a0708e27523d52751c4999bf9bbf1"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/local_http_state.cpp",
+      "source_sha256": "04cfdab2a7fd5b68d51e31c0ad793b1e895fc6b42df9e86caed3218cec8df293"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/mqtt_client.cpp",
+      "source_sha256": "172297bf8c7da535e73f08af60e5d240134f9e88fa7054561e19cb0bf6156e33"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/msp_console_tests.cpp",
+      "source_sha256": "90abdea9d42093da6ef4238c482f0d1f6cee2e9f3f794ed1a03838d7c5be84e8"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/msp_images.cpp",
+      "source_sha256": "ffa65e543b38a34b14318e487c8874757c8b9089fc35d476544d446e86f5e9ba"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/network_client.cpp",
+      "source_sha256": "958a9fc39a4c6c1f053a08936e14a8e18bddc73a2deec341ef97673ca7e8a536"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/network_probe.cpp",
+      "source_sha256": "2716acb75054d388d5373d7447307a8b2c9251fe47928056beb648be17ceaeee"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/physical_inputs.cpp",
+      "source_sha256": "4fc1e99429368b4b2a43e2f53d1ca2f544e9d2f06a08d771f14ef2b718d42713"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/pico_still.cpp",
+      "source_sha256": "f024972394b87694a0baccd0b44429e2fcf3490de7d953be5eafbd7b68d0b330"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/pico_still_sensors.cpp",
+      "source_sha256": "b00dab43d7bb2c55399677a35816171dbca554b812387f73ea78d8d889a902bb"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/pinger.cpp",
+      "source_sha256": "0e3d00cf1ace570d78ce6a8c1eea691a15ce98a5d1cdd1d8a3bd4549339fcf80"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_catalog.cpp",
+      "source_sha256": "a3133b4351b023d3aed6a574f291da45bbd9bfac90da74d526fc32e27fcfa663"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_diagnostics.cpp",
+      "source_sha256": "31f9d78338c621b57ca6dc9815ef4751fe5ba09e2fa98ee9bb16d9e391cc3b5e"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_list.cpp",
+      "source_sha256": "d3a427bcd81939d93e29bc073222287297e6ccdd4ead17f82aead780f2d78b84"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_recipe.cpp",
+      "source_sha256": "f29142b2e6ec0916e755329eb5ba84293b848138c46368fa523443317a4f1900"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_repository.cpp",
+      "source_sha256": "4e53c359c0cd10bb5ff702768af61cbf3033b56d6cb892a6b274e320dbfb848c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_runtime.cpp",
+      "source_sha256": "18a17d4a07db6cd2bab1bd54e7ec27b7877ddee3153de64692cb595162ed4869"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_runtime_execution.cpp",
+      "source_sha256": "ef3903cf1b31372504a6d0be5ded9528f6b885dbb8021deb232ce07396d3ed97"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_runtime_heater.cpp",
+      "source_sha256": "fab8390fe04a889f10c0dcaad6e31b7086b07240a7b6daff6506ed1bab039bc6"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/program_writer.cpp",
+      "source_sha256": "ab1a055ae2ff3e058e5960ba28f2128981b1638f4516776dc3baf3e65de769be"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/quantity.cpp",
+      "source_sha256": "31376af9825f6119dc4ce771a355199c80c7adb41ee7343ec8c2fcb8056f944f"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/runtime_events.cpp",
+      "source_sha256": "be40c79a85525806e0ea792a9ce1244a3aebc41ebe853abd121e89168d5a72ed"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/runtime_instruction.cpp",
+      "source_sha256": "dfa89bc150e4bb7a6b2a21e9a13ae6a438867cb43c30ebeec9f580663121fc75"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/safeties.cpp",
+      "source_sha256": "c8c32484861c8175ee080402b50bb0c02a28e3e1898b6b26a3d7d5167da11df4"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/sensor_acquisition.cpp",
+      "source_sha256": "dd3d7eb81bebb945e0e1606b7844579e723e25bf2a922ca9e5767867b7a988b4"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/serial_console.cpp",
+      "source_sha256": "c1423fcc7ea4ca9ea66806bb9ad42d22cf6df30fb128914251884f1925b79a21"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/serial_logger.cpp",
+      "source_sha256": "309e854ed7ae1036ede355b46975310f6d82b728765a3205f41542cf2c83b311"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/software_console_tests.cpp",
+      "source_sha256": "b4432417b0bf340072260d7ce161b74d2103e2e62561ac8fa1e1abe31f196c0a"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/still_authorization.cpp",
+      "source_sha256": "b28292fe1be2257e23309e1e8282ece5be77430ebd9c927cc1c47aaab82a97fa"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/still_client.cpp",
+      "source_sha256": "fac4d74b33dfb5791b83130de8216d757225d5c88c9e9aa00d3e2f09ed4bfdb1"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/still_http.cpp",
+      "source_sha256": "8ec09f0a2d022201f016232d5386b0d7f94f588855af3210f114da54e4bca9ae"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/system_setup.cpp",
+      "source_sha256": "0d8915af9849383ba0905be1cfd7a456416081f57666a619330dbcdb1b153cf5"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/system_tick.cpp",
+      "source_sha256": "7008b0484ae6eea99b1b316dc33d3190d9e1593e5acc548b9385f909de9515bc"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/temperature.cpp",
+      "source_sha256": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/ui_catalog.cpp",
+      "source_sha256": "ee2f3d99b121abbd1b519f98aa0e6706ce834bf3102c0c7b02c0e3380a5d95f1"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/ui_screen_tick.cpp",
+      "source_sha256": "6fca041d9c4a8fdfc560cc4f4ce1db6975877eab2291a15e9e93cfdc3d1b56fd"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/wifi.cpp",
+      "source_sha256": "df8f3f60a214267744749135d20849f060773b6d7789cdaf815cda3945baa7c2"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/z_backend.cpp",
+      "source_sha256": "93afa0a59e8b9cff741f84b00d38ec8b9df7c490fb46fe090542d6d5e077bbc6"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/src/msp_protocol.c",
+      "source_sha256": "51dbad57a389942d0f8c3549d2f5cd04d26158599d6c5f8e1faac7266464da45"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/application_main.cpp",
+      "source_sha256": "262be67c487cc0932d1590b5e28c2ec5772aff8aeb0d5ffff12e48658779d46d"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/application_platform.cpp",
+      "source_sha256": "2c0b9f6a02e6d58eb11059e53e4e00d716d337f54595cc9e2fcc6de144482fed"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/azure_crypto.cpp",
+      "source_sha256": "346ba86f6426e07565a5bfa9e5db94bab4ae5fe40048f682964094806c9844a2"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/azure_mqtt_platform.cpp",
+      "source_sha256": "1e3cd89a9fffdbb461a2689a03b808930751a5f9ab2bca4c02e0137e0b10422d"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/buzzer_platform.cpp",
+      "source_sha256": "320241d67db8270a585eb341e74e90609c0b027f8b26f4800fa05966fa9e2c30"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/console_platform.cpp",
+      "source_sha256": "130b3c4bb44339e69071e1a2a6ad4a831e3b363cd85c770f347c6cee80c7ddf7"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/display_platform.cpp",
+      "source_sha256": "cab1c7422a752e4cd231e310bb9ec4e5325766474fae70831711af3546d73164"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/esp32_platform.cpp",
+      "source_sha256": "61af80f4af3b9cda85e7eefe99b2b7b9c46e3615524de8a03a4705ec2a116aec"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/http_client_platform.cpp",
+      "source_sha256": "069240969435715fabb40caaae52c41d7a56e9f24c19b45bff3143c817a17a3b"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/http_download_platform.cpp",
+      "source_sha256": "b42c53f5cd588d25532d31ab6015fccdf20f88efc9341f37de8f7928f9ef736c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/local_http_platform.cpp",
+      "source_sha256": "acafc77959f2ebc4e5ba376627aefe700e821c38be92d9bbaeb125f917042d52"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/network_client_platform.cpp",
+      "source_sha256": "6047170dc5deab3dbf9640b2ef6822326334f24bacec7d964117067a6cbefe5f"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/network_probe_platform.cpp",
+      "source_sha256": "83121ffd94a95036f14d60e81951c95acf7be591f81e28b46b83ca4f1998e988"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/physical_input_platform.cpp",
+      "source_sha256": "a2caa220aa50d18d324fb13dad44f7be5f3783d8a5bf54c7fab04717dfccec06"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/pinger_platform.cpp",
+      "source_sha256": "5f991d684d3616274b0a4fa0996627999e0e50fb43d990fe1ffb96d849ac3391"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/still_authorization_platform.cpp",
+      "source_sha256": "e81e9c7c22ae79ba421039dac74bbf63cd132581c0b3f640af6233fb0a7b6b65"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/system_setup_platform.cpp",
+      "source_sha256": "c313a2abad3e7099eeaa70185f2ce28eaf7de3bc03a2d73201289c61ecea9d1a"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/system_tick_platform.cpp",
+      "source_sha256": "2413e58a1dd2dc4f8683385ddf784cb6f6959fe68062378e9365caaee7fca939"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/platform/esp32/wifi_platform.cpp",
+      "source_sha256": "d2c6207d214f56ea0ef422f13289cff38eab6439a758bbd7f2e66856ba6218fe"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/azure_json.cpp",
+      "source_sha256": "2e71c326ca42b2fc8687778069b7a790dfdc578cb9b0160152af3c6bd92bb2b5"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/backend_console_tests_json.cpp",
+      "source_sha256": "71114f4221af4d0f2ed87b13f87a4dd0c1e6d547fadd9882d6bba1905cb4a669"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/basic_console_tests_json.cpp",
+      "source_sha256": "65933f7c0ee426d25e496f062ddf1ffd8aba1888a1a8362f86d656f81bf282a7"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/http_backend_json.cpp",
+      "source_sha256": "2531b71d5353589fea1010ea3fbad1ce69437a3d81edcbc66fc38fb8698fc530"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/program_recipe_json.cpp",
+      "source_sha256": "9e3a6a2a4d124297ef66dfba569881f1d7180233a55f6749e057afd40dc6c6d3"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/still_authorization_json.cpp",
+      "source_sha256": "07f563bb78b1e7b2af8f53ebb08e49df0f1fc0a158453958b12576e89e21c35c"
+    },
+    {
+      "source": "firmware/z-series/reverse-engineered/adapters/arduinojson/z_backend_json.cpp",
+      "source_sha256": "4c830a21c3cb2f0c6f733424cd695f92ab036abdb4431a14a67ceea0d3943b2d"
+    }
+  ],
+  "reconstructed_headers": {
+    "firmware/z-series/reverse-engineered/include/zseries/application_console.hpp": "6c566b5c03b55c540cd5dacdffbc924e2cd84eaed7ae8cd88dd3ae37870183e7",
+    "firmware/z-series/reverse-engineered/include/zseries/auxiliary_sensors.hpp": "597bfb86960bbd1e4c7eb5a36959c0f30ac56b05a71f7110b477274f4a8660b6",
+    "firmware/z-series/reverse-engineered/include/zseries/azure.hpp": "bf721a67579a9d164ac49233e2f78ec018f8313b8bfab50eebed4809ced29afc",
+    "firmware/z-series/reverse-engineered/include/zseries/azure_console_tests.hpp": "b90ffb8c48ccc1415f92eb72aeafddcf595f89fcde08989a3f5331c5657c3abf",
+    "firmware/z-series/reverse-engineered/include/zseries/backend_console.hpp": "fdaba1a2a6432340c1e2ef60912a811a685cf67887927ed1f2df561a7f10f21b",
+    "firmware/z-series/reverse-engineered/include/zseries/backend_console_tests.hpp": "987ff68972d3e8a60dd86b0ce9c345138657e65a5bec8a1d9a19049e5693f429",
+    "firmware/z-series/reverse-engineered/include/zseries/backend_diagnostics.hpp": "ccb6063f39c1bbebada1878b24417ecfd4aa2390d511a1a13074f6d21d6c00e1",
+    "firmware/z-series/reverse-engineered/include/zseries/backend_log_event.hpp": "c9ad536b5ca8ebfd2454a025a635011d15b84e677ef3036fc07b94bd459d4fa5",
+    "firmware/z-series/reverse-engineered/include/zseries/basic_console_json.hpp": "ea8e8353772fdf49760b22fe473852110fea13948bdae1fbf310f8b3e349c6d5",
+    "firmware/z-series/reverse-engineered/include/zseries/basic_console_tests.hpp": "4b1a32f5f48edc2e182ddfc1651bcaf16cd1105b8df4d4a6fdd03b94b9bb52b6",
+    "firmware/z-series/reverse-engineered/include/zseries/buzzer.hpp": "3d29e7b156076571c04a9be6af123d27ac8739be34941f52faf4ffb9f9c28642",
+    "firmware/z-series/reverse-engineered/include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "firmware/z-series/reverse-engineered/include/zseries/console_test_support.hpp": "fa512305be71f62154cd6ce340cdb30b96f36d74843092f3c53f1ce8823497f4",
+    "firmware/z-series/reverse-engineered/include/zseries/core_application.hpp": "52e6a44cf2d5633c59fbfbeac01246e039baab9e089ffd2a5b91eb75eaf35bd3",
+    "firmware/z-series/reverse-engineered/include/zseries/core_commands.hpp": "db47789c16bef8e3123b4966aa4df79dd7a63cf8ee236e4370d15a334401f21b",
+    "firmware/z-series/reverse-engineered/include/zseries/core_control_state.hpp": "bc86aa2e63ee2344e21f7cca8ec558f2f42c82a2d7a3eff9884dd24ba3d6d502",
+    "firmware/z-series/reverse-engineered/include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
+    "firmware/z-series/reverse-engineered/include/zseries/core_helpers.hpp": "6712b7c7aab8097c34506b57ef59aceb966d17d54ce57255eb528e6957968400",
+    "firmware/z-series/reverse-engineered/include/zseries/core_startup.hpp": "0f1853c4f42743a92fbbdb76d25705809ab802a2d22426f97b2baf4c1505209a",
+    "firmware/z-series/reverse-engineered/include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "firmware/z-series/reverse-engineered/include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
+    "firmware/z-series/reverse-engineered/include/zseries/display_console.hpp": "c716880469e7e2a10b552aa3c70ece49ab433a785603c7278ce3e0438360fb83",
+    "firmware/z-series/reverse-engineered/include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
+    "firmware/z-series/reverse-engineered/include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
+    "firmware/z-series/reverse-engineered/include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3",
+    "firmware/z-series/reverse-engineered/include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "firmware/z-series/reverse-engineered/include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
+    "firmware/z-series/reverse-engineered/include/zseries/hardware_console_tests.hpp": "a49f9dd4a24778691801fb2a47ab39a2821f4d37e7a6ba0f9d1eb4c250177b57",
+    "firmware/z-series/reverse-engineered/include/zseries/head_application.hpp": "d143d63f00274c84a3721581899e0bbac15d2887c6e93e97a22a60a881008d31",
+    "firmware/z-series/reverse-engineered/include/zseries/head_character.hpp": "1dcaeae41b7af308136decc9d4f233262745dded0fee8c55b8f48c2ff6ea0958",
+    "firmware/z-series/reverse-engineered/include/zseries/head_core_events.hpp": "159a41bdf4f56425696e9f16cfa432f901652b95fe7a70acd58f77c09a4840b0",
+    "firmware/z-series/reverse-engineered/include/zseries/head_dynamic.hpp": "7ba592a9cd4f23143841a11157d979059f2b8aa483394e963c6b1329229d5abe",
+    "firmware/z-series/reverse-engineered/include/zseries/head_encoder.hpp": "6e740312c6c5f8e5789b18ae4a42807caedbf543082050d4d14f79a97e7037c8",
+    "firmware/z-series/reverse-engineered/include/zseries/head_events.hpp": "f5a2c3d5698e3f9d21e52162458670031f0f2bd5fa2cf231c2a2ff10f07d73a0",
+    "firmware/z-series/reverse-engineered/include/zseries/head_flow.hpp": "e1c446688590f00da33b7e8651c9f10c19d513795f5868e666a4d3fa1494f5e9",
+    "firmware/z-series/reverse-engineered/include/zseries/head_hardware.hpp": "8aec6c777797e1042d9e77446f884551ee00a0d3a14ab61459a2d88f49b69f8d",
+    "firmware/z-series/reverse-engineered/include/zseries/head_menu.hpp": "2edf3793d4be6ff035491ac99c7c6deffe86250587506d314c4ceaa37c9098b2",
+    "firmware/z-series/reverse-engineered/include/zseries/head_network_events.hpp": "269d8b11d80552ef894d972a146e9e16e82d843d39141de1fcf0890a832702ca",
+    "firmware/z-series/reverse-engineered/include/zseries/head_numeric_inputs.hpp": "9144efbbd423f6507ea6e04c335431b270132b5d7e5edd0b1fc8f7585575d840",
+    "firmware/z-series/reverse-engineered/include/zseries/head_paragraph.hpp": "4d6c0156b7a40c5221a1fe657c577aff24e1700f4649f8dd323ce7deefd999c7",
+    "firmware/z-series/reverse-engineered/include/zseries/head_presentation.hpp": "63a8f64d99b84cb09413164d760a07e544a05cfa608d399a2f06f5d6ba3e2f23",
+    "firmware/z-series/reverse-engineered/include/zseries/head_quantity.hpp": "940a4e257e12bd6a907dbb3ce7e48f84abcd3de1c1b506be92f54df39d47adcb",
+    "firmware/z-series/reverse-engineered/include/zseries/head_remote_session.hpp": "d51f373a3392129aa7c80477e3aafc133d995bfbaad5919840d306bfaf410144",
+    "firmware/z-series/reverse-engineered/include/zseries/head_screens.hpp": "0f8bc8de89387a2f9fa7af91fda7d85e156dd60c48fe8923f62aedbcf94c6ebd",
+    "firmware/z-series/reverse-engineered/include/zseries/head_slideshow.hpp": "9c08589048a80843f65819ff524536a1b0cd1c5bc64612c59c1cd884c423c2a2",
+    "firmware/z-series/reverse-engineered/include/zseries/head_still_display.hpp": "1431dd92b58595bbba112e614db8c98c0ed02f0220fe49eb14429d788cfb0802",
+    "firmware/z-series/reverse-engineered/include/zseries/head_text_input.hpp": "5403ea3974d75ea00f06151e4d7e4f7b1c58c019963c7defde0913421d09bf0e",
+    "firmware/z-series/reverse-engineered/include/zseries/head_ui_commands.hpp": "7b978c6ceaaf9fdae795c9fc26ac3c07be77cf94468c56635c3c49c2e9312ce2",
+    "firmware/z-series/reverse-engineered/include/zseries/head_widgets.hpp": "0532e3a96da20d356af3e38207545dd221c60e8d4b2af36c3f428194d6257de7",
+    "firmware/z-series/reverse-engineered/include/zseries/heater.hpp": "835ca0b60d7fcb3aa2a51e0752bb1f345a4313cf8dea3fb2e6d4a402ca50e29f",
+    "firmware/z-series/reverse-engineered/include/zseries/hex_detection.hpp": "18415d26c54cb898bcdea1ce63233f6642171c958de70ac3387c0c54ba9487d5",
+    "firmware/z-series/reverse-engineered/include/zseries/http_backend.hpp": "5d06d427c97cbc5671c440c375a457af69e4ff91e9f9e62014a1add443ddaa7c",
+    "firmware/z-series/reverse-engineered/include/zseries/http_client.hpp": "62368c63d0c9a8dc5d1e469ffedb452795e90f7fce92d01a285c59dec7352c0c",
+    "firmware/z-series/reverse-engineered/include/zseries/http_client_console_tests.hpp": "bf90f4af1a3d2ace79cf49599be6623da3dcc4e44e158fb59315e5a624463cf1",
+    "firmware/z-series/reverse-engineered/include/zseries/http_download.hpp": "2ee689f3ecf7b042cfafc99a07fb8b9557d70c7d22dc033d10e08382154d1d08",
+    "firmware/z-series/reverse-engineered/include/zseries/local_http.hpp": "3b7ecb1b8be47079b0dfe2cc7a904420e2e46156c6c01f58c4fb12c2267fc0d5",
+    "firmware/z-series/reverse-engineered/include/zseries/local_http_application.hpp": "27df3a29bbed07d4a024f85843ada07df1ebcd234b21d1e06ae58652aa469197",
+    "firmware/z-series/reverse-engineered/include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
+    "firmware/z-series/reverse-engineered/include/zseries/local_http_state.hpp": "98749c2026b41d1c0b80be7e69f85795c6a0ecfa9de5d2035c39e74b5f8da058",
+    "firmware/z-series/reverse-engineered/include/zseries/mqtt_client.hpp": "90b5c08a4199ac5b30df7ad8c05b868f17d15b9b3cba86eac6a6ca037bb6db45",
+    "firmware/z-series/reverse-engineered/include/zseries/msp_console_tests.hpp": "8d91a55ef6e712b39e9934a2ed671715b4a69ed613ffe874e3e53ecb231bd63d",
+    "firmware/z-series/reverse-engineered/include/zseries/msp_images.hpp": "091a2dd4ed14af54a917dade38f3906525b077290b19ad8ee72f2dc6c51cf5c0",
+    "firmware/z-series/reverse-engineered/include/zseries/msp_protocol.h": "eca42029deedb69b4f932e11e8996058ff471f1ee68da6b5096bc995b7281aa3",
+    "firmware/z-series/reverse-engineered/include/zseries/network_client.hpp": "f91672d13ae53bb97bbbe7e1483f83866301664417520b588e60b3839f1a4fd9",
+    "firmware/z-series/reverse-engineered/include/zseries/network_console_tests.hpp": "46dd4f866191d39d501324b3eb80d3e27d89e18d79d17b8dae5f2f65d0fdb505",
+    "firmware/z-series/reverse-engineered/include/zseries/network_probe.hpp": "8aa1c90bba7a0bfd72da23b1a0619aa0674255ce834e5dbc5fc87c2f0174c2ab",
+    "firmware/z-series/reverse-engineered/include/zseries/physical_inputs.hpp": "5a2aab934e9024019934d6850c832ae9da8eaeafc15edfb4cf8f9dd67391242e",
+    "firmware/z-series/reverse-engineered/include/zseries/pico_still.hpp": "8da2ef9bbbe65762ba02935492b582762f3662c848850c9682a6877ff2be46fd",
+    "firmware/z-series/reverse-engineered/include/zseries/pico_still_sensors.hpp": "b02523527c74186fd3cec2aaff596cf056f5d702b0d85a377885e190b8785d41",
+    "firmware/z-series/reverse-engineered/include/zseries/pinger.hpp": "36e29b186e8a2d38726feddc57d7f11b7847f609e2e9e3374aa521036a7d47ab",
+    "firmware/z-series/reverse-engineered/include/zseries/program_diagnostics.hpp": "6560b504f0d8f4570b238326456a628fa9aea99ba33d016ea2cfc67dcfbaa7da",
+    "firmware/z-series/reverse-engineered/include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "firmware/z-series/reverse-engineered/include/zseries/program_recipe.hpp": "8ccad90db217b8d2fbb727432260e9e9a05515f1420b57e0b2ccaa35ec482010",
+    "firmware/z-series/reverse-engineered/include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494",
+    "firmware/z-series/reverse-engineered/include/zseries/program_repository.hpp": "d04f1641278f5c0efbdf64a517774bc6ed364d99f37fb3fda23eaf8396f29448",
+    "firmware/z-series/reverse-engineered/include/zseries/program_runtime.hpp": "eaa1de3248c389b293cb231d12e53d3abc820677c4408183acb0814cb94415a5",
+    "firmware/z-series/reverse-engineered/include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
+    "firmware/z-series/reverse-engineered/include/zseries/quantity.hpp": "9110702b8324d3c7e8a0408ae3826bb31bf69869fa09497f6f77e446ffc2d7be",
+    "firmware/z-series/reverse-engineered/include/zseries/runtime_events.hpp": "5a69947c3d9243517b6b011322e1378e9dc51a810ac3b87f1845e89025e22495",
+    "firmware/z-series/reverse-engineered/include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
+    "firmware/z-series/reverse-engineered/include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
+    "firmware/z-series/reverse-engineered/include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
+    "firmware/z-series/reverse-engineered/include/zseries/serial_console.hpp": "fa57350bbd9658d960a3b4cdc97129184d8ee3619e426313963e1fdb1e0e2ae4",
+    "firmware/z-series/reverse-engineered/include/zseries/serial_logger.hpp": "7bf12a2e4e988e82435aaa4fd6bad153f5516962a2b1ead5fb30a030c7f7b2e4",
+    "firmware/z-series/reverse-engineered/include/zseries/software_console_tests.hpp": "8873663ba669e05366ec2053b25dacd80fe597a658411f7bb63c90c12fc4233c",
+    "firmware/z-series/reverse-engineered/include/zseries/still_authorization.hpp": "546b9d2638ca40abe2e463e8bcd4e89771cd676b743d833bab1d54f360a8cbda",
+    "firmware/z-series/reverse-engineered/include/zseries/still_client.hpp": "88196189c7289b42bae61509db92d16bf0126b6ba0ddc9c4495865705c07b767",
+    "firmware/z-series/reverse-engineered/include/zseries/still_diagnostics.hpp": "8517bac0adab1b3ce978b9767c0114ea965f8dbbf19d58620e173ce654c17530",
+    "firmware/z-series/reverse-engineered/include/zseries/still_http.hpp": "4b42693c31f1a8b0851ecb7cd7f24ea2ccd69eec1eb14592bcfb5a995f1cb54b",
+    "firmware/z-series/reverse-engineered/include/zseries/system_setup.hpp": "c10cdb726543faab8f552c05db1a9b3b97980f986b75985ad4786c61a28b0bb8",
+    "firmware/z-series/reverse-engineered/include/zseries/system_tick.hpp": "d486f835ceebc83e5c44372898a882cfd248a6450f864848df7e412f57fd53fb",
+    "firmware/z-series/reverse-engineered/include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "firmware/z-series/reverse-engineered/include/zseries/ui_catalog.hpp": "bac363941ec5673aead8fbfd91d512650bd173bf2f0223956cc6d8476ac81426",
+    "firmware/z-series/reverse-engineered/include/zseries/ui_screen_tick.hpp": "6d932062f71986cb8f1f01c7d9c43a472d65ee81057ad2ad1e7a855b975c4ea3",
+    "firmware/z-series/reverse-engineered/include/zseries/wifi.hpp": "1dd8d76c75288819d85ba4b407af8d1cb1b8dd1194402ce09fa78ee85fff233f",
+    "firmware/z-series/reverse-engineered/include/zseries/z_backend.hpp": "68696268b6c5316a239bc0ba550a8771a1641fd5af2391bba22408528072304b",
+    "firmware/z-series/reverse-engineered/platform/esp32/application_platform.hpp": "faf72a481e78c3875d24acb84fc4511bc0979b549ddfae1c1e504ff572ef1084",
+    "firmware/z-series/reverse-engineered/platform/esp32/azure_crypto.hpp": "090dcb43cfba72f6239937b6f8949df9b4aef266f8edd30c3ae37ce81013575c",
+    "firmware/z-series/reverse-engineered/platform/esp32/azure_mqtt_platform.hpp": "0eb05d640ec063566018cd1b99ca3607db67ed8352d503069af87a1d3d479669",
+    "firmware/z-series/reverse-engineered/platform/esp32/buzzer_platform.hpp": "53d86dde450a9dafef827ed75a808c0f2ed7bc021628d05ce598cd44d14e2ff5",
+    "firmware/z-series/reverse-engineered/platform/esp32/console_platform.hpp": "10f7b89789821d5360b7ef61e5b67020200411ccdca31647ef24135b7365d8fc",
+    "firmware/z-series/reverse-engineered/platform/esp32/display_platform.hpp": "ce0798074651299483bacfba3525a8b18352836951774b2d8255131992da830b",
+    "firmware/z-series/reverse-engineered/platform/esp32/esp32_platform.hpp": "7943c4334f1a80f92194b09037730831e1753450574864ea4b1052f5abf3de6a",
+    "firmware/z-series/reverse-engineered/platform/esp32/http_client_platform.hpp": "ab52a95c8d6a7989de381cc20b82315df89cff3a207cb4e9afe2773257b469d5",
+    "firmware/z-series/reverse-engineered/platform/esp32/http_download_platform.hpp": "8eb7561e36b205f06a89054747e5f35d5626d939252f26b2532cda631ab9607d",
+    "firmware/z-series/reverse-engineered/platform/esp32/local_http_platform.hpp": "c02c1623af6c9f067ff6a5fb3d1272f7842d533fc879c8b8f035053d440450ac",
+    "firmware/z-series/reverse-engineered/platform/esp32/network_client_platform.hpp": "daa1e61f7747fd9d04d860a36519c20c06bdf2b025f6eaa2773875685d3178ba",
+    "firmware/z-series/reverse-engineered/platform/esp32/network_probe_platform.hpp": "3dda5c926570018d59bc99c802afa722e56bd6a1aa92a53612cb1e7fecd13650",
+    "firmware/z-series/reverse-engineered/platform/esp32/physical_input_platform.hpp": "7183b00b57cd510303ad2b3e9a3e2d498f233501ac820be3abfce34be37d1bbf",
+    "firmware/z-series/reverse-engineered/platform/esp32/pinger_platform.hpp": "489d3aa5392ef8bda111bfa7f0be4cd38d5ff49821e87db12e706247879513ab",
+    "firmware/z-series/reverse-engineered/platform/esp32/still_authorization_platform.hpp": "22b087ce4826296db0724599c06dbd82fec7dc99334a8f52786e91b8ec628501",
+    "firmware/z-series/reverse-engineered/platform/esp32/system_setup_platform.hpp": "3cb68302b429c7b8ef8726b89b983e8e508b867bd8ea223056259e3a43e4e6e3",
+    "firmware/z-series/reverse-engineered/platform/esp32/system_tick_platform.hpp": "9ebe57df7007abe79e9b39a7655adc43e38ff5c01266aa5b2a17c376b9f1068e",
+    "firmware/z-series/reverse-engineered/platform/esp32/wifi_platform.hpp": "eaf55a57772a15888444074ada086e398ce2e5783b5e72c39c142dff092b8b43",
+    "firmware/z-series/reverse-engineered/adapters/arduinojson/recipe_document.hpp": "dcbf31ca3f86efe68a41d2fa1865c193d6bb9009d7b216d92bc459ed397fe84c",
+    "firmware/z-series/reverse-engineered/src/application_console_information.inc": "747a9ae06a98182b098623c58e338e8ea52e514b2fada3c699fe53431f23ef6e",
+    "firmware/z-series/reverse-engineered/src/application_console_manifest.inc": "f4f46b6e36520433c1e9e16d646208a906ec09131610c8cb08c123eca3169b01",
+    "firmware/z-series/reverse-engineered/src/application_console_msp.inc": "238454db2cabcb24dbcfcb510e75f6a280b9fb83773f9660a7930f63b7043825",
+    "firmware/z-series/reverse-engineered/src/azure_console_password_vectors.inc": "007e85857a56d97e0e0898108b4d6cb8adf23949898ef52b93aff145414e72cb",
+    "firmware/z-series/reverse-engineered/src/backend_console_documents.inc": "8845523b33a0599e523afb728aa77f51863e08873db36530e9248dd01e4a4887",
+    "firmware/z-series/reverse-engineered/src/basic_console_binary.inc": "009651f0b84926dc5ced3ff21ae73bd0f3fa9fa26a01f54b076062fe811c7e32",
+    "firmware/z-series/reverse-engineered/src/basic_console_literals.inc": "5e5ab71102ce5c9d659e85c1a4442cc9212eb354628dcdda0e325c47216847a7",
+    "firmware/z-series/reverse-engineered/src/basic_console_paragraphs.inc": "b0e6b903bb3cb9e456dedcb3b82aca2dd253545706c7fcd6b7130de1dbd6ca92",
+    "firmware/z-series/reverse-engineered/src/basic_console_samples.inc": "d718d5f9f3e52e1c7a2fd996fc196414d8cfe9bfbbc5ffbadc7a73452ae7e876",
+    "firmware/z-series/reverse-engineered/platform/esp32/application_platform_console.inc": "482ac50cd2148f552c1f9365158b7eab18f7fc821460f2cef7c45f0e6f0c5ce4",
+    "firmware/z-series/oem/upstream/zseries_0_0_119.bin": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+    "firmware/z-series/reverse-engineered/dependencies/arduinojson.json": "08d434f5bac5a02c4789761e6e24163d8dfc3246ba2ba78ec96dc0847fbc364e",
+    "firmware/z-series/reverse-engineered/dependencies/esp32.json": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+    "firmware/z-series/reverse-engineered/dependencies/ethernet2.json": "f061d39dbb5e85dd6301eccb56ad9fe7ac237de1f6d0c0471be81f9b9aecb17e",
+    "firmware/z-series/reverse-engineered/tools/acquire_arduinojson.py": "872f3df65627fb26ea745e3c6b4c8fba00a62be4bc76cd7283d2b9d24f51e36f",
+    "firmware/z-series/reverse-engineered/tools/acquire_esp32.py": "f53f8dd4124f71d2e0a32c563898bbb579498ed9ce2f95daaebb1b423764d36c",
+    "firmware/z-series/reverse-engineered/tools/acquire_ethernet2.py": "2fba1bd1b968c6780a0c04993c555e4d8b0f2003fc06a240ed2e71ec426c68ac",
+    "firmware/z-series/reverse-engineered/tools/adapt_ethernet2.py": "f1b8aa379041e97e3a476c29366dabd7b7e34aa975cb89d51051c3ec4eed4897",
+    "firmware/z-series/reverse-engineered/tools/analyze_images.py": "ef778721be03dba238103da618bb12f9976bda4c774ca5153a8af836883a6df6",
+    "firmware/z-series/reverse-engineered/tools/build_esp32_objects.py": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+    "firmware/z-series/reverse-engineered/tools/recover_backend_credentials.py": "d18cd7f9d841c63e41f6c496e8722901d3e5e14594b48a0d90537e019a52c3ff",
+    "firmware/z-series/reverse-engineered/tools/link_esp32_application.py": "2f94dae25a82608f5b3b490ed80a95014b420889b639ad2d1a93d869234b9a05"
+  },
+  "original_linker_script_sha256": "3cb1e57bfc326dbe7949b8bf490c0299bc27e5297bb8f1d7e0e0f207cfc60f2a",
+  "adapted_linker_script_sha256": "7aabdb26158d11edd40078e380a032297f7906fcb26b74016a006c2d30fddfa5",
+  "iram_libgcc_objects": [
+    "_addsubdf3.o",
+    "_muldf3.o",
+    "_cmpdf2.o",
+    "_fixdfsi.o",
+    "_divdi3.o",
+    "_udivdi3.o",
+    "_umoddi3.o"
+  ],
+  "critical_symbols": {
+    "_ZN7zseries3oem16heater_tick_20msERNS0_16HeaterControllerERKNS0_8HeaterIoE": "0x40081168",
+    "_ZN7zseries3oem14heater_tick_1sERNS0_16HeaterControllerERNS0_13HeaterSensorsERNS0_13ThermalSafetyERKSt5arrayINS0_12ThermalLimitELj4EEjRKNS0_8HeaterIoE": "0x40081198",
+    "_ZN7zseries3oem11pid_computeERNS0_8PidStateEddRd": "0x40081060",
+    "__adddf3": "0x4008c300",
+    "__subdf3": "0x4008c454",
+    "__muldf3": "0x4008c6bc",
+    "__gtdf2": "0x4008c80c",
+    "__ltdf2": "0x4008c8c0",
+    "__fixdfsi": "0x4008c950"
+  },
+  "required_application_symbols": {
+    "app_main": "0x400d42e0",
+    "zseries::oem::esp32::start_firmware()": "0x400d6ef0",
+    "zseries::oem::esp32::FirmwareApplication::setup()": "0x400d54bc",
+    "zseries::oem::esp32::FirmwareApplication::tick(unsigned int)": "0x400d5898",
+    "zseries::oem::CoreApplication::setup()": "0x400e91c8",
+    "zseries::oem::CoreApplication::tick(unsigned int)": "0x400e956c",
+    "zseries::oem::HeadApplication::setup()": "0x400f11f0",
+    "zseries::oem::HeadApplication::tick(unsigned int)": "0x400f1250",
+    "zseries::oem::esp32::FirmwareApplication::heater_second()": "0x40080f98",
+    "zseries::oem::esp32::FirmwareApplication::heater_fast()": "0x40080fe8",
+    "zseries::oem::esp32::(anonymous namespace)::write_pin(void*, unsigned char, bool)": "0x40081024",
+    "zseries::oem::esp32::(anonymous namespace)::encoder_change()": "0x40081034",
+    "zseries::oem::esp32::(anonymous namespace)::button_falling()": "0x4008c138",
+    "zseries::oem::esp32::(anonymous namespace)::read_pin(void*, unsigned char, int&)": "0x4008104c",
+    "zseries::oem::PhysicalEncoder::sample(unsigned char&)": "0x4008c140",
+    "zseries::oem::PhysicalEncoder::interrupt()": "0x4008c180",
+    "millis": "0x400816a4",
+    "esp_timer_get_time": "0x40083d80",
+    "esp_timer_impl_get_time": "0x40083f84",
+    "vTaskEnterCritical": "0x40091c80",
+    "vTaskExitCritical": "0x40091dd8",
+    "__digitalWrite": "0x40081598",
+    "digitalWrite": "0x40081598",
+    "__digitalRead": "0x40081600",
+    "digitalRead": "0x40081600",
+    "__onPinInterrupt": "0x40081388",
+    "__divdi3": "0x4008c99c",
+    "__udivdi3": "0x4008cc64",
+    "__umoddi3": "0x4008cee8",
+    "zseries::oem::esp32::(anonymous namespace)::active_application": "0x3ffc0c08"
+  },
+  "sections": {
+    ".iram0.vectors": {
+      "bytes": 1024,
+      "address": "0x40080000"
+    },
+    ".iram0.text": {
+      "bytes": 82132,
+      "address": "0x40080400"
+    },
+    ".dram0.data": {
+      "bytes": 12444,
+      "address": "0x3ffbdb60"
+    },
+    ".dram0.bss": {
+      "bytes": 28160,
+      "address": "0x3ffc0c00"
+    },
+    ".flash.rodata": {
+      "bytes": 469424,
+      "address": "0x3f400020"
+    },
+    ".flash.text": {
+      "bytes": 936922,
+      "address": "0x400d0018"
+    }
+  },
+  "complete_application_linked": true,
+  "link_probe": false,
+  "hardware_tested": false,
+  "flash_image_produced": false,
+  "scope": "Complete concrete app_main/Core/Head SDK link when complete_application_linked is true. Required heater, encoder, clock, GPIO, lock and compiler arithmetic symbols are checked in internal code; the active owner pointer is checked in internal DRAM. The owner allocation explicitly requests internal memory. Symbol placement does not exercise concurrency, dynamic allocations, SDK failure/panic paths, flash-disabled hardware behavior or a device partition layout.",
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "size": "text\t   data\t    bss\t    dec\t    hex\tfilename\n1020078\t 481868\t  28160\t1530106\t 1758fa\t/workspace/scratch/ae8953cf8f3f/z-application-support/link/application.elf",
+  "build_script_sha256": "2f94dae25a82608f5b3b490ed80a95014b420889b639ad2d1a93d869234b9a05"
+}

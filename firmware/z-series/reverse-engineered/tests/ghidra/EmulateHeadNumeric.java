@@ -14,7 +14,6 @@ public class EmulateHeadNumeric extends GhidraScript {
     private static final int[] PENDING={0x150c,0x159c,0x16bc,0x1760,0x162c};
     private final List<List<Long>> effects=new ArrayList<>();
     private long assertionLine;
-    private static class OriginalAssertion extends RuntimeException {}
     private static String sha(byte[] bytes)throws Exception{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));}
     private static Map<String,Object> row(Object... values){Map<String,Object> r=new LinkedHashMap<>();for(int i=0;i<values.length;i+=2)r.put((String)values[i],values[i+1]);return r;}
     private void screen(long type){effects.add(List.of(type,0L,0L,0L,0L,0L));}
@@ -25,7 +24,8 @@ public class EmulateHeadNumeric extends GhidraScript {
         case 0x4008c2b4:e.countBoundary("diagnostic_basename");return;
         case 0x400d21cc:e.countBoundary("diagnostic_output");return;
         case 0x400d10a0:e.countBoundary("diagnostic_recipe_summary");e.write(e.register(11),0,1);return;
-        case 0x400db014:assertionLine=e.register(11);e.countBoundary("fatal_assertion");throw new OriginalAssertion();
+        case 0x400db014:assertionLine=e.register(11);effects.add(List.of(5L,assertionLine,0L,0L,0L,0L));e.invoke(target);return;
+        case 0x401289a0:if(e.register(10)!=200)throw new IllegalStateException("Unexpected diagnostic delay");e.countBoundary("assertion_delay_200ms");effects.add(List.of(6L,200L,0L,0L,0L,0L));return;
         case 0x401367a0:throw new IllegalStateException("Original stack guard failed");
         case 0x4000c2c8:{
             long dest=e.register(10),source=e.register(11),size=e.register(12);
@@ -83,7 +83,7 @@ public class EmulateHeadNumeric extends GhidraScript {
             for(JsonElement value:inputs){
                 JsonObject input=value.getAsJsonObject();JsonArray state=input.getAsJsonArray("state"),payload=input.getAsJsonArray("value");
                 int op=input.get("operation").getAsInt(),i=0;e.resetRegisters();e.clear(HEAD,0xa300);effects.clear();assertionLine=0;
-                e.write(0x3ffc4654L,0x5a61c0deL,4);e.write(HEAD+0x3868,SINK,4);
+                e.write(0x3ffc4654L,0x5a61c0deL,4);e.write(0x3ffc2e84L,7,4);e.write(HEAD+0x3868,SINK,4);
                 e.write(HEAD+0xa0d8,state.get(i++).getAsLong(),1);e.write(HEAD+0xa0dc,state.get(i++).getAsLong(),4);
                 for(int off:new int[]{0xa0e0,0xa0f0,0xa100})i=quantity(e,HEAD+off,state,i);
                 for(int off=0xa110;off<0xa114;off++)e.write(HEAD+off,state.get(i++).getAsLong(),1);
@@ -92,13 +92,13 @@ public class EmulateHeadNumeric extends GhidraScript {
                 e.write(HEAD+PENDING[op],1,1);
                 if(op==3){e.write(HEAD+0x174c,payload.get(0).getAsLong(),4);quantity(e,HEAD+0x1750,payload,1);}
                 else {int[] offsets={0x1508,0x1598,0x16b8,0,0x1628};e.write(HEAD+offsets[op],payload.get(0).getAsLong(),4);}
-                e.register(10,HEAD);try{e.invoke(ENTRIES[op]);}catch(OriginalAssertion expected){}
+                e.register(10,HEAD);e.invoke(ENTRIES[op]);
                 List<Long> out=new ArrayList<>();out.add(e.read(HEAD+0xa0d8,1));out.add(e.read(HEAD+0xa0dc,4));
                 for(int off:new int[]{0xa0e0,0xa0f0,0xa100})quantityOut(e,HEAD+off,out);
                 for(int off=0xa110;off<0xa114;off++)out.add(e.read(HEAD+off,1));
                 parametersOut(e,HEAD+0xa028,out);parametersOut(e,HEAD+0xa080,out);
                 out.add(e.read(HEAD+0xa1c8,1));out.add(e.read(HEAD+0xa1c9,1));
-                results.add(row("state",out,"assertion_line",assertionLine,"effects",new ArrayList<>(effects),"event_pending",e.read(HEAD+PENDING[op],1)));
+                results.add(row("state",out,"assertion_line",assertionLine,"assertion_count",e.read(0x3ffc2e84L,4),"effects",new ArrayList<>(effects),"event_pending",e.read(HEAD+PENDING[op],1)));
             }
             for(String address:e.functions.keySet()){
                 Function function=currentProgram.getFunctionManager().getFunctionAt(toAddr(Long.parseLong(address.substring(2),16)));

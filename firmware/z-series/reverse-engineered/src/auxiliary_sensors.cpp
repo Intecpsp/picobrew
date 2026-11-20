@@ -52,14 +52,18 @@ std::uint32_t read_auxiliary_register(std::uint8_t address, std::uint8_t reg,
     return AuxiliaryOk;
 }
 
-std::uint32_t lis3dhtr_setup(Lis3dhtr& device, const I2cTransport& io) noexcept {
+std::uint32_t lis3dhtr_setup(Lis3dhtr& device, const I2cTransport& io, const ConsoleServices* diagnostic) noexcept {
     if (!available(io)) return AuxiliaryMissingService;
     const std::uint8_t values[] = {0, 0x47, 0, 0, 0x88, 0, 0};
     for (std::uint8_t i = 0; i < 7; ++i) write_register(device.address, 0x1f + i, values[i], io);
     std::uint8_t id = 0;
     const auto result = read_auxiliary_register(device.address, 0x0f, &id, 1, io);
     if (result != AuxiliaryOk) return result;
-    if (id != 0x33) return AuxiliaryWrongId;
+    if (id != 0x33) {
+        if (diagnostic && (!diagnostic->assertion || !diagnostic->assertion(diagnostic->context,"LIS3DHTR.h",0x8f,"idCheck == 0x33")))
+            return AuxiliaryWrongId | AuxiliaryDiagnosticFailure;
+        return AuxiliaryWrongId;
+    }
     device.polling_enabled = true;
     return AuxiliaryOk;
 }
@@ -92,16 +96,24 @@ std::uint32_t bmp280_read_calibration(Bmp280& device, const I2cTransport& io) no
     return AuxiliaryOk;
 }
 
-std::uint32_t bmp280_setup(Bmp280& device, const I2cTransport& io) noexcept {
+std::uint32_t bmp280_setup(Bmp280& device, const I2cTransport& io, const ConsoleServices* diagnostic) noexcept {
     if (!available(io)) return AuxiliaryMissingService;
     write_register(device.address, 0xf4, 0x3f, io);
     std::uint8_t id = 0;
     auto result = read_auxiliary_register(device.address, 0xd0, &id, 1, io);
     if (result == AuxiliaryOk) {
         if (id == 0x58) device.polling_enabled = true;
-        else result = AuxiliaryWrongId;
+        else {
+            result = AuxiliaryWrongId;
+            if (diagnostic && (!diagnostic->assertion || !diagnostic->assertion(diagnostic->context,"BMP280.h",0x102,"idCheck == 0x58")))
+                return result | AuxiliaryDiagnosticFailure;
+        }
     }
-    return result | bmp280_read_calibration(device, io);
+    const auto calibrated = bmp280_read_calibration(device, io);
+    if (calibrated != AuxiliaryOk && diagnostic && (!diagnostic->log ||
+        !diagnostic->log(diagnostic->context,ConsoleLevel::Error,"BMP","BMP280.h",0x10a,"Failed to retrieve calibration data")))
+        return result | calibrated | AuxiliaryDiagnosticFailure;
+    return result | calibrated;
 }
 
 std::uint32_t original_bmp280_raw(const std::uint8_t bytes[3]) noexcept {
@@ -135,7 +147,7 @@ double bmp280_compensate(Bmp280& device, bool& zero_divisor) noexcept {
 }
 
 std::uint32_t bmp280_tick(Bmp280& device, AuxiliarySensors& sensors, HeaterSensors& heater,
-                         const I2cTransport& io, const AcquisitionClock& clock) noexcept {
+                         const I2cTransport& io, const AcquisitionClock& clock, const ConsoleServices* diagnostic) noexcept {
     if (!available(io) || !clock.millis) return AuxiliaryMissingService;
     if (!device.polling_enabled) return AuxiliaryOk;
     std::uint8_t bytes[3];
@@ -145,6 +157,9 @@ std::uint32_t bmp280_tick(Bmp280& device, AuxiliarySensors& sensors, HeaterSenso
     if (temperature_result == AuxiliaryOk) device.raw_temperature = original_bmp280_raw(bytes);
     bool zero_divisor = false;
     sensors.pressure_pa = bmp280_compensate(device, zero_divisor);
+    if (zero_divisor && diagnostic && (!diagnostic->log ||
+        !diagnostic->log(diagnostic->context,ConsoleLevel::Error,"BMP","BMP280.h",0xe2,"Invalid value")))
+        return pressure_result | temperature_result | AuxiliaryZeroDivisor | AuxiliaryDiagnosticFailure;
     sensors.pressure_ms = clock.millis(clock.context);
     heater.estimated_boil_celsius = (sensors.pressure_pa - 101325.0) * 0.00034724743 + 100.0;
     return pressure_result | temperature_result | (zero_divisor ? AuxiliaryZeroDivisor : AuxiliaryOk);

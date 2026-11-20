@@ -11,6 +11,11 @@ std::int32_t plus(std::int32_t value, std::uint32_t delta) {
     return signed_word(static_cast<std::uint32_t>(value) + delta);
 }
 }
+HeadEncoderResult HeadEncoder::assertion(std::uint32_t line) {
+    state.assertion_line=line;
+    if(!services.assertion)return HeadEncoderResult::MissingService;
+    return services.assertion(services.context,line)?HeadEncoderResult::Ok:HeadEncoderResult::ServiceFailure;
+}
 HeadEncoderResult HeadEncoder::effect(HeadEncoderEffect type, std::uint32_t first, std::uint32_t second) {
     if (!services.perform) return HeadEncoderResult::MissingService;
     return services.perform(services.context, type, first, second)
@@ -24,7 +29,7 @@ HeadEncoderResult HeadEncoder::reset(HeadTimer& timer) {
 }
 HeadEncoderResult HeadEncoder::rotate(std::int32_t input_delta) {
     const std::uint32_t delta = 0u - static_cast<std::uint32_t>(input_delta);
-    if (!delta) state.assertion_line = 0x2c2;
+    if (!delta) {const auto result=assertion(0x2c2);if(result!=HeadEncoderResult::Ok)return result;}
     HeadEncoderResult result;
     if (state.combined.enabled) {
         auto& combined = state.combined;
@@ -91,7 +96,7 @@ HeadEncoderResult HeadEncoder::rotate(std::int32_t input_delta) {
                 // The OEM assertion returns, then stores/draws this index.
                 // Keep the explicit source guard before the drawing child can
                 // index outside its character span; this is a bounded repair.
-                if (next < 0) { state.assertion_line = 0x481; return HeadEncoderResult::InvalidSelection; }
+                if (next < 0) { const auto result=assertion(0x481);return result==HeadEncoderResult::Ok?HeadEncoderResult::InvalidSelection:result; }
             }
             if (character.count <= next) next = plus(next, 0u - static_cast<std::uint32_t>(character.count));
             character.selected = next;

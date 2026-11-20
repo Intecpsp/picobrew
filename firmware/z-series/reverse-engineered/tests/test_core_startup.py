@@ -23,7 +23,7 @@ class CoreStartupTests(unittest.TestCase):
     def test_original_startup_order(self):
         fixture = json.loads((ROOT / "tests/fixtures/core-startup-original.json").read_text())
         for item in fixture["cases"]:
-            result, events = validation.invoke(self.native, item["boiler"])
+            result, events = validation.invoke(self.native, item["boiler"], fail_stage=-1 if item["timer_start"] else -2)
             self.assertEqual(result, 0)
             self.assertEqual(events, item["events"])
 
@@ -35,11 +35,18 @@ class CoreStartupTests(unittest.TestCase):
             self.assertEqual(result, 2)
             self.assertEqual(events[-1], [0, stage, 0, 0, 0])
 
-    def test_timer_failures_do_not_enable_interrupts(self):
-        for failure, expected_result in ((-2, 6), (-3, 7)):
-            result, events = validation.invoke(self.native, fail_stage=failure)
-            self.assertEqual(result, expected_result)
-            self.assertFalse(any(event[0] == 12 for event in events))
+    def test_software_timer_assertion_returns_and_hardware_setup_continues(self):
+        result, events = validation.invoke(self.native, fail_stage=-2)
+        self.assertEqual(result, 0)
+        self.assertIn([14, 0x557, 0, 0, 0], events)
+        self.assertIn([15, 200, 0, 0, 0], events)
+        self.assertEqual(events[-1], [0, 21, 0, 0, 0])
+        self.assertTrue(any(event[0] == 12 for event in events))
+
+    def test_owned_missing_hardware_timer_guard(self):
+        result, events = validation.invoke(self.native, fail_stage=-3)
+        self.assertEqual(result, 7)
+        self.assertFalse(any(event[0] == 12 for event in events))
 
     def test_provenance(self):
         report = json.loads((ROOT / "analysis/core-startup-validation.json").read_text())

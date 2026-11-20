@@ -1,3 +1,9 @@
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+#include "still_continuation_probe.hpp"
+#define STILL_DIAGNOSTICS (&still_continuation_probe.services)
+#else
+#define STILL_DIAGNOSTICS nullptr
+#endif
 #include "zseries/still_client.hpp"
 #include <algorithm>
 #include <cstring>
@@ -25,6 +31,10 @@ struct Fixture{const std::uint32_t* input;std::vector<std::vector<std::uint32_t>
 bool service(void* context,const StillHttpAction& action,std::uint32_t& result){
     auto& f=*static_cast<Fixture*>(context);std::vector<std::uint32_t> row{static_cast<std::uint32_t>(action.effect),action.effect==StillHttpEffect::Configure?action.client_class:0};
     text(row,action.uri);text(row,action.content_type);text(row,action.body,action.body_length);f.events.push_back(row);
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+    still_continuation_probe.service(f.events.size()-1);
+#endif
+
     result=action.effect==StillHttpEffect::Configure?f.input[CONFIGURE_RESULT]:action.effect==StillHttpEffect::Get?f.input[GET_RESULT]:action.effect==StillHttpEffect::Post?f.input[POST_RESULT]:1;
     return true;
 }
@@ -36,6 +46,10 @@ extern "C" int still_client_test(unsigned op,const std::uint32_t* a,const char* 
     PicoStillState state;PicoStillSamples samples;samples.current=initial(a[OLD_TIMESTAMP],a[OLD_DELTA]);samples.seconds10=initial(a[WINDOW10],a[OLD_DELTA]);samples.seconds60=initial(a[WINDOW60],a[OLD_DELTA]);
     state.id=static_cast<PicoStillStateId>(a[STATE]);state.polling_stopped=a[POLL_STOP]!=0;copy(state.ip,"old-ip");copy(state.version,"old-version");copy(state.error,"old error");state.response_date=300;
     StillClient c(state,samples);Fixture f{a,{}};c.services.context=&f;c.services.perform=service;
+#ifdef STILL_CONTINUATION_DIAGNOSTICS
+    c.services.diagnostics=still_continuation_probe.services;
+#endif
+
     c.pending=static_cast<Command>(a[PENDING]);c.error=a[ERROR]!=0;c.retryable=a[RETRYABLE]!=0;c.response_done=a[DONE]!=0;
     c.http.state=a[HTTP_STATE];c.http.error=a[HTTP_ERROR];c.http.socket_error=a[SOCKET_ERROR];c.response.status=static_cast<std::int32_t>(a[STATUS]);c.response.content_length=static_cast<std::int32_t>(a[LENGTH]);copy(c.response.content_type,"old/type");
     copy(c.host,"192.168.4.1");copy(c.uri,"old-uri");copy(c.body,"old-response");c.body_length=12;
@@ -51,17 +65,17 @@ extern "C" int still_client_test(unsigned op,const std::uint32_t* a,const char* 
     case 7:{StillHttpResponse response;response.status=static_cast<std::int32_t>(a[ARGUMENT]);response.content_length=static_cast<std::int32_t>(a[LENGTH]);copy(response.content_type,input);result=c.receive_headers(response);break;}
     case 8:result=static_cast<std::uint32_t>(c.receive_body(input,std::strlen(input)));break;
     case 9:c.body.fill(0);c.body_length=0;c.receive_body(input,std::strlen(input));c.complete(a[NOW]);break;
-    case 10:result=samples.parse(a[NOW],input,std::strlen(input));c.assertion_line=samples.assertion_line;break;
-    case 11:{auto previous=samples.current;samples.current.timestamp=a[NOW];for(std::size_t i=0;i<4;++i)samples.current.temperature[i]+=10.25;samples.current.pressure-=2.5;samples.current.update_speeds(previous);break;}
+    case 10:result=samples.parse(a[NOW],input,std::strlen(input),STILL_DIAGNOSTICS);c.assertion_line=samples.assertion_line;break;
+    case 11:{auto previous=samples.current;samples.current.timestamp=a[NOW];for(std::size_t i=0;i<4;++i)samples.current.temperature[i]+=10.25;samples.current.pressure-=2.5;samples.current.update_speeds(previous,STILL_DIAGNOSTICS);break;}
     case 12:
         for(std::uint32_t i=0;i<a[REPEAT];++i){samples.current.timestamp=a[NOW]+i*3000u;samples.current.temperature[0]=static_cast<double>((i*17u+a[SEED])%31u)/4.0;
-            samples.current.temperature[1]=static_cast<double>((i*7u+a[SEED])%53u)/8.0;samples.current.pressure=static_cast<double>((i*11u+a[SEED])%13u)/16.0;samples.update_statistics(samples.current.timestamp);}
+            samples.current.temperature[1]=static_cast<double>((i*7u+a[SEED])%53u)/8.0;samples.current.pressure=static_cast<double>((i*11u+a[SEED])%13u)/16.0;samples.update_statistics(samples.current.timestamp,STILL_DIAGNOSTICS);}
         c.assertion_line=samples.assertion_line;break;
-    case 13:{std::array<char,128> destination;destination.fill('Z');result=static_cast<std::uint32_t>(still_form_encode(destination.data(),a[CAPACITY],input));
+    case 13:{std::array<char,128> destination;destination.fill('Z');result=static_cast<std::uint32_t>(still_form_encode(destination.data(),a[CAPACITY],input,STILL_DIAGNOSTICS));
         if(capacity<132)return 2;
         output[0]=131;output[1]=result;output[2]=128;output[3]=0;for(std::size_t i=0;i<128;++i)output[i+4]=static_cast<unsigned char>(destination[i]);return 0;}
     case 14:state.error.fill(0);copy(state.error,input);samples.current.error=state.error;result=still_has_error(state);break;
-    case 15:{state.error.fill(0);copy(state.error,input);std::vector<std::uint32_t> message;const char* value=still_error_text(state,c.assertion_line);message.push_back(c.assertion_line);text(message,value);
+    case 15:{state.error.fill(0);copy(state.error,input);std::vector<std::uint32_t> message;const char* value=still_error_text(state,c.assertion_line,STILL_DIAGNOSTICS);message.push_back(c.assertion_line);text(message,value);
         if(capacity<message.size()+4)return 2;
         output[0]=static_cast<std::uint32_t>(message.size()+3);output[1]=0;output[2]=static_cast<std::uint32_t>(message.size());output[3]=0;std::copy(message.begin(),message.end(),output+4);return 0;}
     default:return 1;

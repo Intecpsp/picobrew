@@ -93,11 +93,19 @@
     "0x400fc3e4": "7f86c326877138e0187537c4b24bfd6a421faf7216a722ad7dc0bedae5808e25"
   },
   "source_sha256": {
-    "include/zseries/heater.hpp": "bc7055a7ccd85a656b804ee1a53803679ded1aa480917658383eca7bd0d46387",
-    "src/heater.cpp": "816339ecb3173c11cfa8feb6a3e98e3309c2f267b843c7eae5ee4afce4b3c7f9",
+    "include/zseries/heater.hpp": "835ca0b60d7fcb3aa2a51e0752bb1f345a4313cf8dea3fb2e6d4a402ca50e29f",
+    "src/heater.cpp": "df6731fa1f61b61ef09a43ae429c6b4f42105717320416a8cf68991f1964387e",
     "tests/heater_bridge.cpp": "1852c6f9978b0a114d3717a2fbde994d2de7d4fe5cdafd2e7cca09dc873b2118",
     "tools/validate_heater.py": "b9e35bf26d93f6d36053a9016167b781b7c16b8cf3a337769864f4f78a2fdfee",
     "tools/ghidra/EmulateHeater.java": "cc05d682ccba9e935ed97f5cb89069f92afa0923ad0dddb1856d35f313f338e6"
   },
-  "portable_golden_sha256": "95af3f3a23274369ee62dbef224ad48e55f07e4232cd91c4e8525447dd1411af"
+  "portable_golden_sha256": "95af3f3a23274369ee62dbef224ad48e55f07e4232cd91c4e8525447dd1411af",
+  "integration_revalidation": {
+    "scope": "Current portable implementation replayed against every retained original fixture by the combined 272-test native suite; only provenance checks failed before this refresh. This is not a fresh execution of discarded original-case records or a hardware test.",
+    "changed_sources": [
+      "include/zseries/heater.hpp",
+      "src/heater.cpp"
+    ],
+    "target_build_report": "integration-target-build.json"
+  }
 }

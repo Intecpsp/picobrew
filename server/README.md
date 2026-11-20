@@ -7,10 +7,12 @@ A shared brewing workspace: a Go server and React/TypeScript console for a fleet
 The project is reverse engineering Pico C, S/Pro, Z-family and Zymatic firmware
 to provide the same standalone REST contract and local browser experience as
 the custom S/Pro firmware. See the [project roadmap](../docs/project-roadmap.md).
-S/Pro and the reconstructed C standalone firmware now have Hub adapters. C
-includes explicit SSD1325/SSD1309 display geometry and firmware package matching;
-its source builds/software tests do not establish physical installation or
-brewing. Z and Zymatic remain planning/simulation profiles. See
+The standalone adapter supports S/Pro, reconstructed C, generic Z-series,
+PicoStill and PicoFerm. It discovers each device's real controls, sensors,
+settings and display capabilities. C includes explicit SSD1325/SSD1309 display
+geometry and firmware package matching; Z includes its 128 × 64 grayscale
+panel. These source builds and software tests do not establish physical
+installation or brewing. Zymatic remains a planning/simulation profile. See
 [support and feature coverage](docs/coverage.md).
 
 ## Run locally on Windows, macOS or Linux
@@ -74,7 +76,7 @@ This seeds three simulated brewers, two example recipes and three historical bre
 ## What you can do
 
 - **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
-- **Operate C/S/Pro standalone firmware.** Mirror its OLED, turn or press its dial, select an installed recipe, open its advertised maintenance programs, stop outputs, and update its display/forwarding preferences. The console exposes the capabilities reported by that device.
+- **Operate standalone devices.** C/S/Pro and Z expose their physical screen and dial, installed recipes and advertised maintenance programs. PicoStill exposes its actual pump, fans, temperatures, pressure and operating modes. PicoFerm exposes fermentation sessions, samples, its sampling interval and explicitly confirmed pressure calibration. The console exposes only the capabilities reported by that device.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
 - **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalogue contents and provenance](docs/community-catalog.md).
 - **Adapt and deploy.** Save measured model defaults in Settings, preview batch and efficiency scaling for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
@@ -117,7 +119,7 @@ The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Bre
 5. Open that machine's page, select the installed recipe and confirm Start. Optionally enable AI monitoring for this brew in that confirmation. Follow the machine's preparation prompts through its physical or mirrored front panel.
 6. Watch progress on the fleet or machine page, where you can also enable or disable monitoring for the current brew. The journal imports available retained samples. Open that brew's journal entry for notes, a rating, exports and optional AI result analysis.
 
-A successful HTTP command response means the firmware queued the request. It is not evidence that heating or pumping has begun. An uncertain command delivery is recorded and never automatically retried. Current standalone firmware has no dedicated pause/resume or live recipe/temperature override; the hub and AI do not fabricate those operations.
+A successful HTTP command response means the firmware accepted the request. It is not evidence that heating or pumping has begun. An uncertain command delivery is recorded and never automatically retried. Dedicated pause/resume appears only when advertised by the device. C/S/Pro retains its existing front-panel workflow; the Hub does not infer unsupported controls. See [family controls and history](docs/family-devices.md) for the Z and accessory behavior.
 
 ## Run with Docker
 

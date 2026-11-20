@@ -1,0 +1,1339 @@
+{
+  "schema_version": 1,
+  "machine": "picoferm",
+  "source_repository": "https://github.com/chiefwigms/picobrew_pico",
+  "source_commit": "36acae3003845b72568ef5f7d6cf168acb6f9b69",
+  "images": [
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 268912,
+      "sha256": "75c40b34ea1271801ec130ee57bfa9cd59693c7703bea76a89ba373fe8a3ea8e",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 0,
+        "flash_size_frequency_header": 64,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 0,
+        "flash_size_frequency_header": 64,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 228768,
+            "memory_kind": "IROM",
+            "sha256": "c2526789985ab9e4fbf3e766de102c4ac29ffb106fd427febb7e918f4878b322"
+          },
+          {
+            "index": 1,
+            "header_offset": 232880,
+            "file_offset": 232888,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "f2f7ec4d15b383178025c6a18d417466ad5ce04edfbad560bf5fdbdb9a30203b"
+          },
+          {
+            "index": 2,
+            "header_offset": 263084,
+            "file_offset": 263092,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "4ba281112b740f03290862499ab45c2a721872b564dd5b4db5942fe59d13dc40"
+          },
+          {
+            "index": 3,
+            "header_offset": 264012,
+            "file_offset": 264020,
+            "load_address": 1073644448,
+            "size_bytes": 4876,
+            "memory_kind": "DRAM",
+            "sha256": "99c7e91905c13526b49fc95977a646a3fce56fd5c04c64f79cc17240a75fd793"
+          }
+        ],
+        "end_offset": 268912,
+        "checksum_offset": 268911,
+        "checksum": 148,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_0.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_0.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 268928,
+      "sha256": "bc281a37873648516b7f6bc760590813d87c2b28ffc78938497680766e5eb0fd",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 228768,
+            "memory_kind": "IROM",
+            "sha256": "eb79b9c8827d99759131b22c4bfd365b5cbe548beb892b7322603d27e2de4649"
+          },
+          {
+            "index": 1,
+            "header_offset": 232880,
+            "file_offset": 232888,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "e3e9a4ad15367069041c8d986c6ed27b4de8f11005d863a56e89f3a73c6dee8b"
+          },
+          {
+            "index": 2,
+            "header_offset": 263084,
+            "file_offset": 263092,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "aaf13b7df7775f5527d574b4da986791716d9d53af93b40deb7d0ced8a142e22"
+          },
+          {
+            "index": 3,
+            "header_offset": 264012,
+            "file_offset": 264020,
+            "load_address": 1073644448,
+            "size_bytes": 4892,
+            "memory_kind": "DRAM",
+            "sha256": "4e084ecfadad07e751da2eb2a9b649cb66d323ec9896eb0cfc2315f185ff6048"
+          }
+        ],
+        "end_offset": 268928,
+        "checksum_offset": 268927,
+        "checksum": 139,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_2.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_2.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 268928,
+      "sha256": "cb74106bb13e63441c903dbcdef7acc0fff1ac9c356ca3eb9244d811fbb7a880",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 228768,
+            "memory_kind": "IROM",
+            "sha256": "eb79b9c8827d99759131b22c4bfd365b5cbe548beb892b7322603d27e2de4649"
+          },
+          {
+            "index": 1,
+            "header_offset": 232880,
+            "file_offset": 232888,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "e3e9a4ad15367069041c8d986c6ed27b4de8f11005d863a56e89f3a73c6dee8b"
+          },
+          {
+            "index": 2,
+            "header_offset": 263084,
+            "file_offset": 263092,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "34212944551ae5f8d8031b3c3f33427e1f9381c2855b5c2857df9d5123099639"
+          },
+          {
+            "index": 3,
+            "header_offset": 264012,
+            "file_offset": 264020,
+            "load_address": 1073644448,
+            "size_bytes": 4892,
+            "memory_kind": "DRAM",
+            "sha256": "4e084ecfadad07e751da2eb2a9b649cb66d323ec9896eb0cfc2315f185ff6048"
+          }
+        ],
+        "end_offset": 268928,
+        "checksum_offset": 268927,
+        "checksum": 138,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_3.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_3.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 268928,
+      "sha256": "81129072ddde1ffcd5a7193cbe90738cf8443636213198fcf700dd85899e8fbe",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 228768,
+            "memory_kind": "IROM",
+            "sha256": "eb79b9c8827d99759131b22c4bfd365b5cbe548beb892b7322603d27e2de4649"
+          },
+          {
+            "index": 1,
+            "header_offset": 232880,
+            "file_offset": 232888,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "e3e9a4ad15367069041c8d986c6ed27b4de8f11005d863a56e89f3a73c6dee8b"
+          },
+          {
+            "index": 2,
+            "header_offset": 263084,
+            "file_offset": 263092,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "8ca958be644df21098b15972c970b0287d1904af7d9aa7e4197fef1839d49fb6"
+          },
+          {
+            "index": 3,
+            "header_offset": 264012,
+            "file_offset": 264020,
+            "load_address": 1073644448,
+            "size_bytes": 4892,
+            "memory_kind": "DRAM",
+            "sha256": "4e084ecfadad07e751da2eb2a9b649cb66d323ec9896eb0cfc2315f185ff6048"
+          }
+        ],
+        "end_offset": 268928,
+        "checksum_offset": 268927,
+        "checksum": 141,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_4.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_4.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 274880,
+      "sha256": "41a358d5e7505e0ed28a25d2df5fc24ee92fbfdabe1e460c328f22b8f2888fac",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 232160,
+            "memory_kind": "IROM",
+            "sha256": "7ded6f7160bd1033ad95f31610279bd986d23f760f436703b07497c9db9bacb4"
+          },
+          {
+            "index": 1,
+            "header_offset": 236272,
+            "file_offset": 236280,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "6203f6127f070215c9b9478bdb8a65a9fff621d250fef1d29c6e407f7e077b2a"
+          },
+          {
+            "index": 2,
+            "header_offset": 266476,
+            "file_offset": 266484,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "114f8da02a21b09dd3f0989dac07b43fbced28646f0558d19afe0288833f3680"
+          },
+          {
+            "index": 3,
+            "header_offset": 267404,
+            "file_offset": 267412,
+            "load_address": 1073644448,
+            "size_bytes": 7464,
+            "memory_kind": "DRAM",
+            "sha256": "3215e541ba7bba4e25923ffb7c58515982f464349c28968221f33172f12c8c1f"
+          }
+        ],
+        "end_offset": 274880,
+        "checksum_offset": 274879,
+        "checksum": 218,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_5.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_5.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 275008,
+      "sha256": "a18a234ccd7c95c0f0c036dc764fc08c7ae47b9124dccd327e7b18cbfc0cba01",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 232224,
+            "memory_kind": "IROM",
+            "sha256": "6a0d5e25ff8d06d8e8b55c653a45a16fb922e051f7f8504f7ddf996825b88096"
+          },
+          {
+            "index": 1,
+            "header_offset": 236336,
+            "file_offset": 236344,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "eb7a95dd6088302b8f7203df9d282069e6a5823109371bfbc7d4e90177c589d3"
+          },
+          {
+            "index": 2,
+            "header_offset": 266540,
+            "file_offset": 266548,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "bcc5c12fe13501127895654cbb06aa495b158f3e64821bc86fe330cfb36b7ad4"
+          },
+          {
+            "index": 3,
+            "header_offset": 267468,
+            "file_offset": 267476,
+            "load_address": 1073644448,
+            "size_bytes": 7520,
+            "memory_kind": "DRAM",
+            "sha256": "7b79414aec80e01e8a445dea410fd5516a80c6558432b875c033bf220b2b4141"
+          }
+        ],
+        "end_offset": 275008,
+        "checksum_offset": 275007,
+        "checksum": 178,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_6.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_6.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 275600,
+      "sha256": "7a9b8160f3bf2dd225a926844a4c75a4178d1334d3b1053cd390443c1784d352",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 232512,
+            "memory_kind": "IROM",
+            "sha256": "19f1c1f84765337a7e6b10d5274929168ea3b784e28d1153624b4d14a01fba43"
+          },
+          {
+            "index": 1,
+            "header_offset": 236624,
+            "file_offset": 236632,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "405380be1a2da266d0b63c3d4d5728d5299e59b8d02b7e5f87acde5dc21dd132"
+          },
+          {
+            "index": 2,
+            "header_offset": 266828,
+            "file_offset": 266836,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "3ecca6ff5688734585ba66a7a6a230fa036e8c1c83b2436c49fbd26339cf00c4"
+          },
+          {
+            "index": 3,
+            "header_offset": 267756,
+            "file_offset": 267764,
+            "load_address": 1073644448,
+            "size_bytes": 7832,
+            "memory_kind": "DRAM",
+            "sha256": "bc66977fd781fd031652848fe97d52ee6c0be6e6ab884268617737022e01d257"
+          }
+        ],
+        "end_offset": 275600,
+        "checksum_offset": 275599,
+        "checksum": 209,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_7.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_7.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 275728,
+      "sha256": "433f6e0eb15da277ea0dd4ea43c8d177260d7c0b9c00eaa639a8ad512fb6b4c3",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 232592,
+            "memory_kind": "IROM",
+            "sha256": "451d834f98f15377eaf16cc7d99565607101533266e707f16196a384d16c088c"
+          },
+          {
+            "index": 1,
+            "header_offset": 236704,
+            "file_offset": 236712,
+            "load_address": 1074790400,
+            "size_bytes": 30196,
+            "memory_kind": "IRAM",
+            "sha256": "e21974ab64132cf8a469c7045b36bb77d7090ca155f406fcbbe3a4763aaccb6c"
+          },
+          {
+            "index": 2,
+            "header_offset": 266908,
+            "file_offset": 266916,
+            "load_address": 1073643520,
+            "size_bytes": 920,
+            "memory_kind": "DRAM",
+            "sha256": "9ec9c5a3334cbc898251c4d52f56e3b44a284e129baf35a130d9c4899b1191cf"
+          },
+          {
+            "index": 3,
+            "header_offset": 267836,
+            "file_offset": 267844,
+            "load_address": 1073644448,
+            "size_bytes": 7872,
+            "memory_kind": "DRAM",
+            "sha256": "c63ab0bf92eadd5937eb013ee23bd13b9b1e842863b2a45fc172e7a041dd3f0d"
+          }
+        ],
+        "end_offset": 275728,
+        "checksum_offset": 275727,
+        "checksum": 63,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_1_8.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_1_8.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 327776,
+      "sha256": "4afb45eb11ef6ecb162290a47e0579bd6d0a947d66e2d7b93123b506909a7163",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 280464,
+            "memory_kind": "IROM",
+            "sha256": "7a6826c46e79acb5cc39d531f1e2f25874b8cc91fc135a6ae9c437cc231a7732"
+          },
+          {
+            "index": 1,
+            "header_offset": 284576,
+            "file_offset": 284584,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "94587b5e639b8664e8706358288e5138a49d52ef4ec637f629752d3bd34a0fad"
+          },
+          {
+            "index": 2,
+            "header_offset": 314016,
+            "file_offset": 314024,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "2357dd1bda7633f58d27e075cf67fac7ef363e0a536a0d92e97df780c5cfc5b2"
+          },
+          {
+            "index": 3,
+            "header_offset": 315324,
+            "file_offset": 315332,
+            "load_address": 1073644832,
+            "size_bytes": 12432,
+            "memory_kind": "DRAM",
+            "sha256": "f570cfd4182a096884228f1e4c737110e6f24c23a0339f161975e762a52dea57"
+          }
+        ],
+        "end_offset": 327776,
+        "checksum_offset": 327775,
+        "checksum": 241,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_0.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_0.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 327792,
+      "sha256": "5bd6a47e504ef0810a1b62265240503508ee0bed09b71561f014f43fc9adce2d",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 280464,
+            "memory_kind": "IROM",
+            "sha256": "b60cc882fca827228bad7d9bf77242705b902246001c535f711c5b925fd951e3"
+          },
+          {
+            "index": 1,
+            "header_offset": 284576,
+            "file_offset": 284584,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "b4275942359014c1efa3ac782698946ae7a1ec2a79166e12641c7e6ad801a5d2"
+          },
+          {
+            "index": 2,
+            "header_offset": 314016,
+            "file_offset": 314024,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "d8fa749c574e819ec278ebbf1162f8353abecf8076696255254faa0a9b026a8d"
+          },
+          {
+            "index": 3,
+            "header_offset": 315324,
+            "file_offset": 315332,
+            "load_address": 1073644832,
+            "size_bytes": 12452,
+            "memory_kind": "DRAM",
+            "sha256": "91361ec2b38b2d15946ea153728035dc88d1ce3d0eb234c156631a26c2636a81"
+          }
+        ],
+        "end_offset": 327792,
+        "checksum_offset": 327791,
+        "checksum": 73,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_1.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_1.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 327888,
+      "sha256": "bed448b7703878fbe3e7dfd372f3cbe25116f2a702e39a6e33754863958a8b2c",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 280528,
+            "memory_kind": "IROM",
+            "sha256": "90968d5cc20a36774effc114e15c46b6b0976e15d80f0600957bf4f66f5eaad0"
+          },
+          {
+            "index": 1,
+            "header_offset": 284640,
+            "file_offset": 284648,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "f7203fa362f3f42c3a84795fa53c2436e50eda9750509218b9bb73abaa722b48"
+          },
+          {
+            "index": 2,
+            "header_offset": 314080,
+            "file_offset": 314088,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "a93de3aeea769f67ecc801f3da905cf69b5c528a7ca4967c7a7496fd851fa877"
+          },
+          {
+            "index": 3,
+            "header_offset": 315388,
+            "file_offset": 315396,
+            "load_address": 1073644832,
+            "size_bytes": 12488,
+            "memory_kind": "DRAM",
+            "sha256": "412f142723cc717d7267f81e469f25cf272d9a3f65be82621088b76e3ca233ae"
+          }
+        ],
+        "end_offset": 327888,
+        "checksum_offset": 327887,
+        "checksum": 146,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_2.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_2.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 321840,
+      "sha256": "638d8c2538754f710838c126e8a58eff2a5785f0022a1f100ecc25069f815013",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 278352,
+            "memory_kind": "IROM",
+            "sha256": "f96299f95576d6e55c8881d20e8e54804b6eab8094c1ba5eca0e30d91220aebb"
+          },
+          {
+            "index": 1,
+            "header_offset": 282464,
+            "file_offset": 282472,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "c1c4b6f4131039f7bd1d5ad3ab6d444a817e40b5cd46fff598de517dce7bd0ed"
+          },
+          {
+            "index": 2,
+            "header_offset": 311904,
+            "file_offset": 311912,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "8b164bbe8ae871552a4c0fbde6f8b25b73f57b72ad72ce4038eecd8f6ce1abae"
+          },
+          {
+            "index": 3,
+            "header_offset": 313212,
+            "file_offset": 313220,
+            "load_address": 1073644832,
+            "size_bytes": 8612,
+            "memory_kind": "DRAM",
+            "sha256": "587cec6ef6d457b8741822ffa7d005c8ed746c82fd9df938368aeb830096f184"
+          }
+        ],
+        "end_offset": 321840,
+        "checksum_offset": 321839,
+        "checksum": 65,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_3.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_3.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 322480,
+      "sha256": "386a4cdba586214915a1adb9fa7857ad18944cbe81d8c57f0ea9478eba8d14dc",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 278912,
+            "memory_kind": "IROM",
+            "sha256": "0681ae6aead2ec4f13c6970e398ec6d40feb9d50dfe90ea6108a21448ac020d5"
+          },
+          {
+            "index": 1,
+            "header_offset": 283024,
+            "file_offset": 283032,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "c3e58dae0b8ca4fd1eed9272cb104bf35b8279c1c894700b7ddd544505f85af7"
+          },
+          {
+            "index": 2,
+            "header_offset": 312464,
+            "file_offset": 312472,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "7c83857bc34144e0e13778d244b903ffdd51d65c64cd893d642643f0f4b75609"
+          },
+          {
+            "index": 3,
+            "header_offset": 313772,
+            "file_offset": 313780,
+            "load_address": 1073644832,
+            "size_bytes": 8692,
+            "memory_kind": "DRAM",
+            "sha256": "b760bac78839b22f6f9078710532bc871d7688a80ec489504319a46cc56b4e5a"
+          }
+        ],
+        "end_offset": 322480,
+        "checksum_offset": 322479,
+        "checksum": 229,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_4.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_4.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 322464,
+      "sha256": "fa1309553b558e61967552e75f8abf639cdcd98ea70e487df7bd53d719706406",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 278912,
+            "memory_kind": "IROM",
+            "sha256": "34e26f0f3f7aa64da5a513e4b8b8d201bc55ef930a8aff284886fe000c3589fd"
+          },
+          {
+            "index": 1,
+            "header_offset": 283024,
+            "file_offset": 283032,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "daa08249c274f34d9be5002fd00d34bcc411d6d22866a1a859c2be142f6689ce"
+          },
+          {
+            "index": 2,
+            "header_offset": 312464,
+            "file_offset": 312472,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "9f2ad82936f287bf135779462303218a19cbfb44d4c234c93f0ffff1ea020fd5"
+          },
+          {
+            "index": 3,
+            "header_offset": 313772,
+            "file_offset": 313780,
+            "load_address": 1073644832,
+            "size_bytes": 8680,
+            "memory_kind": "DRAM",
+            "sha256": "6a93ec2f234389e75456ae42c0dbcef891db6e9a2f0e9a3e928fc2ac98f8b7c0"
+          }
+        ],
+        "end_offset": 322464,
+        "checksum_offset": 322463,
+        "checksum": 177,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_5.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_5.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 322496,
+      "sha256": "97edfd30390728db30f711a49c0b058fafb1fff654ef7584047dd82827493ec4",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 278944,
+            "memory_kind": "IROM",
+            "sha256": "13a5cddf783b1fa8a022c0eb7c7fe9016230f74227ed4237679a6882c5fc20f7"
+          },
+          {
+            "index": 1,
+            "header_offset": 283056,
+            "file_offset": 283064,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "46addbdd938f8652b926431573dae6ba1bd95d93d4527762d4d9d7998e405781"
+          },
+          {
+            "index": 2,
+            "header_offset": 312496,
+            "file_offset": 312504,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "ab7237f7498f4b60f892137293ffd503f27a06a85cfeee0ce2b2a975e4bf8785"
+          },
+          {
+            "index": 3,
+            "header_offset": 313804,
+            "file_offset": 313812,
+            "load_address": 1073644832,
+            "size_bytes": 8680,
+            "memory_kind": "DRAM",
+            "sha256": "f0c22c1c62324dee2bb2565f9e0201a43ac1142f23ee6c3d3b3f8a15eb4d4f1a"
+          }
+        ],
+        "end_offset": 322496,
+        "checksum_offset": 322495,
+        "checksum": 157,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_6.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_6.bin"
+    },
+    {
+      "format": "Arduino ESP8266 eboot and application image",
+      "architecture": "Xtensa LX106",
+      "size_bytes": 322544,
+      "sha256": "08c34af891036494ae81d6f29e7495a475f67be977aa4effd3adde6fee4e9532",
+      "bootloader": {
+        "file_offset": 0,
+        "segment_count": 1,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074852508,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 8,
+            "file_offset": 16,
+            "load_address": 1074851840,
+            "size_bytes": 1384,
+            "memory_kind": "IRAM",
+            "sha256": "9e02acf82912fbc5906674fadd55cd65a6c8ecf94e9df719e9dfe421533e8129"
+          }
+        ],
+        "end_offset": 1408,
+        "checksum_offset": 1407,
+        "checksum": 45,
+        "checksum_verified": true
+      },
+      "application": {
+        "file_offset": 4096,
+        "segment_count": 4,
+        "flash_mode": 2,
+        "flash_size_frequency_header": 48,
+        "entry_address": 1074790404,
+        "segments": [
+          {
+            "index": 0,
+            "header_offset": 4104,
+            "file_offset": 4112,
+            "load_address": 1075843088,
+            "size_bytes": 278976,
+            "memory_kind": "IROM",
+            "sha256": "12ce1eb3ef2e0337d7b78412fc778665be0f716db75ef28ffe01fc5bc8f80ebf"
+          },
+          {
+            "index": 1,
+            "header_offset": 283088,
+            "file_offset": 283096,
+            "load_address": 1074790400,
+            "size_bytes": 29432,
+            "memory_kind": "IRAM",
+            "sha256": "d3f9a93fa1b0ba06318028aa946abe5d84a4243bc1a1daab7ce0720992705805"
+          },
+          {
+            "index": 2,
+            "header_offset": 312528,
+            "file_offset": 312536,
+            "load_address": 1073643520,
+            "size_bytes": 1300,
+            "memory_kind": "DRAM",
+            "sha256": "1c80ca219db3049f24dd25326ee990befeec4ca629b75e7cc78c71ea45be1f94"
+          },
+          {
+            "index": 3,
+            "header_offset": 313836,
+            "file_offset": 313844,
+            "load_address": 1073644832,
+            "size_bytes": 8688,
+            "memory_kind": "DRAM",
+            "sha256": "8b18f052686a39e7149aec7ed6507184845463a7c3ac904b4fe2b4b70e63cd62"
+          }
+        ],
+        "end_offset": 322544,
+        "checksum_offset": 322543,
+        "checksum": 76,
+        "checksum_verified": true
+      },
+      "checksum_verified": true,
+      "digest_verified": false,
+      "publisher_signature_verified": false,
+      "flash_configuration_is_hardware_identification": false,
+      "input": "picoferm_0_2_7.bin",
+      "source_path": "app/firmware/picoferm/picoferm_0_2_7.bin"
+    }
+  ],
+  "flash_layout_established": false,
+  "hardware_tested": false,
+  "scope": "Complete image-container checks and virtual mappings. No bootloader/partition/flashing compatibility claim."
+}

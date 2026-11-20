@@ -45,22 +45,29 @@
     "-fno-exceptions",
     "-fno-rtti"
   ],
-  "archive_sha256": "d144b6b2bbcbc1cab7ce2d28d1432da0d33f25a20af3fcd2e303b655d2241286",
+  "archive_sha256": "d7738a789b8de427a7cfd63d03205973829c1a59d528cdb8ab0217576175663e",
   "complete_application_linked": false,
   "hardware_tested": false,
-  "build_script_sha256": "17fced0e7c778dddd92540b7a43e277bb4ffb28cdaf2acb32869d6778761cbf7",
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
   "schema_version": 1,
-  "scope": "PicoStill controller compiles in the 33-module historical ESP32 archive; required HTTP, client, authorization and runtime services remain explicit. No application link or hardware execution.",
-  "compiled_modules": 33,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "compiled_modules": 127,
   "pico_still_sources": [
     {
       "source": "src/pico_still.cpp",
-      "source_sha256": "7779feb364ed238ed4dd0e41d569ae9bab8d4042f0e26fcd0258423bdacf7b02",
-      "object_sha256": "c01e3a97bfd73960d48d46cac4cc58dac94ce728149c8893ec4e7bcdb56ba5d8",
-      "object_bytes": 22948
+      "source_sha256": "f024972394b87694a0baccd0b44429e2fcf3490de7d953be5eafbd7b68d0b330",
+      "object_sha256": "75afbfe63f4785426d5cf15bce0d30a6e923d41b18b8b966fa72c81410134c06",
+      "object_bytes": 33100
     }
   ],
   "pico_still_headers_sha256": {
-    "include/zseries/pico_still.hpp": "4f87a7a7008b97d83c37f2098e6a6e64a4539773f757fc700026c1ac15802ea0"
+    "include/zseries/pico_still.hpp": "8da2ef9bbbe65762ba02935492b582762f3662c848850c9682a6877ff2be46fd"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 1
   }
 }

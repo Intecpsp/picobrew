@@ -1,0 +1,763 @@
+{
+  "schema_version": 1,
+  "compiler": "xtensa-esp32-elf-g++ (crosstool-NG crosstool-ng-1.22.0-80-g6c4433a) 5.2.0",
+  "arduino_reference": "espressif/arduino-esp32@9a7946e6859130146e56231c27a4aa177d9175a1 (1.0.1)",
+  "sdk_config_sha256": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+  "compiler_sha256": "bb03e959cca43b70fd7622c019342c05b619cdba1aed397c2117cfba80db058a",
+  "common_flags": [
+    "-Os",
+    "-Wall",
+    "-Wextra",
+    "-Werror",
+    "-Wno-unused-parameter",
+    "-ffunction-sections",
+    "-fdata-sections",
+    "-fstrict-volatile-bitfields",
+    "-mlongcalls",
+    "-fno-fast-math",
+    "-ffp-contract=off",
+    "-DESP_PLATFORM",
+    "-DESP32",
+    "-DARDUINO_ARCH_ESP32",
+    "-DARDUINO=10805",
+    "-DF_CPU=240000000L",
+    "-DCORE_DEBUG_LEVEL=0",
+    "-DHAVE_CONFIG_H"
+  ],
+  "cpp_flags": [
+    "-std=gnu++11",
+    "-fno-exceptions",
+    "-fno-rtti"
+  ],
+  "sources": [
+    {
+      "source": "src/auxiliary_sensors.cpp",
+      "source_sha256": "86570930f5a96b6de1052fa9da617b6f6a10fb12e39fae7af3507d727c29a2ad",
+      "object_sha256": "223424d6312481619f59dbc74e3b10c1ce8b349f86a53a7786dc743a034ab07c",
+      "object_bytes": 14540
+    },
+    {
+      "source": "src/azure.cpp",
+      "source_sha256": "51092318a4caa73dfca91b9f340e4fa5f52f458669b97cda835899dd62c54c96",
+      "object_sha256": "481db8838a4c33de8990848427bc19797602e3b06ccf77c623ffa0a68e586aeb",
+      "object_bytes": 25460
+    },
+    {
+      "source": "src/backend_console.cpp",
+      "source_sha256": "09c39d586df940adab2bf40a6b3c6cea7a02b6497bfb547890ec6bd042eadcd2",
+      "object_sha256": "0e2da9b125faab4b86fe98e80524ac17157294ecbad7c8107c0017876efd8cc2",
+      "object_bytes": 12036
+    },
+    {
+      "source": "src/buzzer.cpp",
+      "source_sha256": "325217303425edea9396408690ba276f5861ddd4d3d70884cff71babe39abbb8",
+      "object_sha256": "2de359f4c2fca9f02776f0d96a3ed5fabb5be017f75b6affb40e94e0919b0d4a",
+      "object_bytes": 9388
+    },
+    {
+      "source": "src/console.cpp",
+      "source_sha256": "99b28dc15d368f3371d6f78923610112fcd187e3f0656d88c80cda56e924d824",
+      "object_sha256": "c9e034dc10e2838755e647bbd571d89fa2ad3e3c974a0c90610e3b96f6a24184",
+      "object_bytes": 22576
+    },
+    {
+      "source": "src/core_commands.cpp",
+      "source_sha256": "bf455c576b8f005a1866353140b978ced1fc21c1b636ef3f53f27ba9d9d6955b",
+      "object_sha256": "25549ad4675e7b932f8ee80f7fa874c4c2ee3232eff9b42477c6359249e8a18f",
+      "object_bytes": 18552
+    },
+    {
+      "source": "src/core_control_state.cpp",
+      "source_sha256": "8b02c46df064667cde35b90bcb4b2b438c95dc58e766665b02cae7974ddaf001",
+      "object_sha256": "01a6ed0e830bd8c5b93a910869a503ac3271c1e7597cf45874bab700e17535c6",
+      "object_bytes": 1936
+    },
+    {
+      "source": "src/core_flow.cpp",
+      "source_sha256": "ce2e82d4967550ecc81a721e8c6f9b9d53bbc55eef5a0944df9ae3218e3a6449",
+      "object_sha256": "0d579a161a80c2cf26fe282c9f6fd98bebfa5c119276e28105cc089b5470715d",
+      "object_bytes": 21404
+    },
+    {
+      "source": "src/core_helpers.cpp",
+      "source_sha256": "a8ac0f1bddb14a5a1d2927b808857601713961bba963e919528a3b63b2c51591",
+      "object_sha256": "d7cf9b8404808b2c0a6be3e3293b73189cfd7f192a1c5784376da94e3c194b04",
+      "object_bytes": 10208
+    },
+    {
+      "source": "src/core_startup.cpp",
+      "source_sha256": "689215f3b9d9b7321fb1bc5f861884fb61d96a028fff75e763cfc118ecc3ff1d",
+      "object_sha256": "903934a69efcedf73255802155121c5bacc4c2f9f0c9f323cb2eb773232ba776",
+      "object_bytes": 7780
+    },
+    {
+      "source": "src/diagnostics.cpp",
+      "source_sha256": "b67a64e4134c35cc40ddbc16c9995c208f772133b4c9a666228923ac1270824e",
+      "object_sha256": "d0c2af2c7844038af7403e53176ba03a5d999a94bb416da1197c03415f29c412",
+      "object_bytes": 1864
+    },
+    {
+      "source": "src/display.cpp",
+      "source_sha256": "0f92a8cccaee3fa0195ee983faf3f111fb128490f7b95e4f1b417cafc088c888",
+      "object_sha256": "41b77dc9dc34e94f5e8efd6cb659e965b0fb75c49f643e8d519cf70a263229f5",
+      "object_bytes": 14540
+    },
+    {
+      "source": "src/display_effects.cpp",
+      "source_sha256": "f88fa5aebc708678f27c768bdaf1b3caf9dbc54fe3bfbf0a846de87a58af543e",
+      "object_sha256": "912d48ba8589566e1036181d4ec2319f5d29715d68b435e989f6e773fa32b96c",
+      "object_bytes": 11816
+    },
+    {
+      "source": "src/display_fonts.cpp",
+      "source_sha256": "7b93fe8aebea9be365631da0ae120fc00b29eaf6ca296e6cec612e02f1d9114b",
+      "object_sha256": "a391dad4e0694653cd78ee20ed6506355f435c757a4f7c39026155eb8e841788",
+      "object_bytes": 98572
+    },
+    {
+      "source": "src/display_text.cpp",
+      "source_sha256": "1bbf504231346f3cdddd3725bcf7cad272cf7affa091feeb813acf7d849072d7",
+      "object_sha256": "d78a359eef681737f21e53407704e1e6a4294a8b317b50cd0b5d38540e83bef1",
+      "object_bytes": 11628
+    },
+    {
+      "source": "src/eeprom.cpp",
+      "source_sha256": "cc6043665a62b871f44f5aadf182713328c6a38c531b8784a0c9dd8529c7879c",
+      "object_sha256": "38ebfacbcef0fa579e701fe9cf54423d4819342533fcc81176a9749e885fb2c3",
+      "object_bytes": 28764
+    },
+    {
+      "source": "src/enums.cpp",
+      "source_sha256": "fce5148e7b40c06fa898ad7ee979e46c83416e7b940b16d3336a29cbf66a49c1",
+      "object_sha256": "53edc9e53333ed6ddff23df280200fd5f036ea97481cb29e9c86c45a4b427d73",
+      "object_bytes": 56828
+    },
+    {
+      "source": "src/head_core_events.cpp",
+      "source_sha256": "76aa9a94747c7edc68d794922368e25378719fee240d4fcdca0f2367a8f47804",
+      "object_sha256": "cd0ec91eaf3e9b5584c47e4b6b4a5eea15c8b78a633f22f16b2165aa453e77c3",
+      "object_bytes": 12592
+    },
+    {
+      "source": "src/head_encoder.cpp",
+      "source_sha256": "cb54120f03efd603272f8f1b331596e300d3036204ca749be37e705a5d73ab02",
+      "object_sha256": "5c2246e4f5dc401b29add28f0953534ca1252bdf374a5280f67d57c4172bbf76",
+      "object_bytes": 6240
+    },
+    {
+      "source": "src/head_events.cpp",
+      "source_sha256": "8968ea7c271cf5904bca1b4c829d673eca96a1c6415347a51f2f977d859555b4",
+      "object_sha256": "8181ab162e8a41aec082bd410fc3703a4e389c536768ac05c0215ad7b89b1840",
+      "object_bytes": 3368
+    },
+    {
+      "source": "src/head_flow.cpp",
+      "source_sha256": "cd831c3df0f993d9eda73c9133790f59737a240acbe92a23a81fc660520fd16b",
+      "object_sha256": "9cc422abc622e029307e70e27f240d2603d8c1cfbb8a29d16b0491a7e5220198",
+      "object_bytes": 7740
+    },
+    {
+      "source": "src/head_menu.cpp",
+      "source_sha256": "8264fe3573bae9125eac634f3d60e439c1063e19d4c88602de284b40134602ac",
+      "object_sha256": "1c0dec73977046aec35924d381d37a781a7483d0244bd4b455c21a26cb022deb",
+      "object_bytes": 21828
+    },
+    {
+      "source": "src/head_network_events.cpp",
+      "source_sha256": "3ea700ccea190595966eb384e9eb81c04659132920cfd728f51b677ed6b69e64",
+      "object_sha256": "daaa598f1e714d2f0f715bedb4f05184eeb8062096f14deb08d9cb963a05567a",
+      "object_bytes": 7260
+    },
+    {
+      "source": "src/head_numeric_inputs.cpp",
+      "source_sha256": "62059322396ba950f9354337606ca76952850a8cde673ca6bf2c4a72db80b2fd",
+      "object_sha256": "343dd0715a2209b5a556385818e9db23a0acd5a993dd84e3f7c4e3ee2c2a4b4e",
+      "object_bytes": 7000
+    },
+    {
+      "source": "src/head_paragraph.cpp",
+      "source_sha256": "cbf14e60b469ab2287c9bb62f07590741eefa65f5ee2c99fe49b46130c0957e5",
+      "object_sha256": "d83ddb069a931e44dd335dc2b7a1ad869917773ad52774f44c02e2ae8d9ebfeb",
+      "object_bytes": 8920
+    },
+    {
+      "source": "src/head_text_input.cpp",
+      "source_sha256": "2d3b3a3d9c5260634ede8611403c6a78222145c31c162fb7250f2e7a405c96df",
+      "object_sha256": "9e80339df1e13fac7882e2066db24a6eb4621bef445fe1c26ff7790bc1e9d9f4",
+      "object_bytes": 3060
+    },
+    {
+      "source": "src/head_ui_commands.cpp",
+      "source_sha256": "d012457273d0fee92f201d8de70e999aa9a3be7029af80123749ecce73affeb6",
+      "object_sha256": "ed3f73e6f7469fdc55b51bf691428d5c35af4b4eff915bf5c7b7adc65f192cce",
+      "object_bytes": 33636
+    },
+    {
+      "source": "src/head_widgets.cpp",
+      "source_sha256": "6e27a97221a9dcd5c679568d6101d90fc0f6aeaa006c865c1beae317bb9ff09a",
+      "object_sha256": "73dfa8e714c4fbe6e650be8cd0c5894b9d30cb77a693733b53f7f5df213fa6db",
+      "object_bytes": 18516
+    },
+    {
+      "source": "src/heater.cpp",
+      "source_sha256": "df6731fa1f61b61ef09a43ae429c6b4f42105717320416a8cf68991f1964387e",
+      "object_sha256": "e7753d92846482703f9aedbf5b52a69506e7a7f6e3f03bb66274510e9ad8f2c8",
+      "object_bytes": 18808
+    },
+    {
+      "source": "src/hex_detection.cpp",
+      "source_sha256": "fc7bacd53991a8cae60dc1ac4019815404d2fb44884edc2d8afaabcb7a5d6d65",
+      "object_sha256": "0905ca8f848a4bc7acb78d04732a16a5f9495f1776b03ee2e64e6681f8fa8d04",
+      "object_bytes": 6532
+    },
+    {
+      "source": "src/http_assets.cpp",
+      "source_sha256": "9339a03c9cda948730072c3b29a4ba549a2a30f1d2cbdcc83292e0c2dec69d03",
+      "object_sha256": "3a51ebe430aed43f55bfac7b0077b1dd963b9aab8550ac2fff427be4842ada0f",
+      "object_bytes": 26312
+    },
+    {
+      "source": "src/http_backend.cpp",
+      "source_sha256": "47fdd415cf2c9a9558a046358a0d8a4c3f5e481611ee657bc0d829cc7f964707",
+      "object_sha256": "3841707a2b226b3a465babb429807a5d323df87b0dbfdca757bb93fe9b1d21d4",
+      "object_bytes": 30416
+    },
+    {
+      "source": "src/http_client.cpp",
+      "source_sha256": "4c644121b73c9b920f8cebfa4a00d5f387767409b0201b9d4aa71d2a64d56f19",
+      "object_sha256": "8be5f5f89ae9968fe9b77f449d502dcb3ebfac48b12ed35efa2229ea46590fd0",
+      "object_bytes": 54052
+    },
+    {
+      "source": "src/http_download.cpp",
+      "source_sha256": "77924395751c0a2b0f7bd197b89ee40eb50ce3a8795d85f96ce563e424e8ef58",
+      "object_sha256": "4822b2a462b99b634d4a12d2bb610cbde245f6b2f32b741f9d59b9a8df25d57e",
+      "object_bytes": 14992
+    },
+    {
+      "source": "src/local_http.cpp",
+      "source_sha256": "9d765b9957b7240a29a8d14d6a41c73b73f39c236977a7a8de0554094b2be53d",
+      "object_sha256": "ea99741b49cf39156a2c28640d1e93ef1ef4941431e9154d394170c8b9e6ab27",
+      "object_bytes": 8160
+    },
+    {
+      "source": "src/local_http_application.cpp",
+      "source_sha256": "57204e0b7951470b723549ac1cce388509cf1b1f881afb2aabd5132fa02e7ee5",
+      "object_sha256": "0d27404e2883008dc9b335c495487d8bed76a8d86a9b7a2ad267c1fa66e6b064",
+      "object_bytes": 8420
+    },
+    {
+      "source": "src/local_http_server.cpp",
+      "source_sha256": "4cf51bbd3e5e0954172365aceb7628bdb20a0708e27523d52751c4999bf9bbf1",
+      "object_sha256": "5b20de7979c2918c5d03f9182c159c16991553ea820512a2555bcbf4db687e38",
+      "object_bytes": 8444
+    },
+    {
+      "source": "src/local_http_state.cpp",
+      "source_sha256": "04cfdab2a7fd5b68d51e31c0ad793b1e895fc6b42df9e86caed3218cec8df293",
+      "object_sha256": "2ff202253348c14829276a7b5b1f5318355e76008f4a6d22c48f61d39c068b54",
+      "object_bytes": 15128
+    },
+    {
+      "source": "src/network_client.cpp",
+      "source_sha256": "958a9fc39a4c6c1f053a08936e14a8e18bddc73a2deec341ef97673ca7e8a536",
+      "object_sha256": "ff44c360006e9d3aa80139408cb16a074773ce149cd01e4a71e1d805bffe086f",
+      "object_bytes": 17304
+    },
+    {
+      "source": "src/physical_inputs.cpp",
+      "source_sha256": "4fc1e99429368b4b2a43e2f53d1ca2f544e9d2f06a08d771f14ef2b718d42713",
+      "object_sha256": "8a6e1ad766740660e2da6446dc1c7d5d429c7fd6028be9d78700174518ab1636",
+      "object_bytes": 11204
+    },
+    {
+      "source": "src/pico_still.cpp",
+      "source_sha256": "f024972394b87694a0baccd0b44429e2fcf3490de7d953be5eafbd7b68d0b330",
+      "object_sha256": "75afbfe63f4785426d5cf15bce0d30a6e923d41b18b8b966fa72c81410134c06",
+      "object_bytes": 33100
+    },
+    {
+      "source": "src/pico_still_sensors.cpp",
+      "source_sha256": "b00dab43d7bb2c55399677a35816171dbca554b812387f73ea78d8d889a902bb",
+      "object_sha256": "5c7f2872352f506e2f26c0d13c05ca2cf3c8282df301aa41fd6ebd6830abd245",
+      "object_bytes": 19896
+    },
+    {
+      "source": "src/program_catalog.cpp",
+      "source_sha256": "a3133b4351b023d3aed6a574f291da45bbd9bfac90da74d526fc32e27fcfa663",
+      "object_sha256": "82abffb07e464308fe54eb9ca5e521422da9169394a4671932b46381987836a3",
+      "object_bytes": 23304
+    },
+    {
+      "source": "src/program_list.cpp",
+      "source_sha256": "d3a427bcd81939d93e29bc073222287297e6ccdd4ead17f82aead780f2d78b84",
+      "object_sha256": "fd9b68e45057bffcfb3196058f3d8f7c9dec86632582b484e0190fa164f5d42a",
+      "object_bytes": 4512
+    },
+    {
+      "source": "src/program_recipe.cpp",
+      "source_sha256": "f29142b2e6ec0916e755329eb5ba84293b848138c46368fa523443317a4f1900",
+      "object_sha256": "c9cd27c2d96fd5cab88ec37d9afe3e09a0aa1965eb09621a72a765a6c81badf0",
+      "object_bytes": 21960
+    },
+    {
+      "source": "src/program_repository.cpp",
+      "source_sha256": "4e53c359c0cd10bb5ff702768af61cbf3033b56d6cb892a6b274e320dbfb848c",
+      "object_sha256": "ccea415564dc5d588135876b6b295602e1a390b0653266d090fcd2c914305d29",
+      "object_bytes": 9328
+    },
+    {
+      "source": "src/program_runtime.cpp",
+      "source_sha256": "18a17d4a07db6cd2bab1bd54e7ec27b7877ddee3153de64692cb595162ed4869",
+      "object_sha256": "ae27b15f1e65dc59cd606cb4906619fb0bbae3128144bfe0da658ef535d931e3",
+      "object_bytes": 56184
+    },
+    {
+      "source": "src/program_runtime_execution.cpp",
+      "source_sha256": "ef3903cf1b31372504a6d0be5ded9528f6b885dbb8021deb232ce07396d3ed97",
+      "object_sha256": "553be1ec416002ef99e78a66e2c76af7bc2e976378e744933b8e6830542b5117",
+      "object_bytes": 33672
+    },
+    {
+      "source": "src/program_runtime_heater.cpp",
+      "source_sha256": "fab8390fe04a889f10c0dcaad6e31b7086b07240a7b6daff6506ed1bab039bc6",
+      "object_sha256": "9ae74628e52dd385e16a010f6b21d7de9f0ab76b6419a55a4e1345147683f67f",
+      "object_bytes": 4988
+    },
+    {
+      "source": "src/program_writer.cpp",
+      "source_sha256": "ab1a055ae2ff3e058e5960ba28f2128981b1638f4516776dc3baf3e65de769be",
+      "object_sha256": "46240aa540962bc55ee357ad878db883892ba8c868717a91bc7f74f50212be47",
+      "object_bytes": 14068
+    },
+    {
+      "source": "src/quantity.cpp",
+      "source_sha256": "31376af9825f6119dc4ce771a355199c80c7adb41ee7343ec8c2fcb8056f944f",
+      "object_sha256": "2931840493c56583218de0205ff8076a64191d985651bc8b117edf7a4d1eab28",
+      "object_bytes": 4688
+    },
+    {
+      "source": "src/runtime_events.cpp",
+      "source_sha256": "be40c79a85525806e0ea792a9ce1244a3aebc41ebe853abd121e89168d5a72ed",
+      "object_sha256": "3011b86162d5f7273d56eede37c9a9a056c3568a234313e9bb23a6e7a45fb922",
+      "object_bytes": 2212
+    },
+    {
+      "source": "src/runtime_instruction.cpp",
+      "source_sha256": "dfa89bc150e4bb7a6b2a21e9a13ae6a438867cb43c30ebeec9f580663121fc75",
+      "object_sha256": "8791dd72f229df4e0f7877a55fcf77c48da18a8b98b18babd864cf83e485d6f5",
+      "object_bytes": 4860
+    },
+    {
+      "source": "src/safeties.cpp",
+      "source_sha256": "c8c32484861c8175ee080402b50bb0c02a28e3e1898b6b26a3d7d5167da11df4",
+      "object_sha256": "69cff9ccdfb0207ff4a52fdc846143fa7f39e3b27a3f45657912504088365d49",
+      "object_bytes": 5096
+    },
+    {
+      "source": "src/sensor_acquisition.cpp",
+      "source_sha256": "dd3d7eb81bebb945e0e1606b7844579e723e25bf2a922ca9e5767867b7a988b4",
+      "object_sha256": "5db966bd5ac6be34b27e61e9fec4df33bd63fdd36ce43a6e17ced1dda92bc206",
+      "object_bytes": 8160
+    },
+    {
+      "source": "src/serial_console.cpp",
+      "source_sha256": "c1423fcc7ea4ca9ea66806bb9ad42d22cf6df30fb128914251884f1925b79a21",
+      "object_sha256": "58b8d7716d2851cd7901595c6acef311e2e8f8045a5b9d3fc4bf44d1ab23c5a4",
+      "object_bytes": 10708
+    },
+    {
+      "source": "src/still_client.cpp",
+      "source_sha256": "fac4d74b33dfb5791b83130de8216d757225d5c88c9e9aa00d3e2f09ed4bfdb1",
+      "object_sha256": "1ffb47a1a95c4a7a8a1eaafa27a3532f2af42ff6e272c1c8f95ca1005b338fcc",
+      "object_bytes": 29612
+    },
+    {
+      "source": "src/still_http.cpp",
+      "source_sha256": "8ec09f0a2d022201f016232d5386b0d7f94f588855af3210f114da54e4bca9ae",
+      "object_sha256": "f7d54848b5ca480de1a9cc4922677aa289c65bfd1616d7d203ca1d98c92c414d",
+      "object_bytes": 6824
+    },
+    {
+      "source": "src/system_setup.cpp",
+      "source_sha256": "0d8915af9849383ba0905be1cfd7a456416081f57666a619330dbcdb1b153cf5",
+      "object_sha256": "f580adfd493bf07f0ac8f7884d82f9eeb738637c386d866d81bdff7763cff6a8",
+      "object_bytes": 5368
+    },
+    {
+      "source": "src/system_tick.cpp",
+      "source_sha256": "7008b0484ae6eea99b1b316dc33d3190d9e1593e5acc548b9385f909de9515bc",
+      "object_sha256": "1245a97647a4d2c4fd12ca967f58d0911fe061c9f31136135df320c564c80d6a",
+      "object_bytes": 2584
+    },
+    {
+      "source": "src/temperature.cpp",
+      "source_sha256": "5231d1a134e4c851c3bcafbc6ff48057053c7aa634ff2cc21c7bfc6f4cb7b1f8",
+      "object_sha256": "5a431b2ed90bbde34f1a65daa9d44fa287decbbc7b10055b2f818d78df2f14f2",
+      "object_bytes": 5640
+    },
+    {
+      "source": "src/ui_catalog.cpp",
+      "source_sha256": "ee2f3d99b121abbd1b519f98aa0e6706ce834bf3102c0c7b02c0e3380a5d95f1",
+      "object_sha256": "a2f51ac718236349ca6ee925efb590003067119ad6518af20ed2a90e06f2abe1",
+      "object_bytes": 154148
+    },
+    {
+      "source": "src/ui_screen_tick.cpp",
+      "source_sha256": "6fca041d9c4a8fdfc560cc4f4ce1db6975877eab2291a15e9e93cfdc3d1b56fd",
+      "object_sha256": "0a6f08c25d7ea44f1b86ea9de4723dfaa9b081314740e78949e3c27e9bc104cb",
+      "object_bytes": 3768
+    },
+    {
+      "source": "src/wifi.cpp",
+      "source_sha256": "df8f3f60a214267744749135d20849f060773b6d7789cdaf815cda3945baa7c2",
+      "object_sha256": "b16930448e1985b8ee654bc161be14296eef3111f63e0e00aed988e0cb6f3996",
+      "object_bytes": 15496
+    },
+    {
+      "source": "src/z_backend.cpp",
+      "source_sha256": "93afa0a59e8b9cff741f84b00d38ec8b9df7c490fb46fe090542d6d5e077bbc6",
+      "object_sha256": "499f517c0e7cfcb659442956d8aa7b18337bb595b46935d485cade5dc65906a6",
+      "object_bytes": 18748
+    },
+    {
+      "source": "src/msp_protocol.c",
+      "source_sha256": "51dbad57a389942d0f8c3549d2f5cd04d26158599d6c5f8e1faac7266464da45",
+      "object_sha256": "cfe9064721a88135ba3260d0940d78b4555189d1986c4fcea40dd3ac53221309",
+      "object_bytes": 29672
+    },
+    {
+      "source": "platform/esp32/azure_crypto.cpp",
+      "source_sha256": "346ba86f6426e07565a5bfa9e5db94bab4ae5fe40048f682964094806c9844a2",
+      "object_sha256": "6478fbb27f61323669783d2165f9fd9670cd99ec0af6e809f588d190219c5c70",
+      "object_bytes": 1844
+    },
+    {
+      "source": "platform/esp32/buzzer_platform.cpp",
+      "source_sha256": "320241d67db8270a585eb341e74e90609c0b027f8b26f4800fa05966fa9e2c30",
+      "object_sha256": "71a45b7fcc82f102f316a33d625a618d1784e9ab36ba91e2a8d8878059c0c392",
+      "object_bytes": 7748
+    },
+    {
+      "source": "platform/esp32/console_platform.cpp",
+      "source_sha256": "130b3c4bb44339e69071e1a2a6ad4a831e3b363cd85c770f347c6cee80c7ddf7",
+      "object_sha256": "f25d63b800e8fd0807e01e41311ec79b845eaacacf9eb03a84c2d34eca90ed8f",
+      "object_bytes": 7800
+    },
+    {
+      "source": "platform/esp32/display_platform.cpp",
+      "source_sha256": "cab1c7422a752e4cd231e310bb9ec4e5325766474fae70831711af3546d73164",
+      "object_sha256": "b6d6d9724c06f407119186a6aa3601b41d9df78ede91e0b6a0d9363c578323e9",
+      "object_bytes": 5484
+    },
+    {
+      "source": "platform/esp32/esp32_platform.cpp",
+      "source_sha256": "61af80f4af3b9cda85e7eefe99b2b7b9c46e3615524de8a03a4705ec2a116aec",
+      "object_sha256": "a36ff2125fc3127381c9dabe93be1ada92b9aa789547c30651633ecbe80a1263",
+      "object_bytes": 22124
+    },
+    {
+      "source": "platform/esp32/http_client_platform.cpp",
+      "source_sha256": "069240969435715fabb40caaae52c41d7a56e9f24c19b45bff3143c817a17a3b",
+      "object_sha256": "722399332254e9540784db5455da9db76c95af3f0867e8f90c037e6420347fe5",
+      "object_bytes": 6076
+    },
+    {
+      "source": "platform/esp32/http_download_platform.cpp",
+      "source_sha256": "b42c53f5cd588d25532d31ab6015fccdf20f88efc9341f37de8f7928f9ef736c",
+      "object_sha256": "51628e834c10fc8694538878d30a38db6730e246675ecf2fb2d9bb2bdaea9f4c",
+      "object_bytes": 7708
+    },
+    {
+      "source": "platform/esp32/local_http_platform.cpp",
+      "source_sha256": "acafc77959f2ebc4e5ba376627aefe700e821c38be92d9bbaeb125f917042d52",
+      "object_sha256": "02eb377d47af40e55ea34f936350a97302fe497b95ad4dd46e53d1b2505c0d27",
+      "object_bytes": 9044
+    },
+    {
+      "source": "platform/esp32/network_client_platform.cpp",
+      "source_sha256": "6047170dc5deab3dbf9640b2ef6822326334f24bacec7d964117067a6cbefe5f",
+      "object_sha256": "d7bea8cb70a7551517d10153f0c32b427cdca8bb8e0cb82f636f092c19525640",
+      "object_bytes": 35224
+    },
+    {
+      "source": "platform/esp32/physical_input_platform.cpp",
+      "source_sha256": "a2caa220aa50d18d324fb13dad44f7be5f3783d8a5bf54c7fab04717dfccec06",
+      "object_sha256": "7f2d432faf7e3496e724e56f7b34f2e8f616994abe874292702f06e96453e4aa",
+      "object_bytes": 6616
+    },
+    {
+      "source": "platform/esp32/system_setup_platform.cpp",
+      "source_sha256": "c313a2abad3e7099eeaa70185f2ce28eaf7de3bc03a2d73201289c61ecea9d1a",
+      "object_sha256": "8585b80c02fdcabbc213beb98dfb223e6bd939502ffa3b0b948d0741e9f39613",
+      "object_bytes": 9476
+    },
+    {
+      "source": "platform/esp32/system_tick_platform.cpp",
+      "source_sha256": "2413e58a1dd2dc4f8683385ddf784cb6f6959fe68062378e9365caaee7fca939",
+      "object_sha256": "505ab839a65c0250002b79da7e1b015e014fbcf4308d889d294fd15fafc8a796",
+      "object_bytes": 5520
+    },
+    {
+      "source": "platform/esp32/wifi_platform.cpp",
+      "source_sha256": "d2c6207d214f56ea0ef422f13289cff38eab6439a758bbd7f2e66856ba6218fe",
+      "object_sha256": "4dff862ab9be8e4831bd6f42abbaa4d56383768f7145b7bef40dac4f9d44e692",
+      "object_bytes": 8224
+    },
+    {
+      "source": "adapters/arduinojson/azure_json.cpp",
+      "source_sha256": "2e71c326ca42b2fc8687778069b7a790dfdc578cb9b0160152af3c6bd92bb2b5",
+      "object_sha256": "4a7293dc5eeea901b392695c815503e83c291330e42f0422b19df99d45e449e5",
+      "object_bytes": 48428
+    },
+    {
+      "source": "adapters/arduinojson/http_backend_json.cpp",
+      "source_sha256": "2531b71d5353589fea1010ea3fbad1ce69437a3d81edcbc66fc38fb8698fc530",
+      "object_sha256": "20b0fc6a30f68e8984a0dd2de9fbb4f296740e59cc223c2d2dea2b4199255d68",
+      "object_bytes": 92944
+    },
+    {
+      "source": "adapters/arduinojson/program_recipe_json.cpp",
+      "source_sha256": "9e3a6a2a4d124297ef66dfba569881f1d7180233a55f6749e057afd40dc6c6d3",
+      "object_sha256": "92f51d1eb2d8de4d917cbdf4c53480ce9505720dd3803e0897f6bc4137aa1c55",
+      "object_bytes": 54712
+    },
+    {
+      "source": "adapters/arduinojson/z_backend_json.cpp",
+      "source_sha256": "4c830a21c3cb2f0c6f733424cd695f92ab036abdb4431a14a67ceea0d3943b2d",
+      "object_sha256": "476f5a5150d7e5a2e58fd0358bec57940a4bb04e79142ce839baa810163dc80c",
+      "object_bytes": 66768
+    }
+  ],
+  "archive_sha256": "d7738a789b8de427a7cfd63d03205973829c1a59d528cdb8ab0217576175663e",
+  "complete_application_linked": false,
+  "hardware_tested": false,
+  "scope": "Selected source objects from the complete current pinned ESP32 compilation; source, header, included-file, dependency, generated-resource and object/archive identities verified before projection. The linked application has separate evidence. No hardware execution or installation is claimed.",
+  "sdk_identity_sha256": {
+    "tools/sdk/include/config/sdkconfig.h": "868cf74f1b39df51938798e27e7822a2875de0f5ea76a76838f4127a192f56df",
+    "tools/sdk/lib/libesp32.a": "ba5f4f436c96fa26ef665745e353f5e23e369442aa73ca92e6a8e9fbcb6aa827",
+    "platform.txt": "16ab9a2e16147090b726596ab8113a63c160f32bb4190c3e92389f6dae008017"
+  },
+  "esp32_dependency_pin_sha256": "6c79558effc8f8d5f7c6ca709cc7d1dc50c1bbdfe2c8b40d1f38a9786e48ffa3",
+  "arduinojson_dependency": {
+    "schema": 1,
+    "name": "ArduinoJson",
+    "version": "6.21.6",
+    "selection": "Explicitly selected rebuild dependency; the OEM minor version is unknown.",
+    "repository": "https://github.com/bblanchon/ArduinoJson",
+    "tag_object": "30921e555b7f840175d523848cd722ab4c846f64",
+    "commit": "0b03321ed33fa6965114424fbb023260120c856b",
+    "url": "https://codeload.github.com/bblanchon/ArduinoJson/tar.gz/0b03321ed33fa6965114424fbb023260120c856b",
+    "archive_bytes": 295192,
+    "archive_sha256": "a103d16aa6900c127889c2d2b53e04c867ba9b1404f710ef0489075df8b9d648",
+    "directory": "ArduinoJson-0b03321ed33fa6965114424fbb023260120c856b",
+    "license": "MIT",
+    "source_file_count": 135,
+    "source_tree_sha256": "cb608a205bee19a53550c7bfcbbb7aa4c93388601b132359eee4a94c597202e0"
+  },
+  "ethernet2_dependency": {
+    "schema_version": 1,
+    "repository": "adafruit/Ethernet2",
+    "commit": "0bab6349fb5b42fce2d5442bbed093279184b548",
+    "tree": "ecd6a8a865f3818fa1e5d9b52a4c876e14c5e337",
+    "directory": "Ethernet2-0bab6349fb5b42fce2d5442bbed093279184b548",
+    "source_url": "https://github.com/adafruit/Ethernet2/tree/0bab6349fb5b42fce2d5442bbed093279184b548",
+    "raw_base": "https://raw.githubusercontent.com/adafruit/Ethernet2/0bab6349fb5b42fce2d5442bbed093279184b548/",
+    "scope": "Explicit rebuild dependency, not a proven exact revision of the original ESP32Ethernet fork. W5500 socket count, buffers, SPI framing and initialization match recovered original instructions. Tracked adapter preserves original SPI instance and DHCP timeouts; owned Ethernet TLS/client policy is separate.",
+    "license": "GPL-2.0-or-later or LGPL-2.1-or-later; retain source notices and license.txt",
+    "files": {
+      "README.md": {
+        "bytes": 1109,
+        "sha256": "94dbdf0a7111fd8e0c98065909553a9539c81c80acc2f6ac4abcb8ef1353536f"
+      },
+      "library.properties": {
+        "bytes": 578,
+        "sha256": "8754b36963dd33fd402f3274aa5ebe3ebc3382afd7c6ae86440321c454950266"
+      },
+      "license.txt": {
+        "bytes": 39985,
+        "sha256": "7b529afa0c997ed6c143377ca89ac384e7ff717fbd42afbb599da79d9033b158"
+      },
+      "src/Dhcp.cpp": {
+        "bytes": 15427,
+        "sha256": "151d12e0e165a097204e3606336f3f478b92169cf1b36e448fd1bae490c01c0a"
+      },
+      "src/Dhcp.h": {
+        "bytes": 4211,
+        "sha256": "305627544876a05be2a46ef0a7733755148cd3ec2c16f2307e5030e8826b217f"
+      },
+      "src/Dns.cpp": {
+        "bytes": 13421,
+        "sha256": "c73eefd169b26cca17178bdfb626e7ad75842de42ceef3625b21033601b415c1"
+      },
+      "src/Dns.h": {
+        "bytes": 1253,
+        "sha256": "59892c76c9c77d04015a10889419c17874c2efd5c8dd9f16d91978c630915580"
+      },
+      "src/Ethernet2.cpp": {
+        "bytes": 5691,
+        "sha256": "6d48bb2a0d2f8cf9963a096d04b604a457b3f5683cc91f039892b126e4f49596"
+      },
+      "src/Ethernet2.h": {
+        "bytes": 2156,
+        "sha256": "c53e2b11b248fff6f5a0bdbc1b84c585663e48e3ea2f344cd2ded6760454e570"
+      },
+      "src/EthernetClient.cpp": {
+        "bytes": 3512,
+        "sha256": "13c64ecc43fc83dff29f8d4b6c321662e0dd6e20432c22580cb6e08023710bb8"
+      },
+      "src/EthernetClient.h": {
+        "bytes": 939,
+        "sha256": "361bb035428d8d6302bcaca2c0eab1088b350078ba35c2700c11ba54bee75757"
+      },
+      "src/EthernetServer.cpp": {
+        "bytes": 1860,
+        "sha256": "3e9ec1cb93e0725fc78652f9de2774d407798611a2f96b2c76a1acd857a6a855"
+      },
+      "src/EthernetServer.h": {
+        "bytes": 392,
+        "sha256": "c4e2b3b96240c5ad8c15cc051efc668c7df300ce38bdba447c4d266e330176a8"
+      },
+      "src/EthernetUdp2.cpp": {
+        "bytes": 5363,
+        "sha256": "20a561b4b506f6ace210be3715f45d18461740d605ae3a20c40604680242f21e"
+      },
+      "src/EthernetUdp2.h": {
+        "bytes": 4935,
+        "sha256": "96dc01218c899b72912aa6fe14051834e60abefa9667592fed8027237a6c1dd0"
+      },
+      "src/Twitter.cpp": {
+        "bytes": 1992,
+        "sha256": "4ddf61f90033a1bc3c2ad71556741a180771a151474dafea67863993eb4149a3"
+      },
+      "src/Twitter.h": {
+        "bytes": 1124,
+        "sha256": "02e833f674e398fcc0fe861bfc2fb21414cd554ddc7267dea36f4379a8c47db8"
+      },
+      "src/util.h": {
+        "bytes": 330,
+        "sha256": "b9bf659fd5c9a29567bebc69da78f76b3c7038e3f351648ee25f685e1e8c768e"
+      },
+      "src/utility/socket.cpp": {
+        "bytes": 9314,
+        "sha256": "1c53e5ce117dfcb1f2773a1306c21390504f0d79de3bce4a1afd0ce83b5ca3e2"
+      },
+      "src/utility/socket.h": {
+        "bytes": 2188,
+        "sha256": "66612bf601b67ebc9b446b46ee09e1151fb7914c1d2ccbc743ce19688809f1b9"
+      },
+      "src/utility/util.h": {
+        "bytes": 364,
+        "sha256": "3878552a9e4cd66df0febd57d8715a072af685e95143cf08a6e580221c2299a5"
+      },
+      "src/utility/w5500.cpp": {
+        "bytes": 4228,
+        "sha256": "94301fee2b7298aa812c84e02470b9da078d12f2aff353ad29f1afd50f9db379"
+      },
+      "src/utility/w5500.h": {
+        "bytes": 14362,
+        "sha256": "8ab9dcbd513df7fffe9533a8b241bba36b4bca7f235dd5278a9e8f3be01a7c08"
+      }
+    }
+  },
+  "ethernet2_adapter_sha256": "f1b8aa379041e97e3a476c29366dabd7b7e34aa975cb89d51051c3ec4eed4897",
+  "ethernet2_objects": {
+    "ethernet2_src_Dhcp.cpp.o": "0ef7618a993724d8da89586c5ddabb2b9afd8ad35e9e6f03c165605b871dd707",
+    "ethernet2_src_Dns.cpp.o": "33102f705665f5df6ff3c9879cc4c4c90bd41a4ce7df33566f71185897df78fe",
+    "ethernet2_src_Ethernet2.cpp.o": "44588cd989939fc8d4b00fe41be94ab9910758c92d619df198804662d867f8c2",
+    "ethernet2_src_EthernetClient.cpp.o": "1f40775b977bd26e489816eda5f5a9a2d0e7335c20fa32e7379265ac66342071",
+    "ethernet2_src_EthernetServer.cpp.o": "2e54207127c620797735b249db93860e111e43db91f4ceb969f312dbdf2ffd88",
+    "ethernet2_src_EthernetUdp2.cpp.o": "211fed3311e010f08761d646dde5719144e3b2629b99429d85191f684b36eab2",
+    "ethernet2_src_Twitter.cpp.o": "37680d5d63c2588853916c40c197c682a4d81cffe4d5cc161ce6ec62e6840b8d",
+    "ethernet2_src_utility_socket.cpp.o": "33d93864c88a36181f4285fe527147cd7368fb1393915fd7bc14bd1635525d6c",
+    "ethernet2_src_utility_w5500.cpp.o": "898c2ef07a21ec9e86d0d8d356018833ed8c15169e8fce68ffedda601d71e33d"
+  },
+  "build_script_sha256": "295ecd3308d356ca0adc0b8ea1979b908d20f1bfb1a0337baf92f8f0eae891b5",
+  "owned_header_sha256": {
+    "include/zseries/auxiliary_sensors.hpp": "597bfb86960bbd1e4c7eb5a36959c0f30ac56b05a71f7110b477274f4a8660b6",
+    "include/zseries/azure.hpp": "bf721a67579a9d164ac49233e2f78ec018f8313b8bfab50eebed4809ced29afc",
+    "include/zseries/backend_console.hpp": "fdaba1a2a6432340c1e2ef60912a811a685cf67887927ed1f2df561a7f10f21b",
+    "include/zseries/buzzer.hpp": "3d29e7b156076571c04a9be6af123d27ac8739be34941f52faf4ffb9f9c28642",
+    "include/zseries/console.hpp": "e69e03d9b872a72bddfc5609ea63bc970c51527a3f9b847312f1290860b05d90",
+    "include/zseries/core_commands.hpp": "db47789c16bef8e3123b4966aa4df79dd7a63cf8ee236e4370d15a334401f21b",
+    "include/zseries/core_control_state.hpp": "bc86aa2e63ee2344e21f7cca8ec558f2f42c82a2d7a3eff9884dd24ba3d6d502",
+    "include/zseries/core_flow.hpp": "f97e6223d6f4b6f9726c91f63bd888c2517f38a57600d2db9b772fca875ed6cc",
+    "include/zseries/core_helpers.hpp": "6712b7c7aab8097c34506b57ef59aceb966d17d54ce57255eb528e6957968400",
+    "include/zseries/core_startup.hpp": "0f1853c4f42743a92fbbdb76d25705809ab802a2d22426f97b2baf4c1505209a",
+    "include/zseries/diagnostics.hpp": "ca12c7e891b89359d34e4e3da17a59d193a88c0d31968e7c49321a4a97c60cb9",
+    "include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
+    "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
+    "include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
+    "include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3",
+    "include/zseries/eeprom.hpp": "82658ffd5f7f202c773a075b5070ae0506876cd1f6f36283bc1914ca14ce28de",
+    "include/zseries/enums.hpp": "22298d0890c49c550ddb17641c378980daaec7fa1723de7376bf6a33f958c2f8",
+    "include/zseries/head_core_events.hpp": "159a41bdf4f56425696e9f16cfa432f901652b95fe7a70acd58f77c09a4840b0",
+    "include/zseries/head_encoder.hpp": "6e740312c6c5f8e5789b18ae4a42807caedbf543082050d4d14f79a97e7037c8",
+    "include/zseries/head_events.hpp": "f5a2c3d5698e3f9d21e52162458670031f0f2bd5fa2cf231c2a2ff10f07d73a0",
+    "include/zseries/head_flow.hpp": "e1c446688590f00da33b7e8651c9f10c19d513795f5868e666a4d3fa1494f5e9",
+    "include/zseries/head_menu.hpp": "2edf3793d4be6ff035491ac99c7c6deffe86250587506d314c4ceaa37c9098b2",
+    "include/zseries/head_network_events.hpp": "269d8b11d80552ef894d972a146e9e16e82d843d39141de1fcf0890a832702ca",
+    "include/zseries/head_numeric_inputs.hpp": "9144efbbd423f6507ea6e04c335431b270132b5d7e5edd0b1fc8f7585575d840",
+    "include/zseries/head_paragraph.hpp": "4d6c0156b7a40c5221a1fe657c577aff24e1700f4649f8dd323ce7deefd999c7",
+    "include/zseries/head_text_input.hpp": "5403ea3974d75ea00f06151e4d7e4f7b1c58c019963c7defde0913421d09bf0e",
+    "include/zseries/head_ui_commands.hpp": "7b978c6ceaaf9fdae795c9fc26ac3c07be77cf94468c56635c3c49c2e9312ce2",
+    "include/zseries/head_widgets.hpp": "0532e3a96da20d356af3e38207545dd221c60e8d4b2af36c3f428194d6257de7",
+    "include/zseries/heater.hpp": "835ca0b60d7fcb3aa2a51e0752bb1f345a4313cf8dea3fb2e6d4a402ca50e29f",
+    "include/zseries/hex_detection.hpp": "18415d26c54cb898bcdea1ce63233f6642171c958de70ac3387c0c54ba9487d5",
+    "include/zseries/http_backend.hpp": "5d06d427c97cbc5671c440c375a457af69e4ff91e9f9e62014a1add443ddaa7c",
+    "include/zseries/http_client.hpp": "62368c63d0c9a8dc5d1e469ffedb452795e90f7fce92d01a285c59dec7352c0c",
+    "include/zseries/http_download.hpp": "2ee689f3ecf7b042cfafc99a07fb8b9557d70c7d22dc033d10e08382154d1d08",
+    "include/zseries/local_http.hpp": "3b7ecb1b8be47079b0dfe2cc7a904420e2e46156c6c01f58c4fb12c2267fc0d5",
+    "include/zseries/local_http_application.hpp": "27df3a29bbed07d4a024f85843ada07df1ebcd234b21d1e06ae58652aa469197",
+    "include/zseries/local_http_server.hpp": "9bb1f234010a82f6376edb03e5809de6abdf271199fd441a1549876f7c33cc9f",
+    "include/zseries/local_http_state.hpp": "98749c2026b41d1c0b80be7e69f85795c6a0ecfa9de5d2035c39e74b5f8da058",
+    "include/zseries/msp_protocol.h": "eca42029deedb69b4f932e11e8996058ff471f1ee68da6b5096bc995b7281aa3",
+    "include/zseries/network_client.hpp": "f91672d13ae53bb97bbbe7e1483f83866301664417520b588e60b3839f1a4fd9",
+    "include/zseries/physical_inputs.hpp": "5a2aab934e9024019934d6850c832ae9da8eaeafc15edfb4cf8f9dd67391242e",
+    "include/zseries/pico_still.hpp": "8da2ef9bbbe65762ba02935492b582762f3662c848850c9682a6877ff2be46fd",
+    "include/zseries/pico_still_sensors.hpp": "b02523527c74186fd3cec2aaff596cf056f5d702b0d85a377885e190b8785d41",
+    "include/zseries/program_list.hpp": "9785030a58893f2c9127caa356ed67d421dc1115311d41967805c5388e80e778",
+    "include/zseries/program_recipe.hpp": "8ccad90db217b8d2fbb727432260e9e9a05515f1420b57e0b2ccaa35ec482010",
+    "include/zseries/program_recipe_json.hpp": "f51ea936d4bb29f9b00561d71c933ba468178b37e5575cf4a756011f9f1db494",
+    "include/zseries/program_repository.hpp": "d04f1641278f5c0efbdf64a517774bc6ed364d99f37fb3fda23eaf8396f29448",
+    "include/zseries/program_runtime.hpp": "eaa1de3248c389b293cb231d12e53d3abc820677c4408183acb0814cb94415a5",
+    "include/zseries/program_runtime_heater.hpp": "21d7eb78400bff77985d07510dab1645361fea3176e0799c03bcefc975876724",
+    "include/zseries/quantity.hpp": "9110702b8324d3c7e8a0408ae3826bb31bf69869fa09497f6f77e446ffc2d7be",
+    "include/zseries/runtime_events.hpp": "5a69947c3d9243517b6b011322e1378e9dc51a810ac3b87f1845e89025e22495",
+    "include/zseries/runtime_instruction.hpp": "6fe572c1bd9e529cd6bf3377e303b84a4039cf86453ddc5a84e759ed2b5b5bc1",
+    "include/zseries/safeties.hpp": "43a0ebc5819fcac9e682de0f72e8f8bc42a348db5894b1ce02b965d72734a8d9",
+    "include/zseries/sensor_acquisition.hpp": "1fac4c5c6263630e6dd9b4c22f9ec42eddddeda86a208fd569f63dbe5b15c787",
+    "include/zseries/serial_console.hpp": "fa57350bbd9658d960a3b4cdc97129184d8ee3619e426313963e1fdb1e0e2ae4",
+    "include/zseries/still_client.hpp": "88196189c7289b42bae61509db92d16bf0126b6ba0ddc9c4495865705c07b767",
+    "include/zseries/still_http.hpp": "4b42693c31f1a8b0851ecb7cd7f24ea2ccd69eec1eb14592bcfb5a995f1cb54b",
+    "include/zseries/system_setup.hpp": "c10cdb726543faab8f552c05db1a9b3b97980f986b75985ad4786c61a28b0bb8",
+    "include/zseries/system_tick.hpp": "d486f835ceebc83e5c44372898a882cfd248a6450f864848df7e412f57fd53fb",
+    "include/zseries/temperature.hpp": "437bbb9735b6d8f99efff4022ac3a8de8ea664c952c6d30730855ea5dd32a40e",
+    "include/zseries/ui_catalog.hpp": "bac363941ec5673aead8fbfd91d512650bd173bf2f0223956cc6d8476ac81426",
+    "include/zseries/ui_screen_tick.hpp": "6d932062f71986cb8f1f01c7d9c43a472d65ee81057ad2ad1e7a855b975c4ea3",
+    "include/zseries/wifi.hpp": "1dd8d76c75288819d85ba4b407af8d1cb1b8dd1194402ce09fa78ee85fff233f",
+    "include/zseries/z_backend.hpp": "68696268b6c5316a239bc0ba550a8771a1641fd5af2391bba22408528072304b"
+  },
+  "platform_header_sha256": {
+    "platform/esp32/azure_crypto.hpp": "090dcb43cfba72f6239937b6f8949df9b4aef266f8edd30c3ae37ce81013575c",
+    "platform/esp32/buzzer_platform.hpp": "53d86dde450a9dafef827ed75a808c0f2ed7bc021628d05ce598cd44d14e2ff5",
+    "platform/esp32/console_platform.hpp": "10f7b89789821d5360b7ef61e5b67020200411ccdca31647ef24135b7365d8fc",
+    "platform/esp32/display_platform.hpp": "ce0798074651299483bacfba3525a8b18352836951774b2d8255131992da830b",
+    "platform/esp32/esp32_platform.hpp": "7943c4334f1a80f92194b09037730831e1753450574864ea4b1052f5abf3de6a",
+    "platform/esp32/http_client_platform.hpp": "ab52a95c8d6a7989de381cc20b82315df89cff3a207cb4e9afe2773257b469d5",
+    "platform/esp32/http_download_platform.hpp": "8eb7561e36b205f06a89054747e5f35d5626d939252f26b2532cda631ab9607d",
+    "platform/esp32/local_http_platform.hpp": "c02c1623af6c9f067ff6a5fb3d1272f7842d533fc879c8b8f035053d440450ac",
+    "platform/esp32/network_client_platform.hpp": "daa1e61f7747fd9d04d860a36519c20c06bdf2b025f6eaa2773875685d3178ba",
+    "platform/esp32/physical_input_platform.hpp": "7183b00b57cd510303ad2b3e9a3e2d498f233501ac820be3abfce34be37d1bbf",
+    "platform/esp32/system_setup_platform.hpp": "3cb68302b429c7b8ef8726b89b983e8e508b867bd8ea223056259e3a43e4e6e3",
+    "platform/esp32/system_tick_platform.hpp": "9ebe57df7007abe79e9b39a7655adc43e38ff5c01266aa5b2a17c376b9f1068e",
+    "platform/esp32/wifi_platform.hpp": "eaf55a57772a15888444074ada086e398ce2e5783b5e72c39c142dff092b8b43"
+  },
+  "complete_build_report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+  "integration_revalidation": {
+    "report": "integration-target-build.json",
+    "report_sha256": "6a8457f538ecea457e09c1eb25e59347cd3c4e4e616c1cd804eb831b79ec42d8",
+    "compiled_modules": 127,
+    "selected_sources": 83
+  }
+}

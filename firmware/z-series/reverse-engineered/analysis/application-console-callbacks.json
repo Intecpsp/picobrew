@@ -1,0 +1,1845 @@
+{
+  "callbacks": [
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "i",
+      "description": "Displays WiFi information",
+      "callback": "0x400da1f4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "connect",
+      "description": "Connects to WiFi",
+      "callback": "0x400e6bbc",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "scan",
+      "description": "Scan",
+      "callback": "0x400d5c20",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "ap",
+      "description": "Starts AccessPoint",
+      "callback": "0x400d5c10",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "idle",
+      "description": "Go to Idle state",
+      "callback": "0x400d5c30",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "auto on",
+      "description": "Turn auto reconnect on",
+      "callback": "0x400d09bc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "WiFi",
+      "exact": true,
+      "token": "auto off",
+      "description": "Turn auto reconnect off",
+      "callback": "0x400d09cc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "WiFi",
+      "exact": false,
+      "token": "ssid ",
+      "description": "Sets SSID to connect to",
+      "callback": "0x400f2040",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": false,
+      "token": "pass ",
+      "description": "Sets password",
+      "callback": "0x40101088",
+      "owner": "portable"
+    },
+    {
+      "shell": "WiFi",
+      "exact": false,
+      "token": "internet ",
+      "description": "Sets IsInternetExpected",
+      "callback": "0x400d0f08",
+      "owner": "portable"
+    },
+    {
+      "shell": "HttpServer",
+      "exact": true,
+      "token": "i",
+      "description": "Display HttpServer information",
+      "callback": "0x400dafd8",
+      "owner": "portable"
+    },
+    {
+      "shell": "HttpServer",
+      "exact": true,
+      "token": "start",
+      "description": "Starts HttpServer",
+      "callback": "0x400d5d14",
+      "owner": "portable"
+    },
+    {
+      "shell": "HttpServer",
+      "exact": true,
+      "token": "stop",
+      "description": "Stops HttpServer",
+      "callback": "0x400d5d24",
+      "owner": "portable"
+    },
+    {
+      "shell": "Buzzer",
+      "exact": true,
+      "token": "i",
+      "description": "Displays Buzzer state",
+      "callback": "0x400d5d40",
+      "owner": "portable"
+    },
+    {
+      "shell": "Buzzer",
+      "exact": true,
+      "token": "on",
+      "description": "Turn buzzer on",
+      "callback": "0x400d144c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Buzzer",
+      "exact": true,
+      "token": "off",
+      "description": "Turn buzzer off",
+      "callback": "0x400d1460",
+      "owner": "portable"
+    },
+    {
+      "shell": "Buzzer",
+      "exact": false,
+      "token": "setf ",
+      "description": "Sets buzzer frequency",
+      "callback": "0x400d08e0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Buzzer",
+      "exact": false,
+      "token": "setd ",
+      "description": "Sets buzzer duty cycle",
+      "callback": "0x400d08f4",
+      "owner": "portable"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "i",
+      "description": "Display System information",
+      "callback": "0x400dbc2c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "scan",
+      "description": "Scan I2C buses",
+      "callback": "0x40113324",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "reset",
+      "description": "Reset to firmware flashed at factory",
+      "callback": "0x400d5f78",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "restart",
+      "description": "Restart system",
+      "callback": "0x400d5ff4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "eth",
+      "description": "Calls ethernetConnect",
+      "callback": "0x400d60ec",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": false,
+      "token": "setalarm ",
+      "description": "Enable/disable alarm (`setalarm on`, `setalarm off`)",
+      "callback": "0x400dbccc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "System",
+      "exact": true,
+      "token": "test wd",
+      "description": "Test watch dog with endless loop",
+      "callback": "0x401bdbc0",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Servos",
+      "exact": true,
+      "token": "start",
+      "description": "Start timer interrupt for PWM",
+      "callback": "0x400dc0bc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": true,
+      "token": "stop",
+      "description": "Stops timer interrupt for PWM",
+      "callback": "0x400dc0cc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "1 ",
+      "description": "Set Servo #1 pulse width (in 25us tick count)",
+      "callback": "0x400dc3ac",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "2 ",
+      "description": "Set Servo #2 pulse width (in 25us tick count)",
+      "callback": "0x400dc3c8",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "3 ",
+      "description": "Set Servo #3 pulse width (in 25us tick count)",
+      "callback": "0x400dc3e4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "4 ",
+      "description": "Set Servo #4 pulse width (in 25us tick count)",
+      "callback": "0x400dc400",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "5 ",
+      "description": "Set Servo #5 pulse width (in 25us tick count)",
+      "callback": "0x400dc41c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "6 ",
+      "description": "Set Servo #6 pulse width (in 25us tick count)",
+      "callback": "0x400dc438",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "7 ",
+      "description": "Set Servo #7 pulse width (in 25us tick count)",
+      "callback": "0x400dc454",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "8 ",
+      "description": "Set Servo #8 pulse width (in 25us tick count)",
+      "callback": "0x400dc470",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": true,
+      "token": "rel",
+      "description": "Send RELEASE command to all servos",
+      "callback": "0x400dc48c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": true,
+      "token": "pos",
+      "description": "Get all servos positions",
+      "callback": "0x400dc4a0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "open ",
+      "description": "Send GOTO OPEN to given servos",
+      "callback": "0x400dc4b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "close ",
+      "description": "Send GOTO CLOSE to given servos",
+      "callback": "0x400dc4cc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Servos",
+      "exact": false,
+      "token": "all ",
+      "description": "Send GOTO STATE to all servos (0:close, 1:open)",
+      "callback": "0x400dc4e8",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "i",
+      "description": "Display MSP state",
+      "callback": "0x400dc878",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "app",
+      "description": "Tells boot to launch app",
+      "callback": "0x400dc908",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "boot",
+      "description": "Tells app to launch boot",
+      "callback": "0x400dc0f4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "clear",
+      "description": "Clear the MSP app error",
+      "callback": "0x400dc2c0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "bv",
+      "description": "Get boot version",
+      "callback": "0x400dc8a4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "av",
+      "description": "Get app version",
+      "callback": "0x400dc148",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "ap",
+      "description": "Get app PUMPs state",
+      "callback": "0x400dc1b4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "as",
+      "description": "Get app state",
+      "callback": "0x400dc2d0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "h",
+      "description": "Hex pump ON",
+      "callback": "0x400dc1e8",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "H",
+      "description": "Hex pump OFF",
+      "callback": "0x400dc1f8",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "d",
+      "description": "Drain pump ON",
+      "callback": "0x400dc208",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "D",
+      "description": "Drain pump OFF",
+      "callback": "0x400dc218",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "k",
+      "description": "Keg pump ON",
+      "callback": "0x400dc228",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "K",
+      "description": "Keg pump OFF",
+      "callback": "0x400dc238",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "f",
+      "description": "Fan ON",
+      "callback": "0x400dc248",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "F",
+      "description": "Fan OFF",
+      "callback": "0x400dc258",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v h",
+      "description": "Move valve to HOME",
+      "callback": "0x400dc9bc",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v r",
+      "description": "Move valve to REST",
+      "callback": "0x400dc9cc",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v m",
+      "description": "Move valve to MASH",
+      "callback": "0x400dc9dc",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v p",
+      "description": "Move valve to PASSTHROUGH",
+      "callback": "0x400dc9ec",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v 1",
+      "description": "Move valve to Pos 1 (Z1)",
+      "callback": "0x400dc9fc",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v 2",
+      "description": "Move valve to Pos 2 (Z2P1)",
+      "callback": "0x400dca0c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v 3",
+      "description": "Move valve to Pos 3 (P2)",
+      "callback": "0x400dca1c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v 4",
+      "description": "Move valve to Pos 4 (ZP3)",
+      "callback": "0x400dca2c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v 5",
+      "description": "Move valve to Pos 5 (ZP4)",
+      "callback": "0x400dca3c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v z1",
+      "description": "Move valve to Pos 1 (Z1)",
+      "callback": "0x400dca4c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v z2p1",
+      "description": "Move valve to Pos 2 (Z2P1)",
+      "callback": "0x400dca5c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v p2",
+      "description": "Move valve to Pos 3 (P2)",
+      "callback": "0x400dca6c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v zp3",
+      "description": "Move valve to Pos 4 (ZP3)",
+      "callback": "0x400dca7c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "v zp4",
+      "description": "Move valve to Pos 5 (ZP4)",
+      "callback": "0x400dca8c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "+",
+      "description": "Sends STEP_INCR cmd to MSP",
+      "callback": "0x400dc268",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "-",
+      "description": "Sends STEP_DECR cmd to MSP",
+      "callback": "0x400dc2e0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "setup",
+      "description": "Perform MSP setup logic",
+      "callback": "0x400dd0e0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "erase",
+      "description": "Erase MSP application",
+      "callback": "0x400dcb6c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "update",
+      "description": "Update MSP application",
+      "callback": "0x400dccd0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "fupdate",
+      "description": "Force Update MSP application",
+      "callback": "0x400dd13c",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "TEST_BRICK_APP",
+      "description": "Sends TEST_BRICK_APP command to MSP",
+      "callback": "0x400dc280",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "TEST_BRICK_ISR",
+      "description": "Sends TEST_BRICK_ISR command to MSP",
+      "callback": "0x400dc290",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "TEST_ERROR_SET_FIRST",
+      "description": "Sends TEST_ERROR_SET_FIRST command to MSP",
+      "callback": "0x400dc2a0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "TEST_ERROR_SET_LAST",
+      "description": "Sends TEST_ERROR_SET_LAST command to MSP",
+      "callback": "0x400dc2b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": false,
+      "token": "seterror ",
+      "description": "Sets MSP error state (TEST ONLY)",
+      "callback": "0x400dc5b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "test av",
+      "description": "Test ESP32 can get MSP app version",
+      "callback": "0x400dc1a4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "test switch",
+      "description": "Test ESP32 can get MSP to switch between boot and app",
+      "callback": "0x400dc970",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "test update",
+      "description": "Test ESP32 can update the MSP app",
+      "callback": "0x400dd268",
+      "owner": "portable"
+    },
+    {
+      "shell": "MSP",
+      "exact": true,
+      "token": "test integration",
+      "description": "Runs all MSP integration tests",
+      "callback": "0x400dd29c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": true,
+      "token": "i",
+      "description": "Show EEPROM info",
+      "callback": "0x400d6750",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": false,
+      "token": "ssid ",
+      "description": "Sets WiFi SSID",
+      "callback": "0x400d59ac",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": false,
+      "token": "pass ",
+      "description": "Sets WiFi password",
+      "callback": "0x400d59c0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": false,
+      "token": "azure ",
+      "description": "Sets AzureEnabled boolean",
+      "callback": "0x400d6760",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": false,
+      "token": "eth ",
+      "description": "Sets useEthernet boolean",
+      "callback": "0x400d67a8",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": true,
+      "token": "boiler u",
+      "description": "Sets Boiler type to Unknown",
+      "callback": "0x401bdebc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": true,
+      "token": "boiler b",
+      "description": "Sets Boiler type to Big",
+      "callback": "0x401bdee0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": true,
+      "token": "boiler s",
+      "description": "Sets Boiler type to Small",
+      "callback": "0x401bdf04",
+      "owner": "portable"
+    },
+    {
+      "shell": "Eeprom",
+      "exact": true,
+      "token": "test",
+      "description": "Run EEPPROM unit test",
+      "callback": "0x400dd678",
+      "owner": "portable"
+    },
+    {
+      "shell": "Safeties",
+      "exact": true,
+      "token": "i",
+      "description": "Displays Safeties state and information",
+      "callback": "0x400d69b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Safeties",
+      "exact": true,
+      "token": "on",
+      "description": "Enable all temp monitor safeties",
+      "callback": "0x401bf96c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Safeties",
+      "exact": true,
+      "token": "off",
+      "description": "Disable all temp monitor safeties",
+      "callback": "0x400d6a10",
+      "owner": "portable"
+    },
+    {
+      "shell": "Safeties",
+      "exact": true,
+      "token": "sf in",
+      "description": "Simulate step filter in",
+      "callback": "0x400d6a80",
+      "owner": "portable"
+    },
+    {
+      "shell": "Safeties",
+      "exact": true,
+      "token": "sf out",
+      "description": "Simulate step filter out",
+      "callback": "0x400d6a90",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "i",
+      "description": "Displays Sensor values",
+      "callback": "0x400dd8f4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "start",
+      "description": "Start sensor polling",
+      "callback": "0x401bdcdc",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "stop",
+      "description": "Stop sensor polling",
+      "callback": "0x401bdd00",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "read",
+      "description": "Perform one read",
+      "callback": "0x400dd9a4",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "auto",
+      "description": "Detect sensor configuration",
+      "callback": "0x400ddeb8",
+      "owner": "portable"
+    },
+    {
+      "shell": "MAX11613",
+      "exact": true,
+      "token": "tests",
+      "description": "Runs MAX11613 unit tests",
+      "callback": "0x400de068",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "i",
+      "description": "Show heater state",
+      "callback": "0x400d6d64",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "start",
+      "description": "Start heating",
+      "callback": "0x400d6d8c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "stop",
+      "description": "Stop heating",
+      "callback": "0x400d1a9c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "relay on",
+      "description": "Enable mechanical relay",
+      "callback": "0x400d1a54",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "relay off",
+      "description": "Disable mechanical relay",
+      "callback": "0x400d1a64",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": false,
+      "token": "t ",
+      "description": "Set wort target in Celsius",
+      "callback": "0x400d6f10",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": false,
+      "token": "tf ",
+      "description": "Set wort target in Farenheit",
+      "callback": "0x400d6f30",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "auto",
+      "description": "Set automatic PID mode",
+      "callback": "0x400d096c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "manual",
+      "description": "Set manual PID mode",
+      "callback": "0x400d0980",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": true,
+      "token": "setduty",
+      "description": "Set SSR duty [0,100] (manual)",
+      "callback": "0x400de1b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": false,
+      "token": "kp ",
+      "description": "Set P value (in 10th precision)",
+      "callback": "0x400d6e30",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": false,
+      "token": "ki ",
+      "description": "Set I value (in 10th precision)",
+      "callback": "0x400d6d98",
+      "owner": "portable"
+    },
+    {
+      "shell": "Heater",
+      "exact": false,
+      "token": "kd ",
+      "description": "Set D value (in 10th precision)",
+      "callback": "0x400d6de0",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "i",
+      "description": "Displays information",
+      "callback": "0x400dab5c",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "scan",
+      "description": "Scans WiFi for PicoStill",
+      "callback": "0x400f4f08",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": false,
+      "token": "connect ",
+      "description": "Connects to PicoStill",
+      "callback": "0x400f4f18",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "start",
+      "description": "Starts session",
+      "callback": "0x400f4f34",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "stop",
+      "description": "Stops session",
+      "callback": "0x400f4f8c",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "fan on",
+      "description": "Fan on",
+      "callback": "0x4010c9f4",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "fan off",
+      "description": "Fan off",
+      "callback": "0x4010ca04",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "ver",
+      "description": "Fetches PicoStill version",
+      "callback": "0x4010ca14",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "data",
+      "description": "Fetches PicoStill data",
+      "callback": "0x4010ca24",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "sensors",
+      "description": "Turns sensors polling on",
+      "callback": "0x4010ca34",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "test",
+      "description": "Unit tests",
+      "callback": "0x4011a204",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "t b",
+      "description": "Backend Unit tests",
+      "callback": "0x4011a1fc",
+      "owner": "portable"
+    },
+    {
+      "shell": "PicoStill",
+      "exact": true,
+      "token": "t err",
+      "description": "Simulate PicoStill error",
+      "callback": "0x40102710",
+      "owner": "portable"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "i",
+      "description": "Shows display information",
+      "callback": "0x400d7020",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "cls",
+      "description": "Clear screen",
+      "callback": "0x400d1bfc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "inv",
+      "description": "Invert screen colors",
+      "callback": "0x400d1b4c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "ruler",
+      "description": "Draw ruler at test point",
+      "callback": "0x400e780c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": false,
+      "token": "setx ",
+      "description": "Sets X coord of test point",
+      "callback": "0x400d0908",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": false,
+      "token": "sety ",
+      "description": "Sets Y coord of test point",
+      "callback": "0x400d0920",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "uninv",
+      "description": "Uninvert screen colors",
+      "callback": "0x400d1b5c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "x",
+      "description": "Creates a screen shot",
+      "callback": "0x400fce34",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "b 1",
+      "description": "Test bitmap test_16x16_1bpp",
+      "callback": "0x400e78b4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "b 2",
+      "description": "Test bitmap test_16x16_8bpp",
+      "callback": "0x400e78c8",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "b 3",
+      "description": "Test bitmap test_18x18_8bpp",
+      "callback": "0x400e78dc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "b 4",
+      "description": "Test bitmap test_16x16_8bpp_grey",
+      "callback": "0x400e78f0",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": false,
+      "token": "text ",
+      "description": "Draw centered text",
+      "callback": "0x400e7db4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "t ascii",
+      "description": "Test ASCII text",
+      "callback": "0x400e8510",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "t u8",
+      "description": "Test utf8 text",
+      "callback": "0x400e85cc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "t b",
+      "description": "Test border",
+      "callback": "0x400e8994",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "t c",
+      "description": "Test caret",
+      "callback": "0x400e95b0",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "t g",
+      "description": "Test gradient",
+      "callback": "0x400ea520",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "test",
+      "description": "Run all unit tests",
+      "callback": "0x400eaf50",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Display",
+      "exact": true,
+      "token": "togb",
+      "description": "toggle test bool",
+      "callback": "0x400d09a4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "splash",
+      "description": "Show splash screen",
+      "callback": "0x400e7bbc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "screen hw",
+      "description": "Show HW state screen",
+      "callback": "0x4010369c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "menu test",
+      "description": "Show test menu",
+      "callback": "0x40103740",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "menu uitest",
+      "description": "Show ui test menu",
+      "callback": "0x4010376c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "tests",
+      "description": "Run all tests()",
+      "callback": "0x400fe36c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Head",
+      "exact": true,
+      "token": "test ss",
+      "description": "Shows all slideshow screens",
+      "callback": "0x400fea6c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": ".",
+      "description": "Short encoder press",
+      "callback": "0x400f068c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": "<",
+      "description": "1 tick clockwise",
+      "callback": "0x400d19ac",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": "<<",
+      "description": "2 tick clockwise",
+      "callback": "0x400d19bc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": "<<<",
+      "description": "3 tick clockwise",
+      "callback": "0x400d19cc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": "<<<<",
+      "description": "4 tick clockwise",
+      "callback": "0x400d19dc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": ">",
+      "description": "1 tick counter clockwise",
+      "callback": "0x400d19ec",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": ">>",
+      "description": "2 tick counter clockwise",
+      "callback": "0x400d19fc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": ">>>",
+      "description": "3 tick counter clockwise",
+      "callback": "0x400d1a0c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Encoder",
+      "exact": true,
+      "token": ">>>>",
+      "description": "4 tick counter clockwise",
+      "callback": "0x400d1a1c",
+      "owner": "portable"
+    },
+    {
+      "shell": "ZBackendT",
+      "exact": true,
+      "token": "i",
+      "description": "Display backend information",
+      "callback": "0x400dae28",
+      "owner": "portable"
+    },
+    {
+      "shell": "ZBackendT",
+      "exact": true,
+      "token": "tests",
+      "description": "Run ZBackendT unit tests",
+      "callback": "0x4011ec38",
+      "owner": "backend_console_tests"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "i",
+      "description": "Display Runtime state and information",
+      "callback": "0x400e0194",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "stop",
+      "description": "Stops/terminates program execution",
+      "callback": "0x400f4a58",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "pause",
+      "description": "Pause program execution",
+      "callback": "0x400f4a78",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "resume",
+      "description": "Resume program execution",
+      "callback": "0x400f4a84",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "skip",
+      "description": "Skips current instruction",
+      "callback": "0x400f4a94",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "drain",
+      "description": "Starts transient drain",
+      "callback": "0x400f4aa4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": false,
+      "token": "sett_c ",
+      "description": "Sets target wort temp in Celsius",
+      "callback": "0x400f4adc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": false,
+      "token": "sett_f ",
+      "description": "Sets target wort temp in Farenheit",
+      "callback": "0x400f4b00",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s rinse",
+      "description": "Starts Rinse program",
+      "callback": "0x400f4b4c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s clean",
+      "description": "Starts Clean program",
+      "callback": "0x400f4b5c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s drain",
+      "description": "Starts Drain program",
+      "callback": "0x400f4b6c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s rack",
+      "description": "Starts Rack program",
+      "callback": "0x400f4b7c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s circ",
+      "description": "Starts Circulate program",
+      "callback": "0x400f4b8c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s sous",
+      "description": "Starts SousVide program",
+      "callback": "0x400f4b9c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s test1",
+      "description": "Starts Test1 program",
+      "callback": "0x400f4bac",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s test2",
+      "description": "Starts Test2 program",
+      "callback": "0x400f4bbc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s test3",
+      "description": "Starts Test3 program",
+      "callback": "0x400f4bcc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "s BREW!",
+      "description": "Starts BrewTest program",
+      "callback": "0x400f4bdc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "t1 start",
+      "description": "Starts T1 monitoring",
+      "callback": "0x400dafbc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": true,
+      "token": "t1 stop",
+      "description": "Stops T1 monitoring",
+      "callback": "0x400daf4c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Runtime",
+      "exact": false,
+      "token": "t",
+      "description": "Run runtime tests",
+      "callback": "0x400e0e70",
+      "owner": "portable"
+    },
+    {
+      "shell": "HttpBackend",
+      "exact": true,
+      "token": "i",
+      "description": "Display information",
+      "callback": "0x400daa1c",
+      "owner": "portable"
+    },
+    {
+      "shell": "HttpBackend",
+      "exact": true,
+      "token": "tests",
+      "description": "Run HttpBackend unit tests",
+      "callback": "0x40119378",
+      "owner": "backend_console_tests"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": false,
+      "token": "setinterval ",
+      "description": "Sets interval between log (in ms)",
+      "callback": "0x400d76ec",
+      "owner": "portable"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": true,
+      "token": "i",
+      "description": "Display information",
+      "callback": "0x400efbf4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": true,
+      "token": "start",
+      "description": "Start logging",
+      "callback": "0x400efac4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": true,
+      "token": "stop",
+      "description": "Stop logging",
+      "callback": "0x400efad4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": true,
+      "token": "on",
+      "description": "Start logging",
+      "callback": "0x400efae4",
+      "owner": "portable"
+    },
+    {
+      "shell": "Serial Logger",
+      "exact": true,
+      "token": "off",
+      "description": "Stop logging",
+      "callback": "0x400efaf4",
+      "owner": "portable"
+    },
+    {
+      "shell": "ZSessionLogger",
+      "exact": true,
+      "token": "i",
+      "description": "Display Session information",
+      "callback": "0x400df3b0",
+      "owner": "portable"
+    },
+    {
+      "shell": "ZSessionLogger",
+      "exact": true,
+      "token": "end",
+      "description": "Terminates the session on backend",
+      "callback": "0x401bdc88",
+      "owner": "portable"
+    },
+    {
+      "shell": "ZSessionLogger",
+      "exact": true,
+      "token": "log",
+      "description": "Log a data point to backend",
+      "callback": "0x4011c794",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "i",
+      "description": "Display Azure information",
+      "callback": "0x400d77b0",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "c",
+      "description": "Connects to Azure",
+      "callback": "0x400edacc",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "d",
+      "description": "Disconnects from Azure",
+      "callback": "0x401bedf8",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "start",
+      "description": "Simulate session start",
+      "callback": "0x400eda7c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "stop",
+      "description": "Simulate session stop",
+      "callback": "0x400edaa0",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "send",
+      "description": "Sends message to IotHub",
+      "callback": "0x400d0a5c",
+      "owner": "portable"
+    },
+    {
+      "shell": "Azure",
+      "exact": true,
+      "token": "test",
+      "description": "Runs Azure unit tests",
+      "callback": "0x400fa7ec",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Ping",
+      "exact": true,
+      "token": "i",
+      "description": "Display Ping information",
+      "callback": "0x401beec4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Ping",
+      "exact": true,
+      "token": "g",
+      "description": "ping 8.8.4.4 (aka google)",
+      "callback": "0x400e15c4",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Ping",
+      "exact": false,
+      "token": "name ",
+      "description": "ping given host name",
+      "callback": "0x400e171c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Ping",
+      "exact": false,
+      "token": "ip ",
+      "description": "ping given IPAddress",
+      "callback": "0x400e17b8",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "Ping",
+      "exact": true,
+      "token": "test",
+      "description": "Run Pinger tests",
+      "callback": "0x400f72dc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "connect wifi",
+      "description": "Sends WiFiConnect",
+      "callback": "0x40101158",
+      "owner": "portable"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "connect ethernet",
+      "description": "Sends EthernetConnect",
+      "callback": "0x40101168",
+      "owner": "portable"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "all",
+      "description": "Runs All Tests",
+      "callback": "0x4011fbbc",
+      "owner": "core_console_tests"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "basic",
+      "description": "Runs Basic Tests",
+      "callback": "0x4011fbac",
+      "owner": "basic_console_tests"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "net",
+      "description": "Runs Network Tests",
+      "callback": "0x4011c2f8",
+      "owner": "core_console_tests"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "int",
+      "description": "Runs Integration Tests",
+      "callback": "0x4010a3d8",
+      "owner": "core_console_tests"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "rinse",
+      "description": "Test CoreEventType::RinseNeeded",
+      "callback": "0x400f0450",
+      "owner": "portable"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "clean",
+      "description": "Test CoreEventType::CleanNeeded",
+      "callback": "0x400f0460",
+      "owner": "portable"
+    },
+    {
+      "shell": "test",
+      "exact": true,
+      "token": "azure",
+      "description": "Test AzureSessionLoad",
+      "callback": "0x401040f4",
+      "owner": "portable"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "info",
+      "description": "Shows lots of info",
+      "callback": "0x400efcf0",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "powerButton",
+      "description": "Presses power button",
+      "callback": "0x400f3ef4",
+      "owner": "portable"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "restart",
+      "description": "Restart the board",
+      "callback": "0x400d5fe8",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "sizeof",
+      "description": "Logs structs and classes sizes",
+      "callback": "0x400d9164",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": false,
+      "token": "isr ",
+      "description": "Enables/disables timer ISR (`isr on`, `isr off`)",
+      "callback": "0x400d2190",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "esave",
+      "description": "Write data to EEPROM",
+      "callback": "0x400edbfc",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "ereset",
+      "description": "Reset data in EEPROM",
+      "callback": "0x400edc9c",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": true,
+      "token": "reset",
+      "description": "Factoty reset the device",
+      "callback": "0x400edd04",
+      "owner": "platform_or_head"
+    },
+    {
+      "shell": "main",
+      "exact": false,
+      "token": "delay",
+      "description": "Delay for amount of ms",
+      "callback": "0x400d0a48",
+      "owner": "platform_or_head"
+    }
+  ],
+  "note": "Registration recovered by original execution. Owner classifications allocate implementations; platform bindings and pending diagnostic self-tests require concrete external services and never imply no-op success."
+}

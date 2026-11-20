@@ -1,0 +1,1219 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 79,
+  "input_file_sha256": "bca01297f23c33bd428fe92f37c5f43758abc3ed6b75258364e11b6231e14e56",
+  "original_functions": [
+    {
+      "address": "0x400d0908",
+      "calls": 5,
+      "ranges": [
+        {
+          "address": 1074596104,
+          "size": 21,
+          "sha256": "91f67c6f66a164a4b3b081abcf4817ff81d302f2a45543dc807527649c70800a"
+        }
+      ]
+    },
+    {
+      "address": "0x400d0920",
+      "calls": 5,
+      "ranges": [
+        {
+          "address": 1074596128,
+          "size": 21,
+          "sha256": "27a6009182e99cf9c3aacd6fecb61e5b7d8b2837effd03c30e5262efd3e7dc2f"
+        }
+      ]
+    },
+    {
+      "address": "0x400d0994",
+      "calls": 13,
+      "ranges": [
+        {
+          "address": 1074596244,
+          "size": 11,
+          "sha256": "948f0dad0591cba376cc341eabfae4098331166b9f76face776649b22a3f1310"
+        }
+      ]
+    },
+    {
+      "address": "0x400d09a4",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074596260,
+          "size": 19,
+          "sha256": "e58b3195b32b24c888c7a95fa98803f540fec5fdc4523c8e04235d4ea7c06e0d"
+        }
+      ]
+    },
+    {
+      "address": "0x400d11f4",
+      "calls": 56,
+      "ranges": [
+        {
+          "address": 1074598388,
+          "size": 68,
+          "sha256": "f01606105d27f6db2597a11304518fbf0241c92eb2feb34e6afeb2bbea881513"
+        }
+      ]
+    },
+    {
+      "address": "0x400d125c",
+      "calls": 56,
+      "ranges": [
+        {
+          "address": 1074598492,
+          "size": 30,
+          "sha256": "a117354e6806b6bcfc825919f7927874b5fb7e98d3027caab603498b4e933c07"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1aa8",
+      "calls": 237,
+      "ranges": [
+        {
+          "address": 1074600616,
+          "size": 60,
+          "sha256": "167c64675ca716a905f76bdd0ae068b8ae1ee0c7a90ead1ffbfd849194187795"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1ae4",
+      "calls": 251,
+      "ranges": [
+        {
+          "address": 1074600676,
+          "size": 62,
+          "sha256": "df9379f6f028bb224606e62ac0364fb5d870f38320c93e94cae6e9eae6919a9c"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1b24",
+      "calls": 4508,
+      "ranges": [
+        {
+          "address": 1074600740,
+          "size": 38,
+          "sha256": "6f7ff0fcc20138370222ab0129ba2a849d659769aec38dfbadab7adf7edbbec4"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1b4c",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074600780,
+          "size": 13,
+          "sha256": "15bc5e15aba0d568ec95e9c10e09c9ba54f13d1da4b8aeac55735cf445a071d8"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1b5c",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074600796,
+          "size": 13,
+          "sha256": "0a31a900c1e5d58906544106025170ae046e90005f4808d1e62a5d5ccd13445a"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1b6c",
+      "calls": 720,
+      "ranges": [
+        {
+          "address": 1074600812,
+          "size": 18,
+          "sha256": "dc906eefa87458a07752bdb88556d3b3bfb01bd1709c93a6fb2fcf7e5bbd1927"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1b88",
+      "calls": 751,
+      "ranges": [
+        {
+          "address": 1074600840,
+          "size": 114,
+          "sha256": "613797013885122d43edcfe7a61777cc4d1bb0e4a6ffb5e11d8abdc514ae7e07"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1bfc",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074600956,
+          "size": 18,
+          "sha256": "071e2173700505a6ef82f44f1d5667c6ba27d0deed71232017f0bd2ab5cc4cb9"
+        }
+      ]
+    },
+    {
+      "address": "0x400d1c10",
+      "calls": 38,
+      "ranges": [
+        {
+          "address": 1074600976,
+          "size": 16,
+          "sha256": "123cbe4d1dd897beb2354ba76a1d15401224cf06e4cb6cfa06eb101d21c2ffc8"
+        }
+      ]
+    },
+    {
+      "address": "0x400d6f78",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074622328,
+          "size": 166,
+          "sha256": "a32ad9fb47d3d36ee3cd8619bfd0ce4b93ed45874b17e6ec293520d0cf4b400a"
+        }
+      ]
+    },
+    {
+      "address": "0x400d7020",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074622496,
+          "size": 10,
+          "sha256": "d4b9a00201ab0409144e1ac77c7583c622da25a9c429e9ca309e18e6b5894c24"
+        }
+      ]
+    },
+    {
+      "address": "0x400d703c",
+      "calls": 210,
+      "ranges": [
+        {
+          "address": 1074622524,
+          "size": 130,
+          "sha256": "d8011b10f038e6f77436829b5a53a72dd69532ab2ad317f9071bfc81162a604a"
+        }
+      ]
+    },
+    {
+      "address": "0x400d70c0",
+      "calls": 10,
+      "ranges": [
+        {
+          "address": 1074622656,
+          "size": 49,
+          "sha256": "2f84f3ea9baec549da0762e68929890db57a579aee3ac0809cd6bd74f1ef4b9c"
+        }
+      ]
+    },
+    {
+      "address": "0x400d70f8",
+      "calls": 223,
+      "ranges": [
+        {
+          "address": 1074622712,
+          "size": 84,
+          "sha256": "cbac326e11dddb15dc497af9265c920b3766b55468880e8abd74a5f8391e2fd3"
+        },
+        {
+          "address": 1074622797,
+          "size": 62,
+          "sha256": "b19184d50d5310b4fd19fc32ebbb959ba3786d2afa3eff92e3fe28fdd9af9aa6"
+        }
+      ]
+    },
+    {
+      "address": "0x400db014",
+      "calls": 5,
+      "ranges": [
+        {
+          "address": 1074638868,
+          "size": 58,
+          "sha256": "1b17275bd5a7c784b0c7cb71cea3746d3b1c337e73ef59f4d40bea8696ba9042"
+        }
+      ]
+    },
+    {
+      "address": "0x400de2d8",
+      "calls": 2995,
+      "ranges": [
+        {
+          "address": 1074651864,
+          "size": 48,
+          "sha256": "978663be763268e12686868825d6664721f6fb7863e99502a4147b1391e47f17"
+        }
+      ]
+    },
+    {
+      "address": "0x400de30c",
+      "calls": 512,
+      "ranges": [
+        {
+          "address": 1074651916,
+          "size": 22,
+          "sha256": "d218f61fac5b82fac3673472e5204ea2f5c9cc2c63016f888065c0400744c1e0"
+        },
+        {
+          "address": 1074651940,
+          "size": 58,
+          "sha256": "277cd3f6e53d1fda9a6be3601f7ff75e8906777df63f30f5ec6fe256a841b936"
+        }
+      ]
+    },
+    {
+      "address": "0x400de378",
+      "calls": 2483,
+      "ranges": [
+        {
+          "address": 1074652024,
+          "size": 36,
+          "sha256": "c53f499ced7d3e4f01c62c47c57865cc440994114b92ad32557cbb938157951e"
+        },
+        {
+          "address": 1074652061,
+          "size": 50,
+          "sha256": "64fdf00b3d92d79877b4a4a0c4756572a13a5dfad66d4a1c70bb826db7e99c3c"
+        },
+        {
+          "address": 1074652113,
+          "size": 142,
+          "sha256": "deb65ae37297e43f060c9d99afd5e9ec591d3444c4ae01332959b6064a6f66ae"
+        },
+        {
+          "address": 1074652257,
+          "size": 67,
+          "sha256": "acf733524c89aba8fe7a547a2d4f9f8da80a5b3c4f82a79c2127ee1c667fd225"
+        }
+      ]
+    },
+    {
+      "address": "0x400de4b4",
+      "calls": 237,
+      "ranges": [
+        {
+          "address": 1074652340,
+          "size": 35,
+          "sha256": "1b282e635d4a6fda1479cff2ab732dad77b0e44f2712e4d62b444497b0f469a5"
+        },
+        {
+          "address": 1074652376,
+          "size": 15,
+          "sha256": "f9a4e0509c472313af77e50efe954cb0b31502fd72bdb219cc45ea2f0f786f2f"
+        }
+      ]
+    },
+    {
+      "address": "0x400de4e8",
+      "calls": 82,
+      "ranges": [
+        {
+          "address": 1074652392,
+          "size": 76,
+          "sha256": "ad572049035af7a306601b997856912ed69abee49f03c36c3b869bea29bd451d"
+        }
+      ]
+    },
+    {
+      "address": "0x400de534",
+      "calls": 82,
+      "ranges": [
+        {
+          "address": 1074652468,
+          "size": 30,
+          "sha256": "c2a028e95017fd08dc242c30ee19a86fb4f02bf3dc9f4966151101840c5cd3a0"
+        }
+      ]
+    },
+    {
+      "address": "0x400de9ec",
+      "calls": 57,
+      "ranges": [
+        {
+          "address": 1074653676,
+          "size": 71,
+          "sha256": "871f2be5506be689d2ec78816b740b120dff5eb0bf40b8f723b27c4129ab862d"
+        },
+        {
+          "address": 1074653750,
+          "size": 23,
+          "sha256": "1a7a1050dc70afebaf849c9260cd0ad80aef9f2028e8ff2599566617a03dfcd2"
+        }
+      ]
+    },
+    {
+      "address": "0x400e70cc",
+      "calls": 8779,
+      "ranges": [
+        {
+          "address": 1074688204,
+          "size": 94,
+          "sha256": "e59da3165607713679e10bd3b1715aba5fc16475e0c46659b4c47bff79791da2"
+        }
+      ]
+    },
+    {
+      "address": "0x400e712c",
+      "calls": 8777,
+      "ranges": [
+        {
+          "address": 1074688300,
+          "size": 35,
+          "sha256": "e8f7d824696e1f2249c71548d4d00a60766e60b0d44d373480c1354c66967108"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7150",
+      "calls": 18,
+      "ranges": [
+        {
+          "address": 1074688336,
+          "size": 287,
+          "sha256": "7e579f75fdd66ab0b1597f54872b62815a57d3fd1601c9cdcb3e25b69ae6c641"
+        },
+        {
+          "address": 1074688624,
+          "size": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7274",
+      "calls": 16,
+      "ranges": [
+        {
+          "address": 1074688628,
+          "size": 246,
+          "sha256": "78e433a0c487549b8e398b36b67dff52590ec2a9c2cb0ba6f4bca38ed1699d47"
+        },
+        {
+          "address": 1074688876,
+          "size": 135,
+          "sha256": "62b79800aa44c1a06daaaf117f07709fbd82e4a1ede880e69f8280bb70581de1"
+        },
+        {
+          "address": 1074689012,
+          "size": 54,
+          "sha256": "b399e0da0a186ca9ccd98efa092a19af2b1a90a80eeab2924870357c18baadfb"
+        }
+      ]
+    },
+    {
+      "address": "0x400e742c",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074689068,
+          "size": 14,
+          "sha256": "83a25c5d36d02b64a887acd05341c05c126c349c122b2628e655465bcac83ab1"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7460",
+      "calls": 2767,
+      "ranges": [
+        {
+          "address": 1074689120,
+          "size": 631,
+          "sha256": "4d5a9eb9c18a0dc09e563d77b3dbd4256ce3320178441b73db544d565941f0cd"
+        },
+        {
+          "address": 1074689754,
+          "size": 278,
+          "sha256": "2b2006d9ac6baa2fbd658c3a9f5b8aeb8e79970bff088714eb5a8df40555a23a"
+        }
+      ]
+    },
+    {
+      "address": "0x400e77f0",
+      "calls": 580,
+      "ranges": [
+        {
+          "address": 1074690032,
+          "size": 18,
+          "sha256": "4537bd8fedc397ab1b5083417b57a145de6adc8d49fba0f75b8a010410368ded"
+        }
+      ]
+    },
+    {
+      "address": "0x400e780c",
+      "calls": 7,
+      "ranges": [
+        {
+          "address": 1074690060,
+          "size": 31,
+          "sha256": "d0894dfbf00166fa35a42dd3bf1d948ba5c25ddd741ed2feee480c10f5fb75e0"
+        }
+      ]
+    },
+    {
+      "address": "0x400e782c",
+      "calls": 4,
+      "ranges": [
+        {
+          "address": 1074690092,
+          "size": 132,
+          "sha256": "54d11eeb9befc369d88b33983fd1b2b85244704f4073994dcbd18c55ed627385"
+        }
+      ]
+    },
+    {
+      "address": "0x400e78b4",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074690228,
+          "size": 13,
+          "sha256": "a76958cab30cce4dadf5f0039d8886c24ddef08d6c49edac8f01f87aae70b405"
+        }
+      ]
+    },
+    {
+      "address": "0x400e78c8",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074690248,
+          "size": 13,
+          "sha256": "fae3725e1c3b405a78ac6d811888faa2c55b12aaa2c7daff6f8f1666df894ab0"
+        }
+      ]
+    },
+    {
+      "address": "0x400e78dc",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074690268,
+          "size": 13,
+          "sha256": "399c67813361ad416eecb4cc08785d7bda1b930ed8d85e283cf1b380c9594cb1"
+        }
+      ]
+    },
+    {
+      "address": "0x400e78f0",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074690288,
+          "size": 13,
+          "sha256": "1ba0f33f2741c0b0935f06b3a29515daa05b54a3b34d1a4a346c9c267c276479"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7970",
+      "calls": 219,
+      "ranges": [
+        {
+          "address": 1074690416,
+          "size": 42,
+          "sha256": "d6d30338ce04933d8015fef71ba4a6758bd976d01d6c3284e70c62c4594a27bf"
+        },
+        {
+          "address": 1074690460,
+          "size": 71,
+          "sha256": "6f35d6e9e074086ffbfb67c07d48701179f33468dd58422751370222c1169fc5"
+        },
+        {
+          "address": 1074690532,
+          "size": 18,
+          "sha256": "63b8f6543c56d73638c001fbb7c1435324eec63f116536db64309a585662b316"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7a7c",
+      "calls": 6,
+      "ranges": [
+        {
+          "address": 1074690684,
+          "size": 62,
+          "sha256": "e47e04462bee29a98123a4fd3354ea1caf20db7c80dd5d192f1d30baff28a796"
+        },
+        {
+          "address": 1074690748,
+          "size": 11,
+          "sha256": "160541785c24d549e9caf40c65e04c80e9dcd699fdb61eb8414bc47f13d70d19"
+        },
+        {
+          "address": 1074690760,
+          "size": 99,
+          "sha256": "cc3c5ddd706d7712fc40fede83b5a44502551b31645aa01f009b45039d126a46"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7b2c",
+      "calls": 6,
+      "ranges": [
+        {
+          "address": 1074690860,
+          "size": 34,
+          "sha256": "2e9de5f1157104cd9865713b7576680537a74b5de71b36d087d1a7cc34e25d9f"
+        },
+        {
+          "address": 1074690896,
+          "size": 54,
+          "sha256": "e7846ba506a1b9cbe186674d55d8bb4d0ba66e21d5fdc0997ef5a3568c511301"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7bdc",
+      "calls": 219,
+      "ranges": [
+        {
+          "address": 1074691036,
+          "size": 107,
+          "sha256": "761ad6294c0c60fc8e121a102e3864f8aed021f65070b900623a0d700dd133a8"
+        },
+        {
+          "address": 1074691144,
+          "size": 279,
+          "sha256": "3b8a8df35634ffb2b94d0427bcb560e59cb18ce025cd98a768aff16948ca5d6b"
+        },
+        {
+          "address": 1074691425,
+          "size": 41,
+          "sha256": "1db5bb7c97facd8f07778c855fcb9a39cc299aef37cc37186715a692f920ec58"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7d90",
+      "calls": 195,
+      "ranges": [
+        {
+          "address": 1074691472,
+          "size": 34,
+          "sha256": "85966dad53cd6d707610c51dbd6dc919dad263eb2882cede03a6e31a903ce79c"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7db4",
+      "calls": 7,
+      "ranges": [
+        {
+          "address": 1074691508,
+          "size": 30,
+          "sha256": "de27164629ca861dc01dffd8a8eaf98d5ed444592eb1035af19ea1d7bc569aa7"
+        }
+      ]
+    },
+    {
+      "address": "0x400e7fbc",
+      "calls": 6,
+      "ranges": [
+        {
+          "address": 1074692028,
+          "size": 318,
+          "sha256": "c6954699a8b1506177e729d4b05b53de17fc9b7581895d20df91649c866b1795"
+        }
+      ]
+    },
+    {
+      "address": "0x400e83e0",
+      "calls": 4,
+      "ranges": [
+        {
+          "address": 1074693088,
+          "size": 143,
+          "sha256": "53e22ef55121b4842b4353df4c969e770c708c14051f5a1583f29a19025a89da"
+        }
+      ]
+    },
+    {
+      "address": "0x400e8474",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074693236,
+          "size": 126,
+          "sha256": "01fc47a404ab9fe32f4d3bf8a80f0185b335e36aa46d89da53e980e5736c78b8"
+        },
+        {
+          "address": 1074693384,
+          "size": 8,
+          "sha256": "ee8b1704ed4a056f9546643686a302c0ce605d79850cafb505815c1eea140209"
+        }
+      ]
+    },
+    {
+      "address": "0x400e8510",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074693392,
+          "size": 10,
+          "sha256": "c002d59c9c9426180f705be19947251f545a625247fa88f4e4fbcb4aa021a0ea"
+        }
+      ]
+    },
+    {
+      "address": "0x400e8520",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074693408,
+          "size": 142,
+          "sha256": "5b15daa502656964c67619bf887cbd1e88b674be4db6c3a50d6bcbf0c8ab5562"
+        },
+        {
+          "address": 1074693572,
+          "size": 8,
+          "sha256": "e5b4694942ccd0856174851bd9f69e39b2ada18f65726e2b9cbd4741fc50c651"
+        }
+      ]
+    },
+    {
+      "address": "0x400e85cc",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074693580,
+          "size": 10,
+          "sha256": "1b5280b2001fa0e0c75895cf86088e2705af003607c7e7eee91d0be6d320f3d4"
+        }
+      ]
+    },
+    {
+      "address": "0x400e880c",
+      "calls": 554,
+      "ranges": [
+        {
+          "address": 1074694156,
+          "size": 287,
+          "sha256": "57fb3422e8b08ca452974ef865a81bb7aa04a8f02d9e88eda39df870c8c6db10"
+        },
+        {
+          "address": 1074694444,
+          "size": 76,
+          "sha256": "466c8d357f081ad94ad197c76c4e091227aebc370bc42569752937586aa8b27d"
+        },
+        {
+          "address": 1074694522,
+          "size": 26,
+          "sha256": "c0fca907f8bbe330ffcfeb30f887a23363cda35c1459e2c0ddd2ae9c21f07403"
+        }
+      ]
+    },
+    {
+      "address": "0x400e8994",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074694548,
+          "size": 26,
+          "sha256": "1940cf78eae6cfb068464611f47316c68d378af79f8cc15d4e2b11d8b65122b5"
+        }
+      ]
+    },
+    {
+      "address": "0x400e89b0",
+      "calls": 311,
+      "ranges": [
+        {
+          "address": 1074694576,
+          "size": 20,
+          "sha256": "f428ff691e2cbe429feec0b3930eb747609bcd7ce6b5392ba7ee1eafc39dc8c1"
+        }
+      ]
+    },
+    {
+      "address": "0x400e93f8",
+      "calls": 56,
+      "ranges": [
+        {
+          "address": 1074697208,
+          "size": 75,
+          "sha256": "1d5463f121026e2d4edb80723f7540ced275d52f283328c2f041a3e292b65158"
+        },
+        {
+          "address": 1074697284,
+          "size": 18,
+          "sha256": "5c443b8739168ac6d742f2b14323654d9b4ce61ba1d51e8211c7acb7d8f23305"
+        },
+        {
+          "address": 1074697304,
+          "size": 103,
+          "sha256": "8f517af2f97a2ab2216bd2bc87ba973344cdebadac0919b8f5d44d63cb7e3e75"
+        }
+      ]
+    },
+    {
+      "address": "0x400e94c4",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074697412,
+          "size": 218,
+          "sha256": "240c85b2457a4525f8caec697af7beeb0c6436271a0907294c06c54492006e78"
+        }
+      ]
+    },
+    {
+      "address": "0x400e95b0",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074697648,
+          "size": 10,
+          "sha256": "cbbac40e05c3e70ae0deef3cccb7604afa63c7cebd670832780a5acfc6b27a73"
+        }
+      ]
+    },
+    {
+      "address": "0x400e9654",
+      "calls": 30,
+      "ranges": [
+        {
+          "address": 1074697812,
+          "size": 232,
+          "sha256": "280ed88f583d392a5ba22f5939527f9f7bd6a951ef769615a2463e4053d6e0c3"
+        }
+      ]
+    },
+    {
+      "address": "0x400e9b8c",
+      "calls": 16,
+      "ranges": [
+        {
+          "address": 1074699148,
+          "size": 81,
+          "sha256": "9acae7df475df94fe4269cd239513eb6cc33235c57cf684995ef1a30b4dffddd"
+        },
+        {
+          "address": 1074699230,
+          "size": 164,
+          "sha256": "e9bd0cfd92f71ab88bd0a14fc0ad9b7d6b9b3c9e75d84332c9b14ff7bf6bf50f"
+        },
+        {
+          "address": 1074699396,
+          "size": 35,
+          "sha256": "f2fe96d9072a87cdbdb6de1a1d4a22971baf73bf31835ae5da9bea014daa2e00"
+        },
+        {
+          "address": 1074699432,
+          "size": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ]
+    },
+    {
+      "address": "0x400ea068",
+      "calls": 40,
+      "ranges": [
+        {
+          "address": 1074700392,
+          "size": 244,
+          "sha256": "97457a90469f83693c644944f1be7ae3bf7656129b7af93fc74234e4494c91a4"
+        }
+      ]
+    },
+    {
+      "address": "0x400ea19c",
+      "calls": 2,
+      "ranges": [
+        {
+          "address": 1074700700,
+          "size": 879,
+          "sha256": "0ec65dec0a6983933c9187dc61869d66cb74a2db5d32c962b8605d95fcde6dd2"
+        }
+      ]
+    },
+    {
+      "address": "0x400ea520",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074701600,
+          "size": 10,
+          "sha256": "a07cdeb779bc8a306a7b6682c5d0c7bd620c7b2f11382b78cfc95f1faf78c631"
+        }
+      ]
+    },
+    {
+      "address": "0x400ea5a4",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074701732,
+          "size": 1531,
+          "sha256": "77b4a2ab850fec9e25ec782652d13ed56386e4e95bc8c9f87f88ac27099c6b8c"
+        },
+        {
+          "address": 1074703264,
+          "size": 467,
+          "sha256": "b4d8c6036caa607335d2031cd064d5c64c5e1ae1e1b8137ea9bb055cc634f195"
+        },
+        {
+          "address": 1074703732,
+          "size": 308,
+          "sha256": "5d80e223bbad0541c2e0c984d02713061687b60acbe4a61057f957ab3afe5e3e"
+        },
+        {
+          "address": 1074704090,
+          "size": 117,
+          "sha256": "58a9aac639d1f6d1eab9a2e1e5974bdbc13adb1025d28df09214e262235240b1"
+        }
+      ]
+    },
+    {
+      "address": "0x400eaf50",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074704208,
+          "size": 10,
+          "sha256": "a7a92fe1d7fc7104a517481e31a0769d4b9227360baf97e91db7d76f5407a95f"
+        }
+      ]
+    },
+    {
+      "address": "0x400eb268",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074705000,
+          "size": 535,
+          "sha256": "71e91b91bc04fa42f3e87a5cef0dc55f7555f2da97b7342260085f04ceb3a3ab"
+        },
+        {
+          "address": 1074705559,
+          "size": 5,
+          "sha256": "73db4bced4f676e44f6046fc8f8645ba1bb91f5bc1d964774b6e1c1f195b6651"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee40c",
+      "calls": 55,
+      "ranges": [
+        {
+          "address": 1074717708,
+          "size": 97,
+          "sha256": "c8b6837ea1846faff7edd39802ca5cd7bdfb0b1f34d57e040489d1dac2dc3753"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee478",
+      "calls": 19,
+      "ranges": [
+        {
+          "address": 1074717816,
+          "size": 168,
+          "sha256": "46bba7b26c966c41075afa57eefd98ce97b29e49b21de84d28fcec144d376520"
+        },
+        {
+          "address": 1074717985,
+          "size": 21,
+          "sha256": "cbf722c0115048874590e2b45ef63ea6170684db53670f67fa2ea3db419adc64"
+        },
+        {
+          "address": 1074718024,
+          "size": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee54c",
+      "calls": 4,
+      "ranges": [
+        {
+          "address": 1074718028,
+          "size": 18,
+          "sha256": "a3e5b66167a1301bc39e72ad9dbafb4d01b243818cc43c6940642316a6ff60b5"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee57c",
+      "calls": 40,
+      "ranges": [
+        {
+          "address": 1074718076,
+          "size": 116,
+          "sha256": "af79a0b871d529ec04a7451bc891e9131757d67e1942856b127eac87ae8aa71c"
+        },
+        {
+          "address": 1074718208,
+          "size": 2,
+          "sha256": "741d2a67c305abb31d1064be6c7f2092891638d616b694319e079682f6063f0a"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee604",
+      "calls": 6,
+      "ranges": [
+        {
+          "address": 1074718212,
+          "size": 46,
+          "sha256": "cc35ab9a17df57cbf4e3d4d7373fd05b3054e1205f1bb8dbcd5634daac896f60"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee634",
+      "calls": 30,
+      "ranges": [
+        {
+          "address": 1074718260,
+          "size": 54,
+          "sha256": "93fee26f36c40ae1c7e60304d4b479cb448f5232f3886ce486de4b9704324d1b"
+        }
+      ]
+    },
+    {
+      "address": "0x400ee6b4",
+      "calls": 4,
+      "ranges": [
+        {
+          "address": 1074718388,
+          "size": 51,
+          "sha256": "7c0e1bbfb5e5ad5cf530ac5773c68d00f5cf02a0e88311087c24b7add0cfd7dc"
+        },
+        {
+          "address": 1074718442,
+          "size": 110,
+          "sha256": "794fd70b11ced4ad7a75afcef1f6b110ec08a44bf9f9f0390279e436e074e36a"
+        }
+      ]
+    },
+    {
+      "address": "0x400f09f0",
+      "calls": 18,
+      "ranges": [
+        {
+          "address": 1074727408,
+          "size": 181,
+          "sha256": "1dbcf6c1651c4a00a6c1bc3c1278b56f1f2cb8d0c3433bdf93550f20eb5b0843"
+        }
+      ]
+    },
+    {
+      "address": "0x400f12a4",
+      "calls": 3,
+      "ranges": [
+        {
+          "address": 1074729636,
+          "size": 62,
+          "sha256": "7cec2ab5e5eb6ced3f2901dc6d93a7621ace375f91df3ff2a977232b245523ce"
+        }
+      ]
+    },
+    {
+      "address": "0x400f1318",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074729752,
+          "size": 1027,
+          "sha256": "b2cbfc618f1e7e81137715b6875626b30820ef55a67621e9a437394fb349f8b6"
+        }
+      ]
+    },
+    {
+      "address": "0x400fcba8",
+      "calls": 4096,
+      "ranges": [
+        {
+          "address": 1074777000,
+          "size": 160,
+          "sha256": "b1bbcf62ea7aaa81f3e3ba2521a1d0bd2b9b0d4de5aa3192a3d7fa1c08e84e2c"
+        },
+        {
+          "address": 1074777162,
+          "size": 150,
+          "sha256": "ec7c8b7fc78071c9df0b540ff09f2e3929f3b3c444d4b73e0a150b95f3c826d5"
+        }
+      ]
+    },
+    {
+      "address": "0x400fccf0",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074777328,
+          "size": 322,
+          "sha256": "805725a2ed1cfa673c39493f529b5e0b61d72d604be0eea69e17ee7f8978c466"
+        }
+      ]
+    },
+    {
+      "address": "0x400fce34",
+      "calls": 1,
+      "ranges": [
+        {
+          "address": 1074777652,
+          "size": 10,
+          "sha256": "f69000b8ae3fa43e0b963f58d09af09972a507fac91f4f555cefa349e31b6fa3"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf3d4",
+      "calls": 521,
+      "ranges": [
+        {
+          "address": 1075573716,
+          "size": 24,
+          "sha256": "8ce4cb993b41be0c718e3fa559aff403108536823320bc4a4fb3a9597a8a540a"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf500",
+      "calls": 12117,
+      "ranges": [
+        {
+          "address": 1075574016,
+          "size": 19,
+          "sha256": "8829ec820bf3b187337cb8433a9c7848ed7a29ffb2495a6ebb92d4079f0d11f8"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf514",
+      "calls": 12179,
+      "ranges": [
+        {
+          "address": 1075574036,
+          "size": 19,
+          "sha256": "aae9abb0e3b26af9b297fdbd4035e85a47d3cd27ef84d13065ab86367a85df0f"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf574",
+      "calls": 17612,
+      "ranges": [
+        {
+          "address": 1075574132,
+          "size": 46,
+          "sha256": "34e46dc001381c807cf71b42f1a49599b2973aa9735d7e12f370ae6e2fb7af8e"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf5a4",
+      "calls": 8779,
+      "ranges": [
+        {
+          "address": 1075574180,
+          "size": 30,
+          "sha256": "ae90b61d1dd5a6da6a007d771adad59043931e746deda9b2ce688c6a24643953"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf5c4",
+      "calls": 3004,
+      "ranges": [
+        {
+          "address": 1075574212,
+          "size": 46,
+          "sha256": "a832b3ad4ffa1a249cd94828e7290cf161123bcdb7b3835b1a8d9f97c2f3a1c7"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf5f4",
+      "calls": 3202,
+      "ranges": [
+        {
+          "address": 1075574260,
+          "size": 29,
+          "sha256": "b2e782df934bffc54c34a955496f5d1a15cb42c6936e0fc97061730c98efb75b"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf614",
+      "calls": 199,
+      "ranges": [
+        {
+          "address": 1075574292,
+          "size": 24,
+          "sha256": "96a86daf800cd2631a3a0615abcf7ec53472e9c0889891b921a98b810d7dcfbf"
+        }
+      ]
+    },
+    {
+      "address": "0x401bf978",
+      "calls": 4,
+      "ranges": [
+        {
+          "address": 1075575160,
+          "size": 39,
+          "sha256": "a0625611bfdfd1babe5a84b7f840f9bae2ddea4c82f85bcd70c16cb5c76f843c"
+        }
+      ]
+    }
+  ],
+  "modeled_boundaries": {
+    "GPIO_digitalWrite": 15777,
+    "ROM_atoi_reviewed_int32_domain": 10,
+    "ROM_memcpy": 25455,
+    "ROM_memset": 7486,
+    "ROM_strlen": 4528,
+    "SDK_delay": 528,
+    "SPI_transfer": 4508,
+    "SPI_transferBytes": 751,
+    "TestScope_constructor_capture": 32,
+    "TestScope_destructor_capture": 32,
+    "Xtensa_LOOP_400d1bd2_iterations_4096": 751,
+    "Xtensa_LOOP_400e84ad_iterations_96": 2,
+    "Xtensa_LOOP_400e8561_iterations_127": 2,
+    "Xtensa_LOOP_401bf98d_iterations_25": 32,
+    "__divsf3": 27,
+    "__extendsfdf2": 27,
+    "bounded_snprintf_integer_and_string": 4097,
+    "bounded_vsnprintf_reviewed_Xtensa_va_list": 18,
+    "diagnostic_basename": 7,
+    "diagnostic_printf": 27,
+    "prescribed_millis": 27,
+    "single_thread_memw": 24
+  },
+  "hardware_tested": false,
+  "full_cpu_emulation": false,
+  "scope": "Complete Display console callbacks and three diagnostic demonstration entry points execute through real text, geometry, bitmap, gradient, caret, animation, graphics and transfer reversal bodies. Compare every transfer frame, ordered GPIO/SPI/delay/diagnostic/test-scope effects, persistent context and assertion continuation. TestScope logging is an explicit capture boundary; ROM primitives, bounded printf/atoi, SDK transports, prescribed clock and windowed ABI are modeled.",
+  "all_results_match": true,
+  "source_sha256": {
+    "include/zseries/display_console.hpp": "c716880469e7e2a10b552aa3c70ece49ab433a785603c7278ce3e0438360fb83",
+    "src/display_console.cpp": "0c212ac27b9e3ac228e2268dcb5bed0f00fd24f6a7d3d4ab89a06dc9f87dae1f",
+    "include/zseries/display.hpp": "7e55a7424929445196b02a14030706de3515c6717fabb23fdc647562d4d60167",
+    "src/display.cpp": "0f92a8cccaee3fa0195ee983faf3f111fb128490f7b95e4f1b417cafc088c888",
+    "include/zseries/display_effects.hpp": "e98f3700285500e68c6c9d0b7fcda586058cd3b3bef7e3d5a9f303613cbbeec8",
+    "src/display_effects.cpp": "f88fa5aebc708678f27c768bdaf1b3caf9dbc54fe3bfbf0a846de87a58af543e",
+    "include/zseries/display_text.hpp": "98b1f72335d7df79d30b03771f1940ee804b4fd4d10c80edb97581aebb4a37c3",
+    "src/display_text.cpp": "1bbf504231346f3cdddd3725bcf7cad272cf7affa091feeb813acf7d849072d7",
+    "include/zseries/display_fonts.hpp": "e9f61f8f397eccb3753001010d2a99412d3908130e01c7a1f9caacd5f00e880e",
+    "src/display_fonts.cpp": "7b93fe8aebea9be365631da0ae120fc00b29eaf6ca296e6cec612e02f1d9114b",
+    "include/zseries/ui_catalog.hpp": "bac363941ec5673aead8fbfd91d512650bd173bf2f0223956cc6d8476ac81426",
+    "src/ui_catalog.cpp": "ee2f3d99b121abbd1b519f98aa0e6706ce834bf3102c0c7b02c0e3380a5d95f1",
+    "tests/display_console_bridge.cpp": "b68075b6bc23865bdfef49a2d49a6835b9ce9882e7f5c069ada6906621bac635",
+    "tests/test_display_console.py": "6b7699c3fbd42191eca9f8592e7602a4d12ae5aa160279b005c5dda5ba17da7a",
+    "tools/validate_display_console.py": "c9141908117567feb3694b0d3536c9a14359b6c7b91f66ce9871514aabffc2ce"
+  },
+  "golden_fixture_sha256": "4c9fbb25b4d9df2d33135a04f7d5159b50eb064b6753a68fd5aff037ec91c5c2",
+  "fixture_sha256": "6ecb9fed5fe39f46e7b01014b28b9c7c04e7fa57eb820e4621051b4b1dfd3681",
+  "original_execution_sha256": "9ae267096c6a9a295158abfd25181872690f01a10ae4ee9f0585e478a3c684d6",
+  "generator_sha256": {
+    "tools/ghidra/EmulateDisplayConsole.java": "d97adc4732d4061daad56d31352c23ef17a1b1d5079d4d9e2ff25ae52bcd5534",
+    "tools/ghidra/DisplayConsoleExecution.java": "6b98b7a6736d3f94e0bed83ee6e188ba870dd6d6509d2256ae8bb189070b07b9"
+  }
+}

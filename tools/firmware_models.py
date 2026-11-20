@@ -33,6 +33,10 @@ def load_models():
 def resolve_model(model="", machine=""):
     models = load_models()
     model, machine = model.strip(), machine.strip()
+    # The previously reserved generic Z spelling is only an alias for the
+    # shared source family; it never selects or claims Z1/Z2 compatibility.
+    if model == "z": model = "z-series"
+    if machine == "z": machine = "z-series"
     if not model:
         if machine in models:
             model = machine
@@ -64,6 +68,8 @@ def make_command(action, selected, make="make", python=sys.executable, display="
         raise ValueError("Pico C requires DISPLAY_VARIANT=ssd1325 or DISPLAY_VARIANT=ssd1309 after verifying the physical controller")
     if selected['id'] == 'pico-c' and action == 'usb-test':
         raise ValueError("Pico C has no qualified USB installation/recovery tool yet")
+    if selected.get('reference_package') and action == 'usb-test':
+        raise ValueError("This model has a reference build/package, not a qualified USB installation tool")
     command = [make, "-C", str(ROOT / "firmware" / selected["family"] / "modified"),
                TARGETS[action], f"MODEL={selected['id']}", f"PYTHON={python}"]
     if display:

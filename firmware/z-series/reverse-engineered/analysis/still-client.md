@@ -135,3 +135,32 @@ python3 tools/validate_still_client.py \
   --export /path/to/z119-callback-export --write-evidence
 ASAN_OPTIONS=detect_leaks=0 python3 -m unittest discover -s tests -p test_still_client.py
 ```
+
+## Complete parser and client diagnostics
+
+The complete continuation replay in `still-continuation-validation.json` covers
+4,192 client/protocol cases, alongside 2,288 controller cases. The former
+value-only parser and client now invoke the exact diagnostics through optional
+`ConsoleServices` bindings. In particular, a failed data parse still performs
+both statistics-window updates: their data/timestamp assertions return and the
+numeric statistics update continues. The response timestamp is captured before
+those delays, including when the global clock wraps. The original buffer
+truncation warnings, empty-token assertions, malformed-number/flag messages,
+zero-capacity encoder assertion and zero-date speed warning are included.
+
+Bind `StillHttpServices::diagnostics` after creating or replacing the HTTP
+service adapter. `StillClient::set_host`, `build_uri`, `mark_error`, `tick` and
+`complete` return `StillClientResult`; callers may propagate missing/failed
+services. `PicoStillSamples::parse` and `update_statistics` accept an optional
+sink and expose `diagnostics_result` separately from whether a payload parsed.
+The concrete HTTP bridge preserves callback failures across the enclosing HTTP
+state transition. Native failure-injection tests cover this propagation.
+The console parser self-test now calls this production parser with its real
+sink, rather than reconstructing the parser's diagnostics separately.
+
+The old standalone API still permits an entirely empty sink and has been rerun
+against every legacy case. Existing guards remain explicit: failed credential
+encoding is rejected before the OEM's unterminated-stack-buffer use; public
+parser spans stay bounded; the empty error-buffer under-read is guarded after
+its diagnostic; and a null nonempty body reports its assertion while returning
+`InvalidBody`. These guarded inputs are not described as full OEM parity.

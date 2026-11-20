@@ -76,7 +76,7 @@ def input_cases():
     return rows
 def load_native(directory):
     compiler=shlex.split(os.environ.get('CXX','c++'));path=Path(directory)/'http_client.so'
-    subprocess.run(compiler+['-std=c++11','-O2','-Wall','-Wextra','-Werror','-fPIC','-shared','-I',str(ROOT/'include'),str(ROOT/'src/http_client.cpp'),str(ROOT/'tests/http_client_bridge.cpp'),'-o',str(path)],check=True)
+    subprocess.run(compiler+['-std=c++11','-O2','-Wall','-Wextra','-Werror','-fPIC','-shared','-I',str(ROOT/'include'),str(ROOT/'src/http_client.cpp'),str(ROOT/'src/enums.cpp'),str(ROOT/'tests/http_client_bridge.cpp'),'-o',str(path)],check=True)
     native=ctypes.CDLL(str(path));u32=ctypes.POINTER(ctypes.c_uint32);native.http_client_test.argtypes=[ctypes.c_uint,u32]+[ctypes.c_char_p]*5+[u32,ctypes.c_size_t];native.http_client_test.restype=ctypes.c_int
     return native,subprocess.check_output(compiler+['--version'],text=True).splitlines()[0]
 def native_case(native,item):

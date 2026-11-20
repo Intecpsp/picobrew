@@ -147,10 +147,11 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 	if in.ProfileID == "" {
 		in.ProfileID = view.Model
 	}
-	if in.ProfileID != view.Model {
+	if !profileMatchesModel(in.ProfileID, view.Model) {
 		s.fail(w, 422, "profile_mismatch", "Choose the profile that matches the target machine")
 		return
 	}
+	in.ProfileID = view.Model // Bind the preview to the actual hardware identity.
 	profile, ok := s.selectProfile(in.ProfileID)
 	if !ok {
 		s.fail(w, 400, "profile", "Unknown machine profile")

@@ -131,7 +131,7 @@ export function TemperatureChart({
     </div>
   )
 }
-export function StateChart({ samples }: { samples: Sample[] }) {
+export function StateChart({ samples, brewing = true }: { samples: Sample[]; brewing?: boolean }) {
   return (
     <ResponsiveContainer width="100%" height={190}>
       <LineChart data={samples} margin={{ top: 10, right: 20, bottom: 0, left: 0 }}>
@@ -142,30 +142,36 @@ export function StateChart({ samples }: { samples: Sample[] }) {
           labelFormatter={(value) => clockTime(Number(value))}
           contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
         />
-        <Line
-          name="Phase"
-          type="stepAfter"
-          dataKey="phase"
-          stroke="#b46b40"
-          dot={false}
-          isAnimationActive={false}
-        />
-        <Line
-          name="Step"
-          type="stepAfter"
-          dataKey="current_step"
-          stroke="#597b6b"
-          dot={false}
-          isAnimationActive={false}
-        />
-        <Line
-          name="Controller"
-          type="stepAfter"
-          dataKey="controller_status"
-          stroke="#77769a"
-          dot={false}
-          isAnimationActive={false}
-        />
+        {brewing && (
+          <Line
+            name="Phase"
+            type="stepAfter"
+            dataKey="phase"
+            stroke="#b46b40"
+            dot={false}
+            isAnimationActive={false}
+          />
+        )}
+        {brewing && (
+          <Line
+            name="Step"
+            type="stepAfter"
+            dataKey="current_step"
+            stroke="#597b6b"
+            dot={false}
+            isAnimationActive={false}
+          />
+        )}
+        {brewing && (
+          <Line
+            name="Controller"
+            type="stepAfter"
+            dataKey="controller_status"
+            stroke="#77769a"
+            dot={false}
+            isAnimationActive={false}
+          />
+        )}
         <Line
           name="Flags"
           type="stepAfter"
@@ -174,14 +180,16 @@ export function StateChart({ samples }: { samples: Sample[] }) {
           dot={false}
           isAnimationActive={false}
         />
-        <Line
-          name="Compartment"
-          type="stepAfter"
-          dataKey="compartment"
-          stroke="#8e9aa5"
-          dot={false}
-          isAnimationActive={false}
-        />
+        {brewing && (
+          <Line
+            name="Compartment"
+            type="stepAfter"
+            dataKey="compartment"
+            stroke="#8e9aa5"
+            dot={false}
+            isAnimationActive={false}
+          />
+        )}
         <Line
           name="Device state"
           type="stepAfter"

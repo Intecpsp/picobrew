@@ -8,15 +8,22 @@ opcode inventory. `src/quantity.cpp` supplies its recovered unit conversion.
 `src/program_runtime_heater.cpp` connects the interpreter to the independently
 reconstructed heater controller; pump and valve commands call `msp_protocol.c`.
 
-The source matches **5,792 original-instruction comparisons from 52 original
-function bodies**: **4,769 complete within the stated service boundaries;
-1,023 stop at an assertion call**. Each case compares the represented runtime
-state, expansion stack, step-name buffers, returned value, assertion boundary,
-and ordered service calls at its captured endpoint. The 1,023 assertion cases
-are execution prefixes, not completed OEM traces.
-The focused test also links the real runtime, heater, and MSP implementations to
-check their integration. All four new C++ modules compile with the pinned official
-Xtensa GCC 5.2 compiler using warnings as errors.
+The application with diagnostics bound matches **all 5,792 complete original
+executions from 54 function bodies**, including the **1,023 cases that the older
+fixture stopped at an assertion call**. The new replay executes the original
+assertion helper 1,142 times, through its counter increment and 200 ms delay, and
+also executes the target unsigned-conversion helper. Every case compares the
+represented state, 86,880 binary64 state values by exact bits, expansion stack,
+step-name buffers, returned values, ordered device/queue effects, assertion
+file/line/expression, and wrapping clock/counter. All 942 reached Quantity and
+drop-monitor diagnostic messages also match.
+
+`runtime-continuation-validation.json` records this full-continuation evidence.
+The older prefix fixture remains for the explicitly guarded standalone API when
+no diagnostics are bound; its 1,023 stopped cases are still labelled as prefixes.
+The focused native integration links the real Runtime, heater and MSP code. The
+updated Runtime, Quantity, console and software-test objects compile with the
+pinned Xtensa GCC 5.2 compiler using warnings as errors.
 
 This supplies the interpreter module with the bounded behavior described below.
 It does not establish a linked ESP32 application, a byte-identical OEM rebuild, installed firmware, or
@@ -107,12 +114,13 @@ product policies:
 
 - Timed wait completion is strict: `start + duration < now`, using 32-bit unsigned
   arithmetic. Separate original assertions report a clock earlier than the
-  instruction start; the typed guards and historical fixture stop at those
-  calls. Duration multiplication can wrap.
+  instruction start; the bound application records the assertion and continues.
+  Duration multiplication can wrap.
 - HoldFor, CircFor, and DrainFor complete their high-level instruction immediately
   after expansion; the generated WaitFor performs the actual wait.
 - Saving a partially completed WaitFor subtracts whole elapsed seconds. Saving a
-  fully elapsed wait hits the original assertion boundary.
+  fully elapsed wait asserts, subtracts with unsigned wrap and pushes the
+  resulting instruction, asserting again if its argument fails validation.
 - A manual step first converts its temperature to Fahrenheit, truncates to integer
   Fahrenheit, then converts to fixed-point Celsius. It does not simply retain the
   original fractional Celsius value.
@@ -128,17 +136,25 @@ product policies:
 - Equal unknown unit enum values are compatible in the OEM quantity function.
   Unequal unknown values fail compatibility.
 
-Portable result codes expose typed guards at selected OEM assertion sites and
-report missing callback failures. The original helper at `0x400db014` logs,
-increments a diagnostic counter, delays 200 ms, and returns. The historical
-runtime harness instead throws before executing it. Its assertion cases compare
-the represented prefix state and calls; they do not prove that the OEM stopped,
-nor compare its later state changes or service calls.
+Bind `RuntimeServices::diagnostics` to the application `ConsoleServices`. A
+failed or absent required callback returns an explicit error. With both callbacks
+empty, the standalone API retains its original reconstructed guard mode. Stack
+and Quantity methods accept an optional diagnostic pointer for direct users.
+A full stack asserts and drops each additional push; an empty pop asserts and
+returns `Noop`; an invalid program-string reference asserts and uses `<INVALID>`.
+The Still reference transition captures its timestamp between two returning
+assertions, so the clock advances twice while that captured date advances once.
 
-Out-of-range manual numeric conversions and nonfinite current-temperature delta
-estimates are explicit `InvalidNumericDomain` errors rather than undefined host
-C++ conversions. Those added API boundaries are separate from the finite original
-instruction cases. The original interpreter does not validate each instruction
+The console and control loop share `drop_watch_start`, `drop_watch_update` and
+`drop_watch_stop`, including the original diagnostic text and the order of state
+changes around diagnostic callbacks. The Runtime self-test uses these same
+production methods.
+
+Out-of-range signed manual conversions and nonfinite current-temperature delta
+estimates remain explicit `InvalidNumericDomain` errors. The subsequent unsigned
+fixed-point conversion reproduces the actual target helper, including negative
+in-range truncation modulo 2^32 and its saturation values. The remaining added
+API boundaries are separate from this finite original input matrix. The original interpreter does not validate each instruction
 again at dispatch; program loading remains the validation boundary. A portable
 array bound additionally rejects out-of-range direct MoveValve indices.
 
@@ -153,10 +169,11 @@ array bound additionally rejects out-of-range direct MoveValve indices.
 | Celsius to Fahrenheit | value × 1.8 + 32 |
 | Fahrenheit to Celsius | (value − 32) / 1.8 |
 
-These are the original constants, including their precision. Incompatible units
-return false with a zero result in the typed API. The historical runtime fixture
-stops at the original assertion call on that path, so its comparison does not
-validate the original conversion's post-assertion continuation.
+These are the original constants, including their precision. With diagnostics
+bound, incompatible units invoke the real assertion binding, log the original
+error, and complete with a zero value. The full replay verifies that continuation.
+The standalone guard mode still returns false with zero when no diagnostics are
+supplied.
 
 ## Validation and limits
 
@@ -166,12 +183,12 @@ command/wait combinations; threshold-adjacent temperatures and PicoStill signals
 pause/resume, stop, and state transitions; all 2,048 selected safety-priority
 combinations; manual-step conversions; 1,089 quantity conversions and 121 unit
 compatibility cases; repository-selection flags; program validation; and
-periodic runtime ticks. All are subject to the assertion-boundary scope above.
-The assertion counts and counting method are recorded in
-[assertion-coverage.md](assertion-coverage.md).
+periodic runtime ticks. Every one completes in the new replay. Historical prefix
+counts remain available in [assertion-coverage.md](assertion-coverage.md); the
+current full continuation counts are in `runtime-continuation-validation.json`.
 
 The original execution harness uses the verified read-only Ghidra project and a
-200,000-instruction budget per case. It normalizes reviewed Xtensa register-window
+500,000-instruction budget per case for full continuation. It normalizes reviewed Xtensa register-window
 ENTRY/CALL8/RETW boundaries. MEMW is treated as sequential memory ordering in this
 single-thread fixture; interrupt and concurrent-memory behavior are not emulated.
 An unexpected hardware LOOP is an error rather than silently omitted execution.
@@ -199,7 +216,7 @@ Regenerate original instruction evidence using the pinned tools and a verified
 preserved project:
 
 ```sh
-python3 firmware/z-series/reverse-engineered/tests/run_program_runtime_emulation.py \
+python3 firmware/z-series/reverse-engineered/tests/run_runtime_continuation_emulation.py \
   --project /path/to/z119-project \
   --ghidra-home /path/to/ghidra_12.2_PUBLIC \
   --java-home /path/to/jdk-25.0.5+8 \

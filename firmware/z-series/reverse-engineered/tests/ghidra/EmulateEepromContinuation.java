@@ -1,0 +1,144 @@
+// Executes full EEPROM data/lifecycle instructions with returning assertions.
+// @category PicoBrew.Validation
+import java.nio.file.*;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.util.*;
+import com.google.gson.*;
+import ghidra.app.script.GhidraScript;
+import ghidra.program.model.address.AddressRange;
+import ghidra.program.model.listing.Function;
+
+public class EmulateEepromContinuation extends GhidraScript {
+    private static final long OBJECT=0x3ff84000L,CACHE=0x3ff85000L,STRING=0x3ff86000L,CONTEXT=0x3ff87000L,ARGUMENT=CONTEXT+4;
+    private boolean beginResult,commitResult;
+    private long assertionLine,clock,water;private final List<Object> events=new ArrayList<>();
+    private static String sha(byte[] bytes)throws Exception{return HexFormat.of().formatHex(MessageDigest.getInstance("SHA-256").digest(bytes));}
+    private static Map<String,Object> row(Object... values){Map<String,Object> r=new LinkedHashMap<>();for(int i=0;i<values.length;i+=2)r.put((String)values[i],values[i+1]);return r;}
+    private byte[] bytes(SlideshowExecution e,long p,int count)throws Exception{return e.emulator.readMemory(e.address(p),count);}
+    private String string(SlideshowExecution e,long p)throws Exception{if(p==0)throw new IllegalStateException("Null string boundary");int n=0;while(n<65536&&e.read(p+n,1)!=0)n++;if(n==65536)throw new IllegalStateException("Unbounded string");return n==0?"":new String(bytes(e,p,n),StandardCharsets.UTF_8);}
+    private void boundary(SlideshowExecution e,long target)throws Exception{
+        if(e.arithmetic(target))return;
+        if(target==0x4012d48cL){e.countBoundary("__truncdfsf2");e.register(10,Float.floatToRawIntBits((float)e.number(10)));return;}
+        switch((int)target){
+        case 0x40126534:e.countBoundary("Arduino_EEPROM_begin_fixture_cache");if(e.register(10)!=0x3ffc32a0L)throw new IllegalStateException("Wrong SDK EEPROM object");events.add("begin|"+e.register(11));e.register(10,beginResult?1:0);return;
+        case 0x4012659c:e.countBoundary("Arduino_EEPROM_commit_fixture_status");if(e.register(10)!=0x3ffc32a0L)throw new IllegalStateException("Wrong SDK EEPROM object");events.add("commit|"+e.read(0x3ffc32acL,1)+"|"+HexFormat.of().formatHex(bytes(e,CACHE,120)));if(commitResult)e.write(0x3ffc32acL,0,1);e.register(10,commitResult?1:0);return;
+        case 0x400fba48:e.countBoundary("Eeprom_console_registration_independent_console_evidence");if(e.register(10)!=OBJECT)throw new IllegalStateException("Wrong EEPROM registry owner");events.add("register");return;
+
+        case 0x4012d42c:{double v=e.number(10);if(!Double.isFinite(v)||v<0||v>=4294967296.0)throw new IllegalStateException("Unsigned conversion domain");e.register(10,(long)v);e.countBoundary("finite_uint32_conversion");return;}
+        case 0x4013b1d4:{double v=e.number(10);if(!Double.isFinite(v)||Math.abs(v)>1000000)throw new IllegalStateException("round domain");e.number(10,Math.copySign(Math.floor(Math.abs(v)+0.5),v));e.countBoundary("finite_round_half_away_from_zero");return;}
+        case 0x4013b288:e.countBoundary("finite_positive_log");if(e.number(10)<=0)throw new IllegalStateException("log domain");e.number(10,Math.log(e.number(10)));return;
+        case 0x4013b394:e.countBoundary("finite_positive_pow");if(e.number(10)<=0)throw new IllegalStateException("pow domain");e.number(10,Math.pow(e.number(10),e.number(12)));return;
+        case 0x4013b678:e.countBoundary("finite_nonnegative_sqrt");if(e.number(10)<0)throw new IllegalStateException("sqrt domain");e.number(10,Math.sqrt(e.number(10)));return;
+        case 0x400013ac:{String v=string(e,e.register(11));put(e,e.register(10),v);e.countBoundary("ROM_strcpy");return;}
+        case 0x40081388:e.countBoundary("prescribed_millis");e.register(10,clock);return;
+        case 0x4008c2b4:{e.countBoundary("diagnostic_basename");String value=string(e,e.register(10));e.register(10,e.register(10)+Math.max(value.lastIndexOf('/'),value.lastIndexOf('\\'))+1);return;}
+        case 0x400d21cc:e.countBoundary("diagnostic_output");log(e);return;
+        case 0x400db014:assertionLine=e.register(11);events.add("assertion|"+string(e,e.register(10))+"|"+e.register(11)+"|"+string(e,e.register(12)));e.invoke(target);return;
+        case 0x401289a0:if(e.register(10)!=200)throw new IllegalStateException("Unexpected assertion delay");e.countBoundary("assertion_delay_200ms");events.add("delay|200");clock=(clock+200)&0xffffffffL;return;
+        case 0x400d56c4:{events.add("scope|1|"+string(e,e.register(11))+"|"+basename(string(e,e.register(13)))+"|"+e.register(14)+"|"+string(e,e.register(12)));e.invoke(target);return;}
+        case 0x400db438:{long p=e.register(10);events.add("scope|0|"+string(e,e.read(p,4))+"|"+basename(string(e,e.read(p+8,4)))+"|"+e.read(p+12,4)+"|"+string(e,e.read(p+4,4)));e.invoke(target);return;}
+        case 0x40090e2c:e.countBoundary("prescribed_stack_high_water");e.register(10,water);return;
+        case 0x40136e8c:e.countBoundary("esp_task_wdt_reset");e.register(10,0);return;
+        case 0x401367a0:throw new IllegalStateException("Original stack guard failed");
+        case 0x400015d4:{int n=(int)e.register(12);if(n<0||n>65536)throw new IllegalStateException("strncpy bound");byte[] out=new byte[n];boolean ended=false;for(int i=0;i<n;i++){if(!ended){out[i]=(byte)e.read(e.register(11)+i,1);if(out[i]==0)ended=true;}}if(n>0)e.emulator.writeMemory(e.address(e.register(10)),out);e.countBoundary("ROM_strncpy");return;}
+        case 0x4000c2c8:{int n=(int)e.register(12);if(n<0||n>65536)throw new IllegalStateException("memcpy bound");if(n>0)e.emulator.writeMemory(e.address(e.register(10)),bytes(e,e.register(11),n));e.countBoundary("ROM_memcpy");return;}
+        case 0x4000c44c:{int n=(int)e.register(12);if(n<0||n>65536)throw new IllegalStateException("memset bound");byte[] bytes=new byte[n];Arrays.fill(bytes,(byte)e.register(11));if(n>0)e.emulator.writeMemory(e.address(e.register(10)),bytes);e.countBoundary("ROM_memset");return;}
+        case 0x400014c0:{long p=e.register(10);int n=0;if(p==0)throw new IllegalStateException("Null strlen");while(n<65536&&e.read(p+n,1)!=0)n++;if(n==65536)throw new IllegalStateException("strlen bound");e.register(10,n);e.countBoundary("ROM_strlen");return;}
+        case 0x401462c4:{e.countBoundary("SDK_vsnprintf_Xtensa_va_list");String formatted=vaFormat(e,string(e,e.register(12)),e.register(13),e.register(14),(int)e.register(15));int capacity=(int)e.register(11);byte[] value=formatted.getBytes(StandardCharsets.UTF_8);int size=Math.min(value.length,Math.max(0,capacity-1));if(size>0)e.emulator.writeMemory(e.address(e.register(10)),Arrays.copyOf(value,size));if(capacity>0)e.write(e.register(10)+size,0,1);e.register(10,value.length);return;}
+        case 0x4013cd98:{
+            long p=e.register(10),capacity=e.register(11);String format=string(e,e.register(12));StringBuilder out=new StringBuilder();int argument=13;
+            for(int i=0;i<format.length();i++){
+                char ch=format.charAt(i);if(ch!='%'){out.append(ch);continue;}ch=format.charAt(++i);if(ch=='%'){out.append('%');continue;}
+                boolean left=false,zero=false,space=false,plus=false;while("-0 +".indexOf(ch)>=0){if(ch=='-')left=true;if(ch=='0')zero=true;if(ch==' ')space=true;if(ch=='+')plus=true;ch=format.charAt(++i);}
+                int width=0;while(ch>='0'&&ch<='9'){width=width*10+ch-'0';ch=format.charAt(++i);}int precision=-1;if(ch=='.'){precision=0;ch=format.charAt(++i);while(ch>='0'&&ch<='9'){precision=precision*10+ch-'0';ch=format.charAt(++i);}}
+                String replacement;
+                if(ch=='f'){
+                    if((argument&1)!=0)argument++;double v=Double.longBitsToDouble(argument(e,argument)|argument(e,argument+1)<<32);argument+=2;
+                    if(!Double.isFinite(v)||Math.abs(v)>1000000000||precision>12)throw new IllegalStateException("Unreviewed printf float domain");
+                    boolean negative=Double.doubleToRawLongBits(v)<0;replacement=new java.math.BigDecimal(Math.abs(v)).setScale(precision<0?6:precision,java.math.RoundingMode.HALF_EVEN).toPlainString();if(negative)replacement="-"+replacement;else if(plus||space)replacement=(plus?"+":" ")+replacement;
+                }else{long v=argument(e,argument++);if(ch=='d')replacement=Integer.toString((int)v);else if(ch=='u')replacement=Long.toString(v);else if(ch=='s')replacement=string(e,v);else if(ch=='c')replacement=String.valueOf((char)(v&255));else if(ch=='x'||ch=='X'){replacement=Long.toHexString(v);if(ch=='X')replacement=replacement.toUpperCase(Locale.ROOT);}else throw new IllegalStateException("Unreviewed format "+format);}
+                while(replacement.length()<width){if(left)replacement+=" ";else if(zero&&replacement.startsWith("-"))replacement="-0"+replacement.substring(1);else replacement=(zero?"0":" ")+replacement;}out.append(replacement);
+            }
+            byte[] bytes=out.toString().getBytes(StandardCharsets.UTF_8);if(capacity<0||capacity>65536)throw new IllegalStateException("snprintf bound");int n=Math.min(bytes.length,Math.max(0,(int)capacity-1));if(n>0)e.emulator.writeMemory(e.address(p),Arrays.copyOf(bytes,n));if(capacity>0)e.write(p+n,0,1);e.register(10,bytes.length);e.countBoundary("bounded_snprintf_reviewed_fixed_point_half_even_string_integer");return;
+        }
+        default:
+            // Data and thermistor callees execute their actual instructions.
+            if((target>=0x400d0000L&&target<0x40110000L)||(target>=0x401bd000L&&target<0x401c0200L)){e.invoke(target);return;}
+            throw new IllegalStateException(String.format("Unreviewed diagnostic dependency %08x",target));
+        }
+    }
+    private String basename(String value){return value.substring(Math.max(value.lastIndexOf('/'),value.lastIndexOf('\\'))+1);}
+    private String stackFormat(SlideshowExecution e,String format)throws Exception{
+        java.util.regex.Matcher m=java.util.regex.Pattern.compile("%([-+ #0]*)([0-9]*)(?:\\.([0-9]+))?(l?)([sdxcuf])").matcher(format);StringBuilder out=new StringBuilder();int position=0,word=0;
+        while(m.find()){out.append(format,position,m.start());String value;char type=m.group(5).charAt(0);if(type=='f'&&(word&1)!=0)word++;long bits=e.read(e.register(1)+word*4,type=='f'?8:4);word+=type=='f'?2:1;
+            if(type=='s')value=string(e,bits);else if(type=='d')value=Integer.toString((int)bits);else if(type=='u')value=Long.toString(bits&0xffffffffL);else if(type=='c')value=String.valueOf((char)bits);else if(type=='x')value=Long.toHexString(bits&0xffffffffL);
+            else{double number=Double.longBitsToDouble(bits);int precision=m.group(3)==null?6:Integer.parseInt(m.group(3));if(!Double.isFinite(number))throw new IllegalStateException("nonfinite format domain");value=new java.math.BigDecimal(Math.abs(number)).setScale(precision,java.math.RoundingMode.HALF_EVEN).toPlainString();if(bits<0)value="-"+value;else if(m.group(1).contains("+"))value="+"+value;else if(m.group(1).contains(" "))value=" "+value;}
+            int width=m.group(2).isEmpty()?0:Integer.parseInt(m.group(2));if(value.length()<width)out.append(" ".repeat(width-value.length()));out.append(value);position=m.end();}
+        out.append(format.substring(position));return out.toString();
+    }
+    private void log(SlideshowExecution e)throws Exception{
+        String fmt=string(e,e.register(10));if(fmt.contains("[ASSERT]"))return;
+        if(fmt.startsWith("[T>]")||fmt.startsWith("[T_]")||fmt.startsWith("[IV]")||(fmt.contains("[SYST]")&&e.register(15)==0x4f)){e.countBoundary("scope_renderer_owned_by_System_console_replay");return;}
+        int marker=fmt.indexOf("[%s:%u] ");if(marker<0)throw new IllegalStateException("Unexpected diagnostic log "+fmt);
+        String prefix=fmt.substring(0,marker),body=fmt.substring(marker+8).replace("\u001b[0m","");if(body.endsWith("\r\n"))body=body.substring(0,body.length()-2);
+        java.util.regex.Matcher tag=java.util.regex.Pattern.compile("\\]\\[([A-Z0-9]+)\\]").matcher(prefix);if(!tag.find())throw new IllegalStateException("Missing tag");
+        int level=fmt.contains("[W_]")?1:fmt.contains("[E_]")?2:fmt.contains("[D_]")?3:0;
+        events.add("log|"+level+"|"+tag.group(1)+"|"+string(e,e.register(14))+"|"+e.register(15)+"|"+stackFormat(e,body));
+    }
+    private long argument(SlideshowExecution e,int index)throws Exception{return index<16?e.register(index):e.read(e.register(1)+(index-16)*4,4);}
+    private void invoke(SlideshowExecution e,long target,long... args)throws Exception{for(int i=0;i<args.length;i++)e.register(10+i,args[i]);e.invoke(target);}
+    private void put(SlideshowExecution e,long p,String value){byte[] bytes=value.getBytes(StandardCharsets.UTF_8);e.emulator.writeMemory(e.address(p),bytes);e.write(p+bytes.length,0,1);}
+    private long vaArgument(SlideshowExecution e,long stack,long saved,int[] index,int bytes)throws Exception{
+        int aligned=(index[0]+bytes-1)&-bytes,next=aligned+bytes;long base;
+        if(next<=24)base=saved;else{if(aligned<=24)next=32+bytes;base=stack;}index[0]=next;return e.read(base+next-bytes,bytes);
+    }
+    private String vaFormat(SlideshowExecution e,String format,long stack,long saved,int index)throws Exception{
+        java.util.regex.Matcher m=java.util.regex.Pattern.compile("%([-+ #0]*)([0-9]*)(?:\\.([0-9]+))?([sdxcuf])").matcher(format);StringBuilder out=new StringBuilder();int position=0;int[] next={index};
+        while(m.find()){out.append(format,position,m.start());String value;char type=m.group(4).charAt(0);long bits=vaArgument(e,stack,saved,next,type=='f'?8:4);
+            if(type=='s')value=string(e,bits);else if(type=='d')value=Integer.toString((int)bits);else if(type=='u')value=Long.toString(bits&0xffffffffL);else if(type=='c')value=String.valueOf((char)bits);else if(type=='x')value=Long.toHexString(bits&0xffffffffL);
+            else{double number=Double.longBitsToDouble(bits);int precision=m.group(3)==null?6:Integer.parseInt(m.group(3));if(!Double.isFinite(number))throw new IllegalStateException("nonfinite format domain");value=new java.math.BigDecimal(Math.abs(number)).setScale(precision,java.math.RoundingMode.HALF_EVEN).toPlainString();if(bits<0)value="-"+value;else if(m.group(1).contains("+"))value="+"+value;else if(m.group(1).contains(" "))value=" "+value;}
+            int width=m.group(2).isEmpty()?0:Integer.parseInt(m.group(2));if(value.length()<width)out.append(" ".repeat(width-value.length()));out.append(value);position=m.end();}
+        out.append(format.substring(position));return out.toString();
+    }
+    private void validateImage(Path layoutPath)throws Exception{
+        JsonObject layout=JsonParser.parseString(Files.readString(layoutPath)).getAsJsonObject();byte[] original=Files.readAllBytes(Path.of(layout.get("input_path").getAsString()));if(!sha(original).equals(SlideshowExecution.IMAGE_SHA))throw new IllegalStateException("Original image mismatch");
+        for(JsonElement value:layout.getAsJsonArray("segments")){JsonObject part=value.getAsJsonObject();int size=part.get("size").getAsInt(),offset=part.get("offset").getAsInt();if(size==0)continue;byte[] mapped=new byte[size];currentProgram.getMemory().getBytes(toAddr(part.get("address").getAsLong()),mapped);if(!Arrays.equals(mapped,Arrays.copyOfRange(original,offset,offset+size)))throw new IllegalStateException("Program bytes differ from preserved OEM image");}
+    }
+    @Override public void run()throws Exception{
+        String[] args=getScriptArgs();validateImage(Path.of(args[2]));JsonArray inputs=JsonParser.parseString(Files.readString(Path.of(args[0]))).getAsJsonArray();List<Object> results=new ArrayList<>();
+        // Re-decode only the independently verified30-byte getter in this
+        // read-only view; original image bytes are never changed.
+        clearListing(toAddr(0x400de248L),toAddr(0x400de265L));disassemble(toAddr(0x400de248L));
+        try(SlideshowExecution e=new SlideshowExecution(currentProgram,monitor,this::boundary)){
+            for(JsonElement value:inputs){JsonObject c=value.getAsJsonObject();e.resetRegisters();e.clear(OBJECT,0x5000);assertionLine=0;events.clear();clock=c.get("clock").getAsLong();e.write(0x3ffc4654L,0x5a61c0deL,4);e.write(0x3ffc2e84L,c.get("counter").getAsLong(),4);
+                e.emulator.writeMemory(e.address(OBJECT+8),HexFormat.of().parseHex(c.get("data").getAsString()));e.emulator.writeMemory(e.address(CACHE),HexFormat.of().parseHex(c.get("cache").getAsString()));e.write(OBJECT+0x84,c.get("requested").getAsLong(),4);e.write(OBJECT+0x80,c.get("initialized").getAsLong(),1);
+                e.write(0x3ffc32a4L,CACHE,4);e.write(0x3ffc32a8L,c.get("actual").getAsLong(),4);e.write(0x3ffc32acL,c.get("dirty").getAsLong(),1);beginResult=c.get("begin").getAsInt()!=0;commitResult=c.get("commit").getAsInt()!=0;
+                long text=0;if(!c.get("text").isJsonNull()){text=STRING;put(e,STRING,c.get("text").getAsString());}e.write(CONTEXT,OBJECT,4);e.write(ARGUMENT,text,4);long result=0;
+                switch(c.get("action").getAsInt()){
+                case 0:invoke(e,0x400d1a2cL,OBJECT+8);break;
+                case 1:invoke(e,0x400d6410L,OBJECT+8);result=e.register(10);break;
+                case 2:invoke(e,0x401bf7f0L,OBJECT+8);result=e.register(10);break;
+                case 3:invoke(e,0x400d0ed4L,text);result=e.register(10);break;
+                case 4:invoke(e,0x400d598cL,OBJECT+0x14,32,text);result=e.register(10);break;
+                case 5:invoke(e,0x400d598cL,OBJECT+0x34,64,text);result=e.register(10);break;
+                case 6:invoke(e,0x400fbc1cL,OBJECT);break;
+                case 7:invoke(e,0x400edb34L,OBJECT);break;
+                case 8:invoke(e,0x400edc18L,OBJECT);break;
+                case 9:invoke(e,0x400de248L,OBJECT);result=e.register(10)==OBJECT+8?1:0;break;
+                case 10:invoke(e,0x400d59acL,CONTEXT,ARGUMENT);break;
+                case 11:invoke(e,0x400d59c0L,CONTEXT,ARGUMENT);break;
+                case 12:invoke(e,0x400d6760L,CONTEXT,ARGUMENT);break;
+                case 13:invoke(e,0x400d67a8L,CONTEXT,ARGUMENT);break;
+                case 14:invoke(e,0x401bdebcL,CONTEXT);break;
+                case 15:invoke(e,0x401bdee0L,CONTEXT);break;
+                case 16:invoke(e,0x401bdf04L,CONTEXT);break;
+                default:throw new IllegalStateException("Unreviewed EEPROM action");
+                }
+                results.add(row("assertion",assertionLine,"value",result,"data",HexFormat.of().formatHex(bytes(e,OBJECT+8,120)),"cache",HexFormat.of().formatHex(bytes(e,CACHE,120)),"initialized",e.read(OBJECT+0x80,1),"dirty",e.read(0x3ffc32acL,1),"counter",e.read(0x3ffc2e84L,4),"clock",clock,"events",new ArrayList<>(events)));
+            }
+            Files.writeString(Path.of(args[1]),new GsonBuilder().setPrettyPrinting().create().toJson(row("input_sha256",SlideshowExecution.IMAGE_SHA,"cases",results,"original_functions",e.functions,"modeled_boundaries",e.boundaries))+"\n");
+        }
+        println("Executed "+results.size()+" original EEPROM continuations");
+    }
+}

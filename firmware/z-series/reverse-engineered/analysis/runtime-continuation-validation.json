@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "input_sha256": "d84e0106b69aa8a51ed62e56ae7215eb90908569e0f666b829e03fbc34c30b27",
+  "cases": 5792,
+  "asserting_cases": 1023,
+  "returning_assertions": 1142,
+  "diagnostic_logs": 942,
+  "original_functions": 54,
+  "binary64_values_compared": 86880,
+  "all_results_match": true,
+  "source_sha256": {
+    "include/zseries/program_runtime.hpp": "eaa1de3248c389b293cb231d12e53d3abc820677c4408183acb0814cb94415a5",
+    "include/zseries/quantity.hpp": "9110702b8324d3c7e8a0408ae3826bb31bf69869fa09497f6f77e446ffc2d7be",
+    "src/program_runtime.cpp": "18a17d4a07db6cd2bab1bd54e7ec27b7877ddee3153de64692cb595162ed4869",
+    "src/program_runtime_execution.cpp": "ef3903cf1b31372504a6d0be5ded9528f6b885dbb8021deb232ce07396d3ed97",
+    "src/quantity.cpp": "31376af9825f6119dc4ce771a355199c80c7adb41ee7343ec8c2fcb8056f944f",
+    "src/runtime_instruction.cpp": "dfa89bc150e4bb7a6b2a21e9a13ae6a438867cb43c30ebeec9f580663121fc75",
+    "tests/program_runtime_cases.py": "d5301213f8f7dc37cb187223a1b80da42383989ca25e6405c0c20b09889707c5",
+    "tests/test_program_runtime.py": "13e85266309622184d1cba2dee6a340db633ff8db76be9d139fd0dde8beb8c11",
+    "tests/runtime_continuation_native.py": "4098b82cb44d71165ec8e58a1050ae4b0767339d1e4428df783b9fddb47748d7",
+    "tests/test_runtime_continuation.py": "5b291d4896ce02058f5bebf0974cb3c7ffefe3cf5a47fec7804bb49a5cfb7a21",
+    "tests/ghidra/EmulateRuntimeContinuation.java": "b4d3f6b2bdc756945ecdfcc28727f7f77a9c8b9b61bb99f4962ad53f764cf7b7",
+    "tests/run_runtime_continuation_emulation.py": "a006ed210169a7f83430c4be14e9847da0f8579a2a42e4c7736a86b0463befe6",
+    "tools/validate_runtime_continuation.py": "6710b7baab72af6c64c3a436e748473c97e976c0e650c37a864ee9fb32d48206",
+    "tests/fixtures/runtime-continuation-inputs.json.gz": "32ed8683478eb3b2fb1de9594bacc410cc703836761ec68883e26c4c49861c87",
+    "tests/fixtures/runtime-continuation-original.json.gz": "21575f90dc5e80bb383e45cd8b8cddc7e2195952ac8313658291f40c14c1d404"
+  },
+  "scope": "All 5792 original Runtime input cases execute through their returns, including the 1023 previously stopped at diagnostic assertions. The actual assertion helper400db014 increments the counter and delays200ms, and actual unsigned conversion4012d42c executes. Complete projected state, exact binary64 state bits, expansion stack, names, return values, ordered device/queue effects, assertion text, wrapping clock/counter and Quantity/DropMonitor diagnostic text are compared. Reviewed register-window calls and sequential MEMW; other scalar math, clock/delay, diagnostic presentation/string operations, independently checked MSP sends and explicit heater/PicoStill/event services remain boundaries. This is not a full CPU, application-loop or physical-device execution.",
+  "hardware_tested": false,
+  "complete_application_linked": false
+}

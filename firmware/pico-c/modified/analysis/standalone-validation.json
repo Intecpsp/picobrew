@@ -347,8 +347,68 @@
     }
   ],
   "browser_integration": {
-    "result": "not run locally; browser launch blocked",
-    "reason": "Chromium ProcessSingleton socket creation failed with Operation not permitted before any browser test ran.",
+    "result": "passed locally",
+    "recorded_at": "2026-11-20T12:20:53.435267+00:00",
+    "browser": "Google Chrome for Testing 158.0.8127.36 (headless shell)",
+    "command": "PICOBREW_CHROMIUM=<chrome-headless-shell> make web-test PYTHON=python3",
+    "tests": 18,
+    "suites": [
+      {
+        "path": "tests/test_web.py",
+        "tests": 9,
+        "result": "passed"
+      },
+      {
+        "path": "tests/test_web_features.py",
+        "tests": 9,
+        "result": "passed"
+      }
+    ],
+    "coverage": [
+      "Authenticated connection, API errors and untrusted recipe labels",
+      "Recipe create, import, edit, zero-minute steps, starter restore, load, export and delete",
+      "Live framebuffer byte orientation, desktop/mobile layouts and SSD1309 logical viewport",
+      "Encoder, program, stop and idle clear-stop controls",
+      "Settings, disconnect and read-only Hub connection status",
+      "Paginated history, gaps, session selection, eviction, failed-selection isolation and canonical exports"
+    ],
+    "scope": "Real portable C API/store with simulated I/O, served by a local HTTP harness; history edge cases use deterministic paginated fixtures. Production HTTP framing/auth and SimpleLink bindings have separate tests. No physical USB, radio, flash or brewing is exercised.",
+    "source_sha256": {
+      "Makefile": "811f536c35a4b8e4b0f56d25495cf55ca0b597e476f64c701e74078dbd734748",
+      "src/local_api.c": "2c7fd4ac200e7b17c9f87cf78ee00ea68d71b879457d1b99b3507e47b3a538ec",
+      "src/local_history.c": "ad9500a91b3309265006cadebec1ede7aad20caf93912d60317ed759c9571a27",
+      "src/local_store.c": "f803bd07b64799317f9df325169c249064687ea0f4f8d46507b6304e806e0725",
+      "src/local_telemetry.c": "663a17ff37896c2e5f019bb3ee08727a4a61ff9c1d7f44a14108644d69fa5b41",
+      "tests/standalone/local_api_host.c": "a200780faa79b46c4f594c29d981c316868945298b22d093fea46356b8b5db18",
+      "tests/test_local_api.py": "c98a0fd93613bfb844a05ec0d4906af495c6c6476c50d788313aee5cefba8169",
+      "tests/test_web.py": "e1840b6cc1ca0d7bb34d7cbedb792e5a1914b6a2cbf4339cb5a76b18a2860396",
+      "tests/test_web_features.py": "fdf8a782423e86319d15d23fd2a093cfdba13e96d9272cdd8ae03b3e89465199",
+      "tools/native_host.py": "df7d385fff5b815566b2d50f2c5aa05cc1a08f2a940eec0a189752d89a2d692a",
+      "web/api-explorer.js": "8e27a09cce039cd42e326adc757a065c13a87171645d02d0c40a302987c380f0",
+      "web/app.js": "5069e341ad50129aa053883961b394604a7b350c4effb4a9e8b0159a9cb39a44",
+      "web/history.js": "50663f987f4c9e90707e537b602ca4fa88b688017d86587892609a7073db5b85",
+      "web/index.html": "b069d8ae8d5fca97bab714849218553032a2f688f175c3e2db92bbb70b655e4c",
+      "web/style.css": "53421509efc8782636ad480a2a66ba3f98c066ac06fd78be3ef24a8d310ecf6c"
+    },
+    "application_snapshot_match": {
+      "files": 100,
+      "sha256": "82f94fb5afec8788445e6f08e72e0c9ffaf3708944b8690074e0f1248c3714ca"
+    },
+    "screenshot_directory": "build/web-preview",
+    "screenshot_sha256": {
+      "history-desktop.png": "5297bae0a92d4fea9af033a1c664b12e77fcfeba35a306582df066e0be73839f",
+      "history-mobile.png": "779c47a0b5dbfc3aae382795eb29084f041674de6a0215a088b7f772043d88d2",
+      "overview-desktop.png": "a886b86c887554815398fb27fda7120b2fed574dfb9c15aa9d1716373eab39f6",
+      "overview-mobile.png": "ffba0a595108dbddb67a5f12154dbe4da4d29472e8cf856dc8ce082d50ba0b67",
+      "recipes-desktop.png": "a798504a7cf2abea75733fbab5187e3aa155446422fd8aa3ab12c72966adb138",
+      "recipes-mobile-long-label.png": "7e9dcfff7fb40abeac5742ef1d6d6ab07d7035e6d46989495413f60f294d7f1e",
+      "recipes-mobile.png": "44b3e5abae7b54d36bd6859fbf8e638ac1dce73a6dd03708d8d064c3ec76537f",
+      "settings-desktop.png": "eb1fe25e32528bff1d043caf728c924a423d1d853ea2020bf82b8115f66e68cd",
+      "settings-mobile.png": "37d8a647245e6a5424eb2538de16f777336695e041d95bdbe74fe344cdfdcdf7",
+      "settings-wide.png": "327fb8da986e30e29de9a5f6dac8df981d50fd14ab0627b27284a897f6a88f77",
+      "ssd1309-mobile.png": "d43ea3a8b38ffdc048470a0974b8af1da56c8297d87102ef12c67f17b35339eb",
+      "starter-recipes-mobile.png": "9d7551b8eb441e6cb3815dbf482ff5bd4b871eb8ab83b61642f1f56edf642741"
+    },
     "ci_workflow": ".github/workflows/pico-c-standalone.yml",
     "ci_commands": [
       "make web-test PYTHON=python"
@@ -373,7 +433,7 @@
     "Physical controller and board mapping must be independently verified before installing either C candidate.",
     "C retains the OEM SSD1309 32-row logical viewport and 1024-byte transfer; no assumption that it has the SSD1325 geometry.",
     "RAM slack is 3400 bytes beyond reserved 32768-byte heap and 32768-byte SDK stack; real high-water measurements remain outstanding.",
-    "Desktop/mobile browser acceptance must run in CI before merge.",
+    "Desktop/mobile browser acceptance passed locally in 18 cases; the separate remote CI run is pending.",
     "No safe OTA installer is implemented or advertised in this revision."
   ],
   "root_staged_diff_check": {

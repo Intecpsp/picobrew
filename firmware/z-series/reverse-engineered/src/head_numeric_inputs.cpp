@@ -1,6 +1,11 @@
 #include "zseries/head_numeric_inputs.hpp"
 
 namespace zseries { namespace oem {
+HeadNumericResult HeadNumericInputs::assertion(std::uint32_t line) {
+    state.assertion_line=line;
+    if(!services.assertion)return HeadNumericResult::MissingService;
+    return services.assertion(services.context,line)?HeadNumericResult::Ok:HeadNumericResult::ServiceFailure;
+}
 HeadNumericResult HeadNumericInputs::effect(HeadNumericEffect effect, const CoreCommand* command) {
     if (!services.perform) return HeadNumericResult::MissingService;
     return services.perform(services.context, effect, command)
@@ -34,7 +39,7 @@ HeadNumericResult HeadNumericInputs::quantity(HeadQuantityId id, Quantity value)
                 state.manual.hold = value; state.manual.bytes_38[2] = 1; break;
             case HeadQuantityId::StepDrain:
                 state.manual.drain = value; state.manual.bytes_38[3] = 1; break;
-            default: state.assertion_line = 0x2ba; return HeadNumericResult::InvalidQuantity;
+            default: {const auto result=assertion(0x2ba);if(result!=HeadNumericResult::Ok)return result;break;}
         }
         return effect(HeadNumericEffect::ManualStepScreen);
     }
@@ -49,7 +54,7 @@ HeadNumericResult HeadNumericInputs::quantity(HeadQuantityId id, Quantity value)
             state.parameters.intensity = state.coffee_defaults.intensity = value; break;
         case HeadQuantityId::CoffeeDuration:
             state.parameters.time = state.coffee_defaults.time = value; break;
-        default: state.assertion_line = 0x349; return HeadNumericResult::InvalidQuantity;
+        default: {const auto result=assertion(0x349);if(result!=HeadNumericResult::Ok)return result;break;}
     }
     return effect(HeadNumericEffect::CoffeeScreen);
 }

@@ -24,14 +24,17 @@ struct StillHttpAction {
 struct StillHttpServices {
     void* context = nullptr;
     bool (*perform)(void*,const StillHttpAction&,std::uint32_t& result) = nullptr;
+    ConsoleServices diagnostics;
 };
 enum class StillClientResult { Ok, MissingService, ServiceFailure, InvalidCredentialsEncoding, InvalidBody };
 // Original encoder 0x400e1180. Failure leaves the written prefix unchanged;
 // callers must not treat a failed encoding as a terminated C string.
-std::int32_t still_form_encode(char* destination,std::size_t capacity,const char* source) noexcept;
+std::int32_t still_form_encode(char* destination,std::size_t capacity,const char* source,
+    const ConsoleServices* diagnostics = nullptr, ConsoleResult* result = nullptr) noexcept;
 // Original 0x401bf4c8 / 0x400e7078; connectivity errors take text precedence.
 bool still_has_error(const PicoStillState&) noexcept;
-const char* still_error_text(const PicoStillState&,std::uint32_t& assertion_line) noexcept;
+const char* still_error_text(const PicoStillState&,std::uint32_t& assertion_line,
+    const ConsoleServices* diagnostics = nullptr, ConsoleResult* result = nullptr) noexcept;
 class StillClient {
 public:
     StillClient(PicoStillState& state,PicoStillSamples& samples) noexcept : still(state),samples(samples) {}
@@ -45,17 +48,18 @@ public:
     std::size_t body_length = 0;
     bool host_truncated = false, uri_truncated = false, body_truncated = false;
     std::uint32_t assertion_line = 0;
-    void set_host(const char*) noexcept;
-    void build_uri(Command) noexcept;
-    void mark_error() noexcept;
-    void tick() noexcept;
+    ConsoleResult diagnostics_result = ConsoleResult::Ok;
+    StillClientResult set_host(const char*) noexcept;
+    StillClientResult build_uri(Command) noexcept;
+    StillClientResult mark_error() noexcept;
+    StillClientResult tick() noexcept;
     bool succeeded() const noexcept { return !error && response_done; }
     StillClientResult reset();
     StillClientResult command(Command);
     StillClientResult configure(const WifiCredentials&);
     bool receive_headers(const StillHttpResponse&) noexcept;
     StillClientResult receive_body(const void*,std::size_t) noexcept;
-    void complete(std::uint32_t now) noexcept;
+    StillClientResult complete(std::uint32_t now) noexcept;
     void observe(PicoStillObserved&) const noexcept;
 private:
     StillClientResult perform(const StillHttpAction&,std::uint32_t* result = nullptr);

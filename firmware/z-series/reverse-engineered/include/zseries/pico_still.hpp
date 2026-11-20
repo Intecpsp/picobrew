@@ -2,6 +2,7 @@
 #pragma once
 #include "zseries/core_flow.hpp"
 #include "zseries/wifi.hpp"
+#include "zseries/console.hpp"
 #include <array>
 #include <cstdint>
 
@@ -48,6 +49,7 @@ struct PicoStillServices {
     // Reports adapter completion independently from the original service result.
     // Client/backend operations refresh `observed` through the owning binding.
     bool (*perform)(void*, const PicoStillAction&, std::uint32_t& result) = nullptr;
+    ConsoleServices diagnostics;
 };
 enum class PicoStillResult { Ok, MissingService, ServiceFailure, InvalidSelection };
 class PicoStillController {
@@ -76,6 +78,8 @@ public:
     PicoStillResult wait_for(PicoStillStateId next, Command retry_command, std::int32_t maximum);
     PicoStillResult collect_scan();
 private:
+    PicoStillResult diagnose(std::uint32_t line, const char* expression);
+    PicoStillResult log(ConsoleLevel, std::uint32_t line, const char* format, ...);
     PicoStillResult perform(const PicoStillAction&, std::uint32_t* result = nullptr);
     PicoStillResult effect(PicoStillEffect, std::uint32_t argument = 0);
     PicoStillResult connect(const WifiCredentials&);

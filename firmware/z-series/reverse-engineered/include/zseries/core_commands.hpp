@@ -26,8 +26,10 @@ public:
     HeaterSensors& temperatures;
     AuxiliarySensors& auxiliary;
     CoreSession session;
-    // Original Core +0x17b0. Interpretation belongs to the backend/remote
-    // program source; only the evidenced numeric comparison is made here.
+    // Original Core +0x17b0 is the shared AzureState (constructor 0x40120a04
+    // passes this address to Azure's +0x724 state pointer). The original
+    // numeric field name is retained for fixture compatibility; application
+    // composition supplies AzureState, including SessionLoaded == 3.
     std::uint32_t program_source_17b0 = 0;
     bool resumed_session = false; // Original session logger +0x21.
     ProgramBuildResult last_program_result = ProgramBuildResult::Ok;

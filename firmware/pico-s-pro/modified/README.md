@@ -103,7 +103,9 @@ Outputs are isolated by model under `build/standalone/<model>/firmware/`:
 `firmware-report.json`. The default `MODEL=pico-pro` preserves the historical
 build choice. Use `--model pico-s` with `tools/build_firmware.py --standalone`
 for the equivalent CLI build. Only S and Pro are supported by this shared
-implementation; Pico C, Z and Zymatic require their own completed ports.
+implementation. Pico C and generic Z use their own components under
+`firmware/pico-c/` and `firmware/z-series/`; Zymatic still requires its original
+image and a separate port.
 `PICO_MODEL` in `include/picobrew/model.h` controls REST identity, serial
 branding and the OLED model name. Browser branding follows that API identity.
 The build checks vectors, the complete link, the physical RAM budget, absence

@@ -1,6 +1,21 @@
 import { describe, it, expect } from 'vitest'
 import { decodeDisplay } from './display'
 describe('Pico OLED decoder', () => {
+  it('preserves all sixteen Z grayscale levels with the high nibble at even x', () => {
+    const frame = {
+      width: 128,
+      height: 64,
+      rotation: 0,
+      format: 'row-gray4-msb-hex',
+      data: '0123456789abcdef' + '00'.repeat(4088),
+    }
+    const pixels = decodeDisplay(frame)
+    expect(Array.from(pixels.slice(0, 16))).toEqual(Array.from({ length: 16 }, (_, index) => index))
+    expect(pixels[128]).toBe(0)
+    expect(pixels).toHaveLength(8192)
+    for (const invalid of [{ rotation: undefined }, { height: 32 }, { data: frame.data.slice(2) }])
+      expect(() => decodeDisplay({ ...frame, ...invalid })).toThrow()
+  })
   it('decodes page-major LSB pixels and rotates both axes 180 degrees', () => {
     const pixels = decodeDisplay({ width: 2, height: 8, format: 'page-lsb-hex', data: '01 80' })
     expect(Array.from(pixels)).toEqual([1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1])

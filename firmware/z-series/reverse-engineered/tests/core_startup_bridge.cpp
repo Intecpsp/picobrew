@@ -27,11 +27,14 @@ PlatformHandle timer(void* p,std::uint8_t id,std::uint16_t divider,bool up) { tr
 void attach(void* p,PlatformHandle handle,CoreTimerCallback cb,bool edge) { trace(p).event(10,static_cast<std::uint32_t>(handle),static_cast<unsigned>(cb),edge); }
 void alarm(void* p,PlatformHandle handle,std::uint64_t ticks,bool reload) { trace(p).event(11,static_cast<std::uint32_t>(handle),static_cast<std::uint32_t>(ticks),static_cast<std::uint32_t>(ticks>>32),reload); }
 void enable(void* p,PlatformHandle handle,bool value) { trace(p).event(12,static_cast<std::uint32_t>(handle),value); }
+bool heater_commands(void* p){trace(p).event(13);return true;}
+bool assertion(void* p,std::uint32_t line,const char*){trace(p).event(14,line);trace(p).event(15,200);return true;}
+bool adc_commands(void* p){trace(p).event(16);return true;}
 }
 
 extern "C" int core_startup_trace(unsigned kind,int fail_stage,int missing,std::uint32_t* events,std::uint32_t* count) {
     Trace state={events,0,kind,fail_stage};
-    CoreStartupServices services={&state,component,boiler,software,timer,attach,alarm,enable};
+    CoreStartupServices services={&state,component,boiler,software,timer,attach,alarm,enable,heater_commands,assertion,adc_commands};
     I2cTransport bus={&state,begin,write,end,nullptr,nullptr,delay};
     HeaterIo io={&state,configure,gpio};
     if(missing)services.setup_component=nullptr;

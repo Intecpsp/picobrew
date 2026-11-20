@@ -99,6 +99,6 @@ int main(){
 }
 ''')
         subprocess.run(['c++','-std=c++11','-Wall','-Wextra','-Werror','-fsanitize=address,undefined','-fno-omit-frame-pointer','-I',str(ROOT/'include'),
-            str(source),str(ROOT/'src/pico_still.cpp'),str(ROOT/'src/wifi.cpp'),str(ROOT/'src/eeprom.cpp'),'-o',str(binary)],check=True)
+            str(source),str(ROOT/'src/pico_still.cpp'),str(ROOT/'src/wifi.cpp'),str(ROOT/'src/eeprom.cpp'),str(ROOT/'src/enums.cpp'),'-o',str(binary)],check=True)
         subprocess.run([str(binary)],check=True)
 if __name__=='__main__':unittest.main()

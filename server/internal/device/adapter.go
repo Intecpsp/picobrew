@@ -27,11 +27,17 @@ type Adapter interface {
 	HistoryPage(context.Context, uint64, int) ([]domain.Sample, *int, error)
 }
 
+// HistorySchemaReader is optional so existing adapters and simulators retain
+// their stable interface while newer firmware preserves per-session channels.
+type HistorySchemaReader interface {
+	HistoryPageWithSchema(context.Context, uint64, int) (domain.HistoryPage, error)
+}
+
 // ReportedModel validates a firmware build identity. It does not establish
 // physical hardware compatibility. An empty identity denotes older firmware
 // and must never be interpreted as a particular S/Pro model.
 func SupportedModel(model string) bool {
-	return model == "pico-s" || model == "pico-pro" || model == "pico-c"
+	return model == "pico-s" || model == "pico-pro" || model == "pico-c" || model == "z-series" || model == "picoferm" || model == "picostill"
 }
 
 func ReportedModel(c domain.Capabilities) (string, error) {
@@ -47,6 +53,11 @@ func ReportedModel(c domain.Capabilities) (string, error) {
 	if c.Model == "pico-c" {
 		if c.ModelFamily != "pico-c" || (c.DisplayVariant != "ssd1325" && c.DisplayVariant != "ssd1309") {
 			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "Pico C firmware must report its C family and an explicit supported display variant"}
+		}
+	} else if c.Model == "z-series" || c.Model == "picoferm" || c.Model == "picostill" {
+		if c.ModelFamily != c.Model || (c.Model != "z-series" && c.DisplayVariant != "") ||
+			(c.Model == "z-series" && c.DisplayVariant != "" && c.DisplayVariant != "ssd1325") {
+			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware must report a consistent explicit machine family and display identity"}
 		}
 	} else if c.ModelFamily != "" && c.ModelFamily != "pico-s-pro" {
 		return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware model and model family are inconsistent"}
@@ -98,6 +109,9 @@ func validateRecipe(recipe domain.MachineRecipe) error {
 }
 
 func validateCommand(command domain.Command) error {
+	if command.Channel != nil || command.Level != nil || command.Enabled != nil || command.Value != nil || command.DurationSeconds != nil || command.Confirm != nil {
+		return invalid("This firmware does not advertise these command arguments")
+	}
 	known := false
 	for _, value := range commands {
 		if value == command.Command {

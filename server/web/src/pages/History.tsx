@@ -29,6 +29,8 @@ import {
   SearchBox,
   SectionHeading,
 } from '../components/ui'
+import { SensorHistory } from '../components/SensorHistory'
+import { HistorySamples } from '../components/HistorySamples'
 import { TemperatureChart, StateChart } from '../components/Charts'
 import { AIWorkbench } from './Assistant'
 export default function HistoryPage({ id, analyze = false }: { id?: string; analyze?: boolean }) {
@@ -51,7 +53,7 @@ function BrewList() {
     <>
       <PageTitle
         eyebrow="EVERY BREW TELLS A STORY"
-        title="The brew journal."
+        title="The session journal."
         description="Live traces, completed sessions and the notes that make your next batch better."
         actions={
           <Button variant="secondary" onClick={() => void hub.refresh()}>
@@ -61,7 +63,7 @@ function BrewList() {
         }
       />
       <div className="list-toolbar">
-        <SearchBox value={query} onChange={setQuery} placeholder="Search brews or tasting notes" />
+        <SearchBox value={query} onChange={setQuery} placeholder="Search sessions or notes" />
         <div className="filter-controls">
           <select
             aria-label="Filter by machine"
@@ -95,7 +97,7 @@ function BrewList() {
             <table className="data-table brew-table">
               <thead>
                 <tr>
-                  <th>Brew</th>
+                  <th>Session</th>
                   <th>Machine</th>
                   <th>Started</th>
                   <th>Duration</th>
@@ -234,6 +236,8 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
   }
   if (resource.loading && !brew) return <Loading label="Opening the brew journal…" />
   if (!brew) return <ErrorBanner message={resource.error} retry={resource.reload} />
+  const accessory = ['picoferm', 'picostill'].includes(brew.model)
+  const extended = accessory || (brew.sample_fields?.length || 0) > 11
   const samples = brew.samples || []
   const last = samples.at(-1)
   return (
@@ -242,7 +246,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
         back={() => hub.navigate('/history')}
         eyebrow={`${brew.device_name} · ${dateLabel(brew.started_at || brew.observed_at)}`}
         title={brew.recipe_name || brew.command || 'Brew session'}
-        description={`${brew.model} · ${brew.source} · ${brew.recipe_revision ? `Recipe revision ${brew.recipe_revision}` : 'Recipe revision not recorded'}`}
+        description={`${brew.model} · ${brew.source}${accessory ? '' : ` · ${brew.recipe_revision ? `Recipe revision ${brew.recipe_revision}` : 'Recipe revision not recorded'}`}`}
         actions={
           <>
             <Badge tone={brew.state === 'completed' ? 'green' : 'copper'}>{brew.state}</Badge>
@@ -266,15 +270,19 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
         </div>
       )}
       <div className="machine-metrics">
-        <Metric label="Brew duration" value={duration(brew.duration_ms)} note="Recorded session" />
+        <Metric
+          label="Session duration"
+          value={duration(brew.duration_ms)}
+          note="Recorded session"
+        />
         <Metric
           label="Sensor samples"
           value={samples.length.toLocaleString()}
           note={`${events.length} phase or state transitions`}
         />
         <Metric
-          label="Last wort reading"
-          value={temperature(last?.wort_f, hub.unit)}
+          label={accessory ? 'Last temperature reading' : 'Last wort reading'}
+          value={temperature(accessory ? last?.temperature_f : last?.wort_f, hub.unit)}
           note="At the end of the available trace"
           accent
         />
@@ -295,7 +303,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
       </div>
       <section className="panel">
         <SectionHeading
-          title="The complete temperature story"
+          title={extended ? 'Recorded sensor measurements' : 'The complete temperature story'}
           description="Select a point on the graph to add a timestamped note."
           actions={
             marker !== null && (
@@ -314,13 +322,25 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
           }
         />
         {samples.length ? (
-          <TemperatureChart
-            samples={samples}
-            unit={hub.unit}
-            notes={notes}
-            height={340}
-            onSelect={setMarker}
-          />
+          <>
+            {extended ? (
+              <SensorHistory
+                brew={brew}
+                unit={hub.unit}
+                notes={notes}
+                height={340}
+                onSelect={setMarker}
+              />
+            ) : (
+              <TemperatureChart
+                samples={samples}
+                unit={hub.unit}
+                notes={notes}
+                height={340}
+                onSelect={setMarker}
+              />
+            )}
+          </>
         ) : (
           <Empty
             icon={<Activity size={24} />}
@@ -331,16 +351,20 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
       </section>
       <section className="panel">
         <SectionHeading
-          title="Phases, controller state & flags"
+          title={accessory ? 'Device state & flags' : 'Phases, controller state & flags'}
           description="Raw machine state values are retained alongside temperatures for comparison and diagnosis."
         />
-        {samples.length > 0 && <StateChart samples={samples} />}
+        {samples.length > 0 && <StateChart samples={samples} brewing={!accessory} />}
         <div className="chart-legend state-legend">
-          <span>Phase</span>
-          <span>Step</span>
-          <span>Controller</span>
+          {!accessory && (
+            <>
+              <span>Phase</span>
+              <span>Step</span>
+              <span>Controller</span>
+            </>
+          )}
           <span>Flags</span>
-          <span>Compartment</span>
+          {!accessory && <span>Compartment</span>}
           <span>Device state</span>
         </div>
       </section>
@@ -408,14 +432,18 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                 <time>{clockTime(sample.elapsed_ms)}</time>
                 <div>
                   <strong>
-                    Phase {sample.phase} · Step {sample.current_step + 1}
+                    {accessory
+                      ? `Device state ${sample.device_state}`
+                      : `Phase ${sample.phase} · Step ${sample.current_step === 255 ? '—' : sample.current_step + 1}`}
                   </strong>
                   <small>
-                    Controller {sample.controller_status} · Compartment {sample.compartment} · Flags
-                    0x{sample.flags.toString(16).padStart(2, '0')}
+                    {!accessory &&
+                      `Controller ${sample.controller_status} · Compartment ${sample.compartment} · `}
+                    Flags 0x{sample.flags.toString(16).padStart(2, '0')}
                   </small>
                   <small>
-                    {temperature(sample.wort_f, hub.unit)} wort · Device state {sample.device_state}
+                    {temperature(accessory ? sample.temperature_f : sample.wort_f, hub.unit)}
+                    {accessory ? '' : ` wort · Device state ${sample.device_state}`}
                   </small>
                 </div>
               </div>
@@ -450,48 +478,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
         />
         {showSamples && (
           <>
-            <div className="table-scroll">
-              <table className="data-table sample-table">
-                <thead>
-                  <tr>
-                    {[
-                      'Time',
-                      'Wort',
-                      'Thermoblock',
-                      'Target',
-                      'Step time',
-                      'Phase',
-                      'Controller',
-                      'Compartment',
-                      'Step',
-                      'Flags',
-                      'State',
-                      'Source',
-                    ].map((name) => (
-                      <th key={name}>{name}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {samples.slice(samplePage * 100, (samplePage + 1) * 100).map((sample, index) => (
-                    <tr key={index}>
-                      <td>{clockTime(sample.elapsed_ms)}</td>
-                      <td>{temperature(sample.wort_f, hub.unit)}</td>
-                      <td>{temperature(sample.thermoblock_f, hub.unit)}</td>
-                      <td>{temperature(sample.target_f, hub.unit)}</td>
-                      <td>{duration(sample.step_seconds * 1000)}</td>
-                      <td>{sample.phase}</td>
-                      <td>{sample.controller_status}</td>
-                      <td>{sample.compartment}</td>
-                      <td>{sample.current_step}</td>
-                      <td>0x{sample.flags.toString(16)}</td>
-                      <td>{sample.device_state}</td>
-                      <td>{sample.source}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <HistorySamples brew={brew} page={samplePage} unit={hub.unit} />
             <div className="pagination">
               <Button
                 variant="secondary"

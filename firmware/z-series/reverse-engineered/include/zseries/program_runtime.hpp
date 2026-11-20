@@ -1,6 +1,7 @@
 // Typed Z119 runtime execution. Original addresses: analysis/program-runtime.md.
 #pragma once
 #include "zseries/runtime_instruction.hpp"
+#include "zseries/console.hpp"
 #include "zseries/quantity.hpp"
 #include "zseries/msp_protocol.h"
 #include <array>
@@ -32,10 +33,10 @@ const char* program_validation_error(const ProgramView&) noexcept;
 class InstructionStack {
 public:
     static constexpr std::size_t capacity = 256;
-    RuntimeResult push(Instruction) noexcept;
-    RuntimeResult push_checked(Instruction) noexcept;
-    RuntimeResult pop(Instruction&) noexcept;
-    RuntimeResult load(const ProgramView&) noexcept;
+    RuntimeResult push(Instruction,const ConsoleServices* diagnostics=nullptr) noexcept;
+    RuntimeResult push_checked(Instruction,const ConsoleServices* diagnostics=nullptr) noexcept;
+    RuntimeResult pop(Instruction&,const ConsoleServices* diagnostics=nullptr) noexcept;
+    RuntimeResult load(const ProgramView&,const ConsoleServices* diagnostics=nullptr) noexcept;
     void clear() noexcept;
     std::size_t size() const noexcept { return size_; }
     const Instruction& at(std::size_t index) const noexcept { return code_[index]; }
@@ -73,6 +74,10 @@ struct TemperatureDropWatch {
     double maximum = 0;
     double threshold = 0;
 };
+
+RuntimeResult drop_watch_start(TemperatureDropWatch&,double,const ConsoleServices* diagnostics=nullptr) noexcept;
+RuntimeResult drop_watch_update(TemperatureDropWatch&,double,const ConsoleServices* diagnostics=nullptr) noexcept;
+RuntimeResult drop_watch_stop(TemperatureDropWatch&,const ConsoleServices* diagnostics=nullptr) noexcept;
 
 struct ManualStepParameters {
     bool byte_00 = false;
@@ -179,6 +184,9 @@ struct RuntimeServices {
     void (*event)(void*, RuntimeEventType, std::uint32_t, std::uint32_t) = nullptr;
     const ProgramView* (*find_program)(void*, std::uint32_t, double& heating_rate) = nullptr;
     void (*requeue_command)(void*, const RuntimeCommand&) = nullptr;
+    // Bound application services execute OEM assertions and their continuation.
+    // Empty services preserve the explicitly guarded legacy standalone API.
+    ConsoleServices diagnostics;
 };
 
 struct ProgramRuntime {
@@ -210,8 +218,9 @@ struct ProgramRuntime {
                               OpCode wait, std::uint32_t step_reference, bool stop_pumps);
     RuntimeResult progress_still(std::uint32_t now, OpCode completed, bool& interrupted);
     RuntimeResult update_fan(double threshold);
-    void update_t1_drop_watch() noexcept;
-    void reset_t1_drop_watch() noexcept;
+    RuntimeResult start_t1_drop_watch(double threshold) noexcept;
+    RuntimeResult update_t1_drop_watch() noexcept;
+    RuntimeResult reset_t1_drop_watch() noexcept;
     std::uint32_t pause_reason(RuntimeCommandId) const noexcept;
     RuntimeResult select_program(std::uint32_t id, bool& selected);
     RuntimeResult update_remaining_time(std::uint32_t now);
@@ -219,6 +228,8 @@ struct ProgramRuntime {
     RuntimeResult tick(std::uint32_t now, const RuntimeCommand& command);
 
 private:
+    const ConsoleServices* diagnostics() const noexcept;
+    RuntimeResult record_assertion(const char*,std::uint32_t,const char*,RuntimeResult);
     RuntimeResult push(OpCode, std::uint32_t argument = 0) noexcept;
     void* heater_context() const noexcept;
     RuntimeResult enable_heater(bool);
