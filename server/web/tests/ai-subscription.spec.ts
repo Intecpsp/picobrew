@@ -148,7 +148,7 @@ for (const viewport of [
     await page.getByLabel('Model', { exact: true }).selectOption('subscription-model')
     await page.getByLabel('Enable the brew assistant').check()
     await page.getByRole('button', { name: 'Save assistant settings' }).click()
-    await expect(page.getByText('Brew assistant settings saved.', { exact: true })).toBeVisible()
+    await expect(page.getByText('Brew assistant settings saved.', { exact: true }).last()).toBeVisible()
     expect(saved).toMatchObject({
       provider: 'openai',
       auth_mode: 'subscription',
@@ -195,7 +195,7 @@ for (const viewport of [
     )
     await page.getByLabel('Model', { exact: true }).selectOption('sonnet')
     await page.getByRole('button', { name: 'Save assistant settings' }).click()
-    await expect(page.getByText('Brew assistant settings saved.', { exact: true })).toBeVisible()
+    await expect(page.getByText('Brew assistant settings saved.', { exact: true }).last()).toBeVisible()
     await createRecipe('anthropic', 'sonnet')
     expect(assistRequests).toEqual([
       { mode: 'recipe', prompt: 'Create a pale ale' },
