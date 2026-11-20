@@ -3,7 +3,7 @@
   "profile": "standalone",
   "model": "pico-pro",
   "model_family": "pico-s-pro",
-  "firmware_version": "1.3.0",
+  "firmware_version": "1.3.1",
   "reference_version": "0.1.34",
   "source_reconstruction": true,
   "hardware_executed": false,
@@ -13,65 +13,65 @@
     "passed": true,
     "load_address": "0x20004000",
     "ram_end": "0x20040000",
-    "initial_stack_pointer": "0x20035000",
-    "reset_vector": "0x2001c7ed",
-    "entry": "0x2001c7ed",
-    "binary_bytes": 166288,
-    "bss_bytes": 46480,
+    "initial_stack_pointer": "0x20035400",
+    "reset_vector": "0x2001c829",
+    "entry": "0x2001c829",
+    "binary_bytes": 166520,
+    "bss_bytes": 46456,
     "heap_bytes": 32768,
     "sdk_stack_bytes": 32768,
-    "unallocated_ram_bytes": 224,
+    "unallocated_ram_bytes": 16,
     "load_segments": [
       {
         "start": "0x20004000",
-        "memory_bytes": 166288,
-        "file_bytes": 166288
+        "memory_bytes": 166520,
+        "file_bytes": 166520
       }
     ],
     "undefined_symbols": [],
     "test_symbols": [],
     "required_entry_symbols": {
-      "ResetISR": "0x2001c7ed",
-      "main": "0x2001ae69",
-      "setup": "0x2000c2ad",
-      "loop": "0x2000ae11",
-      "pico_application_setup": "0x2000b6e9",
-      "pico_application_loop": "0x2000ab69",
-      "pico_application_initialize": "0x20010571",
+      "ResetISR": "0x2001c829",
+      "main": "0x2001aea5",
+      "setup": "0x2000c4a5",
+      "loop": "0x20007c09",
+      "pico_application_setup": "0x2000b819",
+      "pico_application_loop": "0x20007961",
+      "pico_application_initialize": "0x20010689",
       "pico_application_bind_services": "0x20007799",
-      "pico_recipe_run_step": "0x2000ea41",
+      "pico_recipe_run_step": "0x2000eb59",
       "pico_temperature_control_timer_isr": "0x20005df1",
       "pico_heater_pump_timer_isr": "0x20004585",
       "g_pfnVectors": "0x20004000",
-      "_heap": "0x20037f20",
-      "_eheap": "0x2003ff20",
-      "_bss": "0x2002c990",
-      "_ebss": "0x20037f20"
+      "_heap": "0x20037ff0",
+      "_eheap": "0x2003fff0",
+      "_bss": "0x2002ca78",
+      "_ebss": "0x20037ff0"
     }
   },
-  "elf_sha256": "e4be7be9ddb9c0a151cd4ef5f1e01dad304986bc14084fc465f1eb95a0338d67",
-  "binary_sha256": "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832",
-  "update_body_sha256": "8602f4e6229e719d60d6f2e725988dd9fceea1591cb5825666606abf63a6a8f4",
-  "update_body_bytes": 332618,
+  "elf_sha256": "cd75a1e6cbeb944e164b4cbb98cf4fdd623f014e3d60cd7f82e91003be31a42e",
+  "binary_sha256": "f887663ff2f6e8e4d5936a9c81b2e02cccb5adee89c45050cb2bea9fb4a1e9be",
+  "update_body_sha256": "72656f22f55ad84ca538fb91f25b1fd202e5e269c74d151f2371bdf38a3cbed8",
+  "update_body_bytes": 333082,
   "sdk_link_passed": true,
   "sdk_source_files": 53,
   "app_sources_sha256": {
     "src/actuators.c": "98969de4dad2007d0b42586a188a26621bf2067467b96614d0024a754b7f0cb7",
-    "src/application.c": "d269b596fb2185d9c3474b9b6818328b6083454bb7d399cf25de52a75455704b",
+    "src/application.c": "37659337177e0b9a7a39f3a1deed46ff586511010eb482541d7c3841a3a8af4c",
     "src/control.c": "bb1f9edebda074d4425d9db401aec30eb1b18fd364bbe9661c9ae0daca3da4fc",
     "src/device.c": "20d8032ca6dc9b5def2a69df8cf0beb3709362d28c89ace98552a22ca46f34d4",
     "src/http_server.c": "d4c483d952934b8080aa8b529b274a558ccc202a9d6f8a59b742cf698c2d350f",
-    "src/local_api.c": "5c2a51c88cbcd5f0bdf2ff6876022970dbda43a8bad2f76fc3a6a06c82c8dd60",
+    "src/local_api.c": "a710825effa6b63fbb4d70471ee3c42bc3ccf1b7bb478926b69e8ade89afd88e",
     "src/local_control.c": "1e4874e2c0c88e20b4b4f52c4bb4c9b68a6b99a5bde7b36fe943bd4bb6a0d248",
     "src/local_history.c": "d7b952a39461e154efdfd81111d3eab203f65181d43e541acd99748f0a75ceb7",
     "src/local_starter_recipes.inc": "5de924b9763ceb0dc9a260a9582b703596ed7ffe9652616462926377070bd36e",
     "src/local_store.c": "f0dc8e6ff4231b40c511194507c8f2c04d9515dbde916fa775599dfcad32cf88",
-    "src/local_telemetry.c": "be339dc0bd12d19518de22eebe3f2aa554401dfc5deed9e23326e9069016d21b",
-    "src/local_web_assets.c": "a2b4229a1c2711f9a0e4c38d9fc6e466fca4d7e9659a4deb8b78f7991acd7fcc",
+    "src/local_telemetry.c": "1ba2b8be7001eb405ef28885bbe2696fa14682b7c96416e5e4a8ec98ec359077",
+    "src/local_web_assets.c": "824634f6d7b3b16722d4f6ac0d39d106dd56a061d27d683c42e937c68bf735a6",
     "src/network/api.c": "a982d84fc498d5527bb3ffba63ed7abbf2bb6419437a40df529ed677d6a03c8c",
-    "src/network/network.c": "e02e3a3ea8580fa7323985e2760ae26ad0eaa4dd9fb8303ee34c42549d32c42d",
+    "src/network/network.c": "c297a405d2f22f4e79001b6436487208db30bf475c08aca42739914aa51867e3",
     "src/network/network_internal.h": "437e7ec3d9ac98a3e5853900726077a95e06d64ccb1243c0ce2d09562fbd568f",
-    "src/network/still_network.c": "d0014f21f436199b4c672f9d3e5ce9863e74ccc3245624ba2962c28f571486d3",
+    "src/network/still_network.c": "9e9f353ed3c5b04c84b8b08c1f1df981e2c31d955d8d8e4e97ae72b9a8027ac6",
     "src/network/storage.c": "34cd6ffb35276472962f85167ad88460a75cddab421cf0bbb5493048d7d99adf",
     "src/network/text.c": "8b83150ae17fd8ffe497eafe2647b2cd99a51268a626f1babdfe7407319728b2",
     "src/network/update.c": "2f76ba1f9210d9b6958978a248f67267d35ea618f6bc0f11657b9903032efbf9",
@@ -88,14 +88,14 @@
     "src/ui/actions.c": "6bf785253181cfd68f5af33e8b6110239dc4c416aa062886b0c1731b632449da",
     "src/ui/assets.c": "30eb00cba8dfd36ef82f2788cebe90d25e08c6cb5b2a31acb30f0e84071d8ee8",
     "src/ui/context.c": "3f335790531204ec865a550467802dfde942708be23aef881ca836bea39df561",
-    "src/ui/diagnostics.c": "230c658854e63836cc8a7a7eb5de51dd51ada6857e60bb1139cb49f96e094f13",
+    "src/ui/diagnostics.c": "a47b382ee589e56a0082f31f9e2516632976263afa83606eb66330d991da1d8c",
     "src/ui/display.c": "25ebceda0bf649442b5c039ebd4e99b87393dc842cd4d478adbb71088088114b",
     "src/ui/display_values.c": "a36d983f344248b37656d8d8375fef9688c8edfe8c934ce1e98f9642189c74c6",
     "src/ui/encoder.c": "3ef68e1226597265ff14100845df38bf672a8eb32dbabdc6eec77ff538abc99d",
     "src/ui/encoder_editor.c": "27f1884ef3011d27edf049c8e610437bffbb72cfc26efa93663d691da97bc1df",
     "src/ui/graphics.c": "8e8c862b49ec750159915d5152cb9c6be5ad7ccf2eafb654733ff6d8eb42a357",
     "src/ui/instruction_screens.c": "6662170fe2e380f3b0b2acacf1945fa294090882e03b9edd6763c0b0872f7202",
-    "src/ui/menus.c": "7fa0539f90b9a6b5284ab0ebd571a1fe24f33e950ad2c541cdd02fdefe4a3432",
+    "src/ui/menus.c": "b8c3283323cde105bcb38b197cfb5610fcf1baa0c70c435c36599fddfd796f25",
     "src/ui/packed_bitmaps.h": "b762a5bead4fb600f9e2b314e3a3da33e591401e84925f177cdd8f9edcdb7b70",
     "src/ui/pages.c": "ab7b4627701ccfd572eb59f148203d0df69f6115ba093b3f08b85c0805805140",
     "src/ui/screens.c": "61a5ab73604cf8d2d13735357d78436f9045c9faf414fa9c12a3c27304ea4d3d",
@@ -104,10 +104,10 @@
     "src/ui/translations.c": "dc7aad7b120015c3f01589fb5bb538965137a025b1f500cd780db183a0604d80",
     "src/ui/ui_assets.h": "6473def4314d4afea667aa2ab2ed29096ba812a2b1eda069707796dbd2230908",
     "src/ui/ui_internal.h": "238f9ea39458d1147e1447286a2d88e4ff9fb3040bdb9c9c6daba33e1ebc372a",
-    "src/ui/ui_menus.c": "9de004042549aff99e58de426b4ea6493a31febb262bd295f177ff8118b1ae86",
+    "src/ui/ui_menus.c": "26f551673ed957ca35712e650771b226ab253a678712d6d3e92f179a4db543c6",
     "src/ui/ui_screens.c": "0430f6faddf986c8cc65c5baea835c45359adbe1ae13e5ac4796bf3f223696f8",
     "src/ui/ui_workflows.c": "453110ff56f6f0a2ea83716cbac0dc8617c92f791716fc0b07e6033382b7eadc",
-    "src/ui/workflow_adapters.c": "dee096c673d12800d25425f78872af7cf77201f728ffdc47a19521b78af82fff",
+    "src/ui/workflow_adapters.c": "d6adb4f881d6408ee9bc5a21ec329548f6b90e85b85ca86277b7db9f559bfae7",
     "include/picobrew/actuators.h": "c82c7499378fb3f448e912f353207dbd2a1c6b423976b3240f75f6bd357a7464",
     "include/picobrew/application.h": "dce8b2ff513ec6f182e6a3a3aa95d2b369a81438d456464f073f8235c559016d",
     "include/picobrew/config.h": "3e333b52b91b6f3b3ef27f4d3f16a71099b3670da8af295cf1fa75ed94266c6e",
@@ -119,13 +119,13 @@
     "include/picobrew/energia_network.h": "4c07f22791a46806fad3a3d3478b1e4ac5a607c53390f7648ba4eec8b1088b57",
     "include/picobrew/energia_telemetry.h": "49a567c3d6231ab19554b8d628327e5023a5995728729006e8ca90f1c2aa43c4",
     "include/picobrew/http_server.h": "372a731e8585049656be468609a7bce21ccdbaec95758091ba4225408ae41ac3",
-    "include/picobrew/local_api.h": "ba83a4c5c92f5ea3dcb33245c42556ac9255849dc758ecb4014e19c4dfc4ef0a",
+    "include/picobrew/local_api.h": "eda5e479c12e7c8472c971ad3dea41dbb2f670552a97f0822c626a6d9d8e5d31",
     "include/picobrew/local_control.h": "674eb5d8a62a007b5582113290faf3e853149deb164aea35c8354368cd7ed22a",
     "include/picobrew/local_history.h": "dc9b4b8401a77e3c251c35260f2e9be293730fc9d2fd9ad9d7c2ea81f5c2daae",
     "include/picobrew/local_store.h": "378816d0a7b7b4d93ab4b6c3bb5de11a452b4c6c3ac6146e8a85b6b967c89735",
     "include/picobrew/local_telemetry.h": "71d89a54302a72f32933685d15ab0299f97ebfc38fb9681754db410720b18b5e",
     "include/picobrew/model.h": "16aea756bbba23411a257146b22b6308abbc6fa77cdb542c8186353c94e16320",
-    "include/picobrew/network.h": "c4debb42a55fa843bc22b7da4cf6851ecbad31cf4949afc18883523adc6f6ce4",
+    "include/picobrew/network.h": "afb68336b4b46d7e62554b535ef53cf0f71d1b7c6560df9c5b92067b0371515d",
     "include/picobrew/phase.h": "9b594aab9540b93728816fafa5732c100396e1aab89e2e17fb0ef10a61a33b56",
     "include/picobrew/pico_http_client.h": "e5aa2468f134db47c47ffdcc9e50bac6b8aabdb722488e0e48fc3aa5caa16e17",
     "include/picobrew/pid.h": "cbac06bfdb814e75d6c04e3f83bc5c76f87d1948e01605b421cfde71866df48a",
@@ -134,20 +134,20 @@
     "include/picobrew/sensors.h": "f6caff9f9cc628f6d931235a97904dbea1c49f01a211006661657adbfe0be1b5",
     "include/picobrew/state.h": "0b2735efe0603782caf628c07566aee6fa92629b0d28d3c4f6c5120203b98fd7",
     "include/picobrew/text.h": "0521837aae25b90de024edbc20d5029d92a2be40c2928810ac0f52d65cc15626",
-    "include/picobrew/ui.h": "589c6468957f1fb4151022ac763a112db3f737c9bd4ef9c8be5407904a7e09ab",
-    "include/picobrew/version.h": "84f0b1b3620de9f6b314477e5c18ccf635662e59722992e3a0a607468c35182c",
+    "include/picobrew/ui.h": "bcf9e28b5ed82765bf302b75822a6581a3af4f18bf1a351c0434726257e04b30",
+    "include/picobrew/version.h": "d3cec452d7a2a319c5dd9e11261ef9dbb8ae357fb40758e110d5edb0f9e6fc2b",
     "include/picobrew/web_assets.h": "daaeab47d46d46803e89a9e7069981a4cfb9486fd99b0fcc669cb1dce75c938b",
     "platform/energia_cc3200.cpp": "b15be4d644c8157bc635c985a8fced7db40f83a7d6ddb0aea85cb587a98a6410",
     "platform/energia_history.cpp": "2df266c0d60321b6075d91894c79c3238eadba03fc9857c51f24ced8de7ec952",
     "platform/energia_http_server.cpp": "b0d9d29d3a644a2e114afda8ec5279b6e4ec53b953a100c47d37a2bdfdea7e99",
-    "platform/energia_network.cpp": "277b9a51f7f568a59708adda95c970adfba0f6f4d69820d095d56ffa57590746",
+    "platform/energia_network.cpp": "6d6b9f3d4af1903538aff339a0c01210637fc25f213001e6dc14a1a2638a8fb9",
     "platform/energia_runtime_compat.c": "aeec2c651e1dd4f2e49ac22f1ca3370c6a1d7875704a60d2da5919f6c70e5a81",
     "platform/energia_telemetry.cpp": "7b20ab2fb9ba0e438248643c33cce80f52d2764e0b5436f8295db7352478919d",
-    "platform/firmware_main.cpp": "49331f29920e8faaa0103b751b0ecb1fa169b25502387db2b2b076a55ef8d9fa",
+    "platform/firmware_main.cpp": "91c48e752479d0726f5e765eeb663ee294de42c5e05f32f27a3080bd069d8bfa",
     "platform/hub_recovery/http.c": "0b170977c24ca03c246440a2783a1ade608819a5ad1b5273faf1cf028298ce30",
     "platform/hub_recovery/identity.cpp": "811c0f588105c6014d58d440f7d9bd92ad7c22641c296c0229ffd4ed614ea727",
     "platform/ota_cc3200.hpp": "efcd98a1d2612cd307093a35369f0c630e544ef94a7dfe7b06bc4138a551a21e",
-    "platform/pico_cc3200.ld": "334e5637a6034b33762378fb2d841cadb9858236a8f5547f0be4d75c3e77ee2e",
+    "platform/pico_cc3200.ld": "b44e237855a079d31e4c4d52918258013bcdd74a47aab50761462ed72614b29e",
     "platform/pico_http_client.cpp": "687b69337b839b72443f5dbade71b2fe20951612f620a6a1fa0a057675ba42fe",
     "recovery/recovery/sha256.c": "d6af914aa4bd2ec9d81bd98a6926da57652f07cf426f34293302368a3679b6a4",
     "recovery/recovery/sha256.h": "92cb6786c5db326cf5241a615754cf84da5f2faa3dcbfb42d462278ddc35fbcc"
@@ -263,7 +263,7 @@
     },
     {
       "source": "libraries/WiFi/utility/SimpleLinkCallbacks.cpp",
-      "sha256": "b01e041ce6cc604bea6d0a912881603c958027a7590dcf6743f5e09368aca4f8"
+      "sha256": "b130791e00f57865db20eb640ce79fc9ad724753f2f917e2265d101cc90f7a97"
     },
     {
       "source": "libraries/WiFi/utility/cc_io_park.c",
@@ -367,7 +367,7 @@
     },
     {
       "source": "firmware_main.cpp",
-      "sha256": "49331f29920e8faaa0103b751b0ecb1fa169b25502387db2b2b076a55ef8d9fa"
+      "sha256": "91c48e752479d0726f5e765eeb663ee294de42c5e05f32f27a3080bd069d8bfa"
     },
     {
       "source": "energia_runtime_compat.c",
@@ -396,19 +396,19 @@
       "device_io": "No POSIX descriptor retargeting to Serial, WiFi, or SLFS is supplied"
     },
     "sbrk_linked": true,
-    "sbrk_provider": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/energia_cc3200.a(startup_gcc.c.o)",
+    "sbrk_provider": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/energia_cc3200.a(startup_gcc.c.o)",
     "sdk_heap_provider_verified": true,
-    "bounded_heap_adapter_provider": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/objects/application/energia_runtime_compat_cfe6a7ba54.o",
+    "bounded_heap_adapter_provider": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/objects/application/energia_runtime_compat_c42ec744a4.o",
     "bounded_heap_adapter_verified": true,
     "allocation_providers": {
-      "malloc": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
-      "free": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
-      "calloc": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-calloc.o",
-      "realloc": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-realloc.o",
-      "_malloc_r": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallocr.o",
-      "_free_r": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-freer.o",
-      "_calloc_r": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-callocr.o",
-      "_realloc_r": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocr.o"
+      "malloc": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
+      "free": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
+      "calloc": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-calloc.o",
+      "realloc": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-realloc.o",
+      "_malloc_r": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallocr.o",
+      "_free_r": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-freer.o",
+      "_calloc_r": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-callocr.o",
+      "_realloc_r": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocr.o"
     },
     "allocator_provider_verified": true,
     "allocator": {
@@ -417,102 +417,102 @@
       "objects": [
         {
           "member": "lib_a-malloc.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloc.o",
           "sha256": "113ee69ac2a688f414304ccc041a4c58e6e17eb6facddcff869c4040bed6d214"
         },
         {
           "member": "lib_a-calloc.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-calloc.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-calloc.o",
           "sha256": "1668a05cf54a08584287282ae565b08292f1c284db2286d516cbfcf3f4ef7807"
         },
         {
           "member": "lib_a-realloc.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-realloc.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-realloc.o",
           "sha256": "a45bbc29b8b07f3e69539999dff7f338a243d28f717755a3d8b0462401198f24"
         },
         {
           "member": "lib_a-mallocr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallocr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallocr.o",
           "sha256": "53abd33a50b9b862f75d0decb839b0befe636453040dcf7ff0146864f6bc85b8"
         },
         {
           "member": "lib_a-callocr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-callocr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-callocr.o",
           "sha256": "f649e3d0ec5d88cabb0a77af783b718f6d2b4de5123fbe33ab6f557cd67d2a92"
         },
         {
           "member": "lib_a-freer.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-freer.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-freer.o",
           "sha256": "dc86b88c9da292570403ead78b81df42c8369b94e790e543794ae7b295e15d63"
         },
         {
           "member": "lib_a-reallocr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocr.o",
           "sha256": "564982180b55017bd569b04604342a382790ae677fc6f77dfb82c4e62c938134"
         },
         {
           "member": "lib_a-msizer.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-msizer.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-msizer.o",
           "sha256": "eed0cc2193b1ba21157bf7053d212b642e1137def1c066ee973b9b2cb14cdc37"
         },
         {
           "member": "lib_a-aligned_alloc.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-aligned_alloc.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-aligned_alloc.o",
           "sha256": "87827b49bb967aecf1369bf1b2cdd7c91e80a33210859dc096d617eb9ed5e45d"
         },
         {
           "member": "lib_a-malign.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malign.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malign.o",
           "sha256": "e042f8e01999d3e349fc262ea92ae9335bda190bcfd0e85558e79d2a0b193301"
         },
         {
           "member": "lib_a-malignr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malignr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malignr.o",
           "sha256": "bc64106b822e6e649670bbcce95bd3071a16394d245fbb147a17a2bb5c8c43be"
         },
         {
           "member": "lib_a-valloc.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-valloc.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-valloc.o",
           "sha256": "69f47583da07c1b7ff18e30617841535a61908e91e7b74f68efc0417413456f8"
         },
         {
           "member": "lib_a-vallocr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-vallocr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-vallocr.o",
           "sha256": "33838c0a38c3b472572c9fb6dacb3eac81b7340aff3b10b9c18daf1227cdbd0a"
         },
         {
           "member": "lib_a-pvallocr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-pvallocr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-pvallocr.o",
           "sha256": "9d055c3d7864eba259058129cd834149fc10a98ebade44c308aefca3a7b90a49"
         },
         {
           "member": "lib_a-cfreer.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-cfreer.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-cfreer.o",
           "sha256": "f14d11be306904aeae041e28089f5f38d1b600eeabc7aa2259a1ac44d5596449"
         },
         {
           "member": "lib_a-mallinfor.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallinfor.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallinfor.o",
           "sha256": "3b8a3a60379fa09c3366fadc5694561763d4ab9f0e3e09cb7da037728eb78db4"
         },
         {
           "member": "lib_a-malloptr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloptr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-malloptr.o",
           "sha256": "67ee21f04e0e5486b44c644c4b0748ed296e803f9111ff72adaa41205714034f"
         },
         {
           "member": "lib_a-mallstatsr.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallstatsr.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-mallstatsr.o",
           "sha256": "6ecac1a9dde946fd109afede8d928a8b103e9174d74e4be242df85b3c59050f2"
         },
         {
           "member": "lib_a-reallocarray.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocarray.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocarray.o",
           "sha256": "aca86ee1a0ca9a6ff04df1bd5d55e55a4ceca64c19ed5ae10c0887499f2bd504"
         },
         {
           "member": "lib_a-reallocf.o",
-          "path": "/Users/jeff_walter/Code/pico-ota-worktree/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocf.o",
+          "path": "/private/tmp/pico-wifi-menu/firmware/pico-s-pro/modified/build/standalone/pico-pro/firmware/native/runtime-allocator/lib_a-reallocf.o",
           "sha256": "80af8b4558c8eed8a94238c4c2ad3ae314a3b8a8ec49c5640dd8bb20c8b0bb42"
         }
       ],
@@ -543,7 +543,7 @@
     "scope": "Lazy buffers reused within the retained 32768-byte native heap; allocator overhead and other runtime allocations are additional. Allocation failure is reported without changing brewing controls."
   },
   "hub_ota_protocol": 1,
-  "browser_manifest_sha256": "89f1d18f7d7550c90dbb7142428602ce99cc65ce9f46ec242ec047216e11265f",
+  "browser_manifest_sha256": "32f7b601000a940f8bc860c57c52f7cb8f69240bce702b0890737038761bf6ad",
   "browser_storage": {
     "schema_version": 1,
     "block_size": 4096,
@@ -582,12 +582,12 @@
         "payload": "api-explorer.js.gz",
         "content_type": "application/javascript; charset=utf-8",
         "content_encoding": "gzip",
-        "length": 2741,
+        "length": 2764,
         "max_size": 3584,
         "allocation_blocks": 1,
-        "sha256": "06616531c1d869a7e4f69e77d6e32b26a0d0d494766f782cecee5c42665acdab",
-        "source_length": 7270,
-        "source_sha256": "305dfe63b82c2a7b841c4796f5c5a3554255987f3ec1f1b47f4d820c7c2452a1"
+        "sha256": "3fadaa37da3a0a7087e3f0d29d5472312cfbc57166d413d0461bae85359215d1",
+        "source_length": 7347,
+        "source_sha256": "fd6cb15f62b12855e76c05b642ac33824b4b4ae12928739263908b2ba7ee632f"
       },
       {
         "source": "history.js",
@@ -618,7 +618,7 @@
     ]
   },
   "web_sources_sha256": {
-    "web/api-explorer.js": "305dfe63b82c2a7b841c4796f5c5a3554255987f3ec1f1b47f4d820c7c2452a1",
+    "web/api-explorer.js": "fd6cb15f62b12855e76c05b642ac33824b4b4ae12928739263908b2ba7ee632f",
     "web/app.js": "090d5fbed3d6bdda7d981bdccdfa3e757b5b35fd2dc91711f0e90d6b70bf17d0",
     "web/history.js": "50663f987f4c9e90707e537b602ca4fa88b688017d86587892609a7073db5b85",
     "web/index.html": "b069d8ae8d5fca97bab714849218553032a2f688f175c3e2db92bbb70b655e4c",

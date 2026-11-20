@@ -144,6 +144,60 @@
       "archive_sha256": "7c60cddaae5a5c6d75a9ad74487fc7146ad508252047ea439f6e4f205eda39a7",
       "binary_sha256": "c96d04e67f2cf0439fae038f0cbf7a84357fca38600d6522a637865e0d87acb6",
       "binary_bytes": 1634176
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.1",
+      "kind": "standalone",
+      "source_commit": "df88443c805aa5a5a132eaf81d8f9ee80f26db84",
+      "archive_sha256": "f938064cb8400867cdbf3b39a3f15c2ac6939312572d283de096b374c8e48cac",
+      "binary_sha256": "4cc792a016e34becfbebe41a32e752d80358e60be8c0c7571026551619ee0833",
+      "binary_bytes": 166512,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.1",
+      "kind": "standalone",
+      "source_commit": "df88443c805aa5a5a132eaf81d8f9ee80f26db84",
+      "archive_sha256": "a5dd9fe6f9fecb8fb57b78f77ba7857e119099b810ee67446750627ad12a70e4",
+      "binary_sha256": "f887663ff2f6e8e4d5936a9c81b2e02cccb5adee89c45050cb2bea9fb4a1e9be",
+      "binary_bytes": 166520,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.1",
+      "kind": "standalone",
+      "source_commit": "df88443c805aa5a5a132eaf81d8f9ee80f26db84",
+      "archive_sha256": "f3317190ac0b33049666b8dfd3f2fabaab54778cbe053428698c5f465067180b",
+      "binary_sha256": "47c7ae5729c0b19c9e7b6005164771bd97d0eec00d11f017b3eea9447b1f01e6",
+      "binary_bytes": 162488,
+      "display_variant": "ssd1325"
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.1",
+      "kind": "standalone",
+      "source_commit": "df88443c805aa5a5a132eaf81d8f9ee80f26db84",
+      "archive_sha256": "d0b3bdbe7bb3aba8e19c78e2b32ddd04bf1253cd1153423606df5703fd856ce1",
+      "binary_sha256": "390ab4955ff0489157c9449df6013e205c9f2fd7b11dfdcc99b0dd5c38366641",
+      "binary_bytes": 162392,
+      "display_variant": "ssd1309"
+    },
+    {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.1",
+      "kind": "reference",
+      "source_commit": "a46239d2ab24dd0bdc0cdcb6123272d521979566",
+      "archive_sha256": "5e3512134711b482b8325d42675ba03962e8bfd0291e1ead5c5e6f55e59f7659",
+      "binary_sha256": "086c97669520ea8939eb111a30ddf6d487612a6396fc62887955eadf920f38b4",
+      "binary_bytes": 1636848
     }
   ]
 }

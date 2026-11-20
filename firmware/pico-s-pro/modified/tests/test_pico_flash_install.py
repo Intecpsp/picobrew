@@ -15,6 +15,7 @@ import logging
 import os
 from pathlib import Path
 import struct
+import zipfile
 import sys
 import tempfile
 import unittest
@@ -402,7 +403,6 @@ class InstallWireTests(unittest.TestCase):
                 self.assertNotIn(representation, text)
 
     def test_pinned_s_target_upgrades_version_one_then_provisions_recovery(self):
-        import zipfile
         root = Path(installer.__file__).resolve().parents[1]
         with zipfile.ZipFile(root / "releases/pico-s-pro/1.0.0.zip") as archive:
             installed = archive.read("pico-s-pro-standalone.bin")
@@ -423,6 +423,16 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(recovery.files[installer.RECOVERY_NAME], installer.RECOVERY_FILE.read_bytes())
         self.assertEqual(recovery.files[APP_NAME], packaged.read_bytes())
         self.assertEqual(recovery.files[KEY_NAME], KEY)
+
+    def test_previous_ota_release_is_approved_only_for_its_model(self):
+        for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
+            archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / "1.3.0.zip"
+            with zipfile.ZipFile(archive) as bundle:
+                old = bundle.read(model + "-standalone.bin")
+            identity = installer._image_metadata(old)
+            for operation in ("install", "install-recovery"):
+                self.assertIn(identity, installer._approved_current_applications(operation, model))
+                self.assertNotIn(identity, installer._approved_current_applications(operation, other))
 
     def test_independent_recovery_bootstrap_keeps_application_selected(self):
         files = dict(self.files)
