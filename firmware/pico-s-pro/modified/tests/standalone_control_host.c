@@ -27,10 +27,12 @@ static uint32_t clock_ms(void *c)
 {
     (void)c;
     if (sim.click_on_clock) app.ui.encoder.click_latch=0;
-    if (sim.choose_last && app.ui.encoder.minimum==3 && sim.now%32==0) {
+    /* Allow the OLED redraw to finish between detents. Press only after the
+     * menu has applied the last position on either display controller. */
+    if (sim.choose_last && app.ui.encoder.minimum==3 && sim.now%2048==0) {
         if (app.ui.encoder.position < app.ui.encoder.maximum-1)
             ++app.ui.encoder.position;
-        else
+        else if (app.ui.encoder.previous_position == app.ui.encoder.position)
             app.ui.encoder.click_latch=0;
     }
     return ++sim.now;
