@@ -23,7 +23,11 @@ static struct {
     unsigned bank, received;
     int socket;
     bool loaded, backing_off;
-} telemetry;
+} telemetry
+#if defined(__arm__) && PICO_STANDALONE
+    __attribute__((section(".pico_telemetry_bss")))
+#endif
+    ;
 static void add_count(uint32_t *counter, uint32_t amount);
 
 const char *pico_telemetry_state_name(PicoTelemetryState state)

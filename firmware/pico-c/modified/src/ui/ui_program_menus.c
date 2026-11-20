@@ -58,7 +58,7 @@ void pico_ui_service_menu(void)
         case 4:
             pico_diagnostics_menu();
             break;
-        case 5:
+        case 5: {
 #if PICO_STANDALONE
             return; /* The legacy factory-reset path depends on cloud firmware. */
 #else
@@ -96,6 +96,7 @@ void pico_ui_service_menu(void)
             pico_display_stop_scrolling();
             break;
 #endif
+        }
         default:
             return;
         }
