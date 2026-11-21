@@ -328,7 +328,7 @@ func compileMachineRecipe(r domain.Recipe, warnings *[]string) (*domain.MachineR
 			blockers = append(blockers, fmt.Sprintf("Step %d kind %q has no verified standalone firmware mapping.", i+1, step.Kind))
 		}
 		if step.Location < 1 || step.Location > 6 {
-			blockers = append(blockers, fmt.Sprintf("Step %d requires an explicitly verified chamber location 1–6; no routing is inferred.", i+1))
+			blockers = append(blockers, fmt.Sprintf("Choose a flow path for step %d before sending this recipe to the brewer.", i+1))
 		}
 		if step.Minutes > 599 || step.DrainMinutes > 120 {
 			blockers = append(blockers, fmt.Sprintf("Step %d exceeds firmware duration limits (599 active / 120 drain minutes).", i+1))

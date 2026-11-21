@@ -100,18 +100,18 @@ for (const width of [1440, 390]) {
   })
 }
 
-test('an empty library has one create action and the editor names the valve choices', async ({
+test('an empty library has one create action and the editor names each PicoPak flow path', async ({
   page,
 }) => {
   await page.route('**/api/v1/recipes', (route) => route.fulfill({ json: [] }))
   await page.goto('/#/recipes')
   await expect(page.getByRole('button', { name: 'Create recipe', exact: true })).toHaveCount(0)
   await page.getByRole('button', { name: 'Create a recipe', exact: true }).click()
-  const valve = page.getByLabel('Valve position', { exact: true }).first()
+  const valve = page.getByLabel('Flow path', { exact: true }).first()
   await expect(valve).toHaveValue('0')
-  await expect(valve.getByRole('option', { name: 'Mash · position 2' })).toHaveAttribute(
+  await expect(valve.getByRole('option', { name: 'Hop addition 1', exact: true })).toHaveAttribute(
     'value',
-    '2'
+    '3'
   )
   await expect(valve).toHaveCSS('appearance', 'none')
   await expect(

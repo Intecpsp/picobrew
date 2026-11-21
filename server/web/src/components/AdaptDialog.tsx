@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Send } from 'lucide-react'
 import { useHub } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
-import { isNative } from '../lib/programs'
+import { isNative, routeLabel } from '../lib/programs'
 import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
 import type { Adapted, Profile, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
@@ -361,7 +361,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                       <th>Target</th>
                       <th>Time</th>
                       <th>Drain</th>
-                      <th>Compartment</th>
+                      <th>Flow path</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -372,7 +372,11 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                           <td>{step.target_f ? `${step.target_f}°F` : 'Unheated'}</td>
                           <td>{step.minutes} min</td>
                           <td>{step.drain_minutes} min</td>
-                          <td>{step.location || 'Unmapped'}</td>
+                          <td>
+                            {adapted.machine_recipe
+                              ? routeLabel(step.location, adapted.profile.id)
+                              : routeLabel(step.location, adapted.recipe.source_model, true)}
+                          </td>
                         </tr>
                       )
                     )}
@@ -395,7 +399,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                       <th>Target</th>
                       <th>Time</th>
                       <th>Drain</th>
-                      <th>Compartment</th>
+                      <th>Flow path</th>
                       <th>Instructions</th>
                     </tr>
                   </thead>
@@ -406,7 +410,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                         <td>{step.target_c ? formatTemperature(step.target_c) : 'Unheated'}</td>
                         <td>{step.minutes} min</td>
                         <td>{step.drain_minutes} min</td>
-                        <td>{step.location || 'Unmapped'}</td>
+                        <td>{routeLabel(step.location, adapted.profile.id)}</td>
                         <td>
                           {[
                             step.type || step.kind,

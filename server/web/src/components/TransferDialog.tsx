@@ -435,11 +435,11 @@ export function TransferDialog({
                     <summary>
                       {item.status === 'ready' ? 'Review machine schedule' : 'Machine schedule'}
                     </summary>
-                    <ProgramTable program={item.native} />
+                    <ProgramTable program={item.native} model={plan.profile_id} />
                     {item.previous && (
                       <details>
                         <summary>Previous machine schedule</summary>
-                        <ProgramTable program={item.previous} />
+                        <ProgramTable program={item.previous} model={plan.profile_id} />
                       </details>
                     )}
                   </details>

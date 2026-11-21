@@ -318,8 +318,8 @@ export function RecipeSchedule({
       />
       {steps.length > 0 && (
         <p className="help-text">
-          Choose one valve position per step. The names show how PicoPak starter recipes use each
-          position. Check the routing for your brewer before transfer.
+          Choose where liquid flows during each step. These choices follow the PicoPak brew
+          schedule.
         </p>
       )}
       {steps.map((s, i) => (
@@ -360,7 +360,7 @@ export function RecipeSchedule({
                 ))}
               </select>
             </Field>
-            <Field label="Valve position">
+            <Field label="Flow path">
               <select
                 value={s.location}
                 onChange={(e) => patch(i, { location: Number(e.target.value) })}
@@ -369,7 +369,7 @@ export function RecipeSchedule({
                 <optgroup label="PicoPak starter recipe routing">
                   {picoPakStepUses.map((use, index) => (
                     <option key={use} value={index + 1}>
-                      {use} · position {index + 1}
+                      {use}
                     </option>
                   ))}
                 </optgroup>

@@ -115,7 +115,7 @@ export function InstalledProgramDialog({
             onChange={(event) => setProgram((value) => ({ ...value, name: event.target.value }))}
           />
         </Field>
-        <ProgramFields program={program} onChange={setProgram} device />
+        <ProgramFields program={program} onChange={setProgram} device model={target?.model} />
       </fieldset>
     </Modal>
   )

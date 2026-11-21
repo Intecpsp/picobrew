@@ -156,7 +156,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
   const mashOut = page.locator('.plan-row').filter({ has: page.getByLabel('2. Step name') })
   await expect(page.getByRole('button', { name: 'Remove ingredient' }).first()).toBeVisible()
   await expect(page.getByLabel('Boil volume (L)')).toBeVisible()
-  await mashOut.getByLabel('Valve position', { exact: true }).selectOption('3')
+  await mashOut.getByLabel('Flow path', { exact: true }).selectOption('3')
   await mashOut.getByLabel('Drain after step (min)').fill('2')
   await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
   await expect(
@@ -170,7 +170,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
     'Integration note: retained after save.'
   )
   await expect(page.getByLabel('Minutes before boil ends')).toHaveValue('12.5')
-  await expect(mashOut.getByLabel('Valve position', { exact: true })).toHaveValue('3')
+  await expect(mashOut.getByLabel('Flow path', { exact: true })).toHaveValue('3')
   await expect(mashOut.getByLabel('Drain after step (min)')).toHaveValue('2')
   await expect(page.getByLabel('Tags', { exact: true })).toHaveValue('browser, porter')
   await page.getByRole('button', { name: 'Revision history', exact: true }).click()

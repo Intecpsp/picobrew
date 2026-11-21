@@ -5,10 +5,12 @@ import { Button, Field, IconButton, SectionHeading } from './ui'
 
 export function ProgramTable({
   program,
-  archiveModel,
+  model,
+  archived = false,
 }: {
   program: MachineRecipe
-  archiveModel?: string
+  model?: string
+  archived?: boolean
 }) {
   return (
     <div className="table-scroll">
@@ -16,7 +18,7 @@ export function ProgramTable({
         <thead>
           <tr>
             <th>Step</th>
-            <th>Routing</th>
+            <th>Flow path</th>
             <th>Target</th>
             <th>Hold</th>
             <th>Drain</th>
@@ -29,7 +31,7 @@ export function ProgramTable({
                 <span className="muted">{index + 1}. </span>
                 {step.name}
               </td>
-              <td>{routeLabel(step.location, archiveModel)}</td>
+              <td>{routeLabel(step.location, model, archived)}</td>
               <td>{step.target_f === 0 ? 'Unheated' : `${step.target_f} °F`}</td>
               <td>
                 {step.minutes === 0
@@ -55,13 +57,15 @@ export function ProgramFields({
   onChange,
   device = false,
   title = 'Brew schedule',
-  archiveModel,
+  model,
+  archived = false,
 }: {
   program: MachineRecipe
   onChange: (program: MachineRecipe) => void
   device?: boolean
   title?: string
-  archiveModel?: string
+  model?: string
+  archived?: boolean
 }) {
   function updateStep(index: number, patch: Partial<MachineStep>) {
     onChange({
@@ -78,7 +82,7 @@ export function ProgramFields({
     <>
       <SectionHeading
         title={title}
-        description="Temperatures, timings and valve settings are stored exactly as entered. A zero-minute hold reaches the target, then advances."
+        description="A zero-minute hold reaches the target temperature, then advances."
         actions={
           <Button
             variant="secondary"
@@ -122,7 +126,7 @@ export function ProgramFields({
                 />
               </Field>
               <div className="form-grid quarters">
-                <Field label={`Step ${index + 1} routing`}>
+                <Field label={`Step ${index + 1} flow path`}>
                   <select
                     value={step.location}
                     onChange={(event) =>
@@ -130,10 +134,10 @@ export function ProgramFields({
                     }
                   >
                     {[0, 1, 2, 3, 4, 5, 6]
-                      .filter((n) => n !== 0 || (!device && !archiveModel?.startsWith('pico')))
+                      .filter((n) => n !== 0 || (!device && !model?.startsWith('pico')))
                       .map((n) => (
                         <option key={n} value={n}>
-                          {routeLabel(n, archiveModel)}
+                          {routeLabel(n, model, archived)}
                         </option>
                       ))}
                   </select>
