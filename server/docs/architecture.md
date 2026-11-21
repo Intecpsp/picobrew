@@ -22,7 +22,7 @@ material, not a required component of this architecture. See the
 
 The brewer firmware owns timing, heating, pumping, interlocks, preparation prompts and the stop latch. The hub queues the public operations that the firmware advertises. It does not synthesize low-level actuator commands or run a heating loop over Wi-Fi.
 
-The browser talks only to the hub. The hub stores device credentials encrypted in SQLite and talks to each appliance on its private network. A fleet snapshot is streamed to browsers using server-sent events; one disconnected appliance does not block other appliances. There is one polling worker per enabled device.
+The browser talks only to the hub. The hub stores device credentials encrypted in SQLite and talks to each appliance on its private network. Visible Hub tabs fetch the cached fleet snapshot every three seconds. API clients can also subscribe to the fleet event stream. One disconnected appliance does not block other appliances. There is one polling worker per enabled device.
 
 ## Device transport
 

@@ -124,20 +124,41 @@ export default function App() {
       setAuthError(errorMessage(error))
     }
   }, [])
-  const refresh = useCallback(async () => {
-    const results = await Promise.allSettled([
-      api<Device[]>('/devices'),
-      api<Recipe[]>('/recipes'),
-      api<Brew[]>('/brews'),
-      api<Profile[]>('/profiles'),
-    ])
-    const setters = [setDevices, setRecipes, setBrews, setProfiles] as ((value: any[]) => void)[]
-    results.forEach((result, i) => {
-      if (result.status === 'fulfilled') setters[i](result.value || [])
-      else notify(errorMessage(result.reason), 'error')
-    })
-    setLoading(false)
-  }, [notify])
+  const fleetRequest = useRef(0)
+  const refreshFleet = useCallback(async (signal?: AbortSignal) => {
+    const request = ++fleetRequest.current
+    try {
+      const fleet = await api<Device[]>('/devices', { signal })
+      if (!signal?.aborted && request === fleetRequest.current) {
+        setDevices(fleet || [])
+        setConnected(true)
+      }
+    } catch (error) {
+      if (!signal?.aborted && request === fleetRequest.current) setConnected(false)
+      throw error
+    }
+  }, [])
+  const refresh = useCallback(
+    async (signal?: AbortSignal) => {
+      const results = await Promise.allSettled([
+        refreshFleet(signal),
+        api<Recipe[]>('/recipes', { signal }).then((value) => {
+          if (!signal?.aborted) setRecipes(value || [])
+        }),
+        api<Brew[]>('/brews', { signal }).then((value) => {
+          if (!signal?.aborted) setBrews(value || [])
+        }),
+        api<Profile[]>('/profiles', { signal }).then((value) => {
+          if (!signal?.aborted) setProfiles(value || [])
+        }),
+      ])
+      if (signal?.aborted) return
+      for (const result of results)
+        if (result.status === 'rejected') notify(errorMessage(result.reason), 'error')
+      setLoading(false)
+    },
+    [notify, refreshFleet]
+  )
   useEffect(() => {
     void loadSession()
     const listener = () => {
@@ -173,24 +194,38 @@ export default function App() {
   }, [route])
   useEffect(() => {
     if (!session?.authenticated) return
-    void refresh()
-    const events = new EventSource('/api/v1/events', { withCredentials: true })
-    events.onopen = () => setConnected(true)
-    events.onerror = () => setConnected(false)
-    events.addEventListener('fleet', (event) => {
+    // A permanent event stream per tab exhausts the HTTP/1 connection pool on LAN hubs.
+    const controller = new AbortController()
+    let pending = false
+    let nextFullRefresh = 0
+    async function poll() {
+      if (pending || controller.signal.aborted) return
+      pending = true
       try {
-        setDevices(JSON.parse((event as MessageEvent).data))
-        setConnected(true)
-      } catch {}
-    })
-    const interval = setInterval(() => {
-      void refresh()
-    }, 45000)
-    return () => {
-      events.close()
-      clearInterval(interval)
+        if (Date.now() >= nextFullRefresh) {
+          nextFullRefresh = Date.now() + 45000
+          await refresh(controller.signal)
+        } else {
+          await refreshFleet(controller.signal)
+        }
+      } catch {
+        // The connection indicator reflects fleet errors; the next poll retries.
+      } finally {
+        pending = false
+      }
     }
-  }, [session?.authenticated, refresh])
+    function pollVisible() {
+      if (!document.hidden) void poll()
+    }
+    void poll()
+    const interval = setInterval(pollVisible, 3000)
+    document.addEventListener('visibilitychange', pollVisible)
+    return () => {
+      controller.abort()
+      clearInterval(interval)
+      document.removeEventListener('visibilitychange', pollVisible)
+    }
+  }, [session?.authenticated, refresh, refreshFleet])
   function navigate(path: string) {
     location.hash = path
     if (path === route) setMobile(false)

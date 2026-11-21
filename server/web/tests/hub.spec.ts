@@ -653,3 +653,18 @@ test('Brewery shows simultaneous sessions in full-width rows ahead of idle machi
     )
   }
 })
+
+test('eight open Hub tabs can load and navigate over HTTP', async ({ context }) => {
+  // Keep every tab open. This exceeds Chromium's six HTTP/1 connections per origin.
+  const pages = []
+  for (let i = 0; i < 8; i++) {
+    const tab = await context.newPage()
+    await tab.goto('/#/overview')
+    await expect(tab.getByRole('heading', { name: 'Brewery', exact: true })).toBeVisible()
+    pages.push(tab)
+  }
+  for (const tab of pages) {
+    await tab.locator('.sidebar').getByRole('link', { name: 'Settings' }).click()
+    await expect(tab.getByRole('heading', { name: 'Hub settings' })).toBeVisible()
+  }
+})
