@@ -142,6 +142,7 @@ test('machine management stays on the Overview and works offline on mobile', asy
 
 test('create, revise and import a recipe through the working editor', async ({ page }) => {
   await page.goto('/#/recipes/new')
+  await page.getByRole('button', { name: 'Advanced editor' }).click()
   await expect(page.getByRole('heading', { name: 'What will you brew next?' })).toBeVisible()
   await page.getByLabel('Recipe name', { exact: true }).fill('Browser test porter')
   await page.getByLabel('Style', { exact: true }).fill('Porter')

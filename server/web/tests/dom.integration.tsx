@@ -208,6 +208,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
   })
   it('creates and saves a canonical recipe through the editor', async () => {
     await open('/recipes/new')
+    await user.click(await screen.findByRole('button', { name: 'Advanced editor' }))
     await screen.findByRole('heading', { name: 'What will you brew next?' })
     await user.type(screen.getByLabelText('Recipe name', { exact: true }), 'DOM test porter')
     await user.type(screen.getByLabelText('Tags', { exact: true }), 'dom, porter')

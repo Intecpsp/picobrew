@@ -26,13 +26,26 @@ function profileBatch(current: BatchSelection | undefined, profile?: Profile): B
 export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
   const hub = useHub()
   const native = isNative(recipe)
+  const modelProfile = (model: string) => (model === 'z-series' ? 'z' : model)
+  const source = !native && hub.profiles.find((p) => p.id === recipe.source_model)
   const first = hub.devices.find(
-    (device) => device.online && hub.profiles.some((profile) => profile.id === device.model)
+    (device) =>
+      device.online &&
+      (source
+        ? modelProfile(device.model) === source.id
+        : hub.profiles.some((p) => p.id === modelProfile(device.model)))
   )
   const [deviceID, setDeviceID] = useState(first?.id || '')
-  const [profileID, setProfileID] = useState(first?.model || hub.profiles[0]?.id || '')
+  const [profileID, setProfileID] = useState(
+    (source && source.id) || (first && modelProfile(first.model)) || hub.profiles[0]?.id || ''
+  )
   const profile = hub.profiles.find((item) => item.id === profileID)
-  const [batch, setBatch] = useState<BatchSelection>(() => profileBatch(undefined, profile))
+  const [batch, setBatch] = useState<BatchSelection>(() =>
+    profileBatch(
+      source ? { value: String(recipe.batch_liters), explicit: true } : undefined,
+      profile
+    )
+  )
   const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
   const [sent, setSent] = useState<{ machine: string; path: string; program: string } | null>(null)
   const [busy, setBusy] = useState('')
@@ -58,7 +71,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     !adapted.deployment_blockers?.length &&
     target?.online &&
     !needsReady &&
-    target.model === profileID &&
+    modelProfile(target.model) === profileID &&
     batchValid &&
     !busy
   )
@@ -218,11 +231,11 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
               const machine = hub.devices.find((device) => device.id === event.target.value)
               setDeviceID(event.target.value)
               if (machine) {
-                setProfileID(machine.model)
+                setProfileID(modelProfile(machine.model))
                 setBatch((current) =>
                   profileBatch(
                     current,
-                    hub.profiles.find((p) => p.id === machine.model)
+                    hub.profiles.find((p) => p.id === modelProfile(machine.model))
                   )
                 )
               }
@@ -251,7 +264,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                   hub.profiles.find((p) => p.id === nextProfileID)
                 )
               )
-              if (target && target.model !== nextProfileID) setDeviceID('')
+              if (target && modelProfile(target.model) !== nextProfileID) setDeviceID('')
             }}
           >
             {hub.profiles.map((item) => (

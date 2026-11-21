@@ -1,3 +1,4 @@
+import { RecipeWizard } from '../components/RecipeWizard'
 import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
@@ -208,6 +209,7 @@ function RecipeEditor({ id }: { id: string }) {
   const [recipe, setRecipe] = useState<Recipe>(() =>
     isNew && hub.draft ? { ...hub.draft, id: '', revision: 0 } : newRecipe()
   )
+  const [guided, setGuided] = useState(isNew && !hub.draft)
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [dirty, setDirty] = useState(isNew)
@@ -248,13 +250,13 @@ function RecipeEditor({ id }: { id: string }) {
     setRecipe((value) => ({ ...value, ...patch }))
     setDirty(true)
   }
-  async function save(event?: FormEvent) {
+  async function save(event?: FormEvent, draft: Recipe = recipe) {
     event?.preventDefault()
     setBusy(true)
     setError('')
     try {
       let payload = {
-        ...recipe,
+        ...draft,
         tags: tagsInput
           .split(',')
           .map((tag) => tag.trim())
@@ -275,7 +277,7 @@ function RecipeEditor({ id }: { id: string }) {
       setDirty(false)
       await hub.refresh()
       hub.notify('Recipe saved to your library.')
-      if (isNew) hub.navigate(`/recipes/${saved.id}`)
+      if (isNew) hub.navigate(guided ? '/recipes' : `/recipes/${saved.id}`)
     } catch (error) {
       setError(errorMessage(error))
     } finally {
@@ -297,6 +299,20 @@ function RecipeEditor({ id }: { id: string }) {
   const nativeRecipe = isNew ? recipe : loaded.data
   if (nativeRecipe && isNative(nativeRecipe))
     return <NativeRecipeEditor initial={nativeRecipe} isNew={isNew} />
+  if (guided && isNew)
+    return (
+      <RecipeWizard
+        busy={busy}
+        error={error}
+        save={(draft) => void save(undefined, draft)}
+        advanced={(draft) => {
+          setRecipe(draft)
+          setError('')
+          setGuided(false)
+        }}
+        back={() => hub.navigate('/recipes')}
+      />
+    )
   return (
     <>
       <PageTitle
@@ -396,6 +412,7 @@ function RecipeEditor({ id }: { id: string }) {
             change={(ingredients) => update({ ingredients })}
           />
           <RecipeSchedule
+            model={recipe.source_model}
             steps={recipe.steps}
             unit={hub.unit}
             change={(steps) => update({ steps })}
