@@ -46,7 +46,7 @@ func (s *Server) seedDemo() error {
 			}
 			thermo := wort + 6 + math.Sin(minute*0.4)*2
 			at := start.Add(time.Duration(elapsed) * time.Millisecond)
-			samples = append(samples, domain.Sample{ElapsedMS: int64(elapsed), ObservedAt: &at, WortF: floatPtr(wort), ThermoblockF: floatPtr(thermo), TargetF: floatPtr(target), StepSeconds: i * 15, Phase: phase, Compartment: phase, CurrentStep: phase - 1, Flags: 11, Source: "simulation"})
+			samples = append(samples, domain.Sample{ElapsedMS: int64(elapsed), ObservedAt: &at, WortF: floatPtr(wort), ThermoblockF: floatPtr(thermo), TargetF: floatPtr(target), StepSeconds: i * 15, Phase: phase, Compartment: phase, CurrentStep: phase - 1, Flags: 11, DeviceState: 1, ControllerStatus: 1, Source: "simulation"})
 		}
 		if _, e = s.db.Put("brew", b.ID, b, 0); e != nil {
 			return e

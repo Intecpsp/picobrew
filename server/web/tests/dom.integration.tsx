@@ -206,7 +206,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
     await screen.findByRole('heading', { name: 'What will you brew next?' })
     await user.type(screen.getByLabelText('Recipe name', { exact: true }), 'DOM test porter')
     await user.type(screen.getByLabelText('Tags', { exact: true }), 'dom, porter')
-    await user.click(screen.getByRole('button', { name: 'Add ingredient' }))
+    await user.click(screen.getByRole('button', { name: 'Add grain' }))
     await user.type(screen.getByLabelText('Ingredient 1 name'), 'Pale malt')
     await user.click(screen.getByRole('button', { name: 'Save recipe' }))
     await screen.findByRole('heading', { name: 'DOM test porter', level: 1 })
@@ -231,7 +231,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
       await originalFetch(origin + '/api/v1/brews/demo-history-demo-pro')
     ).json()
     await open('/history/demo-history-demo-pro')
-    await screen.findByRole('heading', { name: 'The complete temperature story' })
+    await screen.findByRole('heading', { name: 'Session measurements' })
     const notes = screen.getByLabelText('Brew notes', { exact: true }) as HTMLTextAreaElement
     await waitFor(() => expect(notes.value).toBe(initial.notes || ''))
     await user.clear(notes)
@@ -301,7 +301,7 @@ describe('community catalogue and local recipe slots', () => {
       recipeID = window.location.hash.split('/recipes/')[1]
       expect(recipeID).toBeTruthy()
       expect(screen.queryByLabelText('Batch size (L)', { exact: true })).toBeNull()
-      expect(screen.queryByRole('button', { name: 'Add ingredient' })).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Add grain' })).toBeNull()
       expect(
         (screen.getByLabelText('Step 1 hold (min)', { exact: true }) as HTMLInputElement).value
       ).toBe('0')

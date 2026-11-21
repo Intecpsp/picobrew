@@ -1,0 +1,56 @@
+.recipe-plan {
+  .plan-group + .plan-group,
+  .plan-row + .plan-row,
+  .plan-add {
+    border-top: 1px solid var(--hub-line);
+  }
+  .plan-group-head,
+  .plan-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .plan-group-head h4 {
+    margin: 0;
+  }
+  .plan-row {
+    padding: 12px 0;
+  }
+  .plan-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .field {
+    margin: 0;
+  }
+  summary {
+    cursor: pointer;
+    color: var(--hub-muted);
+    width: fit-content;
+    padding: 8px 0;
+  }
+  details .form-grid {
+    padding: 8px 0;
+  }
+  .plan-add {
+    justify-content: flex-start;
+    padding-bottom: 0;
+  }
+  .plan-add select {
+    width: auto;
+  }
+  @media (max-width: 650px) {
+    .plan-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .plan-fields > :first-child {
+      grid-column: 1/-1;
+    }
+    .plan-group-head {
+      flex-wrap: wrap;
+    }
+  }
+}

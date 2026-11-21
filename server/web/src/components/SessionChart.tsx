@@ -1,3 +1,4 @@
+import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { BrewDetail, Sample, Unit } from '../types'
 import { historyChannels, sampleReading } from '../lib/history'
@@ -13,7 +14,6 @@ const states = [
   ['compartment', 'Compartment'],
   ['device_state', 'Device state'],
 ] as const
-type StateKey = (typeof states)[number][0]
 const colors = ['wort', 'block', 'target', 'phase', 'steam', 'gold', 'pink', 'leaf']
 const temperatureColors: Record<string, string> = {
   wort_f: 'wort',
@@ -29,12 +29,6 @@ const unitLabels: Record<string, string> = {
   raw: 'Raw sensor readings',
 }
 
-function stateValue(field: StateKey, raw: number | null) {
-  if (raw === null) return '—'
-  if (field === 'current_step') return raw < 0 || raw === 255 ? '—' : String(raw + 1)
-  if (field === 'flags') return '0x' + raw.toString(16).padStart(2, '0')
-  return String(raw)
-}
 function nearest(samples: Sample[], time: number) {
   let lo = 0,
     hi = samples.length - 1
@@ -114,14 +108,14 @@ export function SessionChart({
       states
         .filter(([key]) => !accessory || key === 'device_state' || key === 'flags')
         .map(([key, label]) => {
-          const runs: { start: number; end: number; value: number | null }[] = []
+          const runs: { start: number; end: number; value: number | null; source: string }[] = []
           for (const [i, s] of samples.entries()) {
             const value = sampleReading(s, key)
             const gap = i > 0 && s.elapsed_ms - samples[i - 1].elapsed_ms > gapLimit
             const last = runs[runs.length - 1]
             if (last && !gap) last.end = s.elapsed_ms
-            if (!last || gap || last.value !== value)
-              runs.push({ start: s.elapsed_ms, end: s.elapsed_ms, value })
+            if (!last || gap || last.value !== value || last.source !== s.source)
+              runs.push({ start: s.elapsed_ms, end: s.elapsed_ms, value, source: s.source })
           }
           return { key, label, runs }
         }),
@@ -242,7 +236,10 @@ export function SessionChart({
   const readout = [
     clockTime(sample.elapsed_ms),
     ...series.map((c) => c.metadata.label + ' ' + fmt(c.values[active]) + ' ' + displayUnit),
-    ...lanes.map((l) => l.label + ' ' + stateValue(l.key, sampleReading(sample, l.key))),
+    ...lanes.map(
+      (l) =>
+        l.label + ' ' + sessionState(brew, l.key, sampleReading(sample, l.key), sample.source, true)
+    ),
   ].join(', ')
   return (
     <div className="session-chart">
@@ -390,7 +387,7 @@ export function SessionChart({
               </text>
               {lane.runs.map((r, i) => {
                 const w = Math.max(1, x(r.end) - x(r.start))
-                const label = stateValue(lane.key, r.value)
+                const label = sessionState(brew, lane.key, r.value, r.source)
                 return (
                   <g key={i}>
                     <rect
@@ -457,7 +454,10 @@ export function SessionChart({
           <>
             {lanes.map((l) => (
               <span key={l.key}>
-                {l.label} <b>{stateValue(l.key, sampleReading(sample, l.key))}</b>
+                {l.label}{' '}
+                <b>
+                  {sessionState(brew, l.key, sampleReading(sample, l.key), sample.source, true)}
+                </b>
               </span>
             ))}
             {notesOnChart

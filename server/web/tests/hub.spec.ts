@@ -138,8 +138,17 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await page.getByLabel('Recipe name', { exact: true }).fill('Browser test porter')
   await page.getByLabel('Style', { exact: true }).fill('Porter')
   await page.getByLabel('Tags', { exact: true }).fill('browser, porter')
-  await page.getByRole('button', { name: 'Add ingredient' }).click()
+  await page.getByRole('button', { name: 'Add grain' }).click()
   await page.getByLabel('Ingredient 1 name').fill('Pale malt')
+  await page.getByRole('button', { name: 'Add hops' }).click()
+  await page.getByLabel('Ingredient 2 name').fill('Cascade')
+  await page.getByLabel('Minutes before boil ends').fill('12.5')
+  await page.getByLabel('New step type').selectOption('mash-out')
+  await page.getByRole('button', { name: 'Add step', exact: true }).click()
+  const mashOut = page.locator('.plan-row').filter({ has: page.getByLabel('2. Step name') })
+  await mashOut.getByText('Choose compartment').click()
+  await mashOut.getByLabel('Compartment', { exact: true }).selectOption('3')
+  await mashOut.getByLabel('Drain after step (min)').fill('2')
   await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
   await expect(
     page.getByRole('heading', { name: 'Browser test porter', exact: true, level: 1 })
@@ -151,6 +160,8 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await expect(page.getByLabel('Recipe notes')).toHaveValue(
     'Integration note: retained after save.'
   )
+  await expect(page.getByLabel('Minutes before boil ends')).toHaveValue('12.5')
+  await expect(page.getByText('Compartment 3 · Drain 2 min')).toBeVisible()
   await expect(page.getByLabel('Tags', { exact: true })).toHaveValue('browser, porter')
   await page.getByRole('button', { name: 'Revision history', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Recipe revision history' })).toBeVisible()
@@ -329,7 +340,7 @@ test('community catalogue preserves source schedules through copy, bulk transfer
     recipeID = page.url().split('/recipes/')[1]
     expect(recipeID).toBeTruthy()
     await expect(page.getByLabel('Batch size (L)', { exact: true })).toHaveCount(0)
-    await expect(page.getByRole('button', { name: 'Add ingredient', exact: true })).toHaveCount(0)
+    await expect(page.getByRole('button', { name: 'Add grain', exact: true })).toHaveCount(0)
     await expect(page.getByLabel('Step 1 hold (min)', { exact: true })).toHaveValue('0')
     await page
       .getByLabel('Program notes', { exact: true })
@@ -568,7 +579,7 @@ test('journal readings and state lanes share one time cursor and note timestamp'
   await expect(cursor).toHaveAttribute('aria-valuenow', '2')
   await expect(cursor).toHaveAttribute(
     'aria-valuetext',
-    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags 0x.+Compartment .+Device state/
+    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags Controller ready .+Machine busy .+Step filter inserted .+Compartment .+Device state/
   )
   await page.getByRole('button', { name: 'Note at 0:15', exact: true }).click()
   await expect(page.getByLabel('Brew notes', { exact: true })).toHaveValue(/\[0:15\] $/)

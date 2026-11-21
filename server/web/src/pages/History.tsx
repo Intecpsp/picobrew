@@ -1,3 +1,4 @@
+import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowUpRight,
@@ -394,17 +395,19 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                 <div>
                   <strong>
                     {accessory
-                      ? `Device state ${sample.device_state}`
-                      : `Phase ${sample.phase} · Step ${sample.current_step === 255 ? '—' : sample.current_step + 1}`}
+                      ? `Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`
+                      : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sample.current_step === 255 ? '—' : sample.current_step + 1}`}
                   </strong>
                   <small>
                     {!accessory &&
-                      `Controller ${sample.controller_status} · Compartment ${sample.compartment} · `}
-                    Flags 0x{sample.flags.toString(16).padStart(2, '0')}
+                      `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sample.compartment} · `}
+                    {sessionState(brew, 'flags', sample.flags, sample.source, true)}
                   </small>
                   <small>
                     {temperature(accessory ? sample.temperature_f : sample.wort_f, hub.unit)}
-                    {accessory ? '' : ` wort · Device state ${sample.device_state}`}
+                    {accessory
+                      ? ''
+                      : ` wort · Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`}
                   </small>
                 </div>
               </div>
