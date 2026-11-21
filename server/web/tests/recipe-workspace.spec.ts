@@ -29,7 +29,12 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
     'Pico Pale'
   )
   await expect(page.getByLabel('Catalogue type')).toHaveValue('native-program')
-  await page.getByRole('link', { name: 'Create with AI', exact: true }).click()
+  await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
+  await page.goto('/#/recipes/weekend-pale')
+  await page.getByRole('button', { name: 'Ask the brew assistant', exact: true }).click()
+  await expect(page.getByLabel('Existing recipe to build on (optional)')).toHaveValue(
+    'weekend-pale'
+  )
   await expect(page.getByRole('heading', { name: 'Create a recipe with AI.' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
   await expect(page.getByRole('tablist', { name: 'Assistant task' })).toHaveCount(0)
@@ -57,6 +62,8 @@ for (const width of [1440, 390]) {
     ]) {
       await page.goto('/#' + route)
       await expect(page.locator('h1')).toBeVisible()
+      await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
+      await expect(page.getByRole('button', { name: 'Create with AI', exact: true })).toHaveCount(0)
       const layout = await page.evaluate(() => ({
         width: innerWidth,
         scroll: document.documentElement.scrollWidth,

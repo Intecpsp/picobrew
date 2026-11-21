@@ -76,13 +76,7 @@ describe('recipe workspace navigation', () => {
       expect(views.getByRole('link', { name: selectedView }).getAttribute('aria-current')).toBe(
         'page'
       )
-      if (route.split('?')[0] === '/recipes/create-with-ai') {
-        expect(screen.queryByRole('link', { name: 'Create with AI' })).toBeNull()
-      } else {
-        expect(screen.getByRole('link', { name: 'Create with AI' }).getAttribute('href')).toBe(
-          '#/recipes/create-with-ai'
-        )
-      }
+      expect(screen.queryByRole('link', { name: 'Create with AI' })).toBeNull()
       if (route.startsWith('/catalog')) {
         expect(views.getByRole('link', { name: 'Browse all' }).getAttribute('href')).toBe(
           '#/catalog?kind=native-program&q=Pico%20Pale'
