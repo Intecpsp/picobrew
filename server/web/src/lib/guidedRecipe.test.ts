@@ -79,7 +79,7 @@ test('cannot finish a schedule outside the supported timing and equipment limits
   const d = draft()
   for (const minutes of ['', '0', '2.5', '61'])
     expect(guideProblem({ ...d, hops: [{ ...d.hops[0], minutes }] }, profile, 3)).toContain(
-      'hop addition'
+      'within the boil'
     )
   expect(
     guideProblem(
@@ -87,16 +87,8 @@ test('cannot finish a schedule outside the supported timing and equipment limits
       profile,
       3
     )
-  ).toContain('4 timed hop additions')
+  ).toContain('4 hop slots')
   expect(guideProblem(d, { ...profile, max_steps: 4 }, 3)).toContain('step limit')
-})
-
-test('slot time choices prevent simultaneous or reversed additions even across empty bins', () => {
-  const hops = draft().hops
-  expect(slotTimes(hops, 3, 60)).toEqual(Array.from({ length: 24 }, (_, i) => 29 - i))
-  expect(slotTimes(hops, 1, 60)).toContain(60)
-  expect(slotTimes(hops, 1, 60)).not.toContain(30)
-  expect(slotTimes(hops, 3, 4)).toEqual([])
 })
 
 test('the standard PicoPak mash matches archived temperatures, active times and drains', () => {
@@ -123,4 +115,79 @@ test('the standard PicoPak mash matches archived temperatures, active times and 
     target_c: 65,
     drain_minutes: 2,
   })
+})
+
+test('PicoPak routing uses one direct inlet at each time and preserves nonnumeric slot order', () => {
+  const d = {
+    ...draft(),
+    boil: '45',
+    hops: [
+      [1, 45],
+      [3, 30],
+      [4, 25],
+      [2, 15],
+    ].map(([slot, minutes]) => ({
+      slot,
+      minutes: String(minutes),
+      varieties: [{ name: 'Hop', amount: '5' }],
+    })),
+  }
+  for (const id of ['pico-s', 'pico-pro', 'pico-c']) {
+    const p = { ...profile, id }
+    expect(slotTimes(d.hops, 2, 45)).toContain(15)
+    expect(slotTimes(d.hops, 2, 45)).not.toContain(25)
+    expect(guideProblem(d, p, 3)).toBe('')
+    expect(
+      guidedRecipe(d, p)
+        .steps.filter((s) => s.kind === 'hop')
+        .map((s) => [s.location, s.minutes])
+    ).toEqual([
+      [3, 15],
+      [5, 5],
+      [6, 10],
+      [4, 15],
+    ])
+    expect(
+      guideProblem(
+        { ...d, hops: d.hops.map((h) => (h.slot === 2 ? { ...h, minutes: '25' } : h)) },
+        p,
+        3
+      )
+    ).toContain('separate available minute')
+  }
+})
+
+test('eight sequenced visits consume four ingredient loads and exactly one boil', () => {
+  const d = {
+    ...draft(),
+    hops: [
+      { slot: 1, minutes: '60', returns: ['12'], varieties: [{ name: 'Cascade', amount: '20' }] },
+      { slot: 2, minutes: '52', returns: ['29'], varieties: [{ name: 'Citra', amount: '10' }] },
+      { slot: 3, minutes: '45', returns: ['5'], varieties: [{ name: 'Mosaic', amount: '15' }] },
+      { slot: 4, minutes: '38', returns: ['20'], varieties: [{ name: 'Amarillo', amount: '8' }] },
+    ],
+  }
+  for (const id of ['pico-s', 'pico-c', 'pico-pro', 'z', 'zymatic']) {
+    const p = { ...profile, id }
+    expect(guideProblem(d, p, 3)).toBe('')
+    const program = guidedRecipe(d, p)
+    expect(program.ingredients.filter((i) => i.kind === 'hop')).toHaveLength(4)
+    const visits = program.steps.filter((s) => s.kind === 'hop')
+    expect(visits.map((s) => [s.name, s.minutes])).toEqual(
+      [
+        [1, 8],
+        [2, 7],
+        [3, 7],
+        [4, 9],
+        [2, 9],
+        [4, 8],
+        [1, 7],
+        [3, 5],
+      ].map(([slot, time]) => ['Hop slot ' + slot, time])
+    )
+    expect(visits.reduce((sum, s) => sum + s.minutes, 0)).toBe(60)
+    expect(guideProblem(d, { ...p, max_steps: 5 }, 3)).toContain('step limit')
+  }
+  expect(slotTimes(d.hops, 1, 60, 1)).not.toContain(29)
+  expect(slotTimes(d.hops, 1, 60, 1)).toContain(12)
 })
