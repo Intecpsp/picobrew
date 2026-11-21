@@ -233,6 +233,7 @@ func buildSchemas() schemaMap {
 	r.properties("RecipeStep")["target_c"] = schemaMap{"type": "number", "minimum": 0, "maximum": 100, "description": "Canonical Celsius; zero is the unheated program sentinel."}
 	r.properties("RecipeStep")["minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 43200, "description": "Zero is allowed only for explicit heat/cool targets. Native S/Pro deployment limits holds to 599 minutes and does not map cooling steps."}
 	r.properties("RecipeStep")["drain_minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 1440, "description": "Native S/Pro deployment limits this to 120 minutes."}
+	r.properties("Ingredient")["attenuation"] = schemaMap{"type": "number", "minimum": 0, "maximum": 100, "description": "Expected apparent yeast attenuation, as a percentage."}
 	r.properties("Ingredient")["kind"] = schemaMap{"type": "string", "enum": []string{"fermentable", "hop", "water", "yeast", "misc"}}
 	r.properties("Ingredient")["unit"] = schemaMap{"type": "string", "enum": []string{"kg", "g", "L", "mL", "count"}, "description": "Fermentable: kg; hop: g; water: L; yeast/misc: g, mL, count."}
 	r.properties("MachineRecipe")["id"] = schemaMap{"type": "string", "pattern": "^[A-Za-z0-9_-]{1,20}$"}

@@ -1,3 +1,4 @@
+import { BeerCrafter } from '../components/BeerCrafter'
 import { useEffect, useState } from 'react'
 import { Copy, Download, History, Save, Send, Trash2 } from 'lucide-react'
 import type { Recipe } from '../types'
@@ -114,6 +115,7 @@ export default function NativeRecipeEditor({
       <ErrorBanner message={error} />
       <div className="editor-layout">
         <div className="editor-main">
+          <BeerCrafter recipe={recipe} />
           <section className="panel">
             <SectionHeading title="Program details" />
             <div className="form-grid">

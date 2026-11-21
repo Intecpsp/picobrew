@@ -1,9 +1,13 @@
+import { MeasureChoice, QuantityField, useRecipeQuantity } from './RecipeMeasures'
+import { BeerCrafter, ReferenceLists } from './BeerCrafter'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight, Plus, Save, SlidersHorizontal, Trash2 } from 'lucide-react'
 import { useHub } from '../context'
 import type { Recipe, Unit } from '../types'
 import {
   grainOverLimit,
+  basketWeight,
+  isKegAddition,
   totalWeight,
   hopLimit,
   slotTimes,
@@ -18,7 +22,6 @@ import {
   type Grain,
   type MashRest,
 } from '../lib/guidedRecipe'
-import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
 import { modelLabel, newRecipe } from '../lib/utils'
 import { Button, ErrorBanner, Field, IconButton, PageTitle } from './ui'
 import './recipe-wizard.scss'
@@ -72,22 +75,20 @@ function IngredientFields({
     <>
       <Field label={hop ? 'Hop variety' : 'Grain'}>
         <input
+          list={hop ? 'crafter-hop' : 'crafter-fermentable'}
           value={item.name}
           placeholder={hop ? 'e.g. Cascade' : 'e.g. Pale malt'}
           onChange={(e) => change({ name: e.target.value })}
         />
       </Field>
-      <Field label={hop ? 'Weight (g)' : 'Weight (kg)'}>
-        <input
-          type="number"
-          min="0"
-          step="any"
-          max={maxWeight}
-          aria-invalid={invalid || undefined}
-          value={item.amount}
-          onChange={(e) => change({ amount: e.target.value })}
-        />
-      </Field>
+      <QuantityField
+        label="Weight"
+        unit={hop ? 'g' : 'kg'}
+        value={item.amount}
+        max={maxWeight}
+        invalid={invalid}
+        change={(v) => change({ amount: v })}
+      />
     </>
   )
 }
@@ -106,6 +107,7 @@ export function RecipeWizard({
   back: () => void
 }) {
   const hub = useHub()
+  const formatQuantity = useRecipeQuantity()
   const profiles = hub.profiles.filter((p) => knownModels.includes(p.id))
   const [selected, setSelected] = useState('')
   const available = hub.devices.filter((d) => profiles.some((p) => p.id === profileID(d.model)))
@@ -175,6 +177,7 @@ export function RecipeWizard({
   }
   return (
     <>
+      <ReferenceLists />
       <PageTitle
         title="Create a recipe"
         back={() => {
@@ -256,21 +259,23 @@ export function RecipeWizard({
                       ))}
                     </select>
                   </Field>
-                  <Field
-                    label="Batch size (L)"
-                    hint={`Leave blank for a full ${formatVolume(profile.batch_liters)} batch.`}
-                  >
-                    <input
-                      type="number"
-                      min="0.01"
-                      step="any"
-                      max={profile.batch_liters}
-                      placeholder={formatVolume(profile.batch_liters).replace(' L', '')}
-                      value={draft.batch}
-                      onChange={(e) => patch({ batch: e.target.value })}
-                    />
-                  </Field>
+                  <QuantityField
+                    label="Batch size"
+                    unit="L"
+                    value={draft.batch}
+                    placeholder={profile.batch_liters}
+                    max={profile.batch_liters}
+                    change={(v) => patch({ batch: v })}
+                  />
+                  <MeasureChoice />
                 </div>
+                <Field label="Beer style">
+                  <input
+                    list="crafter-style"
+                    value={draft.style}
+                    onChange={(e) => patch({ style: e.target.value })}
+                  />
+                </Field>
                 {usesPicoPakRouting(profile.id) && (
                   <Button
                     variant="secondary"
@@ -302,7 +307,7 @@ export function RecipeWizard({
                   )}
                   {overGrain && (
                     <p className="notice" role="alert">
-                      Your grain bill totals {formatQuantity(totalWeight(draft.grains), 'kg')}.
+                      Your grain bill totals {formatQuantity(basketWeight(draft.grains), 'kg')}.
                       Reduce it to {formatQuantity(profile.max_grain_kg, 'kg')} or less for{' '}
                       {modelLabel(profile.id)}.
                     </p>
@@ -313,11 +318,11 @@ export function RecipeWizard({
                         item={grain}
                         invalid={overGrain}
                         maxWeight={
-                          profile.max_grain_kg
+                          !isKegAddition(grain) && profile.max_grain_kg
                             ? Math.max(
                                 0,
                                 profile.max_grain_kg -
-                                  totalWeight(draft.grains.filter((_, j) => i !== j))
+                                  basketWeight(draft.grains.filter((_, j) => i !== j))
                               )
                             : undefined
                         }
@@ -531,6 +536,16 @@ export function RecipeWizard({
                         .join(' → ')}
                     </p>
                   )}
+                  {route.length > 0 && route[0].minutes === Number(draft.boil) && (
+                    <label className="check">
+                      <input
+                        type="checkbox"
+                        checked={draft.firstWort}
+                        onChange={(e) => patch({ firstWort: e.target.checked })}
+                      />{' '}
+                      First wort hopping · heat through slot {route[0].slot} on the way to the boil
+                    </label>
+                  )}
                   {overweightSlot && (
                     <p className="notice" role="alert">
                       Reduce the combined hop weight in slot {overweightSlot.slot} to {slotLimit} g
@@ -540,20 +555,39 @@ export function RecipeWizard({
                 </div>
               </>
             )}
+            {stage === 1 && (
+              <div className="guide-fields">
+                <Field label="Yeast (optional)">
+                  <input
+                    list="crafter-yeast"
+                    value={draft.yeast}
+                    onChange={(e) => patch({ yeast: e.target.value })}
+                  />
+                </Field>
+                <QuantityField
+                  label="Yeast amount"
+                  unit="g"
+                  value={draft.yeastGrams}
+                  change={(v) => patch({ yeastGrams: v })}
+                />
+              </div>
+            )}
             {stage === 2 && (
               <div className="guide-group">
                 <Field label="Mash schedule">
                   <select
-                    value={draft.customMash ? 'custom' : 'standard'}
+                    value={draft.customMash ? 'custom' : draft.mashPreset}
                     onChange={(e) =>
                       patch({
                         customMash: e.target.value === 'custom',
-                        rests: draft.rests.length
-                          ? draft.rests
-                          : mashSchedule(draft, profile).map(({ celsius, minutes }) => ({
-                              celsius,
-                              minutes,
-                            })),
+                        mashPreset: e.target.value === 'custom' ? draft.mashPreset : e.target.value,
+                        rests:
+                          e.target.value !== 'custom' || draft.rests.length
+                            ? draft.rests
+                            : mashSchedule(draft, profile).map(({ celsius, minutes }) => ({
+                                celsius,
+                                minutes,
+                              })),
                       })
                     }
                   >
@@ -562,6 +596,11 @@ export function RecipeWizard({
                         ? 'Single infusion'
                         : 'PicoPak step mash'}
                     </option>
+                    {profile.id.startsWith('pico-') && (
+                      <option value="infusion">Single infusion</option>
+                    )}
+                    <option value="mash-out">Single infusion with mash out</option>
+                    <option value="high-efficiency">High efficiency multi-step</option>
                     <option value="custom">Custom mash</option>
                   </select>
                 </Field>
@@ -631,9 +670,10 @@ export function RecipeWizard({
               <>
                 <h3>{recipe.name}</h3>
                 <p>
-                  {modelLabel(profile.id)} · {formatVolume(recipe.batch_liters)}
+                  {modelLabel(profile.id)} · {formatQuantity(recipe.batch_liters, 'L')}
                   {!profile.control_supported ? ' · Planning only' : ''}
                 </p>
+                <BeerCrafter recipe={recipe} />
                 <div className="guide-review">
                   <div>
                     <h3>Ingredients by compartment</h3>
@@ -641,9 +681,21 @@ export function RecipeWizard({
                       <dt>Grain compartment</dt>
                       <dd>
                         {draft.grains
+                          .filter((g) => !isKegAddition(g))
                           .map((g) => g.name + ' · ' + formatQuantity(Number(g.amount), 'kg'))
                           .join(', ')}
                       </dd>
+                      {draft.grains.some(isKegAddition) && (
+                        <>
+                          <dt>Keg additions</dt>
+                          <dd>
+                            {draft.grains
+                              .filter(isKegAddition)
+                              .map((g) => g.name + ' · ' + formatQuantity(Number(g.amount), 'kg'))
+                              .join(', ')}
+                          </dd>
+                        </>
+                      )}
                       {[...draft.hops]
                         .sort((a, b) => Number(b.minutes) - Number(a.minutes))
                         .map((addition) => (

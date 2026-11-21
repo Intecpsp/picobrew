@@ -153,6 +153,7 @@ export interface Ingredient {
   alpha?: number
   type?: string
   form?: string
+  attenuation?: number
   yield?: number
   color?: number
 }

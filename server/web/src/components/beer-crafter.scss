@@ -1,0 +1,162 @@
+.beer-crafter {
+  min-width: 0;
+  header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+  }
+  h3,
+  h4,
+  header p {
+    margin: 0;
+  }
+  h4 {
+    font-size: 1rem;
+  }
+  small,
+  header span,
+  .bill-readout {
+    color: var(--hub-muted);
+    font-size: 0.875rem;
+  }
+  .bill-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    margin: 1rem 0;
+  }
+  .bill {
+    min-width: 0;
+    padding: 1rem;
+    border: 1px solid var(--hub-line);
+    border-radius: 8px;
+  }
+  .bill-pie {
+    position: relative;
+    margin: 1rem auto 0.7rem;
+    width: min(100%, 155px);
+    aspect-ratio: 1.65;
+  }
+  .pie-edge,
+  .pie-top {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+  }
+  .pie-edge {
+    transform: translateY(7px);
+    filter: brightness(0.7);
+  }
+  .bill-readout {
+    text-align: center;
+    min-height: 1.5rem;
+  }
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0.6rem 0 0;
+    max-height: 13rem;
+    overflow: auto;
+  }
+  li button {
+    display: grid;
+    grid-template-columns: 0.65rem 1fr auto;
+    width: 100%;
+    gap: 0.55rem;
+    align-items: center;
+    text-align: left;
+    padding: 0.4rem 0.25rem;
+    color: inherit;
+    font: inherit;
+    border: 0;
+    border-bottom: 1px solid var(--hub-line);
+    background: transparent;
+    cursor: pointer;
+  }
+  li button[aria-pressed='true'] {
+    background: var(--hub-accent-bg);
+  }
+  li i {
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+  }
+  .beer-statistics,
+  .wort-curve {
+    border-top: 1px solid var(--hub-line);
+    padding-top: 1rem;
+    margin-top: 1rem;
+  }
+  dl {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(6rem, 1fr));
+    gap: 0.75rem;
+    margin: 0.8rem 0;
+  }
+  dt {
+    color: var(--hub-muted);
+    font-size: 0.875rem;
+  }
+  dd {
+    font-size: 1.35rem;
+    margin: 0.3rem 0;
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+  }
+  .crafter-scale {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: end;
+    gap: 0.65rem;
+    margin: 0.9rem 0;
+  }
+  .crafter-scale .field {
+    margin: 0;
+  }
+  .crafter-scale input {
+    max-width: 8rem;
+  }
+  .curve-plot {
+    height: 170px;
+    margin: 0.6rem 0;
+    font-size: 0.875rem;
+  }
+  @media (max-width: 600px) {
+    .bill-grid {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 0.6rem;
+    }
+  }
+}
+.brew-print {
+  display: none;
+}
+@media print {
+  body:has(> .brew-print) > :not(.brew-print) {
+    display: none !important;
+  }
+  .brew-print {
+    display: block;
+    color: black;
+    background: white;
+    font-family: system-ui, sans-serif;
+  }
+  .brew-print table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .brew-print td,
+  .brew-print th {
+    text-align: left;
+    padding: 0.45em;
+    border-bottom: 1px solid #aaa;
+  }
+  .brew-print tr {
+    break-inside: avoid;
+  }
+  .brew-print p {
+    white-space: pre-line;
+  }
+}

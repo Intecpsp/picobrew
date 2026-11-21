@@ -203,3 +203,43 @@ func TestRecipePlanPreservesWholeInputInJSON(t *testing.T) {
 		t.Fatal("excessive nesting accepted")
 	}
 }
+
+func TestYeastAttenuationOptionalInBeerXML(t *testing.T) {
+	for _, attenuation := range []float64{0, 74.5} {
+		r := exchangeRecipe()
+		r.Ingredients[2].Attenuation = attenuation
+		data, err := recipe.Export(r, "beerxml")
+		if err != nil {
+			t.Fatal(err)
+		}
+		if bytes.Contains(data, []byte("<ATTENUATION>")) != (attenuation > 0) {
+			t.Fatal("unexpected attenuation field")
+		}
+		got, err := recipe.Import(data, "beerxml")
+		if err != nil || got[0].Ingredients[2].Attenuation != attenuation {
+			t.Fatalf("yeast attenuation %v: %v", attenuation, err)
+		}
+	}
+	r := exchangeRecipe()
+	r.Ingredients[0].Attenuation = 75
+	if err := recipe.Validate(r); err == nil {
+		t.Fatal("accepted attenuation for grain")
+	}
+}
+
+func TestTerminalChillWithoutHold(t *testing.T) {
+	r := exchangeRecipe()
+	r.Fermentation[1].Days = 0
+	data, err := recipe.Export(r, "beerxml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := recipe.Import(data, "beerxml")
+	if err != nil || got[0].Fermentation[1].Days != 0 {
+		t.Fatal("lost terminal temperature target", err)
+	}
+	r.Fermentation[0].Days = 0
+	if recipe.Validate(r) == nil {
+		t.Fatal("accepted a zero-day intermediate hold")
+	}
+}

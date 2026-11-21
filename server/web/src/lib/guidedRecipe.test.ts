@@ -191,3 +191,21 @@ test('eight sequenced visits consume four ingredient loads and exactly one boil'
   expect(slotTimes(d.hops, 1, 60, 1)).not.toContain(29)
   expect(slotTimes(d.hops, 1, 60, 1)).toContain(12)
 })
+
+test('first wort hopping adds a heat-up in the first loaded slot only for a full-boil addition', () => {
+  const guide = { ...draft(), firstWort: true }
+  guide.hops[1].minutes = '60'
+  for (const id of ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']) {
+    const result = guidedRecipe(guide, { ...profile, id })
+    const first = result.steps.find((s) => s.name === 'Heat through hop slot 2')
+    expect(first).toMatchObject({ kind: 'heat', minutes: 0, location: id === 'zymatic' ? 0 : 4 })
+    expect(result.ingredients.filter((i) => i.use === 'first-wort').map((i) => i.name)).toEqual([
+      'Centennial',
+    ])
+  }
+  expect(
+    guidedRecipe({ ...draft(), firstWort: true }, profile).steps.some((s) =>
+      s.name.startsWith('Heat through')
+    )
+  ).toBe(false)
+})
