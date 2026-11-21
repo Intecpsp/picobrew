@@ -58,11 +58,37 @@ export function PageTitle({
   back?: () => void
   className?: string
 }) {
+  useEffect(() => {
+    if (!back) return
+    function handleEscape(event: KeyboardEvent) {
+      if (
+        event.key !== 'Escape' ||
+        event.defaultPrevented ||
+        event.repeat ||
+        event.isComposing ||
+        event.altKey ||
+        event.ctrlKey ||
+        event.metaKey ||
+        event.shiftKey ||
+        document.querySelector('dialog[open]')
+      )
+        return
+      event.preventDefault()
+      back?.()
+    }
+    window.addEventListener('keydown', handleEscape)
+    return () => window.removeEventListener('keydown', handleEscape)
+  }, [back])
   return (
     <header className={`page-heading ${className}`}>
       <div>
         {back && (
-          <button className="back-link" onClick={back}>
+          <button
+            className="back-link"
+            aria-keyshortcuts="Escape"
+            title="Back (Esc)"
+            onClick={back}
+          >
             <ArrowLeft size={16} />
             Back
           </button>

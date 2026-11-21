@@ -58,6 +58,7 @@ function MachinePicker({ devices, current }: { devices: Device[]; current: strin
       }}
       onKeyDown={(event) => {
         if (open && event.key === 'Escape') {
+          event.preventDefault()
           setOpen(false)
           trigger.current?.focus()
         }
@@ -270,7 +271,21 @@ export default function App() {
         setDraft,
       }}
     >
-      <div className="app-shell">
+      <div
+        className="app-shell"
+        onKeyDown={(event) => {
+          if (
+            mobile &&
+            event.key === 'Escape' &&
+            !event.defaultPrevented &&
+            !document.querySelector('dialog[open]')
+          ) {
+            event.preventDefault()
+            setMobile(false)
+            document.querySelector<HTMLButtonElement>('.mobile-nav-button')?.focus()
+          }
+        }}
+      >
         {mobile && <div className="sidebar-scrim" onClick={() => setMobile(false)} />}
         <aside className={`sidebar ${mobile ? 'open' : ''}`}>
           <a href="#/overview" className="brand">

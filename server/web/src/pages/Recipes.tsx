@@ -6,6 +6,7 @@ import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   Plus,
+  ChevronDown,
   Upload,
   Download,
   ArrowUpRight,
@@ -50,6 +51,63 @@ export default function Recipes({ id }: { id?: string }) {
     <RecipeLibrary />
   )
 }
+function AddRecipeMenu({ onImport }: { onImport: () => void }) {
+  const details = useRef<HTMLDetailsElement>(null)
+  const trigger = useRef<HTMLElement>(null)
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    function dismiss(event: PointerEvent) {
+      if (details.current && !details.current.contains(event.target as Node)) {
+        details.current.open = false
+      }
+    }
+    document.addEventListener('pointerdown', dismiss)
+    return () => document.removeEventListener('pointerdown', dismiss)
+  }, [open])
+  return (
+    <details
+      ref={details}
+      className="add-recipe-menu"
+      onToggle={(event) => setOpen(event.currentTarget.open)}
+      onBlur={(event) => {
+        if (event.relatedTarget && !event.currentTarget.contains(event.relatedTarget))
+          event.currentTarget.open = false
+      }}
+      onKeyDown={(event) => {
+        if (event.key === 'Escape' && event.currentTarget.open) {
+          event.preventDefault()
+          event.currentTarget.open = false
+          trigger.current?.focus()
+        }
+      }}
+    >
+      <summary ref={trigger} className="button primary">
+        <Plus size={16} /> Add recipe <ChevronDown size={16} />
+      </summary>
+      <div className="recipe-options">
+        <a href="#/recipes/new">
+          <Plus size={16} />
+          Create a recipe
+        </a>
+        <a href="#/recipes/create-with-ai">
+          <Sparkles size={16} />
+          Ask the brew assistant
+        </a>
+        <button
+          onClick={() => {
+            if (details.current) details.current.open = false
+            trigger.current?.focus()
+            onImport()
+          }}
+        >
+          <Upload size={16} />
+          Import recipe
+        </button>
+      </div>
+    </details>
+  )
+}
 function RecipeLibrary() {
   const hub = useHub()
   const [query, setQuery] = useState('')
@@ -70,37 +128,24 @@ function RecipeLibrary() {
     <>
       <PageTitle
         title="Recipe library"
-        actions={
-          <>
-            <Button variant="secondary" onClick={() => setImporting(true)}>
-              <Upload size={16} />
-              Import recipe
-            </Button>
-            {!emptyLibrary && (
-              <Button onClick={() => hub.navigate('/recipes/new')}>
-                <Plus size={16} />
-                Create recipe
-              </Button>
-            )}
-          </>
-        }
+        actions={!emptyLibrary && <AddRecipeMenu onImport={() => setImporting(true)} />}
       />
       <div className="list-toolbar">
         <SearchBox value={query} onChange={setQuery} placeholder="Search recipes, styles or tags" />
         <div className="inline-actions">
           <span className="muted">{filtered.length} recipes & programs</span>
-          <Button variant="secondary" disabled={!selected.length} onClick={() => setTransfer(true)}>
-            <Send size={16} />
-            Send selected{selected.length ? ` (${selected.length})` : ''}
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={!shoppingIDs.length}
-            onClick={() => setShopping(true)}
-          >
-            <ShoppingBasket size={16} />
-            Shopping list{shoppingIDs.length ? ` (${shoppingIDs.length})` : ''}
-          </Button>
+          {selected.length > 0 && (
+            <>
+              <Button variant="secondary" onClick={() => setTransfer(true)}>
+                <Send size={16} /> Send selected ({selected.length})
+              </Button>
+              {shoppingIDs.length > 0 && (
+                <Button variant="secondary" onClick={() => setShopping(true)}>
+                  <ShoppingBasket size={16} /> Shopping list ({shoppingIDs.length})
+                </Button>
+              )}
+            </>
+          )}
         </div>
       </div>
       {filtered.length ? (
@@ -166,14 +211,7 @@ function RecipeLibrary() {
                 ? 'Create your first recipe, import BeerXML, or ask the brew assistant for a starting point.'
                 : 'Try a different name or style.'
             }
-            action={
-              emptyLibrary && (
-                <Button onClick={() => hub.navigate('/recipes/new')}>
-                  Create a recipe
-                  <Plus size={16} />
-                </Button>
-              )
-            }
+            action={emptyLibrary && <AddRecipeMenu onImport={() => setImporting(true)} />}
           />
         </div>
       )}

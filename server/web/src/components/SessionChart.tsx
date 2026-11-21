@@ -329,7 +329,10 @@ export function SessionChart({
             case 'Enter':
               break
             case 'Escape':
-              clear()
+              if (inspect) {
+                e.preventDefault()
+                clear()
+              }
               return
             default:
               return
