@@ -104,7 +104,23 @@ export function sessionState(
     if (raw < 0 || raw === 255) return 'No step'
     return [String(raw + 1), brew.step_names?.[raw]].filter(Boolean).join(' · ')
   }
-  if (field === 'compartment') return String(raw)
+  if (field === 'compartment') {
+    // The S/Pro history sample records the controller compartment. These are
+    // its front-panel labels, a different namespace from PicoPak recipe steps.
+    if (!sim && ['pico-s', 'pico-pro'].includes(brew.model)) {
+      const name = [
+        'Reservoir',
+        'Mash',
+        'Heat water',
+        'Adjunct 1',
+        'Adjunct 2',
+        'Adjunct 4',
+        'Adjunct 3',
+      ][raw]
+      if (name) return detail ? name + ' (' + raw + ')' : name
+    }
+    return 'Position ' + raw
+  }
   let name: string | undefined
   if (sim) {
     if (field === 'device_state') {

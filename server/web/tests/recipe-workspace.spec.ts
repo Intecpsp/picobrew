@@ -11,9 +11,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   const main = page.getByRole('navigation', { name: 'Main navigation' })
   const views = page.getByRole('navigation', { name: 'Recipe views' })
   await expect(main.getByRole('link', { name: /^Recipes/ })).toHaveAttribute('aria-current', 'page')
-  await expect(main.getByRole('link', { name: /Community catalog|Brew assistant/ })).toHaveCount(
-    0
-  )
+  await expect(main.getByRole('link', { name: /Community catalog|Brew assistant/ })).toHaveCount(0)
   await expect(views.getByRole('link')).toHaveCount(2)
   await expect(page.getByRole('button', { name: /community catalog/i })).toHaveCount(0)
   await views.getByRole('link', { name: 'Browse all' }).click()
@@ -101,3 +99,22 @@ for (const width of [1440, 390]) {
     }
   })
 }
+
+test('an empty library has one create action and the editor names the valve choices', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/recipes', (route) => route.fulfill({ json: [] }))
+  await page.goto('/#/recipes')
+  await expect(page.getByRole('button', { name: 'Create recipe', exact: true })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Create a recipe', exact: true }).click()
+  const valve = page.getByLabel('Valve position', { exact: true }).first()
+  await expect(valve).toHaveValue('0')
+  await expect(valve.getByRole('option', { name: 'Mash · position 2' })).toHaveAttribute(
+    'value',
+    '2'
+  )
+  await expect(valve).toHaveCSS('appearance', 'none')
+  await expect(
+    page.getByLabel('Step type', { exact: true }).first().locator('option:checked')
+  ).toHaveText('Mash rest')
+})

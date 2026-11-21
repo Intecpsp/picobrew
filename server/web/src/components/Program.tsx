@@ -1,16 +1,22 @@
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { MachineRecipe, MachineStep, RecipeProvenance } from '../types'
-import { externalURL, programTiming } from '../lib/programs'
+import { externalURL, programTiming, routeLabel } from '../lib/programs'
 import { Button, Field, IconButton, SectionHeading } from './ui'
 
-export function ProgramTable({ program }: { program: MachineRecipe }) {
+export function ProgramTable({
+  program,
+  archiveModel,
+}: {
+  program: MachineRecipe
+  archiveModel?: string
+}) {
   return (
     <div className="table-scroll">
       <table className="program-table">
         <thead>
           <tr>
             <th>Step</th>
-            <th>Compartment</th>
+            <th>Routing</th>
             <th>Target</th>
             <th>Hold</th>
             <th>Drain</th>
@@ -23,7 +29,7 @@ export function ProgramTable({ program }: { program: MachineRecipe }) {
                 <span className="muted">{index + 1}. </span>
                 {step.name}
               </td>
-              <td>{step.location}</td>
+              <td>{routeLabel(step.location, archiveModel)}</td>
               <td>{step.target_f === 0 ? 'Unheated' : `${step.target_f} °F`}</td>
               <td>
                 {step.minutes === 0
@@ -48,10 +54,14 @@ export function ProgramFields({
   program,
   onChange,
   device = false,
+  title = 'Brew schedule',
+  archiveModel,
 }: {
   program: MachineRecipe
   onChange: (program: MachineRecipe) => void
   device?: boolean
+  title?: string
+  archiveModel?: string
 }) {
   function updateStep(index: number, patch: Partial<MachineStep>) {
     onChange({
@@ -67,8 +77,8 @@ export function ProgramFields({
   return (
     <>
       <SectionHeading
-        title="Machine program"
-        description="Temperatures, timings and compartments are stored exactly as entered. A zero-minute hold reaches the target, then advances."
+        title={title}
+        description="Temperatures, timings and valve settings are stored exactly as entered. A zero-minute hold reaches the target, then advances."
         actions={
           <Button
             variant="secondary"
@@ -112,17 +122,21 @@ export function ProgramFields({
                 />
               </Field>
               <div className="form-grid quarters">
-                <Field label={`Step ${index + 1} compartment`}>
-                  <input
-                    type="number"
-                    min={device ? '1' : '0'}
-                    max="6"
-                    step="1"
+                <Field label={`Step ${index + 1} routing`}>
+                  <select
                     value={step.location}
                     onChange={(event) =>
                       updateStep(index, { location: Number(event.target.value) })
                     }
-                  />
+                  >
+                    {[0, 1, 2, 3, 4, 5, 6]
+                      .filter((n) => n !== 0 || (!device && !archiveModel?.startsWith('pico')))
+                      .map((n) => (
+                        <option key={n} value={n}>
+                          {routeLabel(n, archiveModel)}
+                        </option>
+                      ))}
+                  </select>
                 </Field>
                 <Field label={`Step ${index + 1} target (°F)`} hint="0 = unheated">
                   <input

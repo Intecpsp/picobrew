@@ -1,3 +1,4 @@
+import { sessionState } from '../lib/sessionState'
 import type { BrewDetail, Sample, Unit } from '../types'
 import { clockTime, duration, temperature } from '../lib/utils'
 import { sampleReading } from '../lib/history'
@@ -67,10 +68,17 @@ export function HistorySamples({
                   <td>{temperature(sample.thermoblock_f, unit)}</td>
                   <td>{temperature(sample.target_f, unit)}</td>
                   <td>{duration(sample.step_seconds * 1000)}</td>
-                  <td>{sample.phase}</td>
-                  <td>{sample.controller_status}</td>
-                  <td>{sample.compartment}</td>
-                  <td>{sample.current_step === 255 ? '—' : sample.current_step + 1}</td>
+                  <td>{sessionState(brew, 'phase', sample.phase, sample.source)}</td>
+                  <td>
+                    {sessionState(
+                      brew,
+                      'controller_status',
+                      sample.controller_status,
+                      sample.source
+                    )}
+                  </td>
+                  <td>{sessionState(brew, 'compartment', sample.compartment, sample.source)}</td>
+                  <td>{sessionState(brew, 'current_step', sample.current_step, sample.source)}</td>
                 </>
               )}
               {extra.map((field) => (
@@ -81,8 +89,8 @@ export function HistorySamples({
                   )}
                 </td>
               ))}
-              <td>0x{sample.flags.toString(16)}</td>
-              <td>{sample.device_state}</td>
+              <td>{sessionState(brew, 'flags', sample.flags, sample.source)}</td>
+              <td>{sessionState(brew, 'device_state', sample.device_state, sample.source)}</td>
               <td>{sample.source}</td>
             </tr>
           ))}

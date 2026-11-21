@@ -17,7 +17,15 @@ import {
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import type { BrewDetail } from '../types'
-import { dateLabel, duration, clockTime, slug, temperature, transitions } from '../lib/utils'
+import {
+  modelLabel,
+  dateLabel,
+  duration,
+  clockTime,
+  slug,
+  temperature,
+  transitions,
+} from '../lib/utils'
 import {
   Badge,
   Button,
@@ -245,7 +253,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
         back={() => hub.navigate('/history')}
         eyebrow={`${brew.device_name} · ${dateLabel(brew.started_at || brew.observed_at)}`}
         title={brew.recipe_name || brew.command || 'Brew session'}
-        description={`${brew.model} · ${brew.source}${accessory ? '' : ` · ${brew.recipe_revision ? `Recipe revision ${brew.recipe_revision}` : 'Recipe revision not recorded'}`}`}
+        description={`${modelLabel(brew.model)} · ${brew.source === 'device' ? 'Machine history' : brew.source === 'simulation' ? 'Simulation' : brew.source}${accessory ? '' : ` · ${brew.recipe_revision ? `Recipe revision ${brew.recipe_revision}` : 'Recipe revision not recorded'}`}`}
         actions={
           <>
             <Badge tone={brew.state === 'completed' ? 'green' : 'copper'}>{brew.state}</Badge>
@@ -400,7 +408,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                   </strong>
                   <small>
                     {!accessory &&
-                      `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sample.compartment} · `}
+                      `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sessionState(brew, 'compartment', sample.compartment, sample.source)} · `}
                     {sessionState(brew, 'flags', sample.flags, sample.source, true)}
                   </small>
                   <small>
