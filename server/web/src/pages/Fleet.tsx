@@ -1,13 +1,12 @@
+import './fleet.scss'
 import { useEffect, useRef, useState } from 'react'
 import {
   ArrowUpRight,
   ArrowRight,
   Plus,
-  Clock3,
   FlaskConical,
   BookOpen,
   Radio,
-  WifiOff,
   Pencil,
   Trash2,
   KeyRound,
@@ -20,7 +19,6 @@ import {
   Empty,
   IconButton,
   Loading,
-  Metric,
   PageTitle,
   SectionHeading,
 } from '../components/ui'
@@ -32,7 +30,7 @@ import { Sparkline, TemperatureChart } from '../components/Charts'
 import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 export default function Fleet({ addMachine = false }: { addMachine?: boolean }) {
   const hub = useHub()
-  const { devices, brews, recipes, unit, navigate, loading } = hub
+  const { devices, brews, unit, navigate, loading } = hub
   const [editing, setEditing] = useState<Device | 'new' | null>(addMachine ? 'new' : null)
   const updates = useResource<FirmwareUpdates>(
     devices.some((d) => d.adapter === 'pico-standalone') ? '/firmware/updates' : null,
@@ -48,12 +46,9 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
     if (addMachine) navigate('/overview')
   }
   const active = devices.filter((device) => device.online && device.status?.busy)
-  const focus = active[0]
-  const lastBrew = focus ? brews.find((brew) => brew.device_id === focus.id) : brews[0]
-  const trace = useResource<BrewDetail>(
-    lastBrew ? `/brews/${lastBrew.id}` : null,
-    focus ? 10000 : 0
-  )
+  const lastBrew = brews.find((brew) => brew.state === 'completed')
+  const trace = useResource<BrewDetail>(lastBrew ? `/brews/${lastBrew.id}` : null)
+  const ordered = [...active, ...devices.filter((d) => !d.online || !d.status?.busy)]
   const [traces, setTraces] = useState<Record<string, { value: number | null }[]>>({})
   const previous = useRef('')
   useEffect(() => {
@@ -65,7 +60,12 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
       for (const device of devices)
         next[device.id] = [
           ...(old[device.id] || []),
-          { value: device.status?.temperature_f ?? device.status?.wort_f ?? null },
+          {
+            value: device.online
+              ? ((isAccessory(device) ? device.status?.temperature_f : device.status?.wort_f) ??
+                null)
+              : null,
+          },
         ].slice(-40)
       return next
     })
@@ -74,9 +74,8 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
   return (
     <>
       <PageTitle
-        eyebrow="YOUR BREWERY AT A GLANCE"
-        title="A good day to brew."
-        description="Every machine, every recipe, every moment of the brew."
+        title="Brewery"
+        description={`${devices.filter((d) => d.online).length} of ${devices.length} machines connected · ${active.length} sessions in progress`}
         actions={
           <>
             <Button variant="secondary" onClick={() => setEditing('new')}>
@@ -101,51 +100,9 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
       {firmwareID && (
         <MachineFirmwareDialog deviceID={firmwareID} onClose={() => setFirmwareID('')} />
       )}
-      <div className="overview-stats">
-        <Metric
-          label="Machines connected"
-          value={
-            <>
-              {devices.filter((d) => d.online).length}
-              <small> / {devices.length}</small>
-            </>
-          }
-          note="Across your brewery"
-        />
-        <Metric
-          label="Sessions in progress"
-          value={active.length}
-          note={active.length ? 'Keeping an eye on every step' : 'Ready when you are'}
-          accent
-        />
-        <Metric
-          label="In your recipe library"
-          value={recipes.length}
-          note="One collection, all your machines"
-        />
-        <Metric
-          label="Sessions recorded"
-          value={brews.length}
-          note="Your craft, captured over time"
-        />
-      </div>
-      <SectionHeading
-        title="On the brew bench"
-        description={
-          devices.length
-            ? `${devices.length} ${devices.length === 1 ? 'machine' : 'machines'} · readings update automatically`
-            : 'Connect a machine to start your workspace'
-        }
-        actions={
-          <span className="live-label">
-            <i />
-            LIVE READINGS
-          </span>
-        }
-      />
       {devices.length ? (
-        <div className="fleet-grid">
-          {devices.map((device) => (
+        <div className="brewery-list">
+          {ordered.map((device) => (
             <MachineCard
               key={device.id}
               device={device}
@@ -172,20 +129,8 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
       <div className="overview-bottom">
         <section className="panel trace-panel">
           <SectionHeading
-            title={
-              focus
-                ? 'Brew day, in motion.'
-                : lastBrew
-                  ? 'A look at your last brew.'
-                  : 'The story is in the readings.'
-            }
-            description={
-              focus
-                ? `${focus.name} · ${focus.status?.recipe_name || focus.status?.step_name || 'Program in progress'}`
-                : lastBrew
-                  ? `${lastBrew.recipe_name} · ${lastBrew.device_name}`
-                  : 'Temperatures and phases will appear as you brew.'
-            }
+            title="Last completed brew"
+            description={lastBrew ? `${lastBrew.recipe_name} · ${lastBrew.device_name}` : undefined}
             actions={
               lastBrew && (
                 <Button variant="ghost" onClick={() => navigate(`/history/${lastBrew.id}`)}>
@@ -204,12 +149,8 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
           ) : (
             <Empty
               icon={<Radio size={25} />}
-              title={focus ? 'Listening to your brew.' : 'Ready for a fresh trace.'}
-              description={
-                focus
-                  ? 'The first sensor samples will appear here shortly.'
-                  : 'Start a brew and capture its temperatures and phases from beginning to end.'
-              }
+              title="No readings yet"
+              description="Completed brews with recorded samples appear here."
             />
           )}
         </section>
@@ -267,138 +208,80 @@ function MachineCard({
   onRemove: () => void
 }) {
   const { unit } = useHub()
-  const status = device.status
+  const status = device.online ? device.status : undefined
+  const busy = !!status?.busy && !status.stopped
   const accessory = isAccessory(device)
-  const state = deviceState(device)
-  const progress = status?.step_count
-    ? Math.min(100, ((status.current_step + 1) / status.step_count) * 100)
-    : 0
+  const step =
+    busy && status.current_step >= 0 && status.current_step < status.step_count
+      ? status.current_step + 1
+      : 0
   return (
-    <article className={`machine-card ${status?.busy ? 'brewing' : ''}`}>
-      <div className="machine-card-top">
-        <div>
-          <p className="eyebrow">
-            {deviceModelLabel(device)}
-            {device.adapter === 'simulator' ? ' · VIRTUAL' : ''}
-          </p>
-          <h3>{device.name}</h3>
-          <p className="machine-location">{device.location || 'Your brewery'}</p>
+    <article className={`machine-card brewery-row ${busy ? 'brewing' : ''}`}>
+      <div className="brewery-identity">
+        <div className="row-illustration" aria-hidden="true">
+          {accessory ? <FlaskConical size={36} /> : <BrewerIllustration active={busy} />}
         </div>
-        <div className="machine-card-status">
+        <div>
+          <small>
+            {deviceModelLabel(device)}
+            {device.location ? ' · ' + device.location : ''}
+          </small>
+          <h3>{device.name}</h3>
           <Badge
             tone={
-              !device.online
-                ? 'neutral'
-                : status?.stopped
-                  ? 'danger'
-                  : status?.busy
-                    ? 'copper'
-                    : 'green'
+              !device.online ? 'neutral' : status?.stopped ? 'danger' : busy ? 'copper' : 'green'
             }
           >
-            {state}
+            {deviceState(device)}
           </Badge>
-          {device.key_reused && (
-            <span
-              className="machine-key-notice"
-              title="The hub has the same saved API key for another machine."
-            >
-              <KeyRound size={12} />
-              Shared API key
+        </div>
+      </div>
+      <div className="brewery-session">
+        <small>{busy ? 'Current session' : 'Session'}</small>
+        <strong>
+          {busy
+            ? status.recipe_name || status.command || 'Program in progress'
+            : !device.online
+              ? 'Machine offline'
+              : status?.stopped
+                ? 'Outputs stopped'
+                : status?.ready
+                  ? 'Ready for the next session'
+                  : 'Waiting for machine status'}
+        </strong>
+        {busy && (
+          <>
+            <span>
+              {[step ? `Step ${step} of ${status.step_count}` : '', status.step_name]
+                .filter(Boolean)
+                .join(' · ')}
             </span>
-          )}
-        </div>
-      </div>
-      {device.model_error && (
-        <p className="help-text" role="status">
-          {device.model_error}{' '}
-          {device.model_selection_required && (
-            <button className="text-button" onClick={onEdit}>
-              Choose machine model
-            </button>
-          )}
-        </p>
-      )}
-      <div className="machine-card-body">
-        <>
-          {accessory ? (
-            <div className="accessory-illustration" aria-hidden="true">
-              <FlaskConical size={70} strokeWidth={1} />
-              <span>{deviceModelLabel(device)}</span>
-            </div>
-          ) : (
-            <BrewerIllustration active={!!status?.busy} />
-          )}
-        </>
-        <div className="machine-readings">
-          <span>{accessory ? 'TEMPERATURE' : 'WORT TEMPERATURE'}</span>
-          <strong>
-            {device.online
-              ? temperature(accessory ? status?.temperature_f : status?.wort_f, unit)
-              : '—'}
-          </strong>
-          <small>
-            {accessory
-              ? status?.pressure_kpa != null
-                ? `${status.pressure_kpa.toFixed(2)} kPa`
-                : status?.battery_v != null
-                  ? `${status.battery_v.toFixed(2)} V battery`
-                  : deviceState(device)
-              : `Target ${temperature(status?.target_f, unit)}`}
-          </small>
-          {values.length > 1 ? (
-            <Sparkline values={values} />
-          ) : (
-            <div className="trace-wait">
-              {device.online ? 'Collecting a live trace' : 'Awaiting connection'}
-            </div>
-          )}
-        </div>
-      </div>
-      <div className="machine-phase">
-        <div>
-          <span>
-            {!device.online ? (
-              <>
-                <WifiOff size={14} />
-                Connection unavailable
-              </>
-            ) : status?.stopped ? (
-              'Outputs stopped'
-            ) : status?.busy ? (
-              accessory ? (
-                state
-              ) : (
-                status.step_name || `Phase ${status.phase}`
-              )
-            ) : accessory ? (
-              'Ready for a session'
-            ) : (
-              'Ready for the next recipe'
+            {step > 0 && (
+              <progress aria-label="Current step" value={step} max={status.step_count} />
             )}
-          </span>
-          {status?.busy && !accessory && (
-            <small>
-              <Clock3 size={12} />
-              {duration(status.step_seconds * 1000)}
-            </small>
-          )}
-        </div>
-        <>
-          {!accessory && (
-            <div className="progress-track">
-              <span style={{ width: `${progress}%` }} />
-            </div>
-          )}
-        </>
+            {status.step_seconds > 0 && (
+              <small>
+                {duration(status.step_seconds * 1000)}{' '}
+                {device.adapter === 'simulator' ||
+                (device.model.startsWith('pico-') && status.phase === 8)
+                  ? 'elapsed in step'
+                  : 'left in step'}
+              </small>
+            )}
+          </>
+        )}
       </div>
-      <footer>
-        <span>
-          {status?.recipe_name ||
-            (device.capabilities?.firmware_version &&
-              `Firmware ${device.capabilities.firmware_version}`) ||
-            'Standalone brewer'}
-        </span>
+      <div className="brewery-reading">
+        <small>{accessory ? 'Temperature' : 'Wort temperature'}</small>
+        <strong>{temperature(accessory ? status?.temperature_f : status?.wort_f, unit)}</strong>
+        {busy && status.target_f != null && status.target_f > 0 && (
+          <span>Target {temperature(status.target_f, unit)}</span>
+        )}
+        {status?.pressure_kpa != null && <span>{status.pressure_kpa.toFixed(2)} kPa</span>}
+        {status?.battery_v != null && <span>{status.battery_v.toFixed(2)} V battery</span>}
+        {status && values.length > 1 && <Sparkline values={values} />}
+      </div>
+      <div className="brewery-actions">
         <a
           className="machine-card-link"
           href={`#/devices/${device.id}`}
@@ -414,7 +297,26 @@ function MachineCard({
             <Trash2 size={16} />
           </IconButton>
         </div>
-      </footer>
+      </div>
+      {(device.key_reused || device.model_error) && (
+        <div className="brewery-alert">
+          {device.key_reused && (
+            <span>
+              <KeyRound size={14} /> Shared API key
+            </span>
+          )}
+          {device.model_error && (
+            <span>
+              {device.model_error}{' '}
+              {device.model_selection_required && (
+                <button className="text-button" onClick={onEdit}>
+                  Choose machine model
+                </button>
+              )}
+            </span>
+          )}
+        </div>
+      )}
     </article>
   )
 }

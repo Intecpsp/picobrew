@@ -26,14 +26,27 @@
   .field {
     margin: 0;
   }
-  summary {
-    cursor: pointer;
-    color: var(--hub-muted);
-    width: fit-content;
-    padding: 8px 0;
+  .ingredient-fields,
+  .step-routing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: 10px 14px;
+    align-items: end;
   }
-  details .form-grid {
-    padding: 8px 0;
+  .ingredient-fields > :first-child {
+    grid-column: span 2;
+  }
+  .ingredient-fields button {
+    justify-self: start;
+  }
+  .step-routing {
+    margin-top: 10px;
+  }
+  @media (max-width: 650px) {
+    .ingredient-fields,
+    .step-routing {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
   }
   .plan-add {
     justify-content: flex-start;

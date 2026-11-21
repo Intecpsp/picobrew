@@ -308,7 +308,7 @@ export function RemoveDeviceDialog({
     try {
       await api(`/devices/${device.id}`, { method: 'DELETE' })
       await hub.refresh()
-      hub.notify('Machine removed from the workspace. Brew history is retained.')
+      hub.notify('Machine removed from the brewery. Brew history is retained.')
       onClose()
       onRemoved?.()
     } catch (error) {
@@ -336,8 +336,7 @@ export function RemoveDeviceDialog({
       }
     >
       <p>
-        The hub will stop monitoring {device.name}. Its recorded brew history stays in your
-        workspace.
+        The hub will stop monitoring {device.name}. Its recorded brew history stays in your brewery.
       </p>
       <p className="help-text">
         This removes the connection from the hub. It does not erase the brewer, change its recipes

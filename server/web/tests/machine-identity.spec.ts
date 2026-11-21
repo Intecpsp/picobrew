@@ -113,6 +113,7 @@ for (const viewport of [
     expect(overrides).toHaveLength(0)
     expect(registrations).toBe(1)
     await card.getByRole('link', { name: 'Open Automatically connected Pico S controls' }).click()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
     await expect(dialog.getByLabel('Receiver host')).toHaveValue('hub.local')
@@ -135,7 +136,9 @@ for (const viewport of [
       true
     )
     await dialog.getByRole('button', { name: 'Close dialog' }).click()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await page.getByRole('button', { name: 'Test connection' }).click()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
     await expect(dialog.getByLabel('Receiver host')).toHaveValue('brew-relay.local')
@@ -149,6 +152,7 @@ for (const viewport of [
     receiver = { ...receiver, state: 'pending' }
     const previousSettingsRequests = settingsRequests
     await page.reload()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await expect(page.getByRole('button', { name: 'Brewer preferences' })).toBeEnabled()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
@@ -173,6 +177,7 @@ for (const viewport of [
     )
     await dialog.getByRole('button', { name: 'Close dialog' }).click()
     await page.reload()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await page.getByRole('button', { name: 'Brewer preferences' }).click()
     dialog = page.getByRole('dialog', { name: 'Brewer preferences' })
     await expect(dialog.getByLabel('Receiver host')).toHaveValue('offline-saved.local')

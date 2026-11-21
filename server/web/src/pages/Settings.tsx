@@ -41,7 +41,7 @@ export default function Settings() {
     <>
       <PageTitle
         eyebrow="MAKE IT YOUR BREWERY"
-        title="Workspace settings."
+        title="Hub settings"
         description="Choose how your hub plans, displays and records your brews."
       />
       <div className="settings-sheet">
@@ -116,7 +116,7 @@ export default function Settings() {
             <p>A portable record of your recipes, equipment and brewing history.</p>
           </div>
           <div className="settings-fields">
-            <h3>Export the workspace</h3>
+            <h3>Export brewery data</h3>
             <p>
               Download recipes, revisions, machine records, brew sessions and their sensor samples
               as a ZIP archive.
@@ -132,7 +132,7 @@ export default function Settings() {
               }}
             >
               <Download size={16} />
-              Export workspace
+              Download backup
             </Button>
             <p className="help-text">
               Account passwords and API credentials are excluded. Complete disaster recovery uses a

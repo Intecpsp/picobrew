@@ -95,7 +95,7 @@ async function simulationMutation(path: string, body: unknown = {}) {
 describe('UI interactions against the real isolated Go simulator', () => {
   it('loads fleet data, streams updates and exposes simulator controls without an OLED', async () => {
     await open('/overview')
-    await screen.findByRole('heading', { name: 'A good day to brew.' })
+    await screen.findByRole('heading', { name: 'Brewery' })
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
     await screen.findByRole('heading', { name: 'Simulator controls' })
@@ -148,6 +148,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
 
       await user.click(screen.getByRole('link', { name: 'Open DOM renamed brewer controls' }))
       await screen.findByRole('heading', { name: 'DOM renamed brewer', level: 1 })
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       expect(
         (screen.getByRole('button', { name: 'Edit connection' }) as HTMLButtonElement).disabled
       ).toBe(false)
@@ -179,15 +180,17 @@ describe('UI interactions against the real isolated Go simulator', () => {
       const brew = brews.find((item: any) => item.device_id === id)
       expect(brew.sample_count).toBeGreaterThan(0)
 
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       await user.click(screen.getByRole('button', { name: 'Edit connection' }))
       dialog = await screen.findByRole('dialog', { name: 'Edit machine connection' })
       await user.click(within(dialog).getByLabelText('Monitor this machine'))
       await user.click(within(dialog).getByRole('button', { name: 'Save machine' }))
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       await user.click(screen.getByRole('button', { name: 'Remove machine' }))
       dialog = await screen.findByRole('dialog', { name: 'Remove DOM renamed brewer?' })
       await user.click(within(dialog).getByRole('button', { name: 'Remove machine' }))
-      await screen.findByRole('heading', { name: 'A good day to brew.' })
+      await screen.findByRole('heading', { name: 'Brewery' })
       expect(window.location.hash).toBe('#/overview')
       expect((await originalFetch(origin + `/api/v1/devices/${id}`)).status).toBe(404)
       const retained = await (await originalFetch(origin + `/api/v1/brews/${brew.id}`)).json()
@@ -252,7 +255,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
   })
   it('persists calibration and exercises the authenticated API explorer', async () => {
     await open('/settings')
-    await screen.findByRole('heading', { name: 'Workspace settings.' })
+    await screen.findByRole('heading', { name: 'Hub settings' })
     expect(screen.queryByRole('heading', { name: 'Your machines' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Add machine' })).toBeNull()
     await waitFor(() =>

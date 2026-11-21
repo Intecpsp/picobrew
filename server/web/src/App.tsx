@@ -31,7 +31,7 @@ const Settings = lazy(() => import('./pages/Settings'))
 const Assistant = lazy(() => import('./pages/Assistant'))
 const Explorer = lazy(() => import('./pages/Explorer'))
 const navigation = [
-  { path: '/overview', label: 'Overview', icon: LayoutDashboard },
+  { path: '/overview', label: 'Brewery', icon: LayoutDashboard },
   { path: '/recipes', label: 'Recipes', icon: BookOpen },
   { path: '/history', label: 'Brew journal', icon: History },
   { path: '/settings', label: 'Settings', icon: Settings2 },
@@ -247,7 +247,6 @@ export default function App() {
               <small>YOUR BREWERY, TOGETHER</small>
             </div>
           </a>
-          <div className="sidebar-label">WORKSPACE</div>
           <nav aria-label="Main navigation">
             {navigation.map((item) => (
               <a
@@ -286,18 +285,25 @@ export default function App() {
                 <Menu size={21} />
               </IconButton>
               <nav className="breadcrumb" aria-label="Breadcrumb">
-                <a className="breadcrumb-parent" href="#/overview">
-                  Brewery
-                </a>
-                <span className="breadcrumb-separator" aria-hidden="true">
-                  /
-                </span>
-                {section === 'devices' && devices.length > 1 ? (
-                  <MachinePicker key={parts[1]} devices={devices} current={parts[1]} />
+                {section === 'overview' ? (
+                  <strong aria-current="page">Brewery</strong>
                 ) : (
-                  <strong aria-current="page">
-                    {section === 'devices' ? 'Machine' : selected.label}
-                  </strong>
+                  <>
+                    {' '}
+                    <a className="breadcrumb-parent" href="#/overview">
+                      Brewery
+                    </a>
+                    <span className="breadcrumb-separator" aria-hidden="true">
+                      /
+                    </span>
+                    {section === 'devices' && devices.length > 1 ? (
+                      <MachinePicker key={parts[1]} devices={devices} current={parts[1]} />
+                    ) : (
+                      <strong aria-current="page">
+                        {section === 'devices' ? 'Machine' : selected.label}
+                      </strong>
+                    )}
+                  </>
                 )}
               </nav>
             </div>
@@ -329,10 +335,7 @@ export default function App() {
             {session.demo && (
               <div className="demo-notice">
                 <Radio size={15} />
-                <span>
-                  Simulation workspace · Controls operate virtual brewers. Your real machines are
-                  untouched.
-                </span>
+                <span>Simulation · Controls operate virtual brewers.</span>
               </div>
             )}
             {recipeView && <RecipeWorkspaceTabs route={route} />}
@@ -445,11 +448,11 @@ function AuthPage({ session, onComplete }: { session: Session; onComplete: () =>
       </div>
       <div className="auth-form">
         <LockKeyhole size={28} />
-        <p className="eyebrow">YOUR BREWERY WORKSPACE</p>
+        <p className="eyebrow">YOUR BREWERY</p>
         <h2>{session.setup_required ? 'Make yourself at home.' : 'Welcome back.'}</h2>
         <p>
           {session.setup_required
-            ? 'Use the setup token printed by your hub and choose a workspace password.'
+            ? 'Use the setup token printed by your hub and choose a Hub password.'
             : 'Sign in to monitor your machines and plan the next brew.'}
         </p>
         <form onSubmit={submit}>
@@ -475,7 +478,7 @@ function AuthPage({ session, onComplete }: { session: Session; onComplete: () =>
           </Field>
           <ErrorBanner message={error} />
           <Button type="submit" disabled={busy}>
-            {busy ? 'Connecting…' : session.setup_required ? 'Create workspace' : 'Sign in'}
+            {busy ? 'Connecting…' : session.setup_required ? 'Set up Hub' : 'Sign in'}
             <ArrowRight size={17} />
           </Button>
         </form>

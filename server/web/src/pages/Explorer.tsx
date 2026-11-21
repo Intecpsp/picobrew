@@ -139,7 +139,7 @@ export default function Explorer() {
       <PageTitle
         eyebrow="THE SAME API, YOUR OWN IDEAS"
         title="Explore the hub API."
-        description="Browse every endpoint and try authenticated requests from your workspace."
+        description="Browse every endpoint and try authenticated requests from your Hub."
         actions={
           <Button
             variant="secondary"
@@ -300,7 +300,7 @@ export default function Explorer() {
       {confirm && (
         <Confirm
           title="Send this API request?"
-          description={`${selected?.method} ${path} may change workspace data or operate a machine. Review the path and ${multipart ? 'selected file' : 'body'} before continuing.`}
+          description={`${selected?.method} ${path} may change brewery data or operate a machine. Review the path and ${multipart ? 'selected file' : 'body'} before continuing.`}
           label="Send request"
           onClose={() => setConfirm(false)}
           onConfirm={() => void execute()}

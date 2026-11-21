@@ -140,8 +140,8 @@ export function AIWorkbench({
             <h3>Bring your own brewing companion.</h3>
             <p>
               Connect a ChatGPT or Claude subscription, or add a provider API key, in Settings.
-              Choose a model and save with the brew assistant enabled. Your workspace works fully
-              without it.
+              Choose a model and save with the brew assistant enabled. Your Hub works fully without
+              it.
             </p>
           </div>
           <Button variant="secondary" onClick={() => hub.navigate('/settings')}>

@@ -69,7 +69,7 @@ export function RecipeIngredients({
                 units = ingredientUnits(item.kind)
               return (
                 <div className="plan-row" key={index}>
-                  <div className="plan-fields">
+                  <div className="ingredient-fields">
                     <Field
                       label={
                         hop
@@ -118,73 +118,105 @@ export function RecipeIngredients({
                         />
                       </Field>
                     )}
-                  </div>
-                  <details>
-                    <summary>Ingredient details</summary>
-                    <div className="form-grid">
-                      <Field label="Kind">
+                    <Field label="Kind">
+                      <select
+                        value={item.kind}
+                        onChange={(e) => {
+                          const kind = e.target.value
+                          patch(index, { kind, unit: ingredientUnits(kind)[0] })
+                        }}
+                      >
+                        {Object.entries(kinds).map(([k, label]) => (
+                          <option key={k} value={k}>
+                            {label}
+                          </option>
+                        ))}
+                      </select>
+                    </Field>
+                    {units.length > 1 && (
+                      <Field label="Unit">
                         <select
-                          value={item.kind}
-                          onChange={(e) => {
-                            const kind = e.target.value
-                            patch(index, { kind, unit: ingredientUnits(kind)[0] })
-                          }}
+                          value={item.unit}
+                          onChange={(e) => patch(index, { unit: e.target.value })}
                         >
-                          {Object.entries(kinds).map(([k, label]) => (
-                            <option key={k} value={k}>
-                              {label}
-                            </option>
+                          {units.map((u) => (
+                            <option key={u}>{u}</option>
                           ))}
                         </select>
                       </Field>
-                      {units.length > 1 && (
-                        <Field label="Unit">
-                          <select
-                            value={item.unit}
-                            onChange={(e) => patch(index, { unit: e.target.value })}
-                          >
-                            {units.map((u) => (
-                              <option key={u}>{u}</option>
-                            ))}
-                          </select>
-                        </Field>
-                      )}
-                      <Field label="Use">
+                    )}
+                    <Field label="Use">
+                      <input
+                        value={item.use}
+                        onChange={(e) => patch(index, { use: e.target.value })}
+                      />
+                    </Field>
+                    {hop ? (
+                      <Field label="Alpha acid (%)">
                         <input
-                          value={item.use}
-                          onChange={(e) => patch(index, { use: e.target.value })}
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="any"
+                          value={item.alpha ?? ''}
+                          onChange={(e) => patch(index, { alpha: Number(e.target.value) })}
                         />
                       </Field>
-                      {hop ? (
-                        <Field label="Alpha acid (%)">
-                          <input
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="any"
-                            value={item.alpha ?? ''}
-                            onChange={(e) => patch(index, { alpha: Number(e.target.value) })}
-                          />
-                        </Field>
-                      ) : (
-                        <Field label="Addition time (min)">
-                          <input
-                            type="number"
-                            min="0"
-                            step="any"
-                            value={item.minutes}
-                            onChange={(e) => patch(index, { minutes: Number(e.target.value) })}
-                          />
-                        </Field>
-                      )}
-                      <Button
-                        variant="ghost"
-                        onClick={() => change(items.filter((_, i) => i !== index))}
-                      >
-                        <Trash2 size={15} /> Remove ingredient
-                      </Button>
-                    </div>
-                  </details>
+                    ) : (
+                      <Field label="Addition time (min)">
+                        <input
+                          type="number"
+                          min="0"
+                          step="any"
+                          value={item.minutes}
+                          onChange={(e) => patch(index, { minutes: Number(e.target.value) })}
+                        />
+                      </Field>
+                    )}
+                    <Field label="Type">
+                      <input
+                        value={item.type || ''}
+                        onChange={(event) => patch(index, { type: event.target.value })}
+                        placeholder={
+                          item.kind === 'fermentable'
+                            ? 'Grain'
+                            : item.kind === 'hop'
+                              ? 'Bittering'
+                              : 'Ale'
+                        }
+                      />
+                    </Field>
+                    <Field label="Form">
+                      <input
+                        value={item.form || ''}
+                        onChange={(event) => patch(index, { form: event.target.value })}
+                        placeholder={item.kind === 'hop' ? 'Pellet' : 'Dry'}
+                      />
+                    </Field>
+                    <Field label="Yield (%)">
+                      <input
+                        type="number"
+                        min="0"
+                        max="100"
+                        value={item.yield || ''}
+                        onChange={(event) => patch(index, { yield: Number(event.target.value) })}
+                      />
+                    </Field>
+                    <Field label="Color (Lovibond)">
+                      <input
+                        type="number"
+                        min="0"
+                        value={item.color || ''}
+                        onChange={(event) => patch(index, { color: Number(event.target.value) })}
+                      />
+                    </Field>
+                    <Button
+                      variant="ghost"
+                      onClick={() => change(items.filter((_, i) => i !== index))}
+                    >
+                      <Trash2 size={15} /> Remove ingredient
+                    </Button>
+                  </div>
                 </div>
               )
             })}
@@ -303,74 +335,64 @@ export function RecipeSchedule({
               />
             </Field>
           </div>
-          <details>
-            <summary>
-              {s.location ? 'Compartment ' + s.location : 'Choose compartment'}
-              {s.drain_minutes ? ' · Drain ' + s.drain_minutes + ' min' : ''}
-            </summary>
-            <div className="form-grid">
-              <Field label="Step type">
-                <select
-                  value={s.kind}
-                  onChange={(e) =>
-                    patch(i, {
-                      kind: e.target.value,
-                      ...(e.target.value === 'unheated' ? { target_c: 0 } : {}),
-                    })
-                  }
-                >
-                  {Object.entries(stepKinds).map(([k, n]) => (
-                    <option key={k} value={k}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Compartment">
-                <select
-                  value={s.location}
-                  onChange={(e) => patch(i, { location: Number(e.target.value) })}
-                >
-                  <option value="0">Choose before transfer</option>
-                  {[1, 2, 3, 4, 5, 6].map((n) => (
-                    <option key={n} value={n}>
-                      {n}
-                    </option>
-                  ))}
-                </select>
-              </Field>
-              <Field label="Drain after step (min)">
-                <input
-                  type="number"
-                  min="0"
-                  value={s.drain_minutes}
-                  onChange={(e) => patch(i, { drain_minutes: Number(e.target.value) })}
-                />
-              </Field>
-              <div className="inline-actions">
-                <IconButton
-                  label={`Move step ${i + 1} up`}
-                  disabled={!i}
-                  onClick={() => move(i, -1)}
-                >
-                  <ArrowUp size={16} />
-                </IconButton>
-                <IconButton
-                  label={`Move step ${i + 1} down`}
-                  disabled={i === steps.length - 1}
-                  onClick={() => move(i, 1)}
-                >
-                  <ArrowDown size={16} />
-                </IconButton>
-                <IconButton
-                  label={`Remove step ${i + 1}`}
-                  onClick={() => change(steps.filter((_, idx) => i !== idx))}
-                >
-                  <Trash2 size={16} />
-                </IconButton>
-              </div>
+          <div className="step-routing">
+            <Field label="Step type">
+              <select
+                value={s.kind}
+                onChange={(e) =>
+                  patch(i, {
+                    kind: e.target.value,
+                    ...(e.target.value === 'unheated' ? { target_c: 0 } : {}),
+                  })
+                }
+              >
+                {Object.entries(stepKinds).map(([k, n]) => (
+                  <option key={k} value={k}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Compartment">
+              <select
+                value={s.location}
+                onChange={(e) => patch(i, { location: Number(e.target.value) })}
+              >
+                <option value="0">Choose before transfer</option>
+                {[1, 2, 3, 4, 5, 6].map((n) => (
+                  <option key={n} value={n}>
+                    {n}
+                  </option>
+                ))}
+              </select>
+            </Field>
+            <Field label="Drain after step (min)">
+              <input
+                type="number"
+                min="0"
+                value={s.drain_minutes}
+                onChange={(e) => patch(i, { drain_minutes: Number(e.target.value) })}
+              />
+            </Field>
+            <div className="inline-actions">
+              <IconButton label={`Move step ${i + 1} up`} disabled={!i} onClick={() => move(i, -1)}>
+                <ArrowUp size={16} />
+              </IconButton>
+              <IconButton
+                label={`Move step ${i + 1} down`}
+                disabled={i === steps.length - 1}
+                onClick={() => move(i, 1)}
+              >
+                <ArrowDown size={16} />
+              </IconButton>
+              <IconButton
+                label={`Remove step ${i + 1}`}
+                onClick={() => change(steps.filter((_, idx) => i !== idx))}
+              >
+                <Trash2 size={16} />
+              </IconButton>
             </div>
-          </details>
+          </div>
         </div>
       ))}
       <div className="plan-add">

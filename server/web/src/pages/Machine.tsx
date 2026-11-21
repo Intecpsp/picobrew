@@ -1,3 +1,4 @@
+import { MachineManagement } from '../components/MachineManagement'
 import { useState } from 'react'
 import {
   ArrowDown,
@@ -6,8 +7,6 @@ import {
   RefreshCw,
   Square,
   Play,
-  SlidersHorizontal,
-  Settings2,
   Radio,
   BookOpen,
   Clock3,
@@ -28,7 +27,6 @@ import {
   Field,
   Loading,
   Metric,
-  Modal,
   PageTitle,
   SectionHeading,
 } from '../components/ui'
@@ -191,8 +189,8 @@ function BrewerMachine({ id }: { id: string }) {
     return (
       <Empty
         title="Machine not found"
-        description="This machine may have been removed from your workspace."
-        action={<Button onClick={() => hub.navigate('/overview')}>Return to overview</Button>}
+        description="This machine may have been removed from your brewery."
+        action={<Button onClick={() => hub.navigate('/overview')}>Return to Brewery</Button>}
       />
     )
   const status = device.status
@@ -236,12 +234,15 @@ function BrewerMachine({ id }: { id: string }) {
             >
               {state}
             </Badge>
-            <Button
-              variant="secondary"
-              onClick={() => document.getElementById('machine-management')?.focus()}
-            >
-              <Settings2 size={16} /> Manage machine
-            </Button>
+            <MachineManagement
+              device={device}
+              testing={testingConnection}
+              test={() => void testConnection()}
+              edit={() => setEditing(true)}
+              preferences={() => setSettings(true)}
+              preferencesDisabled={!device.online && device.adapter !== 'pico-standalone'}
+              remove={() => setRemoving(true)}
+            />
             {commands.includes('stop') && (
               <Button
                 variant="danger"
@@ -691,40 +692,6 @@ function BrewerMachine({ id }: { id: string }) {
         loading={monitor.loading}
         reload={monitor.reload}
       />
-      <section
-        className="panel machine-management"
-        tabIndex={-1}
-        id="machine-management"
-        aria-label="Machine management"
-      >
-        <SectionHeading title="Machine management" description={device.base_url || undefined} />
-        <div className="inline-actions">
-          <Button
-            variant="ghost"
-            disabled={testingConnection || !device.enabled}
-            onClick={() => void testConnection()}
-          >
-            <RefreshCw size={16} className={testingConnection ? 'spin' : ''} />
-            Test connection
-          </Button>
-          <Button variant="secondary" onClick={() => setEditing(true)}>
-            <Pencil size={16} />
-            Edit connection
-          </Button>
-          <Button
-            variant="secondary"
-            disabled={!device.online && device.adapter !== 'pico-standalone'}
-            onClick={() => setSettings(true)}
-          >
-            <SlidersHorizontal size={16} />
-            Brewer preferences
-          </Button>
-          <Button variant="ghost" onClick={() => setRemoving(true)}>
-            <Trash2 size={16} />
-            Remove machine
-          </Button>
-        </div>
-      </section>
       {confirm && (
         <Confirm
           title={

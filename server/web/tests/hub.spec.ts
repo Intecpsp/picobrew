@@ -12,7 +12,7 @@ test('fleet opens a machine and exposes real front-panel controls', async ({ pag
   const errors: string[] = []
   page.on('pageerror', (error) => errors.push(error.message))
   await page.goto('/#/overview')
-  await expect(page.getByRole('heading', { name: 'A good day to brew.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Brewery' })).toBeVisible()
   await expect(page.locator('.machine-card')).toHaveCount(3)
   await expect(page.getByText('SIMULATION', { exact: true })).toBeVisible()
   await page.screenshot({ path: test.info().outputPath('overview-desktop.png'), fullPage: true })
@@ -90,6 +90,9 @@ test('machine management stays on the Overview and works offline on mobile', asy
     await expect(
       page.getByRole('heading', { name: 'Browser managed brewer', exact: true, level: 1 })
     ).toBeVisible()
+    await expect(page.getByRole('button', { name: 'Edit connection' })).toBeHidden()
+    await page.getByRole('button', { name: 'Manage machine' }).click()
+    await expect(page.getByRole('dialog', { name: 'Machine management' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'Edit connection' })).toBeEnabled()
     await expect(page.getByRole('button', { name: 'Remove machine', exact: true })).toBeEnabled()
     await expect(page.getByRole('button', { name: 'Brewer preferences' })).toBeDisabled()
@@ -104,6 +107,7 @@ test('machine management stays on the Overview and works offline on mobile', asy
       location: 'Updated while offline',
     })
 
+    await page.getByRole('button', { name: 'Manage machine' }).click()
     await page.getByRole('button', { name: 'Remove machine', exact: true }).click()
     dialog = page.getByRole('dialog', { name: 'Remove Browser managed brewer?' })
     await expect(dialog.getByText(/brew history/i)).toBeVisible()
@@ -146,7 +150,8 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await page.getByLabel('New step type').selectOption('mash-out')
   await page.getByRole('button', { name: 'Add step', exact: true }).click()
   const mashOut = page.locator('.plan-row').filter({ has: page.getByLabel('2. Step name') })
-  await mashOut.getByText('Choose compartment').click()
+  await expect(page.getByRole('button', { name: 'Remove ingredient' }).first()).toBeVisible()
+  await expect(page.getByLabel('Boil volume (L)')).toBeVisible()
   await mashOut.getByLabel('Compartment', { exact: true }).selectOption('3')
   await mashOut.getByLabel('Drain after step (min)').fill('2')
   await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
@@ -161,7 +166,8 @@ test('create, revise and import a recipe through the working editor', async ({ p
     'Integration note: retained after save.'
   )
   await expect(page.getByLabel('Minutes before boil ends')).toHaveValue('12.5')
-  await expect(page.getByText('Compartment 3 · Drain 2 min')).toBeVisible()
+  await expect(mashOut.getByLabel('Compartment', { exact: true })).toHaveValue('3')
+  await expect(mashOut.getByLabel('Drain after step (min)')).toHaveValue('2')
   await expect(page.getByLabel('Tags', { exact: true })).toHaveValue('browser, porter')
   await page.getByRole('button', { name: 'Revision history', exact: true }).click()
   await expect(page.getByRole('heading', { name: 'Recipe revision history' })).toBeVisible()
@@ -227,7 +233,7 @@ test('brew journal saves notes, exposes all sensor columns and exports', async (
 
 test('settings, API explorer and contextual assistant are functional', async ({ page }) => {
   await page.goto('/#/settings')
-  await expect(page.getByRole('heading', { name: 'Workspace settings.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Hub settings' })).toBeVisible()
   for (const name of [
     'Equipment calibration',
     'Display preferences',
@@ -512,6 +518,7 @@ test('appearance follows the system, remembers overrides, and applies to the mac
     await expect(info.getByText(label)).toBeVisible()
   await page.setViewportSize({ width: 360, height: 740 })
   await expect.poll(() => panel.evaluate((el) => el.scrollWidth <= el.clientWidth)).toBe(true)
+  await page.getByRole('button', { name: 'Manage machine' }).click()
   await page.getByRole('button', { name: 'Brewer preferences' }).click()
   await expect(page.getByRole('dialog')).toBeVisible()
   await page.goto('/#/settings')
@@ -589,4 +596,60 @@ test('journal readings and state lanes share one time cursor and note timestamp'
   await chart.getByRole('button', { name: 'Unpin' }).click()
   await expect(page.getByRole('button', { name: /^Note at / })).toHaveCount(0)
   expect(await chart.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true)
+})
+
+test('Brewery shows simultaneous sessions in full-width rows ahead of idle machines', async ({
+  page,
+}) => {
+  await page.route('**/api/v1/events', (route) =>
+    route.fulfill({ contentType: 'text/event-stream', body: '' })
+  )
+  await page.route('**/api/v1/devices', async (route) => {
+    const response = await route.fetch()
+    const devices = await response.json()
+    const examples = [
+      ['studio', 'Studio Porter', 'Mash'],
+      ['pilot', 'Weekend Pale', 'Boil'],
+      ['bench', '', ''],
+    ]
+    await route.fulfill({
+      json: examples
+        .map(([id, recipe, step], i) => ({
+          ...devices[0],
+          id,
+          name: id,
+          online: true,
+          status: {
+            ...devices[0].status,
+            ready: true,
+            busy: !!step,
+            stopped: false,
+            state: step ? 'brewing' : 'idle',
+            recipe_name: recipe,
+            step_name: step,
+            current_step: i,
+            step_count: 2,
+            target_f: step ? 152 : 0,
+          },
+        }))
+        .reverse(),
+    })
+  })
+  await page.goto('/#/overview')
+  for (const width of [1440, 390]) {
+    await page.setViewportSize({ width, height: 950 })
+    const rows = page.locator('.brewery-row')
+    await expect(rows).toHaveCount(3)
+    await expect(rows.nth(0)).toContainText('Weekend Pale')
+    await expect(rows.nth(0)).toContainText('Step 2 of 2 · Boil')
+    await expect(rows.nth(1)).toContainText('Studio Porter')
+    await expect(rows.nth(1)).toContainText('Step 1 of 2 · Mash')
+    await expect(rows.last()).toContainText('Ready for the next session')
+    const first = await rows.nth(0).boundingBox(),
+      second = await rows.nth(1).boundingBox()
+    expect(second!.y).toBeGreaterThanOrEqual(first!.y + first!.height)
+    expect(first!.width).toBe(
+      await page.locator('.brewery-list').evaluate((e) => e.getBoundingClientRect().width)
+    )
+  }
 })

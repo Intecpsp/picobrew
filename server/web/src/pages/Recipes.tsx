@@ -210,6 +210,28 @@ function RecipeLibrary() {
     </>
   )
 }
+function metadata(recipe: Recipe) {
+  const {
+    id,
+    name,
+    style,
+    description,
+    batch_liters,
+    efficiency,
+    ingredients,
+    steps,
+    tags,
+    notes,
+    revision,
+    created_at,
+    updated_at,
+    type,
+    boil_liters,
+    boil_minutes,
+    ...extras
+  } = recipe as Recipe & Record<string, unknown>
+  return extras
+}
 function RecipeEditor({ id }: { id: string }) {
   const hub = useHub()
   const isNew = id === 'new'
@@ -224,8 +246,7 @@ function RecipeEditor({ id }: { id: string }) {
   const [deploy, setDeploy] = useState(false)
   const [remove, setRemove] = useState(false)
   const [revisions, setRevisions] = useState(false)
-  const [advanced, setAdvanced] = useState('')
-  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [advanced, setAdvanced] = useState<string | null>(null)
   const originalRevision = useRef(0)
   useEffect(() => {
     if (loaded.data) {
@@ -235,6 +256,7 @@ function RecipeEditor({ id }: { id: string }) {
         steps: loaded.data.steps || [],
         tags: loaded.data.tags || [],
       })
+      setAdvanced(null)
       originalRevision.current = loaded.data.revision
       setTagsInput((loaded.data.tags || []).join(', '))
       setDirty(false)
@@ -257,13 +279,6 @@ function RecipeEditor({ id }: { id: string }) {
     setRecipe((value) => ({ ...value, ...patch }))
     setDirty(true)
   }
-  function updateIngredient(index: number, patch: Partial<Ingredient>) {
-    update({
-      ingredients: recipe.ingredients.map((item, i) =>
-        i === index ? { ...item, ...patch } : item
-      ),
-    })
-  }
   async function save(event?: FormEvent) {
     event?.preventDefault()
     setBusy(true)
@@ -276,7 +291,7 @@ function RecipeEditor({ id }: { id: string }) {
           .map((tag) => tag.trim())
           .filter(Boolean),
       }
-      if (advanced.trim()) {
+      if (advanced?.trim()) {
         const extras = JSON.parse(advanced)
         if (!extras || Array.isArray(extras) || typeof extras !== 'object')
           throw new Error('Advanced metadata must be a JSON object.')
@@ -308,31 +323,6 @@ function RecipeEditor({ id }: { id: string }) {
       hub.notify(errorMessage(error), 'error')
     }
   }
-  function toggleAdvanced() {
-    if (!advancedOpen && !advanced) {
-      const {
-        id,
-        name,
-        style,
-        description,
-        batch_liters,
-        efficiency,
-        ingredients,
-        steps,
-        tags,
-        notes,
-        revision,
-        created_at,
-        updated_at,
-        type,
-        boil_liters,
-        boil_minutes,
-        ...extras
-      } = recipe as Recipe & Record<string, unknown>
-      setAdvanced(JSON.stringify(extras, null, 2))
-    }
-    setAdvancedOpen(!advancedOpen)
-  }
   if (!isNew && loaded.loading) return <Loading label="Opening your recipe…" />
   if (!isNew && loaded.error) return <ErrorBanner message={loaded.error} retry={loaded.reload} />
   const nativeRecipe = isNew ? recipe : loaded.data
@@ -351,7 +341,6 @@ function RecipeEditor({ id }: { id: string }) {
             : `RECIPE · REVISION ${recipe.revision}${dirty ? ' · UNSAVED CHANGES' : ''}`
         }
         title={isNew ? 'What will you brew next?' : recipe.name || 'Untitled recipe'}
-        description="A shared recipe, ready to be shaped for your next brew day."
         actions={
           <>
             {!isNew && (
@@ -375,7 +364,7 @@ function RecipeEditor({ id }: { id: string }) {
       <div className="editor-layout">
         <div className="editor-main">
           <section className="panel">
-            <SectionHeading title="The idea" />
+            <SectionHeading title="Recipe details" />
             <div className="form-grid">
               <Field label="Recipe name">
                 <input
@@ -442,8 +431,8 @@ function RecipeEditor({ id }: { id: string }) {
             unit={hub.unit}
             change={(steps) => update({ steps })}
           />
-          <details className="panel ingredient-details">
-            <summary>Boil planning &amp; BeerXML specifications</summary>
+          <section className="panel">
+            <SectionHeading title="Boil planning" />
             <div className="form-grid thirds">
               <Field label="Recipe type">
                 <select
@@ -474,62 +463,7 @@ function RecipeEditor({ id }: { id: string }) {
                 />
               </Field>
             </div>
-            <details className="ingredient-details">
-              <summary>Ingredient specifications</summary>
-              {recipe.ingredients.map((item, index) => (
-                <div key={index}>
-                  <h4>{item.name || `Ingredient ${index + 1}`}</h4>
-                  <div className="form-grid quarters">
-                    <Field label="Type">
-                      <input
-                        value={item.type || ''}
-                        onChange={(event) => updateIngredient(index, { type: event.target.value })}
-                        placeholder={
-                          item.kind === 'fermentable'
-                            ? 'Grain'
-                            : item.kind === 'hop'
-                              ? 'Bittering'
-                              : 'Ale'
-                        }
-                      />
-                    </Field>
-                    <Field label="Form">
-                      <input
-                        value={item.form || ''}
-                        onChange={(event) => updateIngredient(index, { form: event.target.value })}
-                        placeholder={item.kind === 'hop' ? 'Pellet' : 'Dry'}
-                      />
-                    </Field>
-                    <Field label="Yield (%)">
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={item.yield || ''}
-                        onChange={(event) =>
-                          updateIngredient(index, { yield: Number(event.target.value) })
-                        }
-                      />
-                    </Field>
-                    <Field label="Color (Lovibond)">
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.color || ''}
-                        onChange={(event) =>
-                          updateIngredient(index, { color: Number(event.target.value) })
-                        }
-                      />
-                    </Field>
-                  </div>
-                </div>
-              ))}
-            </details>
-            <p className="help-text">
-              Use advanced metadata below for water chemistry, fermentation stages and carbonation.
-              These plans are preserved and exported; hot-side machine programs do not control them.
-            </p>
-          </details>
+          </section>
           <section className="panel">
             <SectionHeading title="Notes for brew day" />
             <Field label="Recipe notes">
@@ -540,25 +474,20 @@ function RecipeEditor({ id }: { id: string }) {
                 placeholder="Water treatment, preparation, tasting goals…"
               />
             </Field>
-            <button className="text-button" onClick={toggleAdvanced}>
-              {advancedOpen ? 'Hide' : 'Show'} advanced BeerXML metadata
-            </button>
-            {advancedOpen && (
-              <Field
-                label="Water, fermentation, carbonation and other recipe metadata"
-                hint="Existing extended fields are retained. Edit this JSON object to update recipe type, boil volume/time, water profile, fermentation stages or carbonation."
-              >
-                <textarea
-                  className="code-input"
-                  rows={12}
-                  value={advanced}
-                  onChange={(event) => {
-                    setAdvanced(event.target.value)
-                    setDirty(true)
-                  }}
-                />
-              </Field>
-            )}
+            <Field
+              label="Water, fermentation, carbonation and other recipe metadata"
+              hint="Water chemistry, fermentation and carbonation are stored with the recipe as JSON."
+            >
+              <textarea
+                className="code-input"
+                rows={5}
+                value={advanced ?? JSON.stringify(metadata(recipe), null, 2)}
+                onChange={(event) => {
+                  setAdvanced(event.target.value)
+                  setDirty(true)
+                }}
+              />
+            </Field>
           </section>
         </div>
         <aside className="editor-aside">
