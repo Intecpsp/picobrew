@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState, type FormEvent } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   LayoutDashboard,
   BookOpen,
@@ -14,7 +14,9 @@ import {
   ArrowRight,
   LockKeyhole,
   Radio,
+  ChevronDown,
 } from 'lucide-react'
+import { deviceState } from './lib/utils'
 import { api, errorMessage, setCSRF } from './lib/api'
 import type { Session, Device, Recipe, Brew, Profile, Unit } from './types'
 import { HubContext } from './context'
@@ -35,6 +37,62 @@ const navigation = [
   { path: '/settings', label: 'Settings', icon: Settings2 },
   { path: '/api', label: 'API explorer', icon: Code2 },
 ]
+function MachinePicker({ devices, current }: { devices: Device[]; current: string }) {
+  const root = useRef<HTMLDivElement>(null)
+  const trigger = useRef<HTMLButtonElement>(null)
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    if (!open) return
+    function dismiss(event: PointerEvent) {
+      if (!root.current?.contains(event.target as Node)) setOpen(false)
+    }
+    document.addEventListener('pointerdown', dismiss)
+    return () => document.removeEventListener('pointerdown', dismiss)
+  }, [open])
+  return (
+    <div
+      className="machine-picker"
+      ref={root}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setOpen(false)
+      }}
+      onKeyDown={(event) => {
+        if (open && event.key === 'Escape') {
+          setOpen(false)
+          trigger.current?.focus()
+        }
+      }}
+    >
+      <button
+        ref={trigger}
+        aria-label="Switch machine"
+        aria-expanded={open}
+        aria-controls="breadcrumb-machines"
+        onClick={() => setOpen(!open)}
+      >
+        Machine <ChevronDown size={14} />
+      </button>
+      <ul id="breadcrumb-machines" aria-label="Machines" hidden={!open}>
+        {devices.map((device) => (
+          <li key={device.id}>
+            <a
+              href={`#/devices/${device.id}`}
+              aria-current={device.id === current ? 'page' : undefined}
+              onClick={() => {
+                setOpen(false)
+                trigger.current?.focus()
+              }}
+            >
+              <span>{device.name}</span>
+              <small>{deviceState(device)}</small>
+              {device.id === current && <Check size={15} aria-label="Current machine" />}
+            </a>
+          </li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 export default function App() {
   const [session, setSession] = useState<Session | null>(null)
   const [authError, setAuthError] = useState('')
@@ -204,18 +262,6 @@ export default function App() {
               </a>
             ))}
           </nav>
-          <div className="sidebar-machines">
-            <div className="sidebar-label">
-              YOUR MACHINES <span>{devices.length}</span>
-            </div>
-            {devices.map((device) => (
-              <a href={`#/devices/${device.id}`} key={device.id}>
-                <i className={`online-dot ${device.online ? 'online' : ''}`} />
-                <span>{device.name}</span>
-                {device.status?.busy && <Radio size={13} />}
-              </a>
-            ))}
-          </div>
           <div className="sidebar-bottom">
             <div className="local-status">
               <i className="online-dot online" />
@@ -239,11 +285,21 @@ export default function App() {
               >
                 <Menu size={21} />
               </IconButton>
-              <span className="breadcrumb">
-                <span className="breadcrumb-parent">Brewery</span>
-                <span className="breadcrumb-separator">/</span>
-                <strong>{section === 'devices' ? 'Machine' : selected.label}</strong>
-              </span>
+              <nav className="breadcrumb" aria-label="Breadcrumb">
+                <a className="breadcrumb-parent" href="#/overview">
+                  Brewery
+                </a>
+                <span className="breadcrumb-separator" aria-hidden="true">
+                  /
+                </span>
+                {section === 'devices' && devices.length > 1 ? (
+                  <MachinePicker key={parts[1]} devices={devices} current={parts[1]} />
+                ) : (
+                  <strong aria-current="page">
+                    {section === 'devices' ? 'Machine' : selected.label}
+                  </strong>
+                )}
+              </nav>
             </div>
             <div className="topbar-right">
               {session.demo && <span className="simulation-badge">SIMULATION</span>}

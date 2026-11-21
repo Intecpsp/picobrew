@@ -512,3 +512,38 @@ test('appearance follows the system, remembers overrides, and applies to the mac
   await appearance.selectOption('system')
   await expect.poll(background).toBe(dark)
 })
+
+test('the breadcrumb switches machines and returns to the fleet overview', async ({ page }) => {
+  for (const width of [1280, 360]) {
+    await page.setViewportSize({ width, height: 900 })
+    await page.goto('/#/overview')
+    const cards = page.locator('.machine-card')
+    await expect(cards).toHaveCount(3)
+    await expect(page.locator('.sidebar a[href^="#/devices/"]')).toHaveCount(0)
+    const first = cards.first().getByRole('link', { name: /^Open .+ controls$/ })
+    await first.click()
+    const crumb = page.getByRole('navigation', { name: 'Breadcrumb' })
+    const toggle = crumb.getByRole('button', { name: 'Switch machine' })
+    await toggle.click()
+    const machines = crumb.getByRole('list', { name: 'Machines' })
+    await expect(machines.getByRole('link')).toHaveCount(3)
+    await expect(machines.locator('a[aria-current="page"]')).toHaveCount(1)
+    const next = machines.locator('a:not([aria-current])').first()
+    const link = await next.getAttribute('href')
+    await next.focus()
+    await page.keyboard.press('Escape')
+    await expect(toggle).toBeFocused()
+    await expect(machines).toBeHidden()
+    await toggle.click()
+    await next.click()
+    await expect(page).toHaveURL((url) => url.hash === link)
+    await expect(machines).toBeHidden()
+    await toggle.click()
+    await expect(machines.locator('a[aria-current="page"]')).toHaveAttribute('href', link!)
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
+      true
+    )
+    await crumb.getByRole('link', { name: 'Brewery' }).click()
+    await expect(cards).toHaveCount(3)
+  }
+})

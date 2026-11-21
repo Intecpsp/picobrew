@@ -399,30 +399,6 @@ hr,
   background: var(--hub-accent-bg);
   border-radius: 4px;
 }
-.sidebar-machines {
-  margin-top: 8px;
-}
-.sidebar-machines a {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  padding: 9px 11px;
-  text-decoration: none;
-  color: var(--hub-muted);
-  font-size: $text-body;
-  min-width: 0;
-}
-.sidebar-machines a span {
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.sidebar-machines .sidebar-label {
-  margin-top: 22px;
-}
-.sidebar-machines a:hover {
-  color: $ink;
-}
 .online-dot {
   height: 6px;
   width: 6px;
@@ -478,8 +454,65 @@ hr,
   gap: 15px;
 }
 .breadcrumb {
+  display: flex;
+  align-items: center;
   font-size: $text-body;
   color: var(--hub-subtle);
+}
+.breadcrumb-parent {
+  text-decoration: none;
+  &:hover {
+    text-decoration: underline;
+  }
+}
+.machine-picker {
+  position: relative;
+  button {
+    display: inline-flex;
+    align-items: center;
+    padding: 0;
+    min-height: 44px;
+    gap: 4px;
+    color: var(--hub-muted);
+    font-weight: 500;
+  }
+  ul {
+    position: absolute;
+    z-index: 20;
+    inset: 100% auto auto 0;
+    width: min(20rem, 90vw);
+    max-height: min(60vh, 24rem);
+    overflow: auto;
+    list-style: none;
+    padding: 5px;
+    margin: 0;
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-line);
+    border-radius: 8px;
+    box-shadow: 0 8px 24px #0002;
+  }
+  a {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto 15px;
+    gap: 8px;
+    align-items: center;
+    min-height: 44px;
+    padding: 8px 10px;
+    border-radius: 5px;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  a:hover,
+  a:focus-visible {
+    background: var(--hub-hover);
+  }
+  [aria-current='page'] {
+    background: var(--hub-accent-bg);
+  }
+  small {
+    color: var(--hub-muted);
+    font-size: $text-small;
+  }
 }
 .breadcrumb .breadcrumb-separator {
   margin: 0 10px;
@@ -2919,9 +2952,14 @@ hr,
   .breadcrumb .breadcrumb-separator {
     margin: 0 6px;
   }
-  .breadcrumb-parent,
-  .breadcrumb-separator {
-    display: none;
+  .breadcrumb {
+    position: relative;
+  }
+  .machine-picker {
+    position: static;
+  }
+  .machine-picker ul {
+    width: min(18rem, calc(100vw - 85px));
   }
   .topbar-right {
     gap: 8px !important;
