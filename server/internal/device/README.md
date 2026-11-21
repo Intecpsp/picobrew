@@ -123,7 +123,7 @@ connections. Its firmware version is `simulator`, device UID is prefixed with
 history or outbound telemetry forwarding. The model label is descriptive.
 
 The simulator has no OLED framebuffer. Each simulator supports stored recipes, settings, encoder input,
-preparation prompts, accelerated brews, maintenance completion, stop latching and
+REST-started accelerated brews, maintenance completion, stop latching and
 retained history. Time runs at 60 simulated seconds per real second. History is
 volatile and has the same eight-entry / 4,224-row shared limits. The `demo-pro`
 and `demo-z` fixtures start in different simulated brew phases; `demo-s` starts

@@ -38,14 +38,7 @@ import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components
 import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
-import {
-  dateLabel,
-  deviceModelLabel,
-  deviceAttention,
-  deviceState,
-  duration,
-  temperature,
-} from '../lib/utils'
+import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 import AccessoryMachine from './AccessoryMachine'
 import { DevicePreferences } from '../components/DevicePreferences'
 import { isAccessory, sensorValue, supports } from '../lib/capabilities'
@@ -216,7 +209,6 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const allowed = (name: string) => device.online && commands.includes(name)
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
-  const attention = deviceAttention(device)
   const state = deviceState(device)
   return (
     <>
@@ -343,7 +335,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
             title={simulated ? 'Simulator controls' : 'Front panel'}
             description={
               simulated
-                ? 'Use the dial to control the simulated program. A connected brewer shows its screen here.'
+                ? 'This virtual brewer supports remote commands. A connected brewer shows its screen here.'
                 : undefined
             }
             actions={live?.filter_inserted === false && <Badge tone="amber">Filter removed</Badge>}
@@ -420,11 +412,10 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           {!device.online && device.last_seen && (
             <p className="help-text">Last connected {dateLabel(device.last_seen)}</p>
           )}
-          {live?.busy && attention && <p className="notice">{attention.instruction}</p>}
-          {live?.busy && !attention && (
+          {live?.busy && (
             <div className="session-step">
               <span>{stepNumber || 'Current step'}</span>
-              <strong>{live.step_name || 'Follow the front panel'}</strong>
+              <strong>{live.step_name || 'Check the brewer display'}</strong>
               {live.step_seconds > 0 && (
                 <span>
                   {duration(live.step_seconds * 1000)}{' '}
@@ -730,7 +721,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                 ? 'Verify the water, vessel and filter before resuming. Saved progress can be up to 30 seconds behind the interruption. The brewer resumes with its saved remaining step time and may return to preparation prompts.'
                 : confirm.command === 'discard-interrupted'
                   ? 'This saved operation cannot be resumed afterward. Discard its checkpoint?'
-                  : `This sends a command to ${device.name}. Confirm the brewer is prepared, then follow any prompts on its front panel.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
+                  : `This sends a command to ${device.name}. Confirm the brewer is prepared.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
           }
           label={
             confirm.command === 'clear-stop'

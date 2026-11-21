@@ -6,7 +6,6 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
-  awaiting_confirmation?: boolean
   state?: string
   temperature_f?: number | null
   pressure_kpa?: number | null

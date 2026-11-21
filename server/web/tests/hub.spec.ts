@@ -669,10 +669,7 @@ test('eight open Hub tabs can load and navigate over HTTP', async ({ context }) 
   }
 })
 
-test('send a recipe, review it on the brewer and follow its confirmation', async ({
-  page,
-  request,
-}) => {
+test('send a recipe and start it directly from the Hub', async ({ page, request }) => {
   const headers = { 'X-CSRF-Token': 'demo' }
   const name = 'Handoff brewer'
   const created = await request.post('/api/v1/devices', {
@@ -703,17 +700,19 @@ test('send a recipe, review it on the brewer and follow its confirmation', async
     expect(sent.started).toBe(false)
     await page.getByRole('button', { name: `Open ${name}` }).click()
     await expect(page.getByLabel('Recipe on this machine')).toHaveValue(sent.recipe.id)
+    const commands: string[] = []
+    page.on('request', (req) => {
+      if (req.method() === 'POST' && req.url().endsWith(`/devices/${id}/commands`))
+        commands.push(req.postDataJSON().command)
+    })
     await page.getByRole('button', { name: 'Start recipe' }).click()
     await page.getByRole('button', { name: 'Start program' }).click()
-    await expect(page.getByText('Press the dial to begin.')).toBeVisible()
+    await expect(page.locator('.session-step')).toContainText('Mash')
     await page.goto('/#/overview')
     const row = page.locator('.brewery-row').filter({ has: page.getByRole('heading', { name }) })
-    await expect(row).toContainText('Press the dial to begin.')
-    await expect(row.getByRole('progressbar')).toHaveCount(0)
-    await row.getByRole('link', { name: /controls/ }).click()
-    await page.getByRole('button', { name: 'Press dial', exact: true }).click()
-    await expect(page.locator('.session-step')).toContainText('Mash')
-    await expect(page.getByText('Press the dial to begin.')).toHaveCount(0)
+    await expect(row).toContainText('Mash')
+    await expect(row.getByRole('progressbar')).toBeVisible()
+    expect(commands).toEqual(['brew'])
     await page.goto('/#/history/demo-history-demo-pro')
     await expect(page.locator('[data-state=current_step]')).toContainText('Mash out')
     const cursor = page.getByRole('slider', { name: 'Inspect recorded samples' })

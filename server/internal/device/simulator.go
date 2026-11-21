@@ -28,7 +28,6 @@ type simulator struct {
 	settings, telemetry map[string]any
 	brews               []*simulatedBrew
 	active              *simulatedBrew
-	pending             *domain.MachineRecipe
 	programStarted      time.Time
 }
 
@@ -121,7 +120,6 @@ func (s *simulator) begin(recipe domain.MachineRecipe, command string, started t
 		s.brews = s.brews[:8]
 	}
 	s.active = brew
-	s.pending = nil
 	s.status.Busy = true
 	s.status.Command = command
 	s.status.SessionID = fmt.Sprintf("simulation-%d", id)
@@ -239,9 +237,7 @@ func (s *simulator) Status(ctx context.Context) (domain.Status, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.advance(time.Now())
-	status := cloneStatus(s.status)
-	status.AwaitingConfirmation = s.pending != nil
-	return status, nil
+	return cloneStatus(s.status), nil
 }
 func (s *simulator) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 	if err := simulationContext(ctx); err != nil {
@@ -311,7 +307,6 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 			s.active.meta.State = "interrupted"
 			s.active = nil
 		}
-		s.pending = nil
 		s.status.Busy = false
 		s.status.Stopped = true
 		s.status.StopReason = "requested"
@@ -328,20 +323,10 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 		return nil
 	case "encoder":
 		s.status.Encoder.Position = max(s.status.Encoder.Min, min(s.status.Encoder.Max, s.status.Encoder.Position+command.Delta))
-		if command.Click {
-			if s.pending != nil {
-				recipe := cloneRecipe(*s.pending)
-				kind := s.status.Command
-				s.begin(recipe, kind, now)
-				s.advance(now)
-			} else if s.status.Command == "utilities" || s.status.Command == "settings" {
-				s.status.Busy = false
-				s.status.Command = "idle"
-				s.status.StepName = ""
-			} else if s.status.Busy && s.active == nil {
-				s.programStarted = now
-				s.status.StepName = "Simulated program"
-			}
+		if command.Click && (s.status.Command == "utilities" || s.status.Command == "settings") {
+			s.status.Busy = false
+			s.status.Command = "idle"
+			s.status.StepName = ""
 		}
 		return nil
 	}
@@ -351,28 +336,32 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 	if s.status.Busy {
 		return busyError()
 	}
-	if command.Command == "brew" {
+	switch command.Command {
+	case "brew":
 		recipe, ok := s.recipes[command.RecipeID]
 		if !ok {
 			return &Error{StatusCode: 404, Code: "recipe_not_found", Message: "Recipe is not stored on this simulator"}
 		}
-		copy := cloneRecipe(recipe)
-		s.pending = &copy
-		s.status.RecipeName = recipe.Name
-		s.status.StepCount = len(recipe.Steps)
-	} else if command.Command == "manual" {
+		s.begin(recipe, command.Command, now)
+		s.advance(now)
+	case "manual":
 		recipe := domain.MachineRecipe{ID: "manual", Name: "Manual brew", Steps: []domain.MachineStep{{Name: "Manual", Location: 1, TargetF: 152, Minutes: 30}}}
-		s.pending = &recipe
-		s.status.RecipeName = recipe.Name
-	} else {
+		s.begin(recipe, command.Command, now)
+		s.advance(now)
+	default:
+		s.status.Busy = true
+		s.status.Command = command.Command
 		s.status.RecipeName = ""
-		s.pending = nil
+		s.status.StepName = ""
+		s.status.CurrentStep = 0
+		s.status.StepCount = 0
+		s.status.StepSeconds = 0
+		s.status.TargetF = floatValue(0)
+		s.programStarted = now
+		if command.Command == "utilities" || command.Command == "settings" {
+			s.programStarted = time.Time{}
+		}
 	}
-	s.status.Busy = true
-	s.status.Command = command.Command
-	s.status.StepName = "Press dial to begin"
-	s.status.TargetF = floatValue(0)
-	s.programStarted = time.Time{}
 	return nil
 }
 func (s *simulator) Settings(ctx context.Context) (map[string]any, error) {

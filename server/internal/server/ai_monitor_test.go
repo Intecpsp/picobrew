@@ -94,9 +94,6 @@ func aiStartCommand(t *testing.T, client *http.Client, base, csrf string, comman
 	if command == "brew" {
 		input["recipe_id"] = "studio-porter"
 	}
-	if command == "encoder" {
-		input["click"] = true
-	}
 	return request(t, client, "POST", base+"/api/v1/devices/machine/commands", csrf, input, map[string]string{"Idempotency-Key": "test-" + randomID()})
 }
 
@@ -106,7 +103,7 @@ func physicalBrew(t *testing.T, adapter device.Adapter, command string) {
 	if command == "brew" {
 		start.RecipeID = "studio-porter"
 	}
-	for _, input := range []domain.Command{{Command: "stop"}, {Command: "clear-stop"}, start, {Command: "encoder", Click: true}} {
+	for _, input := range []domain.Command{{Command: "stop"}, {Command: "clear-stop"}, start} {
 		if err := adapter.Command(context.Background(), input); err != nil {
 			t.Fatal(err)
 		}
@@ -140,17 +137,13 @@ func TestAIStartConsentBindsOnceAndNeverStartsOrControlsTheBrewer(t *testing.T) 
 		t.Fatal("pending consent requested advice or issued a machine command")
 	}
 	boundary.queued.Store(false)
-	code, body = aiStartCommand(t, client, base, csrf, "encoder", false)
-	if code != 202 {
-		t.Fatalf("front-panel acknowledgement: %d %s", code, body)
-	}
 	active := readAIMonitor(t, client, base, csrf)
 	if active.State != "active" || active.BrewID == "" || active.BrewID != active.CurrentBrewID || active.ExpiresAt != nil {
 		t.Fatalf("consent did not bind to the actual history session: %+v", active)
 	}
 	s.monitorTick(context.Background())
 	s.monitorTick(context.Background())
-	if calls.Load() != 1 || adapter.calls.Load() != 2 {
+	if calls.Load() != 1 || adapter.calls.Load() != 1 {
 		t.Fatalf("monitor rate/control boundary: provider=%d commands=%d", calls.Load(), adapter.calls.Load())
 	}
 	// A subsequent physical brew can replace the current one between Hub polls.
@@ -195,7 +188,6 @@ func TestAIPendingConsentCannotSurviveFailureExpiryCancellationOrAmbiguousSessio
 					if err := s.saveAIMonitor(record); err != nil {
 						t.Fatal(err)
 					}
-					_, _ = aiStartCommand(t, client, base, csrf, "encoder", false)
 				case "queue-timeout":
 					record, _ := s.loadAIMonitor("machine")
 					record.RequestedAt = time.Now().Add(-10 * time.Second)
@@ -207,17 +199,14 @@ func TestAIPendingConsentCannotSurviveFailureExpiryCancellationOrAmbiguousSessio
 					if err := s.recoverAIMonitor(); err != nil {
 						t.Fatal(err)
 					}
-					_, _ = aiStartCommand(t, client, base, csrf, "encoder", false)
 				case "stop":
 					_, _ = aiStartCommand(t, client, base, csrf, "stop", false)
 					physicalBrew(t, adapter, "brew")
 				case "maintenance":
 					physicalBrew(t, adapter, "rinse")
 				case "two-new-sessions":
-					_, _ = aiStartCommand(t, client, base, csrf, "encoder", false)
 					physicalBrew(t, adapter, "brew")
 				case "front-panel-start":
-					_, _ = aiStartCommand(t, client, base, csrf, "encoder", false)
 					adapter.Adapter.(*aiBoundaryAdapter).statusCommand.Store("front-panel")
 				}
 			}
@@ -418,7 +407,7 @@ func TestAIHistoryDownloadDoesNotBlockStopAndWithdrawnConsentSkipsProvider(t *te
 func (a *changingAIHistory) HistoryPage(ctx context.Context, id uint64, offset int) ([]domain.Sample, *int, error) {
 	samples, next, err := a.Adapter.HistoryPage(ctx, id, offset)
 	if a.change.Swap(false) {
-		for _, command := range []domain.Command{{Command: "stop"}, {Command: "clear-stop"}, {Command: "brew", RecipeID: "weekend-pale"}, {Command: "encoder", Click: true}} {
+		for _, command := range []domain.Command{{Command: "stop"}, {Command: "clear-stop"}, {Command: "brew", RecipeID: "weekend-pale"}} {
 			if e := a.Adapter.Command(ctx, command); e != nil {
 				return nil, nil, e
 			}

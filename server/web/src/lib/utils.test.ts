@@ -39,11 +39,10 @@ describe('telemetry presentation', () => {
   })
 })
 
-it('asks for attention only when the connected machine reports a prompt or checkpoint', () => {
+it('asks for attention only when the connected machine reports an interrupted checkpoint', () => {
   const attention = (status: Partial<DeviceStatus>, online = true) =>
     deviceAttention({ online, status } as Device)
   expect(attention({ busy: true, step_name: 'Press dial to begin' })).toBeNull()
-  expect(attention({ busy: true, awaiting_confirmation: true })?.instruction).toMatch(/dial/i)
   const recovery = { available: true, valid: true } as NonNullable<DeviceStatus['recovery']>
   expect(attention({ recovery })?.instruction).toMatch(/interrupted brew/)
   expect(attention({ recovery: { ...recovery, valid: false } })?.instruction).toMatch(/unreadable/)

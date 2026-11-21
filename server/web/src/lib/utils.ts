@@ -31,9 +31,6 @@ export function dateLabel(value: string | null | undefined) {
 export function deviceAttention(device: Device) {
   const status = device.online ? device.status : null
   if (!status || status.stopped) return null
-  if (status.busy && status.awaiting_confirmation) {
-    return { title: 'Waiting for confirmation', instruction: 'Press the dial to begin.' }
-  }
   if (!status.busy && status.recovery && (status.recovery.available || !status.recovery.valid)) {
     return {
       title: 'Review checkpoint',

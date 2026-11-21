@@ -105,7 +105,7 @@ func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession,
 			return b, err
 		}
 		before := b
-		if observed != nil && observed.Busy && !observed.Stopped && !observed.AwaitingConfirmation &&
+		if observed != nil && observed.Busy && !observed.Stopped &&
 			h.State == "recording" && h.Command == "brew" && h.RecipeName != "" && observed.RecipeName == h.RecipeName &&
 			observed.CurrentStep >= 0 && observed.CurrentStep < observed.StepCount && observed.StepCount <= 255 {
 			name := strings.TrimSpace(observed.StepName)

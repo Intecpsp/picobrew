@@ -40,7 +40,7 @@ func TestSimulatorFixturesAreIndependentAndExplicit(t *testing.T) {
 	}
 }
 
-func TestSimulatorBrewRequiresPromptThenRecordsAndCompletes(t *testing.T) {
+func TestSimulatorBrewCommandStartsRecordingAndCompletes(t *testing.T) {
 	ctx := context.Background()
 	s := NewSimulator("test", "pico-pro").(*simulator)
 	recipe := nativeRecipe()
@@ -54,11 +54,8 @@ func TestSimulatorBrewRequiresPromptThenRecordsAndCompletes(t *testing.T) {
 	}
 	status, _ := s.Status(ctx)
 	history, _ := s.History(ctx)
-	if !status.Busy || status.StepName != "Press dial to begin" || *status.TargetF != 0 || history.Available {
-		t.Fatalf("brew bypassed its prompt: %+v %+v", status, history)
-	}
-	if err := s.Command(ctx, domain.Command{Command: "encoder", Click: true}); err != nil {
-		t.Fatal(err)
+	if !status.Busy || status.StepName != recipe.Steps[0].Name || !history.Available || history.State != "recording" {
+		t.Fatalf("REST start did not start recording the first step: %+v %+v", status, history)
 	}
 	s.mu.Lock()
 	s.active.started = time.Now().Add(-2 * time.Second)
@@ -190,10 +187,10 @@ func TestSimulatorDisplayProgramsAndNoOutboundTelemetry(t *testing.T) {
 	if err := s.Command(ctx, domain.Command{Command: "rinse"}); err != nil {
 		t.Fatal(err)
 	}
-	if err := s.Command(ctx, domain.Command{Command: "encoder", Click: true}); err != nil {
-		t.Fatal(err)
-	}
 	s.mu.Lock()
+	if s.programStarted.IsZero() {
+		t.Fatal("rinse timer did not start with the REST command")
+	}
 	s.programStarted = time.Now().Add(-20 * time.Second)
 	s.mu.Unlock()
 	status, _ := s.Status(ctx)
