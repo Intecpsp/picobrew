@@ -3,10 +3,15 @@ import { ArrowLeft, ArrowRight, Plus, Save, SlidersHorizontal, Trash2 } from 'lu
 import { useHub } from '../context'
 import type { Recipe, Unit } from '../types'
 import {
-  additionTimes,
+  grainOverLimit,
+  totalWeight,
+  hopLimit,
+  slotTimes,
+  type HopAddition,
   guidedRecipe,
   guideProblem,
   initialGuide,
+  mashSchedule,
   type GuidedDraft,
   type Grain,
   type MashRest,
@@ -52,8 +57,12 @@ function IngredientFields({
   item,
   hop = false,
   change,
+  maxWeight,
+  invalid,
 }: {
   item: Grain
+  maxWeight?: number
+  invalid?: boolean
   hop?: boolean
   change: (patch: Partial<Grain>) => void
 }) {
@@ -71,6 +80,8 @@ function IngredientFields({
           type="number"
           min="0"
           step="any"
+          max={maxWeight}
+          aria-invalid={invalid || undefined}
           value={item.amount}
           onChange={(e) => change({ amount: e.target.value })}
         />
@@ -101,6 +112,7 @@ export function RecipeWizard({
     profiles.find((p) => p.id === (selected || (preferred && profileID(preferred.model)))) ??
     profiles[0]
   const [draft, setDraft] = useState(initialGuide)
+  const [selectedSlot, setSelectedSlot] = useState<number | null>(null)
   const [stage, setStage] = useState(0)
   const [problem, setProblem] = useState('')
   const heading = useRef<HTMLHeadingElement>(null)
@@ -126,7 +138,33 @@ export function RecipeWizard({
     if (stage === 3) save(recipe)
     else setStage(stage + 1)
   }
-  const times = additionTimes(draft.hops)
+  const overGrain = profile && grainOverLimit(draft.grains, profile)
+  const slots = Array.from({ length: profile ? hopLimit(profile) : 0 }, (_, i) => i + 1)
+  const times = selectedSlot === null ? [] : slotTimes(draft.hops, selectedSlot, Number(draft.boil))
+  const savedSlot = draft.hops.find((h) => h.slot === selectedSlot)
+  const preferredMinutes = [Number(draft.boil), 30, 15, 5]
+  const current =
+    savedSlot ??
+    (selectedSlot !== null && times.length
+      ? {
+          slot: selectedSlot,
+          minutes: String(times.find((t) => t <= preferredMinutes[selectedSlot - 1]) ?? times[0]),
+          varieties: [{ name: '', amount: '' }],
+        }
+      : undefined)
+  const slotLimit = profile?.max_hop_slot_g || 0
+  const overweightSlot = draft.hops.find(
+    (h) => slotLimit > 0 && totalWeight(h.varieties) > slotLimit + 1e-9
+  )
+  function updateAddition(values: Partial<HopAddition>) {
+    if (!current) return
+    const changed = { ...current, ...values }
+    patch({
+      hops: savedSlot
+        ? draft.hops.map((h) => (h.slot === current.slot ? changed : h))
+        : [...draft.hops, changed],
+    })
+  }
   return (
     <>
       <PageTitle
@@ -194,7 +232,7 @@ export function RecipeWizard({
                     <select
                       value={profile.id}
                       onChange={(e) => {
-                        patch({ batch: '' })
+                        patch({ batch: '', ...(draft.customMash ? {} : { rests: [] }) })
                         setSelected(e.target.value)
                       }}
                     >
@@ -233,13 +271,31 @@ export function RecipeWizard({
                   <h3>Grain bill</h3>
                   {profile.max_grain_kg > 0 && (
                     <p className="help-text">
-                      Grain capacity: {formatQuantity(profile.max_grain_kg, 'kg')}.
+                      {modelLabel(profile.id)} grain limit ·{' '}
+                      {formatQuantity(profile.max_grain_kg, 'kg')}
+                    </p>
+                  )}
+                  {overGrain && (
+                    <p className="notice" role="alert">
+                      Your grain bill totals {formatQuantity(totalWeight(draft.grains), 'kg')}.
+                      Reduce it to {formatQuantity(profile.max_grain_kg, 'kg')} or less for{' '}
+                      {modelLabel(profile.id)}.
                     </p>
                   )}
                   {draft.grains.map((grain, i) => (
                     <div className="guide-row" key={i}>
                       <IngredientFields
                         item={grain}
+                        invalid={overGrain}
+                        maxWeight={
+                          profile.max_grain_kg
+                            ? Math.max(
+                                0,
+                                profile.max_grain_kg -
+                                  totalWeight(draft.grains.filter((_, j) => i !== j))
+                              )
+                            : undefined
+                        }
                         change={(values) =>
                           patch({
                             grains: draft.grains.map((g, j) => (j === i ? { ...g, ...values } : g)),
@@ -265,8 +321,7 @@ export function RecipeWizard({
                 <div className="guide-group">
                   <h3>Boil and hops</h3>
                   <p className="help-text">
-                    Use up to {Math.min(4, profile.hop_slots || 4)} addition times. Hops added
-                    together share a bin.
+                    Fill slots in boil order, longest first. Hops in the same slot start together.
                   </p>
                   <Field label="Boil time (min)">
                     <input
@@ -277,101 +332,207 @@ export function RecipeWizard({
                       onChange={(e) => patch({ boil: e.target.value })}
                     />
                   </Field>
-                  {draft.hops.map((hop, i) => (
-                    <div className="guide-row hops" key={i}>
-                      <IngredientFields
-                        item={hop}
-                        hop
-                        change={(values) =>
+                  <div className="hop-slots" role="group" aria-label="Hop slots">
+                    {slots.map((slot) => {
+                      const addition = draft.hops.find((h) => h.slot === slot)
+                      return (
+                        <button
+                          type="button"
+                          key={slot}
+                          aria-label={`Hop slot ${slot}`}
+                          aria-pressed={slot === selectedSlot}
+                          disabled={
+                            !addition && !slotTimes(draft.hops, slot, Number(draft.boil)).length
+                          }
+                          onClick={() => setSelectedSlot(slot)}
+                        >
+                          <strong>{slot}</strong>
+                          <span>{addition ? `${addition.minutes} min` : 'Empty'}</span>
+                        </button>
+                      )
+                    })}
+                  </div>
+                  {current && (
+                    <fieldset className="guide-addition">
+                      <legend>Hop slot {current.slot}</legend>
+                      <div className="addition-header">
+                        <Field label="Minutes before boil ends">
+                          <select
+                            value={current.minutes}
+                            onChange={(e) => updateAddition({ minutes: e.target.value })}
+                          >
+                            {!times.includes(Number(current.minutes)) && (
+                              <option value={current.minutes} disabled>
+                                Choose a valid time
+                              </option>
+                            )}
+                            {times.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        </Field>
+                        <Button
+                          variant="ghost"
+                          onClick={() => {
+                            patch({ hops: draft.hops.filter((h) => h.slot !== current.slot) })
+                            setSelectedSlot(null)
+                          }}
+                        >
+                          Clear slot
+                        </Button>
+                      </div>
+                      {current.varieties.map((v, j) => (
+                        <div key={j} className="guide-row">
+                          <IngredientFields
+                            item={v}
+                            hop
+                            invalid={
+                              !!slotLimit && totalWeight(current.varieties) > slotLimit + 1e-9
+                            }
+                            maxWeight={
+                              slotLimit
+                                ? Math.max(
+                                    0,
+                                    slotLimit -
+                                      totalWeight(current.varieties.filter((_, k) => k !== j))
+                                  )
+                                : undefined
+                            }
+                            change={(values) =>
+                              updateAddition({
+                                varieties: current.varieties.map((old, k) =>
+                                  j === k ? { ...old, ...values } : old
+                                ),
+                              })
+                            }
+                          />
+                          {current.varieties.length > 1 && (
+                            <IconButton
+                              label={`Remove variety ${j + 1}`}
+                              onClick={() =>
+                                updateAddition({
+                                  varieties: current.varieties.filter((_, k) => j !== k),
+                                })
+                              }
+                            >
+                              <Trash2 size={16} />
+                            </IconButton>
+                          )}
+                        </div>
+                      ))}
+                      <Button
+                        variant="ghost"
+                        onClick={() =>
+                          updateAddition({
+                            varieties: [...current.varieties, { name: '', amount: '' }],
+                          })
+                        }
+                      >
+                        <Plus size={16} />
+                        Add variety
+                      </Button>
+                      <span className="help-text">
+                        {' '}
+                        {formatQuantity(totalWeight(current.varieties), 'g')} of {slotLimit} g
+                      </span>
+                    </fieldset>
+                  )}
+                  {overweightSlot && (
+                    <p className="notice" role="alert">
+                      Reduce the combined hop weight in slot {overweightSlot.slot} to {slotLimit} g
+                      or less.
+                    </p>
+                  )}
+                </div>
+              </>
+            )}
+            {stage === 2 && (
+              <div className="guide-group">
+                <Field label="Mash schedule">
+                  <select
+                    value={draft.customMash ? 'custom' : 'standard'}
+                    onChange={(e) =>
+                      patch({
+                        customMash: e.target.value === 'custom',
+                        rests: draft.rests.length
+                          ? draft.rests
+                          : mashSchedule(draft, profile).map(({ celsius, minutes }) => ({
+                              celsius,
+                              minutes,
+                            })),
+                      })
+                    }
+                  >
+                    <option value="standard">
+                      {profile.id === 'z' || profile.id === 'zymatic'
+                        ? 'Single infusion'
+                        : 'PicoPak step mash'}
+                    </option>
+                    <option value="custom">Custom mash</option>
+                  </select>
+                </Field>
+                {!draft.customMash && (
+                  <ol>
+                    {mashSchedule(draft, profile).map((rest) => (
+                      <li key={rest.name}>
+                        <strong>{rest.name}</strong> ·{' '}
+                        {Number(
+                          (hub.unit === 'F' ? rest.celsius * 1.8 + 32 : rest.celsius).toFixed(1)
+                        )}{' '}
+                        °{hub.unit} · {rest.minutes} min
+                      </li>
+                    ))}
+                  </ol>
+                )}
+                {draft.customMash &&
+                  draft.rests.map((rest, i) => (
+                    <div className="guide-row" key={i}>
+                      <MashTemperature
+                        rest={rest}
+                        unit={hub.unit}
+                        change={(celsius) =>
                           patch({
-                            hops: draft.hops.map((h, j) => (j === i ? { ...h, ...values } : h)),
+                            rests: draft.rests.map((r, j) => (i === j ? { ...r, celsius } : r)),
                           })
                         }
                       />
-                      <Field label="Minutes before boil ends">
+                      <Field label={`Hold time (min)`}>
                         <input
                           type="number"
                           min="1"
-                          max={Number(draft.boil)}
-                          value={hop.minutes}
+                          max="599"
+                          value={rest.minutes}
                           onChange={(e) =>
                             patch({
-                              hops: draft.hops.map((h, j) =>
-                                i === j ? { ...h, minutes: e.target.value } : h
+                              rests: draft.rests.map((r, j) =>
+                                i === j ? { ...r, minutes: e.target.value } : r
                               ),
                             })
                           }
                         />
                       </Field>
                       <IconButton
-                        label={`Remove hop ${i + 1}`}
-                        onClick={() => patch({ hops: draft.hops.filter((_, j) => i !== j) })}
+                        label={`Remove mash rest ${i + 1}`}
+                        disabled={draft.rests.length === 1}
+                        onClick={() => patch({ rests: draft.rests.filter((_, j) => i !== j) })}
                       >
                         <Trash2 size={16} />
                       </IconButton>
                     </div>
                   ))}
+                {draft.customMash && (
                   <Button
                     variant="ghost"
                     onClick={() =>
-                      patch({
-                        hops: [
-                          ...draft.hops,
-                          { name: '', amount: '', minutes: draft.hops.length ? '' : draft.boil },
-                        ],
-                      })
+                      patch({ rests: [...draft.rests, { celsius: 76, minutes: '10' }] })
                     }
                   >
                     <Plus size={16} />
-                    Add hops
+                    Add mash rest
                   </Button>
-                </div>
-              </>
-            )}
-            {stage === 2 && (
-              <div className="guide-group">
-                {draft.rests.map((rest, i) => (
-                  <div className="guide-row" key={i}>
-                    <MashTemperature
-                      rest={rest}
-                      unit={hub.unit}
-                      change={(celsius) =>
-                        patch({
-                          rests: draft.rests.map((r, j) => (i === j ? { ...r, celsius } : r)),
-                        })
-                      }
-                    />
-                    <Field label={`Hold time (min)`}>
-                      <input
-                        type="number"
-                        min="1"
-                        max="599"
-                        value={rest.minutes}
-                        onChange={(e) =>
-                          patch({
-                            rests: draft.rests.map((r, j) =>
-                              i === j ? { ...r, minutes: e.target.value } : r
-                            ),
-                          })
-                        }
-                      />
-                    </Field>
-                    <IconButton
-                      label={`Remove mash rest ${i + 1}`}
-                      disabled={draft.rests.length === 1}
-                      onClick={() => patch({ rests: draft.rests.filter((_, j) => i !== j) })}
-                    >
-                      <Trash2 size={16} />
-                    </IconButton>
-                  </div>
-                ))}
-                <Button
-                  variant="ghost"
-                  onClick={() => patch({ rests: [...draft.rests, { celsius: 76, minutes: '10' }] })}
-                >
-                  <Plus size={16} />
-                  Add mash rest
-                </Button>
+                )}
               </div>
             )}
             {stage === 3 && (
@@ -391,19 +552,20 @@ export function RecipeWizard({
                           .map((g) => g.name + ' · ' + formatQuantity(Number(g.amount), 'kg'))
                           .join(', ')}
                       </dd>
-                      {times.map((time, i) => (
-                        <div key={time}>
-                          <dt>
-                            Hop addition {i + 1} · {time} min before boil ends
-                          </dt>
-                          <dd>
-                            {draft.hops
-                              .filter((h) => Number(h.minutes) === time)
-                              .map((h) => h.name + ' · ' + formatQuantity(Number(h.amount), 'g'))
-                              .join(', ')}
-                          </dd>
-                        </div>
-                      ))}
+                      {[...draft.hops]
+                        .sort((a, b) => Number(b.minutes) - Number(a.minutes))
+                        .map((addition) => (
+                          <div key={addition.minutes}>
+                            <dt>
+                              Hop slot {addition.slot} · {addition.minutes} min before boil ends
+                            </dt>
+                            <dd>
+                              {addition.varieties
+                                .map((h) => h.name + ' · ' + formatQuantity(Number(h.amount), 'g'))
+                                .join(', ')}
+                            </dd>
+                          </div>
+                        ))}
                     </dl>
                   </div>
                   <div>
@@ -437,7 +599,10 @@ export function RecipeWizard({
                   Previous
                 </Button>
               )}
-              <Button disabled={busy} onClick={next}>
+              <Button
+                disabled={busy || (stage === 1 && (overGrain || !!overweightSlot))}
+                onClick={next}
+              >
                 {stage === 3 ? (
                   <>
                     <Save size={16} />

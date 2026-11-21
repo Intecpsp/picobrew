@@ -26,17 +26,22 @@ var stepKinds = map[string]bool{"mash": true, "mash-out": true, "boil": true, "h
 // entry describes one brewing module, not a combined Z2/Z4 program.
 func Profiles() []domain.Profile {
 	const assumptions = "70% efficiency is a planning assumption; replace it with measured efficiency. Locations must be supplied and checked against the actual machine."
-	const picoAssumptions = "5 L is a nominal batch size. 50% efficiency is Small Brew Companion's community planning estimate, not a measurement of your machine. Replace it with your measured efficiency. Grain capacity is unverified; check your actual grain container. Locations must be supplied and checked against the actual machine."
+	const picoAssumptions = "5 L is a nominal batch size. 50% efficiency is Small Brew Companion's community planning estimate, not a measurement of your machine. Replace it with your measured efficiency. The Hub uses a 2 kg grain planning ceiling based on Small Brew Companion guidance. The shared crafter planning allowance is 42.5 g per hop addition. Set lower working limits for your insert. Locations must be supplied and checked against the actual machine."
 	picoSource := domain.ProfileSource{
 		Label:       "Small Brew Companion: Pico C/S/Pro recipe scaling",
 		URL:         "https://www.smallbrewcompanion.com/docs/scale-recipe-to-pico-c-s-pro-manual-steps/",
 		Description: "Community starting points: 5 L batches and approximately 50% efficiency. Does not establish a maximum grain capacity.",
 	}
+	grainSource := domain.ProfileSource{
+		Label:       "Small Brew Companion: grain loading guidance",
+		URL:         "https://www.smallbrewcompanion.com/docs/adjust-recipe-advanced-feature/",
+		Description: "The guide recommends staying below 4.5 lb for C/S/Pro. The Hub rounds down to a 2 kg planning ceiling.",
+	}
 	return []domain.Profile{
 		{
 			ID: "pico-pro", Name: "Pico Pro (standalone)", BatchLiters: 5, Efficiency: 50,
-			MaxSteps: 15, MaxTargetC: 100, ControlSupported: true, Notes: picoAssumptions,
-			Sources: []domain.ProfileSource{picoSource, {
+			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
+			Sources: []domain.ProfileSource{picoSource, grainSource, {
 				Label:       "PicoBrew: Pico Pro specifications",
 				URL:         "https://picobrew.com/store/products/pico",
 				Description: "Manufacturer nominal batch size: 5 L. The separately listed 6.6 L keg volume is not the batch size.",
@@ -44,20 +49,20 @@ func Profiles() []domain.Profile {
 		},
 		{
 			ID: "pico-s", Name: "Pico S (standalone)", BatchLiters: 5, Efficiency: 50,
-			MaxSteps: 15, MaxTargetC: 100, ControlSupported: true, Notes: picoAssumptions,
-			Sources: []domain.ProfileSource{picoSource},
+			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
+			Sources: []domain.ProfileSource{picoSource, grainSource},
 		},
 		{
 			ID: "pico-c", Name: "Pico C (standalone)", BatchLiters: 5, Efficiency: 50,
-			MaxSteps: 15, MaxTargetC: 100, ControlSupported: true, Notes: picoAssumptions,
-			Sources: []domain.ProfileSource{picoSource, {
+			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
+			Sources: []domain.ProfileSource{picoSource, grainSource, {
 				Label:       "PicoBrew: Pico C specifications",
 				URL:         "https://picobrew.com/store/products/picoc",
 				Description: "Manufacturer nominal batch size: 5 L. This specification does not establish grain capacity or efficiency.",
 			}},
 		},
-		{ID: "z", Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
-		{ID: "zymatic", Name: "Zymatic (planning only)", BatchLiters: 9.46352946, Efficiency: 70, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. No control adapter is implemented."},
+		{ID: "z", Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
+		{ID: "zymatic", Name: "Zymatic (planning only)", BatchLiters: 9.46352946, Efficiency: 70, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. No control adapter is implemented."},
 	}
 }
 
@@ -191,6 +196,50 @@ func supportedProfile(id string) (domain.Profile, bool) {
 	return domain.Profile{}, false
 }
 
+func grainIngredient(in domain.Ingredient) bool {
+	return in.Kind == "fermentable" && !strings.EqualFold(in.Type, "Extract") && !strings.EqualFold(in.Type, "Dry Extract") && !strings.EqualFold(in.Type, "Sugar")
+}
+
+// ValidateCapacity checks the quantities for one batch, after scaling when adapting.
+func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
+	if r.BatchLiters > profile.BatchLiters+1e-9 {
+		return fmt.Errorf("batch exceeds the %.3g L limit for %s", profile.BatchLiters, profile.Name)
+	}
+	if profile.MaxSteps > 0 && len(r.Steps) > profile.MaxSteps {
+		return fmt.Errorf("recipe has %d steps; configured profile allows %d", len(r.Steps), profile.MaxSteps)
+	}
+	for i, step := range r.Steps {
+		if step.TargetC > profile.MaxTargetC {
+			return fmt.Errorf("step %d exceeds configured maximum temperature", i+1)
+		}
+	}
+	grain := 0.0
+	timings := map[string]float64{}
+	for _, in := range r.Ingredients {
+		if grainIngredient(in) {
+			grain += in.Amount
+		}
+		use := strings.ToLower(strings.TrimSpace(in.Use))
+		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
+			if use == "first wort" {
+				use = "first-wort"
+			}
+			key := fmt.Sprintf("%s:%g", use, in.Minutes)
+			timings[key] += in.Amount
+			if profile.MaxHopSlotG > 0 && timings[key] > profile.MaxHopSlotG+1e-9 {
+				return fmt.Errorf("combined hops at %g minutes exceed the %.3g g slot limit for %s", in.Minutes, profile.MaxHopSlotG, profile.Name)
+			}
+		}
+	}
+	if profile.MaxGrainKG > 0 && grain > profile.MaxGrainKG+1e-9 {
+		return fmt.Errorf("grain bill %.3f kg exceeds the %.3f kg grain limit for %s", grain, profile.MaxGrainKG, profile.Name)
+	}
+	if profile.HopSlots > 0 && len(timings) > profile.HopSlots {
+		return fmt.Errorf("%d timed hop additions exceed the configured %d slots", len(timings), profile.HopSlots)
+	}
+	return nil
+}
+
 // Adapt scales grain/unspecified fermentables by volume and source/target
 // efficiency. Known extracts/sugars, hops and other ingredients scale by volume.
 // It preserves source data and returns a new plan.
@@ -205,7 +254,7 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	if !known {
 		return domain.Adapted{}, fmt.Errorf("unknown machine profile %q", profile.ID)
 	}
-	if !finite(profile.BatchLiters) || profile.BatchLiters <= 0 || !finite(profile.Efficiency) || profile.Efficiency <= 0 || profile.Efficiency > 100 || !finite(profile.MaxTargetC) || profile.MaxTargetC <= 0 || profile.MaxTargetC > 100 || !finite(profile.MaxGrainKG) || profile.MaxGrainKG < 0 || profile.MaxSteps < 0 || profile.HopSlots < 0 {
+	if !finite(profile.BatchLiters) || profile.BatchLiters <= 0 || !finite(profile.Efficiency) || profile.Efficiency <= 0 || profile.Efficiency > 100 || !finite(profile.MaxTargetC) || profile.MaxTargetC <= 0 || profile.MaxTargetC > 100 || !finite(profile.MaxGrainKG) || profile.MaxGrainKG < 0 || !finite(profile.MaxHopSlotG) || profile.MaxHopSlotG < 0 || profile.MaxSteps < 0 || profile.HopSlots < 0 {
 		return domain.Adapted{}, errors.New("profile has invalid capacity, temperature or efficiency")
 	}
 	if IsNative(r) {
@@ -217,9 +266,7 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	if !finite(batchLiters) || batchLiters <= 0 || batchLiters > profile.BatchLiters+1e-9 {
 		return domain.Adapted{}, errors.New("requested batch exceeds the configured profile batch limit or is invalid")
 	}
-	if profile.MaxSteps > 0 && len(r.Steps) > profile.MaxSteps {
-		return domain.Adapted{}, fmt.Errorf("recipe has %d steps; configured profile allows %d", len(r.Steps), profile.MaxSteps)
-	}
+
 	plan := domain.Adapted{Recipe: r, Profile: profile, SourceRevision: r.Revision, Warnings: []string{}, DeploymentBlockers: []string{}}
 	plan.Recipe.Ingredients = append([]domain.Ingredient(nil), r.Ingredients...)
 	plan.Recipe.Steps = append([]domain.RecipeStep(nil), r.Steps...)
@@ -238,39 +285,27 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	for i := range plan.Recipe.Steps {
 		plan.Recipe.Steps[i].InfuseLiters *= ratio
 	}
-	grain := 0.0
-	hops := false
-	yeast := false
-	timings := map[string]bool{}
+	hops, yeast := false, false
 	for i := range plan.Recipe.Ingredients {
 		in := &plan.Recipe.Ingredients[i]
 		factor := ratio
-		isExtract := strings.EqualFold(in.Type, "Extract") || strings.EqualFold(in.Type, "Dry Extract") || strings.EqualFold(in.Type, "Sugar")
-		if in.Kind == "fermentable" && !isExtract {
+		isGrain := grainIngredient(*in)
+		if isGrain {
 			factor *= r.Efficiency / profile.Efficiency
 		}
 		in.Amount *= factor
 		if !finite(in.Amount) || in.Amount <= 0 {
 			return domain.Adapted{}, errors.New("ingredient scaling overflow")
 		}
-		if in.Kind == "fermentable" && !isExtract {
-			grain += in.Amount
-		}
 		if in.Kind == "hop" {
 			hops = true
-			if in.Use == "boil" || in.Use == "first-wort" {
-				timings[fmt.Sprintf("%s:%g", in.Use, in.Minutes)] = true
-			}
 		}
 		if in.Kind == "yeast" {
 			yeast = true
 		}
 	}
-	if profile.MaxGrainKG > 0 && grain > profile.MaxGrainKG+1e-9 {
-		return domain.Adapted{}, fmt.Errorf("scaled fermentables %.3f kg exceed configured grain limit %.3f kg; separate extract/sugar additions require explicit review", grain, profile.MaxGrainKG)
-	}
-	if profile.HopSlots > 0 && len(timings) > profile.HopSlots {
-		return domain.Adapted{}, fmt.Errorf("%d timed hop additions exceed the configured %d slots", len(timings), profile.HopSlots)
+	if err := ValidateCapacity(plan.Recipe, profile); err != nil {
+		return domain.Adapted{}, err
 	}
 	if hops {
 		plan.Warnings = append(plan.Warnings, "Hops scale by batch volume only; utilization, gravity, boil-off and IBU changes are not modeled. Ingredient timings do not create machine steps or assign chambers.")
@@ -285,11 +320,7 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 	if profile.MaxGrainKG == 0 {
 		plan.Warnings = append(plan.Warnings, "No verified grain capacity is configured for this profile; this plan does not prove the grain load fits.")
 	}
-	for i, step := range r.Steps {
-		if step.TargetC > profile.MaxTargetC {
-			return domain.Adapted{}, fmt.Errorf("step %d exceeds configured maximum temperature", i+1)
-		}
-	}
+
 	if !builtIn.ControlSupported || !profile.ControlSupported {
 		plan.Profile.ControlSupported = false
 		plan.DeploymentBlockers = append(plan.DeploymentBlockers, "This profile has no enabled Hub control adapter. The recipe is available for planning and export only.")

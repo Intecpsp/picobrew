@@ -133,13 +133,25 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByLabel('Grain', { exact: true }).fill('Pale malt')
   await page.getByLabel('Weight (kg)').fill('2')
-  await page.getByRole('button', { name: 'Add hops' }).click()
+  await page.getByRole('button', { name: 'Hop slot 4', exact: true }).click()
   await page.getByLabel('Hop variety').fill('Cascade')
   await page.getByLabel('Weight (g)').fill('20')
-  await page.getByLabel('Minutes before boil ends').fill('15')
+  await page.getByLabel('Minutes before boil ends').selectOption('15')
+  await page.getByRole('button', { name: 'Add variety' }).click()
+  await page.getByLabel('Hop variety').nth(1).fill('Amarillo')
+  await page.getByLabel('Weight (g)').nth(1).fill('30')
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled()
+  await page.getByLabel('Weight (g)').nth(1).fill('10')
+  await page.getByRole('button', { name: 'Hop slot 1', exact: true }).click()
+  await expect(
+    page.getByLabel('Minutes before boil ends').locator('option[value="15"]')
+  ).toHaveCount(0)
+  await page.getByLabel('Minutes before boil ends').selectOption('60')
+  await page.getByLabel('Hop variety').fill('Columbus')
+  await page.getByLabel('Weight (g)').fill('8')
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
-  await expect(page.getByText('Hop addition 1 · 15 min before boil ends')).toBeVisible()
+  await expect(page.getByText('Hop slot 4 · 15 min before boil ends')).toBeVisible()
   await page.getByRole('button', { name: 'Save recipe' }).click()
   const entry = page.getByRole('link', { name: new RegExp(name) })
   await expect(entry).toBeVisible()
@@ -167,9 +179,9 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
       ])
     ).toEqual([
       [1, 0],
-      [2, 60],
-      [1, 45],
-      [3, 15],
+      [2, 90],
+      [3, 45],
+      [6, 15],
     ])
   } finally {
     await request.delete('/api/v1/recipes/' + id, { headers: { 'X-CSRF-Token': 'demo' } })
@@ -185,7 +197,12 @@ test('mobile Pico wizard carries ingredients and generated steps into advanced e
   await page.getByLabel('Recipe name').fill('Pico wheat')
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByLabel('Grain', { exact: true }).fill('Wheat malt')
+  await page.getByLabel('Weight (kg)').fill('100')
+  await expect(page.getByRole('alert')).toContainText('Reduce it to 2 kg')
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled()
   await page.getByLabel('Weight (kg)').fill('1.5')
+  await page.getByRole('button', { name: 'Hop slot 3', exact: true }).click()
+  await expect(page.getByLabel('Minutes before boil ends')).toBeVisible()
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
   await expect(page.getByText('Wheat malt · 1.5 kg')).toBeVisible()
@@ -193,6 +210,6 @@ test('mobile Pico wizard carries ingredients and generated steps into advanced e
   await page.getByRole('button', { name: 'Advanced editor' }).click()
   await expect(page.getByLabel('Recipe name', { exact: true })).toHaveValue('Pico wheat')
   await expect(page.getByLabel('Ingredient 1 name')).toHaveValue('Wheat malt')
-  await expect(page.getByLabel('2. Step name', { exact: true })).toHaveValue('Mash')
+  await expect(page.getByLabel('2. Step name', { exact: true })).toHaveValue('Dough in')
   await expect(page.getByLabel('Flow path', { exact: true }).nth(1)).toHaveValue('2')
 })

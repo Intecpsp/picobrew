@@ -109,7 +109,7 @@ it cannot operate heaters, pumps, or machine controls.
 
 ### Equipment starting points
 
-The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Brew Companion's documented recipe-scaling guidance, with source links visible in Settings. The Pro's nominal 5 L batch is also supported by PicoBrew's published specifications. Efficiency is a planning estimate, and S/Pro grain capacity remains unknown until supplied for the actual grain container. Saved calibration values override these starting points. See [equipment profiles and sources](docs/equipment-profiles.md).
+The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Brew Companion's documented recipe-scaling guidance, with source links visible in Settings. The Pro's nominal 5 L batch is also supported by PicoBrew's published specifications. The Hub limits grain to 2 kg on these models and supports a lower working limit for your insert. Each hop slot has a single addition time and a combined weight limit. See [equipment profiles and sources](docs/equipment-profiles.md).
 
 ## Brewing workflow
 

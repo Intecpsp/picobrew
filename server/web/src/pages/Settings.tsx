@@ -152,6 +152,7 @@ function CalibrationForm() {
     batch_liters: hub.profiles[0]?.batch_liters ?? 0,
     efficiency: hub.profiles[0]?.efficiency ?? 0,
     max_grain_kg: hub.profiles[0]?.max_grain_kg ?? 0,
+    max_hop_slot_g: hub.profiles[0]?.max_hop_slot_g ?? 0,
   })
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -162,6 +163,7 @@ function CalibrationForm() {
       batch_liters: profile.batch_liters,
       efficiency: profile.efficiency,
       max_grain_kg: profile.max_grain_kg,
+      max_hop_slot_g: profile.max_hop_slot_g ?? 0,
     })
     setError('')
   }
@@ -207,7 +209,7 @@ function CalibrationForm() {
           <input
             type="number"
             min="0.1"
-            step="0.1"
+            step="any"
             value={form.batch_liters}
             onChange={(event) => setForm({ ...form, batch_liters: Number(event.target.value) })}
           />
@@ -225,13 +227,28 @@ function CalibrationForm() {
             onChange={(event) => setForm({ ...form, efficiency: Number(event.target.value) })}
           />
         </Field>
-        <Field label="Grain capacity (kg)" hint="0 means unverified.">
+        <Field
+          label="Grain capacity (kg)"
+          hint="Use 0 for the model default, or enter a lower measured limit."
+        >
           <input
             type="number"
             min="0"
-            step="0.1"
+            step="any"
             value={form.max_grain_kg}
             onChange={(event) => setForm({ ...form, max_grain_kg: Number(event.target.value) })}
+          />
+        </Field>
+        <Field
+          label="Hop capacity per slot (g)"
+          hint="Use the lower working limit for your insert and hop form. Zero restores the model default."
+        >
+          <input
+            type="number"
+            min="0"
+            step="any"
+            value={form.max_hop_slot_g}
+            onChange={(e) => setForm({ ...form, max_hop_slot_g: Number(e.target.value) })}
           />
         </Field>
       </div>

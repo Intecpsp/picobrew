@@ -1,6 +1,6 @@
 import { expect, test } from 'vitest'
 import type { Profile } from '../types'
-import { guidedRecipe, guideProblem, initialGuide } from './guidedRecipe'
+import { guidedRecipe, guideProblem, initialGuide, slotTimes } from './guidedRecipe'
 
 const profile: Profile = {
   id: 'pico-s',
@@ -9,8 +9,9 @@ const profile: Profile = {
   efficiency: 50,
   max_steps: 15,
   max_target_c: 100,
-  max_grain_kg: 0,
-  hop_slots: 0,
+  max_grain_kg: 2,
+  max_hop_slot_g: 42.5,
+  hop_slots: 4,
   control_supported: true,
   notes: '',
 }
@@ -19,9 +20,15 @@ const draft = () => ({
   name: 'Pale ale',
   grains: [{ name: 'Pale malt', amount: '1.2' }],
   hops: [
-    { name: 'Cascade', amount: '10', minutes: '5' },
-    { name: 'Centennial', amount: '20', minutes: '30' },
-    { name: 'Amarillo', amount: '8', minutes: '5' },
+    {
+      slot: 4,
+      minutes: '5',
+      varieties: [
+        { name: 'Cascade', amount: '10' },
+        { name: 'Amarillo', amount: '8' },
+      ],
+    },
+    { slot: 2, minutes: '30', varieties: [{ name: 'Centennial', amount: '20' }] },
   ],
 })
 
@@ -31,12 +38,15 @@ test('hop countdowns become sequential holds and simultaneous varieties share a 
   const recipe = guidedRecipe(d, profile)
   expect(recipe.steps.map((s) => [s.location, s.minutes])).toEqual([
     [1, 0],
-    [2, 60],
+    [2, 7],
+    [2, 25],
+    [2, 20],
+    [2, 7],
     [1, 30],
-    [3, 25],
-    [4, 5],
+    [4, 25],
+    [6, 5],
   ])
-  expect(recipe.ingredients.map((i) => i.minutes)).toEqual([0, 5, 30, 5])
+  expect(recipe.ingredients.map((i) => i.minutes)).toEqual([0, 5, 5, 30])
   expect(recipe.efficiency).toBe(50)
   expect(guidedRecipe({ ...d, hops: [] }, profile).steps.at(-1)).toMatchObject({
     name: 'Boil',
@@ -73,10 +83,44 @@ test('cannot finish a schedule outside the supported timing and equipment limits
     )
   expect(
     guideProblem(
-      { ...d, hops: [1, 2, 3, 4, 5].map((n) => ({ ...d.hops[0], minutes: String(n) })) },
+      { ...d, hops: [1, 2, 3, 4, 5].map((n) => ({ ...d.hops[0], slot: n, minutes: String(n) })) },
       profile,
       3
     )
-  ).toContain('4 different hop times')
+  ).toContain('4 timed hop additions')
   expect(guideProblem(d, { ...profile, max_steps: 4 }, 3)).toContain('step limit')
+})
+
+test('slot time choices prevent simultaneous or reversed additions even across empty bins', () => {
+  const hops = draft().hops
+  expect(slotTimes(hops, 3, 60)).toEqual(Array.from({ length: 24 }, (_, i) => 29 - i))
+  expect(slotTimes(hops, 1, 60)).toContain(60)
+  expect(slotTimes(hops, 1, 60)).not.toContain(30)
+  expect(slotTimes(hops, 3, 4)).toEqual([])
+})
+
+test('the standard PicoPak mash matches archived temperatures, active times and drains', () => {
+  const d = draft()
+  const fields = (model: string) =>
+    guidedRecipe(d, { ...profile, id: model })
+      .steps.filter((s) => s.location === 2)
+      .map((s) => [Math.round(s.target_c * 1.8 + 32), s.minutes, s.drain_minutes])
+  for (const id of ['pico-s', 'pico-c', 'pico-pro'])
+    expect(fields(id)).toEqual([
+      [110, 7, 0],
+      [148, 25, 0],
+      [156, 20, 0],
+      [176, 7, 2],
+    ])
+  expect(fields('z')).toEqual([[152, 90, 8]])
+  const custom = guidedRecipe(
+    { ...d, customMash: true, rests: [{ celsius: 65, minutes: '38' }] },
+    profile
+  )
+  expect(custom.steps[1]).toMatchObject({
+    location: 2,
+    minutes: 38,
+    target_c: 65,
+    drain_minutes: 2,
+  })
 })

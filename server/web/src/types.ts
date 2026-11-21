@@ -211,6 +211,7 @@ export interface Profile {
   max_steps: number
   max_target_c: number
   max_grain_kg: number
+  max_hop_slot_g?: number
   hop_slots: number
   control_supported: boolean
   notes: string
