@@ -371,7 +371,7 @@ func (s *Server) storeError(w http.ResponseWriter, e error) {
 }
 func (s *Server) deviceError(w http.ResponseWriter, e error) {
 	if errors.Is(e, context.Canceled) {
-		s.fail(w, 499, "cancelled", "The request was cancelled")
+		s.fail(w, 499, "cancelled", "The request was canceled")
 		return
 	}
 	var remote *device.Error

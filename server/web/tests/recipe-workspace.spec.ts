@@ -11,13 +11,14 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   const main = page.getByRole('navigation', { name: 'Main navigation' })
   const views = page.getByRole('navigation', { name: 'Recipe views' })
   await expect(main.getByRole('link', { name: /^Recipes/ })).toHaveAttribute('aria-current', 'page')
-  await expect(main.getByRole('link', { name: /Community catalogue|Brew assistant/ })).toHaveCount(
+  await expect(main.getByRole('link', { name: /Community catalog|Brew assistant/ })).toHaveCount(
     0
   )
   await expect(views.getByRole('link')).toHaveCount(2)
+  await expect(page.getByRole('button', { name: /community catalog/i })).toHaveCount(0)
   await views.getByRole('link', { name: 'Browse all' }).click()
   await page.getByPlaceholder('Search community recipes and programs').fill('Pico Pale')
-  await page.getByLabel('Catalogue type').selectOption('native-program')
+  await page.getByLabel('Catalog type').selectOption('native-program')
   await expect(page).toHaveURL(/q=Pico\+Pale/)
   await page.getByRole('button', { name: 'Pico Pale', exact: true }).first().click()
   await expect(
@@ -28,7 +29,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(page.getByPlaceholder('Search community recipes and programs')).toHaveValue(
     'Pico Pale'
   )
-  await expect(page.getByLabel('Catalogue type')).toHaveValue('native-program')
+  await expect(page.getByLabel('Catalog type')).toHaveValue('native-program')
   await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
   await page.goto('/#/recipes/weekend-pale')
   await page.getByRole('button', { name: 'Ask the brew assistant', exact: true }).click()

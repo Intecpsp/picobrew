@@ -294,7 +294,7 @@ test('mobile layouts contain wide recipe and history tables', async ({ page }) =
   await expect(page.getByRole('heading', { name: 'Your recipe library.' })).toBeVisible()
 })
 
-test('community catalogue preserves source schedules through copy, bulk transfer and machine editing', async ({
+test('community catalog preserves source schedules through copy, bulk transfer and machine editing', async ({
   page,
   request,
 }) => {
@@ -308,7 +308,7 @@ test('community catalogue preserves source schedules through copy, bulk transfer
     const created = await request.post('/api/v1/devices', {
       headers,
       data: {
-        name: 'Catalogue transfer brewer',
+        name: 'Catalog transfer brewer',
         adapter: 'simulator',
         model: 'pico-pro',
         enabled: true,
@@ -325,7 +325,7 @@ test('community catalogue preserves source schedules through copy, bulk transfer
 
     await page.goto('/#/catalog')
     await expect(page.getByRole('heading', { name: 'A whole library to explore.' })).toBeVisible()
-    await page.getByLabel('Catalogue type', { exact: true }).selectOption('native-program')
+    await page.getByLabel('Catalog type', { exact: true }).selectOption('native-program')
     await page.getByLabel('Search community recipes and programs').fill('Pico Pale')
     await expect(
       page
@@ -333,7 +333,7 @@ test('community catalogue preserves source schedules through copy, bulk transfer
         .filter({ has: page.getByRole('button', { name: 'Pico Pale', exact: true }) })
     ).toHaveCount(1)
     await page.screenshot({
-      path: test.info().outputPath('community-catalogue-desktop.png'),
+      path: test.info().outputPath('community-catalog-desktop.png'),
       fullPage: true,
     })
     await page.getByRole('button', { name: 'Pico Pale', exact: true }).click()
@@ -419,7 +419,7 @@ test('community catalogue preserves source schedules through copy, bulk transfer
   }
 })
 
-test('catalogue images, machine guides and program editor fit a mobile screen', async ({
+test('catalog images, machine guides and program editor fit a mobile screen', async ({
   page,
   request,
 }) => {
@@ -459,7 +459,7 @@ test('catalogue images, machine guides and program editor fit a mobile screen', 
   expect(catalog.items.length).toBeGreaterThan(0)
   await expect(page.getByText('Cleaning program', { exact: true }).first()).toBeVisible()
   await page.screenshot({
-    path: test.info().outputPath('cleaning-catalogue-mobile.png'),
+    path: test.info().outputPath('cleaning-catalog-mobile.png'),
     fullPage: true,
   })
   const copied = await request.post('/api/v1/catalog/picopak-64/copy', {

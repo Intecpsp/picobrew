@@ -173,7 +173,7 @@ async function countPDFInk(canvas: Locator) {
   })
 }
 
-test('recipe detail presents readable quantities and credits without losing catalogue filters', async ({
+test('recipe detail presents readable quantities and credits without losing catalog filters', async ({
   page,
   request,
 }) => {
@@ -215,5 +215,5 @@ test('recipe detail presents readable quantities and credits without losing cata
   expect(source.recipe.batch_liters).toBe(9.46352946)
   await page.getByRole('button', { name: 'Back', exact: true }).click()
   await expect(page.getByPlaceholder('Search community recipes and programs')).toHaveValue('Alpine')
-  await expect(page.getByLabel('Catalogue type', { exact: true })).toHaveValue('recipe')
+  await expect(page.getByLabel('Catalog type', { exact: true })).toHaveValue('recipe')
 })

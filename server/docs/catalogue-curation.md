@@ -1,6 +1,6 @@
-# Catalogue curation review
+# Catalog curation review
 
-Reviewed all **5,282** previously browsable entries and their **11,164** associated original records. Removed **66 entries** representing **498 original records** from browsing. The resulting catalogue has **5,216 entries**.
+Reviewed all **5,282** previously browsable entries and their **11,164** associated original records. Removed **66 entries** representing **498 original records** from browsing. The resulting catalog has **5,216 entries**.
 
 All **11,518** recipe/program source files remain preserved, including the **354** malformed or empty records already excluded before this review. Eight firmware starter programs and all legitimate Chiefwigms/ZPak records remain available. User-saved recipes, revisions and installed brewer programs are unaffected.
 

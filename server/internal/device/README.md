@@ -100,7 +100,7 @@ thermoblock and target temperatures; step seconds; phase; controller status;
 compartment; current step; flags; and device state. Unavailable temperatures are
 null. New firmware appends normalized readings and named sensor/actuator fields.
 Each page carries that session's stored field names and metadata; the current
-catalogue cannot overwrite an older session's schema. The adapter validates page identity, continuation, field counts, numeric
+catalog cannot overwrite an older session's schema. The adapter validates page identity, continuation, field counts, numeric
 bounds and ordering within the page. Raw state codes are preserved. It does not
 invent wall-clock timestamps: the appliance's stored records provide elapsed
 time, not a trustworthy brew start time.

@@ -1,4 +1,4 @@
-# Catalogue reference icons
+# Catalog reference icons
 
 These three drawings and two original notices are the only files retained here
 from Tom Herold's [Zymatic server](https://github.com/hotzenklotz/picobrew-server),
@@ -8,6 +8,6 @@ notice in `icon-license.txt`; `server-license.txt` retains the repository's MIT
 notice. No server implementation is included.
 
 `build_catalog.py` checks every file against its pinned SHA-256 before copying it
-into the catalogue. It preserves the original source paths, provenance metadata
-and archive bytes. Catalogue regeneration needs the four recipe/support source
+into the catalog. It preserves the original source paths, provenance metadata
+and archive bytes. Catalog regeneration needs the four recipe/support source
 checkouts, but no old server checkout or Git history for these icons.

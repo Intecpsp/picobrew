@@ -286,7 +286,7 @@ func buildSchemas() schemaMap {
 	}, "provider")
 	r.values["AISubscriptionLoginInput"] = schemaObject(schemaMap{"provider": schemaMap{"type": "string", "enum": []string{"openai"}}, "redirect_uri": schemaMap{"type": "string", "enum": []string{chatGPTCallbackURL}}}, "provider")
 	r.values["AISubscriptionCallbackInput"] = schemaObject(schemaMap{"provider": schemaMap{"type": "string", "enum": []string{"openai"}}, "callback_url": schemaMap{"type": "string", "maxLength": 16384, "writeOnly": true, "description": "Full loopback callback address containing a single-use authorization code. Never logged or exported."}}, "provider", "callback_url")
-	r.properties("aiModelList")["source"] = schemaMap{"type": "string", "enum": []string{"api", "subscription", "subscription-aliases"}, "description": "Claude Code exposes stable native model aliases; these are labelled distinctly from a live account catalogue."}
+	r.properties("aiModelList")["source"] = schemaMap{"type": "string", "enum": []string{"api", "subscription", "subscription-aliases"}, "description": "Claude Code exposes stable native model aliases; these are labeled distinctly from a live account catalog."}
 	r.properties("aiModelList")["models"] = schemaMap{"type": "array", "items": schemaRef("Model"), "description": "Provider model IDs or documented Claude Code model aliases, as indicated by source. Availability does not establish plan eligibility or inference compatibility."}
 	r.properties("Request")["mode"] = schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}}
 	r.properties("Request")["prompt"] = schemaMap{"type": "string", "maxLength": 16000}
@@ -386,14 +386,14 @@ func operationParameters(e endpoint) []any {
 		params[len(params)-1].(schemaMap)["required"] = true
 	case "/catalog":
 		for _, name := range []string{"q", "source", "kind", "model", "style"} {
-			query(name, "Catalogue filter.", stringSchema())
+			query(name, "Catalog filter.", stringSchema())
 		}
 		query("offset", "Zero-based result offset.", schemaMap{"type": "integer", "minimum": 0, "default": 0})
 		query("limit", "Results per page.", schemaMap{"type": "integer", "minimum": 1, "maximum": 100, "default": 24})
 	case "/catalog/references":
 		query("model", "Filter by machine model.", stringSchema())
 	case "/catalog/{id}/source":
-		query("record", "Original record ID within this grouped catalogue entry.", stringSchema())
+		query("record", "Original record ID within this grouped catalog entry.", stringSchema())
 	case "/catalog/assets/{asset_path}":
 		params[0].(schemaMap)["description"] = "Full manifest asset path, including its source prefix and nested directories."
 	case "/recipes/{id}/export":
@@ -675,7 +675,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[404] = "Requested record or machine does not exist."
 	}
 	if strings.HasPrefix(e.path, "/devices/{id}") {
-		for code, message := range map[int]string{400: "Invalid device command or configuration.", 409: "Machine state, device file or command key conflict.", 413: "Device rejected an oversized payload.", 422: "Device/target profile rejected this program.", 499: "The device request was cancelled.", 502: "Device unavailable, rejected transport response or mutation outcome unknown; writes are not automatically retried.", 503: "The machine connection/adapter is not configured."} {
+		for code, message := range map[int]string{400: "Invalid device command or configuration.", 409: "Machine state, device file or command key conflict.", 413: "Device rejected an oversized payload.", 422: "Device/target profile rejected this program.", 499: "The device request was canceled.", 502: "Device unavailable, rejected transport response or mutation outcome unknown; writes are not automatically retried.", 503: "The machine connection/adapter is not configured."} {
 			statuses[code] = message
 		}
 	}
@@ -698,7 +698,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[400] = "Format unsupported, or required BeerXML metadata is missing."
 	}
 	if strings.HasPrefix(e.path, "/catalog") {
-		statuses[400] = "Invalid catalogue filters, pagination or request body."
+		statuses[400] = "Invalid catalog filters, pagination or request body."
 		statuses[404] = "Entry, original record or local asset is unavailable."
 		if e.path == "/catalog/{id}/copy" {
 			statuses[422] = "This entry has no verified editable conversion; its original source remains available."
@@ -727,7 +727,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[409] = "The saved source changed, the cache is full, or saved package integrity failed."
 		statuses[422] = "Package structure, metadata, sizes, hashes or image bounds failed validation."
 		statuses[429] = "Another firmware acquisition is in progress; retry shortly."
-		statuses[499] = "The firmware request was cancelled."
+		statuses[499] = "The firmware request was canceled."
 		statuses[504] = "The firmware request exceeded its time limit."
 		if strings.Contains(e.path, "{packageID}") {
 			statuses[404] = "The saved firmware package does not exist."

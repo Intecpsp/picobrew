@@ -208,7 +208,7 @@ export function TransferDialog({
       }
     >
       <p>
-        Send saved recipes to the machine’s local catalogue. Programs remain available from its Brew
+        Send saved recipes to the machine’s local catalog. Programs remain available from its Brew
         PicoPak menu and its browser interface.
       </p>
       <ErrorBanner message={error} />
@@ -335,7 +335,7 @@ export function TransferDialog({
                     hub.navigate('/catalog')
                   }}
                 >
-                  Browse community catalogue
+                  Browse community catalog
                 </Button>
               }
             />

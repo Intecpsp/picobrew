@@ -98,17 +98,17 @@ func prohibitedIP(ip net.IP, allowLoopback bool) bool {
 
 func (p *pico) lock(ctx context.Context) error {
 	if ctx.Err() != nil {
-		return &Error{Code: "cancelled", Message: "Device request was cancelled before dispatch"}
+		return &Error{Code: "cancelled", Message: "Device request was canceled before dispatch"}
 	}
 	select {
 	case p.gate <- struct{}{}:
 		if ctx.Err() != nil {
 			p.unlock()
-			return &Error{Code: "cancelled", Message: "Device request was cancelled while queued"}
+			return &Error{Code: "cancelled", Message: "Device request was canceled while queued"}
 		}
 		return nil
 	case <-ctx.Done():
-		return &Error{Code: "cancelled", Message: "Device request was cancelled while queued"}
+		return &Error{Code: "cancelled", Message: "Device request was canceled while queued"}
 	}
 }
 func (p *pico) unlock() { <-p.gate }

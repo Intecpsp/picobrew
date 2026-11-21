@@ -102,7 +102,7 @@ func cloneSamples(values []domain.Sample) []domain.Sample {
 }
 func simulationContext(ctx context.Context) error {
 	if ctx.Err() != nil {
-		return &Error{Code: "cancelled", Message: "Simulator request was cancelled"}
+		return &Error{Code: "cancelled", Message: "Simulator request was canceled"}
 	}
 	return nil
 }

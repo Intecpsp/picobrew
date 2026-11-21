@@ -28,7 +28,7 @@ func (s *Server) openCatalog(w http.ResponseWriter) (*catalog.Archive, bool) {
 
 func (s *Server) catalogError(w http.ResponseWriter, err error) {
 	if errors.Is(err, catalog.ErrNotFound) {
-		s.fail(w, 404, "not_found", "Catalogue entry or source is unavailable")
+		s.fail(w, 404, "not_found", "Catalog entry or source is unavailable")
 		return
 	}
 	s.internal(w, err)
@@ -38,7 +38,7 @@ func (s *Server) listCatalog(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	query := catalog.Query{Query: q.Get("q"), Source: q.Get("source"), Kind: q.Get("kind"), Model: q.Get("model"), Style: q.Get("style"), Limit: 24}
 	if len(query.Query) > 512 || len(query.Source) > 128 || len(query.Kind) > 64 || len(query.Model) > 64 || len(query.Style) > 512 {
-		s.fail(w, 400, "catalog_query", "Catalogue filters are too long")
+		s.fail(w, 400, "catalog_query", "Catalog filters are too long")
 		return
 	}
 	for key, target := range map[string]*int{"offset": &query.Offset, "limit": &query.Limit} {
@@ -105,7 +105,7 @@ func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if _, err := s.db.Put("recipe-revision", v.ID+":1", v, 0); err != nil {
-		s.cfg.Logger.Error("Catalogue copy revision archive failed", "id", v.ID, "error", err)
+		s.cfg.Logger.Error("Catalog copy revision archive failed", "id", v.ID, "error", err)
 	}
 	s.json(w, 201, v)
 }

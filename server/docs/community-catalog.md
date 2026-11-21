@@ -1,4 +1,4 @@
-# Offline community catalogue
+# Offline community catalog
 
 The Hub bundles a pinned archive of recipes, machine programs, illustrations and
 support references. Browsing and recipe copying work without picobrew.com or an
@@ -8,7 +8,7 @@ recipe to a brewer or starts a program.
 
 ## Included content
 
-| Source | Original records | Catalogue entries | Treatment |
+| Source | Original records | Catalog entries | Treatment |
 | --- | ---: | ---: | --- |
 | Public PicoBrew recipes | 1,320 | 1,316 | Ingredient recipes with source quantities, declared mash/boil plans and conversion warnings; four reviewed disposable records are hidden. |
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
@@ -25,13 +25,13 @@ source archive and `excluded.json`. Entries with long or non-ASCII machine label
 remain copyable, but require explicit editing before deployment; labels and
 timings are never silently rewritten during native import.
 
-The bundle also contains 88 image/text assets, including beer colour/style
+The bundle also contains 88 image/text assets, including beer color/style
 illustrations, machine drawings and support text. Illustration credits and kinds
 are available in source details; they are not photographs of named beers. An additional
 27 original PDF assets are optional local references. The references API reports
 which files are actually available.
 
-## Catalogue curation
+## Catalog curation
 
 A review of all 5,282 previously browsable entries removed **66 clearly
 disposable entries representing 498 original records**: explicit test/default
@@ -102,13 +102,13 @@ protection.
 | `GET /api/v1/catalog/references` | Support references and asset metadata, optionally filtered by `model`. |
 | `GET /api/v1/catalog/assets/*` | Manifest-listed local image/text/PDF, with pinned checksum verification. |
 
-No catalogue endpoint fetches arbitrary URLs. Source paths are selected from the
+No catalog endpoint fetches arbitrary URLs. Source paths are selected from the
 entry manifest, assets are selected from the asset manifest, and optional files
 are constrained to the reference directory and checked against their pinned hash.
 
 ## Rebuild the pinned bundle
 
-Normal installation needs no source checkouts or catalogue-generation step. The
+Normal installation needs no source checkouts or catalog-generation step. The
 Go executable embeds `internal/catalog/data/catalog.zip`.
 
 To regenerate it, check out the exact four source commits recorded in
@@ -136,7 +136,7 @@ Python conversion tests use originals already included in the bundle. Go tests
 validate every copyable recipe, every advertised deployment, all original source
 hashes, exclusion preservation, and exact native temperatures/timings/routing.
 The Python suite also compares every firmware starter's ID, complete schedule and
-source checksum to its catalogue copy in
+source checksum to its catalog copy in
 `firmware/pico-s-pro/modified/data/starter-recipes.json` at the repository root.
 `CATALOG_REQUIRE_FIRMWARE=1` makes missing firmware data an error in the project
 checkout; an isolated server source archive
@@ -147,7 +147,7 @@ directory. It contains the single top-level directory `catalog-references/`.
 For Docker, this directory belongs in the existing `/data` volume. Source links
 remain visible when a reference is absent; the Hub never downloads it on demand.
 Existing recipes, revisions, calibration settings and deployed programs are not
-rewritten when the bundled catalogue changes.
+rewritten when the bundled catalog changes.
 
 ## Source rights
 

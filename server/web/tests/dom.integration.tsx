@@ -278,13 +278,13 @@ describe('UI interactions against the real isolated Go simulator', () => {
   })
 })
 
-describe('community catalogue and local recipe slots', () => {
+describe('community catalog and local recipe slots', () => {
   it('copies a native recipe, preserves zero-minute steps, previews transfer, edits its machine slot and skips overwrites', async () => {
     let deviceID = ''
     let recipeID = ''
     try {
       const created = await simulationMutation('/devices', {
-        name: 'DOM catalogue brewer',
+        name: 'DOM catalog brewer',
         adapter: 'simulator',
         model: 'pico-pro',
         enabled: true,
@@ -350,7 +350,7 @@ describe('community catalogue and local recipe slots', () => {
       await user.click(within(dialog).getByRole('button', { name: 'Done' }))
 
       window.location.hash = `/devices/${deviceID}`
-      await screen.findByRole('heading', { name: 'DOM catalogue brewer', level: 1 })
+      await screen.findByRole('heading', { name: 'DOM catalog brewer', level: 1 })
       await waitFor(() => expect(screen.getByRole('option', { name: 'Pico Pale' })).toBeTruthy())
       await user.selectOptions(
         screen.getByLabelText('Recipe on this machine', { exact: true }),
@@ -417,7 +417,7 @@ describe('community catalogue and local recipe slots', () => {
       expect(document.querySelectorAll('.catalog-card').length).toBeGreaterThan(0)
     )
     expect(
-      (screen.getByLabelText('Catalogue type', { exact: true }) as HTMLSelectElement).value
+      (screen.getByLabelText('Catalog type', { exact: true }) as HTMLSelectElement).value
     ).toBe('maintenance')
     expect(screen.getAllByText('Cleaning program', { exact: true }).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: 'Machine guides & artwork' }))
@@ -437,7 +437,7 @@ describe('community catalogue and local recipe slots', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Close dialog' }))
     await user.click(screen.getByRole('button', { name: 'Sources & credits' }))
     const sources = await screen.findByRole('dialog', {
-      name: 'Catalogue sources & credits',
+      name: 'Catalog sources & credits',
     })
     expect(
       within(sources).getByRole('heading', { name: 'PicoPak and ZPak program archive' })

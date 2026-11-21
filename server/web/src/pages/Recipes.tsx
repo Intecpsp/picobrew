@@ -17,7 +17,6 @@ import {
   Sparkles,
   Check,
   Loader2,
-  BookOpen,
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
@@ -67,10 +66,6 @@ function RecipeLibrary() {
         description="Create once. Refine with every brew. Adapt to the machine on your bench."
         actions={
           <>
-            <Button variant="secondary" onClick={() => hub.navigate('/catalog')}>
-              <BookOpen size={16} />
-              Community catalogue
-            </Button>
             <Button variant="secondary" onClick={() => setImporting(true)}>
               <Upload size={16} />
               Import recipe

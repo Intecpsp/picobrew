@@ -114,7 +114,7 @@ function CatalogBrowse() {
           placeholder="Search community recipes and programs"
         />
         <div className="form-grid quarters">
-          <Field label="Catalogue type">
+          <Field label="Catalog type">
             <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
               <option value="">All recipes & programs</option>
               <option value="recipe">Ingredient recipes</option>
@@ -156,7 +156,7 @@ function CatalogBrowse() {
       </div>
       <ErrorBanner message={resource.error} retry={resource.reload} />
       {resource.loading ? (
-        <Loading label="Opening the community catalogue…" />
+        <Loading label="Opening the community catalog…" />
       ) : (
         page && (
           <>
@@ -472,7 +472,7 @@ function CatalogEntry({ id }: { id: string }) {
 }
 function Sources({ sources, onClose }: { sources: CatalogSource[]; onClose: () => void }) {
   return (
-    <Modal title="Catalogue sources & credits" onClose={onClose} wide>
+    <Modal title="Catalog sources & credits" onClose={onClose} wide>
       <p>
         Source records are bundled at the revisions shown here. Copying a recipe creates an
         independent library entry; it keeps the source attribution.
@@ -483,7 +483,7 @@ function Sources({ sources, onClose }: { sources: CatalogSource[]; onClose: () =
           <p>{source.notes}</p>
           <dl>
             <div>
-              <dt>Catalogue entries</dt>
+              <dt>Catalog entries</dt>
               <dd>{source.entry_count.toLocaleString()}</dd>
             </div>
             <div>
