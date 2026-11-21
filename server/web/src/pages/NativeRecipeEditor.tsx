@@ -7,7 +7,6 @@ import { api, download, errorMessage } from '../lib/api'
 import { copyProgram, kindLabel, programTiming } from '../lib/programs'
 import { dateLabel, modelLabel, slug } from '../lib/utils'
 import {
-  Badge,
   Button,
   Confirm,
   ErrorBanner,
@@ -92,7 +91,7 @@ export default function NativeRecipeEditor({
         }}
         eyebrow={`${kindLabel(recipe.kind, recipe.source_model).toUpperCase()} · ${isNew ? 'NEW COPY' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
         title={recipe.name || 'Untitled program'}
-        description="Edit this library copy, then preview a transfer to the brewer’s saved recipe catalog."
+        description="Preview a transfer to check the brewer’s firmware and available recipe slots."
         actions={
           <>
             {!isNew && (
@@ -113,7 +112,21 @@ export default function NativeRecipeEditor({
         }
       />
       <ErrorBanner message={error} />
-      <div className="editor-layout">
+      <dl className="program-overview" aria-label="Program summary">
+        <div>
+          <dt>Source machine</dt>
+          <dd>{modelLabel(recipe.source_model)}</dd>
+        </div>
+        <div>
+          <dt>Steps</dt>
+          <dd>{program.steps.length}</dd>
+        </div>
+        <div>
+          <dt>Schedule</dt>
+          <dd>{programTiming(program)}</dd>
+        </div>
+      </dl>
+      <div className={isNew ? undefined : 'editor-layout'}>
         <div className="editor-main">
           <BeerCrafter recipe={recipe} />
           <section className="panel">
@@ -200,28 +213,6 @@ export default function NativeRecipeEditor({
           </section>
         </div>
         <aside className="editor-aside">
-          <div className="recipe-summary">
-            <Badge tone="copper">{kindLabel(recipe.kind, recipe.source_model)}</Badge>
-            <h3>{recipe.name}</h3>
-            <dl>
-              <div>
-                <dt>Source model</dt>
-                <dd>{modelLabel(recipe.source_model)}</dd>
-              </div>
-              <div>
-                <dt>Steps</dt>
-                <dd>{program.steps.length}</dd>
-              </div>
-              <div>
-                <dt>Schedule</dt>
-                <dd>{programTiming(program)}</dd>
-              </div>
-            </dl>
-            <p>
-              Zero-minute heating steps retain their original meaning. The transfer preview checks
-              this brewer’s firmware and available slots.
-            </p>
-          </div>
           {!isNew && (
             <div className="editor-tools">
               <Button

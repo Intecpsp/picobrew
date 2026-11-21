@@ -382,6 +382,9 @@ hr,
   margin: 40px 11px 11px;
 }
 .sidebar nav {
+  margin-top: 20px;
+  border-top: 1px solid var(--hub-line);
+  padding-top: 14px;
   display: flex;
   flex-direction: column;
   gap: 5px;
@@ -1464,6 +1467,58 @@ hr,
   align-items: center;
   margin-bottom: 24px;
 }
+.add-recipe-menu {
+  position: relative;
+  width: fit-content;
+  summary {
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  &[open] summary svg:last-child {
+    transform: rotate(180deg);
+  }
+}
+.recipe-options {
+  position: absolute;
+  z-index: 5;
+  top: calc(100% + 4px);
+  right: 0;
+  width: max-content;
+  padding: 4px;
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-line);
+  border-radius: 8px;
+  box-shadow: 0 6px 18px #0002;
+  a,
+  button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 5px;
+    text-decoration: none;
+    color: var(--hub-ink);
+    font-size: 1rem;
+  }
+  :is(a, button):is(:hover, :focus-visible) {
+    background: var(--hub-hover);
+  }
+}
+.empty-state .recipe-options {
+  right: 50%;
+  transform: translateX(50%);
+}
+@media (max-width: 580px) {
+  .page-actions .recipe-options {
+    right: auto;
+    left: 0;
+  }
+}
 .search-box {
   display: flex;
   align-items: center;
@@ -1648,6 +1703,24 @@ hr,
 .editor-aside {
   position: sticky;
   top: 20px;
+}
+.program-overview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px 48px;
+  padding: 16px 24px;
+  margin: 0 0 24px;
+  background: var(--hub-surface);
+  border: 1px solid var(--hub-line);
+  border-radius: 10px;
+  dt {
+    color: var(--hub-muted);
+    font-size: $text-small;
+  }
+  dd {
+    margin: 3px 0 0;
+    font-weight: 600;
+  }
 }
 .recipe-summary {
   background: var(--hub-warning-bg);

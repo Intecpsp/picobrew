@@ -179,6 +179,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await expect(page.getByText('Revision 1', { exact: true })).toBeVisible()
   await page.getByRole('button', { name: 'Close dialog' }).click()
   await page.goto('/#/recipes')
+  await page.getByText('Add recipe', { exact: true }).click()
   await page.getByRole('button', { name: 'Import recipe', exact: true }).click()
   await page.getByLabel('Format', { exact: true }).selectOption('json')
   await page.getByLabel('Or paste the recipe').fill(
