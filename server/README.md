@@ -12,7 +12,7 @@ PicoStill and PicoFerm. It discovers each device's real controls, sensors,
 settings and display capabilities. C includes explicit SSD1325/SSD1309 display
 geometry and firmware package matching; Z includes its 128 × 64 grayscale
 panel. These source builds and software tests do not establish physical
-installation or brewing. Zymatic remains a planning/simulation profile. See
+installation or brewing. Stock Zymatic firmware can fetch [published recipes over the LAN](docs/stock-zymatic.md). See
 [support and feature coverage](docs/coverage.md).
 
 ## Run locally on Windows, macOS or Linux
@@ -77,7 +77,7 @@ This seeds three simulated brewers, two example recipes and three historical bre
 
 - **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
 - **Operate standalone devices.** C/S/Pro and Z expose their physical screen and dial, installed recipes and advertised maintenance programs. PicoStill exposes its actual pump, fans, temperatures, pressure and operating modes. PicoFerm exposes fermentation sessions, samples, its sampling interval and explicitly confirmed pressure calibration. The console exposes only the capabilities reported by that device.
-- **Create a recipe.** Choose a brewer, enter grain weights and hop times, and set the mash rests. Review the bin loading list and schedule before saving. The wizard uses the selected equipment profile, with Z batches sized for one module. Choose **Advanced editor** to carry the draft into the full editor for unusual schedules or detailed planning. Zymatic recipes are for planning and export.
+- **Create a recipe.** Choose a brewer, enter grain weights and hop times, and set the mash rests. Review the bin loading list and schedule before saving. The wizard uses the selected equipment profile, with Z batches sized for one module. Choose **Advanced editor** to carry the draft into the full editor for unusual schedules or detailed planning. Zymatic recipes can be published to the stock brewer’s sync menu.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
 - **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalog contents and provenance](docs/community-catalog.md).
 - **Adapt and deploy.** Save measured model defaults in Settings, preview batch and efficiency scaling for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.

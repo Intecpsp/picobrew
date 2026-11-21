@@ -21,11 +21,12 @@ type Config struct {
 	MonitorEnabled bool   `json:"monitor_enabled"`
 }
 type Request struct {
-	Mode     string `json:"mode"`
-	Prompt   string `json:"prompt"`
-	RecipeID string `json:"recipe_id,omitempty"`
-	BrewID   string `json:"brew_id,omitempty"`
-	DeviceID string `json:"device_id,omitempty"`
+	Mode      string `json:"mode"`
+	Prompt    string `json:"prompt"`
+	RecipeID  string `json:"recipe_id,omitempty"`
+	CatalogID string `json:"catalog_id,omitempty"`
+	BrewID    string `json:"brew_id,omitempty"`
+	DeviceID  string `json:"device_id,omitempty"`
 }
 type Result struct {
 	Text        string          `json:"text"`

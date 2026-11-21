@@ -32,7 +32,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await page.goto('/#/recipes/weekend-pale')
   await page.getByRole('button', { name: 'Ask the brew assistant', exact: true }).click()
   await expect(page.getByLabel('Existing recipe to build on (optional)')).toHaveValue(
-    'weekend-pale'
+    'Weekend Pale'
   )
   await expect(page.getByRole('heading', { name: 'Create a recipe with AI.' })).toBeVisible()
   await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
@@ -41,7 +41,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await page.goto('/#/assistant?recipe=studio-porter')
   await expect(page).toHaveURL(/#\/recipes\/create-with-ai\?recipe=studio-porter$/)
   await expect(page.getByLabel('Existing recipe to build on (optional)')).toHaveValue(
-    'studio-porter'
+    'Studio Porter'
   )
 })
 
@@ -318,4 +318,48 @@ test('starting with an archived PicoPak preserves every original step through tr
   } finally {
     await request.delete('/api/v1/recipes/' + id, { headers })
   }
+})
+
+test('assistant filters both recipe sources and can change a catalog selection to a library recipe', async ({
+  page,
+}) => {
+  await page.goto('/#/recipes/create-with-ai')
+  const search = page.getByRole('searchbox', { name: 'Existing recipe to build on (optional)' })
+  await search.fill('pale')
+  const results = page.locator('[aria-label="Recipe search results"]')
+  await expect(results.getByRole('button', { name: /Weekend Pale/ }).first()).toBeVisible()
+  await results
+    .getByRole('button', { name: /Pico Pale/i })
+    .first()
+    .click()
+  await expect(search).toHaveValue(/Pico Pale/i)
+  await expect(page.getByText(/^Community catalog ·/)).toBeVisible()
+  await page.getByRole('button', { name: 'Clear selection' }).click()
+  await search.fill('studio porter')
+  await results
+    .getByRole('button', { name: /Studio Porter/ })
+    .first()
+    .click()
+  await expect(page.getByText(/^My library · Studio Porter/)).toBeVisible()
+})
+
+test('preview and publish a Zymatic recipe from the real transfer dialog', async ({ page }) => {
+  await page.goto('/#/recipes/new')
+  await page.getByLabel('Recipe name').fill('Stock sync test ale')
+  await page.getByLabel('Brewer', { exact: true }).selectOption('zymatic')
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByLabel('Grain', { exact: true }).fill('Pale malt')
+  await page.getByLabel('Weight (kg)').fill('1.5')
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: /save recipe/i }).click()
+  await page.getByRole('link', { name: /^Stock sync test ale/ }).click()
+  await page.getByRole('button', { name: /adapt.*send/i }).click()
+  await page.getByLabel('Target machine').selectOption('stock-zymatic-menu')
+  const dialog = page.getByRole('dialog')
+  await dialog.getByLabel('Zymatic serial number').fill('ABC123XYZ999')
+  await dialog.getByRole('button', { name: 'Preview stock menu' }).click()
+  await expect(dialog.getByRole('cell', { name: 'Keg circulation' }).first()).toBeVisible()
+  await dialog.getByRole('button', { name: 'Publish to brewer menu' }).click()
+  await expect(dialog.getByText(/Published for ABC123XYZ999/)).toBeVisible()
 })

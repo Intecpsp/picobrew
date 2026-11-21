@@ -253,7 +253,7 @@ export function RecipeWizard({
                           {p.id === 'z'
                             ? ' · one brewing module'
                             : p.id === 'zymatic'
-                              ? ' · planning only'
+                              ? ' · stock menu sync'
                               : ''}
                         </option>
                       ))}
@@ -671,7 +671,11 @@ export function RecipeWizard({
                 <h3>{recipe.name}</h3>
                 <p>
                   {modelLabel(profile.id)} · {formatQuantity(recipe.batch_liters, 'L')}
-                  {!profile.control_supported ? ' · Planning only' : ''}
+                  {profile.id === 'zymatic'
+                    ? ' · Stock menu sync'
+                    : !profile.control_supported
+                      ? ' · Planning only'
+                      : ''}
                 </p>
                 <BeerCrafter recipe={recipe} />
                 <div className="guide-review">

@@ -64,6 +64,7 @@ type Server struct {
 	cancel                    context.CancelFunc
 	wg                        sync.WaitGroup
 	router                    http.Handler
+	stockMu                   sync.Mutex
 	recipeMu                  sync.Mutex
 	aiMu                      sync.Mutex
 	configMu                  sync.Mutex
@@ -234,6 +235,7 @@ func (s *Server) routes() http.Handler {
 	r.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		s.json(w, 200, map[string]any{"status": "ok", "version": Version})
 	})
+	r.Get("/API/*", s.stockWire)
 	r.Route("/api/v1", func(r chi.Router) {
 		r.Get("/auth/session", s.authStatus)
 		r.Post("/auth/setup", s.login)
@@ -266,6 +268,9 @@ func (s *Server) routes() http.Handler {
 			r.Post("/devices/{id}/deployments", s.planDeployment)
 			r.Get("/devices/{id}/deployments/{deployment_id}", s.getDeployment)
 			r.Post("/devices/{id}/deployments/{deployment_id}/execute", s.executeDeployment)
+			r.Get("/stock-zymatics/{machine}/recipes", s.stockMenu)
+			r.Post("/stock-zymatics/{machine}/recipes", s.stockMenu)
+			r.Delete("/stock-zymatics/{machine}/recipes/{recipe_id}", s.stockMenu)
 			r.Get("/profiles", s.profiles)
 			r.Put("/profiles/{id}", s.saveProfile)
 			r.Delete("/profiles/{id}", s.saveProfile)

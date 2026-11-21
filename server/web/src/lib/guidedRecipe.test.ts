@@ -72,7 +72,9 @@ test('Z uses its configured batch and grain limit, Zymatic keeps a planning sche
   expect(guideProblem({ ...d, grains: [{ name: 'Malt', amount: '5' }] }, z, 1)).toContain(
     'grain bill exceeds'
   )
-  expect(guidedRecipe(d, { ...z, id: 'zymatic' }).steps.every((s) => s.location === 0)).toBe(true)
+  expect(guidedRecipe(d, { ...z, id: 'zymatic' }).steps.map((s) => s.location)).toEqual(
+    recipe.steps.map((s) => s.location)
+  )
 })
 
 test('cannot finish a schedule outside the supported timing and equipment limits', () => {
@@ -198,7 +200,7 @@ test('first wort hopping adds a heat-up in the first loaded slot only for a full
   for (const id of ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']) {
     const result = guidedRecipe(guide, { ...profile, id })
     const first = result.steps.find((s) => s.name === 'Heat through hop slot 2')
-    expect(first).toMatchObject({ kind: 'heat', minutes: 0, location: id === 'zymatic' ? 0 : 4 })
+    expect(first).toMatchObject({ kind: 'heat', minutes: 0, location: 4 })
     expect(result.ingredients.filter((i) => i.use === 'first-wort').map((i) => i.name)).toEqual([
       'Centennial',
     ])

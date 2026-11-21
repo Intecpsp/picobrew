@@ -34,7 +34,9 @@ func (s *Server) calibratedProfiles() ([]domain.Profile, error) {
 			}
 			profiles[i].UserConfigured = true
 			profiles[i].Notes = "Batch size and efficiency use your calibration. Grain and hop slot weights use the lower of your measured limit and the model planning ceiling. Source links describe published starting points, not your saved values. Verify the physical compartment mapping before deployment."
-			if !profiles[i].ControlSupported {
+			if profiles[i].ID == "zymatic" {
+				profiles[i].Notes += " Use the stock Zymatic sync menu to transfer recipes."
+			} else if !profiles[i].ControlSupported {
 				profiles[i].Notes += " Planning and export only: no live control adapter is implemented for this model."
 			}
 			if profiles[i].ID == "z" {

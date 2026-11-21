@@ -13,6 +13,7 @@ import (
 	"unicode/utf8"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/catalog"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
@@ -150,6 +151,31 @@ func (s *Server) aiContext(input ai.Request) (map[string]any, error) {
 		return nil, err
 	}
 	data := map[string]any{"available_profiles": profiles}
+	if input.CatalogID != "" {
+		if input.Mode != "recipe" || input.RecipeID != "" {
+			return nil, errors.New("choose one recipe source in recipe mode")
+		}
+		archive, err := catalog.Open()
+		if err != nil {
+			return nil, err
+		}
+		item, err := archive.Detail(input.CatalogID)
+		if errors.Is(err, catalog.ErrNotFound) {
+			return nil, store.ErrNotFound
+		}
+		if err != nil {
+			return nil, err
+		}
+		data["catalog_reference"] = item.Summary
+		data["source_warnings"] = item.Warnings
+		if item.Recipe != nil {
+			data["recipe"] = item.Recipe
+		} else if item.NativeProgram != nil {
+			data["native_program"] = item.NativeProgram
+		} else {
+			data["source_notes"] = item.Notes
+		}
+	}
 	if input.RecipeID != "" {
 		var v domain.Recipe
 		if _, err := s.db.Get("recipe", input.RecipeID, &v); err != nil {
@@ -288,6 +314,10 @@ func (s *Server) aiAssist(w http.ResponseWriter, r *http.Request) {
 	}
 	if input.Mode != "recipe" && input.Mode != "live" && input.Mode != "analysis" {
 		s.fail(w, 400, "mode", "Choose recipe, live, or analysis")
+		return
+	}
+	if input.CatalogID != "" && (input.Mode != "recipe" || input.RecipeID != "") {
+		s.fail(w, 400, "recipe_source", "Choose one recipe source in recipe mode")
 		return
 	}
 	if input.Mode == "live" && (input.DeviceID == "" || input.BrewID == "") {

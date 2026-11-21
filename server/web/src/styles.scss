@@ -2140,6 +2140,27 @@ hr,
   line-height: 1.8;
   margin: 0;
 }
+.assistant-search-matches {
+  max-height: 24rem;
+  overflow-y: auto;
+  border: 1px solid var(--hub-line);
+  border-radius: 0.5rem;
+  padding: 0 0.75rem 0.75rem;
+  margin-bottom: 1rem;
+  h4 {
+    margin: 0.75rem 0 0.25rem;
+  }
+  p {
+    margin: 0.25rem 0;
+  }
+  .assistant-search-match {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    text-align: left;
+    white-space: normal;
+  }
+}
 .assistant-layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 270px;
