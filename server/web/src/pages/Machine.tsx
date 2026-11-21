@@ -75,7 +75,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const device = hub.devices.find((device) => device.id === id)
   const simulated = device?.adapter === 'simulator'
   const display = useResource<Display>(
-    device?.online && !simulated && supports(device.capabilities, 'front_panel')
+    device?.online && supports(device.capabilities, 'front_panel')
       ? `/devices/${id}/display`
       : null,
     2500
@@ -333,19 +333,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
         <section className="panel front-panel">
           <SectionHeading
             title={simulated ? 'Simulator controls' : 'Front panel'}
-            description={
-              simulated
-                ? 'This virtual brewer supports remote commands. A connected brewer shows its screen here.'
-                : undefined
-            }
             actions={live?.filter_inserted === false && <Badge tone="amber">Filter removed</Badge>}
           />
-          {!simulated && (
-            <OLED
-              display={display.data}
-              error={!device.online ? 'Machine offline' : display.error}
-            />
-          )}
+          <OLED
+            simulated={simulated}
+            display={display.data}
+            error={!device.online ? 'Machine offline' : display.error}
+          />
           <div className="dial-controls">
             <Button
               variant="secondary"

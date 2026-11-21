@@ -28,6 +28,7 @@ type simulator struct {
 	settings, telemetry map[string]any
 	brews               []*simulatedBrew
 	active              *simulatedBrew
+	panelMenu           string
 	programStarted      time.Time
 }
 
@@ -42,7 +43,7 @@ func NewSimulator(id, model string) Adapter {
 	now := time.Now()
 	s := &simulator{id: id, model: model, boot: now, recipes: make(map[string]domain.MachineRecipe), settings: map[string]any{"temperature_unit": "F", "language": "en", "detailed_status": false}, telemetry: map[string]any{"enabled": false, "host": "", "port": 8080}}
 	s.status = domain.Status{Ready: true, DeviceUID: "simulator:" + id, Command: "idle", WortF: floatValue(72), ThermoblockF: floatValue(76), TargetF: floatValue(0), FilterInserted: boolValue(true), StopReason: "none"}
-	s.status.Encoder.Max = 3
+	s.resetPanel("")
 	porter := domain.MachineRecipe{ID: "studio-porter", Name: "Studio Porter", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 152, Minutes: 60, DrainMinutes: 2}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60, DrainMinutes: 2}}}
 	pale := domain.MachineRecipe{ID: "weekend-pale", Name: "Weekend Pale", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 149, Minutes: 60}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60}}}
 	s.recipes[porter.ID] = porter
@@ -119,6 +120,7 @@ func (s *simulator) begin(recipe domain.MachineRecipe, command string, started t
 	if len(s.brews) > 8 {
 		s.brews = s.brews[:8]
 	}
+	s.resetPanel("")
 	s.active = brew
 	s.status.Busy = true
 	s.status.Command = command
@@ -126,6 +128,7 @@ func (s *simulator) begin(recipe domain.MachineRecipe, command string, started t
 	s.status.RecipeName = recipe.Name
 	s.status.StepCount = len(recipe.Steps)
 	s.status.DeviceState = 1
+	s.status.Encoder.Max = 1
 }
 func duration(recipe domain.MachineRecipe) int64 {
 	var result int64
@@ -162,6 +165,7 @@ func (s *simulator) advance(now time.Time) {
 		if s.status.Busy && !s.programStarted.IsZero() && now.Sub(s.programStarted) > 12*time.Second {
 			s.status.Busy = false
 			s.status.Command = "idle"
+			s.resetPanel("")
 			s.status.StepName = ""
 			s.programStarted = time.Time{}
 		}
@@ -201,6 +205,7 @@ func (s *simulator) advance(now time.Time) {
 		s.active = nil
 		s.status.Busy = false
 		s.status.Command = "idle"
+		s.resetPanel("")
 		s.status.TargetF = floatValue(0)
 		s.status.DeviceState = 0
 	}
@@ -228,7 +233,7 @@ func (s *simulator) Discover(ctx context.Context) (domain.Capabilities, error) {
 	if err := simulationContext(ctx); err != nil {
 		return domain.Capabilities{}, err
 	}
-	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true}, nil
+	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", FrontPanel: true, Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true}, nil
 }
 func (s *simulator) Status(ctx context.Context) (domain.Status, error) {
 	if err := simulationContext(ctx); err != nil {
@@ -311,6 +316,7 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 		s.status.Stopped = true
 		s.status.StopReason = "requested"
 		s.status.Command = "idle"
+		s.resetPanel("")
 		s.status.TargetF = floatValue(0)
 		s.status.DeviceState = 0
 		return nil
@@ -322,13 +328,7 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 		s.status.StopReason = "none"
 		return nil
 	case "encoder":
-		s.status.Encoder.Position = max(s.status.Encoder.Min, min(s.status.Encoder.Max, s.status.Encoder.Position+command.Delta))
-		if command.Click && (s.status.Command == "utilities" || s.status.Command == "settings") {
-			s.status.Busy = false
-			s.status.Command = "idle"
-			s.status.StepName = ""
-		}
-		return nil
+		return s.panelInput(command, now)
 	}
 	if s.status.Stopped {
 		return &Error{StatusCode: 409, Code: "stopped", Message: "Clear the latched stop before starting a program"}
@@ -336,6 +336,11 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 	if s.status.Busy {
 		return busyError()
 	}
+	return s.startProgram(command, now)
+}
+
+// Called under the simulator lock for REST and simulated panel selections.
+func (s *simulator) startProgram(command domain.Command, now time.Time) error {
 	switch command.Command {
 	case "brew":
 		recipe, ok := s.recipes[command.RecipeID]
@@ -358,8 +363,10 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 		s.status.StepSeconds = 0
 		s.status.TargetF = floatValue(0)
 		s.programStarted = now
+		s.resetPanel("")
 		if command.Command == "utilities" || command.Command == "settings" {
 			s.programStarted = time.Time{}
+			s.resetPanel(command.Command)
 		}
 	}
 	return nil
@@ -461,11 +468,4 @@ func (s *simulator) HistoryPage(ctx context.Context, id uint64, offset int) ([]d
 		}
 	}
 	return nil, nil, &Error{StatusCode: 409, Code: "history_changed", Message: "This simulated brew is no longer retained"}
-}
-
-func (s *simulator) Display(ctx context.Context) (domain.Display, error) {
-	if err := simulationContext(ctx); err != nil {
-		return domain.Display{}, err
-	}
-	return domain.Display{}, unsupportedCapability("an OLED framebuffer")
 }

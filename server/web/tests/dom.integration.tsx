@@ -93,13 +93,15 @@ async function simulationMutation(path: string, body: unknown = {}) {
 }
 
 describe('UI interactions against the real isolated Go simulator', () => {
-  it('loads fleet data, streams updates and exposes simulator controls without an OLED', async () => {
+  it('loads fleet data, streams updates and exposes simulator controls with an OLED', async () => {
     await open('/overview')
     await screen.findByRole('heading', { name: 'Brewery' })
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
     await screen.findByRole('heading', { name: 'Simulator controls' })
-    expect(document.querySelector('.front-panel canvas')).toBeNull()
+    expect(document.querySelector('.front-panel canvas')?.getAttribute('aria-label')).toBe(
+      'Simulated Pico OLED display'
+    )
     const down = screen.getByRole('button', { name: 'Move selection down' }) as HTMLButtonElement
     await waitFor(() => expect(down.disabled).toBe(false))
     await user.click(down)

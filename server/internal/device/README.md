@@ -122,7 +122,11 @@ connections. Its firmware version is `simulator`, device UID is prefixed with
 `simulator:`, samples use source `simulation`, and it advertises no persistent
 history or outbound telemetry forwarding. The model label is descriptive.
 
-The simulator has no OLED framebuffer. Each simulator supports stored recipes, settings, encoder input,
+The simulator exposes a 128 × 64 Pico-style framebuffer through the display API.
+The main menu uses the S/Pro logo, font and selection layout. Encoder input navigates
+the simulated recipe, utilities and units menus or switches brew pages. All virtual
+brewers share this panel. Connected hardware supplies its own model-specific pixels.
+Each simulator supports stored recipes, settings, encoder input,
 REST-started accelerated brews, maintenance completion, stop latching and
 retained history. Time runs at 60 simulated seconds per real second. History is
 volatile and has the same eight-entry / 4,224-row shared limits. The `demo-pro`

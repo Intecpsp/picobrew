@@ -2,6 +2,8 @@ package device
 
 import (
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"reflect"
 	"sync"
@@ -175,11 +177,45 @@ func TestSimulatorDisplayProgramsAndNoOutboundTelemetry(t *testing.T) {
 	ctx := context.Background()
 	s := NewSimulator("test", "z").(*simulator)
 	caps, err := s.Discover(ctx)
-	if err != nil || caps.FrontPanel || !includes(caps.Commands, "encoder") {
+	if err != nil || !caps.FrontPanel || !includes(caps.Commands, "encoder") {
 		t.Fatalf("unexpected simulator capabilities: %+v %v", caps, err)
 	}
-	if _, err := s.Display(ctx); err == nil || deviceFailure(t, err).Code != "unsupported_capability" {
-		t.Fatalf("simulator returned a display: %v", err)
+	home, err := s.Display(ctx)
+	if err != nil || validateDisplay(home) != nil {
+		t.Fatalf("invalid simulator frame: %v", err)
+	}
+	pixels, _ := hex.DecodeString(home.Data)
+	// Golden produced by pico_display_logo and pico_ui_draw_menu_items(6,4,4,0)
+	// from S/Pro modified firmware with the English labels and upright rotation.
+	if fmt.Sprintf("%x", sha256.Sum256(pixels)) != "75981269cd4b56361d69739039dcb3389c7bd136379fedba0d6a11d8c76534a5" {
+		t.Fatal("idle OLED differs from the firmware renderer")
+	}
+	if err = s.Command(ctx, domain.Command{Command: "encoder", Delta: 1}); err != nil {
+		t.Fatal(err)
+	}
+	selected, err := s.Display(ctx)
+	if err != nil || home.Data == selected.Data {
+		t.Fatal("dial did not move selection")
+	}
+	if err = s.Command(ctx, domain.Command{Command: "encoder", Delta: -1}); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.Command(ctx, domain.Command{Command: "encoder", Click: true}); err != nil {
+		t.Fatal(err)
+	}
+	recipes, err := s.Display(ctx)
+	if err != nil || recipes.Data == home.Data || recipes.Data == selected.Data {
+		t.Fatal("click did not open recipe list")
+	}
+	if err = s.Command(ctx, domain.Command{Command: "encoder", Delta: 2}); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.Command(ctx, domain.Command{Command: "encoder", Click: true}); err != nil {
+		t.Fatal(err)
+	}
+	restored, _ := s.Display(ctx)
+	if restored.Data != home.Data {
+		t.Fatal("Back did not restore main menu")
 	}
 	if err := s.UpdateTelemetry(ctx, map[string]any{"enabled": true, "host": "brewer.local", "port": 8080}); deviceFailure(t, err).Code != "simulator_only" {
 		t.Fatal("simulator enabled outbound network telemetry")

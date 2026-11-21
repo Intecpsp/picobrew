@@ -1,7 +1,15 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Display } from '../types'
 import { decodeDisplay } from '../lib/display'
-export default function OLED({ display, error }: { display: Display | null; error?: string }) {
+export default function OLED({
+  display,
+  error,
+  simulated = false,
+}: {
+  display: Display | null
+  error?: string
+  simulated?: boolean
+}) {
   const ref = useRef<HTMLCanvasElement>(null)
   const [invalid, setInvalid] = useState('')
   useEffect(() => {
@@ -32,11 +40,11 @@ export default function OLED({ display, error }: { display: Display | null; erro
         hidden={!live}
         width={display?.width}
         height={display?.height}
-        aria-label="Live Pico OLED display"
+        aria-label={simulated ? 'Simulated Pico OLED display' : 'Live Pico OLED display'}
       />
       {live ? (
         <span>
-          LIVE OLED · {display.width} × {display.height}
+          {simulated ? 'SIMULATED OLED' : 'LIVE OLED'} · {display.width} × {display.height}
         </span>
       ) : (
         <div className="oled-placeholder">{error || invalid || 'Waiting for the front panel…'}</div>
