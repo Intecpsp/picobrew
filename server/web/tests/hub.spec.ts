@@ -190,10 +190,8 @@ test('create, revise and import a recipe through the working editor', async ({ p
 
 test('brew journal saves notes, exposes all sensor columns and exports', async ({ page }) => {
   await page.goto('/#/history/demo-history-demo-pro')
-  await expect(page.getByRole('heading', { name: 'The complete temperature story' })).toBeVisible()
-  await expect(
-    page.getByRole('heading', { name: 'Phases, controller state & flags' })
-  ).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Session measurements' })).toBeVisible()
+  await expect(page.getByRole('slider', { name: 'Inspect recorded samples' })).toBeVisible()
   await page
     .getByLabel('Brew notes', { exact: true })
     .fill('[25:30] Browser test annotation\nRoast aroma and stable mash.')
@@ -242,7 +240,7 @@ test('settings, API explorer and contextual assistant are functional', async ({ 
   await page.goto('/#/assistant?brew=demo-history-demo-pro')
   await expect(page).toHaveURL(/#\/history\/demo-history-demo-pro\?analysis=1$/)
   await expect(page.getByRole('heading', { name: 'AI brew analysis' })).toBeVisible()
-  await expect(page.getByRole('heading', { name: 'The complete temperature story' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Session measurements' })).toBeVisible()
   await expect(page.getByRole('tablist', { name: 'Assistant task' })).toHaveCount(0)
   await expect(page.getByLabel('Brew to analyze')).toHaveCount(0)
 })
@@ -546,4 +544,38 @@ test('the breadcrumb switches machines and returns to the fleet overview', async
     await crumb.getByRole('link', { name: 'Brewery' }).click()
     await expect(cards).toHaveCount(3)
   }
+})
+
+test('journal readings and state lanes share one time cursor and note timestamp', async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/#/history/demo-history-demo-pro')
+  const chart = page.locator('.session-chart')
+  const cursor = chart.getByRole('slider', { name: 'Inspect recorded samples' })
+  await expect(cursor).toBeVisible()
+  await expect(cursor.locator('svg')).toHaveCount(1)
+  await expect(cursor.locator('[data-channel]')).toHaveCount(3)
+  await expect(cursor.locator('[data-state]')).toHaveCount(6)
+  const wort = chart.getByRole('button', { name: 'Wort', exact: true })
+  await wort.click()
+  await expect(wort).toHaveAttribute('aria-pressed', 'false')
+  await expect(cursor.locator('[data-channel="wort_f"]')).toHaveCount(0)
+  await wort.click()
+  await cursor.press('Home')
+  await expect(cursor).toHaveAttribute('aria-valuenow', '1')
+  await cursor.press('ArrowRight')
+  await expect(cursor).toHaveAttribute('aria-valuenow', '2')
+  await expect(cursor).toHaveAttribute(
+    'aria-valuetext',
+    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags 0x.+Compartment .+Device state/
+  )
+  await page.getByRole('button', { name: 'Note at 0:15', exact: true }).click()
+  await expect(page.getByLabel('Brew notes', { exact: true })).toHaveValue(/\[0:15\] $/)
+  const bounds = await cursor.boundingBox()
+  await cursor.click({ position: { x: bounds!.width * 0.7, y: 60 } })
+  await expect(cursor).not.toHaveAttribute('aria-valuenow', '2')
+  await chart.getByRole('button', { name: 'Unpin' }).click()
+  await expect(page.getByRole('button', { name: /^Note at / })).toHaveCount(0)
+  expect(await chart.evaluate((e) => e.scrollWidth <= e.clientWidth + 1)).toBe(true)
 })

@@ -431,7 +431,7 @@ for (const width of [1280, 390]) {
       }
       await page.goto('/#/history/family-device-1')
       await page.getByLabel('Recorded measurements', { exact: true }).selectOption('raw')
-      await expect(page.getByRole('img', { name: 'Recorded Native pressure in raw' })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Native pressure', exact: true })).toBeVisible()
       await page.getByRole('button', { name: 'Show raw samples' }).click()
       await expect(page.getByRole('columnheader', { name: 'Native pressure (raw)' })).toBeVisible()
       expect(errors).toEqual([])
