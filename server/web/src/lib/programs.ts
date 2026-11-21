@@ -26,6 +26,9 @@ export function routeLabel(location: number, model?: string, archived = false) {
   if (archived && (model === 'z' || model === 'zymatic'))
     return location === 6 ? 'Pause' : `Valve position ${location + 1}`
   if (location === 0) return 'Unassigned'
+  // Z local programs route to the keg, mash compartment, or one of four adjuncts.
+  if ((model === 'z' || model === 'z-series') && location >= 1 && location <= 6)
+    return location === 1 ? 'Keg circulation' : picoPakStepUses[location - 1]
   if (
     ['pico', 'pico-s', 'pico-pro', 'pico-c'].includes(model ?? '') &&
     picoPakStepUses[location - 1]

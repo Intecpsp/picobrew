@@ -13,5 +13,6 @@ test('PicoPak steps use brewing names and Z archives retain their own routing', 
   expect(routeLabel(0, 'pico')).toBe('Unassigned')
   expect(routeLabel(0, 'z', true)).toBe('Valve position 1')
   expect(routeLabel(6, 'zymatic', true)).toBe('Pause')
-  expect(routeLabel(6, 'z')).toBe('Valve position 6')
+  expect(routeLabel(1, 'z')).toBe('Keg circulation')
+  expect(routeLabel(6, 'z')).toBe('Hop addition 4')
 })
