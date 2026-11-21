@@ -1,13 +1,6 @@
+import { modelLabel } from '../lib/utils'
 import { useEffect, useState } from 'react'
-import {
-  ArrowDownToLine,
-  ArrowLeft,
-  ArrowRight,
-  Copy,
-  Library,
-  Search,
-  Wheat,
-} from 'lucide-react'
+import { ArrowDownToLine, ArrowLeft, ArrowRight, Copy, Library, Search, Wheat } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { catalogAssetURL, externalURL, kindLabel } from '../lib/programs'
@@ -30,15 +23,6 @@ import { ProgramTable } from '../components/Program'
 import { ReferenceLibrary } from '../components/ReferenceViewer'
 import './Catalog.scss'
 
-const modelNames: Record<string, string> = {
-  pico: 'Pico',
-  'pico-s': 'Pico S',
-  'pico-pro': 'Pico Pro',
-  'pico-c': 'Pico C',
-  z: 'Pico Z',
-  zymatic: 'Zymatic',
-}
-const displayModel = (value: string) => modelNames[value] || value
 const catalogQuery = () => {
   const query = location.hash.split('?')[1]
   return query ? `?${query}` : ''
@@ -118,7 +102,7 @@ function CatalogBrowse() {
             <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
               <option value="">All recipes & programs</option>
               <option value="recipe">Ingredient recipes</option>
-              <option value="native-program">Machine programs</option>
+              <option value="native-program">PicoPaks and other brew programs</option>
               <option value="maintenance">Cleaning programs</option>
             </select>
           </Field>
@@ -135,13 +119,11 @@ function CatalogBrowse() {
           <Field label="Source machine">
             <select value={model} onChange={(event) => change(setModel, event.target.value)}>
               <option value="">All machines</option>
-              {Object.entries(modelNames)
-                .filter(([key]) => key !== 'pico')
-                .map(([key, name]) => (
-                  <option key={key} value={key}>
-                    {name}
-                  </option>
-                ))}
+              {['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic'].map((key) => (
+                <option key={key} value={key}>
+                  {modelLabel(key)}
+                </option>
+              ))}
             </select>
           </Field>
           <Field label="Beer style">
@@ -165,7 +147,7 @@ function CatalogBrowse() {
                 {page.total.toLocaleString()} matching entries
               </span>
               <span className="help-text">
-                Machine programs contain brewing steps; ingredient recipes include a grain bill.
+                PicoPaks contain brewing steps. Ingredient recipes also include a grain bill.
               </span>
             </div>
             {page.items.length ? (
@@ -182,7 +164,7 @@ function CatalogBrowse() {
                       ) : (
                         <Wheat size={58} strokeWidth={1.1} />
                       )}
-                      <span>{entry.style || kindLabel(entry.kind)}</span>
+                      <span>{entry.style || kindLabel(entry.kind, entry.source_model)}</span>
                       {entry.featured && (
                         <strong className="catalog-featured">Starter program</strong>
                       )}
@@ -197,7 +179,7 @@ function CatalogBrowse() {
                               : 'copper'
                         }
                       >
-                        {kindLabel(entry.kind)}
+                        {kindLabel(entry.kind, entry.source_model)}
                       </Badge>
                       <h3>
                         <button
@@ -221,7 +203,7 @@ function CatalogBrowse() {
                       <div className="recipe-meta">
                         {entry.abv != null && <span>{formatNumber(entry.abv, 1)}% ABV</span>}
                         {entry.ibu != null && <span>{formatNumber(entry.ibu, 1)} IBU</span>}
-                        <span>{(entry.models || []).map(displayModel).join(' · ')}</span>
+                        <span>{(entry.models || []).map(modelLabel).join(' · ')}</span>
                       </div>
                       <footer>
                         <small>
@@ -331,7 +313,7 @@ function CatalogEntry({ id }: { id: string }) {
     <>
       <PageTitle
         back={() => hub.navigate(`/catalog${catalogQuery()}`)}
-        eyebrow={kindLabel(entry.kind).toUpperCase()}
+        eyebrow={kindLabel(entry.kind, entry.source_model).toUpperCase()}
         title={entry.name}
         description={
           entry.description ||
@@ -359,7 +341,7 @@ function CatalogEntry({ id }: { id: string }) {
               }
             />
             {program ? (
-              <ProgramTable program={program} />
+              <ProgramTable program={program} archiveModel={entry.source_model} />
             ) : (
               entry.recipe && (
                 <>
@@ -439,12 +421,12 @@ function CatalogEntry({ id }: { id: string }) {
             ) : (
               <Wheat size={50} />
             )}
-            <Badge tone="copper">{kindLabel(entry.kind)}</Badge>
+            <Badge tone="copper">{kindLabel(entry.kind, entry.source_model)}</Badge>
             <h3>{entry.style || entry.name}</h3>
             <dl>
               <div>
                 <dt>Source machine</dt>
-                <dd>{displayModel(entry.source_model)}</dd>
+                <dd>{modelLabel(entry.source_model)}</dd>
               </div>
               {entry.abv != null && (
                 <div>
@@ -461,7 +443,7 @@ function CatalogEntry({ id }: { id: string }) {
             </dl>
             <p>
               {entry.can_deploy
-                ? `Transfer support: ${entry.deploy_models.map(displayModel).join(', ')}. The preview checks the connected machine and its available slots.`
+                ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
                 : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}
             </p>
           </div>

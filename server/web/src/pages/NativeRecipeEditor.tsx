@@ -4,7 +4,7 @@ import type { Recipe } from '../types'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { copyProgram, kindLabel, programTiming } from '../lib/programs'
-import { dateLabel, slug } from '../lib/utils'
+import { dateLabel, modelLabel, slug } from '../lib/utils'
 import {
   Badge,
   Button,
@@ -74,7 +74,7 @@ export default function NativeRecipeEditor({
       setRecipe(saved)
       setDirty(false)
       await hub.refresh()
-      hub.notify('Machine program saved to your library.')
+      hub.notify(`${kindLabel(saved.kind, saved.source_model)} saved to your library.`)
       if (isNew) hub.navigate(`/recipes/${saved.id}`)
     } catch (error) {
       setError(errorMessage(error))
@@ -89,7 +89,7 @@ export default function NativeRecipeEditor({
           if (!dirty || window.confirm('Leave this program without saving your changes?'))
             hub.navigate('/recipes')
         }}
-        eyebrow={`${kindLabel(recipe.kind).toUpperCase()} · ${isNew ? 'NEW COPY' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
+        eyebrow={`${kindLabel(recipe.kind, recipe.source_model).toUpperCase()} · ${isNew ? 'NEW COPY' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
         title={recipe.name || 'Untitled program'}
         description="Edit this library copy, then preview a transfer to the brewer’s saved recipe catalog."
         actions={
@@ -149,7 +149,9 @@ export default function NativeRecipeEditor({
                   value={recipe.kind}
                   onChange={(event) => update({ kind: event.target.value })}
                 >
-                  <option value="native-program">Machine program</option>
+                  <option value="native-program">
+                    {kindLabel('native-program', recipe.source_model)}
+                  </option>
                   <option value="maintenance">Cleaning program</option>
                 </select>
               </Field>
@@ -157,7 +159,7 @@ export default function NativeRecipeEditor({
                 label="Source machine"
                 hint="This preserves the compartment layout of the original program."
               >
-                <input readOnly value={recipe.source_model || ''} />
+                <input readOnly value={modelLabel(recipe.source_model)} />
               </Field>
             </div>
             <Field label="Tags">
@@ -176,6 +178,8 @@ export default function NativeRecipeEditor({
           </section>
           <section className="panel">
             <ProgramFields
+              title={kindLabel(recipe.kind, recipe.source_model)}
+              archiveModel={recipe.source_model}
               program={program}
               onChange={(value) => update({ native_program: value })}
             />
@@ -194,12 +198,12 @@ export default function NativeRecipeEditor({
         </div>
         <aside className="editor-aside">
           <div className="recipe-summary">
-            <Badge tone="copper">{kindLabel(recipe.kind)}</Badge>
+            <Badge tone="copper">{kindLabel(recipe.kind, recipe.source_model)}</Badge>
             <h3>{recipe.name}</h3>
             <dl>
               <div>
                 <dt>Source model</dt>
-                <dd>{recipe.source_model}</dd>
+                <dd>{modelLabel(recipe.source_model)}</dd>
               </div>
               <div>
                 <dt>Steps</dt>

@@ -18,7 +18,7 @@ import {
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
-import { dateLabel, newRecipe, slug } from '../lib/utils'
+import { dateLabel, modelLabel, newRecipe, slug } from '../lib/utils'
 import { isNative, kindLabel, programTiming } from '../lib/programs'
 import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
 import NativeRecipeEditor from './NativeRecipeEditor'
@@ -47,6 +47,7 @@ function RecipeLibrary() {
   const [selected, setSelected] = useState<string[]>([])
   const [shopping, setShopping] = useState(false)
   const [transfer, setTransfer] = useState(false)
+  const emptyLibrary = hub.recipes.length === 0
   const shoppingIDs = selected.filter((id) =>
     hub.recipes.some((recipe) => recipe.id === id && !isNative(recipe))
   )
@@ -65,10 +66,12 @@ function RecipeLibrary() {
               <Upload size={16} />
               Import recipe
             </Button>
-            <Button onClick={() => hub.navigate('/recipes/new')}>
-              <Plus size={16} />
-              Create recipe
-            </Button>
+            {!emptyLibrary && (
+              <Button onClick={() => hub.navigate('/recipes/new')}>
+                <Plus size={16} />
+                Create recipe
+              </Button>
+            )}
           </>
         }
       />
@@ -118,8 +121,13 @@ function RecipeLibrary() {
                     <strong>{recipe.name}</strong>
                     <small>
                       {native
-                        ? [kindLabel(recipe.kind), recipe.source_model].filter(Boolean).join(' · ')
-                        : recipe.style || kindLabel(recipe.kind)}
+                        ? [
+                            kindLabel(recipe.kind, recipe.source_model),
+                            recipe.source_model && modelLabel(recipe.source_model),
+                          ]
+                            .filter(Boolean)
+                            .join(' · ')
+                        : recipe.style || kindLabel(recipe.kind, recipe.source_model)}
                     </small>
                   </span>
                   <span className="library-fact">
@@ -140,14 +148,16 @@ function RecipeLibrary() {
         <div className="panel">
           <Empty
             icon={<Wheat size={28} />}
-            title={query ? 'No recipes match that search.' : 'Great brews start with an idea.'}
+            title={
+              emptyLibrary ? 'Great brews start with an idea.' : 'No recipes match that search.'
+            }
             description={
-              query
-                ? 'Try a different name or style.'
-                : 'Create your first recipe, import BeerXML, or ask the brew assistant for a starting point.'
+              emptyLibrary
+                ? 'Create your first recipe, import BeerXML, or ask the brew assistant for a starting point.'
+                : 'Try a different name or style.'
             }
             action={
-              !query && (
+              emptyLibrary && (
                 <Button onClick={() => hub.navigate('/recipes/new')}>
                   Create a recipe
                   <Plus size={16} />

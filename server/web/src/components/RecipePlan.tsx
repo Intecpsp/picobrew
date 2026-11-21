@@ -1,3 +1,4 @@
+import { picoPakStepUses } from '../lib/programs'
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { Ingredient, RecipeStep, Unit } from '../types'
@@ -315,6 +316,12 @@ export function RecipeSchedule({
         title="Brew schedule"
         description="The brewer runs these steps in order. For a timed hop addition, include its step here."
       />
+      {steps.length > 0 && (
+        <p className="help-text">
+          Choose one valve position per step. The names show how PicoPak starter recipes use each
+          position. Check the routing for your brewer before transfer.
+        </p>
+      )}
       {steps.map((s, i) => (
         <div className="plan-row" key={i}>
           <div className="plan-fields">
@@ -353,17 +360,19 @@ export function RecipeSchedule({
                 ))}
               </select>
             </Field>
-            <Field label="Compartment">
+            <Field label="Valve position">
               <select
                 value={s.location}
                 onChange={(e) => patch(i, { location: Number(e.target.value) })}
               >
                 <option value="0">Choose before transfer</option>
-                {[1, 2, 3, 4, 5, 6].map((n) => (
-                  <option key={n} value={n}>
-                    {n}
-                  </option>
-                ))}
+                <optgroup label="PicoPak starter recipe routing">
+                  {picoPakStepUses.map((use, index) => (
+                    <option key={use} value={index + 1}>
+                      {use} · position {index + 1}
+                    </option>
+                  ))}
+                </optgroup>
               </select>
             </Field>
             <Field label="Drain after step (min)">

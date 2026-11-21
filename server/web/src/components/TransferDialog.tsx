@@ -68,7 +68,9 @@ export function TransferDialog({
     !target.status.busy &&
     !target.status.stopped
   const visible = recipes.filter((recipe) =>
-    `${recipe.name} ${kindLabel(recipe.kind)}`.toLowerCase().includes(query.toLowerCase())
+    `${recipe.name} ${kindLabel(recipe.kind, recipe.source_model)}`
+      .toLowerCase()
+      .includes(query.toLowerCase())
   )
   const chosen = recipes.filter((recipe) => selection.includes(recipe.id))
   const lastReceipt = savedReceipt(deviceID)
@@ -298,7 +300,7 @@ export function TransferDialog({
                     <span>
                       <strong>{recipe.name}</strong>
                       <small>
-                        {kindLabel(recipe.kind)} · revision {recipe.revision}
+                        {kindLabel(recipe.kind, recipe.source_model)} · revision {recipe.revision}
                         {isNative(recipe) ? ' · exact schedule' : ''}
                       </small>
                     </span>

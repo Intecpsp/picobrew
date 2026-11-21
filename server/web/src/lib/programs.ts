@@ -3,12 +3,29 @@ import type { MachineRecipe, Recipe } from '../types'
 export function isNative(recipe: Recipe) {
   return recipe.kind === 'native-program' || recipe.kind === 'maintenance'
 }
-export function kindLabel(kind?: string) {
-  return kind === 'native-program'
-    ? 'Machine program'
-    : kind === 'maintenance'
-      ? 'Cleaning program'
-      : 'Ingredient recipe'
+export function kindLabel(kind?: string, sourceModel?: string) {
+  if (kind === 'maintenance') return 'Cleaning program'
+  if (kind !== 'native-program') return 'Ingredient recipe'
+  if (['pico', 'pico-s', 'pico-pro', 'pico-c'].includes(sourceModel || '')) return 'PicoPak'
+  if (sourceModel === 'z') return 'ZPak'
+  if (sourceModel === 'zymatic') return 'Zymatic program'
+  return 'Brew program'
+}
+// Typical uses in the bundled PicoPak starter schedules, not physical valve names.
+export const picoPakStepUses = [
+  'Heat water',
+  'Mash',
+  'Hop addition 1',
+  'Hop addition 2',
+  'Hop addition 3',
+  'Hop addition 4',
+]
+
+// Archived Z/Zymatic schedules encode valves from zero and reserve 6 for a pause.
+export function routeLabel(location: number, archiveModel?: string) {
+  if (archiveModel === 'z' || archiveModel === 'zymatic')
+    return location === 6 ? 'Pause' : `Valve position ${location + 1}`
+  return location === 0 ? 'Unassigned' : `Valve position ${location}`
 }
 export function programTiming(program: MachineRecipe) {
   const minutes = program.steps.reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)

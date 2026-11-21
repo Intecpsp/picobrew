@@ -316,7 +316,7 @@ describe('community catalog and local recipe slots', () => {
         'Exact original program retained.'
       )
       await user.click(screen.getByRole('button', { name: 'Save program' }))
-      await screen.findByText('Machine program saved to your library.')
+      await screen.findByText('PicoPak saved to your library.')
       const saved = await (await originalFetch(origin + `/api/v1/recipes/${recipeID}`)).json()
       expect(saved.native_program).toEqual(original.native_program)
       expect(saved.ingredients).toEqual([])
