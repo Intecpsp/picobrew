@@ -53,8 +53,54 @@
     align-items: end;
     margin-bottom: 0.75rem;
   }
-  .guide-row.hops {
-    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr)) auto;
+  .hop-slots {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 5.75rem));
+    gap: 0.5rem;
+    margin: 1rem 0;
+  }
+  .hop-slots button {
+    aspect-ratio: 1;
+    display: grid;
+    align-content: center;
+    gap: 0.15rem;
+    padding: 0;
+    border: 1px solid var(--hub-edge);
+    border-radius: 0.45rem;
+    background: var(--hub-surface);
+    color: var(--hub-ink);
+    cursor: pointer;
+  }
+  .hop-slots button[aria-pressed='true'] {
+    background: var(--hub-accent-bg);
+    box-shadow: inset 0 0 0 2px var(--hub-accent);
+  }
+  .hop-slots button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  .hop-slots strong {
+    font-size: 1.4rem;
+  }
+  .hop-slots span {
+    font-size: 0.82rem;
+  }
+  .guide-addition {
+    min-width: 0;
+    margin: 1rem 0;
+    padding: 1rem;
+    border: 1px solid var(--hub-line);
+    border-radius: 0.5rem;
+  }
+  .addition-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    margin-bottom: 0.75rem;
+  }
+  .addition-header .field {
+    margin: 0;
+    max-width: 13rem;
   }
   .guide-row .field {
     margin: 0;
@@ -86,12 +132,6 @@
     .guide-fields,
     .guide-review {
       grid-template-columns: 1fr;
-    }
-    .guide-row.hops {
-      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
-    }
-    .guide-row.hops > :first-child {
-      grid-column: 1 / -1;
     }
     .guide-progress {
       gap: 0.35rem;

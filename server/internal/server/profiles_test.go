@@ -89,7 +89,7 @@ func TestPublishedProfileDefaultsPreserveExistingCalibrationAndRecipes(t *testin
 	}
 	for _, id := range []string{"pico-s", "pico-c"} {
 		p := profiles[id]
-		if p.BatchLiters != 5 || p.Efficiency != 50 || p.MaxGrainKG != 0 || p.UserConfigured || len(p.Sources) == 0 {
+		if p.BatchLiters != 5 || p.Efficiency != 50 || p.MaxGrainKG != 2 || p.UserConfigured || len(p.Sources) == 0 {
 			t.Fatalf("incorrect published starting point for %s: %+v", id, p)
 		}
 	}
@@ -122,7 +122,7 @@ func TestPublishedProfileDefaultsPreserveExistingCalibrationAndRecipes(t *testin
 	if err := json.Unmarshal(p, &reset); err != nil {
 		t.Fatal(err)
 	}
-	if reset.Efficiency != 50 || reset.BatchLiters != 5 || reset.MaxGrainKG != 0 || reset.UserConfigured || !reflect.DeepEqual(reset.Sources, pro.Sources) {
+	if reset.Efficiency != 50 || reset.BatchLiters != 5 || reset.MaxGrainKG != 2 || reset.UserConfigured || !reflect.DeepEqual(reset.Sources, pro.Sources) {
 		t.Fatalf("reset did not restore sourced defaults: %+v", reset)
 	}
 	if persisted := readProfiles()["pico-pro"]; !reflect.DeepEqual(reset, persisted) {
@@ -131,5 +131,31 @@ func TestPublishedProfileDefaultsPreserveExistingCalibrationAndRecipes(t *testin
 	status, recipeAfter := request(t, c, "GET", h.URL+"/api/v1/recipes/"+savedRecipe.ID, csrf, nil, nil)
 	if status != 200 || !bytes.Equal(recipeBefore, recipeAfter) {
 		t.Fatalf("profile defaults changed the stored recipe: %d %s", status, recipeAfter)
+	}
+}
+
+func TestRecipeSaveUsesModelLimitsAndCombinedSlotWeight(t *testing.T) {
+	_, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	for _, id := range []string{"pico-s", "pico-pro", "pico-c", "z", "z-series", "zymatic"} {
+		t.Run(id, func(t *testing.T) {
+			r := validRecipe()
+			r.SourceModel = id
+			r.Ingredients[0].Amount = 100
+			save := func(want int) {
+				t.Helper()
+				status, body := request(t, c, "POST", h.URL+"/api/v1/recipes", csrf, r, nil)
+				if status != want {
+					t.Fatalf("save %s: %d %s", id, status, body)
+				}
+			}
+			save(400)
+			r.Ingredients[0].Amount = 1
+			hop := domain.Ingredient{Name: "Cascade", Kind: "hop", Amount: 25, Unit: "g", Use: "boil", Minutes: 15}
+			r.Ingredients = append(r.Ingredients, hop, hop)
+			save(400)
+			r.Ingredients[2].Amount = 17.5
+			save(201)
+		})
 	}
 }

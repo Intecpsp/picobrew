@@ -276,6 +276,7 @@ type Profile struct {
 	MaxSteps         int             `json:"max_steps"`
 	MaxTargetC       float64         `json:"max_target_c"`
 	MaxGrainKG       float64         `json:"max_grain_kg"`
+	MaxHopSlotG      float64         `json:"max_hop_slot_g"`
 	HopSlots         int             `json:"hop_slots"`
 	ControlSupported bool            `json:"control_supported"`
 	Notes            string          `json:"notes"`

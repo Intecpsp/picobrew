@@ -2,6 +2,7 @@ package server
 
 import (
 	"errors"
+	"fmt"
 	"math"
 	"net/http"
 
@@ -12,9 +13,10 @@ import (
 )
 
 type profileCalibration struct {
-	BatchLiters float64 `json:"batch_liters"`
-	Efficiency  float64 `json:"efficiency"`
-	MaxGrainKG  float64 `json:"max_grain_kg"`
+	MaxHopSlotG *float64 `json:"max_hop_slot_g,omitempty"`
+	BatchLiters float64  `json:"batch_liters"`
+	Efficiency  float64  `json:"efficiency"`
+	MaxGrainKG  float64  `json:"max_grain_kg"`
 }
 
 func (s *Server) calibratedProfiles() ([]domain.Profile, error) {
@@ -22,14 +24,16 @@ func (s *Server) calibratedProfiles() ([]domain.Profile, error) {
 	for i := range profiles {
 		var calibration profileCalibration
 		if _, err := s.db.Get("profile", profiles[i].ID, &calibration); err == nil {
-			profiles[i].BatchLiters = calibration.BatchLiters
+			profiles[i].BatchLiters = math.Min(calibration.BatchLiters, profiles[i].BatchLiters)
 			profiles[i].Efficiency = calibration.Efficiency
-			profiles[i].MaxGrainKG = calibration.MaxGrainKG
-			profiles[i].UserConfigured = true
-			profiles[i].Notes = "Batch size, efficiency and grain capacity use your saved planning calibration. Source links describe published starting points, not your saved values. Verify the physical compartment mapping before deployment."
-			if calibration.MaxGrainKG == 0 {
-				profiles[i].Notes += " Grain capacity remains unverified."
+			if calibration.MaxGrainKG > 0 && calibration.MaxGrainKG < profiles[i].MaxGrainKG {
+				profiles[i].MaxGrainKG = calibration.MaxGrainKG
 			}
+			if calibration.MaxHopSlotG != nil && *calibration.MaxHopSlotG > 0 && *calibration.MaxHopSlotG < profiles[i].MaxHopSlotG {
+				profiles[i].MaxHopSlotG = *calibration.MaxHopSlotG
+			}
+			profiles[i].UserConfigured = true
+			profiles[i].Notes = "Batch size and efficiency use your calibration. Grain and hop slot weights use the lower of your measured limit and the model planning ceiling. Source links describe published starting points, not your saved values. Verify the physical compartment mapping before deployment."
 			if !profiles[i].ControlSupported {
 				profiles[i].Notes += " Planning and export only: no live control adapter is implemented for this model."
 			}
@@ -98,9 +102,23 @@ func (s *Server) saveProfile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	valid := func(v float64) bool { return !math.IsNaN(v) && !math.IsInf(v, 0) }
-	if !valid(in.BatchLiters) || in.BatchLiters <= 0 || in.BatchLiters > 50 || !valid(in.Efficiency) || in.Efficiency <= 0 || in.Efficiency > 100 || !valid(in.MaxGrainKG) || in.MaxGrainKG < 0 || in.MaxGrainKG > 25 {
-		s.fail(w, 422, "calibration", "Use a batch volume above 0 and at most 50 L, efficiency above 0 and at most 100%, and grain capacity from 0 to 25 kg (0 means unverified)")
+	if !valid(in.BatchLiters) || in.BatchLiters <= 0 || in.BatchLiters > base.BatchLiters || !valid(in.Efficiency) || in.Efficiency <= 0 || in.Efficiency > 100 || !valid(in.MaxGrainKG) || in.MaxGrainKG < 0 || in.MaxGrainKG > base.MaxGrainKG {
+		s.fail(w, 422, "calibration", fmt.Sprintf("Use a batch volume above 0 and at most %.6g L, efficiency above 0 and at most 100%%, and a grain limit at or below %.3f kg (0 uses the model default).", base.BatchLiters, base.MaxGrainKG))
 		return
+	}
+	if in.MaxHopSlotG != nil && (!valid(*in.MaxHopSlotG) || *in.MaxHopSlotG < 0 || *in.MaxHopSlotG > base.MaxHopSlotG) {
+		s.fail(w, 422, "calibration", fmt.Sprintf("Use a hop slot limit between 0 and %.3g g.", base.MaxHopSlotG))
+		return
+	}
+	// Older clients omit this field when saving the other calibration values.
+	if in.MaxHopSlotG == nil {
+		var current profileCalibration
+		if _, err := s.db.Get("profile", id, &current); err == nil {
+			in.MaxHopSlotG = current.MaxHopSlotG
+		} else if !errors.Is(err, store.ErrNotFound) {
+			s.internal(w, err)
+			return
+		}
 	}
 	if _, err := s.db.Put("profile", id, in, -1); err != nil {
 		s.internal(w, err)

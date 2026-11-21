@@ -29,12 +29,29 @@ func (s *Server) getRecipe(w http.ResponseWriter, r *http.Request) {
 	}
 	s.json(w, 200, v)
 }
+func (s *Server) validateLibraryRecipe(v domain.Recipe) error {
+	if err := recipe.Validate(v); err != nil {
+		return err
+	}
+	if !recipe.IsNative(v) && v.SourceModel != "" {
+		profiles, err := s.calibratedProfiles()
+		if err != nil {
+			return err
+		}
+		for _, profile := range profiles {
+			if profileMatchesModel(profile.ID, v.SourceModel) {
+				return recipe.ValidateCapacity(v, profile)
+			}
+		}
+	}
+	return nil
+}
 func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) {
 	var v domain.Recipe
 	if !s.decode(w, r, &v) {
 		return
 	}
-	if e := recipe.Validate(v); e != nil {
+	if e := s.validateLibraryRecipe(v); e != nil {
 		s.fail(w, 400, "invalid_recipe", e.Error())
 		return
 	}
@@ -226,7 +243,7 @@ func (s *Server) importRecipes(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	for _, v := range items {
-		if e = recipe.Validate(v); e != nil {
+		if e = s.validateLibraryRecipe(v); e != nil {
 			s.fail(w, 400, "invalid_recipe", e.Error())
 			return
 		}
