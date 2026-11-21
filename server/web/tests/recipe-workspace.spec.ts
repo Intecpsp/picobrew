@@ -213,3 +213,109 @@ test('mobile Pico wizard carries ingredients and generated steps into advanced e
   await expect(page.getByLabel('2. Step name', { exact: true })).toHaveValue('Dough in')
   await expect(page.getByLabel('Flow path', { exact: true }).nth(1)).toHaveValue('2')
 })
+
+test('four loaded slots support eight distinct visits through save and adaptation', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/#/recipes/new')
+  await page.getByLabel('Brewer', { exact: true }).selectOption('pico-s')
+  const name = 'Eight visits pale ale'
+  await page.getByLabel('Recipe name').fill(name)
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByLabel('Grain', { exact: true }).fill('Pale malt')
+  await page.getByLabel('Weight (kg)').fill('1.2')
+  const countdowns = [
+    [60, 12],
+    [52, 29],
+    [45, 5],
+    [38, 20],
+  ]
+  for (const [i, [first, again]] of countdowns.entries()) {
+    await page.getByRole('button', { name: 'Hop slot ' + (i + 1), exact: true }).click()
+    await page.getByLabel('Minutes before boil ends', { exact: true }).selectOption(String(first))
+    await page.getByLabel('Hop variety').fill(['Cascade', 'Citra', 'Mosaic', 'Amarillo'][i])
+    await page.getByLabel('Weight (g)').fill('8')
+    await page.getByRole('button', { name: 'Add return visit' }).click()
+    const repeat = page.getByLabel('Return 1 (minutes before boil ends)')
+    await expect(repeat.locator('option[value="60"]')).toHaveCount(0)
+    await repeat.selectOption(String(again))
+  }
+  await expect(page.getByText('Boil route', { exact: true }).locator('..')).toContainText(
+    'Slot 4 (38 min) → Slot 2 (29 min) → Slot 4 (20 min) → Slot 1 (12 min) → Slot 3 (5 min)'
+  )
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Continue' }).click()
+  await page.getByRole('button', { name: 'Save recipe' }).click()
+  const id = (await page.getByRole('link', { name: new RegExp(name) }).getAttribute('href'))!
+    .split('/')
+    .at(-1)!
+  const headers = { 'X-CSRF-Token': 'demo' }
+  try {
+    const result = await request.post('/api/v1/recipes/' + id + '/adapt', {
+      headers,
+      data: { profile_id: 'pico-s', batch_liters: 5 },
+    })
+    expect(result.ok()).toBe(true)
+    const plan = await result.json()
+    expect(plan.can_deploy).toBe(true)
+    expect(plan.recipe.ingredients.filter((i: { kind: string }) => i.kind === 'hop')).toHaveLength(
+      4
+    )
+    expect(
+      plan.machine_recipe.steps
+        .slice(-8)
+        .map((s: { location: number; minutes: number }) => [s.location, s.minutes])
+    ).toEqual([
+      [3, 8],
+      [4, 7],
+      [5, 7],
+      [6, 9],
+      [4, 9],
+      [6, 8],
+      [3, 7],
+      [5, 5],
+    ])
+  } finally {
+    await request.delete('/api/v1/recipes/' + id, { headers })
+  }
+})
+
+test('starting with an archived PicoPak preserves every original step through transfer preview', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/#/recipes/new')
+  await page.getByRole('button', { name: 'Start from an original PicoPak' }).click()
+  await expect(page).toHaveURL(/catalog\?[^#]*source=picopak-library/)
+  const path = '/api/v1/catalog/picopak-1557'
+  const original = await (await request.get(path + '/source?record=1557')).json()
+  const headers = { 'X-CSRF-Token': 'demo' }
+  const copy = await request.post(path + '/copy', { headers, data: {} })
+  expect(copy.ok()).toBe(true)
+  const { id } = await copy.json()
+  try {
+    for (const profile_id of ['pico-c', 'pico-s', 'pico-pro']) {
+      const result = await request.post('/api/v1/recipes/' + id + '/adapt', {
+        headers,
+        data: { profile_id },
+      })
+      expect(result.ok()).toBe(true)
+      const plan = await result.json()
+      expect(plan.can_deploy).toBe(true)
+      expect(plan.machine_recipe.steps).toEqual(
+        original.Steps.map(
+          (s: { Name: string; Location: number; Temp: number; Time: number; Drain: number }) => ({
+            name: s.Name,
+            location: s.Location,
+            target_f: s.Temp,
+            minutes: s.Time,
+            drain_minutes: s.Drain,
+          })
+        )
+      )
+    }
+  } finally {
+    await request.delete('/api/v1/recipes/' + id, { headers })
+  }
+})

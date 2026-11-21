@@ -7,6 +7,8 @@ import {
   totalWeight,
   hopLimit,
   slotTimes,
+  hopRoute,
+  usesPicoPakRouting,
   type HopAddition,
   guidedRecipe,
   guideProblem,
@@ -143,7 +145,7 @@ export function RecipeWizard({
   const times = selectedSlot === null ? [] : slotTimes(draft.hops, selectedSlot, Number(draft.boil))
   const savedSlot = draft.hops.find((h) => h.slot === selectedSlot)
   const preferredMinutes = [Number(draft.boil), 30, 15, 5]
-  const current =
+  const current: HopAddition | undefined =
     savedSlot ??
     (selectedSlot !== null && times.length
       ? {
@@ -152,6 +154,12 @@ export function RecipeWizard({
           varieties: [{ name: '', amount: '' }],
         }
       : undefined)
+  const returns = current?.returns ?? []
+  const nextReturn = savedSlot
+    ? slotTimes(draft.hops, savedSlot.slot, Number(draft.boil), returns.length + 1)[0]
+    : undefined
+  const stepLimit = Math.min(15, profile?.max_steps || 15)
+  const route = hopRoute(draft.hops)
   const slotLimit = profile?.max_hop_slot_g || 0
   const overweightSlot = draft.hops.find(
     (h) => slotLimit > 0 && totalWeight(h.varieties) > slotLimit + 1e-9
@@ -263,6 +271,23 @@ export function RecipeWizard({
                     />
                   </Field>
                 </div>
+                {usesPicoPakRouting(profile.id) && (
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      if (
+                        !entered.current ||
+                        window.confirm('Leave this draft and browse original PicoPaks?')
+                      )
+                        hub.navigate(
+                          '/catalog?source=picopak-library&kind=native-program&model=' +
+                            encodeURIComponent(profile.id)
+                        )
+                    }}
+                  >
+                    Start from an original PicoPak
+                  </Button>
+                )}
               </>
             )}
             {stage === 1 && (
@@ -321,7 +346,8 @@ export function RecipeWizard({
                 <div className="guide-group">
                   <h3>Boil and hops</h3>
                   <p className="help-text">
-                    Fill slots in boil order, longest first. Hops in the same slot start together.
+                    Load each slot once. Set when wort flows directly into it, including any return
+                    visits.
                   </p>
                   <Field label="Boil time (min)">
                     <input
@@ -383,6 +409,64 @@ export function RecipeWizard({
                           Clear slot
                         </Button>
                       </div>
+                      {returns.map((minutes, index) => {
+                        const choices = slotTimes(
+                          draft.hops,
+                          current.slot,
+                          Number(draft.boil),
+                          index + 1
+                        )
+                        return (
+                          <div key={index} className="addition-header">
+                            <Field label={`Return ${index + 1} (minutes before boil ends)`}>
+                              <select
+                                value={minutes}
+                                onChange={(e) =>
+                                  updateAddition({
+                                    returns: returns.map((value, i) =>
+                                      i === index ? e.target.value : value
+                                    ),
+                                  })
+                                }
+                              >
+                                {!choices.includes(Number(minutes)) && (
+                                  <option value={minutes} disabled>
+                                    Choose a valid time
+                                  </option>
+                                )}
+                                {choices.map((t) => (
+                                  <option key={t} value={t}>
+                                    {t}
+                                  </option>
+                                ))}
+                              </select>
+                            </Field>
+                            <IconButton
+                              label={`Remove return ${index + 1}`}
+                              onClick={() =>
+                                updateAddition({ returns: returns.filter((_, i) => i !== index) })
+                              }
+                            >
+                              <Trash2 size={16} />
+                            </IconButton>
+                          </div>
+                        )
+                      })}
+                      {savedSlot && (
+                        <Button
+                          variant="ghost"
+                          disabled={nextReturn === undefined || recipe.steps.length >= stepLimit}
+                          onClick={() =>
+                            updateAddition({ returns: [...returns, String(nextReturn)] })
+                          }
+                        >
+                          <Plus size={16} />
+                          Add return visit
+                        </Button>
+                      )}
+                      {savedSlot && recipe.steps.length >= stepLimit && (
+                        <p className="help-text">All {stepLimit} program steps are in use.</p>
+                      )}
                       {current.varieties.map((v, j) => (
                         <div key={j} className="guide-row">
                           <IngredientFields
@@ -438,6 +522,14 @@ export function RecipeWizard({
                         {formatQuantity(totalWeight(current.varieties), 'g')} of {slotLimit} g
                       </span>
                     </fieldset>
+                  )}
+                  {route.length > 1 && (
+                    <p>
+                      <strong>Boil route</strong> ·{' '}
+                      {route
+                        .map((visit) => `Slot ${visit.slot} (${visit.minutes} min)`)
+                        .join(' → ')}
+                    </p>
                   )}
                   {overweightSlot && (
                     <p className="notice" role="alert">

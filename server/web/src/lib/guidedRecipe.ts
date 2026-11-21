@@ -2,7 +2,7 @@ import type { Profile, Recipe, RecipeStep } from '../types'
 import { newRecipe } from './utils'
 
 export type Grain = { name: string; amount: string }
-export type HopAddition = { slot: number; minutes: string; varieties: Grain[] }
+export type HopAddition = { slot: number; minutes: string; returns?: string[]; varieties: Grain[] }
 export type MashRest = { name?: string; celsius: number; minutes: string }
 export type GuidedDraft = {
   name: string
@@ -52,9 +52,7 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
   const hops = draft.hops
     .flatMap((addition) => addition.varieties.map((v) => ({ ...v, minutes: addition.minutes })))
     .filter((h) => h.name || h.amount)
-  const scheduled = draft.hops
-    .filter((a) => a.varieties.some((v) => v.name || v.amount))
-    .sort((a, b) => Number(b.minutes) - Number(a.minutes))
+  const scheduled = hopRoute(draft.hops.filter((h) => h.varieties.some((v) => v.name || v.amount)))
   const z = profile.id === 'z'
   const largeBrewer = z || profile.id === 'zymatic'
   const rests = mashSchedule(draft, profile)
@@ -135,16 +133,38 @@ export function hopLimit(profile: Profile) {
   return Math.min(profile.hop_slots || 4, 4)
 }
 
-// Only offer times strictly between the neighboring occupied physical slots.
-export function slotTimes(hops: HopAddition[], slot: number, boil: number) {
-  const earlier = hops.filter((h) => h.slot < slot).map((h) => Number(h.minutes))
-  const later = hops.filter((h) => h.slot > slot).map((h) => Number(h.minutes))
-  const last = Math.max(0, ...later) + 1
-  const first = Math.min(
-    Number.isInteger(boil) && boil <= 599 ? boil : 0,
-    ...earlier.map((t) => t - 1)
+export function usesPicoPakRouting(profileID: string) {
+  return ['pico-s', 'pico-pro', 'pico-c'].includes(profileID)
+}
+
+function visitStarts(hop: HopAddition) {
+  return [hop.minutes, ...(hop.returns ?? [])]
+}
+
+export function hopRoute(hops: HopAddition[]) {
+  return hops
+    .flatMap((h) => visitStarts(h).map((minutes) => ({ slot: h.slot, minutes: Number(minutes) })))
+    .sort((a, b) => b.minutes - a.minutes)
+}
+
+// Times count down to boil end. Only successive visits to the same slot have
+// a local ordering constraint. Every slot shares the single direct inlet.
+export function slotTimes(hops: HopAddition[], slot: number, boil: number, visitIndex = 0) {
+  if (!Number.isInteger(boil) || boil < 1 || boil > 599) return []
+  const used = new Set<number>()
+  let upper = boil,
+    lower = 1
+  for (const hop of hops) {
+    visitStarts(hop).forEach((minutes, index) => {
+      const time = Number(minutes)
+      if (hop.slot !== slot) used.add(time)
+      else if (index < visitIndex) upper = Math.min(upper, time - 1)
+      else if (index > visitIndex) lower = Math.max(lower, time + 1)
+    })
+  }
+  return Array.from({ length: Math.max(0, upper - lower + 1) }, (_, i) => upper - i).filter(
+    (time) => !used.has(time)
   )
-  return Array.from({ length: Math.max(0, first - last + 1) }, (_, i) => first - i)
 }
 
 export function totalWeight(grains: Grain[]) {
@@ -169,7 +189,7 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
   if (!Number.isInteger(boil) || boil < 1 || boil > 599)
     return 'Use a boil time between 1 and 599 whole minutes.'
   const slots = hopLimit(profile)
-  if (draft.hops.length > slots) return `This brewer has room for ${slots} timed hop additions.`
+  if (draft.hops.length > slots) return `This brewer has room for ${slots} hop slots.`
   if (
     draft.hops.some((h) => !Number.isInteger(h.slot) || h.slot < 1 || h.slot > slots) ||
     new Set(draft.hops.map((h) => h.slot)).size !== draft.hops.length
@@ -183,10 +203,15 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
       hop.varieties.some((v) => !v.name.trim() || !(Number(v.amount) > 0))
     )
       return 'Enter a variety and weight for each hop.'
-    const time = Number(hop.minutes)
-    if (!slotTimes(draft.hops, hop.slot, boil).includes(time))
-      return 'Choose a whole minute within the boil for each hop addition. Earlier slots must start first.'
+    if (
+      visitStarts(hop).some(
+        (time, index) => !slotTimes(draft.hops, hop.slot, boil, index).includes(Number(time))
+      )
+    )
+      return 'Choose a separate available minute within the boil for each visit.'
   }
+  if (recipe.steps.length > Math.min(15, profile.max_steps || 15))
+    return 'The schedule exceeds this brewer’s step limit. Remove a return visit or a mash rest.'
   if (stage === 1) return ''
   if (
     mashSchedule(draft, profile).some(
@@ -202,7 +227,5 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
     return 'Check the mash temperature and use a hold between 1 and 599 whole minutes.'
   if (recipe.steps.some((s) => s.target_c > profile.max_target_c))
     return 'This schedule exceeds the brewer’s temperature limit. Adjust the targets in the advanced editor.'
-  if (recipe.steps.length > Math.min(15, profile.max_steps || 15))
-    return 'The schedule exceeds this brewer’s step limit. Remove a mash rest or combine hop additions.'
   return ''
 }
