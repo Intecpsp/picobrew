@@ -1,3 +1,4 @@
+import { AssistantRecipeSearch, type RecipeReference } from '../components/AssistantRecipeSearch'
 import { useState } from 'react'
 import { Sparkles, ArrowRight, ArrowUpRight, Loader2, Lightbulb } from 'lucide-react'
 import { useHub, useResource } from '../context'
@@ -48,7 +49,14 @@ export function AIWorkbench({
 }) {
   const hub = useHub()
   const [prompt, setPrompt] = useState('')
-  const [recipeID, setRecipeID] = useState(initialRecipeID)
+  const [picked, setPicked] = useState<RecipeReference | null | undefined>(undefined)
+  const initial = hub.recipes.find((r) => r.id === initialRecipeID)
+  const selected =
+    picked === undefined
+      ? initial
+        ? { source: 'library' as const, id: initial.id, name: initial.name }
+        : null
+      : picked
   const [busy, setBusy] = useState(false)
   const [result, setResult] = useState<AIResult | null>(null)
   const [error, setError] = useState('')
@@ -81,7 +89,11 @@ export function AIWorkbench({
           body: {
             mode,
             prompt,
-            ...(mode === 'recipe' && recipeID ? { recipe_id: recipeID } : {}),
+            ...(mode === 'recipe' && selected
+              ? selected.source === 'library'
+                ? { recipe_id: selected.id }
+                : { catalog_id: selected.id }
+              : {}),
             ...(mode === 'live' ? { device_id: deviceID } : {}),
             ...(mode !== 'recipe' && brewID ? { brew_id: brewID } : {}),
           },
@@ -157,16 +169,7 @@ export function AIWorkbench({
               title={mode === 'recipe' ? 'Shape your recipe' : 'Ask about this session'}
             />
             {mode === 'recipe' && (
-              <Field label="Existing recipe to build on (optional)">
-                <select value={recipeID} onChange={(event) => setRecipeID(event.target.value)}>
-                  <option value="">No recipe selected</option>
-                  {hub.recipes.map((recipe) => (
-                    <option key={recipe.id} value={recipe.id}>
-                      {recipe.name}
-                    </option>
-                  ))}
-                </select>
-              </Field>
+              <AssistantRecipeSearch recipes={hub.recipes} selected={selected} choose={setPicked} />
             )}
             <Field label="What would you like to explore?">
               <textarea

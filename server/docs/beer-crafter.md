@@ -20,4 +20,4 @@ Gravity uses fermentable extract potential (46 gravity points per pound per US g
 
 The forecast starts at 55 °F and uses Crafter’s approximate 4.96 °C/min heating and 0.585 °C/min cooling rates unless the recipe specifies a ramp. Pauses have unknown wall-clock duration. Unheated stretches have unknown temperature. The live brew journal uses measured temperatures. Starting-water estimates use the brewer’s own measured losses.
 
-Pico S, Pro and C use their PicoPak routing. Generic Z uses its canonical direct-valve schedule. Zymatic supports planning and export. PicoStill and PicoFerm retain their distillation and fermentation controls. Hosted account publishing and KegSmarts fermentation control are outside the local Hub’s supported integrations.
+Pico S, Pro and C use their PicoPak routing. Generic Z uses its canonical direct-valve schedule. Zymatic supports planning, export and [stock recipe sync](stock-zymatic.md). PicoStill and PicoFerm retain their distillation and fermentation controls. Hosted account publishing and KegSmarts fermentation control are outside the local Hub’s supported integrations.

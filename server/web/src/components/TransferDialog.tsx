@@ -1,3 +1,4 @@
+import { StockZymaticTransfer, stockTarget } from './StockZymaticTransfer'
 import { useState } from 'react'
 import { ArrowRight, Check, RefreshCw, Send } from 'lucide-react'
 import { useHub } from '../context'
@@ -155,6 +156,15 @@ export function TransferDialog({
       setBusy('')
     }
   }
+  if (deviceID === stockTarget)
+    return (
+      <StockZymaticTransfer
+        recipes={recipes}
+        initialSelection={selection}
+        back={() => setDeviceID('')}
+        close={onClose}
+      />
+    )
   return (
     <Modal
       title={
@@ -223,6 +233,7 @@ export function TransferDialog({
               onChange={(event) => setDeviceID(event.target.value)}
             >
               <option value="">Choose a machine</option>
+              <option value={stockTarget}>Stock Zymatic · sync menu</option>
               {hub.devices
                 .filter((device) => supports(device.capabilities, 'recipes'))
                 .map((device) => (

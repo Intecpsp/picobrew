@@ -303,8 +303,8 @@ describe('contextual AI workflow', () => {
     await screen.findByText('openai · test-model')
     expect(screen.queryByRole('tablist', { name: 'Assistant task' })).toBeNull()
     expect(
-      (screen.getByLabelText('Existing recipe to build on (optional)') as HTMLSelectElement).value
-    ).toBe('porter')
+      (screen.getByLabelText('Existing recipe to build on (optional)') as HTMLInputElement).value
+    ).toBe('Library porter')
     await user.type(
       screen.getByLabelText('What would you like to explore?'),
       'Make a citrus variation'

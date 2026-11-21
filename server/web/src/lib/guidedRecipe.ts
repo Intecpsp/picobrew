@@ -91,7 +91,7 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
       kind,
       target_c,
       minutes,
-      location: profile.id === 'zymatic' || location > 6 ? 0 : location,
+      location: location > 6 ? 0 : location,
       drain_minutes,
     })
   }

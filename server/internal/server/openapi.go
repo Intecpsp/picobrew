@@ -20,6 +20,9 @@ type endpoint struct {
 }
 
 var endpoints = []endpoint{
+	{"GET", "/stock-zymatics/{machine}/recipes", "Read stock Zymatic sync menu and last request", nil},
+	{"POST", "/stock-zymatics/{machine}/recipes", "Preview or publish saved recipe revisions to one stock Zymatic menu", map[string]any{"recipes": []map[string]any{{"recipe_id": "saved-recipe", "revision": 1}}, "publish": false}},
+	{"DELETE", "/stock-zymatics/{machine}/recipes/{recipe_id}", "Remove a recipe from a stock Zymatic sync menu", nil},
 	{"GET", "/telemetry/receiver", "Prove that an inferred receiver reaches this Hub instance", nil},
 	{"GET", "/auth/session", "Read owner session and CSRF token", nil}, {"POST", "/auth/setup", "Create the first owner account", map[string]any{"token": "server-printed-setup-token", "password": "a-long-private-password"}}, {"POST", "/auth/login", "Sign in", map[string]any{"password": "your-password"}}, {"POST", "/auth/logout", "Sign out", map[string]any{}},
 	{"GET", "/devices", "List fleet status", nil}, {"POST", "/devices", "Register a machine", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "api_key": "64-hex-character-device-key", "location": "Brew room"}},

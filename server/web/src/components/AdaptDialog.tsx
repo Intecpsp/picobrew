@@ -1,3 +1,4 @@
+import { StockZymaticTransfer, stockTarget } from './StockZymaticTransfer'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Send } from 'lucide-react'
 import { useHub } from '../context'
@@ -163,6 +164,15 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     }
   }
 
+  if (deviceID === stockTarget)
+    return (
+      <StockZymaticTransfer
+        recipes={[recipe]}
+        initialSelection={[recipe.id]}
+        back={() => setDeviceID('')}
+        close={onClose}
+      />
+    )
   if (sent)
     return (
       <Modal
@@ -242,6 +252,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
             }}
           >
             <option value="">Planning only</option>
+            <option value={stockTarget}>Stock Zymatic · sync menu</option>
             {hub.devices.map((device) => (
               <option key={device.id} value={device.id} disabled={!device.model}>
                 {device.name}

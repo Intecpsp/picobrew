@@ -24,10 +24,25 @@ export const picoPakStepUses = [
 // Archived Z/Zymatic schedules encode valves from zero and reserve 6 for a pause.
 export function routeLabel(location: number, model?: string, archived = false) {
   if (archived && (model === 'z' || model === 'zymatic'))
-    return location === 6 ? 'Pause' : `Valve position ${location + 1}`
+    return location === 6
+      ? 'Pause'
+      : model === 'zymatic' && location >= 0 && location <= 5
+        ? [
+            'Keg circulation',
+            'Mash',
+            'Hop addition 1',
+            'Hop addition 2',
+            'Hop addition 3',
+            'Hop addition 4',
+          ][location]
+        : `Valve position ${location + 1}`
   if (location === 0) return 'Unassigned'
   // Z local programs route to the keg, mash compartment, or one of four adjuncts.
-  if ((model === 'z' || model === 'z-series') && location >= 1 && location <= 6)
+  if (
+    (model === 'z' || model === 'z-series' || model === 'zymatic') &&
+    location >= 1 &&
+    location <= 6
+  )
     return location === 1 ? 'Keg circulation' : picoPakStepUses[location - 1]
   if (
     ['pico', 'pico-s', 'pico-pro', 'pico-c'].includes(model ?? '') &&
