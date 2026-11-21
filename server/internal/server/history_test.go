@@ -21,13 +21,17 @@ import (
 )
 
 // Embedding supplies unrelated adapter operations; history tests deliberately
-// implement only the two read operations and never invoke machine commands.
+// use optional live status and the history catalog and page reads.
 type historyAdapter struct {
 	device.Adapter
+	status  domain.Status
 	catalog func(context.Context) (domain.History, error)
 	page    func(context.Context, uint64, int) ([]domain.Sample, *int, error)
 }
 
+func (a *historyAdapter) Status(context.Context) (domain.Status, error) {
+	return a.status, nil
+}
 func (a *historyAdapter) History(ctx context.Context) (domain.History, error) { return a.catalog(ctx) }
 func (a *historyAdapter) HistoryPage(ctx context.Context, id uint64, offset int) ([]domain.Sample, *int, error) {
 	return a.page(ctx, id, offset)
@@ -40,7 +44,7 @@ func historyFixture(t *testing.T, path string) (*Server, *runtimeDevice, *histor
 	}
 	t.Cleanup(func() { _ = db.Close() })
 	a := &historyAdapter{}
-	d := &runtimeDevice{view: domain.DeviceView{Device: domain.Device{ID: "machine", Name: "Brewer", Model: "pico-pro"}}, adapter: a}
+	d := &runtimeDevice{view: domain.DeviceView{Capabilities: &domain.Capabilities{}, Device: domain.Device{ID: "machine", Name: "Brewer", Model: "pico-pro"}}, adapter: a}
 	return &Server{db: db}, d, a
 }
 func historyDescription(id uint64, count int) domain.HistorySession {
@@ -545,5 +549,59 @@ func TestBackupFailureNeverPublishesPartialZIP(t *testing.T) {
 				t.Fatalf("failed archive retained: %v %v", entries, err)
 			}
 		})
+	}
+}
+
+func TestJournalNamesUseRecordingOrLinkedRevision(t *testing.T) {
+	s, d, a := historyFixture(t, ":memory:")
+	h := historyDescription(1, 1)
+	h.State = "recording"
+	a.status = domain.Status{Busy: true, RecipeName: h.RecipeName, StepCount: 3, CurrentStep: 1, StepName: "Hop stand"}
+	a.catalog = func(context.Context) (domain.History, error) {
+		return domain.History{Sessions: []domain.HistorySession{h}}, nil
+	}
+	a.page = func(context.Context, uint64, int) ([]domain.Sample, *int, error) {
+		return []domain.Sample{{ElapsedMS: 1000, CurrentStep: 1}}, nil, nil
+	}
+	if err := s.pullHistory(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	var brew domain.Brew
+	version, err := s.db.Get("brew", "machine-1", &brew)
+	if err != nil || brew.StepNames[1] != "Hop stand" {
+		t.Fatalf("recorded names %v, %v", brew.StepNames, err)
+	}
+	brew.RecipeID, brew.RecipeRevision = "ale", 1
+	if _, err = s.db.Put("brew", brew.ID, brew, version); err != nil {
+		t.Fatal(err)
+	}
+	revision := domain.Recipe{ID: "ale", Revision: 1, Steps: []domain.RecipeStep{{Name: "Mash"}, {Name: "Boil"}}}
+	if _, err = s.db.Put("recipe-revision", "ale:1", revision, 0); err != nil {
+		t.Fatal(err)
+	}
+	revision.Revision = 2
+	revision.Steps[0].Name = "Rewritten"
+	if _, err = s.db.Put("recipe", "ale", revision, 0); err != nil {
+		t.Fatal(err)
+	}
+	detail, err := s.brewDetail(brew.ID)
+	if err != nil || detail.StepNames[0] != "Mash" || detail.StepNames[1] != "Hop stand" || detail.StepNames[2] != "" {
+		t.Fatalf("journal names %v, %v", detail.StepNames, err)
+	}
+	h.ID = 2
+	calls := 0
+	a.catalog = func(context.Context) (domain.History, error) {
+		calls++
+		if calls > 1 {
+			h.State = "completed"
+		}
+		return domain.History{Sessions: []domain.HistorySession{h}}, nil
+	}
+	if err = s.pullHistory(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	detail, err = s.brewDetail("machine-2")
+	if err != nil || len(detail.StepNames) != 0 {
+		t.Fatalf("unexpected attribution %v, %v", detail.StepNames, err)
 	}
 }

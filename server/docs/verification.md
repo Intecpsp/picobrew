@@ -63,11 +63,11 @@ that Go module path. The directory move and per-machine firmware layout passed:
   build, simulator startup, health response and the static website all passed.
   Its Python suite passed with the one optional firmware comparison skipped;
   setting `CATALOG_REQUIRE_FIRMWARE=1` correctly failed for missing firmware data.
-- Catalogue preservation: the directory move retains the exact 18,546,799-byte
+- Catalog preservation: the directory move retains the exact 18,546,799-byte
   archive, SHA-256
   `81b8923c7402031862521f0ae33ff4e13c972728a6592ad68d4ab938c13c5f60`.
 
-During the preceding repository migration, a complete catalogue regeneration
+During the preceding repository migration, a complete catalog regeneration
 from the four pinned recipe/support source checkouts and the five checked-in
 icon/notice files produced that same archive byte-for-byte.
 
@@ -75,15 +75,15 @@ These checks used no historical Zymatic server checkout or implementation.
 Chromium and Docker results for the migrated revision must come from its own
 GitHub Actions run; the historical runs below do not establish those results.
 
-## Community catalogue and bulk transfers — local checks, 19 November 2026
+## Community catalog and bulk transfers — local checks, 19 November 2026
 
 - Full Go package suite with the race detector, `go vet ./...`, and production build: passed.
-- Eight Python conversion, static-asset and cross-component tests: passed. The mandatory starter check compares the firmware's eight default programs with the bundled catalogue, including IDs, names, exact steps and source hashes.
-- Catalogue integrity checks cover every copyable entry, every advertised native deployment, original source checksums, excluded malformed/empty records, local asset containment and immutable source data.
+- Eight Python conversion, static-asset and cross-component tests: passed. The mandatory starter check compares the firmware's eight default programs with the bundled catalog, including IDs, names, exact steps and source hashes.
+- Catalog integrity checks cover every copyable entry, every advertised native deployment, original source checksums, excluded malformed/empty records, local asset containment and immutable source data.
 - Transfer tests cover slot limits, preserving existing programs by default, explicitly updating matching IDs, no duplicate execution, changes to source revisions/profiles/inventory/capabilities, busy machines, uncertain writes and receipt recovery after restart.
 - Installed-slot editing tests cover idle-state checks, stale expected values, verified write outcomes and absence of automatic brew starts.
 - Frontend typecheck/build and all 22 unit tests: passed.
-- All seven DOM integration tests against an isolated Go simulator: passed. The added workflows exercise catalogue lookup, copying, exact zero-minute schedules, bulk preview/transfer, installed-slot editing, overwrite prevention, cleaning records and local artwork/source credits.
+- All seven DOM integration tests against an isolated Go simulator: passed. The added workflows exercise catalog lookup, copying, exact zero-minute schedules, bulk preview/transfer, installed-slot editing, overwrite prevention, cleaning records and local artwork/source credits.
 - Local Chromium launch was blocked before reaching the application by a denied browser socket operation. Real-browser/mobile assertions and screenshots must be verified in the published commit's GitHub Actions run.
 
 These are local implementation checks. They do not claim a new physical brewing test or a successful remote CI run; the exact published commit's checks provide that evidence.
@@ -131,7 +131,7 @@ The checked-in GitHub Actions workflow runs Go tests/builds on Linux and macOS, 
 - Owner setup/login/logout, session cookies, CSRF/Origin checks, host-based throttling and encrypted key redaction.
 - Two independent machines receiving commands concurrently, stable command receipts, repeated-key payload conflicts and unknown delivery without automatic retry.
 - Physical REST protocol fixtures for exact payloads, authentication, Content-Length, serialized requests, bounded reads, redirects, cancellation, no mutation retries, recipe readback and history framing.
-- Simulator isolation, preparation prompts, stop latch, capacity limits and history lifecycle.
+- Simulator isolation, direct REST starts, stop latch, capacity limits and history lifecycle.
 - Recipe units, adaptation/efficiency scaling, hard native bounds, unknown routing, recipe revision conflicts, BeerXML/JSON exchange and deployment without starting.
 - History pagination, retained samples after interruptions, concurrent edits preserved across imports, partial data, terminal-session caching and simulation labeling.
 - Provider request/authentication contracts, no redirect credential forwarding, bounded errors/context, opt-in monitor cadence, saved advice and invalid AI drafts kept out of the recipe library.

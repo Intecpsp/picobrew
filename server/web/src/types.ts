@@ -247,6 +247,7 @@ export interface Sample {
   source: string
 }
 export interface Brew {
+  step_names?: Record<number, string>
   sample_fields?: string[]
   sample_interval_ms?: number
   field_metadata?: Record<string, FieldMetadata>

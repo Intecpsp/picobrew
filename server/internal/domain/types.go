@@ -348,6 +348,7 @@ type HistoryPage struct {
 	FieldMetadata map[string]FieldMetadata
 }
 type Brew struct {
+	StepNames        map[int]string           `json:"step_names,omitempty"`
 	ID               string                   `json:"id"`
 	DeviceID         string                   `json:"device_id"`
 	DeviceName       string                   `json:"device_name"`

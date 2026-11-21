@@ -26,7 +26,7 @@ const firmwareRecordKind = "firmware-package"
 
 func (s *Server) firmwareError(w http.ResponseWriter, err error) {
 	if errors.Is(err, context.Canceled) {
-		s.fail(w, 499, "cancelled", "The firmware request was cancelled")
+		s.fail(w, 499, "cancelled", "The firmware request was canceled")
 		return
 	}
 	if errors.Is(err, context.DeadlineExceeded) {

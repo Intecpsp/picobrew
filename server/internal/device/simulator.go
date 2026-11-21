@@ -2,12 +2,10 @@ package device
 
 import (
 	"context"
-	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"math"
 	"sort"
-	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -30,7 +28,7 @@ type simulator struct {
 	settings, telemetry map[string]any
 	brews               []*simulatedBrew
 	active              *simulatedBrew
-	pending             *domain.MachineRecipe
+	panelMenu           string
 	programStarted      time.Time
 }
 
@@ -45,7 +43,7 @@ func NewSimulator(id, model string) Adapter {
 	now := time.Now()
 	s := &simulator{id: id, model: model, boot: now, recipes: make(map[string]domain.MachineRecipe), settings: map[string]any{"temperature_unit": "F", "language": "en", "detailed_status": false}, telemetry: map[string]any{"enabled": false, "host": "", "port": 8080}}
 	s.status = domain.Status{Ready: true, DeviceUID: "simulator:" + id, Command: "idle", WortF: floatValue(72), ThermoblockF: floatValue(76), TargetF: floatValue(0), FilterInserted: boolValue(true), StopReason: "none"}
-	s.status.Encoder.Max = 3
+	s.resetPanel("")
 	porter := domain.MachineRecipe{ID: "studio-porter", Name: "Studio Porter", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 152, Minutes: 60, DrainMinutes: 2}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60, DrainMinutes: 2}}}
 	pale := domain.MachineRecipe{ID: "weekend-pale", Name: "Weekend Pale", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 149, Minutes: 60}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60}}}
 	s.recipes[porter.ID] = porter
@@ -104,7 +102,7 @@ func cloneSamples(values []domain.Sample) []domain.Sample {
 }
 func simulationContext(ctx context.Context) error {
 	if ctx.Err() != nil {
-		return &Error{Code: "cancelled", Message: "Simulator request was cancelled"}
+		return &Error{Code: "cancelled", Message: "Simulator request was canceled"}
 	}
 	return nil
 }
@@ -122,14 +120,15 @@ func (s *simulator) begin(recipe domain.MachineRecipe, command string, started t
 	if len(s.brews) > 8 {
 		s.brews = s.brews[:8]
 	}
+	s.resetPanel("")
 	s.active = brew
-	s.pending = nil
 	s.status.Busy = true
 	s.status.Command = command
 	s.status.SessionID = fmt.Sprintf("simulation-%d", id)
 	s.status.RecipeName = recipe.Name
 	s.status.StepCount = len(recipe.Steps)
 	s.status.DeviceState = 1
+	s.status.Encoder.Max = 1
 }
 func duration(recipe domain.MachineRecipe) int64 {
 	var result int64
@@ -166,6 +165,7 @@ func (s *simulator) advance(now time.Time) {
 		if s.status.Busy && !s.programStarted.IsZero() && now.Sub(s.programStarted) > 12*time.Second {
 			s.status.Busy = false
 			s.status.Command = "idle"
+			s.resetPanel("")
 			s.status.StepName = ""
 			s.programStarted = time.Time{}
 		}
@@ -205,6 +205,7 @@ func (s *simulator) advance(now time.Time) {
 		s.active = nil
 		s.status.Busy = false
 		s.status.Command = "idle"
+		s.resetPanel("")
 		s.status.TargetF = floatValue(0)
 		s.status.DeviceState = 0
 	}
@@ -232,7 +233,7 @@ func (s *simulator) Discover(ctx context.Context) (domain.Capabilities, error) {
 	if err := simulationContext(ctx); err != nil {
 		return domain.Capabilities{}, err
 	}
-	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, FrontPanel: true, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true}, nil
+	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", FrontPanel: true, Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true}, nil
 }
 func (s *simulator) Status(ctx context.Context) (domain.Status, error) {
 	if err := simulationContext(ctx); err != nil {
@@ -311,11 +312,11 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 			s.active.meta.State = "interrupted"
 			s.active = nil
 		}
-		s.pending = nil
 		s.status.Busy = false
 		s.status.Stopped = true
 		s.status.StopReason = "requested"
 		s.status.Command = "idle"
+		s.resetPanel("")
 		s.status.TargetF = floatValue(0)
 		s.status.DeviceState = 0
 		return nil
@@ -327,23 +328,7 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 		s.status.StopReason = "none"
 		return nil
 	case "encoder":
-		s.status.Encoder.Position = max(s.status.Encoder.Min, min(s.status.Encoder.Max, s.status.Encoder.Position+command.Delta))
-		if command.Click {
-			if s.pending != nil {
-				recipe := cloneRecipe(*s.pending)
-				kind := s.status.Command
-				s.begin(recipe, kind, now)
-				s.advance(now)
-			} else if s.status.Command == "utilities" || s.status.Command == "settings" {
-				s.status.Busy = false
-				s.status.Command = "idle"
-				s.status.StepName = ""
-			} else if s.status.Busy && s.active == nil {
-				s.programStarted = now
-				s.status.StepName = "Simulated program"
-			}
-		}
-		return nil
+		return s.panelInput(command, now)
 	}
 	if s.status.Stopped {
 		return &Error{StatusCode: 409, Code: "stopped", Message: "Clear the latched stop before starting a program"}
@@ -351,28 +336,39 @@ func (s *simulator) Command(ctx context.Context, command domain.Command) error {
 	if s.status.Busy {
 		return busyError()
 	}
-	if command.Command == "brew" {
+	return s.startProgram(command, now)
+}
+
+// Called under the simulator lock for REST and simulated panel selections.
+func (s *simulator) startProgram(command domain.Command, now time.Time) error {
+	switch command.Command {
+	case "brew":
 		recipe, ok := s.recipes[command.RecipeID]
 		if !ok {
 			return &Error{StatusCode: 404, Code: "recipe_not_found", Message: "Recipe is not stored on this simulator"}
 		}
-		copy := cloneRecipe(recipe)
-		s.pending = &copy
-		s.status.RecipeName = recipe.Name
-		s.status.StepCount = len(recipe.Steps)
-	} else if command.Command == "manual" {
+		s.begin(recipe, command.Command, now)
+		s.advance(now)
+	case "manual":
 		recipe := domain.MachineRecipe{ID: "manual", Name: "Manual brew", Steps: []domain.MachineStep{{Name: "Manual", Location: 1, TargetF: 152, Minutes: 30}}}
-		s.pending = &recipe
-		s.status.RecipeName = recipe.Name
-	} else {
+		s.begin(recipe, command.Command, now)
+		s.advance(now)
+	default:
+		s.status.Busy = true
+		s.status.Command = command.Command
 		s.status.RecipeName = ""
-		s.pending = nil
+		s.status.StepName = ""
+		s.status.CurrentStep = 0
+		s.status.StepCount = 0
+		s.status.StepSeconds = 0
+		s.status.TargetF = floatValue(0)
+		s.programStarted = now
+		s.resetPanel("")
+		if command.Command == "utilities" || command.Command == "settings" {
+			s.programStarted = time.Time{}
+			s.resetPanel(command.Command)
+		}
 	}
-	s.status.Busy = true
-	s.status.Command = command.Command
-	s.status.StepName = "Press dial to begin"
-	s.status.TargetF = floatValue(0)
-	s.programStarted = time.Time{}
 	return nil
 }
 func (s *simulator) Settings(ctx context.Context) (map[string]any, error) {
@@ -472,51 +468,4 @@ func (s *simulator) HistoryPage(ctx context.Context, id uint64, offset int) ([]d
 		}
 	}
 	return nil, nil, &Error{StatusCode: 409, Code: "history_changed", Message: "This simulated brew is no longer retained"}
-}
-
-func (s *simulator) Display(ctx context.Context) (domain.Display, error) {
-	status, err := s.Status(ctx)
-	if err != nil {
-		return domain.Display{}, err
-	}
-	pixels := make([]byte, 1024)
-	draw := func(x, y int) {
-		if x >= 0 && x < 128 && y >= 0 && y < 64 {
-			rx, ry := 127-x, 63-y
-			pixels[rx+(ry/8)*128] |= 1 << uint(ry&7)
-		}
-	}
-	text := func(value string, y int) {
-		for i, ch := range strings.ToUpper(value) {
-			if i >= 21 {
-				break
-			}
-			glyph := simFont[ch]
-			for x, bits := range glyph {
-				for row := range 7 {
-					if bits&(1<<uint(row)) != 0 {
-						draw(i*6+x, y+row)
-					}
-				}
-			}
-		}
-	}
-	text("SIMULATOR", 0)
-	label := status.Command
-	if status.Stopped {
-		label = "STOPPED"
-	}
-	text(label, 14)
-	text(status.StepName, 28)
-	if status.WortF != nil {
-		text(fmt.Sprintf("%.1f F", *status.WortF), 42)
-	}
-	for x := range 128 {
-		draw(x, 61)
-	}
-	return domain.Display{Width: 128, Height: 64, Format: "page-lsb-hex", Data: hex.EncodeToString(pixels)}, nil
-}
-
-var simFont = map[rune][5]byte{
-	'A': {0x7e, 0x11, 0x11, 0x11, 0x7e}, 'B': {0x7f, 0x49, 0x49, 0x49, 0x36}, 'C': {0x3e, 0x41, 0x41, 0x41, 0x22}, 'D': {0x7f, 0x41, 0x41, 0x22, 0x1c}, 'E': {0x7f, 0x49, 0x49, 0x49, 0x41}, 'F': {0x7f, 0x09, 0x09, 0x09, 0x01}, 'G': {0x3e, 0x41, 0x49, 0x49, 0x7a}, 'H': {0x7f, 0x08, 0x08, 0x08, 0x7f}, 'I': {0, 0x41, 0x7f, 0x41, 0}, 'J': {0x20, 0x40, 0x41, 0x3f, 0x01}, 'K': {0x7f, 0x08, 0x14, 0x22, 0x41}, 'L': {0x7f, 0x40, 0x40, 0x40, 0x40}, 'M': {0x7f, 0x02, 0x04, 0x02, 0x7f}, 'N': {0x7f, 0x04, 0x08, 0x10, 0x7f}, 'O': {0x3e, 0x41, 0x41, 0x41, 0x3e}, 'P': {0x7f, 0x09, 0x09, 0x09, 0x06}, 'Q': {0x3e, 0x41, 0x51, 0x21, 0x5e}, 'R': {0x7f, 0x09, 0x19, 0x29, 0x46}, 'S': {0x46, 0x49, 0x49, 0x49, 0x31}, 'T': {0x01, 0x01, 0x7f, 0x01, 0x01}, 'U': {0x3f, 0x40, 0x40, 0x40, 0x3f}, 'V': {0x1f, 0x20, 0x40, 0x20, 0x1f}, 'W': {0x7f, 0x20, 0x18, 0x20, 0x7f}, 'X': {0x63, 0x14, 0x08, 0x14, 0x63}, 'Y': {0x07, 0x08, 0x70, 0x08, 0x07}, 'Z': {0x61, 0x51, 0x49, 0x45, 0x43}, '0': {0x3e, 0x51, 0x49, 0x45, 0x3e}, '1': {0, 0x42, 0x7f, 0x40, 0}, '2': {0x42, 0x61, 0x51, 0x49, 0x46}, '3': {0x21, 0x41, 0x45, 0x4b, 0x31}, '4': {0x18, 0x14, 0x12, 0x7f, 0x10}, '5': {0x27, 0x45, 0x45, 0x45, 0x39}, '6': {0x3c, 0x4a, 0x49, 0x49, 0x30}, '7': {1, 0x71, 9, 5, 3}, '8': {0x36, 0x49, 0x49, 0x49, 0x36}, '9': {6, 0x49, 0x49, 0x29, 0x1e}, '.': {0, 0x60, 0x60, 0, 0}, '-': {8, 8, 8, 8, 8},
 }

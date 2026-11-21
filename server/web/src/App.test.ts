@@ -69,20 +69,14 @@ describe('recipe workspace navigation', () => {
       await screen.findByRole('heading', { name: heading })
       const main = within(screen.getByRole('navigation', { name: 'Main navigation' }))
       expect(main.getByRole('link', { name: /^Recipes/ }).getAttribute('aria-current')).toBe('page')
-      expect(main.queryByRole('link', { name: 'Community catalogue' })).toBeNull()
+      expect(main.queryByRole('link', { name: 'Community catalog' })).toBeNull()
       expect(main.queryByRole('link', { name: 'Brew assistant' })).toBeNull()
       const views = within(screen.getByRole('navigation', { name: 'Recipe views' }))
       expect(views.getAllByRole('link')).toHaveLength(2)
       expect(views.getByRole('link', { name: selectedView }).getAttribute('aria-current')).toBe(
         'page'
       )
-      if (route.split('?')[0] === '/recipes/create-with-ai') {
-        expect(screen.queryByRole('link', { name: 'Create with AI' })).toBeNull()
-      } else {
-        expect(screen.getByRole('link', { name: 'Create with AI' }).getAttribute('href')).toBe(
-          '#/recipes/create-with-ai'
-        )
-      }
+      expect(screen.queryByRole('link', { name: 'Create with AI' })).toBeNull()
       if (route.startsWith('/catalog')) {
         expect(views.getByRole('link', { name: 'Browse all' }).getAttribute('href')).toBe(
           '#/catalog?kind=native-program&q=Pico%20Pale'

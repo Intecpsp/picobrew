@@ -14,9 +14,9 @@
   max-width: 100%;
   gap: 5px;
   padding: 5px;
-  border: 1px solid #e4e1d7;
+  border: 1px solid var(--hub-line);
   border-radius: 10px;
-  background: #eeece4;
+  background: var(--hub-hover);
 
   > a {
     display: flex;
@@ -26,7 +26,7 @@
     min-height: 44px;
     padding: 9px 16px;
     border-radius: 6px;
-    color: #5c6255;
+    color: var(--hub-muted);
     font-size: 0.95rem;
     line-height: 1.4;
     text-align: center;
@@ -34,13 +34,13 @@
   }
 
   > a:hover {
-    color: #292c25;
-    background: #f6f4ee;
+    color: var(--hub-ink);
+    background: var(--hub-warning-bg);
   }
 
   > a[aria-current='page'] {
-    background: #fffefb;
-    color: #426b57;
+    background: var(--hub-surface);
+    color: var(--hub-muted);
     font-weight: 650;
     box-shadow: 0 1px 3px #292c2512;
   }
@@ -68,9 +68,5 @@
 @media (max-width: 440px) {
   .recipe-workspace-tabs {
     flex-basis: 100%;
-  }
-
-  .recipe-create-ai {
-    width: 100%;
   }
 }

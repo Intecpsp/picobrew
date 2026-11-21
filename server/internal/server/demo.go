@@ -31,22 +31,34 @@ func (s *Server) seedDemo() error {
 	}
 	for j, d := range devices {
 		start := now.Add(-time.Duration(j+1) * 24 * time.Hour)
-		b := domain.Brew{ID: "demo-history-" + d.ID, DeviceID: d.ID, DeviceName: d.Name, Model: d.Model, RecipeName: recipes[j%2].Name, RecipeID: recipes[j%2].ID, RecipeRevision: 1, State: "completed", Command: "brew", StartedAt: &start, ObservedAt: start, DurationMS: 7800000, SampleCount: 521, Source: "simulation", Notes: "Simulated brew history for exploring graphs and exports.", Rating: 4}
-		samples := make([]domain.Sample, 0, 521)
-		for i := 0; i <= 520; i++ {
+		b := domain.Brew{ID: "demo-history-" + d.ID, DeviceID: d.ID, DeviceName: d.Name, Model: d.Model, RecipeName: recipes[j%2].Name, RecipeID: recipes[j%2].ID, RecipeRevision: 1, State: "completed", Command: "brew", StartedAt: &start, ObservedAt: start, Source: "simulation", Notes: "Simulated brew history for exploring graphs and exports.", Rating: 4}
+		schedule := recipes[j%2].Steps
+		b.StepNames = make(map[int]string, len(schedule))
+		for i, step := range schedule {
+			b.StepNames[i] = step.Name
+			b.DurationMS += int64(step.Minutes) * 60000
+		}
+		b.SampleCount = int(b.DurationMS/15000) + 1
+		samples := make([]domain.Sample, 0, b.SampleCount)
+		for i := 0; i < b.SampleCount; i++ {
 			elapsed := i * 15000
 			minute := float64(elapsed) / 60000
-			target := 152.0
-			phase := 1
-			wort := 72 + math.Min(minute/18, 1)*80 + math.Sin(minute)*0.6
-			if minute > 70 {
-				target = 210
-				phase = 2
-				wort = 152 + math.Min((minute-70)/15, 1)*58 + math.Sin(minute)*0.4
+			stepIndex := 0
+			stepStart := 0
+			for stepIndex < len(schedule)-1 && minute >= float64(stepStart+schedule[stepIndex].Minutes) {
+				stepStart += schedule[stepIndex].Minutes
+				stepIndex++
 			}
+			step := schedule[stepIndex]
+			target := step.TargetC*1.8 + 32
+			previous := 72.0
+			if stepIndex > 0 {
+				previous = schedule[stepIndex-1].TargetC*1.8 + 32
+			}
+			wort := previous + math.Min((minute-float64(stepStart))/math.Min(15, float64(step.Minutes)), 1)*(target-previous) + math.Sin(minute)*0.4
 			thermo := wort + 6 + math.Sin(minute*0.4)*2
 			at := start.Add(time.Duration(elapsed) * time.Millisecond)
-			samples = append(samples, domain.Sample{ElapsedMS: int64(elapsed), ObservedAt: &at, WortF: floatPtr(wort), ThermoblockF: floatPtr(thermo), TargetF: floatPtr(target), StepSeconds: i * 15, Phase: phase, Compartment: phase, CurrentStep: phase - 1, Flags: 11, Source: "simulation"})
+			samples = append(samples, domain.Sample{ElapsedMS: int64(elapsed), ObservedAt: &at, WortF: floatPtr(wort), ThermoblockF: floatPtr(thermo), TargetF: floatPtr(target), StepSeconds: i*15 - stepStart*60, Phase: stepIndex + 1, Compartment: step.Location, CurrentStep: stepIndex, Flags: 11, DeviceState: 1, ControllerStatus: 1, Source: "simulation"})
 		}
 		if _, e = s.db.Put("brew", b.ID, b, 0); e != nil {
 			return e

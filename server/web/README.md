@@ -39,7 +39,7 @@ Go server from running.
 
 ## Working features
 
-- Live fleet updates over server-sent events; machine state and temperatures.
+- Visible tabs refresh machine state and temperatures every three seconds.
 - OLED decoding with the physical Pico's 180-degree orientation, remote dial,
   discovered programs, immediate stop, preferences and optional forwarding.
 - One Recipes workspace for saved recipes, curated archive browsing and AI

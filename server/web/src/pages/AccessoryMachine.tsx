@@ -1,5 +1,6 @@
+import { MachineManagement } from '../components/MachineManagement'
 import { useState } from 'react'
-import { ArrowUpRight, Pencil, RefreshCw, SlidersHorizontal, Square, Trash2 } from 'lucide-react'
+import { ArrowUpRight, RefreshCw, Square } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
 import { calibrationPrerequisite, commandLabels, sensorValue, supports } from '../lib/capabilities'
@@ -118,26 +119,14 @@ export default function AccessoryMachine({ device }: { device: Device }) {
             >
               {deviceState(device)}
             </Badge>
-            <Button
-              variant="ghost"
-              disabled={!!pending || !device.enabled}
-              onClick={() => void refresh('test')}
-            >
-              <RefreshCw size={16} />
-              Test connection
-            </Button>
-            <Button variant="secondary" onClick={() => setEditing(true)}>
-              <Pencil size={16} />
-              Edit connection
-            </Button>
-            <Button variant="secondary" onClick={() => setSettings(true)}>
-              <SlidersHorizontal size={16} />
-              Preferences
-            </Button>
-            <Button variant="ghost" onClick={() => setRemoving(true)}>
-              <Trash2 size={16} />
-              Remove device
-            </Button>
+            <MachineManagement
+              device={device}
+              testing={!!pending}
+              test={() => void refresh('test')}
+              edit={() => setEditing(true)}
+              preferences={() => setSettings(true)}
+              remove={() => setRemoving(true)}
+            />
           </>
         }
       />

@@ -91,7 +91,7 @@ export default function NativeRecipeEditor({
         }}
         eyebrow={`${kindLabel(recipe.kind).toUpperCase()} · ${isNew ? 'NEW COPY' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
         title={recipe.name || 'Untitled program'}
-        description="Edit this library copy, then preview a transfer to the brewer’s saved recipe catalogue."
+        description="Edit this library copy, then preview a transfer to the brewer’s saved recipe catalog."
         actions={
           <>
             {!isNew && (

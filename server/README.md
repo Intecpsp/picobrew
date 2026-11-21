@@ -22,7 +22,7 @@ website and uses a pure-Go SQLite driver. Building and running it does not
 require Node, npm, a C compiler, or a separate SQLite installation.
 
 The application is self-contained in `server/`: its Go module, frontend,
-catalogue, tests, Dockerfile and Compose configuration are all in that directory.
+catalog, tests, Dockerfile and Compose configuration are all in that directory.
 It builds and runs without the sibling firmware trees. From either the repository
 root or `server/`, build and start the Hub with:
 
@@ -78,11 +78,11 @@ This seeds three simulated brewers, two example recipes and three historical bre
 - **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
 - **Operate standalone devices.** C/S/Pro and Z expose their physical screen and dial, installed recipes and advertised maintenance programs. PicoStill exposes its actual pump, fans, temperatures, pressure and operating modes. PicoFerm exposes fermentation sessions, samples, its sampling interval and explicitly confirmed pressure calibration. The console exposes only the capabilities reported by that device.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
-- **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalogue contents and provenance](docs/community-catalog.md).
+- **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalog contents and provenance](docs/community-catalog.md).
 - **Adapt and deploy.** Save measured model defaults in Settings, preview batch and efficiency scaling for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
 - **Transfer several programs.** Select library entries and preview what fits on a brewer. Existing recipes are preserved by default; matching updates require an explicit choice. Confirm the reviewed batch to write and verify each program. Receipts identify verified, skipped and unconfirmed entries, including after a Hub restart. The machine page can also edit the installed slots used by the brewer's own interface.
 - **Keep the brew record.** Import retained sessions automatically, preserve their available sensor samples beyond the device's ring buffer, chart temperatures and phase/controller state, add notes and ratings, and export JSON or CSV. Disconnections, truncated data and unknown start times remain visible.
-- **Create recipes with AI.** Use **Recipes → Create with AI** to generate a structured draft, optionally using a saved recipe as a starting point. Review the draft in the recipe editor before saving, adapting or deploying it.
+- **Create recipes with AI.** Open a new or saved recipe and choose **Ask the brew assistant** to generate a structured draft, optionally using a saved recipe as a starting point. Review the draft in the recipe editor before saving, adapting or deploying it.
 - **Get help with a brew.** Opt into AI monitoring in the Start confirmation or on the active machine page. Monitoring follows that one brew and saves observations at most once every five minutes. Ask follow-up questions beside the live readings, then open the brew's journal entry for analysis of its recorded results. Provider setup is optional; machine commands still require your explicit action.
 - **Build other clients.** Browse the authenticated API explorer or download `/api/v1/openapi.json`. The same API serves the UI, with session authentication, CSRF protection and idempotent command receipts.
 
@@ -94,13 +94,13 @@ In **Settings → Brew assistant**, choose a provider and a **Connection method*
 - **Claude subscription:** install the [official native Claude Code app](https://code.claude.com/docs/en/setup), version **2.1.259 or newer**, on the Hub host. Run `claude auth login` as the same operating-system user that runs the Hub and choose your Claude account. Select **Anthropic / Claude → Claude subscription**, then **Check Claude connection**. The Hub calls the official app with tools, hooks, MCP and session persistence disabled; it does not read or copy Claude's credential files. For a container, Claude Code must be installed and signed in inside that container as the Hub user; the standard image does not include it.
 - **API key:** choose **API key · provider API billing**, enter an OpenAI or Anthropic key, and click **Connect and load models**. Discovery does not save a supplied key; **Save assistant settings** saves it encrypted. API calls use provider API billing and any eligible account credits.
 
-After connecting, select a model, enable the assistant and save. ChatGPT subscription and API-key connections load their provider model catalogue. Claude subscription offers the official `default`, `sonnet`, `opus` and `haiku` aliases; their availability depends on the signed-in plan, and this is not a live account-entitlement list. **Refresh models** reloads the selected connection. API listings include all Anthropic result pages; a listing alone does not establish compatibility with the chat endpoint or inference permission. Manual model entry remains available.
+After connecting, select a model, enable the assistant and save. ChatGPT subscription and API-key connections load their provider model catalog. Claude subscription offers the official `default`, `sonnet`, `opus` and `haiku` aliases; their availability depends on the signed-in plan, and this is not a live account-entitlement list. **Refresh models** reloads the selected connection. API listings include all Anthropic result pages; a listing alone does not establish compatibility with the chat endpoint or inference permission. Manual model entry remains available.
 
-Changing provider or connection method clears the previous catalogue. Subscription calls never fall back to a saved API key. Subscription limits, model access and account settings still apply. **Disconnect ChatGPT** removes the Hub's saved ChatGPT registration and tokens; Claude sign-out is managed through its native app. Browser storage remembers only that ChatGPT setup is in progress, never authorization URLs, callback codes or credentials.
+Changing provider or connection method clears the previous catalog. Subscription calls never fall back to a saved API key. Subscription limits, model access and account settings still apply. **Disconnect ChatGPT** removes the Hub's saved ChatGPT registration and tokens; Claude sign-out is managed through its native app. Browser storage remembers only that ChatGPT setup is in progress, never authorization URLs, callback codes or credentials.
 
 Enabling a provider does not start monitoring. Choose monitoring separately for
 each brew. An opted-in Start waits for the new, matching machine session; this
-pending choice expires after 15 minutes and is cancelled if the Hub restarts.
+pending choice expires after 15 minutes and is canceled if the Hub restarts.
 Once bound, monitoring stays with that exact session and ends when it finishes
 or another program starts. Saved advice appears with that brew and is included
 in its JSON export. The AI can interpret available readings and suggest actions;
@@ -116,7 +116,7 @@ The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Bre
 2. Select a target machine or equipment profile. Adaptation starts with that profile's configured batch size; choose another valid volume if needed. Review the scaled ingredients and any deployment blockers. A planning preview remains available before all machine routing is assigned.
 3. Assign the actual physical compartment for every machine step. An imported recipe does not establish plumbing; unknown mappings block deployment. Infusions, decoction and timed ramps that the native protocol cannot represent also block deployment.
 4. Deploy while the machine is ready at its main menu. The server verifies the stored program; it does not start it.
-5. Open that machine's page, select the installed recipe and confirm Start. Optionally enable AI monitoring for this brew in that confirmation. Follow the machine's preparation prompts through its physical or mirrored front panel.
+5. Choose **Open** on the transfer receipt to see the installed recipe selected on the brewer. Choose **Start recipe** and confirm **Start program** to send the REST start command. You can enable AI monitoring in that confirmation. If the brewer displays a preparation question, answer it using the Hub’s mirrored front panel.
 6. Watch progress on the fleet or machine page, where you can also enable or disable monitoring for the current brew. The journal imports available retained samples. Open that brew's journal entry for notes, a rating, exports and optional AI result analysis.
 
 A successful HTTP command response means the firmware accepted the request. It is not evidence that heating or pumping has begun. An uncertain command delivery is recorded and never automatically retried. Dedicated pause/resume appears only when advertised by the device. C/S/Pro retains its existing front-panel workflow; the Hub does not infer unsupported controls. See [family controls and history](docs/family-devices.md) for the Z and accessory behavior.
@@ -218,7 +218,7 @@ requires Go, and the one-command startup also uses Make.
 
 If Chromium is installed separately, set `CHROMIUM_PATH` to its executable. `HUB_TEST_URL` targets an existing **demo** instance instead of starting the suite's isolated server on port 18080. The suite checks demo mode before making any changes.
 
-In a full project checkout, the Python suite also compares catalogue starters
+In a full project checkout, the Python suite also compares catalog starters
 with `../firmware/pico-s-pro/modified/data/starter-recipes.json`. An isolated
 server checkout skips that cross-component check. Set
 `CATALOG_REQUIRE_FIRMWARE=1` to require it, as the repository CI does.

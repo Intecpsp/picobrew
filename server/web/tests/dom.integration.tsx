@@ -6,7 +6,6 @@ import App from '../src/App'
 
 const origin = 'http://127.0.0.1:18081'
 const originalFetch = globalThis.fetch
-const painted = vi.fn()
 let user: ReturnType<typeof userEvent.setup>
 let csrfToken = ''
 let dialogPolyfilled = false
@@ -62,15 +61,6 @@ beforeAll(async () => {
     }
   )
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
-  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
-    () =>
-      ({
-        createImageData: (width: number, height: number) => ({
-          data: new Uint8ClampedArray(width * height * 4),
-        }),
-        putImageData: painted,
-      }) as unknown as CanvasRenderingContext2D
-  )
 })
 beforeEach(() => {
   localStorage.clear()
@@ -103,18 +93,20 @@ async function simulationMutation(path: string, body: unknown = {}) {
 }
 
 describe('UI interactions against the real isolated Go simulator', () => {
-  it('loads fleet data, streams updates and decodes an actual OLED response', async () => {
+  it('loads fleet data, streams updates and exposes simulator controls with an OLED', async () => {
     await open('/overview')
-    await screen.findByRole('heading', { name: 'A good day to brew.' })
+    await screen.findByRole('heading', { name: 'Brewery' })
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
-    await screen.findByRole('heading', { name: 'The front panel, wherever you are.' })
-    await waitFor(() => expect(painted).toHaveBeenCalled())
+    await screen.findByRole('heading', { name: 'Simulator controls' })
+    expect(document.querySelector('.front-panel canvas')?.getAttribute('aria-label')).toBe(
+      'Simulated Pico OLED display'
+    )
     const down = screen.getByRole('button', { name: 'Move selection down' }) as HTMLButtonElement
     await waitFor(() => expect(down.disabled).toBe(false))
     await user.click(down)
     await waitFor(() => expect(down.disabled).toBe(false))
-    expect(screen.getByRole('button', { name: 'Stop' })).toBeTruthy()
+    expect(screen.getByRole('button', { name: 'Stop machine outputs' })).toBeTruthy()
   })
   it('manages an offline machine from Overview and its detail page while retaining brew history', async () => {
     let id = ''
@@ -158,6 +150,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
 
       await user.click(screen.getByRole('link', { name: 'Open DOM renamed brewer controls' }))
       await screen.findByRole('heading', { name: 'DOM renamed brewer', level: 1 })
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       expect(
         (screen.getByRole('button', { name: 'Edit connection' }) as HTMLButtonElement).disabled
       ).toBe(false)
@@ -189,15 +182,17 @@ describe('UI interactions against the real isolated Go simulator', () => {
       const brew = brews.find((item: any) => item.device_id === id)
       expect(brew.sample_count).toBeGreaterThan(0)
 
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       await user.click(screen.getByRole('button', { name: 'Edit connection' }))
       dialog = await screen.findByRole('dialog', { name: 'Edit machine connection' })
       await user.click(within(dialog).getByLabelText('Monitor this machine'))
       await user.click(within(dialog).getByRole('button', { name: 'Save machine' }))
       await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+      await user.click(screen.getByRole('button', { name: 'Manage machine' }))
       await user.click(screen.getByRole('button', { name: 'Remove machine' }))
       dialog = await screen.findByRole('dialog', { name: 'Remove DOM renamed brewer?' })
       await user.click(within(dialog).getByRole('button', { name: 'Remove machine' }))
-      await screen.findByRole('heading', { name: 'A good day to brew.' })
+      await screen.findByRole('heading', { name: 'Brewery' })
       expect(window.location.hash).toBe('#/overview')
       expect((await originalFetch(origin + `/api/v1/devices/${id}`)).status).toBe(404)
       const retained = await (await originalFetch(origin + `/api/v1/brews/${brew.id}`)).json()
@@ -216,7 +211,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
     await screen.findByRole('heading', { name: 'What will you brew next?' })
     await user.type(screen.getByLabelText('Recipe name', { exact: true }), 'DOM test porter')
     await user.type(screen.getByLabelText('Tags', { exact: true }), 'dom, porter')
-    await user.click(screen.getByRole('button', { name: 'Add ingredient' }))
+    await user.click(screen.getByRole('button', { name: 'Add grain' }))
     await user.type(screen.getByLabelText('Ingredient 1 name'), 'Pale malt')
     await user.click(screen.getByRole('button', { name: 'Save recipe' }))
     await screen.findByRole('heading', { name: 'DOM test porter', level: 1 })
@@ -241,7 +236,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
       await originalFetch(origin + '/api/v1/brews/demo-history-demo-pro')
     ).json()
     await open('/history/demo-history-demo-pro')
-    await screen.findByRole('heading', { name: 'The complete temperature story' })
+    await screen.findByRole('heading', { name: 'Session measurements' })
     const notes = screen.getByLabelText('Brew notes', { exact: true }) as HTMLTextAreaElement
     await waitFor(() => expect(notes.value).toBe(initial.notes || ''))
     await user.clear(notes)
@@ -262,7 +257,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
   })
   it('persists calibration and exercises the authenticated API explorer', async () => {
     await open('/settings')
-    await screen.findByRole('heading', { name: 'Workspace settings.' })
+    await screen.findByRole('heading', { name: 'Hub settings' })
     expect(screen.queryByRole('heading', { name: 'Your machines' })).toBeNull()
     expect(screen.queryByRole('button', { name: 'Add machine' })).toBeNull()
     await waitFor(() =>
@@ -285,13 +280,13 @@ describe('UI interactions against the real isolated Go simulator', () => {
   })
 })
 
-describe('community catalogue and local recipe slots', () => {
+describe('community catalog and local recipe slots', () => {
   it('copies a native recipe, preserves zero-minute steps, previews transfer, edits its machine slot and skips overwrites', async () => {
     let deviceID = ''
     let recipeID = ''
     try {
       const created = await simulationMutation('/devices', {
-        name: 'DOM catalogue brewer',
+        name: 'DOM catalog brewer',
         adapter: 'simulator',
         model: 'pico-pro',
         enabled: true,
@@ -311,7 +306,7 @@ describe('community catalogue and local recipe slots', () => {
       recipeID = window.location.hash.split('/recipes/')[1]
       expect(recipeID).toBeTruthy()
       expect(screen.queryByLabelText('Batch size (L)', { exact: true })).toBeNull()
-      expect(screen.queryByRole('button', { name: 'Add ingredient' })).toBeNull()
+      expect(screen.queryByRole('button', { name: 'Add grain' })).toBeNull()
       expect(
         (screen.getByLabelText('Step 1 hold (min)', { exact: true }) as HTMLInputElement).value
       ).toBe('0')
@@ -357,12 +352,13 @@ describe('community catalogue and local recipe slots', () => {
       await user.click(within(dialog).getByRole('button', { name: 'Done' }))
 
       window.location.hash = `/devices/${deviceID}`
-      await screen.findByRole('heading', { name: 'DOM catalogue brewer', level: 1 })
+      await screen.findByRole('heading', { name: 'DOM catalog brewer', level: 1 })
       await waitFor(() => expect(screen.getByRole('option', { name: 'Pico Pale' })).toBeTruthy())
       await user.selectOptions(
         screen.getByLabelText('Recipe on this machine', { exact: true }),
         original.native_program.id
       )
+      await user.click(screen.getByText('Manage saved recipes', { exact: true }))
       await user.click(screen.getByRole('button', { name: 'Edit saved program' }))
       dialog = await screen.findByRole('dialog', {
         name: 'Edit the machine’s saved program',
@@ -423,7 +419,7 @@ describe('community catalogue and local recipe slots', () => {
       expect(document.querySelectorAll('.catalog-card').length).toBeGreaterThan(0)
     )
     expect(
-      (screen.getByLabelText('Catalogue type', { exact: true }) as HTMLSelectElement).value
+      (screen.getByLabelText('Catalog type', { exact: true }) as HTMLSelectElement).value
     ).toBe('maintenance')
     expect(screen.getAllByText('Cleaning program', { exact: true }).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: 'Machine guides & artwork' }))
@@ -443,7 +439,7 @@ describe('community catalogue and local recipe slots', () => {
     await user.click(within(dialog).getByRole('button', { name: 'Close dialog' }))
     await user.click(screen.getByRole('button', { name: 'Sources & credits' }))
     const sources = await screen.findByRole('dialog', {
-      name: 'Catalogue sources & credits',
+      name: 'Catalog sources & credits',
     })
     expect(
       within(sources).getByRole('heading', { name: 'PicoPak and ZPak program archive' })

@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"os"
 	"reflect"
@@ -85,7 +86,7 @@ func historyDuration(ms int64) (time.Duration, error) {
 
 // mergeHistoryBrew changes only device-owned fields. Re-read and compare-and-swap
 // after network work so concurrent edits to notes/rating/recipe links survive.
-func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession, complete bool) (domain.Brew, error) {
+func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession, complete bool, observed *domain.Status) (domain.Brew, error) {
 	if h.SampleIntervalMS != 0 && (h.SampleIntervalMS < 15000 || h.SampleIntervalMS > 86400000) {
 		return domain.Brew{}, errors.New("invalid history sampling interval")
 	}
@@ -104,6 +105,18 @@ func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession,
 			return b, err
 		}
 		before := b
+		if observed != nil && observed.Busy && !observed.Stopped &&
+			h.State == "recording" && h.Command == "brew" && h.RecipeName != "" && observed.RecipeName == h.RecipeName &&
+			observed.CurrentStep >= 0 && observed.CurrentStep < observed.StepCount && observed.StepCount <= 255 {
+			name := strings.TrimSpace(observed.StepName)
+			if name != "" && len(name) <= 128 && b.StepNames[observed.CurrentStep] == "" {
+				b.StepNames = maps.Clone(b.StepNames)
+				if b.StepNames == nil {
+					b.StepNames = make(map[int]string)
+				}
+				b.StepNames[observed.CurrentStep] = name
+			}
+		}
 		if b.StartedAt == nil && h.State == "recording" {
 			at := time.Now().UTC().Add(-duration)
 			b.StartedAt = &at
@@ -151,7 +164,7 @@ func (s *Server) pullHistorySession(ctx context.Context, d *runtimeDevice, devic
 			return existsErr
 		}
 		if existsErr == nil && count == previous.SampleCount {
-			_, err = s.mergeHistoryBrew(device, h, true)
+			_, err = s.mergeHistoryBrew(device, h, true, nil)
 			return err
 		}
 	}
@@ -160,12 +173,22 @@ func (s *Server) pullHistorySession(ctx context.Context, d *runtimeDevice, devic
 	if err := s.db.Delete("history-sync", id); err != nil {
 		return err
 	}
-	b, err := s.mergeHistoryBrew(device, h, false)
+	b, err := s.mergeHistoryBrew(device, h, false, nil)
 	if err != nil {
 		return err
 	}
 	count, readErr := s.readHistoryPages(ctx, d, h, b)
 	finalDescription := h
+	var observed *domain.Status
+	// A screen label belongs to this recording only when the same history ID is
+	// recording on both sides of the status read. Offline imports have no label.
+	if readErr == nil && h.State == "recording" && h.Command == "brew" {
+		if status, err := s.verifiedStatus(ctx, d); err == nil {
+			observed = &status
+		} else if device.Adapter == "pico-standalone" {
+			return err
+		}
+	}
 	if readErr == nil {
 		// The retained ring can move between pages. A completed download is only
 		// complete for the metadata snapshot it started with; otherwise retain the
@@ -200,7 +223,10 @@ func (s *Server) pullHistorySession(ctx context.Context, d *runtimeDevice, devic
 	// its final tail is present, rather than cached as a complete terminal record.
 	terminal = finalDescription.State == "completed" || finalDescription.State == "interrupted"
 	complete := readErr == nil && (!terminal || count >= finalDescription.RecordCount)
-	final, mergeErr := s.mergeHistoryBrew(device, finalDescription, complete)
+	if readErr != nil {
+		observed = nil
+	}
+	final, mergeErr := s.mergeHistoryBrew(device, finalDescription, complete, observed)
 	if readErr != nil || mergeErr != nil {
 		return errors.Join(readErr, mergeErr)
 	}
@@ -385,6 +411,34 @@ func (s *Server) brewDetail(id string) (domain.BrewDetail, error) {
 	}
 	if e != nil {
 		return domain.BrewDetail{}, e
+	}
+	// Earlier seeded demo samples used synthetic phase numbers as step indices.
+	// Only the newer seed records its actual schedule alongside the trace.
+	legacyDemo := b.Source == "simulation" && strings.HasPrefix(b.ID, "demo-history-") && len(b.StepNames) == 0
+	if !legacyDemo && b.Command == "brew" && b.RecipeID != "" && b.RecipeRevision > 0 {
+		var archived domain.Recipe
+		_, err := s.db.Get("recipe-revision", b.RecipeID+":"+strconv.FormatInt(b.RecipeRevision, 10), &archived)
+		if err != nil && !errors.Is(err, store.ErrNotFound) {
+			return domain.BrewDetail{}, err
+		}
+		if err == nil && archived.ID == b.RecipeID && archived.Revision == b.RecipeRevision {
+			if b.StepNames == nil {
+				b.StepNames = make(map[int]string)
+			}
+			if archived.NativeProgram != nil {
+				for i, step := range archived.NativeProgram.Steps {
+					if b.StepNames[i] == "" {
+						b.StepNames[i] = step.Name
+					}
+				}
+			} else {
+				for i, step := range archived.Steps {
+					if b.StepNames[i] == "" {
+						b.StepNames[i] = step.Name
+					}
+				}
+			}
+		}
 	}
 	advice, e := s.adviceForBrew(id)
 	return domain.BrewDetail{Brew: b, Samples: samples, AIAdvice: advice}, e

@@ -100,7 +100,7 @@ thermoblock and target temperatures; step seconds; phase; controller status;
 compartment; current step; flags; and device state. Unavailable temperatures are
 null. New firmware appends normalized readings and named sensor/actuator fields.
 Each page carries that session's stored field names and metadata; the current
-catalogue cannot overwrite an older session's schema. The adapter validates page identity, continuation, field counts, numeric
+catalog cannot overwrite an older session's schema. The adapter validates page identity, continuation, field counts, numeric
 bounds and ordering within the page. Raw state codes are preserved. It does not
 invent wall-clock timestamps: the appliance's stored records provide elapsed
 time, not a trustworthy brew start time.
@@ -122,8 +122,12 @@ connections. Its firmware version is `simulator`, device UID is prefixed with
 `simulator:`, samples use source `simulation`, and it advertises no persistent
 history or outbound telemetry forwarding. The model label is descriptive.
 
-Each simulator supports stored recipes, settings, a rendered OLED, encoder input,
-preparation prompts, accelerated brews, maintenance completion, stop latching and
+The simulator exposes a 128 × 64 Pico-style framebuffer through the display API.
+The main menu uses the S/Pro logo, font and selection layout. Encoder input navigates
+the simulated recipe, utilities and units menus or switches brew pages. All virtual
+brewers share this panel. Connected hardware supplies its own model-specific pixels.
+Each simulator supports stored recipes, settings, encoder input,
+REST-started accelerated brews, maintenance completion, stop latching and
 retained history. Time runs at 60 simulated seconds per real second. History is
 volatile and has the same eight-entry / 4,224-row shared limits. The `demo-pro`
 and `demo-z` fixtures start in different simulated brew phases; `demo-s` starts

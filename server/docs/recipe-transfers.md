@@ -1,6 +1,6 @@
 # Recipe and program transfers
 
-The community catalogue is immutable. **Copy to library** creates a separate
+The community catalog is immutable. **Copy to library** creates a separate
 editable record and retains source provenance. The library is independent of
 each brewer's installed recipe slots. The machine page and the brewer's own
 browser interface both read and edit those same installed slots.
@@ -14,7 +14,7 @@ temperatures, hold times, drains and routing. They have no inferred batch size
 or ingredient quantities, and transfer with `batch_liters: 0`.
 
 Native IDs are preserved. For example, the Pico Pale starter has the same
-`pico-pak-64` ID in firmware and catalogue copies. Copying it into the Hub library
+`pico-pak-64` ID in firmware and catalog copies. Copying it into the Hub library
 does not create another appliance slot until a transfer is explicitly confirmed;
 an identical installed program is skipped.
 

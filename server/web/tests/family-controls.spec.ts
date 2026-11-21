@@ -268,12 +268,9 @@ for (const width of [1280, 390]) {
       if (brewing) {
         const canvas = page.locator('canvas[aria-label="Live Pico OLED display"]')
         await expect(canvas).toBeVisible()
-        await expect(
-          page.getByRole('button', { name: 'Pause session', exact: true })
-        ).toBeDisabled()
-        await expect(
-          page.getByRole('button', { name: 'Resume session', exact: true })
-        ).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Pause session' })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Resume session' })).toHaveCount(0)
+        await page.getByRole('button', { name: 'Other programs', exact: true }).click()
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Clean')
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Chill')
         const pixels = await canvas.evaluate((node) =>
@@ -307,6 +304,7 @@ for (const width of [1280, 390]) {
           page.getByRole('button', { name: 'Resume interrupted brew', exact: true })
         ).toHaveCount(0)
         Object.assign(status.recovery!, { available: false, valid: false })
+        await page.getByRole('button', { name: 'Manage machine' }).click()
         await page.getByRole('button', { name: 'Test connection', exact: true }).click()
         await expect(
           page.getByText(
@@ -329,6 +327,41 @@ for (const width of [1280, 390]) {
         await expect(
           page.getByRole('button', { name: 'Discard checkpoint', exact: true })
         ).toHaveCount(0)
+        Object.assign(status, {
+          busy: true,
+          state: 'brewing',
+          step_name: 'Mash',
+          step_seconds: 120,
+          current_step: 0,
+          step_count: 3,
+        })
+        await page.getByRole('button', { name: 'Manage machine' }).click()
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Current session' })).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Pause session' })).toBeEnabled()
+        await expect(page.getByRole('button', { name: 'Resume session' })).toBeEnabled()
+        await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Stop machine outputs' })).toBeEnabled()
+        Object.assign(device, { status: null })
+        await page.getByRole('button', { name: 'Manage machine' }).click()
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(
+          page.getByRole('heading', { name: 'Waiting for machine status' })
+        ).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
+        Object.assign(device, { status })
+        Object.assign(device, { online: false })
+        await page.getByRole('button', { name: 'Manage machine' }).click()
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(page.getByRole('heading', { name: 'Machine offline' })).toBeVisible()
+        await expect(canvas).toBeHidden()
+        await expect(page.getByText('LIVE OLED', { exact: false })).toHaveCount(0)
+        await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toBeDisabled()
+        await expect(page.getByRole('region', { name: 'Live readings' })).toHaveCount(0)
+        Object.assign(device, { online: true })
+        await page.getByRole('button', { name: 'Manage machine' }).click()
+        await page.getByRole('button', { name: 'Test connection', exact: true }).click()
+        await expect(canvas).toBeVisible()
       } else {
         await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toHaveCount(0)
         await expect(page.getByText('Thermoblock', { exact: true })).toHaveCount(0)
@@ -394,7 +427,8 @@ for (const width of [1280, 390]) {
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
       ).toBe(true)
       if (!brewing) {
-        await page.getByRole('button', { name: 'Preferences', exact: true }).click()
+        await page.getByRole('button', { name: 'Manage machine' }).click()
+        await page.getByRole('button', { name: 'Device preferences', exact: true }).click()
         const dialog = page.getByRole('dialog', { name: 'Device preferences' })
         await expect(dialog.getByLabel('Temperature unit', { exact: true })).toBeVisible()
         await expect(dialog.getByLabel('Front-panel language', { exact: true })).toHaveCount(0)
@@ -403,7 +437,7 @@ for (const width of [1280, 390]) {
       }
       await page.goto('/#/history/family-device-1')
       await page.getByLabel('Recorded measurements', { exact: true }).selectOption('raw')
-      await expect(page.getByRole('img', { name: 'Recorded Native pressure in raw' })).toBeVisible()
+      await expect(page.getByRole('button', { name: 'Native pressure', exact: true })).toBeVisible()
       await page.getByRole('button', { name: 'Show raw samples' }).click()
       await expect(page.getByRole('columnheader', { name: 'Native pressure (raw)' })).toBeVisible()
       expect(errors).toEqual([])

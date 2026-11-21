@@ -262,6 +262,7 @@ describe('contextual AI workflow', () => {
     })
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
     // Consent is a choice for the single start, not an option silently kept for later brews.
+    await user.click(screen.getByRole('button', { name: 'Other programs' }))
     await user.selectOptions(screen.getByLabelText('Other programs'), 'manual')
     await user.click(screen.getByRole('button', { name: 'Open program' }))
     expect(
@@ -280,6 +281,7 @@ describe('contextual AI workflow', () => {
       })
     })
     await waitFor(() => expect(screen.queryByRole('dialog')).toBeNull())
+    await user.click(screen.getByRole('button', { name: 'Saved recipes' }))
     failAfterAcceptedStart = true
     await user.click(screen.getByRole('button', { name: 'Start recipe' }))
     await user.click(screen.getByRole('checkbox', { name: 'Monitor this brew with AI' }))

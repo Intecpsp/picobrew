@@ -1,4 +1,4 @@
-import { BookOpen, Library, Sparkles } from 'lucide-react'
+import { BookOpen, Library } from 'lucide-react'
 import './recipe-workspace.scss'
 
 export type RecipeView = 'recipes' | 'catalog'
@@ -38,12 +38,6 @@ export function RecipeWorkspaceTabs({ route }: { route: string }) {
           </a>
         ))}
       </nav>
-      {route.split('?')[0] !== '/recipes/create-with-ai' && (
-        <a className="button secondary recipe-create-ai" href="#/recipes/create-with-ai">
-          <Sparkles size={17} aria-hidden="true" />
-          Create with AI
-        </a>
-      )}
     </div>
   )
 }

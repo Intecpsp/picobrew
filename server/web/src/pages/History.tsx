@@ -1,3 +1,4 @@
+import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowUpRight,
@@ -29,12 +30,11 @@ import {
   SearchBox,
   SectionHeading,
 } from '../components/ui'
-import { SensorHistory } from '../components/SensorHistory'
+import { SessionChart } from '../components/SessionChart'
 import { HistorySamples } from '../components/HistorySamples'
-import { TemperatureChart, StateChart } from '../components/Charts'
 import { AIWorkbench } from './Assistant'
 export default function HistoryPage({ id, analyze = false }: { id?: string; analyze?: boolean }) {
-  return id ? <BrewPage id={id} analyze={analyze} /> : <BrewList />
+  return id ? <BrewPage key={id} id={id} analyze={analyze} /> : <BrewList />
 }
 function BrewList() {
   const hub = useHub()
@@ -237,7 +237,6 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
   if (resource.loading && !brew) return <Loading label="Opening the brew journal…" />
   if (!brew) return <ErrorBanner message={resource.error} retry={resource.reload} />
   const accessory = ['picoferm', 'picostill'].includes(brew.model)
-  const extended = accessory || (brew.sample_fields?.length || 0) > 11
   const samples = brew.samples || []
   const last = samples.at(-1)
   return (
@@ -301,10 +300,10 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
           note="A little hindsight helps"
         />
       </div>
-      <section className="panel">
+      <section className="panel session-panel">
         <SectionHeading
-          title={extended ? 'Recorded sensor measurements' : 'The complete temperature story'}
-          description="Select a point on the graph to add a timestamped note."
+          title="Session measurements"
+          description="Click or tap to pin a sample and add a note. Use the arrow keys to inspect adjacent samples."
           actions={
             marker !== null && (
               <Button
@@ -322,25 +321,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
           }
         />
         {samples.length ? (
-          <>
-            {extended ? (
-              <SensorHistory
-                brew={brew}
-                unit={hub.unit}
-                notes={notes}
-                height={340}
-                onSelect={setMarker}
-              />
-            ) : (
-              <TemperatureChart
-                samples={samples}
-                unit={hub.unit}
-                notes={notes}
-                height={340}
-                onSelect={setMarker}
-              />
-            )}
-          </>
+          <SessionChart brew={brew} unit={hub.unit} notes={notes} onSelect={setMarker} />
         ) : (
           <Empty
             icon={<Activity size={24} />}
@@ -348,25 +329,6 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
             description="This session may have been discovered before a complete history could be imported."
           />
         )}
-      </section>
-      <section className="panel">
-        <SectionHeading
-          title={accessory ? 'Device state & flags' : 'Phases, controller state & flags'}
-          description="Raw machine state values are retained alongside temperatures for comparison and diagnosis."
-        />
-        {samples.length > 0 && <StateChart samples={samples} brewing={!accessory} />}
-        <div className="chart-legend state-legend">
-          {!accessory && (
-            <>
-              <span>Phase</span>
-              <span>Step</span>
-              <span>Controller</span>
-            </>
-          )}
-          <span>Flags</span>
-          {!accessory && <span>Compartment</span>}
-          <span>Device state</span>
-        </div>
       </section>
       <div className="journal-bottom">
         <section className="panel">
@@ -433,17 +395,19 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                 <div>
                   <strong>
                     {accessory
-                      ? `Device state ${sample.device_state}`
-                      : `Phase ${sample.phase} · Step ${sample.current_step === 255 ? '—' : sample.current_step + 1}`}
+                      ? `Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`
+                      : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sessionState(brew, 'current_step', sample.current_step, sample.source)}`}
                   </strong>
                   <small>
                     {!accessory &&
-                      `Controller ${sample.controller_status} · Compartment ${sample.compartment} · `}
-                    Flags 0x{sample.flags.toString(16).padStart(2, '0')}
+                      `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sample.compartment} · `}
+                    {sessionState(brew, 'flags', sample.flags, sample.source, true)}
                   </small>
                   <small>
                     {temperature(accessory ? sample.temperature_f : sample.wort_f, hub.unit)}
-                    {accessory ? '' : ` wort · Device state ${sample.device_state}`}
+                    {accessory
+                      ? ''
+                      : ` wort · Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`}
                   </small>
                 </div>
               </div>

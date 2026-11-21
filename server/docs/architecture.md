@@ -22,7 +22,7 @@ material, not a required component of this architecture. See the
 
 The brewer firmware owns timing, heating, pumping, interlocks, preparation prompts and the stop latch. The hub queues the public operations that the firmware advertises. It does not synthesize low-level actuator commands or run a heating loop over Wi-Fi.
 
-The browser talks only to the hub. The hub stores device credentials encrypted in SQLite and talks to each appliance on its private network. A fleet snapshot is streamed to browsers using server-sent events; one disconnected appliance does not block other appliances. There is one polling worker per enabled device.
+The browser talks only to the hub. The hub stores device credentials encrypted in SQLite and talks to each appliance on its private network. Visible Hub tabs fetch the cached fleet snapshot every three seconds. API clients can also subscribe to the fleet event stream. One disconnected appliance does not block other appliances. There is one polling worker per enabled device.
 
 ## Device transport
 
@@ -68,7 +68,7 @@ The data directory has a persistent 32-byte master key. AES-GCM uses each creden
 
 Provider integrations have bounded context and response sizes, request timeouts, refused redirects and no retry loop. API keys stay server-side. Selected recipe and telemetry context is sent only when a configured provider is enabled. A ChatGPT/Claude website subscription is not an API credential.
 
-Authenticated `GET /ai/models` discovers models with a saved provider key. CSRF-protected `POST /ai/models` can test a supplied key without saving it, so initial setup does not require selecting a model before discovery. Both use a separate bounded provider request and return only IDs/display names. Anthropic cursor pages are collected before returning a complete catalogue. The browser cancels obsolete lookups on provider/key changes; an older response cannot replace the new provider's list. Provider authentication failures return a provider error, not a Hub session-expiration response.
+Authenticated `GET /ai/models` discovers models with a saved provider key. CSRF-protected `POST /ai/models` can test a supplied key without saving it, so initial setup does not require selecting a model before discovery. Both use a separate bounded provider request and return only IDs/display names. Anthropic cursor pages are collected before returning a complete catalog. The browser cancels obsolete lookups on provider/key changes; an older response cannot replace the new provider's list. Provider authentication failures return a provider error, not a Hub session-expiration response.
 
 Recipe creation lives in the recipe workspace. Live advice is scoped to the
 machine's verified current brew, and historical analysis is scoped to the
@@ -80,7 +80,7 @@ Automatic monitoring requires consent for one brew. The owner can opt in during
 a confirmed brew/manual start or enable it for an already active session. The
 start intent is stored only after the machine accepts the command; it binds to
 one new matching history session on the same verified device. Pending intent
-expires after 15 minutes, is cancelled on Hub restart, and cannot attach to a
+expires after 15 minutes, is canceled on Hub restart, and cannot attach to a
 later brew after an ambiguous session transition. Bound consent uses the device
 UID, native history ID and live session ID, and does not roll into the next brew.
 The legacy global monitoring setting grants no per-brew consent.

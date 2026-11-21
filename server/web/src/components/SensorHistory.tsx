@@ -16,14 +16,14 @@ import { sensorValue } from '../lib/capabilities'
 import { Field } from './ui'
 
 const colors = [
-  '#b46b40',
-  '#597b6b',
-  '#77769a',
-  '#227b9a',
-  '#a37b25',
-  '#ba4e74',
-  '#557e46',
-  '#6e6a9d',
+  'var(--hub-wort)',
+  'var(--hub-block)',
+  'var(--hub-phase)',
+  'var(--hub-steam)',
+  'var(--hub-gold)',
+  'var(--hub-pink)',
+  'var(--hub-leaf)',
+  'var(--hub-phase)',
 ]
 export function SensorHistory({
   brew,
@@ -93,8 +93,9 @@ export function SensorHistory({
                 onSelect?.(Number(event.activeLabel))
             }}
           >
-            <CartesianGrid vertical={false} stroke="#e7e1d8" strokeDasharray="3 4" />
+            <CartesianGrid vertical={false} stroke="var(--hub-line)" strokeDasharray="3 4" />
             <XAxis
+              stroke="var(--hub-muted)"
               dataKey="elapsed_ms"
               tickFormatter={clockTime}
               minTickGap={55}
@@ -103,6 +104,7 @@ export function SensorHistory({
               fontSize={14}
             />
             <YAxis
+              stroke="var(--hub-muted)"
               domain={['auto', 'auto']}
               tickLine={false}
               axisLine={false}
@@ -120,7 +122,13 @@ export function SensorHistory({
                   : sensorValue({ value: Number(value), unit: displayUnit }, unit),
                 name,
               ]}
-              contentStyle={{ border: '1px solid #e5ddd2', borderRadius: 10, fontSize: 16 }}
+              contentStyle={{
+                backgroundColor: 'var(--hub-surface)',
+                color: 'var(--hub-ink)',
+                border: '1px solid var(--hub-line)',
+                borderRadius: 10,
+                fontSize: 16,
+              }}
             />
             {visible.map(({ field, metadata }, index) => (
               <Line
@@ -139,9 +147,14 @@ export function SensorHistory({
               <ReferenceLine
                 key={index}
                 x={note.elapsed_ms}
-                stroke="#565775"
+                stroke="var(--hub-phase)"
                 strokeDasharray="3 3"
-                label={{ value: note.label, position: 'insideTopLeft', fontSize: 14 }}
+                label={{
+                  value: note.label,
+                  position: 'insideTopLeft',
+                  fill: 'var(--hub-muted)',
+                  fontSize: 14,
+                }}
               />
             ))}
           </LineChart>

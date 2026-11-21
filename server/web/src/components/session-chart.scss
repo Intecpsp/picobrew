@@ -1,0 +1,93 @@
+.session-chart {
+  min-width: 0;
+}
+.session-chart .field {
+  max-width: 18rem;
+}
+.session-chart-toolbar,
+.session-series,
+.session-chart-detail {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+}
+.session-chart-toolbar {
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+.session-chart-toolbar > span,
+.session-chart-detail {
+  color: var(--hub-muted);
+  font-size: 0.875rem;
+}
+.session-chart strong,
+.session-chart b {
+  font-variant-numeric: tabular-nums;
+  color: var(--hub-ink);
+}
+.session-chart-toolbar > span button {
+  color: var(--hub-accent);
+  text-decoration: underline;
+}
+.session-series {
+  gap: 5px;
+}
+.session-series button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 9px;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  border: 1px solid var(--hub-line);
+  &[aria-pressed='true'] {
+    background: var(--hub-inset);
+  }
+  &[aria-pressed='false'] i {
+    opacity: 0.32;
+  }
+  i {
+    width: 16px;
+    height: 0;
+    border-width: 2px 0 0;
+  }
+}
+.session-plot {
+  width: 100%;
+  cursor: crosshair;
+  touch-action: pan-y;
+}
+.session-plot svg {
+  display: block;
+}
+.session-plot text {
+  font-size: 14px;
+  fill: var(--hub-muted);
+  font-variant-numeric: tabular-nums;
+}
+.session-plot .plot-unit {
+  font-weight: 600;
+}
+.session-plot .plot-grid {
+  stroke: var(--hub-line);
+  stroke-dasharray: 3 4;
+}
+.session-chart-detail {
+  min-height: 2.5rem;
+  padding-top: 8px;
+  border-top: 1px solid var(--hub-line);
+}
+@media (pointer: coarse) {
+  .session-series button,
+  .session-chart-toolbar > span button {
+    min-height: 44px;
+  }
+}
+@media (max-width: 640px) {
+  .session-panel .section-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 8px;
+  }
+}

@@ -1,0 +1,69 @@
+.recipe-plan {
+  .plan-group + .plan-group,
+  .plan-row + .plan-row,
+  .plan-add {
+    border-top: 1px solid var(--hub-line);
+  }
+  .plan-group-head,
+  .plan-add {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 0;
+  }
+  .plan-group-head h4 {
+    margin: 0;
+  }
+  .plan-row {
+    padding: 12px 0;
+  }
+  .plan-fields {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+  .field {
+    margin: 0;
+  }
+  .ingredient-fields,
+  .step-routing {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+    gap: 10px 14px;
+    align-items: end;
+  }
+  .ingredient-fields > :first-child {
+    grid-column: span 2;
+  }
+  .ingredient-fields button {
+    justify-self: start;
+  }
+  .step-routing {
+    margin-top: 10px;
+  }
+  @media (max-width: 650px) {
+    .ingredient-fields,
+    .step-routing {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+  .plan-add {
+    justify-content: flex-start;
+    padding-bottom: 0;
+  }
+  .plan-add select {
+    width: auto;
+  }
+  @media (max-width: 650px) {
+    .plan-fields {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .plan-fields > :first-child {
+      grid-column: 1/-1;
+    }
+    .plan-group-head {
+      flex-wrap: wrap;
+    }
+  }
+}

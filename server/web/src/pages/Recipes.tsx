@@ -1,16 +1,13 @@
+import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
   Plus,
   Upload,
   Download,
   ArrowUpRight,
-  ArrowDown,
-  ArrowUp,
   Trash2,
   Send,
   Save,
-  FlaskConical,
-  Clock3,
   Wheat,
   ShoppingBasket,
   History,
@@ -18,25 +15,22 @@ import {
   Sparkles,
   Check,
   Loader2,
-  BookOpen,
 } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
-import { dateLabel, ingredientUnits, newRecipe, slug } from '../lib/utils'
+import { dateLabel, newRecipe, slug } from '../lib/utils'
 import { isNative, kindLabel, programTiming } from '../lib/programs'
 import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
 import NativeRecipeEditor from './NativeRecipeEditor'
 import { TransferDialog } from '../components/TransferDialog'
 import { AdaptDialog } from '../components/AdaptDialog'
-import type { Recipe, Ingredient, RecipeStep } from '../types'
+import type { Recipe, Ingredient } from '../types'
 import {
-  Badge,
   Button,
   Confirm,
   Empty,
   ErrorBanner,
   Field,
-  IconButton,
   Loading,
   Modal,
   PageTitle,
@@ -64,15 +58,9 @@ function RecipeLibrary() {
   return (
     <>
       <PageTitle
-        eyebrow="A COLLECTION WORTH BREWING"
-        title="Your recipe library."
-        description="Create once. Refine with every brew. Adapt to the machine on your bench."
+        title="Recipe library"
         actions={
           <>
-            <Button variant="secondary" onClick={() => hub.navigate('/catalog')}>
-              <BookOpen size={16} />
-              Community catalogue
-            </Button>
             <Button variant="secondary" onClick={() => setImporting(true)}>
               <Upload size={16} />
               Import recipe
@@ -103,82 +91,51 @@ function RecipeLibrary() {
         </div>
       </div>
       {filtered.length ? (
-        <div className="recipe-grid">
-          {filtered.map((recipe, index) => (
-            <article className="recipe-card" key={recipe.id}>
-              <div className={`recipe-art tone-${index % 3}`}>
-                <Wheat size={58} strokeWidth={1.1} />
-                <div className="recipe-art-lines" />
-                <label className="recipe-select">
-                  <input
-                    type="checkbox"
-                    aria-label={`Select ${recipe.name}`}
-                    checked={selected.includes(recipe.id)}
-                    onChange={(event) =>
-                      setSelected((values) =>
-                        event.target.checked
-                          ? [...values, recipe.id]
-                          : values.filter((id) => id !== recipe.id)
-                      )
-                    }
-                  />
-                </label>
-                <span>{recipe.style || kindLabel(recipe.kind)}</span>
-              </div>
-              <div className="recipe-card-content">
-                <Badge tone={isNative(recipe) ? 'copper' : 'green'}>{kindLabel(recipe.kind)}</Badge>
-                <h3>
-                  <button onClick={() => hub.navigate(`/recipes/${recipe.id}`)}>
-                    {recipe.name}
-                  </button>
-                </h3>
-                <p>{recipe.description || 'A recipe ready for your next brew day.'}</p>
-                <div className="recipe-meta">
-                  {isNative(recipe) ? (
-                    <>
-                      <span>{recipe.source_model}</span>
-                      <span>
-                        <Clock3 size={14} />
-                        {recipe.native_program
-                          ? programTiming(recipe.native_program)
-                          : 'Schedule unavailable'}
-                      </span>
-                      <span>Program only</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>
-                        <FlaskConical size={14} />
-                        {formatVolume(recipe.batch_liters)}
-                      </span>
-                      <span>
-                        <Clock3 size={14} />
-                        {(recipe.steps || []).reduce(
-                          (total, step) => total + step.minutes + step.drain_minutes,
-                          0
-                        )}{' '}
-                        min
-                      </span>
-                      <span>{(recipe.ingredients || []).length} ingredients</span>
-                    </>
-                  )}
-                </div>
-                <div className="recipe-tags">
-                  {(recipe.tags || []).slice(0, 3).map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-                <footer>
-                  <small>Revision {recipe.revision}</small>
-                  <button onClick={() => hub.navigate(`/recipes/${recipe.id}`)}>
-                    Open recipe
-                    <ArrowUpRight size={16} />
-                  </button>
-                </footer>
-              </div>
-            </article>
-          ))}
-        </div>
+        <ul className="library-list" aria-label="Saved recipes and programs">
+          {filtered.map((recipe) => {
+            const native = isNative(recipe)
+            const timing = native
+              ? recipe.native_program
+                ? programTiming(recipe.native_program)
+                : 'Schedule unavailable'
+              : `${(recipe.steps || []).reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)} min`
+            return (
+              <li key={recipe.id}>
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${recipe.name}`}
+                  checked={selected.includes(recipe.id)}
+                  onChange={(event) =>
+                    setSelected((values) =>
+                      event.target.checked
+                        ? [...values, recipe.id]
+                        : values.filter((id) => id !== recipe.id)
+                    )
+                  }
+                />
+                <a href={`#/recipes/${recipe.id}`}>
+                  <span className="library-name">
+                    <strong>{recipe.name}</strong>
+                    <small>
+                      {native
+                        ? [kindLabel(recipe.kind), recipe.source_model].filter(Boolean).join(' · ')
+                        : recipe.style || kindLabel(recipe.kind)}
+                    </small>
+                  </span>
+                  <span className="library-fact">
+                    <small>Batch</small>
+                    {native ? 'Program only' : formatVolume(recipe.batch_liters)}
+                  </span>
+                  <span className="library-fact">
+                    <small>Schedule</small>
+                    {timing}
+                  </span>
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+              </li>
+            )
+          })}
+        </ul>
       ) : (
         <div className="panel">
           <Empty
@@ -212,6 +169,28 @@ function RecipeLibrary() {
     </>
   )
 }
+function metadata(recipe: Recipe) {
+  const {
+    id,
+    name,
+    style,
+    description,
+    batch_liters,
+    efficiency,
+    ingredients,
+    steps,
+    tags,
+    notes,
+    revision,
+    created_at,
+    updated_at,
+    type,
+    boil_liters,
+    boil_minutes,
+    ...extras
+  } = recipe as Recipe & Record<string, unknown>
+  return extras
+}
 function RecipeEditor({ id }: { id: string }) {
   const hub = useHub()
   const isNew = id === 'new'
@@ -226,8 +205,7 @@ function RecipeEditor({ id }: { id: string }) {
   const [deploy, setDeploy] = useState(false)
   const [remove, setRemove] = useState(false)
   const [revisions, setRevisions] = useState(false)
-  const [advanced, setAdvanced] = useState('')
-  const [advancedOpen, setAdvancedOpen] = useState(false)
+  const [advanced, setAdvanced] = useState<string | null>(null)
   const originalRevision = useRef(0)
   useEffect(() => {
     if (loaded.data) {
@@ -237,6 +215,7 @@ function RecipeEditor({ id }: { id: string }) {
         steps: loaded.data.steps || [],
         tags: loaded.data.tags || [],
       })
+      setAdvanced(null)
       originalRevision.current = loaded.data.revision
       setTagsInput((loaded.data.tags || []).join(', '))
       setDirty(false)
@@ -259,16 +238,6 @@ function RecipeEditor({ id }: { id: string }) {
     setRecipe((value) => ({ ...value, ...patch }))
     setDirty(true)
   }
-  function updateIngredient(index: number, patch: Partial<Ingredient>) {
-    update({
-      ingredients: recipe.ingredients.map((item, i) =>
-        i === index ? { ...item, ...patch } : item
-      ),
-    })
-  }
-  function updateStep(index: number, patch: Partial<RecipeStep>) {
-    update({ steps: recipe.steps.map((item, i) => (i === index ? { ...item, ...patch } : item)) })
-  }
   async function save(event?: FormEvent) {
     event?.preventDefault()
     setBusy(true)
@@ -281,7 +250,7 @@ function RecipeEditor({ id }: { id: string }) {
           .map((tag) => tag.trim())
           .filter(Boolean),
       }
-      if (advanced.trim()) {
+      if (advanced?.trim()) {
         const extras = JSON.parse(advanced)
         if (!extras || Array.isArray(extras) || typeof extras !== 'object')
           throw new Error('Advanced metadata must be a JSON object.')
@@ -313,31 +282,6 @@ function RecipeEditor({ id }: { id: string }) {
       hub.notify(errorMessage(error), 'error')
     }
   }
-  function toggleAdvanced() {
-    if (!advancedOpen && !advanced) {
-      const {
-        id,
-        name,
-        style,
-        description,
-        batch_liters,
-        efficiency,
-        ingredients,
-        steps,
-        tags,
-        notes,
-        revision,
-        created_at,
-        updated_at,
-        type,
-        boil_liters,
-        boil_minutes,
-        ...extras
-      } = recipe as Recipe & Record<string, unknown>
-      setAdvanced(JSON.stringify(extras, null, 2))
-    }
-    setAdvancedOpen(!advancedOpen)
-  }
   if (!isNew && loaded.loading) return <Loading label="Opening your recipe…" />
   if (!isNew && loaded.error) return <ErrorBanner message={loaded.error} retry={loaded.reload} />
   const nativeRecipe = isNew ? recipe : loaded.data
@@ -356,7 +300,6 @@ function RecipeEditor({ id }: { id: string }) {
             : `RECIPE · REVISION ${recipe.revision}${dirty ? ' · UNSAVED CHANGES' : ''}`
         }
         title={isNew ? 'What will you brew next?' : recipe.name || 'Untitled recipe'}
-        description="A shared recipe, ready to be shaped for your next brew day."
         actions={
           <>
             {!isNew && (
@@ -380,7 +323,7 @@ function RecipeEditor({ id }: { id: string }) {
       <div className="editor-layout">
         <div className="editor-main">
           <section className="panel">
-            <SectionHeading title="The idea" />
+            <SectionHeading title="Recipe details" />
             <div className="form-grid">
               <Field label="Recipe name">
                 <input
@@ -438,323 +381,17 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
             </div>
           </section>
+          <RecipeIngredients
+            items={recipe.ingredients}
+            change={(ingredients) => update({ ingredients })}
+          />
+          <RecipeSchedule
+            steps={recipe.steps}
+            unit={hub.unit}
+            change={(steps) => update({ steps })}
+          />
           <section className="panel">
-            <SectionHeading
-              title="Ingredients"
-              description="Keep quantities in canonical units: malt in kg, hops in g and water in L. Adaptation scales the selected batch."
-              actions={
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    update({
-                      ingredients: [
-                        ...recipe.ingredients,
-                        {
-                          name: '',
-                          kind: 'fermentable',
-                          amount: 1,
-                          unit: 'kg',
-                          use: 'mash',
-                          minutes: 0,
-                        },
-                      ],
-                    })
-                  }
-                >
-                  <Plus size={15} />
-                  Add ingredient
-                </Button>
-              }
-            />
-            {recipe.ingredients.length ? (
-              <div className="table-scroll">
-                <table className="editor-table">
-                  <thead>
-                    <tr>
-                      <th>Ingredient</th>
-                      <th>Kind</th>
-                      <th>Amount</th>
-                      <th>Unit</th>
-                      <th>Use</th>
-                      <th>Minutes</th>
-                      <th>Alpha %</th>
-                      <th />
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {recipe.ingredients.map((item, index) => (
-                      <tr key={index}>
-                        <td>
-                          <input
-                            aria-label={`Ingredient ${index + 1} name`}
-                            value={item.name}
-                            onChange={(event) =>
-                              updateIngredient(index, { name: event.target.value })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <select
-                            aria-label={`Ingredient ${index + 1} kind`}
-                            value={item.kind}
-                            onChange={(event) =>
-                              updateIngredient(index, {
-                                kind: event.target.value,
-                                unit: ingredientUnits(event.target.value)[0],
-                              })
-                            }
-                          >
-                            <option value="fermentable">Fermentable</option>
-                            <option value="hop">Hop</option>
-                            <option value="yeast">Yeast</option>
-                            <option value="water">Water</option>
-                            <option value="misc">Other</option>
-                          </select>
-                        </td>
-                        <td>
-                          <input
-                            aria-label={`Ingredient ${index + 1} amount`}
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={item.amount}
-                            onChange={(event) =>
-                              updateIngredient(index, { amount: Number(event.target.value) })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <select
-                            aria-label={`Ingredient ${index + 1} unit`}
-                            value={item.unit}
-                            onChange={(event) =>
-                              updateIngredient(index, { unit: event.target.value })
-                            }
-                          >
-                            {ingredientUnits(item.kind).map((unit) => (
-                              <option key={unit}>{unit}</option>
-                            ))}
-                          </select>
-                        </td>
-                        <td>
-                          <input
-                            aria-label={`Ingredient ${index + 1} use`}
-                            value={item.use}
-                            onChange={(event) =>
-                              updateIngredient(index, { use: event.target.value })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            aria-label={`Ingredient ${index + 1} minutes`}
-                            type="number"
-                            min="0"
-                            value={item.minutes}
-                            onChange={(event) =>
-                              updateIngredient(index, { minutes: Number(event.target.value) })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <input
-                            aria-label={`Ingredient ${index + 1} alpha acid`}
-                            type="number"
-                            min="0"
-                            max="100"
-                            step="0.1"
-                            value={item.alpha || 0}
-                            disabled={item.kind !== 'hop'}
-                            onChange={(event) =>
-                              updateIngredient(index, { alpha: Number(event.target.value) })
-                            }
-                          />
-                        </td>
-                        <td>
-                          <IconButton
-                            label={`Remove ingredient ${index + 1}`}
-                            onClick={() =>
-                              update({
-                                ingredients: recipe.ingredients.filter((_, i) => i !== index),
-                              })
-                            }
-                          >
-                            <Trash2 size={15} />
-                          </IconButton>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <Empty
-                icon={<Wheat size={24} />}
-                title="Build the grain bill."
-                description="Add fermentables, hops, yeast and anything else that makes this recipe yours."
-              />
-            )}
-          </section>
-          <section className="panel">
-            <SectionHeading
-              title="The brew schedule"
-              description="Targets use Celsius in the shared recipe. Machine adaptation converts them as required."
-              actions={
-                <Button
-                  variant="secondary"
-                  onClick={() =>
-                    update({
-                      steps: [
-                        ...recipe.steps,
-                        {
-                          name: 'New step',
-                          kind: 'hold',
-                          target_c: 67,
-                          minutes: 10,
-                          drain_minutes: 0,
-                          location: 0,
-                        },
-                      ],
-                    })
-                  }
-                >
-                  <Plus size={15} />
-                  Add step
-                </Button>
-              }
-            />
-            <div className="recipe-steps">
-              {recipe.steps.map((step, index) => (
-                <div className="recipe-step" key={index}>
-                  <span className="step-number">{String(index + 1).padStart(2, '0')}</span>
-                  <div className="step-fields">
-                    <div className="form-grid">
-                      <Field label="Step name">
-                        <input
-                          value={step.name}
-                          onChange={(event) => updateStep(index, { name: event.target.value })}
-                        />
-                      </Field>
-                      <Field label="Type">
-                        <select
-                          value={step.kind}
-                          onChange={(event) =>
-                            updateStep(index, {
-                              kind: event.target.value,
-                              ...(event.target.value === 'unheated' ? { target_c: 0 } : {}),
-                            })
-                          }
-                        >
-                          {[
-                            'mash',
-                            'mash-out',
-                            'boil',
-                            'hop',
-                            'heat',
-                            'hold',
-                            'rest',
-                            'unheated',
-                            'cool',
-                            'fermentation',
-                          ].map((kind) => (
-                            <option key={kind}>{kind}</option>
-                          ))}
-                        </select>
-                      </Field>
-                    </div>
-                    <div className="form-grid quarters">
-                      <Field label="Target (°C)">
-                        <input
-                          type="number"
-                          min="0"
-                          max="100"
-                          step="0.1"
-                          value={step.target_c}
-                          onChange={(event) =>
-                            updateStep(index, { target_c: Number(event.target.value) })
-                          }
-                        />
-                      </Field>
-                      <Field
-                        label="Duration (min)"
-                        hint={
-                          step.kind === 'heat' || step.kind === 'cool'
-                            ? '0 = reach the target temperature'
-                            : undefined
-                        }
-                      >
-                        <input
-                          type="number"
-                          min={step.kind === 'heat' || step.kind === 'cool' ? '0' : '1'}
-                          max="43200"
-                          value={step.minutes}
-                          onChange={(event) =>
-                            updateStep(index, { minutes: Number(event.target.value) })
-                          }
-                        />
-                      </Field>
-                      <Field label="Drain (min)">
-                        <input
-                          type="number"
-                          min="0"
-                          value={step.drain_minutes}
-                          onChange={(event) =>
-                            updateStep(index, { drain_minutes: Number(event.target.value) })
-                          }
-                        />
-                      </Field>
-                      <Field label="Compartment (0 = unmapped)">
-                        <input
-                          type="number"
-                          min="0"
-                          max="6"
-                          value={step.location}
-                          onChange={(event) =>
-                            updateStep(index, { location: Number(event.target.value) })
-                          }
-                        />
-                      </Field>
-                    </div>
-                  </div>
-                  <div className="step-actions">
-                    <IconButton
-                      label={`Move step ${index + 1} up`}
-                      disabled={!index}
-                      onClick={() => {
-                        const steps = [...recipe.steps]
-                        ;[steps[index - 1], steps[index]] = [steps[index], steps[index - 1]]
-                        update({ steps })
-                      }}
-                    >
-                      <ArrowUp size={15} />
-                    </IconButton>
-                    <IconButton
-                      label={`Move step ${index + 1} down`}
-                      disabled={index === recipe.steps.length - 1}
-                      onClick={() => {
-                        const steps = [...recipe.steps]
-                        ;[steps[index + 1], steps[index]] = [steps[index], steps[index + 1]]
-                        update({ steps })
-                      }}
-                    >
-                      <ArrowDown size={15} />
-                    </IconButton>
-                    <IconButton
-                      label={`Remove step ${index + 1}`}
-                      onClick={() => update({ steps: recipe.steps.filter((_, i) => i !== index) })}
-                    >
-                      <Trash2 size={15} />
-                    </IconButton>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-          <section className="panel">
-            <SectionHeading
-              title="Beyond the hot side"
-              description="Recipe type, boil planning, fermentation and water chemistry travel with your recipe."
-            />
+            <SectionHeading title="Boil planning" />
             <div className="form-grid thirds">
               <Field label="Recipe type">
                 <select
@@ -785,61 +422,6 @@ function RecipeEditor({ id }: { id: string }) {
                 />
               </Field>
             </div>
-            <details className="ingredient-details">
-              <summary>Ingredient specifications</summary>
-              {recipe.ingredients.map((item, index) => (
-                <div key={index}>
-                  <h4>{item.name || `Ingredient ${index + 1}`}</h4>
-                  <div className="form-grid quarters">
-                    <Field label="Type">
-                      <input
-                        value={item.type || ''}
-                        onChange={(event) => updateIngredient(index, { type: event.target.value })}
-                        placeholder={
-                          item.kind === 'fermentable'
-                            ? 'Grain'
-                            : item.kind === 'hop'
-                              ? 'Bittering'
-                              : 'Ale'
-                        }
-                      />
-                    </Field>
-                    <Field label="Form">
-                      <input
-                        value={item.form || ''}
-                        onChange={(event) => updateIngredient(index, { form: event.target.value })}
-                        placeholder={item.kind === 'hop' ? 'Pellet' : 'Dry'}
-                      />
-                    </Field>
-                    <Field label="Yield (%)">
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={item.yield || ''}
-                        onChange={(event) =>
-                          updateIngredient(index, { yield: Number(event.target.value) })
-                        }
-                      />
-                    </Field>
-                    <Field label="Color (Lovibond)">
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.color || ''}
-                        onChange={(event) =>
-                          updateIngredient(index, { color: Number(event.target.value) })
-                        }
-                      />
-                    </Field>
-                  </div>
-                </div>
-              ))}
-            </details>
-            <p className="help-text">
-              Use advanced metadata below for water chemistry, fermentation stages and carbonation.
-              These plans are preserved and exported; hot-side machine programs do not control them.
-            </p>
           </section>
           <section className="panel">
             <SectionHeading title="Notes for brew day" />
@@ -851,25 +433,20 @@ function RecipeEditor({ id }: { id: string }) {
                 placeholder="Water treatment, preparation, tasting goals…"
               />
             </Field>
-            <button className="text-button" onClick={toggleAdvanced}>
-              {advancedOpen ? 'Hide' : 'Show'} advanced BeerXML metadata
-            </button>
-            {advancedOpen && (
-              <Field
-                label="Water, fermentation, carbonation and other recipe metadata"
-                hint="Existing extended fields are retained. Edit this JSON object to update recipe type, boil volume/time, water profile, fermentation stages or carbonation."
-              >
-                <textarea
-                  className="code-input"
-                  rows={12}
-                  value={advanced}
-                  onChange={(event) => {
-                    setAdvanced(event.target.value)
-                    setDirty(true)
-                  }}
-                />
-              </Field>
-            )}
+            <Field
+              label="Water, fermentation, carbonation and other recipe metadata"
+              hint="Water chemistry, fermentation and carbonation are stored with the recipe as JSON."
+            >
+              <textarea
+                className="code-input"
+                rows={5}
+                value={advanced ?? JSON.stringify(metadata(recipe), null, 2)}
+                onChange={(event) => {
+                  setAdvanced(event.target.value)
+                  setDirty(true)
+                }}
+              />
+            </Field>
           </section>
         </div>
         <aside className="editor-aside">
