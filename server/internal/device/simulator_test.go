@@ -2,7 +2,6 @@ package device
 
 import (
 	"context"
-	"encoding/hex"
 	"fmt"
 	"reflect"
 	"sync"
@@ -178,10 +177,12 @@ func TestSimulatorSharedHistoryCapacityEvictsOldBrews(t *testing.T) {
 func TestSimulatorDisplayProgramsAndNoOutboundTelemetry(t *testing.T) {
 	ctx := context.Background()
 	s := NewSimulator("test", "z").(*simulator)
-	display, err := s.Display(ctx)
-	data, decodeErr := hex.DecodeString(display.Data)
-	if err != nil || decodeErr != nil || len(data) != 1024 || display.Format != "page-lsb-hex" || display.Width != 128 || display.Height != 64 {
-		t.Fatalf("invalid framebuffer: %+v %v", display, err)
+	caps, err := s.Discover(ctx)
+	if err != nil || caps.FrontPanel || !includes(caps.Commands, "encoder") {
+		t.Fatalf("unexpected simulator capabilities: %+v %v", caps, err)
+	}
+	if _, err := s.Display(ctx); err == nil || deviceFailure(t, err).Code != "unsupported_capability" {
+		t.Fatalf("simulator returned a display: %v", err)
 	}
 	if err := s.UpdateTelemetry(ctx, map[string]any{"enabled": true, "host": "brewer.local", "port": 8080}); deviceFailure(t, err).Code != "simulator_only" {
 		t.Fatal("simulator enabled outbound network telemetry")

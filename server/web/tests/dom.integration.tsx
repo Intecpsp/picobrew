@@ -6,7 +6,6 @@ import App from '../src/App'
 
 const origin = 'http://127.0.0.1:18081'
 const originalFetch = globalThis.fetch
-const painted = vi.fn()
 let user: ReturnType<typeof userEvent.setup>
 let csrfToken = ''
 let dialogPolyfilled = false
@@ -62,15 +61,6 @@ beforeAll(async () => {
     }
   )
   vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
-  vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockImplementation(
-    () =>
-      ({
-        createImageData: (width: number, height: number) => ({
-          data: new Uint8ClampedArray(width * height * 4),
-        }),
-        putImageData: painted,
-      }) as unknown as CanvasRenderingContext2D
-  )
 })
 beforeEach(() => {
   localStorage.clear()
@@ -103,13 +93,13 @@ async function simulationMutation(path: string, body: unknown = {}) {
 }
 
 describe('UI interactions against the real isolated Go simulator', () => {
-  it('loads fleet data, streams updates and decodes an actual OLED response', async () => {
+  it('loads fleet data, streams updates and exposes simulator controls without an OLED', async () => {
     await open('/overview')
     await screen.findByRole('heading', { name: 'A good day to brew.' })
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
-    await screen.findByRole('heading', { name: 'Front panel' })
-    await waitFor(() => expect(painted).toHaveBeenCalled())
+    await screen.findByRole('heading', { name: 'Simulator controls' })
+    expect(document.querySelector('.front-panel canvas')).toBeNull()
     const down = screen.getByRole('button', { name: 'Move selection down' }) as HTMLButtonElement
     await waitFor(() => expect(down.disabled).toBe(false))
     await user.click(down)

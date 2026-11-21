@@ -122,7 +122,7 @@ connections. Its firmware version is `simulator`, device UID is prefixed with
 `simulator:`, samples use source `simulation`, and it advertises no persistent
 history or outbound telemetry forwarding. The model label is descriptive.
 
-Each simulator supports stored recipes, settings, a rendered OLED, encoder input,
+The simulator has no OLED framebuffer. Each simulator supports stored recipes, settings, encoder input,
 preparation prompts, accelerated brews, maintenance completion, stop latching and
 retained history. Time runs at 60 simulated seconds per real second. History is
 volatile and has the same eight-entry / 4,224-row shared limits. The `demo-pro`

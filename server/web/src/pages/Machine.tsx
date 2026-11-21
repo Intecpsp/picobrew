@@ -74,8 +74,9 @@ export default function Machine({ id }: { id: string }) {
 function BrewerMachine({ id }: { id: string }) {
   const hub = useHub()
   const device = hub.devices.find((device) => device.id === id)
+  const simulated = device?.adapter === 'simulator'
   const display = useResource<Display>(
-    device?.online && supports(device.capabilities, 'front_panel')
+    device?.online && !simulated && supports(device.capabilities, 'front_panel')
       ? `/devices/${id}/display`
       : null,
     2500
@@ -331,10 +332,20 @@ function BrewerMachine({ id }: { id: string }) {
       <div className="machine-main">
         <section className="panel front-panel">
           <SectionHeading
-            title="Front panel"
+            title={simulated ? 'Simulator controls' : 'Front panel'}
+            description={
+              simulated
+                ? 'Use the dial to control the simulated program. A connected brewer shows its screen here.'
+                : undefined
+            }
             actions={live?.filter_inserted === false && <Badge tone="amber">Filter removed</Badge>}
           />
-          <OLED display={display.data} error={!device.online ? 'Machine offline' : display.error} />
+          {!simulated && (
+            <OLED
+              display={display.data}
+              error={!device.online ? 'Machine offline' : display.error}
+            />
+          )}
           <div className="dial-controls">
             <Button
               variant="secondary"
