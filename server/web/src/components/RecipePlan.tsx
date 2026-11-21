@@ -1,4 +1,6 @@
+import { QuantityField } from './RecipeMeasures'
 import { routeLabel } from '../lib/programs'
+import { renameIngredient, ingredientDefaults, yeastInfo } from '../lib/beerCrafter'
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { Ingredient, RecipeStep, Unit } from '../types'
@@ -11,6 +13,13 @@ const groups = [
   { title: 'Hop additions', kind: 'hop', add: 'Add hops' },
   { title: 'Yeast, water & other additions', kind: 'misc', add: 'Add other ingredient' },
 ]
+const hopUses = {
+  boil: 'Boil',
+  'first-wort': 'First wort',
+  'dry-hop': 'Dry hop',
+  aroma: 'Whirlpool or flameout',
+  mash: 'Mash',
+}
 const kinds: Record<string, string> = {
   fermentable: 'Fermentable',
   hop: 'Hop',
@@ -32,6 +41,7 @@ export function RecipeIngredients({
   return (
     <section className="panel recipe-plan">
       <SectionHeading title="Ingredients" />
+
       {groups.map((group) => {
         const members = items
           .map((item, index) => ({ item, index }))
@@ -44,6 +54,27 @@ export function RecipeIngredients({
           <div className="plan-group" key={group.kind}>
             <div className="plan-group-head">
               <h4>{group.title}</h4>
+              {group.kind === 'misc' && (
+                <Button
+                  variant="ghost"
+                  onClick={() =>
+                    change([
+                      ...items,
+                      {
+                        name: '',
+                        kind: 'misc',
+                        type: 'Water Agent',
+                        use: 'mash',
+                        amount: 1,
+                        unit: 'g',
+                        minutes: 0,
+                      },
+                    ])
+                  }
+                >
+                  <Plus size={15} /> Add water amendment
+                </Button>
+              )}
               <Button
                 variant="ghost"
                 onClick={() =>
@@ -82,6 +113,7 @@ export function RecipeIngredients({
                     >
                       <input
                         aria-label={`Ingredient ${index + 1} name`}
+                        list={'crafter-' + item.kind}
                         value={item.name}
                         placeholder={
                           hop
@@ -90,18 +122,15 @@ export function RecipeIngredients({
                               ? 'e.g. Pale malt'
                               : 'Name'
                         }
-                        onChange={(e) => patch(index, { name: e.target.value })}
+                        onChange={(e) => patch(index, renameIngredient(item, e.target.value))}
                       />
                     </Field>
-                    <Field label={`Amount (${item.unit})`}>
-                      <input
-                        type="number"
-                        min="0"
-                        step="any"
-                        value={item.amount}
-                        onChange={(e) => patch(index, { amount: Number(e.target.value) })}
-                      />
-                    </Field>
+                    <QuantityField
+                      label="Amount"
+                      unit={item.unit}
+                      value={item.amount}
+                      change={(v) => patch(index, { amount: Number(v) })}
+                    />
                     {hop && (
                       <Field
                         label={
@@ -124,7 +153,17 @@ export function RecipeIngredients({
                         value={item.kind}
                         onChange={(e) => {
                           const kind = e.target.value
-                          patch(index, { kind, unit: ingredientUnits(kind)[0] })
+                          patch(index, {
+                            kind,
+                            unit: ingredientUnits(kind)[0],
+                            attenuation: undefined,
+                            yield: undefined,
+                            alpha: undefined,
+                            color: undefined,
+                            type: '',
+                            form: '',
+                            ...ingredientDefaults(kind, item.name),
+                          })
                         }}
                       >
                         {Object.entries(kinds).map(([k, label]) => (
@@ -147,10 +186,26 @@ export function RecipeIngredients({
                       </Field>
                     )}
                     <Field label="Use">
-                      <input
-                        value={item.use}
-                        onChange={(e) => patch(index, { use: e.target.value })}
-                      />
+                      {hop ? (
+                        <select
+                          value={item.use}
+                          onChange={(e) => patch(index, { use: e.target.value })}
+                        >
+                          {!Object.hasOwn(hopUses, item.use) && (
+                            <option value={item.use}>{item.use || 'Choose how to add'}</option>
+                          )}
+                          {Object.entries(hopUses).map(([value, label]) => (
+                            <option key={value} value={value}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <input
+                          value={item.use}
+                          onChange={(e) => patch(index, { use: e.target.value })}
+                        />
+                      )}
                     </Field>
                     {hop ? (
                       <Field label="Alpha acid (%)">
@@ -160,7 +215,11 @@ export function RecipeIngredients({
                           max="100"
                           step="any"
                           value={item.alpha ?? ''}
-                          onChange={(e) => patch(index, { alpha: Number(e.target.value) })}
+                          onChange={(e) =>
+                            patch(index, {
+                              alpha: e.target.value === '' ? undefined : Number(e.target.value),
+                            })
+                          }
                         />
                       </Field>
                     ) : (
@@ -194,23 +253,69 @@ export function RecipeIngredients({
                         placeholder={item.kind === 'hop' ? 'Pellet' : 'Dry'}
                       />
                     </Field>
-                    <Field label="Yield (%)">
-                      <input
-                        type="number"
-                        min="0"
-                        max="100"
-                        value={item.yield || ''}
-                        onChange={(event) => patch(index, { yield: Number(event.target.value) })}
-                      />
-                    </Field>
-                    <Field label="Color (Lovibond)">
-                      <input
-                        type="number"
-                        min="0"
-                        value={item.color || ''}
-                        onChange={(event) => patch(index, { color: Number(event.target.value) })}
-                      />
-                    </Field>
+                    {item.kind === 'yeast' && (
+                      <Field
+                        label="Expected attenuation (%)"
+                        hint={
+                          yeastInfo(item.name)
+                            ? 'Reference fermentation range ' +
+                              yeastInfo(item.name)!.minF +
+                              '–' +
+                              yeastInfo(item.name)!.maxF +
+                              ' °F'
+                            : ''
+                        }
+                      >
+                        <input
+                          type="number"
+                          min="0"
+                          max="100"
+                          step="any"
+                          value={item.attenuation ?? ''}
+                          onChange={(e) =>
+                            patch(index, {
+                              attenuation:
+                                e.target.value === '' ? undefined : Number(e.target.value),
+                            })
+                          }
+                        />
+                      </Field>
+                    )}
+                    {item.kind === 'fermentable' && (
+                      <>
+                        <Field label="Yield (%)">
+                          <input
+                            type="number"
+                            min="0"
+                            max="100"
+                            value={item.yield ?? ''}
+                            onChange={(event) =>
+                              patch(index, {
+                                yield:
+                                  event.target.value === ''
+                                    ? undefined
+                                    : Number(event.target.value),
+                              })
+                            }
+                          />
+                        </Field>
+                        <Field label="Color (Lovibond)">
+                          <input
+                            type="number"
+                            min="0"
+                            value={item.color ?? ''}
+                            onChange={(event) =>
+                              patch(index, {
+                                color:
+                                  event.target.value === ''
+                                    ? undefined
+                                    : Number(event.target.value),
+                              })
+                            }
+                          />
+                        </Field>
+                      </>
+                    )}
                     <Button
                       variant="ghost"
                       onClick={() => change(items.filter((_, i) => i !== index))}
@@ -295,6 +400,28 @@ export function RecipeSchedule({
     change(next)
   }
   function add() {
+    if (kind === 'whirlpool') {
+      change([
+        ...steps,
+        {
+          name: 'Cool for whirlpool',
+          kind: 'cool',
+          target_c: 80,
+          minutes: 0,
+          drain_minutes: 0,
+          location: 0,
+        },
+        {
+          name: 'Whirlpool hop stand',
+          kind: 'hold',
+          target_c: 80,
+          minutes: 15,
+          drain_minutes: 0,
+          location: 0,
+        },
+      ])
+      return
+    }
     const step = {
       kind,
       name: stepKinds[kind],
@@ -400,6 +527,7 @@ export function RecipeSchedule({
       ))}
       <div className="plan-add">
         <select aria-label="New step type" value={kind} onChange={(e) => setKind(e.target.value)}>
+          <option value="whirlpool">Whirlpool hop stand with cooling</option>
           {Object.entries(stepKinds).map(([k, n]) => (
             <option key={k} value={k}>
               {n}

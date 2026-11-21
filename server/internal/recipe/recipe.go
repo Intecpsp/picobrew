@@ -115,8 +115,8 @@ func Validate(r domain.Recipe) error {
 			return errors.New("invalid water chemistry parameter")
 		}
 	}
-	for _, phase := range r.Fermentation {
-		if !text(phase.Name, 512) || !finite(phase.TargetC) || phase.TargetC < -10 || phase.TargetC > 60 || !finite(phase.Days) || phase.Days <= 0 || phase.Days > 3650 {
+	for i, phase := range r.Fermentation {
+		if !text(phase.Name, 512) || !finite(phase.TargetC) || phase.TargetC < -10 || phase.TargetC > 60 || !finite(phase.Days) || phase.Days < 0 || (phase.Days == 0 && i != len(r.Fermentation)-1) || phase.Days > 3650 {
 			return errors.New("invalid fermentation phase")
 		}
 	}
@@ -137,6 +137,9 @@ func Validate(r domain.Recipe) error {
 	for i, in := range r.Ingredients {
 		if !text(in.Name, 512) || !finite(in.Amount) || in.Amount <= 0 || !finite(in.Minutes) || in.Minutes < 0 || !finite(in.Alpha) || in.Alpha < 0 || in.Alpha > 100 {
 			return fmt.Errorf("ingredient %d has invalid name, amount, timing or alpha percentage", i+1)
+		}
+		if !finite(in.Attenuation) || in.Attenuation < 0 || in.Attenuation > 100 || (in.Attenuation != 0 && in.Kind != "yeast") {
+			return fmt.Errorf("ingredient %d has invalid yeast attenuation", i+1)
 		}
 		if !finite(in.Yield) || in.Yield < 0 || in.Yield > 100 || !finite(in.Color) || in.Color < 0 {
 			return fmt.Errorf("ingredient %d has invalid yield or color", i+1)

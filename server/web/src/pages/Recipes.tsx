@@ -1,3 +1,6 @@
+import { MeasureChoice, QuantityField, RecipeMeasures } from '../components/RecipeMeasures'
+import { FermentationPlan } from '../components/FermentationPlan'
+import { BeerCrafter, ReferenceLists } from '../components/BeerCrafter'
 import { RecipeWizard } from '../components/RecipeWizard'
 import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
@@ -39,7 +42,13 @@ import {
   SectionHeading,
 } from '../components/ui'
 export default function Recipes({ id }: { id?: string }) {
-  return id ? <RecipeEditor id={id} /> : <RecipeLibrary />
+  return id ? (
+    <RecipeMeasures>
+      <RecipeEditor id={id} />
+    </RecipeMeasures>
+  ) : (
+    <RecipeLibrary />
+  )
 }
 function RecipeLibrary() {
   const hub = useHub()
@@ -198,6 +207,9 @@ function metadata(recipe: Recipe) {
     type,
     boil_liters,
     boil_minutes,
+    water,
+    fermentation,
+    carbonation,
     ...extras
   } = recipe as Recipe & Record<string, unknown>
   return extras
@@ -346,10 +358,12 @@ function RecipeEditor({ id }: { id: string }) {
         }
       />
       <ErrorBanner message={error} />
+      <ReferenceLists />
       <div className="editor-layout">
         <div className="editor-main">
           <section className="panel">
             <SectionHeading title="Recipe details" />
+            <MeasureChoice />
             <div className="form-grid">
               <Field label="Recipe name">
                 <input
@@ -362,6 +376,7 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
               <Field label="Style">
                 <input
+                  list="crafter-style"
                   value={recipe.style}
                   onChange={(event) => update({ style: event.target.value })}
                   placeholder="American Pale Ale"
@@ -377,15 +392,12 @@ function RecipeEditor({ id }: { id: string }) {
               />
             </Field>
             <div className="form-grid thirds">
-              <Field label="Batch size (L)">
-                <input
-                  type="number"
-                  min="0.1"
-                  step="0.1"
-                  value={recipe.batch_liters}
-                  onChange={(event) => update({ batch_liters: Number(event.target.value) })}
-                />
-              </Field>
+              <QuantityField
+                label="Batch size"
+                unit="L"
+                value={recipe.batch_liters}
+                change={(v) => update({ batch_liters: Number(v) })}
+              />
               <Field label="Brewhouse efficiency (%)">
                 <input
                   type="number"
@@ -407,6 +419,7 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
             </div>
           </section>
+          <BeerCrafter recipe={recipe} change={(ingredients) => update({ ingredients })} />
           <RecipeIngredients
             items={recipe.ingredients}
             change={(ingredients) => update({ ingredients })}
@@ -431,15 +444,12 @@ function RecipeEditor({ id }: { id: string }) {
                   <option>Extract</option>
                 </select>
               </Field>
-              <Field label="Boil volume (L)">
-                <input
-                  type="number"
-                  min="0"
-                  step="0.1"
-                  value={recipe.boil_liters || ''}
-                  onChange={(event) => update({ boil_liters: Number(event.target.value) })}
-                />
-              </Field>
+              <QuantityField
+                label="Boil volume"
+                unit="L"
+                value={recipe.boil_liters || ''}
+                change={(v) => update({ boil_liters: Number(v) })}
+              />
               <Field label="Boil duration (min)">
                 <input
                   type="number"
@@ -450,6 +460,7 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
             </div>
           </section>
+          <FermentationPlan recipe={recipe} change={update} />
           <section className="panel">
             <SectionHeading title="Notes for brew day" />
             <Field label="Recipe notes">
@@ -461,8 +472,8 @@ function RecipeEditor({ id }: { id: string }) {
               />
             </Field>
             <Field
-              label="Water, fermentation, carbonation and other recipe metadata"
-              hint="Water chemistry, fermentation and carbonation are stored with the recipe as JSON."
+              label="Additional recipe metadata"
+              hint="Additional source and exchange fields, stored as JSON."
             >
               <textarea
                 className="code-input"

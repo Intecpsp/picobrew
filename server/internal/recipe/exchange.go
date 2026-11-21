@@ -200,6 +200,7 @@ type xmlIngredient struct {
 	Amount         *float64 `xml:"AMOUNT"`
 	Use            string   `xml:"USE,omitempty"`
 	Time           *float64 `xml:"TIME,omitempty"`
+	Attenuation    *float64 `xml:"ATTENUATION,omitempty"`
 	Alpha          *float64 `xml:"ALPHA,omitempty"`
 	Yield          *float64 `xml:"YIELD,omitempty"`
 	Color          *float64 `xml:"COLOR,omitempty"`
@@ -410,6 +411,9 @@ func fromXML(x xmlRecipe) (domain.Recipe, error) {
 				}
 				in.Amount = amount * 1000
 				if group.kind == "yeast" {
+					if item.Attenuation != nil {
+						in.Attenuation = *item.Attenuation
+					}
 					if in.Type, err = enum(item.Type, "Ale", "Lager", "Wheat", "Wine", "Champagne"); err != nil {
 						return r, err
 					}
@@ -574,6 +578,9 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 				item.AmountIsWeight = "TRUE"
 			}
 			if in.Kind == "yeast" {
+				if in.Attenuation > 0 {
+					item.Attenuation = pointer(in.Attenuation)
+				}
 				if item.Type, err = enum(in.Type, "Ale", "Lager", "Wheat", "Wine", "Champagne"); err != nil {
 					return nil, err
 				}

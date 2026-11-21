@@ -196,17 +196,18 @@ type MachineRecipe struct {
 	Steps []MachineStep `json:"steps"`
 }
 type Ingredient struct {
-	Name    string  `json:"name"`
-	Kind    string  `json:"kind"`
-	Amount  float64 `json:"amount"`
-	Unit    string  `json:"unit"`
-	Use     string  `json:"use"`
-	Minutes float64 `json:"minutes"`
-	Alpha   float64 `json:"alpha,omitempty"`
-	Type    string  `json:"type,omitempty"`
-	Form    string  `json:"form,omitempty"`
-	Yield   float64 `json:"yield,omitempty"`
-	Color   float64 `json:"color,omitempty"`
+	Name        string  `json:"name"`
+	Kind        string  `json:"kind"`
+	Amount      float64 `json:"amount"`
+	Unit        string  `json:"unit"`
+	Use         string  `json:"use"`
+	Minutes     float64 `json:"minutes"`
+	Alpha       float64 `json:"alpha,omitempty"`
+	Type        string  `json:"type,omitempty"`
+	Form        string  `json:"form,omitempty"`
+	Attenuation float64 `json:"attenuation,omitempty"`
+	Yield       float64 `json:"yield,omitempty"`
+	Color       float64 `json:"color,omitempty"`
 }
 type RecipeStep struct {
 	Name         string  `json:"name"`

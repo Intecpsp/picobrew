@@ -1,4 +1,5 @@
 import type { Profile, Recipe, RecipeStep } from '../types'
+import { goesInKeg, grainInfo, ingredientDefaults } from './beerCrafter'
 import { newRecipe } from './utils'
 
 export type Grain = { name: string; amount: string }
@@ -9,6 +10,11 @@ export type GuidedDraft = {
   batch: string
   grains: Grain[]
   hops: HopAddition[]
+  style: string
+  yeast: string
+  yeastGrams: string
+  firstWort: boolean
+  mashPreset: string
   customMash: boolean
   rests: MashRest[]
   boil: string
@@ -20,6 +26,11 @@ export function initialGuide(): GuidedDraft {
     batch: '',
     grains: [{ name: '', amount: '' }],
     hops: [],
+    style: '',
+    yeast: '',
+    yeastGrams: '',
+    firstWort: false,
+    mashPreset: 'standard',
     customMash: false,
     rests: [],
     boil: '60',
@@ -35,6 +46,16 @@ export function mashSchedule(draft: GuidedDraft, profile: Profile): MashRest[] {
     celsius: (fahrenheit - 32) / 1.8,
     minutes: String(minutes),
   })
+  if (draft.mashPreset === 'infusion') return [rest('Single infusion', 152, 90)]
+  if (draft.mashPreset === 'mash-out')
+    return [rest('Single infusion', 152, 90), rest('Mash out', 175, 15)]
+  if (draft.mashPreset === 'high-efficiency')
+    return [
+      rest('Dough in', 104, 20),
+      rest('Mash 1', 145, 40),
+      rest('Mash 2', 161, 80),
+      rest('Mash out', 175, 20),
+    ]
   if (profile.id === 'z' || profile.id === 'zymatic') return [rest('Single infusion', 152, 90)]
   return [
     rest('Dough in', 110, 7),
@@ -88,6 +109,15 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
   const boil = Number(draft.boil)
   const beforeHops = boil - Number(scheduled[0]?.minutes || 0)
   // Z limits keg passthrough to 94.45 °C. 202 °F stays below that ceiling.
+  const firstWort = draft.firstWort && beforeHops === 0 && !!scheduled.length
+  if (firstWort)
+    add(
+      'Heat through hop slot ' + scheduled[0].slot,
+      'heat',
+      largeBrewer ? (207 - 32) / 1.8 : 95,
+      0,
+      scheduled[0].slot + 2
+    )
   if (beforeHops > 0) add('Boil', 'boil', z ? (202 - 32) / 1.8 : 95, beforeHops, 1)
   scheduled.forEach((addition, i) =>
     add(
@@ -102,6 +132,7 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
   return {
     ...newRecipe(),
     name: draft.name.trim(),
+    style: draft.style.trim(),
     source_model: profile.id,
     batch_liters: draft.batch === '' ? profile.batch_liters : Number(draft.batch),
     efficiency: profile.efficiency,
@@ -109,21 +140,36 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
     type: 'All Grain',
     ingredients: [
       ...grains.map((g) => ({
+        ...ingredientDefaults('fermentable', g.name),
         name: g.name.trim(),
         kind: 'fermentable',
         amount: Number(g.amount),
         unit: 'kg',
-        use: 'mash',
+        use: isKegAddition(g) ? 'boil' : 'mash',
         minutes: 0,
       })),
       ...hops.map((h) => ({
+        ...ingredientDefaults('hop', h.name),
         name: h.name.trim(),
         kind: 'hop',
         amount: Number(h.amount),
         unit: 'g',
-        use: 'boil',
+        use: firstWort && Number(h.minutes) === boil ? 'first-wort' : 'boil',
         minutes: Number(h.minutes),
       })),
+      ...(draft.yeast.trim() && Number(draft.yeastGrams) > 0
+        ? [
+            {
+              kind: 'yeast',
+              name: draft.yeast.trim(),
+              amount: Number(draft.yeastGrams),
+              unit: 'g',
+              minutes: 0,
+              use: 'fermentation',
+              ...ingredientDefaults('yeast', draft.yeast),
+            },
+          ]
+        : []),
     ],
     steps,
   }
@@ -171,8 +217,12 @@ export function totalWeight(grains: Grain[]) {
   return grains.reduce((sum, item) => sum + Number(item.amount), 0)
 }
 
+export const isKegAddition = (g: Grain) => goesInKeg(grainInfo(g.name)?.type)
+export const basketWeight = (grains: Grain[]) =>
+  totalWeight(grains.filter((g) => !isKegAddition(g)))
+
 export function grainOverLimit(grains: Grain[], profile: Profile) {
-  return profile.max_grain_kg > 0 && totalWeight(grains) > profile.max_grain_kg + 1e-9
+  return profile.max_grain_kg > 0 && basketWeight(grains) > profile.max_grain_kg + 1e-9
 }
 
 export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number): string {
@@ -212,6 +262,11 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
   }
   if (recipe.steps.length > Math.min(15, profile.max_steps || 15))
     return 'The schedule exceeds this brewer’s step limit. Remove a return visit or a mash rest.'
+  if (
+    (draft.yeast.trim() || draft.yeastGrams) &&
+    !(draft.yeast.trim() && Number(draft.yeastGrams) > 0)
+  )
+    return 'Enter both the yeast name and pitch weight, or leave both blank.'
   if (stage === 1) return ''
   if (
     mashSchedule(draft, profile).some(
