@@ -22,10 +22,16 @@ export const picoPakStepUses = [
 ]
 
 // Archived Z/Zymatic schedules encode valves from zero and reserve 6 for a pause.
-export function routeLabel(location: number, archiveModel?: string) {
-  if (archiveModel === 'z' || archiveModel === 'zymatic')
+export function routeLabel(location: number, model?: string, archived = false) {
+  if (archived && (model === 'z' || model === 'zymatic'))
     return location === 6 ? 'Pause' : `Valve position ${location + 1}`
-  return location === 0 ? 'Unassigned' : `Valve position ${location}`
+  if (location === 0) return 'Unassigned'
+  if (
+    ['pico', 'pico-s', 'pico-pro', 'pico-c'].includes(model ?? '') &&
+    picoPakStepUses[location - 1]
+  )
+    return picoPakStepUses[location - 1]
+  return `Valve position ${location}`
 }
 export function programTiming(program: MachineRecipe) {
   const minutes = program.steps.reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)

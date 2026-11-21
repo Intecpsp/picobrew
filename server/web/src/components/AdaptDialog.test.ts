@@ -107,7 +107,7 @@ function plan(batch = 5, ready = false, profile = pro): Adapted {
       : null,
     deployment_blockers: ready
       ? []
-      : ['Step 1 requires an explicitly verified chamber location 1–6; no routing is inferred.'],
+      : ['Choose a flow path for step 1 before sending this recipe to the brewer.'],
     warnings: [],
     can_deploy: ready,
     source_revision: source.revision,
@@ -195,9 +195,9 @@ describe('recipe adaptation planning and deployment review', () => {
     })
     expect(screen.getByRole('heading', { name: 'Scaled ingredients' })).toBeTruthy()
     expect(screen.getByRole('region', { name: 'Deployment blockers' }).textContent).toContain(
-      'chamber location'
+      'Choose a flow path'
     )
-    expect(screen.getByText('Unmapped')).toBeTruthy()
+    expect(screen.getByText('Unassigned')).toBeTruthy()
     expect(
       (screen.getByRole('button', { name: 'Send to machine' }) as HTMLButtonElement).disabled
     ).toBe(true)

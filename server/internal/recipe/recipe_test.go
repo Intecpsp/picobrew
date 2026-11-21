@@ -132,7 +132,7 @@ func TestUnmappedLargeRecipePlansAtProfileVolumeWithoutInventingRouting(t *testi
 		}
 	}
 	blockers := strings.Join(plan.DeploymentBlockers, " ")
-	if !strings.Contains(blockers, "Step 1 requires") || !strings.Contains(blockers, "Step 2 requires") || !strings.Contains(blockers, "infusion") {
+	if !strings.Contains(blockers, "Choose a flow path for step 1") || !strings.Contains(blockers, "Choose a flow path for step 2") || !strings.Contains(blockers, "infusion") {
 		t.Fatalf("deployment blockers omitted: %s", blockers)
 	}
 	after, _ := json.Marshal(r)

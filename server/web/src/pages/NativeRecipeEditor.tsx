@@ -157,7 +157,7 @@ export default function NativeRecipeEditor({
               </Field>
               <Field
                 label="Source machine"
-                hint="This preserves the compartment layout of the original program."
+                hint="Flow paths follow the original program for this machine."
               >
                 <input readOnly value={modelLabel(recipe.source_model)} />
               </Field>
@@ -179,7 +179,8 @@ export default function NativeRecipeEditor({
           <section className="panel">
             <ProgramFields
               title={kindLabel(recipe.kind, recipe.source_model)}
-              archiveModel={recipe.source_model}
+              model={recipe.source_model}
+              archived
               program={program}
               onChange={(value) => update({ native_program: value })}
             />

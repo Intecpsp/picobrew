@@ -39,12 +39,12 @@ func TestUnmappedRecipePreviewRetainsPlanButSingleAndBulkDeploymentCannotWrite(t
 		"recipe_id": source.ID, "profile_id": "pico-pro", "batch_liters": 5,
 		"source_revision": preview.SourceRevision, "profile_fingerprint": preview.ProfileFingerprint,
 	}, nil)
-	if status != 422 || !strings.Contains(string(body), "chamber location") || adapter.writes != 0 {
+	if status != 422 || !strings.Contains(string(body), "Choose a flow path for step 1") || adapter.writes != 0 {
 		t.Fatalf("unmapped single deployment was not denied: %d writes=%d %s", status, adapter.writes, body)
 	}
 	selection := DeploymentInput{ProfileID: "pico-pro", Items: []DeploymentSelection{{RecipeID: source.ID, SourceRevision: source.Revision, BatchLiters: 5}}}
 	plan := previewTransfer(t, c, h.URL, csrf, selection)
-	if plan.PlannedCount != 0 || plan.Items[0].Status != "skipped" || plan.Items[0].Native != nil || !strings.Contains(plan.Items[0].Reason, "chamber location") {
+	if plan.PlannedCount != 0 || plan.Items[0].Status != "skipped" || plan.Items[0].Native != nil || !strings.Contains(plan.Items[0].Reason, "Choose a flow path for step 1") {
 		t.Fatalf("bulk preview included an unmapped program: %+v", plan)
 	}
 	status, _ = executeTransfer(t, c, h.URL, csrf, plan)

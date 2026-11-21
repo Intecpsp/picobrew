@@ -341,7 +341,7 @@ function CatalogEntry({ id }: { id: string }) {
               }
             />
             {program ? (
-              <ProgramTable program={program} archiveModel={entry.source_model} />
+              <ProgramTable program={program} model={entry.source_model} archived />
             ) : (
               entry.recipe && (
                 <>
