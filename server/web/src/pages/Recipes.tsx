@@ -8,8 +8,6 @@ import {
   Trash2,
   Send,
   Save,
-  FlaskConical,
-  Clock3,
   Wheat,
   ShoppingBasket,
   History,
@@ -28,7 +26,6 @@ import { TransferDialog } from '../components/TransferDialog'
 import { AdaptDialog } from '../components/AdaptDialog'
 import type { Recipe, Ingredient } from '../types'
 import {
-  Badge,
   Button,
   Confirm,
   Empty,
@@ -61,9 +58,7 @@ function RecipeLibrary() {
   return (
     <>
       <PageTitle
-        eyebrow="A COLLECTION WORTH BREWING"
-        title="Your recipe library."
-        description="Create once. Refine with every brew. Adapt to the machine on your bench."
+        title="Recipe library"
         actions={
           <>
             <Button variant="secondary" onClick={() => setImporting(true)}>
@@ -96,82 +91,51 @@ function RecipeLibrary() {
         </div>
       </div>
       {filtered.length ? (
-        <div className="recipe-grid">
-          {filtered.map((recipe, index) => (
-            <article className="recipe-card" key={recipe.id}>
-              <div className={`recipe-art tone-${index % 3}`}>
-                <Wheat size={58} strokeWidth={1.1} />
-                <div className="recipe-art-lines" />
-                <label className="recipe-select">
-                  <input
-                    type="checkbox"
-                    aria-label={`Select ${recipe.name}`}
-                    checked={selected.includes(recipe.id)}
-                    onChange={(event) =>
-                      setSelected((values) =>
-                        event.target.checked
-                          ? [...values, recipe.id]
-                          : values.filter((id) => id !== recipe.id)
-                      )
-                    }
-                  />
-                </label>
-                <span>{recipe.style || kindLabel(recipe.kind)}</span>
-              </div>
-              <div className="recipe-card-content">
-                <Badge tone={isNative(recipe) ? 'copper' : 'green'}>{kindLabel(recipe.kind)}</Badge>
-                <h3>
-                  <button onClick={() => hub.navigate(`/recipes/${recipe.id}`)}>
-                    {recipe.name}
-                  </button>
-                </h3>
-                <p>{recipe.description || 'A recipe ready for your next brew day.'}</p>
-                <div className="recipe-meta">
-                  {isNative(recipe) ? (
-                    <>
-                      <span>{recipe.source_model}</span>
-                      <span>
-                        <Clock3 size={14} />
-                        {recipe.native_program
-                          ? programTiming(recipe.native_program)
-                          : 'Schedule unavailable'}
-                      </span>
-                      <span>Program only</span>
-                    </>
-                  ) : (
-                    <>
-                      <span>
-                        <FlaskConical size={14} />
-                        {formatVolume(recipe.batch_liters)}
-                      </span>
-                      <span>
-                        <Clock3 size={14} />
-                        {(recipe.steps || []).reduce(
-                          (total, step) => total + step.minutes + step.drain_minutes,
-                          0
-                        )}{' '}
-                        min
-                      </span>
-                      <span>{(recipe.ingredients || []).length} ingredients</span>
-                    </>
-                  )}
-                </div>
-                <div className="recipe-tags">
-                  {(recipe.tags || []).slice(0, 3).map((tag) => (
-                    <span key={tag}>{tag}</span>
-                  ))}
-                </div>
-                <footer>
-                  <small>Revision {recipe.revision}</small>
-                  <button onClick={() => hub.navigate(`/recipes/${recipe.id}`)}>
-                    Open recipe
-                    <ArrowUpRight size={16} />
-                  </button>
-                </footer>
-              </div>
-            </article>
-          ))}
-        </div>
+        <ul className="library-list" aria-label="Saved recipes and programs">
+          {filtered.map((recipe) => {
+            const native = isNative(recipe)
+            const timing = native
+              ? recipe.native_program
+                ? programTiming(recipe.native_program)
+                : 'Schedule unavailable'
+              : `${(recipe.steps || []).reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)} min`
+            return (
+              <li key={recipe.id}>
+                <input
+                  type="checkbox"
+                  aria-label={`Select ${recipe.name}`}
+                  checked={selected.includes(recipe.id)}
+                  onChange={(event) =>
+                    setSelected((values) =>
+                      event.target.checked
+                        ? [...values, recipe.id]
+                        : values.filter((id) => id !== recipe.id)
+                    )
+                  }
+                />
+                <a href={`#/recipes/${recipe.id}`}>
+                  <span className="library-name">
+                    <strong>{recipe.name}</strong>
+                    <small>
+                      {native
+                        ? [kindLabel(recipe.kind), recipe.source_model].filter(Boolean).join(' · ')
+                        : recipe.style || kindLabel(recipe.kind)}
+                    </small>
+                  </span>
+                  <span className="library-fact">
+                    <small>Batch</small>
+                    {native ? 'Program only' : formatVolume(recipe.batch_liters)}
+                  </span>
+                  <span className="library-fact">
+                    <small>Schedule</small>
+                    {timing}
+                  </span>
+                  <ArrowUpRight size={16} aria-hidden="true" />
+                </a>
+              </li>
+            )
+          })}
+        </ul>
       ) : (
         <div className="panel">
           <Empty

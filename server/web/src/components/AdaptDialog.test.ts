@@ -257,7 +257,13 @@ describe('recipe adaptation planning and deployment review', () => {
   it('ignores a late preview and sends only the currently reviewed batch and calibration fingerprint', async () => {
     let resolveOld!: (value: Response) => void
     fetchMock.mockImplementation(async (path) => {
-      if (String(path).endsWith('/deploy')) return json({ deployed: true, started: false })
+      if (String(path).endsWith('/deploy'))
+        return json({
+          deployed: true,
+          started: false,
+          device_id: pro.id,
+          recipe: { id: 'from-server', name: source.name },
+        })
       if (requests('/adapt').length === 1)
         return new Promise<Response>((resolve) => {
           resolveOld = resolve
@@ -352,10 +358,13 @@ describe('recipe adaptation planning and deployment review', () => {
     }
     const result: Adapted = { ...plan(0, true), recipe: native, machine_recipe: program }
     fetchMock.mockImplementation(async (path) =>
-      String(path).endsWith('/adapt') ? json(result) : json({ deployed: true })
+      String(path).endsWith('/adapt')
+        ? json(result)
+        : json({ deployed: true, device_id: pro.id, recipe: program })
     )
     const user = userEvent.setup()
-    render(element(state({ devices }), native))
+    const hub = state({ devices })
+    render(element(hub, native))
     expect(screen.queryByRole('spinbutton', { name: 'Target batch size (L)' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
     await screen.findByText('Exact native schedule')
@@ -366,5 +375,9 @@ describe('recipe adaptation planning and deployment review', () => {
     await user.click(screen.getByRole('button', { name: 'Send to machine' }))
     await waitFor(() => expect(requests('/deploy')).toHaveLength(1))
     expect(JSON.parse(String(requests('/deploy')[0][1]?.body)).batch_liters).toBe(0)
+    expect(hub.navigate).not.toHaveBeenCalled()
+    await user.click(await screen.findByRole('button', { name: 'Open Kitchen Pro' }))
+    expect(hub.navigate).toHaveBeenCalledWith('/devices/pico-pro?recipe=pale-pak')
+    expect(requests('/commands')).toHaveLength(0)
   })
 })

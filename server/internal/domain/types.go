@@ -18,39 +18,40 @@ type Device struct {
 	CreatedAt     time.Time `json:"created_at"`
 }
 type Status struct {
-	Model            string     `json:"model,omitempty"`
-	ModelName        string     `json:"model_name,omitempty"`
-	ModelFamily      string     `json:"model_family,omitempty"`
-	DisplayVariant   string     `json:"display_variant,omitempty"`
-	UptimeMS         uint64     `json:"uptime_ms"`
-	Ready            bool       `json:"ready"`
-	DeviceUID        string     `json:"device_uid"`
-	Busy             bool       `json:"busy"`
-	Stopped          bool       `json:"stopped"`
-	Command          string     `json:"command"`
-	DeviceState      int        `json:"device_state"`
-	Phase            int        `json:"phase"`
-	ControllerStatus int        `json:"controller_status"`
-	Compartment      int        `json:"compartment"`
-	WortF            *float64   `json:"wort_f"`
-	ThermoblockF     *float64   `json:"thermoblock_f"`
-	TargetF          *float64   `json:"target_f"`
-	StepSeconds      int        `json:"step_seconds"`
-	CurrentStep      int        `json:"current_step"`
-	StepCount        int        `json:"step_count"`
-	RecipeName       string     `json:"recipe_name"`
-	StepName         string     `json:"step_name"`
-	SessionID        string     `json:"session_id"`
-	FilterInserted   *bool      `json:"filter_inserted"`
-	StopReason       string     `json:"stop_reason"`
-	State            string     `json:"state,omitempty"`
-	TemperatureF     *float64   `json:"temperature_f,omitempty"`
-	PressureKPa      *float64   `json:"pressure_kpa,omitempty"`
-	BatteryV         *float64   `json:"battery_v,omitempty"`
-	Sensors          []Sensor   `json:"sensors,omitempty"`
-	Actuators        []Actuator `json:"actuators,omitempty"`
-	Recovery         *Recovery  `json:"recovery,omitempty"`
-	Encoder          struct {
+	AwaitingConfirmation bool       `json:"awaiting_confirmation,omitempty"`
+	Model                string     `json:"model,omitempty"`
+	ModelName            string     `json:"model_name,omitempty"`
+	ModelFamily          string     `json:"model_family,omitempty"`
+	DisplayVariant       string     `json:"display_variant,omitempty"`
+	UptimeMS             uint64     `json:"uptime_ms"`
+	Ready                bool       `json:"ready"`
+	DeviceUID            string     `json:"device_uid"`
+	Busy                 bool       `json:"busy"`
+	Stopped              bool       `json:"stopped"`
+	Command              string     `json:"command"`
+	DeviceState          int        `json:"device_state"`
+	Phase                int        `json:"phase"`
+	ControllerStatus     int        `json:"controller_status"`
+	Compartment          int        `json:"compartment"`
+	WortF                *float64   `json:"wort_f"`
+	ThermoblockF         *float64   `json:"thermoblock_f"`
+	TargetF              *float64   `json:"target_f"`
+	StepSeconds          int        `json:"step_seconds"`
+	CurrentStep          int        `json:"current_step"`
+	StepCount            int        `json:"step_count"`
+	RecipeName           string     `json:"recipe_name"`
+	StepName             string     `json:"step_name"`
+	SessionID            string     `json:"session_id"`
+	FilterInserted       *bool      `json:"filter_inserted"`
+	StopReason           string     `json:"stop_reason"`
+	State                string     `json:"state,omitempty"`
+	TemperatureF         *float64   `json:"temperature_f,omitempty"`
+	PressureKPa          *float64   `json:"pressure_kpa,omitempty"`
+	BatteryV             *float64   `json:"battery_v,omitempty"`
+	Sensors              []Sensor   `json:"sensors,omitempty"`
+	Actuators            []Actuator `json:"actuators,omitempty"`
+	Recovery             *Recovery  `json:"recovery,omitempty"`
+	Encoder              struct {
 		Position int `json:"position"`
 		Min      int `json:"min"`
 		Max      int `json:"max"`
@@ -348,6 +349,7 @@ type HistoryPage struct {
 	FieldMetadata map[string]FieldMetadata
 }
 type Brew struct {
+	StepNames        map[int]string           `json:"step_names,omitempty"`
 	ID               string                   `json:"id"`
 	DeviceID         string                   `json:"device_id"`
 	DeviceName       string                   `json:"device_name"`

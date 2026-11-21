@@ -1,6 +1,14 @@
 import { describe, it, expect } from 'vitest'
-import { annotations, clockTime, convertTemp, duration, temperature, transitions } from './utils'
-import type { Sample } from '../types'
+import {
+  deviceAttention,
+  annotations,
+  clockTime,
+  convertTemp,
+  duration,
+  temperature,
+  transitions,
+} from './utils'
+import type { Device, DeviceStatus, Sample } from '../types'
 describe('telemetry presentation', () => {
   it('preserves missing sensors and converts Fahrenheit accurately', () => {
     expect(temperature(null, 'C')).toBe('—')
@@ -29,4 +37,16 @@ describe('telemetry presentation', () => {
     ]
     expect(transitions(samples).map((sample) => sample.elapsed_ms)).toEqual([0, 2, 3])
   })
+})
+
+it('asks for attention only when the connected machine reports a prompt or checkpoint', () => {
+  const attention = (status: Partial<DeviceStatus>, online = true) =>
+    deviceAttention({ online, status } as Device)
+  expect(attention({ busy: true, step_name: 'Press dial to begin' })).toBeNull()
+  expect(attention({ busy: true, awaiting_confirmation: true })?.instruction).toMatch(/dial/i)
+  const recovery = { available: true, valid: true } as NonNullable<DeviceStatus['recovery']>
+  expect(attention({ recovery })?.instruction).toMatch(/interrupted brew/)
+  expect(attention({ recovery: { ...recovery, valid: false } })?.instruction).toMatch(/unreadable/)
+  expect(attention({ recovery, stopped: true })).toBeNull()
+  expect(attention({ recovery }, false)).toBeNull()
 })

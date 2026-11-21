@@ -380,6 +380,21 @@ export function SessionChart({
               <circle cx={x(note.elapsed_ms)} cy={top} r={3} fill="var(--hub-phase)" />
             </g>
           ))}
+          {lanes
+            .find((lane) => lane.key === 'current_step')
+            ?.runs.slice(1)
+            .map((run) => (
+              <line
+                key={run.start}
+                x1={x(run.start)}
+                x2={x(run.start)}
+                y1={top}
+                y2={bottom}
+                stroke="var(--hub-edge)"
+                strokeDasharray="3 5"
+                pointerEvents="none"
+              />
+            ))}
           {lanes.map((lane, li) => (
             <g key={lane.key} data-state={lane.key} transform={`translate(0,${laneY + li * 25})`}>
               <text x={0} y={14}>
@@ -388,8 +403,21 @@ export function SessionChart({
               {lane.runs.map((r, i) => {
                 const w = Math.max(1, x(r.end) - x(r.start))
                 const label = sessionState(brew, lane.key, r.value, r.source)
+                const shortLabel =
+                  lane.key === 'current_step' && r.value !== null
+                    ? brew.step_names?.[r.value]
+                    : undefined
+                const visibleLabel =
+                  w > label.length * 7 + 12
+                    ? label
+                    : shortLabel && w > shortLabel.length * 6.5 + 8
+                      ? shortLabel
+                      : null
                 return (
                   <g key={i}>
+                    <title>
+                      {lane.label} {label}
+                    </title>
                     <rect
                       x={x(r.start)}
                       y={0}
@@ -398,9 +426,9 @@ export function SessionChart({
                       fill={i % 2 ? 'var(--hub-accent-bg)' : 'var(--hub-inset)'}
                     />
                     <line x1={x(r.start)} x2={x(r.start)} y1={1} y2={19} stroke="var(--hub-edge)" />
-                    {w > label.length * 8 + 14 && (
+                    {visibleLabel && (
                       <text x={x(r.start) + 6} y={14}>
-                        {label}
+                        {visibleLabel}
                       </text>
                     )}
                   </g>

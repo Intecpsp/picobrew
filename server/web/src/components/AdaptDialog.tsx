@@ -34,6 +34,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   const profile = hub.profiles.find((item) => item.id === profileID)
   const [batch, setBatch] = useState<BatchSelection>(() => profileBatch(undefined, profile))
   const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
+  const [sent, setSent] = useState<{ machine: string; path: string; program: string } | null>(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
   const requestID = useRef(0)
@@ -117,19 +118,24 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     setBusy('deploy')
     setError('')
     try {
-      await api(`/devices/${deviceID}/deploy`, {
-        method: 'POST',
-        body: {
-          recipe_id: recipe.id,
-          profile_id: adapted.profile.id,
-          batch_liters: native ? 0 : adapted.recipe.batch_liters,
-          source_revision: adapted.source_revision,
-          profile_fingerprint: adapted.profile_fingerprint,
-        },
+      const receipt = await api<{ device_id: string; recipe: { id: string; name: string } }>(
+        `/devices/${deviceID}/deploy`,
+        {
+          method: 'POST',
+          body: {
+            recipe_id: recipe.id,
+            profile_id: adapted.profile.id,
+            batch_liters: native ? 0 : adapted.recipe.batch_liters,
+            source_revision: adapted.source_revision,
+            profile_fingerprint: adapted.profile_fingerprint,
+          },
+        }
+      )
+      setSent({
+        machine: target!.name,
+        program: receipt.recipe.name,
+        path: `/devices/${receipt.device_id}?recipe=${encodeURIComponent(receipt.recipe.id)}`,
       })
-      hub.notify(`Recipe sent to ${target?.name}. It has not been started.`)
-      onClose()
-      hub.navigate(`/devices/${deviceID}`)
     } catch (error) {
       setError(errorMessage(error))
       if (
@@ -144,6 +150,34 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     }
   }
 
+  if (sent)
+    return (
+      <Modal
+        title="Recipe sent"
+        onClose={onClose}
+        actions={
+          <>
+            <Button variant="secondary" onClick={onClose}>
+              Done
+            </Button>
+            <Button
+              onClick={() => {
+                onClose()
+                hub.navigate(sent.path)
+              }}
+            >
+              Open {sent.machine}
+              <ArrowUpRight size={16} />
+            </Button>
+          </>
+        }
+      >
+        <p>
+          <strong>{sent.program}</strong> is saved on {sent.machine}. Open the brewer to review the
+          selection and start when ready.
+        </p>
+      </Modal>
+    )
   return (
     <Modal
       title="Adapt the recipe. Choose its brewer."

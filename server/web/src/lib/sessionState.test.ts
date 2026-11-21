@@ -9,6 +9,8 @@ test('decodes the recorded model and preserves ambiguous and unknown values', ()
     'Controller ready · Machine busy · Step filter inserted (0x0b)'
   )
   expect(value('pico-s', 'flags', 52)).toBe('Stopped · Sampling gap · Unknown bits 0x20 (0x34)')
+  expect(value('pico-s', 'current_step', 1)).toBe('2')
+  expect(value('pico-s', 'current_step', 255)).toBe('No step')
   expect(value('pico-s', 'device_state', 0)).toBe('Code 0')
   expect(value('pico-s', 'device_state', 3)).toBe('Brewing (3)')
   expect(value('picostill', 'device_state', 0)).toBe('No program selected (0)')

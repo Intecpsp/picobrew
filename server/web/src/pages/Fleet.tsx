@@ -27,7 +27,14 @@ import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { SensorHistory } from '../components/SensorHistory'
 import { isAccessory } from '../lib/capabilities'
 import { Sparkline, TemperatureChart } from '../components/Charts'
-import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
+import {
+  dateLabel,
+  deviceModelLabel,
+  deviceAttention,
+  deviceState,
+  duration,
+  temperature,
+} from '../lib/utils'
 export default function Fleet({ addMachine = false }: { addMachine?: boolean }) {
   const hub = useHub()
   const { devices, brews, unit, navigate, loading } = hub
@@ -45,10 +52,19 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
     setEditing(null)
     if (addMachine) navigate('/overview')
   }
-  const active = devices.filter((device) => device.online && device.status?.busy)
+  const attention = devices.filter((device) => deviceAttention(device))
+  const active = devices.filter(
+    (device) =>
+      device.online &&
+      device.status?.busy &&
+      !device.status.stopped &&
+      !deviceAttention(device) &&
+      !(device.status.command === 'front-panel' && device.status.device_state === 2)
+  )
   const lastBrew = brews.find((brew) => brew.state === 'completed')
   const trace = useResource<BrewDetail>(lastBrew ? `/brews/${lastBrew.id}` : null)
-  const ordered = [...active, ...devices.filter((d) => !d.online || !d.status?.busy)]
+  const prioritized = new Set([...attention, ...active])
+  const ordered = [...prioritized, ...devices.filter((device) => !prioritized.has(device))]
   const [traces, setTraces] = useState<Record<string, { value: number | null }[]>>({})
   const previous = useRef('')
   useEffect(() => {
@@ -75,7 +91,7 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
     <>
       <PageTitle
         title="Brewery"
-        description={`${devices.filter((d) => d.online).length} of ${devices.length} machines connected · ${active.length} sessions in progress`}
+        description={`${devices.filter((d) => d.online).length} of ${devices.length} machines connected · ${active.length} session${active.length === 1 ? '' : 's'} in progress${attention.length ? ` · ${attention.length} awaiting attention` : ''}`}
         actions={
           <>
             <Button variant="secondary" onClick={() => setEditing('new')}>
@@ -211,6 +227,7 @@ function MachineCard({
   const status = device.online ? device.status : undefined
   const busy = !!status?.busy && !status.stopped
   const accessory = isAccessory(device)
+  const attention = deviceAttention(device)
   const step =
     busy && status.current_step >= 0 && status.current_step < status.step_count
       ? status.current_step + 1
@@ -229,7 +246,13 @@ function MachineCard({
           <h3>{device.name}</h3>
           <Badge
             tone={
-              !device.online ? 'neutral' : status?.stopped ? 'danger' : busy ? 'copper' : 'green'
+              !device.online
+                ? 'neutral'
+                : status?.stopped
+                  ? 'danger'
+                  : busy || attention
+                    ? 'copper'
+                    : 'green'
             }
           >
             {deviceState(device)}
@@ -237,19 +260,22 @@ function MachineCard({
         </div>
       </div>
       <div className="brewery-session">
-        <small>{busy ? 'Current session' : 'Session'}</small>
+        <small>{attention ? 'Needs attention' : busy ? 'Current session' : 'Session'}</small>
         <strong>
-          {busy
-            ? status.recipe_name || status.command || 'Program in progress'
-            : !device.online
-              ? 'Machine offline'
-              : status?.stopped
-                ? 'Outputs stopped'
-                : status?.ready
-                  ? 'Ready for the next session'
-                  : 'Waiting for machine status'}
+          {attention
+            ? status?.recovery?.recipe_name || status?.recipe_name || attention.title
+            : busy
+              ? status.recipe_name || status.command || 'Program in progress'
+              : !device.online
+                ? 'Machine offline'
+                : status?.stopped
+                  ? 'Outputs stopped'
+                  : status?.ready
+                    ? 'Ready for the next session'
+                    : 'Waiting for machine status'}
         </strong>
-        {busy && (
+        {attention && <span>{attention.instruction}</span>}
+        {busy && !attention && (
           <>
             <span>
               {[step ? `Step ${step} of ${status.step_count}` : '', status.step_name]

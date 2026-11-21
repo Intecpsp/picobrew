@@ -28,20 +28,42 @@ export function dateLabel(value: string | null | undefined) {
       }).format(new Date(value))
     : 'Not recorded'
 }
+export function deviceAttention(device: Device) {
+  const status = device.online ? device.status : null
+  if (!status || status.stopped) return null
+  if (status.busy && status.awaiting_confirmation) {
+    return { title: 'Waiting for confirmation', instruction: 'Press the dial to begin.' }
+  }
+  if (!status.busy && status.recovery && (status.recovery.available || !status.recovery.valid)) {
+    return {
+      title: 'Review checkpoint',
+      instruction: status.recovery.valid
+        ? 'Open the brewer to review the interrupted brew.'
+        : 'Open the brewer to discard the unreadable checkpoint.',
+    }
+  }
+  return null
+}
 export function deviceState(device: Device) {
+  const attention = deviceAttention(device)
+  if (attention) return attention.title
   return !device.online
     ? 'Offline'
     : device.status?.stopped
       ? 'Stopped'
       : device.status?.state
         ? device.status.state.replace(/[_-]/g, ' ').replace(/^./, (c) => c.toUpperCase())
-        : device.status?.busy
-          ? ['picoferm', 'picostill'].includes(device.model)
-            ? 'Session active'
-            : 'Brewing'
-          : device.status?.ready
-            ? 'Ready'
-            : 'Connected'
+        : device.status?.busy &&
+            device.status.command === 'front-panel' &&
+            device.status.device_state === 2
+          ? 'At front panel'
+          : device.status?.busy
+            ? ['picoferm', 'picostill'].includes(device.model)
+              ? 'Session active'
+              : 'Brewing'
+            : device.status?.ready
+              ? 'Ready'
+              : 'Connected'
 }
 export function deviceModelLabel(device: Pick<Device, 'model' | 'model_error' | 'enabled'>) {
   const names: Record<string, string> = {

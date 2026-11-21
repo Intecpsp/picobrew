@@ -396,7 +396,7 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                   <strong>
                     {accessory
                       ? `Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`
-                      : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sample.current_step === 255 ? '—' : sample.current_step + 1}`}
+                      : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sessionState(brew, 'current_step', sample.current_step, sample.source)}`}
                   </strong>
                   <small>
                     {!accessory &&

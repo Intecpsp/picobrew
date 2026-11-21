@@ -291,7 +291,7 @@ test('mobile layouts contain wide recipe and history tables', async ({ page }) =
     .getByRole('navigation', { name: 'Main navigation' })
     .getByRole('link', { name: /^Recipes/ })
     .click()
-  await expect(page.getByRole('heading', { name: 'Your recipe library.' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Recipe library' })).toBeVisible()
 })
 
 test('community catalog preserves source schedules through copy, bulk transfer and machine editing', async ({
@@ -666,5 +666,61 @@ test('eight open Hub tabs can load and navigate over HTTP', async ({ context }) 
   for (const tab of pages) {
     await tab.locator('.sidebar').getByRole('link', { name: 'Settings' }).click()
     await expect(tab.getByRole('heading', { name: 'Hub settings' })).toBeVisible()
+  }
+})
+
+test('send a recipe, review it on the brewer and follow its confirmation', async ({
+  page,
+  request,
+}) => {
+  const headers = { 'X-CSRF-Token': 'demo' }
+  const name = 'Handoff brewer'
+  const created = await request.post('/api/v1/devices', {
+    headers,
+    data: {
+      name,
+      adapter: 'simulator',
+      model: 'pico-s',
+      enabled: true,
+    },
+  })
+  expect(created.ok()).toBe(true)
+  const id = (await created.json()).id
+  try {
+    expect((await request.post(`/api/v1/devices/${id}/test`, { headers, data: {} })).ok()).toBe(
+      true
+    )
+    await page.goto('/#/recipes')
+    await page.getByRole('link', { name: /Weekend Pale/ }).click()
+    await page.getByRole('button', { name: 'Adapt & send' }).click()
+    await page.getByLabel('Target machine').selectOption(id)
+    await page.getByRole('button', { name: 'Preview adaptation' }).click()
+    const receipt = page.waitForResponse((response) =>
+      response.url().endsWith(`/devices/${id}/deploy`)
+    )
+    await page.getByRole('button', { name: 'Send to machine' }).click()
+    const sent = await (await receipt).json()
+    expect(sent.started).toBe(false)
+    await page.getByRole('button', { name: `Open ${name}` }).click()
+    await expect(page.getByLabel('Recipe on this machine')).toHaveValue(sent.recipe.id)
+    await page.getByRole('button', { name: 'Start recipe' }).click()
+    await page.getByRole('button', { name: 'Start program' }).click()
+    await expect(page.getByText('Press the dial to begin.')).toBeVisible()
+    await page.goto('/#/overview')
+    const row = page.locator('.brewery-row').filter({ has: page.getByRole('heading', { name }) })
+    await expect(row).toContainText('Press the dial to begin.')
+    await expect(row.getByRole('progressbar')).toHaveCount(0)
+    await row.getByRole('link', { name: /controls/ }).click()
+    await page.getByRole('button', { name: 'Press dial', exact: true }).click()
+    await expect(page.locator('.session-step')).toContainText('Mash')
+    await expect(page.getByText('Press the dial to begin.')).toHaveCount(0)
+    await page.goto('/#/history/demo-history-demo-pro')
+    await expect(page.locator('[data-state=current_step]')).toContainText('Mash out')
+    const cursor = page.getByRole('slider', { name: 'Inspect recorded samples' })
+    await cursor.focus()
+    await cursor.press('End')
+    await expect(cursor).toHaveAttribute('aria-valuetext', /Step 3 · Boil/)
+  } finally {
+    await request.delete(`/api/v1/devices/${id}`, { headers })
   }
 })

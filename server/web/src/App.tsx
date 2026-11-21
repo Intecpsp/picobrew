@@ -376,7 +376,13 @@ export default function App() {
             {recipeView && <RecipeWorkspaceTabs route={route} />}
             <Suspense fallback={<Loading />}>
               {section === 'devices' ? (
-                <Machine key={parts[1]} id={parts[1]} />
+                <Machine
+                  key={route}
+                  id={parts[1]}
+                  initialRecipe={
+                    new URLSearchParams(route.split('?')[1]).get('recipe') || undefined
+                  }
+                />
               ) : section === 'recipes' ? (
                 parts[1] === 'create-with-ai' ? (
                   <Assistant key={route} />

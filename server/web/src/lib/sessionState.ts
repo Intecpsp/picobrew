@@ -76,7 +76,7 @@ const still = [
 const hex = (value: number) => '0x' + value.toString(16).padStart(2, '0')
 
 export function sessionState(
-  brew: Pick<Brew, 'id' | 'model' | 'source'>,
+  brew: Pick<Brew, 'id' | 'model' | 'source' | 'step_names'>,
   field: string,
   raw: number | null,
   source: string,
@@ -100,7 +100,10 @@ export function sessionState(
     const value = labels.join(' · ') || 'No flags set'
     return detail ? value + ' (' + hex(raw) + ')' : value
   }
-  if (field === 'current_step') return raw < 0 || raw === 255 ? 'No step' : String(raw + 1)
+  if (field === 'current_step') {
+    if (raw < 0 || raw === 255) return 'No step'
+    return [String(raw + 1), brew.step_names?.[raw]].filter(Boolean).join(' · ')
+  }
   if (field === 'compartment') return String(raw)
   let name: string | undefined
   if (sim) {

@@ -239,7 +239,9 @@ func (s *simulator) Status(ctx context.Context) (domain.Status, error) {
 	s.mu.Lock()
 	defer s.mu.Unlock()
 	s.advance(time.Now())
-	return cloneStatus(s.status), nil
+	status := cloneStatus(s.status)
+	status.AwaitingConfirmation = s.pending != nil
+	return status, nil
 }
 func (s *simulator) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 	if err := simulationContext(ctx); err != nil {

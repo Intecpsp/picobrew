@@ -6,6 +6,7 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
+  awaiting_confirmation?: boolean
   state?: string
   temperature_f?: number | null
   pressure_kpa?: number | null
@@ -247,6 +248,7 @@ export interface Sample {
   source: string
 }
 export interface Brew {
+  step_names?: Record<number, string>
   sample_fields?: string[]
   sample_interval_ms?: number
   field_metadata?: Record<string, FieldMetadata>

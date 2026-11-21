@@ -38,7 +38,14 @@ import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components
 import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
-import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
+import {
+  dateLabel,
+  deviceModelLabel,
+  deviceAttention,
+  deviceState,
+  duration,
+  temperature,
+} from '../lib/utils'
 import AccessoryMachine from './AccessoryMachine'
 import { DevicePreferences } from '../components/DevicePreferences'
 import { isAccessory, sensorValue, supports } from '../lib/capabilities'
@@ -60,16 +67,17 @@ const programNames: Record<string, string> = {
   utilities: 'Utilities',
   settings: 'Settings',
 }
-export default function Machine({ id }: { id: string }) {
+type MachineProps = { id: string; initialRecipe?: string }
+export default function Machine({ id, initialRecipe }: MachineProps) {
   const hub = useHub()
   const device = hub.devices.find((item) => item.id === id)
   return device && isAccessory(device) ? (
     <AccessoryMachine device={device} />
   ) : (
-    <BrewerMachine id={id} />
+    <BrewerMachine id={id} initialRecipe={initialRecipe} />
   )
 }
-function BrewerMachine({ id }: { id: string }) {
+function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const hub = useHub()
   const device = hub.devices.find((device) => device.id === id)
   const simulated = device?.adapter === 'simulator'
@@ -86,7 +94,7 @@ function BrewerMachine({ id }: { id: string }) {
   const [task, setTask] = useState<'recipes' | 'programs'>('recipes')
   const [monitorNextBrew, setMonitorNextBrew] = useState(false)
   const monitor = useResource<AIMonitorState>(device ? `/devices/${id}/ai-monitor` : null, 5000)
-  const [recipeID, setRecipeID] = useState('')
+  const [selection, setRecipeID] = useState(initialRecipe || '')
   const [pending, setPending] = useState('')
   const [confirm, setConfirm] = useState<{
     command: string
@@ -110,6 +118,7 @@ function BrewerMachine({ id }: { id: string }) {
     device?.status?.busy ? 10000 : 0
   )
   const recipes = Array.isArray(native.data) ? native.data : native.data?.recipes || []
+  const recipeID = recipes.find((recipe) => recipe.id === selection)?.id || ''
   function requestStart(value: NonNullable<typeof confirm>) {
     setMonitorNextBrew(false)
     setError('')
@@ -207,10 +216,8 @@ function BrewerMachine({ id }: { id: string }) {
   const allowed = (name: string) => device.online && commands.includes(name)
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
-  const state =
-    device.online && interrupted && !status?.busy && !status?.stopped
-      ? 'Review checkpoint'
-      : deviceState(device)
+  const attention = deviceAttention(device)
+  const state = deviceState(device)
   return (
     <>
       <PageTitle
@@ -413,12 +420,19 @@ function BrewerMachine({ id }: { id: string }) {
           {!device.online && device.last_seen && (
             <p className="help-text">Last connected {dateLabel(device.last_seen)}</p>
           )}
-          {live?.busy && (
+          {live?.busy && attention && <p className="notice">{attention.instruction}</p>}
+          {live?.busy && !attention && (
             <div className="session-step">
               <span>{stepNumber || 'Current step'}</span>
               <strong>{live.step_name || 'Follow the front panel'}</strong>
               {live.step_seconds > 0 && (
-                <span>{duration(live.step_seconds * 1000)} remaining in this step</span>
+                <span>
+                  {duration(live.step_seconds * 1000)}{' '}
+                  {device.adapter === 'simulator' ||
+                  (device.model.startsWith('pico-') && live.phase === 8)
+                    ? 'elapsed in this step'
+                    : 'remaining in this step'}
+                </span>
               )}
             </div>
           )}
@@ -472,6 +486,11 @@ function BrewerMachine({ id }: { id: string }) {
                 <>
                   {recipes.length > 0 ? (
                     <>
+                      {initialRecipe && selection === initialRecipe && !recipeID && native.data && (
+                        <p className="notice">
+                          The sent recipe is no longer in this brewer’s recipe list.
+                        </p>
+                      )}
                       <Field label="Recipe on this machine">
                         <select
                           value={recipeID}
@@ -490,6 +509,7 @@ function BrewerMachine({ id }: { id: string }) {
                         disabled={
                           !recipeID ||
                           !allowed('brew') ||
+                          !live.ready ||
                           !!pending ||
                           !!status?.busy ||
                           interrupted

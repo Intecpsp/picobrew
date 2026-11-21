@@ -118,7 +118,7 @@ func (s *Server) observeAIBrew(ctx context.Context, d *runtimeDevice) (aiBrewObs
 		if _, err := s.db.Get("brew", observed.BrewID, &brew); errors.Is(err, store.ErrNotFound) {
 			// The normal history importer will fill the samples. Creating this
 			// exact metadata record lets the user opt in before its next poll.
-			_, err = s.mergeHistoryBrew(view.Device, history.HistorySession, false)
+			_, err = s.mergeHistoryBrew(view.Device, history.HistorySession, false, nil)
 			if err != nil {
 				return observed, err
 			}
