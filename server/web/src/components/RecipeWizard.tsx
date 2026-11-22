@@ -181,6 +181,16 @@ export function RecipeWizard({
   }, [stage])
   const [conditioning, setConditioning] = useState<Pick<Recipe, 'fermentation' | 'carbonation'>>({})
   const recipe = profile && { ...guidedRecipe(draft, profile), ...conditioning }
+  function openAdvanced() {
+    if (entered.current && recipe) return advanced(recipe)
+    const base = newRecipe()
+    if (profile) {
+      base.source_model = profile.id
+      base.batch_liters = profile.batch_liters
+      base.efficiency = profile.efficiency
+    }
+    advanced(base)
+  }
   function next() {
     if (!profile || !recipe) return
     const message = guideProblem(draft, profile, stage)
@@ -235,11 +245,7 @@ export function RecipeWizard({
             back()
         }}
         actions={
-          <Button
-            variant="secondary"
-            disabled={busy}
-            onClick={() => advanced(entered.current && recipe ? recipe : newRecipe())}
-          >
+          <Button variant="secondary" disabled={busy} onClick={openAdvanced}>
             <SlidersHorizontal size={16} /> Advanced editor
           </Button>
         }

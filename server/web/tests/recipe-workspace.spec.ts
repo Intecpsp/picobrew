@@ -116,7 +116,10 @@ test('an empty library has one create action and the editor names each PicoPak f
   await page.goBack()
   await add.click()
   await page.getByRole('link', { name: 'Create for a brewer', exact: true }).click()
+  const brewerBatch = await page.getByLabel('Batch size (L)').getAttribute('placeholder')
+  expect(brewerBatch).toBeTruthy()
   await page.getByRole('button', { name: 'Advanced editor' }).click()
+  await expect(page.getByLabel('Batch size (L)')).toHaveValue(brewerBatch!)
   const valve = page.getByLabel('Flow path', { exact: true }).first()
   await expect(valve).toHaveValue('0')
   await expect(valve.getByRole('option', { name: 'Hop addition 1', exact: true })).toHaveAttribute(
@@ -559,14 +562,15 @@ test('a recipe plan can be recorded separately for each batch after brew day', a
   }
 })
 
-test('a generic batch recipe opens in the editor with an editable five gallon base', async ({
+test('a shared recipe defaults to 2.5 US gallons and preserves a custom yield across brewer views', async ({
   page,
 }) => {
   await page.goto('/#/recipes')
   await page.getByText('Add recipe', { exact: true }).click()
   await page.getByRole('link', { name: 'Create by batch size' }).click()
   await page.getByLabel('Recipe measurements').selectOption('us')
-  await expect(page.getByLabel('Batch size (US gal)')).toHaveValue('5')
+  await expect(page.getByLabel('Batch size (US gal)')).toHaveValue('2.5')
+  await page.getByLabel('Batch size (US gal)').fill('5')
   await expect(page.getByLabel('2. Step name')).toHaveValue('Boil')
   await page.getByLabel('Recipe name', { exact: true }).fill('Five gallon base')
   await page.getByRole('button', { name: 'Add grain' }).click()
