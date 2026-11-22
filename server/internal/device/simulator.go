@@ -44,8 +44,21 @@ func NewSimulator(id, model string) Adapter {
 	s := &simulator{id: id, model: model, boot: now, recipes: make(map[string]domain.MachineRecipe), settings: map[string]any{"temperature_unit": "F", "language": "en", "detailed_status": false}, telemetry: map[string]any{"enabled": false, "host": "", "port": 8080}}
 	s.status = domain.Status{Ready: true, DeviceUID: "simulator:" + id, Command: "idle", WortF: floatValue(72), ThermoblockF: floatValue(76), TargetF: floatValue(0), FilterInserted: boolValue(true), StopReason: "none"}
 	s.resetPanel("")
-	porter := domain.MachineRecipe{ID: "studio-porter", Name: "Studio Porter", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 152, Minutes: 60, DrainMinutes: 2}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60, DrainMinutes: 2}}}
-	pale := domain.MachineRecipe{ID: "weekend-pale", Name: "Weekend Pale", Steps: []domain.MachineStep{{Name: "Mash", Location: 1, TargetF: 149, Minutes: 60}, {Name: "Boil", Location: 2, TargetF: 210, Minutes: 60}}}
+	kegTarget := 203
+	if model == "z" || model == "z-series" {
+		kegTarget = 202
+	}
+	porter := domain.MachineRecipe{ID: "studio-porter", Name: "Studio Porter", Steps: []domain.MachineStep{
+		{Name: "Mash", Location: 2, TargetF: 153, Minutes: 60},
+		{Name: "Mash out", Location: 2, TargetF: 169, Minutes: 10, DrainMinutes: 2},
+		{Name: "Heat to boil", Location: 1, TargetF: kegTarget},
+		{Name: "Boil", Location: 3, TargetF: 203, Minutes: 60},
+	}}
+	pale := domain.MachineRecipe{ID: "weekend-pale", Name: "Weekend Pale", Steps: []domain.MachineStep{
+		{Name: "Mash", Location: 2, TargetF: 149, Minutes: 60, DrainMinutes: 2},
+		{Name: "Boil", Location: 1, TargetF: kegTarget, Minutes: 30},
+		{Name: "Hop slot 1", Location: 3, TargetF: 203, Minutes: 30},
+	}}
 	s.recipes[porter.ID] = porter
 	s.recipes[pale.ID] = pale
 	if id == "demo-pro" {

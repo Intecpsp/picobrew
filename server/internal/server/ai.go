@@ -231,15 +231,64 @@ func (s *Server) performAI(ctx context.Context, cfg ai.Config, key string, input
 		return result, err
 	}
 	if len(result.Recipe) > 0 {
-		var draft domain.Recipe
-		if err = json.Unmarshal(result.Recipe, &draft); err != nil {
-			return ai.Result{}, errors.New("generated recipe is not valid JSON")
-		}
-		if err = recipe.Validate(draft); err != nil {
+		profiles, _ := data["available_profiles"].([]domain.Profile)
+		machine, _ := data["device"].(domain.DeviceView)
+		if err := validateGeneratedRecipe(result.Recipe, machine.Model, profiles); err != nil {
 			return ai.Result{}, fmt.Errorf("generated recipe failed validation: %w", err)
 		}
 	}
 	return result, nil
+}
+
+// Only return ingredient drafts that the same compiler used by Send can turn
+// into a supported brewing program. Device commands and native programs are
+// outside the recipe assistant's output format.
+func validateGeneratedRecipe(raw json.RawMessage, target string, profiles []domain.Profile) error {
+	if value := strings.TrimSpace(string(raw)); value == "" || value[0] != '{' {
+		return errors.New("expected one recipe object")
+	}
+	recipes, err := recipe.Import(raw, "json")
+	if err != nil {
+		return err
+	}
+	draft := recipes[0]
+	if recipe.IsNative(draft) {
+		return errors.New("expected an ingredient recipe")
+	}
+	var grist, yeast, boiled bool
+	for _, item := range draft.Ingredients {
+		grist = grist || item.Kind == "fermentable"
+		yeast = yeast || item.Kind == "yeast"
+	}
+	for _, step := range draft.Steps {
+		boiled = boiled || ((step.Kind == "boil" || step.Kind == "hop") && step.Minutes > 0 && step.TargetC > 0)
+	}
+	if !grist || !boiled || (!yeast && strings.TrimSpace(recipe.SourceYeast(draft)) == "") {
+		return errors.New("include fermentables, a named yeast and a timed, heated boil")
+	}
+	if target == "" {
+		target = draft.SourceModel
+	}
+	if len(profiles) == 0 {
+		profiles = recipe.Profiles()
+	}
+	reason := "choose a supported brewing model"
+	for _, profile := range profiles {
+		if target != "" && !profileMatchesModel(profile.ID, target) {
+			continue
+		}
+		plan, err := recipe.Translate(draft, profile, 0)
+		if err != nil {
+			return err
+		}
+		if plan.MachineRecipe != nil && len(plan.DeploymentBlockers) == 0 {
+			return nil
+		}
+		if len(plan.DeploymentBlockers) > 0 {
+			reason = strings.Join(plan.DeploymentBlockers, "; ")
+		}
+	}
+	return errors.New(reason)
 }
 
 func (s *Server) recordAdvice(input ai.Request, result ai.Result, err error) {

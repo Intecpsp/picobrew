@@ -235,3 +235,30 @@ func TestJournalPreservesExplicitZeroCarbonationTemperature(t *testing.T) {
 		t.Fatal("invented temperature")
 	}
 }
+
+func TestGeneratedRecipesUseTheSameProgramChecksAsSend(t *testing.T) {
+	r := validRecipe()
+	r.SourceYeast = "US-05"
+	for i := range r.Steps {
+		r.Steps[i].Location = 0
+	}
+	check := func(target string, wantOK bool) {
+		t.Helper()
+		b, err := json.Marshal(r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = validateGeneratedRecipe(b, target, nil); (err == nil) != wantOK {
+			t.Fatalf("target %s: %v", target, err)
+		}
+	}
+	for _, model := range []string{"pico-s", "pico-pro", "pico-c", "z-series", "zymatic"} {
+		check(model, true)
+	}
+	check("picoferm", false)
+	r.Steps[0].Location = 1
+	r.Steps[1].Location = 1
+	check("pico-s", false)
+	r.SourceYeast = ""
+	check("", false)
+}

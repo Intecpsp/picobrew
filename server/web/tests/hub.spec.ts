@@ -700,7 +700,8 @@ test('send a recipe and start it directly from the Hub', async ({ page, request 
     const receipt = page.waitForResponse((response) =>
       response.url().endsWith(`/devices/${id}/deploy`)
     )
-    await page.getByRole('button', { name: 'Send to machine' }).click()
+    await expect(page.getByText('This will replace “Weekend Pale” on ' + name + '.')).toBeVisible()
+    await page.getByRole('button', { name: 'Replace on machine' }).click()
     const sent = await (await receipt).json()
     expect(sent.started).toBe(false)
     await page.getByRole('button', { name: `Open ${name}` }).click()
