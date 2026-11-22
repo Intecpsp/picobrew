@@ -34,6 +34,18 @@ type Candidate struct {
 	BinaryBytes     int    `json:"binary_bytes"`
 }
 
+// SupportsHubOTA identifies packages the Hub recovery protocol can install.
+func (c Candidate) SupportsHubOTA() bool {
+	return c.HubOTAProtocol == 1 && c.ModelFamily == "pico-s-pro" && c.DisplayVariant == "" && (c.Model == "pico-s" || c.Model == "pico-pro")
+}
+
+// ReviewedStockUID identifies the one S/Pro-family brewer whose OEM boot
+// layout and both firmware slots are documented. The USB writer independently
+// reads and verifies the connected brewer before opening any slot for writing.
+func ReviewedStockUID(uid string) bool {
+	return Digest([]byte(uid)) == "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
+}
+
 type Catalog struct {
 	Repository string      `json:"repository"`
 	Ref        string      `json:"ref"`
@@ -68,6 +80,7 @@ type InstallReceipt struct {
 	Message   string    `json:"message"`
 }
 type MachineFirmware struct {
+	StockRestoreGuide            bool            `json:"stock_restore_guide,omitempty"`
 	RetryPackageID               string          `json:"retry_package_id,omitempty"`
 	LastInstall                  *InstallReceipt `json:"last_install,omitempty"`
 	DeviceID                     string          `json:"device_id"`

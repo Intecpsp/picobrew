@@ -131,14 +131,16 @@ def main() -> None:
     for path in manifests:
         print(json.dumps(verify_manifest(path.resolve(), index_modes=index_modes), sort_keys=True))
     for path in sorted((ROOT / "firmware").glob("*/provenance.json")):
-        device = json.loads(path.read_text(encoding="utf-8")).get("oem_application")
-        if not device:
-            continue
-        image = path.parent.joinpath(*safe_path(device["path"]).parts)
-        data = image.read_bytes()
-        if len(data) != device["size"] or hashlib.sha256(data).hexdigest() != device["sha256"]:
-            raise ValueError(f"Verified device image changed: {image}")
-        print(json.dumps({"device_image": image.relative_to(ROOT).as_posix(), "verified": True}))
+        provenance = json.loads(path.read_text(encoding="utf-8"))
+        for kind in ("oem_application", "oem_recovery"):
+            device = provenance.get(kind)
+            if not device:
+                continue
+            image = path.parent.joinpath(*safe_path(device["path"]).parts)
+            data = image.read_bytes()
+            if len(data) != device["size"] or hashlib.sha256(data).hexdigest() != device["sha256"]:
+                raise ValueError(f"Verified device image changed: {image}")
+            print(json.dumps({"device_image": image.relative_to(ROOT).as_posix(), "verified": True}))
 
 
 if __name__ == "__main__":

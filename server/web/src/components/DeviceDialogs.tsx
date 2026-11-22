@@ -5,6 +5,7 @@ import { api, errorMessage } from '../lib/api'
 import { deviceModelLabel, liveReadingsStatus } from '../lib/utils'
 import type { Device } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
+import { StockSetupGuide } from './StockSetupGuide'
 
 export function DeviceKeyNotice() {
   return (
@@ -44,6 +45,7 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
   const [busy, setBusy] = useState(false)
   const [identifying, setIdentifying] = useState(false)
   const [error, setError] = useState('')
+  const [usbSetup, setUSBSetup] = useState(false)
   const locked = busy || identifying
   const physical = form.adapter === 'pico-standalone'
   const invalidIdentity = ['invalid_model', 'unsupported_model'].includes(
@@ -112,6 +114,7 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
           { id: 'pico-pro', name: 'Pico Pro' },
           { id: 'pico-s', name: 'Pico S' },
         ]
+  if (usbSetup) return <StockSetupGuide onClose={() => setUSBSetup(false)} />
   return (
     <Modal
       title={device ? 'Edit machine connection' : 'Add machine'}
@@ -136,6 +139,16 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
         </>
       }
     >
+      {!device && physical && !hub.session.demo && (
+        <Button
+          className="stock-setup-entry"
+          variant="secondary"
+          disabled={locked}
+          onClick={() => setUSBSetup(true)}
+        >
+          Set up a stock brewer via USB
+        </Button>
+      )}
       <form id="device-form" onSubmit={submit}>
         <div className="form-grid">
           <Field label="Machine name">

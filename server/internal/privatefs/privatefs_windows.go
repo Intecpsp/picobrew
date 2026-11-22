@@ -267,3 +267,8 @@ func OpenFile(path string, flags int) (*os.File, error) {
 	}
 	return os.NewFile(uintptr(h), path), nil
 }
+
+// OpenSource verifies an existing file's ACL without modifying it.
+func OpenSource(path string) (*os.File, error) {
+	return OpenFile(path, os.O_RDONLY)
+}

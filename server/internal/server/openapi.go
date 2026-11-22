@@ -367,6 +367,7 @@ func addFirmwareSchemas(values schemaMap) {
 		"verified_display_variant":       displayVariant,
 		"device_uid":                     stringSchema(),
 		"hardware_verification_required": boolSchema(),
+		"stock_restore_guide":            boolSchema(),
 		"install_supported":              boolSchema(),
 		"retry_package_id":               hash,
 		"last_install":                   schemaRef("FirmwareInstallReceipt"),

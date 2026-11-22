@@ -35,3 +35,27 @@ func TestUnixModesAndNoFollow(t *testing.T) {
 		t.Fatalf("followed symlink: %q", data)
 	}
 }
+
+func TestOpenSourcePreservesReadOnlyPermissions(t *testing.T) {
+	path := filepath.Join(t.TempDir(), "original.bin")
+	if err := os.WriteFile(path, []byte("read-only capture"), 0400); err != nil {
+		t.Fatal(err)
+	}
+	f, err := OpenSource(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer f.Close()
+	info, err := f.Stat()
+	if err != nil || info.Mode().Perm() != 0400 {
+		t.Fatal("external file permissions were changed", info, err)
+	}
+	link := path + ".link"
+	if err := os.Symlink(path, link); err != nil {
+		t.Fatal(err)
+	}
+	if other, err := OpenSource(link); err == nil {
+		other.Close()
+		t.Fatal("opened a symlink in place of the original")
+	}
+}

@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"net/http"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -25,6 +26,15 @@ type releaseView struct {
 	Notices  []releaseNotice    `json:"notices"`
 }
 
+// The repository also publishes USB and reference images. Filter at both
+// catalog boundaries so a Hub upgrade takes effect before the next refresh.
+func otaCatalog(c firmware.ReleaseCatalog) firmware.ReleaseCatalog {
+	c.Releases = slices.DeleteFunc(c.Releases, func(r firmware.Release) bool {
+		return r.Kind != "standalone" || !r.Candidate.SupportsHubOTA()
+	})
+	return c
+}
+
 func (s *Server) savedCatalog() (firmware.ReleaseCatalog, error) {
 	var catalog firmware.ReleaseCatalog
 	s.configMu.Lock()
@@ -37,7 +47,7 @@ func (s *Server) savedCatalog() (firmware.ReleaseCatalog, error) {
 	if errors.Is(err, store.ErrNotFound) || (err == nil && catalog.Settings != cfg) {
 		return firmware.ReleaseCatalog{Settings: cfg}, nil
 	}
-	return catalog, err
+	return otaCatalog(catalog), err
 }
 func (s *Server) refreshCatalog(ctx context.Context) (firmware.ReleaseCatalog, error) {
 	s.releaseMu.Lock()
@@ -59,6 +69,7 @@ func (s *Server) refreshCatalog(ctx context.Context) (firmware.ReleaseCatalog, e
 	if current != next.Settings {
 		return catalog, sourceChanged()
 	}
+	next = otaCatalog(next)
 	_, err = s.db.Put("config", "firmware-releases", next, -1)
 	return next, err
 }
@@ -74,15 +85,6 @@ func (s *Server) fleetForReleases() []domain.DeviceView {
 		d.mu.RUnlock()
 	}
 	return out
-}
-func releaseMatches(r firmware.Release, v domain.DeviceView) bool {
-	if r.Model == "pico-s-pro" {
-		return v.Model == "pico-s" || v.Model == "pico-pro"
-	}
-	if r.Model != v.Model {
-		return false
-	}
-	return r.Model != "pico-c" || v.Capabilities != nil && r.DisplayVariant == v.Capabilities.DisplayVariant
 }
 
 // Only compare numbered production releases for update notifications.
@@ -148,14 +150,14 @@ func (s *Server) firmwareUpdates(w http.ResponseWriter, r *http.Request) {
 	for _, d := range s.fleetForReleases() {
 		latest := ""
 		for _, v := range c.Releases {
-			if !releaseMatches(v, d) {
+			if v.Model != d.Model {
 				continue
 			}
 			if !seen[v.ArchiveSHA256] {
 				out.Releases = append(out.Releases, v)
 				seen[v.ArchiveSHA256] = true
 			}
-			if v.Kind != "historical" && d.Capabilities != nil && newerRelease(v.FirmwareVersion, d.Capabilities.FirmwareVersion) && (latest == "" || newerRelease(v.FirmwareVersion, latest)) {
+			if d.Capabilities != nil && newerRelease(v.FirmwareVersion, d.Capabilities.FirmwareVersion) && (latest == "" || newerRelease(v.FirmwareVersion, latest)) {
 				latest = v.FirmwareVersion
 			}
 		}
@@ -191,7 +193,14 @@ func (s *Server) stageRelease(w http.ResponseWriter, r *http.Request) {
 	s.firmwareMu.Lock()
 	_, err = s.db.Get(firmwareRecordKind, id, &saved)
 	if err == nil {
-		_, err = s.readFirmwareArchive(id)
+		var archive []byte
+		archive, err = s.readFirmwareArchive(id)
+		if err == nil && saved.Candidate != selected.Candidate {
+			err = &firmware.Error{Code: "firmware_package_invalid", Message: "The staged package metadata differs from the selected release"}
+		}
+		if err == nil {
+			err = firmware.ValidateRelease(archive, *selected)
+		}
 	}
 	s.firmwareMu.Unlock()
 	if err == nil {

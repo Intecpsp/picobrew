@@ -1,7 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { isAccessory, profileForModel, sensorValue, supports } from './capabilities'
+import {
+  brewerOutputsIdle,
+  isAccessory,
+  profileForModel,
+  sensorValue,
+  supports,
+} from './capabilities'
 import { historyChannels, sampleReading } from './history'
-import type { BrewDetail, Capabilities, Sample } from '../types'
+import type { Actuator, BrewDetail, Capabilities, DeviceStatus, Sample } from '../types'
 
 const legacy: Capabilities = {
   api_version: 1,
@@ -93,5 +99,62 @@ describe('family capabilities and named measurements', () => {
     )
     expect(sampleReading(sample, 'sensor_pressure_native')).toBe(532.125)
     expect(sampleReading(sample, 'sensor_missing')).toBeNull()
+  })
+})
+
+describe('brewer output lock label', () => {
+  const now = Date.parse('2026-11-22T20:15:00Z')
+  const device = {
+    online: true,
+    last_seen: new Date(now).toISOString(),
+    status: { ready: true, busy: false, stopped: false, command: 'idle' } as DeviceStatus,
+  }
+  function idle(status: Partial<DeviceStatus>) {
+    return brewerOutputsIdle({ ...device, status: { ...device.status, ...status } }, 0, now)
+  }
+  it('recognizes a Pico at the idle menu and a Z in idle or standby', () => {
+    expect(idle({})).toBe(true)
+    expect(idle({ state: 'StandBy', command: '' })).toBe(true)
+    expect(idle({ state: 'Idle', command: '', target_f: 160, recipe_name: 'Previous brew' })).toBe(
+      true
+    )
+  })
+  it('treats operating, unrecognized, and incomplete status as possibly active', () => {
+    for (const command of ['brew', 'manual', 'rinse', 'clean', 'front-panel', 'unknown'])
+      expect(idle({ command })).toBe(false)
+    for (const state of ['Paused', 'Running', 'Starting', 'unknown'])
+      expect(idle({ state })).toBe(false)
+    expect(idle({ ready: false })).toBe(false)
+    expect(idle({ stopped: true })).toBe(false)
+    expect(idle({ busy: true })).toBe(false)
+    expect(idle({ command: '', state: '' })).toBe(false)
+  })
+  it('requires a fresh, connected observation taken after the last operation', () => {
+    expect(brewerOutputsIdle({ ...device, online: false }, 0, now)).toBe(false)
+    expect(brewerOutputsIdle({ ...device, status: null }, 0, now)).toBe(false)
+    expect(brewerOutputsIdle({ ...device, last_seen: null }, 0, now)).toBe(false)
+    expect(brewerOutputsIdle(device, now, now)).toBe(false)
+    expect(brewerOutputsIdle(device, now - 1, now)).toBe(true)
+    expect(brewerOutputsIdle(device, 0, now + 60_000)).toBe(false)
+  })
+  it('checks heater and pump activity without treating an indicator as an energized output', () => {
+    const pump: Actuator = {
+      id: 'hex-pump',
+      label: 'HEX pump',
+      kind: 'pump',
+      enabled: false,
+      level: null,
+      rpm: null,
+    }
+    expect(idle({ actuators: [pump, { ...pump, kind: 'fan', enabled: true, rpm: 1200 }] })).toBe(
+      true
+    )
+    for (const actuator of [
+      { ...pump, enabled: true },
+      { ...pump, enabled: null },
+      { ...pump, rpm: 500 },
+      { ...pump, kind: 'heater', level: 10 },
+    ])
+      expect(idle({ actuators: [actuator] })).toBe(false)
   })
 })

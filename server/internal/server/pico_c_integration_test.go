@@ -48,7 +48,7 @@ func TestCAutomaticPairingSetsUpHubWithoutHardwareConfirmation(t *testing.T) {
 	}
 }
 
-func TestCPackageApplicabilityRequiresIndependentPinnedHardware(t *testing.T) {
+func TestCDisplayInventoryIsIndependentOfWirelessFirmwareSupport(t *testing.T) {
 	s, d, a := cPairingFixture(t, "ssd1309")
 	pairedRefresh(t, s, d)
 	for _, display := range []string{"ssd1325", "ssd1309"} {
@@ -90,8 +90,8 @@ func TestCPackageApplicabilityRequiresIndependentPinnedHardware(t *testing.T) {
 		t.Fatalf("verification status %d", code)
 	}
 	got = read()
-	if got.HardwareVerificationRequired || got.VerifiedDisplayVariant != "ssd1309" || len(got.Packages) != 1 || got.Packages[0].DisplayVariant != "ssd1309" {
-		t.Fatalf("verified matching C package: %+v", got)
+	if got.HardwareVerificationRequired || got.VerifiedDisplayVariant != "ssd1309" || len(got.Packages) != 0 || got.StockRestoreGuide {
+		t.Fatalf("verified C inventory and wireless eligibility: %+v", got)
 	}
 	if a.writes != writes || a.commands != 0 {
 		t.Fatal("hardware inventory wrote to the machine")

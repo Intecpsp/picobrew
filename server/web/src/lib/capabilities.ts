@@ -22,6 +22,41 @@ export function isAccessory(device: Pick<Device, 'model' | 'capabilities'>): boo
   )
 }
 
+export function brewerOutputsIdle(
+  device: Pick<Device, 'online' | 'last_seen' | 'status'>,
+  lastCommandAt: number,
+  now = Date.now()
+): boolean {
+  const status = device.status
+  const seen = Date.parse(device.last_seen ?? '')
+  // The Hub normally polls every three seconds. An older reading cannot establish current activity.
+  if (
+    !device.online ||
+    !status?.ready ||
+    status.busy !== false ||
+    status.stopped !== false ||
+    !Number.isFinite(seen) ||
+    seen <= lastCommandAt ||
+    Math.abs(now - seen) > 15_000
+  )
+    return false
+
+  const state = status.state?.toLowerCase() || ''
+  const command = status.command || ''
+  // S/Pro/C identify the idle menu by command. Z reports its core state instead.
+  if (
+    (!state && !command) ||
+    !['', 'idle', 'standby'].includes(state) ||
+    !['', 'idle'].includes(command)
+  )
+    return false
+  return !(status.actuators || []).some(
+    (item) =>
+      ['heater', 'pump'].includes(item.kind) &&
+      (item.enabled !== false || (item.level ?? 0) > 0 || (item.rpm ?? 0) > 0)
+  )
+}
+
 export function profileForModel(model: string): string {
   return model === 'z-series' ? 'z' : model
 }

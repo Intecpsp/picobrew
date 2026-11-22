@@ -6,7 +6,7 @@ for (const viewport of [
   { name: 'mobile', width: 390, height: 844 },
 ]) {
   for (const controller of ['ssd1325', 'ssd1309'] as const) {
-    test(`Pico C ${controller} screen and verified packages work on ${viewport.name}`, async ({
+    test(`Pico C ${controller} screen and USB-only firmware on ${viewport.name}`, async ({
       page,
     }) => {
       await page.setViewportSize(viewport)
@@ -30,10 +30,8 @@ for (const viewport of [
         validation: 'passed',
         provenance: { source: 'github', repository, commit },
       }))
-      let packages: FirmwarePackage[] = []
       let verified = ''
       let rejectObservation = true
-      const imports: unknown[] = []
       const observations: unknown[] = []
       const commands: unknown[] = []
       const identity = {
@@ -129,7 +127,7 @@ for (const viewport of [
             : 'Network installation is not available yet.',
         packages:
           verified === controller
-            ? packages.filter((item) => item.display_variant === controller)
+            ? choices.filter((item) => item.display_variant === controller)
             : [],
       })
       await page.route('**/api/v1/events', (route) =>
@@ -146,19 +144,6 @@ for (const viewport of [
               releases: choices.map((p) => ({ ...p, archive_sha256: p.id, kind: 'standalone' })),
               notices: [],
             },
-          })
-        } else if (path.endsWith('/stage')) {
-          const picked = choices.find((p) => path.includes(p.id))!
-          packages.push(picked)
-          await route.fulfill({ json: picked })
-        } else if (path.endsWith('/packages')) {
-          await route.fulfill({ json: packages })
-        } else if (path.endsWith('/download')) {
-          const selected = choices.find((item) => path.includes(item.id))
-          expect(selected?.display_variant).toBe(controller)
-          await route.fulfill({
-            contentType: 'application/zip',
-            body: Buffer.from('fixture package'),
           })
         } else throw new Error(`Unexpected firmware request: ${request.method()} ${path}`)
       })
@@ -291,7 +276,10 @@ for (const viewport of [
       await check.check()
       await save.click()
       const matching = dialog.getByLabel('Firmware version')
-      await expect(matching).toHaveValue(choices.find((p) => p.display_variant === controller)!.id)
+      await expect(matching).toBeDisabled()
+      await expect(matching.locator('option')).toHaveText(
+        'No compatible wireless firmware available'
+      )
       await expect(dialog.getByRole('button', { name: /^Install/ })).toHaveCount(0)
       expect(observations).toEqual(
         [other, other, controller].map((display_variant) => ({ device_uid: uid, display_variant }))
@@ -300,9 +288,7 @@ for (const viewport of [
       await dialog.screenshot({
         path: test.info().outputPath(`c-verified-${controller}-${viewport.name}.png`),
       })
-      const downloaded = page.waitForEvent('download')
-      await dialog.getByRole('button', { name: 'Download', exact: true }).click()
-      expect((await downloaded).suggestedFilename()).toBe(`pico-c-${controller}-1.2.0.zip`)
+      await expect(dialog.getByRole('button', { name: 'Download', exact: true })).toBeDisabled()
       expect(
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
       ).toBe(true)

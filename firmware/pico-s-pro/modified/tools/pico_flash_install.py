@@ -2,16 +2,18 @@
 """Provision, install, or restore this verified Pico through direct CH340 USB.
 
 Keep this script beside pico_flash_backup_v2.py, pico_uart_probe.py,
-pico_flash_preflight.py, and pico_inspect_backup.py. Each operation requires
-the exact original full-flash backup and a new absolute --output JSON path.
-The backup is verified locally before USB is opened. The original application
-is extracted in memory; raw flash and credentials are never copied to reports.
+pico_flash_preflight.py, and pico_inspect_backup.py. USB write operations
+require a new absolute --output JSON path. Provide the exact original
+full-flash backup, or use --oem-directory for restore-stock. All input images
+are verified locally before USB is opened. Reports omit raw flash and credentials.
 
 provision-key writes only /local/api.key, then proves an existing-file rewrite
 of that same key. install repeats that proof, installs and reads back the exact
 pinned browser bundle, then updates the existing /sys/mcuimg2.bin allocation.
 restore rewrites only that existing application allocation
-with the exact original image. None changes boot information, erases/deletes
+with the exact original image. restore-stock restores both the application and
+the OEM recovery image from the profiled brewer. All commands
+leave the boot record intact. None invokes a raw erase, deletes
 files, formats flash, relocates allocations, or starts the application.
 
 Opening an existing file for write erases that file's contents. An interrupted
@@ -19,8 +21,8 @@ application write can require restore. Restore attempts mode 0x1000 only;
 it stops if the filesystem cannot reopen the existing allocation. It does not
 claim recovery from every interrupted or damaged filesystem state.
 
-Leave USB connected and unplug Pico mains before starting. Restore mains only
-when the existing BREAK prompt appears. Do not press RESET.
+With USB connected, power on or reset the idle Pico once at the initial
+BREAK prompt. Leave it powered and connected until verification finishes.
 """
 
 import argparse
@@ -46,10 +48,14 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 12
+INSTALL_REVISION = 14
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
+ORIGINAL_RECOVERY_OFFSET = 214 * 4096 + 8
+UID_BLOCK = 106
+# Identity of the single physical brewer whose flash layout was verified.
+PROFILE_UID_SHA256 = "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
 CANDIDATE_SIZE = 166496
@@ -101,9 +107,8 @@ APPLICATION_ALLOCATION_BLOCKS = 48
 APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-# Updated together with the final firmware candidate, after asset generation.
-# A placeholder deliberately prevents installation of an unreviewed bundle.
-WEB_MANIFEST_SHA256 = '32f7b601000a940f8bc860c57c52f7cb8f69240bce702b0890737038761bf6ad'
+# Shared by the Pico S and Pico Pro 1.3.4 packages.
+WEB_MANIFEST_SHA256 = "f678effd8eef08fcad796b9b25af166bb5502f00ac6a326d4518227f8e87a9aa"
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
              ("api-explorer.js", "/local/web/e.gz"), ("history.js", "/local/web/h.gz"),
@@ -123,6 +128,7 @@ SUCCESS_MARKERS = {
     "install": "SUCCESS: standalone firmware, browser files and API key verified",
     "install-recovery": "SUCCESS: pinned recovery and unchanged active application verified",
     "restore": "SUCCESS: original firmware restored and read back exactly",
+    "restore-stock": "SUCCESS: OEM bootloader, boot selection, recovery and application verified; image3 absent",
 }
 
 
@@ -222,20 +228,63 @@ def _read_regular(path, limit, private=False, owner=None):
         raise InstallError("Could not safely read the required local input file") from None
 
 
-def verify_backup(path):
+def _verified_backup_image(path):
     image = _read_regular(path, BACKUP_SIZE)
     digest = hashlib.sha256(image).hexdigest()
     if len(image) != BACKUP_SIZE or digest != BACKUP_SHA256:
         raise InstallError("The full backup does not match the pinned original 1 MiB backup")
+    return image
+
+
+def _original_application(image):
     header = image[ORIGINAL_OFFSET - 8:ORIGINAL_OFFSET]
     if header[6:8] != b"LS" or int.from_bytes(header[:3], "little") != ORIGINAL_SIZE:
         raise InstallError("The pinned backup has an unexpected original-image header")
     original = image[ORIGINAL_OFFSET:ORIGINAL_OFFSET + ORIGINAL_SIZE]
     if len(original) != ORIGINAL_SIZE or hashlib.sha256(original).hexdigest() != ORIGINAL_SHA256:
         raise InstallError("The original image extracted from the backup did not verify")
-    return original, {"size_bytes": len(image), "sha256": digest,
+    return original, {"size_bytes": len(image), "sha256": BACKUP_SHA256,
                       "original_image_size_bytes": len(original),
                       "original_image_sha256": ORIGINAL_SHA256}
+
+
+def verify_backup(path):
+    return _original_application(_verified_backup_image(path))
+
+
+def _read_uid_record(record):
+    size = int.from_bytes(record[:3], "little")
+    data = record[8:8 + size]
+    if (record[6:8] != b"LS" or size not in (32, 33) or len(data) != size
+            or re.fullmatch(rb"[a-f0-9]{32}\x00?", data) is None):
+        raise InstallError("The brewer identity file could not be verified")
+    return data[:32]
+
+
+def load_stock_backup(path):
+    image = _verified_backup_image(path)
+    original, metadata = _original_application(image)
+    offset = ORIGINAL_RECOVERY_OFFSET
+    expected = preflight.EXPECTED_FILES[RECOVERY_NAME]
+    size = expected["size_bytes"]
+    recovery = image[offset:offset + size]
+    if (image[offset - 2:offset] != b"LS" or int.from_bytes(image[offset - 8:offset - 5], "little") != size
+            or _image_metadata(recovery) != expected):
+        raise InstallError("The original recovery image extracted from the backup did not verify")
+    uid = _read_uid_record(image[UID_BLOCK * 4096:UID_BLOCK * 4096 + 41])
+    return original, metadata, recovery, hashlib.sha256(uid).digest()
+
+
+def load_stock_directory(directory):
+    images = {}
+    for name in (APP_NAME, RECOVERY_NAME):
+        expected = _expected_public(name)
+        path = directory / Path(name).name
+        payload = _read_regular(path, expected["size_bytes"])
+        if _image_metadata(payload) != expected:
+            raise InstallError(f"The raw OEM image {path.name} differs from the profiled image")
+        images[name] = payload
+    return images
 
 
 def validate_key(data):
@@ -355,7 +404,8 @@ def _protected_matches(name, observed):
     return observed == _expected_public(name) or (name == RECOVERY_NAME and observed == RECOVERY_IMAGE)
 
 
-def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None, model="pico-pro"):
+def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None,
+                     model="pico-pro", uid_digest=None):
     """Create a session whose complete write bytes and destinations are pinned.
 
     The inherited guard still owns the exact SRAM-helper upload. Only this
@@ -366,7 +416,13 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
         raise InstallError("Unknown operation")
     immutable = MappingProxyType(dict(payloads))
     web_assets = parse_web_manifest(web_manifest) if mode == "install" else MappingProxyType({})
-    expected_names = {APP_NAME} if mode == "restore" else {KEY_NAME}
+    expected_names = {APP_NAME} if mode in ("restore", "restore-stock") else {KEY_NAME}
+    if mode == "restore-stock":
+        expected_names.add(RECOVERY_NAME)
+        if (not isinstance(uid_digest, bytes) or len(uid_digest) != 32
+                or not isinstance(immutable.get(RECOVERY_NAME), bytes)
+                or _image_metadata(immutable[RECOVERY_NAME]) != _expected_public(RECOVERY_NAME)):
+            raise InstallError("Stock restore requires the profiled brewer identity and verified OEM recovery")
     if mode == "install":
         expected_names.add(APP_NAME)
         expected_names.update(web_assets)
@@ -380,7 +436,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
         validate_key(immutable[KEY_NAME])
     if APP_NAME in immutable:
         _validate_application_size(len(immutable[APP_NAME]))
-        expected = ((ORIGINAL_SIZE, ORIGINAL_SHA256) if mode == "restore"
+        expected = ((ORIGINAL_SIZE, ORIGINAL_SHA256) if mode in ("restore", "restore-stock")
                     else candidate_identity(model))
         if (len(immutable[APP_NAME]), hashlib.sha256(immutable[APP_NAME]).hexdigest()) != expected:
             raise InstallError("Registered application payload is not the pinned image")
@@ -395,6 +451,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
             super().__init__()
             self.operation = mode
             self.target_model = model
+            self.requires_profile_uid = uid_digest is not None
             self.protocol_module = cc
             self.journal = journal
             self.file_infos = {}
@@ -485,16 +542,27 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
             if (not self.layout["application_allocation_verified"]
                     or not self.layout["image3_absent_in_all_fats"]):
                 raise InstallError("The live application layout differs from the approved layout")
+            if self.requires_profile_uid and not self.layout.get("profile_uid_matches"):
+                raise InstallError("Live identity has not matched the profiled brewer")
             for name in PROTECTED_NAMES:
+                if name == RECOVERY_NAME and self.operation == "restore-stock":
+                    # Slot 1 can be repaired after an interrupted write if the
+                    # confirmed application slot already holds the OEM image.
+                    if self.observed.get(APP_NAME) == _expected_public(APP_NAME):
+                        continue
                 if not _protected_matches(name, self.observed.get(name)):
                     raise InstallError("Protected firmware or logical boot information has not verified")
             image3 = self.file_infos.get(preflight.OPTIONAL_IMAGE_NAME)
             if image3 is None or image3["exists"]:
                 raise InstallError("The additional image slot is not confirmed absent")
-            if self.operation != "restore":
+            if self.operation not in ("restore", "restore-stock"):
                 app = self.observed.get(APP_NAME)
                 if app not in _approved_current_applications(self.operation, self.target_model):
                     raise InstallError("Current application is not an approved stock/standalone image; use restore")
+
+        def verify_profile_uid(self, record):
+            if not hmac.compare_digest(hashlib.sha256(_read_uid_record(record)).digest(), uid_digest):
+                raise InstallError("Connected brewer identity differs from the profiled brewer")
 
         def arm_write(self, name, flags):
             if self.failed or self.phase != "idle" or self.pending is not None or self.armed is not None:
@@ -515,24 +583,36 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
                     label = "key-existing-write-proof"
                 else:
                     raise InstallError("Unapproved key open mode")
+            elif name == RECOVERY_NAME and self.operation == "restore-stock":
+                if (flags != OPEN_EXISTING_WRITE or info is None
+                        or self.observed.get(APP_NAME) != _expected_public(APP_NAME)
+                        or self.observed.get(name) == _expected_public(name)
+                        or not self.layout.get("recovery_allocation_verified")
+                        or any(item["target"] == name for item in self.mutation_attempts)):
+                    raise InstallError("Stock recovery requires a verified OEM application and recovery allocation")
+                label = "recovery-restore"
             elif name == RECOVERY_NAME and self.operation == "install-recovery":
                 if (flags != OPEN_EXISTING_WRITE or not self.key_matches or not info or not info["exists"]
                         or self.mutation_attempts or not self.layout.get("recovery_allocation_verified")
                         or self.observed.get(RECOVERY_NAME) != _expected_public(RECOVERY_NAME)):
                     raise InstallError("Recovery installation requires the original recovery allocation and verified identity")
                 label = "recovery-existing-write"
-            elif name == APP_NAME and self.operation in ("install", "restore"):
+            elif name == APP_NAME and self.operation in ("install", "restore", "restore-stock"):
                 if flags != OPEN_EXISTING_WRITE or self.application_write_attempted:
                     raise InstallError("Only one existing-application write is permitted per session")
+                if self.operation == "restore-stock" and (
+                        self.observed.get(name) == _expected_public(name)
+                        or not _protected_matches(RECOVERY_NAME, self.observed.get(RECOVERY_NAME))):
+                    raise InstallError("Stock application restore requires an intact recovery slot")
                 if self.operation == "install" and not self.key_existing_write_verified:
                     raise InstallError("The matching key's existing-file rewrite must verify before installation")
                 if self.operation == "install" and self.web_verified != set(self.web_assets):
                     raise InstallError("Every pinned browser file must verify before the application write")
                 # Restore need not trust logical existence/length of a damaged
                 # file. The raw named allocation is checked independently.
-                if info is None or (not info["exists"] and self.operation != "restore"):
+                if info is None or (not info["exists"] and self.operation == "install"):
                     raise InstallError("Application presence has not been checked")
-                label = "application-restore" if self.operation == "restore" else "application-install"
+                label = "application-install" if self.operation == "install" else "application-restore"
             elif name in self.web_assets and self.operation == "install":
                 if not self.key_existing_write_verified or not self.key_matches:
                     raise InstallError("The matching key's existing-file rewrite must verify before browser files")
@@ -861,7 +941,16 @@ def read_live_layout(connection, cc):
                     raise InstallError("Live FAT names or allocations overlap")
                 names[name] = entry
                 occupied.update(blocks)
-            if connection.operation == "install-recovery":
+            if connection.requires_profile_uid:
+                for name, start, blocks, mirrored, flags in (
+                        ("/sys/uid.txt", UID_BLOCK, 1, False, 0xC),
+                        ("/sys/mcuimg.bin", 71, 4, True, 0),
+                        (preflight.BOOT_INFO_NAME, 79, 1, True, 8)):
+                    entry = names.get(name)
+                    if entry is None or (entry.start_block, entry.size_blocks, bool(entry.mirrored), entry.flags) != (
+                            start, blocks, mirrored, flags):
+                        raise InstallError("Firmware or identity allocation differs from the original backup")
+            if connection.operation in ("install-recovery", "restore-stock"):
                 recovery = names.get(RECOVERY_NAME)
                 if (recovery is None or recovery.start_block != 214 or recovery.size_blocks != 16
                         or recovery.mirrored or recovery.flags != 0xC):
@@ -919,7 +1008,10 @@ def read_live_layout(connection, cc):
               "image3_absent_in_all_fats": image3_absent,
               "free_blocks_min": free_blocks_min, "free_file_slots_min": free_file_slots_min,
               "web_assets": web_layout}
-    result["recovery_allocation_verified"] = connection.operation == "install-recovery"
+    result["recovery_allocation_verified"] = connection.operation in ("install-recovery", "restore-stock")
+    if connection.requires_profile_uid:
+        connection.verify_profile_uid(connection._read_chunk(UID_BLOCK * 4096, 41, 2))
+        result["profile_uid_matches"] = True
     connection.layout = result
     return result
 
@@ -1025,16 +1117,60 @@ def _install_web_bundle(connection, details, progress, plans):
     connection._record("web-bundle-verified", manifest_sha256=WEB_MANIFEST_SHA256)
 
 
+def _restore_stock(connection, progress, details):
+    before = details["live_preflight"]
+    if (not before["layout"]["image3_absent_in_all_fats"]
+            or read_file_info(connection, preflight.OPTIONAL_IMAGE_NAME)["exists"]):
+        raise InstallError("Stock restore requires the original empty third slot")
+    for name in ("/sys/mcuimg.bin", preflight.BOOT_INFO_NAME):
+        expected = _expected_public(name)
+        if _image_metadata(read_file_bytes(connection, name, expected["size_bytes"])) != expected:
+            raise InstallError("Bootloader or boot selection differs from the original backup")
+    before["slots"] = {}
+    for name, limit in ((APP_NAME, APPLICATION_PAYLOAD_LIMIT), (RECOVERY_NAME, 16 * 4096)):
+        info = read_file_info(connection, name)
+        before["slots"][name] = (_image_metadata(read_file_bytes(connection, name, limit))
+                                 if info["exists"] else {"exists": False})
+    connection._live_state_ok()
+    connection._record("live-preflight-passed", mode="restore-stock")
+
+    # The original boot record selects slot 2. Verify it before overwriting
+    # the independent recovery, even when resuming a partially written slot.
+    for name in (APP_NAME, RECOVERY_NAME):
+        expected = _expected_public(name)
+        if before["slots"][name] != expected:
+            progress(f"Restoring {name} from the verified OEM image")
+            _write_registered(connection, name, OPEN_EXISTING_WRITE)
+        if _image_metadata(read_file_bytes(connection, name, expected["size_bytes"])) != expected:
+            raise InstallError("OEM firmware slot failed full readback")
+        if name == APP_NAME:
+            connection.application_verified = True
+        connection._record("stock-slot-readback-verified", target=name)
+
+    after = details["postcheck"] = {}
+    after["protected"] = _check_protected(connection, progress)
+    after["application"] = _image_metadata(read_file_bytes(connection, APP_NAME, ORIGINAL_SIZE))
+    after["layout"] = read_live_layout(connection, connection.protocol_module)
+    if (after["protected"][RECOVERY_NAME] != _expected_public(RECOVERY_NAME)
+            or after["application"] != _expected_public(APP_NAME)
+            or not after["layout"]["image3_absent_in_all_fats"]
+            or read_file_info(connection, preflight.OPTIONAL_IMAGE_NAME)["exists"]):
+        raise InstallError("OEM firmware slots failed the final check")
+    details["operation_verified"] = True
+    connection._record("operation-verified", mode="restore-stock")
+    return details
+
+
 def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, journal,
                   progress=report, details=None):
     if details is None:
         details = {}
     if mode != connection.operation:
         raise InstallError("Operation and guarded connection disagree")
-    if mode != "restore" and key_bytes != connection.payloads.get(KEY_NAME):
+    if mode not in ("restore", "restore-stock") and key_bytes != connection.payloads.get(KEY_NAME):
         raise InstallError("The registered key payload changed")
-    expected_app = original_bytes if mode == "restore" else candidate_bytes
-    if mode in ("install","restore") and expected_app != connection.payloads.get(APP_NAME):
+    expected_app = original_bytes if mode in ("restore", "restore-stock") else candidate_bytes
+    if mode in ("install", "restore", "restore-stock") and expected_app != connection.payloads.get(APP_NAME):
         raise InstallError("The registered application payload changed")
     details["live_preflight"] = before = {}
     before["flash"] = backup.detect_flash(connection)
@@ -1044,6 +1180,8 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
     # read-only parser uses the same version as the guarded connection.
     cc = connection.protocol_module
     before["layout"] = read_live_layout(connection, cc)
+    if mode == "restore-stock":
+        return _restore_stock(connection, progress, details)
     before["protected"] = _check_protected(connection, progress)
     optional = read_file_info(connection, preflight.OPTIONAL_IMAGE_NAME)
     if optional["exists"] or not before["layout"]["image3_absent_in_all_fats"]:
@@ -1212,16 +1350,33 @@ def _usb_summary(details):
     return result
 
 
+def _load_hub_recovery():
+    payload = _read_regular(RECOVERY_FILE, RECOVERY_IMAGE["size_bytes"])
+    if _image_metadata(payload) != RECOVERY_IMAGE:
+        raise InstallError("Packaged recovery differs from the pinned recovery image")
+    return payload
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="mode", required=True)
+    prepare = commands.add_parser("prepare-install", help="Verify the backup and local installation files offline")
+    prepare.add_argument("--backup", required=True, type=Path)
+    prepare.add_argument("--model", required=True, choices=("pico-pro", "pico-s"))
     for name in SUCCESS_MARKERS:
         command = commands.add_parser(name)
-        command.add_argument("--backup", required=True, type=Path, help="Exact original full-flash backup")
+        if name == "restore-stock":
+            source = command.add_mutually_exclusive_group(required=True)
+            source.add_argument("--backup", type=Path, help="Exact original full-flash backup")
+            source.add_argument("--oem-directory", type=Path, help="Directory containing the two pinned raw OEM images")
+        else:
+            command.add_argument("--backup", required=True, type=Path, help="Exact original full-flash backup")
         command.add_argument("--output", required=True, type=Path, help="New absolute private JSON report path")
         command.add_argument("--power-wait", type=float, default=60)
-        if name != "restore":
+        if name not in ("restore", "restore-stock"):
             command.add_argument("--key-file", required=True, type=Path, help="Existing private host key file")
+            command.add_argument("--verify-backup-uid", action="store_true",
+                                 help="Require the live brewer identity to match the pinned original backup")
         if name in ("install", "install-recovery"):
             command.add_argument("--model", choices=("pico-pro", "pico-s"), default="pico-pro",
                                  help="Exact application target on the pinned appliance (default: pico-pro)")
@@ -1230,6 +1385,18 @@ def main(argv=None):
             command.add_argument("--web-directory", type=Path, default=WEB_DIRECTORY,
                                  help="Matching pinned browser bundle (defaults to repository firmware/web)")
     args = parser.parse_args(argv)
+    if args.mode == "prepare-install":
+        try:
+            load_stock_backup(args.backup)
+            load_candidate(RECOVERY_FILE.parent / args.model / (args.model + "-standalone.bin"), args.model)
+            load_web_bundle(WEB_DIRECTORY)
+            _load_hub_recovery()
+            backup.load_dependencies()
+        except Exception as exc:
+            report("STOPPED: " + _safe_error(exc))
+            return 1
+        report("Verified the original backup, standalone image, browser files, recovery and USB helper offline.")
+        return 0
     if not 1 <= args.power_wait <= 300:
         parser.error("--power-wait must be between 1 and 300 seconds")
     files = None
@@ -1244,8 +1411,17 @@ def main(argv=None):
                "helper_uploaded_bytes": 0, "helper_executed": False}
     try:
         owner = backup.sudo_owner()
-        original, details["backup"] = verify_backup(args.backup)
-        key = load_key(args.key_file, owner) if args.mode != "restore" else None
+        recovery = uid_digest = None
+        if getattr(args, "oem_directory", None) is not None:
+            stock = load_stock_directory(args.oem_directory)
+            original, recovery = stock[APP_NAME], stock[RECOVERY_NAME]
+            uid_digest = bytes.fromhex(PROFILE_UID_SHA256)
+            details["oem_images"] = {name: _image_metadata(data) for name, data in stock.items()}
+        elif args.mode == "restore-stock" or getattr(args, "verify_backup_uid", False):
+            original, details["backup"], recovery, uid_digest = load_stock_backup(args.backup)
+        else:
+            original, details["backup"] = verify_backup(args.backup)
+        key = load_key(args.key_file, owner) if hasattr(args, "key_file") else None
         model = getattr(args, "model", "pico-pro")
         if args.mode in ("install", "install-recovery"):
             details["target_model"] = model
@@ -1259,21 +1435,26 @@ def main(argv=None):
         details["cc3200tool_version"] = version
         details["helper"] = {"name": backup.HELPER_NAME, "size_bytes": len(helper),
                              "sha256": backup.HELPER_SHA256, "destination": "SRAM only"}
-        payloads = {APP_NAME: original} if args.mode == "restore" else {KEY_NAME: key}
+        payloads = {APP_NAME: original} if args.mode in ("restore", "restore-stock") else {KEY_NAME: key}
+        if args.mode == "restore-stock":
+            payloads[RECOVERY_NAME] = recovery
         if args.mode == "install-recovery":
-            payloads[RECOVERY_NAME] = _read_regular(RECOVERY_FILE, RECOVERY_IMAGE["size_bytes"])
-            if _image_metadata(payloads[RECOVERY_NAME]) != RECOVERY_IMAGE:
-                raise InstallError("Packaged recovery differs from the pinned recovery image")
+            payloads[RECOVERY_NAME] = _load_hub_recovery()
         if args.mode == "install":
             payloads[APP_NAME] = candidate
             payloads.update(web_payloads)
-        report("LOCAL BACKUP: exact original full-flash backup and stock image verified")
+        if "oem_images" in details:
+            report("LOCAL OEM IMAGES: original application and recovery verified")
+        else:
+            report("LOCAL BACKUP: exact original full-flash backup and stock image verified")
         report("OPERATION: " + args.mode)
         report("REPORT: " + str(files.output))
         report("JOURNAL: " + str(files.journal_path))
         result = 1
         with files:
-            files.record("session-start", mode=args.mode, backup_sha256=BACKUP_SHA256)
+            source = ({"backup_sha256": BACKUP_SHA256} if "backup" in details
+                      else {"oem_images": details["oem_images"]})
+            files.record("session-start", mode=args.mode, **source)
             try:
                 transport = probe_module.CH340USBTransport()
                 try:
@@ -1293,7 +1474,7 @@ def main(argv=None):
                             port = backup.USBSerialPort(raw)
                             connection = build_connection(cc, probe_module, port, helper,
                                                           args.mode, payloads, files,
-                                                          web_manifest=web_manifest, model=model)
+                                                          web_manifest=web_manifest, model=model, uid_digest=uid_digest)
                             connection.vinfo = cc.CC3x00VersionInfo.from_packet(payload)
                             if (not connection.vinfo.is_cc3200
                                     or connection.vinfo.bootloader[1] != 4):
@@ -1354,7 +1535,9 @@ def main(argv=None):
                    + error.get("message", "The operation did not verify"))
             if not details["persistent_write_attempted"]:
                 report("No Pico flash or file write was attempted")
-            if details.get("application_write_attempted") and not details.get("application_readback_verified"):
+            if args.mode == "restore-stock" and details.get("persistent_write_attempted"):
+                report("Keep the restore source and report. Retry restore-stock in a fresh USB session before booting.")
+            elif details.get("application_write_attempted") and not details.get("application_readback_verified"):
                 report("APPLICATION: image2 may be incomplete; use a fresh restore session with the original backup")
             report("No retries or automatic recovery writes were attempted")
         report("REPORT: " + str(files.output))
