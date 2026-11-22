@@ -94,13 +94,13 @@ function AddRecipeMenu({ onImport }: { onImport: () => void }) {
         <Plus size={16} /> Add recipe <ChevronDown size={16} />
       </summary>
       <div className="recipe-options">
-        <a href="#/recipes/new">
-          <Plus size={16} />
-          Create for a brewer
-        </a>
         <a href="#/recipes/new?mode=batch">
           <Plus size={16} />
           Create by batch size
+        </a>
+        <a href="#/recipes/new">
+          <Plus size={16} />
+          Create for a brewer
         </a>
         <a href="#/recipes/create-with-ai">
           <Sparkles size={16} />
@@ -276,7 +276,6 @@ function RecipeEditor({ id }: { id: string }) {
     if (isNew && hub.draft) return { ...hub.draft, id: '', revision: 0 }
     const base = newRecipe()
     if (generic) {
-      base.batch_liters = 5 * 3.785411784
       base.boil_minutes = 60
       base.steps.push({
         name: 'Boil',

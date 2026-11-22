@@ -472,6 +472,7 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
 
 test('catalog and library show five automatic versions from one measured recipe', async ({
   page,
+  request,
 }) => {
   await page.goto('/#/catalog?kind=brew-ready&q=UB08&model=pico-s')
   await expect(page.getByRole('heading', { name: 'Community recipes' })).toBeVisible()
@@ -499,7 +500,10 @@ test('catalog and library show five automatic versions from one measured recipe'
   )
   await view.selectOption('pico-s')
   await page.getByRole('button', { name: 'Send', exact: true }).click()
-  await expect(page.getByLabel('Target machine')).toHaveValue('demo-s')
+  const deviceID = await page.getByLabel('Target machine').inputValue()
+  expect(deviceID).toBeTruthy()
+  const device = await request.get('/api/v1/devices/' + encodeURIComponent(deviceID))
+  expect(await device.json()).toMatchObject({ model: 'pico-s' })
   await page.getByRole('button', { name: 'Cancel', exact: true }).click()
   await view.selectOption('')
   await expect(page.getByLabel('Batch size (L)')).toHaveValue(sourceVolume)
