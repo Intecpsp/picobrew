@@ -74,7 +74,7 @@ bool valid_text(const char* value, std::size_t capacity);
 bool recipe_valid(const Recipe& recipe, bool zero_minutes);
 bool settings_valid(const Settings& settings);
 bool telemetry_valid(const TelemetryConfig& config);
-bool parse_recipe(Json& json, const char* id, Recipe& recipe);
+bool parse_recipe(Json& json, const char* id, Recipe& recipe, bool& create_only);
 bool parse_command(Json& json, Command& command);
 unsigned error(Writer& writer, Result result);
 void reading(Writer& writer, Reading value);
@@ -138,7 +138,7 @@ struct standalone::Engine::Impl {
     bool load_recipes();
     bool save_catalogue(const detail::RecipeEntry* entries);
     Result recipe_read(unsigned slot, Recipe& output) const;
-    Result recipe_write(const Recipe&, bool* created);
+    Result recipe_write(const Recipe&, bool* created, bool create_only = false);
     Result recipe_delete(const char* id);
     Result restore_defaults(unsigned& added, unsigned& preserved);
     bool load_history();

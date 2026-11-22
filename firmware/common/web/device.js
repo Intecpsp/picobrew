@@ -17,6 +17,25 @@ const PicoDevice = (() => {
     'essential-oils':'Essential oils','start-fermentation':'Start fermentation',
     'stop-fermentation':'Stop fermentation',calibrate:'Calibrate pressure',sample:'Take a reading',
     'set-pump':'Set pump','set-fan':'Set fan','set-sampling-interval':'Set sampling interval'};
+  // The Z reports its current native instruction in the phase field.
+  const zPhases = ['Paused','Starting step','Reaching target','Holding temperature','Circulating','Draining','Moving valve','Setting pumps','Unheated','Idle',
+    'Setting flag','Clearing flag','Starting substep','Waiting','Waiting for operator','Waiting for temperature A','Waiting for temperature B','Waiting for temperature C','Waiting for temperature E',
+    'Reading delay','Waiting for delay','Reading step parameters','Reading temperature','Reading time','Waiting for time','Setting target','Setting time','Setting valve','Setting pumps','Setting valve mode',
+    'Setting screen','Showing screen','Controlling heater','Starting temperature control','Stopping temperature control','Setting controller minimum','Setting controller maximum','Checking filter','Stopping derivative control',
+    'Preparing brew','Completing brew','Checking for PicoStill','Starting PicoStill','Setting heat-loss target','Measuring heat loss','Finding boiling point','Stabilizing','Distilling','Waiting for PicoStill','Waiting for seal',
+    'Waiting for vacuum','Waiting for stable temperature','Waiting for temperature rise','Waiting for temperature drop','Checking safe temperature','Waiting for pump','Rinsing','Setup'];
+  const picoPhases = ['Heating','Holding temperature','Cooling','Draining','Idle','Circulating','Cooling thermoblock','Pump hold','Heating'];
+  function phaseLabel(model, phase) {
+    return (model === 'z-series' ? zPhases : picoPhases)[phase] || 'Phase '+phase;
+  }
+  function accessoryActionAllowed(command, status) {
+    if (!status) return false;
+    if (command === 'stop') return true;
+    if (command === 'sample') return !['initializing','sampling','calibrating','storage-fault'].includes(status.state);
+    if (command === 'set-sampling-interval') return !status.busy && status.state !== 'storage-fault';
+    if (command === 'set-fan' || command === 'set-pump') return status.ready && status.busy && !status.stopped;
+    return status.ready && !status.busy && !(command === 'start' && status.state === 'calibration-required');
+  }
   function decodeDisplay(frame) {
     const width=frame.width,height=frame.height;
     if(width!==128 || ![32,64].includes(height)) throw new Error('Unsupported display dimensions.');
@@ -63,6 +82,6 @@ const PicoDevice = (() => {
       } catch(error) {if(error.status!==409 || error.code!=='display_changed' || attempt===2)throw error;}
     }
   }
-  return {feature,label,finite,commands,commandLabels,decodeDisplay,readDisplay};
+  return {feature,label,finite,commands,commandLabels,phaseLabel,accessoryActionAllowed,decodeDisplay,readDisplay};
 })();
 if(typeof module==='object' && module.exports)module.exports=PicoDevice;

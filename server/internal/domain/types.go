@@ -104,6 +104,7 @@ type Capabilities struct {
 	HistoryPersistent     bool                     `json:"history_persistent"`
 	TelemetryForwarding   bool                     `json:"telemetry_forwarding"`
 	DedicatedPauseResume  bool                     `json:"dedicated_pause_resume"`
+	RecipeCreateOnly      bool                     `json:"recipe_create_only"`
 	ZeroMinuteSteps       bool                     `json:"zero_minute_steps"`
 	RestoreDefaultRecipes bool                     `json:"restore_default_recipes"`
 	StarterRecipeCount    int                      `json:"starter_recipe_count"`
@@ -227,9 +228,9 @@ type FermentationStep struct {
 	Days    float64 `json:"days"`
 }
 type Carbonation struct {
-	Method       string  `json:"method,omitempty"`
-	Volumes      float64 `json:"volumes,omitempty"`
-	TemperatureC float64 `json:"temperature_c,omitempty"`
+	Method       string   `json:"method,omitempty"`
+	Volumes      float64  `json:"volumes,omitempty"`
+	TemperatureC *float64 `json:"temperature_c,omitempty"`
 }
 
 // RecipeProvenance identifies the immutable original record from which an
@@ -247,6 +248,7 @@ type RecipeProvenance struct {
 	Warnings       []string `json:"warnings"`
 }
 type Recipe struct {
+	SourceYeast    string             `json:"source_yeast,omitempty"`
 	ID             string             `json:"id"`
 	Name           string             `json:"name"`
 	Style          string             `json:"style"`

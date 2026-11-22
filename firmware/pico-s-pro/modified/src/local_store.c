@@ -388,7 +388,7 @@ PicoLocalStoreResult pico_local_recipe_visit(PicoNetwork *n,
     }
     return PICO_LOCAL_STORE_OK;
 }
-PicoLocalStoreResult pico_local_recipe_put(PicoNetwork *n, const PicoLocalRecipe *r, bool *created)
+PicoLocalStoreResult pico_local_recipe_put(PicoNetwork *n, const PicoLocalRecipe *r, bool create_only, bool *created)
 {
     if (!pico_local_recipe_valid(r)) return PICO_LOCAL_STORE_INVALID;
     Index index; PicoLocalStoreResult result = load_index(n, &index);
@@ -399,6 +399,7 @@ PicoLocalStoreResult pico_local_recipe_put(PicoNetwork *n, const PicoLocalRecipe
         if (!index.entries[i].id[0] && empty < 0) empty = (int)i;
     }
     bool is_new = slot < 0;
+    if (!is_new && create_only) return PICO_LOCAL_STORE_EXISTS;
     if (is_new) slot = empty;
     if (slot < 0) return PICO_LOCAL_STORE_FULL;
     Entry *e = &index.entries[slot];

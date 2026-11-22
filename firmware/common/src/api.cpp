@@ -31,9 +31,9 @@ void metadata_json(Writer& writer, const Session& session, bool storage_error, s
 unsigned Engine::Impl::discovery_json(Writer& writer) {
     writer.text("{"); identity_json(writer, identity);
     writer.text(",\"api_version\":1,\"firmware_version\":"); writer.quote(identity.firmware_version);
-    writer.format(",\"mode\":\"standalone\",\"recipe_capacity\":%u,\"step_capacity\":%u,\"zero_minute_steps\":%s,\"restore_default_recipes\":%s,\"starter_recipe_count\":%u,\"recipe_labels\":\"printable ASCII\",\"commands\":[",
+    writer.format(",\"mode\":\"standalone\",\"recipe_capacity\":%u,\"step_capacity\":%u,\"recipe_create_only\":%s,\"zero_minute_steps\":%s,\"restore_default_recipes\":%s,\"starter_recipe_count\":%u,\"recipe_labels\":\"printable ASCII\",\"commands\":[",
         capabilities.flags & Recipes ? unsigned(RecipeCapacity) : 0u, capabilities.flags & Recipes ? unsigned(RecipeStepCapacity) : 0u,
-        capabilities.zero_minute_steps ? "true" : "false", capabilities.starter_recipe_count ? "true" : "false", unsigned(capabilities.starter_recipe_count));
+        capabilities.flags & Recipes ? "true" : "false", capabilities.zero_minute_steps ? "true" : "false", capabilities.starter_recipe_count ? "true" : "false", unsigned(capabilities.starter_recipe_count));
     for (std::size_t i = 0; i < capabilities.command_count; ++i) { if (i) writer.text(","); writer.quote(capabilities.commands[i].name); }
     writer.format("],\"dedicated_pause_resume\":%s,\"front_panel\":%s,\"events_persistent\":false,\"history_persistent\":true,\"history_capacity_records\":%u,\"history_capacity_sessions\":8,\"telemetry_forwarding\":true,\"capabilities\":{",
         capabilities.dedicated_pause_resume ? "true" : "false", capabilities.flags & FrontPanel ? "true" : "false", PointCapacity);
@@ -169,8 +169,9 @@ unsigned Engine::Impl::recipes_api(const PicoHttpRequest& request, Writer& write
     }
     if (request.method != PICO_HTTP_PUT) return method_error(writer);
     Recipe recipe; Json json(request.body, request.body_length);
-    if (!parse_recipe(json, suffix, recipe)) return error(writer, Result(400, "invalid_recipe", "Invalid or duplicate recipe fields"));
-    bool created = false; const Result result = recipe_write(recipe, &created); if (!result.ok()) return error(writer, result);
+    bool create_only = false;
+    if (!parse_recipe(json, suffix, recipe, create_only)) return error(writer, Result(400, "invalid_recipe", "Invalid or duplicate recipe fields"));
+    bool created = false; const Result result = recipe_write(recipe, &created, create_only); if (!result.ok()) return error(writer, result);
     recipe_json(writer, recipe); return created ? 201 : 200;
 }
 unsigned Engine::Impl::command_api(const PicoHttpRequest& request, Writer& writer) {

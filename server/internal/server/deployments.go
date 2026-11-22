@@ -34,13 +34,15 @@ type DeploymentInput struct {
 
 type DeploymentItem struct {
 	DeploymentSelection
-	Name     string                `json:"name"`
-	Status   string                `json:"status"`
-	Reason   string                `json:"reason,omitempty"`
-	Update   bool                  `json:"update"`
-	Warnings []string              `json:"warnings"`
-	Native   *domain.MachineRecipe `json:"native,omitempty"`
-	Previous *domain.MachineRecipe `json:"previous,omitempty"`
+	// Keep the requested volume (zero means automatic) alongside the previewed yield.
+	RequestedBatchLiters *float64              `json:"requested_batch_liters,omitempty"`
+	Name                 string                `json:"name"`
+	Status               string                `json:"status"`
+	Reason               string                `json:"reason,omitempty"`
+	Update               bool                  `json:"update"`
+	Warnings             []string              `json:"warnings"`
+	Native               *domain.MachineRecipe `json:"native,omitempty"`
+	Previous             *domain.MachineRecipe `json:"previous,omitempty"`
 }
 
 type BulkDeployment struct {
@@ -218,6 +220,8 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				}
 				item.Warnings = adapted.Warnings
 			} else {
+				requested := selection.BatchLiters
+				item.RequestedBatchLiters = &requested
 				item.BatchLiters = adapted.Recipe.BatchLiters
 				native := *adapted.MachineRecipe
 				item.Native, item.Warnings = &native, adapted.Warnings
@@ -352,6 +356,15 @@ func (s *Server) executeDeployment(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, 409, "revision_conflict", "A selected recipe changed after this preview; prepare it again")
 			return
 		}
+		if item.RequestedBatchLiters == nil {
+			s.fail(w, 409, "preview_changed", "This preview was made by an earlier Hub version. Prepare the transfer again.")
+			return
+		}
+		adapted, err := recipe.Translate(source, profile, *item.RequestedBatchLiters)
+		if err != nil || !adapted.CanDeploy || !reflect.DeepEqual(adapted.MachineRecipe, item.Native) || adapted.Recipe.BatchLiters != item.BatchLiters {
+			s.fail(w, 409, "preview_changed", "The brewing program or estimated yield for "+item.Name+" has changed. Prepare a new preview before sending.")
+			return
+		}
 	}
 	plan.State = "running"
 	version, err = s.db.Put("batch-deployment", plan.ID, plan, version)
@@ -378,7 +391,11 @@ func (s *Server) executeDeployment(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, 500, "receipt_error", "Transfer stopped because its receipt could not be saved. Inspect the current machine inventory before trying again.")
 			return
 		}
-		if err = d.adapter.PutRecipe(r.Context(), *item.Native); err != nil {
+		write := d.adapter.CreateRecipe
+		if item.Update {
+			write = d.adapter.PutRecipe
+		}
+		if err = write(r.Context(), *item.Native); err != nil {
 			item.Status = "unconfirmed"
 			item.Reason = "The recipe write was not verified. Refresh the machine inventory before preparing another transfer."
 			var failure *device.Error

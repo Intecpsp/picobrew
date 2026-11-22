@@ -360,6 +360,9 @@ func (a *Archive) Detail(id string) (Detail, error) {
 	if result.ID != id || result.Provenance.CatalogID != id || result.Provenance.SourceID != result.SourceID || len(result.SourceRecords) == 0 || result.SourceRecordCount != len(result.SourceRecords) {
 		return Detail{}, fmt.Errorf("catalog: invalid detail %q", id)
 	}
+	if result.Recipe != nil {
+		result.Recipe.SourceYeast = recipe.SourceYeast(*result.Recipe)
+	}
 	if fix, ok := a.recovered[id]; ok {
 		if err := fix.apply(&result); err != nil {
 			return Detail{}, err

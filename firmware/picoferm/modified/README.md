@@ -161,7 +161,8 @@ unbounded OEM acquisition and cloud application paths.
 `analysis/memory-validation.json` binds the actual target ELF and pinned compiler
 size probes to a 32-bit execution of the real controller, Engine, provisioning,
 verified transaction layer, all five pinned SPIFFS C sources and the original
-SDK UMM allocator. The final reference ELF has **29,264 bytes** between
+SDK UMM allocator. The 1.2.1 release replay used Debian’s multilib compiler
+and QEMU to run the 32-bit Linux test. The packaged ELF has **29,264 bytes** between
 `_heap_start` and the SDK heap end. The 5,788-byte application owner is already in
 static RAM; it includes the 4,936-byte HTTP server and its 4,096-byte arena. The
 SDK's 4 KiB continuation stack is also static, so neither is counted twice as a

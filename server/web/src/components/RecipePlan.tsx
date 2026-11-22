@@ -31,8 +31,10 @@ const kinds: Record<string, string> = {
 
 export function RecipeIngredients({
   items,
+  sourceYeast,
   change,
 }: {
+  sourceYeast?: string
   items: Ingredient[]
   change: (items: Ingredient[]) => void
 }) {
@@ -97,6 +99,9 @@ export function RecipeIngredients({
                 {group.add}
               </Button>
             </div>
+            {group.kind === 'misc' && sourceYeast && (
+              <p>Yeast: {sourceYeast} · Pitch amount unspecified.</p>
+            )}
             {members.map(({ item, index }) => {
               const hop = item.kind === 'hop',
                 units = ingredientUnits(item.kind)

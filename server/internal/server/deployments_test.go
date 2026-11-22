@@ -24,6 +24,7 @@ type transferAdapter struct {
 	programs                 map[string]domain.MachineRecipe
 	writes, commands, failAt int
 	busy                     bool
+	arriveDuringCreate       *domain.MachineRecipe
 }
 
 func (a *transferAdapter) Discover(context.Context) (domain.Capabilities, error) {
@@ -50,8 +51,22 @@ func (a *transferAdapter) Recipes(context.Context) ([]domain.MachineRecipe, erro
 	return result, nil
 }
 func (a *transferAdapter) PutRecipe(_ context.Context, r domain.MachineRecipe) error {
+	return a.writeRecipe(r, false)
+}
+func (a *transferAdapter) CreateRecipe(_ context.Context, r domain.MachineRecipe) error {
+	return a.writeRecipe(r, true)
+}
+func (a *transferAdapter) writeRecipe(r domain.MachineRecipe, create bool) error {
 	a.mu.Lock()
 	defer a.mu.Unlock()
+	if create {
+		if a.arriveDuringCreate != nil {
+			a.programs[a.arriveDuringCreate.ID] = *a.arriveDuringCreate
+		}
+		if _, exists := a.programs[r.ID]; exists {
+			return &device.Error{StatusCode: 409, Code: "recipe_exists", Message: "ID already exists"}
+		}
+	}
 	a.writes++
 	r.Steps = append([]domain.MachineStep(nil), r.Steps...)
 	a.programs[r.ID] = r
@@ -143,7 +158,7 @@ func TestBulkPreviewPreservesExistingAndLimitsNewSlots(t *testing.T) {
 }
 
 func TestBulkTransferRejectsChangedPreviewInputs(t *testing.T) {
-	for _, change := range []string{"inventory", "revision", "profile", "capability", "busy", "expiry"} {
+	for _, change := range []string{"inventory", "revision", "profile", "capability", "busy", "expiry", "legacy", "program", "yield"} {
 		t.Run(change, func(t *testing.T) {
 			s, h, c := newTestServer(t)
 			csrf := signIn(t, c, h.URL)
@@ -163,6 +178,16 @@ func TestBulkTransferRejectsChangedPreviewInputs(t *testing.T) {
 				a.caps.ZeroMinuteSteps = false
 			case "busy":
 				a.busy = true
+			case "legacy", "program", "yield":
+				switch change {
+				case "legacy":
+					plan.Items[0].RequestedBatchLiters = nil
+				case "program":
+					plan.Items[0].Native.Steps[0].Location = 5
+				case "yield":
+					plan.Items[0].BatchLiters++
+				}
+				_, _ = s.db.Put("batch-deployment", plan.ID, plan, -1)
 			case "expiry":
 				plan.ExpiresAt = time.Now().Add(-time.Minute)
 				_, _ = s.db.Put("batch-deployment", plan.ID, plan, -1)
@@ -245,5 +270,81 @@ func TestInstalledProgramEditingChecksStaleAndBusyState(t *testing.T) {
 	code, _ = request(t, c, "PUT", url, csrf, in, nil)
 	if code != 409 || a.writes != 1 {
 		t.Fatal("stale slot editor replaced an updated recipe")
+	}
+}
+
+func TestBulkRevalidatesAutomaticYieldAndExplicitBatch(t *testing.T) {
+	for _, requested := range []float64{0, 3} {
+		s, h, c := newTestServer(t)
+		token := signIn(t, c, h.URL)
+		a := newTransferAdapter()
+		installTestDevice(t, s, "bulk", a)
+		r := validRecipe()
+		r.ID, r.Revision = "pale", 1
+		if _, err := s.db.Put("recipe", r.ID, r, 0); err != nil {
+			t.Fatal(err)
+		}
+		in := transferInput(r)
+		in.Items[0].BatchLiters = requested
+		plan := previewTransfer(t, c, h.URL, token, in)
+		item := plan.Items[0]
+		if item.Status != "ready" || item.RequestedBatchLiters == nil || *item.RequestedBatchLiters != requested ||
+			requested == 0 && item.BatchLiters <= 5 || requested > 0 && item.BatchLiters != requested {
+			t.Fatalf("unexpected preview for requested %g L: %+v", requested, item)
+		}
+		if code, receipt := executeTransfer(t, c, h.URL, token, plan); code != 200 || receipt.VerifiedCount != 1 || a.writes != 1 {
+			t.Fatalf("unchanged preview for requested %g L did not transfer: %d %+v", requested, code, receipt)
+		}
+	}
+}
+
+func TestNewTransferSlotCannotReplaceAConcurrentArrival(t *testing.T) {
+	for _, mode := range []string{"single", "bulk"} {
+		t.Run(mode, func(t *testing.T) {
+			s, h, c := newTestServer(t)
+			csrf := signIn(t, c, h.URL)
+			a := newTransferAdapter()
+			installTestDevice(t, s, "bulk", a)
+			r := putTransferSource(t, s, "one")
+			incoming := *r.NativeProgram
+			incoming.Name = "Created on brewer"
+			a.arriveDuringCreate = &incoming
+			if mode == "bulk" {
+				input := transferInput(r)
+				input.OverwriteExisting = true
+				plan := previewTransfer(t, c, h.URL, csrf, input)
+				code, receipt := executeTransfer(t, c, h.URL, csrf, plan)
+				if code != 200 || receipt.State != "partial" || receipt.Items[0].Status != "not_sent" {
+					t.Fatal(code, receipt)
+				}
+			} else {
+				url := h.URL + "/api/v1/devices/bulk/deploy"
+				in := map[string]any{"recipe_id": r.ID, "source_revision": r.Revision}
+				code, _ := request(t, c, "POST", url, csrf, in, nil)
+				if code != 409 {
+					t.Fatal(code)
+				}
+				if code, _ = request(t, c, "POST", url, csrf, in, nil); code != 409 {
+					t.Fatal("existing slot accepted", code)
+				}
+				changed := incoming
+				changed.Name = "Stale preview"
+				in["replace_expected"] = changed
+				if code, _ = request(t, c, "POST", url, csrf, in, nil); code != 409 {
+					t.Fatal("stale replacement accepted", code)
+				}
+				if !reflect.DeepEqual(a.programs[incoming.ID], incoming) || a.writes != 0 {
+					t.Fatal("collision overwrote the slot")
+				}
+				in["replace_expected"] = incoming
+				if code, _ = request(t, c, "POST", url, csrf, in, nil); code != 200 || a.writes != 1 || !reflect.DeepEqual(a.programs[incoming.ID], *r.NativeProgram) {
+					t.Fatal("reviewed replacement failed", code, a.writes)
+				}
+				return
+			}
+			if !reflect.DeepEqual(a.programs[incoming.ID], incoming) || a.writes != 0 {
+				t.Fatal("collision overwrote the slot")
+			}
+		})
 	}
 }

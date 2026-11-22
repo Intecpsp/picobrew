@@ -10,6 +10,8 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 )
 
+const minBoilTargetC = 85
+
 // Translate derives a model version from the canonical recipe. Native programs
 // keep their original encoding and follow the existing compatibility rules.
 func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapted, error) {
@@ -45,9 +47,12 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	case r.SourceModel != p.ID:
 		staged.Steps = translateRoutedSteps(r, p)
 	}
+	if issue == "" && routed == len(r.Steps) {
+		staged.Steps = prepareBoilStart(staged, p)
+	}
 	slots := firstHopRoutes(staged.Steps)
-	if issue == "" && routed > 0 {
-		issue = checkRoutedHops(staged, slots)
+	if issue == "" {
+		issue = checkRoutedIngredients(staged, slots)
 	}
 	plan, err := adapt(staged, p, liters, true)
 	if err != nil {
@@ -95,57 +100,119 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	return plan, nil
 }
 
-// Use the first direct flow to a slot to assign its ingredient load. Later
-// visits to the same slot recirculate the existing load.
-func firstHopRoutes(steps []domain.RecipeStep) map[int]int {
-	remaining := 0
+// A regular full-boil addition must stay dry while wort heats after the mash.
+// Older wizard recipes went directly from mash-out to a timed hop step.
+func prepareBoilStart(r domain.Recipe, p domain.Profile) []domain.RecipeStep {
+	for i, s := range r.Steps {
+		if s.Kind != "boil" && s.Kind != "hop" {
+			continue
+		}
+		if s.Location < 3 || s.TargetC == 0 {
+			break
+		}
+		fullBoil := boilDuration(r.Steps)
+		regular := false
+		for _, in := range r.Ingredients {
+			use := strings.ToLower(strings.TrimSpace(in.Use))
+			if in.Minutes == float64(fullBoil) && (in.SlotAddition || in.Kind == "hop" && use == "boil") {
+				regular = true
+				break
+			}
+		}
+		if !regular {
+			break
+		}
+		target := s.TargetC
+		if p.ID == "z" {
+			target = math.Min(target, (202.0-32)/1.8)
+		}
+		if i > 0 && r.Steps[i-1].TargetC >= target {
+			break
+		}
+		heat := domain.RecipeStep{Name: "Heat to boil", Kind: "heat", Location: 1, TargetC: target}
+		return slices.Insert(slices.Clone(r.Steps), i, heat)
+	}
+	return r.Steps
+}
+
+func boilDuration(steps []domain.RecipeStep) int {
+	total := 0
 	for _, step := range steps {
 		if step.Kind == "boil" || step.Kind == "hop" {
-			remaining += step.Minutes
+			total += step.Minutes
 		}
 	}
+	return total
+}
+
+// A loaded slot is identified by its first timed direct visit. Later visits
+// recirculate its existing load.
+func firstHopRoutes(steps []domain.RecipeStep) map[int]int {
+	remaining := boilDuration(steps)
 	first := map[int]int{}
 	visited := map[int]bool{}
 	for _, step := range steps {
-		if step.Kind != "boil" && step.Kind != "hop" && step.Kind != "heat" {
+		if step.Kind != "boil" && step.Kind != "hop" {
 			continue
 		}
 		if step.Location >= 3 && !visited[step.Location] {
 			visited[step.Location] = true
 			first[remaining] = step.Location - 2
 		}
-		if step.Kind != "heat" {
-			remaining -= step.Minutes
-		}
+		remaining -= step.Minutes
 	}
 	return first
 }
 
-func checkRoutedHops(r domain.Recipe, first map[int]int) string {
-	boilMinutes, preheatedSlot := 0, 0
+func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
+	type exposure struct{ index, minutes int }
+	wet := map[int]exposure{}
+	duration := boilDuration(r.Steps)
+	if r.BoilMinutes != 0 && r.BoilMinutes != float64(duration) {
+		return "The declared boil duration and scheduled boil disagree. Choose the intended duration."
+	}
+	remaining := duration
+	mashRest := false
 	for i, step := range r.Steps {
-		if step.Kind != "boil" && step.Kind != "hop" {
-			continue
+		if remaining == duration && step.Location == 2 && step.TargetC > 0 && step.Minutes > 0 && (step.Kind == "mash" || step.Kind == "hold") {
+			mashRest = true
 		}
-		if boilMinutes == 0 && i > 0 {
-			heat := r.Steps[i-1]
-			if heat.Kind == "heat" && heat.Location >= 3 && heat.Location == step.Location {
-				preheatedSlot = heat.Location - 2
+		// Wort cascades through the lower-numbered slots on every visit.
+		for slot := 1; slot <= step.Location-2; slot++ {
+			if _, seen := wet[slot]; !seen {
+				wet[slot] = exposure{i, remaining}
 			}
 		}
-		boilMinutes += step.Minutes
+		if step.Kind == "boil" || step.Kind == "hop" {
+			if step.Minutes > 0 && step.TargetC < minBoilTargetC {
+				return fmt.Sprintf("The timed boil step %q needs a target of at least %d °C.", step.Name, minBoilTargetC)
+			}
+			remaining -= step.Minutes
+		}
 	}
 	for _, in := range r.Ingredients {
 		use := strings.ToLower(strings.TrimSpace(in.Use))
-		if in.SlotAddition || in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
-			if use == "first-wort" || use == "first wort" {
-				if in.Minutes != float64(boilMinutes) || preheatedSlot == 0 || first[boilMinutes] != preheatedSlot {
-					return "First-wort hops must receive flow during heat-up and the full boil."
-				}
+		if !mashRest && in.Kind == "fermentable" && mashLoadKG(in) > 0 {
+			return "Add a heated, timed mash rest through the grain basket for " + in.Name + " before the boil."
+		}
+		firstWort := use == "first-wort" || use == "first wort"
+		if !in.SlotAddition && !(in.Kind == "hop" && (use == "boil" || firstWort)) {
+			continue
+		}
+		slot := first[int(in.Minutes)]
+		if in.Minutes != math.Trunc(in.Minutes) || slot == 0 {
+			return fmt.Sprintf("Assign %s a hop slot that first receives direct flow at %g minutes before boil ends.", in.Name, in.Minutes)
+		}
+		touch := wet[slot]
+		step := r.Steps[touch.index]
+		if firstWort {
+			next := touch.index + 1
+			if in.Minutes != float64(duration) || step.Kind != "heat" || step.Location != slot+2 ||
+				next >= len(r.Steps) || (r.Steps[next].Kind != "boil" && r.Steps[next].Kind != "hop") || r.Steps[next].Location != slot+2 {
+				return "First-wort hops must receive flow during heat-up and the full boil."
 			}
-			if in.Minutes != math.Trunc(in.Minutes) || first[int(in.Minutes)] == 0 {
-				return fmt.Sprintf("Assign %s a hop slot that first receives direct flow at %g minutes before boil ends.", in.Name, in.Minutes)
-			}
+		} else if touch.minutes != int(in.Minutes) || (step.Kind != "boil" && step.Kind != "hop") || step.Location != slot+2 {
+			return fmt.Sprintf("Slot %d wets %s before its %g-minute boil addition. Start loaded slots in ascending order and heat through the keg before regular boil hops.", slot, in.Name, in.Minutes)
 		}
 	}
 	return ""
@@ -175,7 +242,7 @@ func translateRoutedSteps(r domain.Recipe, p domain.Profile) []domain.RecipeStep
 				s.DrainMinutes = hop
 			}
 		}
-		if s.Kind == "boil" || s.Kind == "hop" || s.Kind == "heat" && s.Location >= 3 {
+		if s.Kind == "boil" || s.Kind == "hop" || s.Kind == "heat" && (s.Location >= 3 || s.Location == 1 && i+1 < len(steps) && (steps[i+1].Kind == "hop" || steps[i+1].Kind == "boil")) {
 			s.TargetC = math.Min(s.TargetC, (hotF-32)/1.8)
 		}
 		if p.ID == "z" && s.Location == 1 {
@@ -198,7 +265,7 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 			s.Location = 2
 			rests = append(rests, s)
 		case "boil":
-			if boil.Minutes != 0 || s.TargetC < 85 || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || s.Type != "" && s.Type != "Temperature" {
+			if boil.Minutes != 0 || s.TargetC < minBoilTargetC || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || s.Type != "" && s.Type != "Temperature" {
 				return nil, "Review the source boil stages and temperatures."
 			}
 			boil = s

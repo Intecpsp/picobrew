@@ -52,6 +52,10 @@ export function renameIngredient(item: Ingredient, name: string) {
 
 export const goesInKeg = (type?: string) => /^(sugar|extract|dry extract)$/i.test(type ?? '')
 
+export function unmeasuredYeast(r: Recipe) {
+  return r.ingredients?.some((i) => i.kind === 'yeast') ? undefined : r.source_yeast
+}
+
 export function ingredientBill(ingredients: Ingredient[], kind: string) {
   const weights = new Map<string, number>()
   for (const i of ingredients) {

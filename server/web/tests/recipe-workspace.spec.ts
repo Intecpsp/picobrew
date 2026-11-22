@@ -232,6 +232,7 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
     ).toEqual([
       [1, 0],
       [2, 90],
+      [1, 0], // Heat through the keg before wetting the first boil addition.
       [3, 45],
       [6, 15],
     ])

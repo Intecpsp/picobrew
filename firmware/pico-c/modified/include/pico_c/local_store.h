@@ -15,7 +15,8 @@ typedef enum PicoLocalStoreResult {
     PICO_LOCAL_STORE_INVALID,
     PICO_LOCAL_STORE_FULL,
     PICO_LOCAL_STORE_IO,
-    PICO_LOCAL_STORE_CORRUPT
+    PICO_LOCAL_STORE_CORRUPT,
+    PICO_LOCAL_STORE_EXISTS
 } PicoLocalStoreResult;
 
 /* 0: exists, 1: definitely absent, negative: I/O failure. Missing and failed
@@ -40,7 +41,7 @@ bool pico_local_recipe_valid(const PicoLocalRecipe *recipe);
 PicoLocalStoreResult pico_local_recipe_get(PicoNetwork *network, const char *id,
                                           PicoLocalRecipe *recipe);
 PicoLocalStoreResult pico_local_recipe_put(PicoNetwork *network,
-                                          const PicoLocalRecipe *recipe, bool *created);
+                                          const PicoLocalRecipe *recipe, bool create_only, bool *created);
 PicoLocalStoreResult pico_local_recipe_delete(PicoNetwork *network, const char *id);
 /* Returns each occupied slot by ordinal, without an unbounded directory scan. */
 PicoLocalStoreResult pico_local_recipe_at(PicoNetwork *network, unsigned ordinal,

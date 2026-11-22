@@ -80,8 +80,11 @@ func validateConditioning(r domain.Recipe) error {
 			return errors.New("invalid fermentation phase")
 		}
 	}
-	if !finite(r.Carbonation.Volumes) || r.Carbonation.Volumes < 0 || r.Carbonation.Volumes > 10 || !finite(r.Carbonation.TemperatureC) || r.Carbonation.TemperatureC < -10 || r.Carbonation.TemperatureC > 60 {
+	if !finite(r.Carbonation.Volumes) || r.Carbonation.Volumes < 0 || r.Carbonation.Volumes > 10 {
 		return errors.New("invalid carbonation plan")
+	}
+	if c := r.Carbonation.TemperatureC; c != nil && (!finite(*c) || *c < -10 || *c > 60) {
+		return errors.New("invalid carbonation temperature")
 	}
 	if r.Carbonation.Method != "" {
 		if _, err := enum(r.Carbonation.Method, "forced", "natural"); err != nil {
@@ -143,6 +146,9 @@ func Validate(r domain.Recipe) error {
 	}
 	if len(r.Ingredients) > 512 || len(r.Steps) == 0 || len(r.Steps) > 256 {
 		return errors.New("a recipe requires 1–256 steps and at most 512 ingredients")
+	}
+	if len(r.SourceYeast) > 512 {
+		return errors.New("source yeast name is too long")
 	}
 	if len(r.Description) > 65536 || len(r.Notes) > 65536 || len(r.Tags) > 100 {
 		return errors.New("recipe metadata is too large")
@@ -215,8 +221,23 @@ func supportedProfile(id string) (domain.Profile, bool) {
 	return domain.Profile{}, false
 }
 
-func grainIngredient(in domain.Ingredient) bool {
-	return in.Kind == "fermentable" && !strings.EqualFold(in.Type, "Extract") && !strings.EqualFold(in.Type, "Dry Extract") && !strings.EqualFold(in.Type, "Sugar")
+// Count the measured mass that the loading sheet assigns to the mash basket.
+func mashLoadKG(in domain.Ingredient) float64 {
+	use := strings.ToLower(strings.TrimSpace(in.Use))
+	if in.Kind != "fermentable" {
+		if use == "mash" && in.Unit == "g" {
+			return in.Amount / 1000
+		}
+		return 0
+	}
+	if use == "mash" {
+		return in.Amount
+	}
+	if use == "boil" || strings.EqualFold(in.Type, "Extract") || strings.EqualFold(in.Type, "Dry Extract") || strings.EqualFold(in.Type, "Sugar") {
+		return 0
+	}
+	// Older recipes without placement metadata used grain type to identify basket loads.
+	return in.Amount
 }
 
 // ValidateCapacity checks the quantities for one batch, after scaling when adapting.
@@ -285,6 +306,7 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 		return domain.Adapted{}, errors.New("requested batch exceeds the configured profile batch limit or is invalid")
 	}
 
+	r.SourceYeast = SourceYeast(r)
 	plan := domain.Adapted{Recipe: r, Profile: profile, SourceRevision: r.Revision, Warnings: []string{}, DeploymentBlockers: []string{}}
 	plan.Recipe.Ingredients = append([]domain.Ingredient(nil), r.Ingredients...)
 	plan.Recipe.Steps = append([]domain.RecipeStep(nil), r.Steps...)
@@ -335,7 +357,7 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 	if yeast {
 		plan.Warnings = append(plan.Warnings, "Yeast scales by volume only; verify cell count, viability and pitch rate separately.")
 	}
-	if len(r.Fermentation) > 0 || r.Carbonation.Volumes > 0 {
+	if len(r.Fermentation) > 0 || r.Carbonation != (domain.Carbonation{}) {
 		plan.Warnings = append(plan.Warnings, "Track fermentation and carbonation manually in the brew journal.")
 	}
 	plan.Warnings = append(plan.Warnings, "Verify the profile efficiency and actual grain/water capacity. Water absorption, dead space and boil-off are not modeled.")
@@ -472,9 +494,7 @@ func ingredientLoads(r domain.Recipe) (float64, map[float64]float64) {
 	grain := 0.0
 	hops := map[float64]float64{}
 	for _, in := range r.Ingredients {
-		if grainIngredient(in) {
-			grain += in.Amount
-		}
+		grain += mashLoadKG(in)
 		use := strings.ToLower(strings.TrimSpace(in.Use))
 		if in.SlotAddition || in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
 			hops[in.Minutes] += in.Amount

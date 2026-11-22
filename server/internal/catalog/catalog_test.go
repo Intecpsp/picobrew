@@ -398,6 +398,36 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 				}
 				continue
 			}
+			if plan.Recipe.SourceYeast == "" {
+				t.Fatalf("%s/%s missing source yeast", d.ID, p.ID)
+			}
+			var basketKG float64
+			slotGrams := map[int]float64{}
+			for _, in := range plan.Recipe.Ingredients {
+				if in.Use == "mash" {
+					switch in.Unit {
+					case "kg":
+						basketKG += in.Amount
+					case "g":
+						basketKG += in.Amount / 1000
+					}
+				}
+				if in.SlotAddition || in.Kind == "hop" && (in.Use == "boil" || in.Use == "first-wort") {
+					slot := plan.HopSlotsByMinute[int(in.Minutes)]
+					if slot < 1 || slot > p.HopSlots {
+						t.Fatalf("%s/%s unassigned timed addition: %+v", d.ID, p.ID, in)
+					}
+					slotGrams[slot] += in.Amount
+				}
+			}
+			if basketKG > p.MaxGrainKG+1e-8 {
+				t.Fatalf("%s/%s overfilled basket: %g kg", d.ID, p.ID, basketKG)
+			}
+			for slot, g := range slotGrams {
+				if g > p.MaxHopSlotG+1e-8 {
+					t.Fatalf("%s/%s overfilled slot %d: %g g", d.ID, p.ID, slot, g)
+				}
+			}
 			if p.ID == "zymatic" {
 				if len(recipe.StockZymaticRecord(*plan.MachineRecipe)) > 511 || plan.CanDeploy {
 					t.Fatal("invalid stock record", d.ID)

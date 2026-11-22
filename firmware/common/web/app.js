@@ -95,7 +95,7 @@ function updateControls() {
   $('saveRecipe').disabled = !ready || busy;
   $('deleteRecipe').disabled = !ready || busy || !state.editorId;
   $('saveSettings').disabled = !ready || busy;
-  document.querySelectorAll('[data-action]').forEach(button=>button.disabled=!ready || !allowedCommand(button.dataset.action) || (busy && ['start','calibrate','clean','essential-oils'].includes(button.dataset.action)));
+  document.querySelectorAll('[data-action]').forEach(button=>button.disabled=!state.connected || state.pending || !allowedCommand(button.dataset.action) || !PicoDevice.accessoryActionAllowed(button.dataset.action,state.status));
   $('accessoryStop').disabled=!state.connected || state.pending || !allowedCommand('stop');
   apiExplorer?.update();
   brewHistory?.update();
@@ -123,7 +123,7 @@ function applyCapabilities(info) {
   state.info=info;
   document.body.classList.toggle("accessory",!hasFeature("brewing"));
   $("recipeRoutingHeader").textContent=info.model==="z-series"?"Direct valve":"Location";
-  $("recipeRoutingHint").textContent=info.model==="z-series"?"Z uses direct valve locations 1–6. Archived Z/Zymatic location and pause codes must be explicitly converted before importing a program.":"Use verified locations 1–6 for this device.";
+  $("recipeRoutingHint").textContent=info.model==="z-series"?"Choose the flow path for each step. Convert archived Z or Zymatic programs before importing them; their route and pause codes differ.":"Use verified locations 1–6 for this device.";
   document.querySelectorAll('[data-feature]').forEach(node=>node.hidden=!hasFeature(node.dataset.feature));
   document.querySelectorAll('[data-accessory]').forEach(node=>node.hidden=hasFeature('brewing') ||
     (node.dataset.feature && !hasFeature(node.dataset.feature)));
@@ -137,7 +137,7 @@ function applyCapabilities(info) {
 }
 function renderActions() {
   const actions=$('deviceActions'),parameters=$('parameterControls');actions.replaceChildren();parameters.replaceChildren();
-  const labels={...PicoDevice.commandLabels,start:hasFeature('fermentation')?'Start fermentation':'Start manual session'};
+  const labels={...PicoDevice.commandLabels,start:hasFeature('fermentation')?'Start recording':'Start manual session'};
   $('controlsHeading').textContent=hasFeature('fermentation')?'Monitor fermentation.':'Run your PicoStill.';
   $('controlHint').textContent=hasFeature('fermentation')?'Readings and session history are recorded on the device.':
     'Prepare the device before starting and review its live sensor and output readings.';
@@ -156,9 +156,16 @@ function renderActions() {
       if(name==='set-fan') {add('channel','Fan channel','number',1,2,1);add('level','Fan level (%)','number',0,100,0);add('enabled','Fan enabled','checkbox',0,0,false);}
       else if(name==='set-pump')add('enabled','Pump enabled','checkbox',0,0,false);
       else add('value','Sampling interval (seconds)','number',60,86400,300);
+      form.addEventListener('input',event=>{
+        if(event.target.name==='channel') {delete form.dataset.edited;syncActuatorForm(form);}
+        else {
+          form.dataset.edited='true';
+          if(event.target.name==='level')form.elements.enabled.checked=Number(event.target.value)>0;
+        }
+      });
       const button=document.createElement('button');button.type='submit';button.className='button';button.dataset.action=name;button.textContent=labels[name];form.append(button);
       form.addEventListener('submit',event=>{event.preventDefault();if(!form.reportValidity())return;
-        const body={command:name};form.querySelectorAll('input').forEach(input=>body[input.name]=input.type==='checkbox'?input.checked:Number(input.value));sendCommand(body);});
+        const body={command:name};form.querySelectorAll('input').forEach(input=>body[input.name]=input.type==='checkbox'?input.checked:Number(input.value));sendCommand(body).then(accepted=>{if(accepted){delete form.dataset.edited;syncActuatorForm(form);}});});
       parameters.append(form);
     } else {
       const button=document.createElement('button');button.type='button';button.className='button primary';button.dataset.action=name;button.textContent=labels[name];
@@ -176,6 +183,15 @@ function renderActions() {
     }
   }
   $('accessoryStopRow').hidden=!allowedCommand('stop');updateControls();
+}
+function syncActuatorForm(form) {
+  const name=form.dataset.command;
+  if(form.dataset.edited || (name!=='set-fan' && name!=='set-pump'))return;
+  const id=name==='set-fan'?'fan'+form.elements.channel.value:'pump';
+  const reading=state.status?.actuators?.find(item=>item.id===id);
+  if(!reading)return;
+  form.elements.enabled.checked=reading.enabled===true;
+  if(name==='set-fan')form.elements.level.value=Math.round(reading.level ?? 0);
 }
 function renderReadings(status) {
   const render=(target,items,actuator)=>{
@@ -203,6 +219,7 @@ function renderStatus(status) {
   state.status = status;
   if (status.model) renderIdentity(status);
   renderReadings(status);
+  $('parameterControls').querySelectorAll('form').forEach(syncActuatorForm);
   const recovery=status.recovery;
   $('recoveryHeading').textContent=recovery?.valid===false?'The checkpoint could not be verified.':'Review the saved checkpoint.';
   $('recoveryDetail').textContent=recovery?.valid===false?'Discard the invalid checkpoint before starting another recipe.':
@@ -216,12 +233,15 @@ function renderStatus(status) {
   $('blockTemperature').textContent = temperature(status.thermoblock_f);
   $('targetTemperature').textContent = status.target_f === 0 ? 'Unheated' : temperature(status.target_f);
   $('stepTime').textContent = duration(status.step_seconds);
-  const phases = ['Heating','Holding temperature','Cooling','Draining','Idle','Circulating','Cooling thermoblock','Pump hold','Heating'];
-  $('phaseName').textContent = phases[status.phase] || 'Phase '+status.phase;
+  $('phaseName').textContent = state.info.model==='z-series' && !status.busy ? (status.ready?'Idle':'—') : PicoDevice.phaseLabel(state.info.model,status.phase);
   $('operationTitle').textContent = status.stopped ? 'Outputs stopped.' : status.busy ? (status.recipe_name || 'Operation in progress.') : 'Ready for your next brew.';
   $('operationDetail').textContent = status.stopped ? (status.stop_reason === 'filter-removed' ? 'The step filter was removed during pumping. This operation is cancelled. Refit the filter and wait for idle before clearing the stop.' : 'The stop latch is active. Wait for the operation to end before clearing it.') : status.busy ? (status.step_name || 'Follow the brewer’s prompts on the remote front panel.') : 'Choose a saved recipe, open a program, or use the front panel.';
-  $('modeBadge').textContent = status.stopped ? 'STOPPED' : status.busy ? 'IN PROGRESS' : 'READY';
+  $('modeBadge').textContent = status.stopped ? 'STOPPED' : !status.ready ? 'NOT READY' : status.busy ? 'IN PROGRESS' : 'READY';
   $('modeBadge').classList.toggle('stopped', !!status.stopped);
+  if(hasFeature('brewing') && !status.ready && !status.busy && !status.stopped){
+    $('operationTitle').textContent='Waiting for the brewer.';
+    $('operationDetail').textContent='Check the front panel for instructions.';
+  }
   const reviewRecovery=!!recovery && (recovery.available===true || recovery.valid===false) && !status.busy && !status.stopped;
   $('modeBadge').classList.toggle('warning',reviewRecovery);
   if(reviewRecovery){
@@ -233,7 +253,7 @@ function renderStatus(status) {
   $('filterBadge').classList.toggle('warning', status.filter_inserted === false);
   if(!hasFeature('brewing')) {
     $('operationTitle').textContent=status.stopped?'Operation stopped.':status.state?.replace(/[_-]/g,' ').replace(/^./,letter=>letter.toUpperCase()) || (status.busy?'Session in progress.':'Ready.');
-    $('operationDetail').textContent=status.stop_reason && status.stop_reason!=='none'?'Stop reason: '+status.stop_reason:status.busy?'The device is running this session and recording its readings.':'Choose an available device control below.';
+    $('operationDetail').textContent=status.stop_reason && status.stop_reason!=='none'?'Stop reason: '+status.stop_reason:status.busy?(status.state==='sampling'?'Taking a sensor reading.':status.state==='calibrating'?'Pressure calibration in progress.':'The device is running this session.'):'Choose an available device control below.';
   }
   $('filterBadge').hidden=status.filter_inserted==null;
   $('deviceId').textContent = status.device_uid ? 'Device '+status.device_uid : '';
@@ -281,13 +301,15 @@ async function refreshRecipes() {
   updateControls();
 }
 
+const flowPaths = ['Keg circulation', 'Mash', 'Hop addition 1', 'Hop addition 2', 'Hop addition 3', 'Hop addition 4'];
+
 function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
   if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
   const row=document.createElement('tr');
   const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',0,599],['drain_minutes','number',0,120]];
   for (const [field,type,min,max] of definitions) {
     const cell=document.createElement('td');let input;
-    if(type==='select') {input=document.createElement('select');for(let i=1;i<=6;i++)input.add(new Option(String(i),String(i)));}
+    if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
     else {input=document.createElement('input');input.type=type;if(type==='text')input.maxLength=21;else{input.min=min;input.max=max;input.step=1;}}
     input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
     input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
@@ -301,7 +323,7 @@ function editRecipe(recipe, existing=false) {
   $('recipeName').value=recipe.name || '';$('recipeId').value=recipe.id || '';$('recipeId').readOnly=existing;
   $('recipeId').dataset.auto=existing ? 'false' : 'true';
   $('editorHeading').textContent=existing ? 'Edit recipe' : 'New recipe';$('steps').replaceChildren();
-  for(const step of recipe.steps || [{name:'Mash',location:1,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
+  for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
   updateControls();
 }
 
@@ -327,7 +349,7 @@ async function sendCommand(body) {
   try {
     const reply=await api('/commands','POST',body);
     if(!reply?.accepted || reply.command!==body.command)throw new Error('Command acceptance was not confirmed.');
-    notify(body.command==='stop'?'Stop requested.':'Command accepted.');renderStatus(await api('/status'));
+    notify(body.command==='stop'?'Stop requested.':'Command accepted.');renderStatus(await api('/status'));return true;
   } catch(error){notify(error.message+(!error.status?' Check the device status before repeating the command.':''),true);}
   finally{state.pending=false;updateControls();}
 }
@@ -449,7 +471,7 @@ $('recipeName').addEventListener('input',()=>{if($('recipeId').dataset.auto==='t
 $('recipeId').addEventListener('input',()=>{$('recipeId').dataset.auto='false';});
 $('recipeForm').addEventListener('submit',async event=>{
   event.preventDefault();const recipe=recipeFromForm();if(!recipe)return;
-  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{name:recipe.name,steps:recipe.steps});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
+  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{name:recipe.name,steps:recipe.steps,...(!state.editorId && {create_only:true})});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
   catch(error){notify(error.message,true);}
 });
 $('deleteRecipe').addEventListener('click',async()=>{
@@ -476,7 +498,7 @@ document.addEventListener('visibilitychange',()=>{if(!document.hidden && state.k
 apiExplorer=setupApiExplorer({session:()=>({key:state.key,connected:state.connected,generation:state.generation}),enqueue:task=>{
   const result=requestQueue.catch(()=>{}).then(task);requestQueue=result;return result;
 }});
-brewHistory=setupHistory({session:()=>({key:state.key,connected:state.connected,generation:state.generation,temperature_unit:state.settings.temperature_unit,brewing:hasFeature('brewing')}),enqueue:task=>{
+brewHistory=setupHistory({session:()=>({key:state.key,connected:state.connected,generation:state.generation,temperature_unit:state.settings.temperature_unit,brewing:hasFeature('brewing'),model:state.info.model}),enqueue:task=>{
   const result=requestQueue.catch(()=>{}).then(task);requestQueue=result;return result;
 }});
 editRecipe({});

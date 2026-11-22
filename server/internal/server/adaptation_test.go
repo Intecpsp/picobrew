@@ -182,3 +182,89 @@ func TestSaveTranslatesEveryBrewerAndRebuildsEditedVersions(t *testing.T) {
 		t.Fatal("unexpected library copies", len(rows), err)
 	}
 }
+
+func TestShoppingListKeepsUnspecifiedPitchSeparateFromMeasuredYeast(t *testing.T) {
+	s, h, client := newTestServer(t)
+	signIn(t, client, h.URL)
+	r := validRecipe()
+	r.SourceYeast = "SafAle US-05"
+	if _, err := s.db.Put("recipe", "source", r, 0); err != nil {
+		t.Fatal(err)
+	}
+	r.Ingredients = append(r.Ingredients, domain.Ingredient{Kind: "yeast", Name: r.SourceYeast, Amount: 8, Unit: "g", Use: "fermentation"})
+	if _, err := s.db.Put("recipe", "measured", r, 0); err != nil {
+		t.Fatal(err)
+	}
+	code, b := request(t, client, "GET", h.URL+"/api/v1/shopping-list?recipes=source,measured", "", nil, nil)
+	var list []struct {
+		domain.Ingredient
+		AmountUnspecified bool `json:"amount_unspecified"`
+	}
+	if code != 200 || json.Unmarshal(b, &list) != nil {
+		t.Fatalf("shopping list: %d %s", code, b)
+	}
+	var measured, unspecified int
+	for _, i := range list {
+		if i.Kind != "yeast" {
+			continue
+		}
+		if i.Name != r.SourceYeast {
+			t.Fatal(i)
+		}
+		if i.AmountUnspecified && i.Amount == 0 {
+			unspecified++
+		} else if !i.AmountUnspecified && i.Amount == 8 && i.Unit == "g" {
+			measured++
+		} else {
+			t.Fatal(i)
+		}
+	}
+	if measured != 1 || unspecified != 1 {
+		t.Fatalf("mixed doses: %s", b)
+	}
+}
+
+func TestJournalPreservesExplicitZeroCarbonationTemperature(t *testing.T) {
+	r := domain.Recipe{Carbonation: domain.Carbonation{Method: "forced", TemperatureC: new(float64)}}
+	plan := conditioningPlan(r)
+	if plan.Stages[0].TargetC == nil || *plan.Stages[0].TargetC != 0 {
+		t.Fatal(plan)
+	}
+	r.Carbonation.TemperatureC = nil
+	if conditioningPlan(r).Stages[0].TargetC != nil {
+		t.Fatal("invented temperature")
+	}
+}
+
+func TestGeneratedRecipesUseTheSameProgramChecksAsSend(t *testing.T) {
+	r := validRecipe()
+	r.SourceYeast = "US-05"
+	for i := range r.Steps {
+		r.Steps[i].Location = 0
+	}
+	check := func(target string, wantOK bool) {
+		t.Helper()
+		b, err := json.Marshal(r)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if err = validateGeneratedRecipe(b, target, nil); (err == nil) != wantOK {
+			t.Fatalf("target %s: %v", target, err)
+		}
+	}
+	for _, model := range []string{"pico-s", "pico-pro", "pico-c", "z-series", "zymatic"} {
+		check(model, true)
+	}
+	check("picoferm", false)
+	r.Steps[0].Location = 2
+	r.Steps[1].Location = 1
+	check("pico-s", true)
+	r.Steps[1].TargetC = 20
+	check("pico-s", false)
+	r.Steps[1].TargetC = 100
+	r.Steps[0].Location = 1
+	check("pico-s", false)
+	r.Steps[0].Location = 2
+	r.SourceYeast = ""
+	check("", false)
+}

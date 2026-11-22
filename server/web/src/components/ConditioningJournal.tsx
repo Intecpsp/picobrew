@@ -22,7 +22,7 @@ export function ConditioningJournal({
       r.fermentation?.length ||
       r.carbonation?.method ||
       r.carbonation?.volumes ||
-      r.carbonation?.temperature_c
+      r.carbonation?.temperature_c !== undefined
   )
   const [recipeId, choose] = useState('')
   const [name, setName] = useState('')

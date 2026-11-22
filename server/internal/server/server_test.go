@@ -101,7 +101,7 @@ func signIn(t *testing.T, c *http.Client, url string) string {
 	return v.Token
 }
 func validRecipe() domain.Recipe {
-	return domain.Recipe{Name: "Test Pale", BatchLiters: 5, Efficiency: 55, Type: "All Grain", BoilLiters: 6.5, BoilMinutes: 60, Ingredients: []domain.Ingredient{{Name: "Pale malt", Kind: "fermentable", Type: "Grain", Amount: 1.2, Unit: "kg", Use: "mash"}}, Steps: []domain.RecipeStep{{Name: "Mash", Kind: "mash", TargetC: 67, Minutes: 60, Location: 1}, {Name: "Boil", Kind: "boil", TargetC: 100, Minutes: 60, Location: 2}}}
+	return domain.Recipe{Name: "Test Pale", BatchLiters: 5, Efficiency: 55, Type: "All Grain", BoilLiters: 6.5, BoilMinutes: 60, Ingredients: []domain.Ingredient{{Name: "Pale malt", Kind: "fermentable", Type: "Grain", Amount: 1.2, Unit: "kg", Use: "mash"}}, Steps: []domain.RecipeStep{{Name: "Mash", Kind: "mash", TargetC: 67, Minutes: 60, Location: 2}, {Name: "Boil", Kind: "boil", TargetC: 100, Minutes: 60, Location: 1}}}
 }
 
 func TestOwnerSessionCSRFRevisionAndSecretStorage(t *testing.T) {

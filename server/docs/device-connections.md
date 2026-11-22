@@ -1,10 +1,10 @@
 # Machine connections and API keys
 
-## Manage machines from Overview
+## Manage machines from Brewery
 
-**Overview → Add machine** opens the connection form directly. A machine card opens its controls and also provides separate Edit and Remove actions. The individual machine page offers **Edit connection**, **Remove machine**, and **Test connection**. Connection management stays available when the machine is offline.
+**Brewery → Add machine** opens the connection form directly. A machine card opens its controls and also provides separate Edit and Remove actions. On the individual machine page, **Manage machine** offers **Edit connection**, **Remove machine**, and **Test connection**. Connection management stays available when the machine is offline.
 
-Workspace Settings contains equipment planning, display preferences, Brew Assistant configuration, and workspace exports. Machine registrations live on Overview.
+Settings contains equipment planning, display preferences, Brew Assistant configuration, and workspace exports. Machine registrations live on the Brewery page.
 
 The Hub reads the product model from authenticated, model-aware firmware and associates it with the verified device UID. New physical registrations do not default to Pro. Older firmware can use a manual model selection if it does not report an identity. A corrected current model does not rewrite archived brew snapshots, and a changed UID never silently replaces the registered appliance. The connection type stays fixed. The API-key field starts empty: leave it empty to keep the saved key. **Monitor this machine** enables or disables the Hub connection. The server rejects connection changes and removal while its last verified state reports an active operation.
 
@@ -16,7 +16,7 @@ Saving while offline or busy retains the changes in the Hub and shows that appli
 
 Removal requires confirmation and removes the Hub registration and saved credential. Archived brew records and their sensor samples remain available in Brew history. The Hub attempts to disable its own reporting connection on a reachable idle appliance; it does not disable a custom external destination or another Hub's connection. The action does not send a firmware erase, recipe deletion, or stop command to the appliance.
 
-Old `#/settings/new-device` links redirect to the Overview add-machine dialog.
+Old `#/settings/new-device` links redirect to the Brewery add-machine dialog.
 
 ## One provisioned key per physical brewer
 

@@ -30,6 +30,10 @@ recovered Z builder still applies its valve and local boiling-temperature
 limits. An unheated step explicitly stops the preceding PID before valve
 movement. Original setup, filter and completion prompts remain interactive.
 
+The local recipe format carries no starting-water quantity. For these programs,
+the loading screen prompts the operator to add water according to the recipe.
+The native duration estimator still uses its nominal heating volume.
+
 Archived native Z programs use a different grammar: locations 0–5 map to
 valves 1–6, and location 6 means pause. They are retained as reference/export
 data in the Hub; they are not silently interpreted as canonical API recipes.

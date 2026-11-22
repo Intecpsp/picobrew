@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -364,4 +365,106 @@ func TestTelemetryValidationMatchesFirmwareHostRules(t *testing.T) {
 			t.Errorf("accepted invalid telemetry host %q", host)
 		}
 	}
+}
+
+func TestRecipeCreateNegotiatesAndNeverRetriesRejectedWrites(t *testing.T) {
+	for _, modern := range []bool{false, true} {
+		for _, collision := range []bool{false, true} {
+			t.Run(fmt.Sprintf("modern=%t/existing=%t", modern, collision), func(t *testing.T) {
+				recipe := nativeRecipe()
+				calls := []string{}
+				p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+					calls = append(calls, r.Method+" "+r.URL.Path)
+					if r.URL.Path == "/api/v1" {
+						caps := map[string]any{"api_version": 1, "mode": "standalone", "recipe_capacity": 16}
+						if modern {
+							caps["recipe_create_only"] = true
+						}
+						replyJSON(w, 200, caps)
+						return
+					}
+					if r.URL.Path != "/api/v1/recipes/"+recipe.ID {
+						t.Errorf("wrong path %s", r.URL.Path)
+					}
+					switch r.Method {
+					case http.MethodGet:
+						if len(calls) == 2 && !collision {
+							replyJSON(w, 404, map[string]any{"error": "not_found", "message": "Recipe not found"})
+						} else {
+							replyJSON(w, 200, recipe)
+						}
+					case http.MethodPut:
+						var sent map[string]json.RawMessage
+						if err := json.NewDecoder(r.Body).Decode(&sent); err != nil {
+							t.Error(err)
+						}
+						raw, specified := sent["create_only"]
+						if modern != specified || specified && string(raw) != "true" {
+							t.Errorf("wrong create-only payload %s", raw)
+						}
+						if collision {
+							replyJSON(w, 409, map[string]any{"error": "recipe_exists", "message": "ID exists"})
+						} else {
+							replyJSON(w, 201, recipe)
+						}
+					}
+				})
+				err := p.CreateRecipe(context.Background(), recipe)
+				if collision {
+					failure := deviceFailure(t, err)
+					if failure.Code != "recipe_exists" || failure.UnknownOutcome {
+						t.Fatal(failure)
+					}
+				} else if err != nil {
+					t.Fatal(err)
+				}
+				methods := []string{}
+				for _, call := range calls {
+					method, _, _ := strings.Cut(call, " ")
+					methods = append(methods, method)
+				}
+				want := []string{"GET"}
+				if !modern {
+					want = append(want, "GET")
+				}
+				if modern || !collision {
+					want = append(want, "PUT")
+				}
+				if !collision {
+					want = append(want, "GET")
+				}
+				if !reflect.DeepEqual(methods, want) {
+					t.Fatal(calls, want)
+				}
+			})
+		}
+	}
+}
+
+func TestSimulatorCreateRecipePreservesExistingProgram(t *testing.T) {
+	ctx := context.Background()
+	sim := NewSimulator("create-test", "pico-pro")
+	caps, err := sim.Discover(ctx)
+	if err != nil || !caps.RecipeCreateOnly {
+		t.Fatal(caps, err)
+	}
+	original := nativeRecipe()
+	if err = sim.CreateRecipe(ctx, original); err != nil {
+		t.Fatal(err)
+	}
+	collision := original
+	collision.Name = "Unrelated replacement"
+	if failure := deviceFailure(t, sim.CreateRecipe(ctx, collision)); failure.Code != "recipe_exists" {
+		t.Fatal(failure)
+	}
+	items, err := sim.Recipes(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, item := range items {
+		if item.ID == original.ID && reflect.DeepEqual(item, original) {
+			return
+		}
+	}
+	t.Fatalf("original missing from inventory %+v", items)
 }

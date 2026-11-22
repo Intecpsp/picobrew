@@ -150,6 +150,7 @@ static int storage_error(Writer *w, PicoLocalStoreResult result)
 {
     switch (result) {
     case PICO_LOCAL_STORE_NOT_FOUND: return error(w, 404, "not_found", "Recipe not found");
+    case PICO_LOCAL_STORE_EXISTS: return error(w, 409, "recipe_exists", "Recipe ID is already in use. Choose another ID or open the saved recipe to edit it.");
     case PICO_LOCAL_STORE_INVALID: return error(w, 400, "invalid_recipe", "Invalid recipe");
     case PICO_LOCAL_STORE_FULL: return error(w, 507, "recipe_capacity", "Local recipe storage is full");
     case PICO_LOCAL_STORE_CORRUPT: return error(w, 503, "storage_corrupt", "Local records failed integrity checks; preserved for recovery");
@@ -195,7 +196,7 @@ static int discovery(PicoLocalApi *api, Writer *w)
     text(w, "{"); identity(w);
     text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
             "\",\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
-            "\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
+            "\"recipe_create_only\":true,\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
             "\"descale\",\"circulate\",\"drain-reservoir\",\"drain-filter\",\"rack-beer\",\"utilities\","
             "\"settings\",\"stop\",\"clear-stop\",\"encoder\"],\"dedicated_pause_resume\":false,"
@@ -287,7 +288,7 @@ static bool parse_step(Json *j, PicoRecipeStep *step)
     } while (comma_or_end(j, '}'));
     return token(j, '}') && (seen & 15) == 15;
 }
-static bool parse_recipe(const char *body, size_t length, const char *id, PicoLocalRecipe *r)
+static bool parse_recipe(const char *body, size_t length, const char *id, PicoLocalRecipe *r, bool *create_only)
 {
     Json j = {body, body + length, true}; unsigned seen = 0;
     memset(r, 0, sizeof *r); snprintf(r->id, sizeof r->id, "%s", id);
@@ -306,6 +307,8 @@ static bool parse_recipe(const char *body, size_t length, const char *id, PicoLo
         } else if (!strcmp(field, "id")) {
             char supplied[21]; bit = 4;
             if (!string(&j, supplied, sizeof supplied) || strcmp(supplied, id)) return false;
+        } else if (!strcmp(field, "create_only")) {
+            bit = 8; if (!boolean(&j, create_only)) return false;
         } else return false;
         if (seen & bit) return false;
         seen |= bit;
@@ -340,7 +343,7 @@ static int recipes(PicoLocalApi *api, Writer *w, const char *method, const char 
 {
     PicoNetwork *n = &api->application->network;
     if (!id) {
-        if (strcmp(method, "GET")) return error(w, 405, "method_not_allowed", "Use GET for the recipe collection");
+        if (strcmp(method, "GET")) return error(w, 405, "method_not_allowed", "Use GET");
         text(w, "{\"recipes\":["); Listing list = {w, 0};
         PicoLocalStoreResult result = pico_local_recipe_visit(n, list_recipe, &list);
         if (result != PICO_LOCAL_STORE_OK) return storage_error(w, result);
@@ -355,24 +358,25 @@ static int recipes(PicoLocalApi *api, Writer *w, const char *method, const char 
     }
     if (strcmp(method, "PUT") && strcmp(method, "DELETE"))
         return error(w, 405, "method_not_allowed", "Use GET, PUT or DELETE for a recipe");
-    if (pico_local_control_busy()) return error(w, 409, "busy", "Edit recipes only while the appliance is idle");
+    if (pico_local_control_busy()) return error(w, 409, "busy", "Wait until the brewer is idle");
     if (!strcmp(method, "DELETE")) {
         if (length) return error(w, 400, "unexpected_body", "DELETE takes no body");
         PicoLocalStoreResult result = pico_local_recipe_delete(n, id);
         if (result != PICO_LOCAL_STORE_OK) return storage_error(w, result);
         pico_local_event(n, "recipe_deleted", id); return 204;
     }
-    if (!parse_recipe(body, length, id, &recipe))
+    bool create_only = false;
+    if (!parse_recipe(body, length, id, &recipe, &create_only))
         return error(w, 400, "invalid_recipe", "Use a printable ASCII name and 1-15 valid recipe steps");
     bool created = false;
-    PicoLocalStoreResult result = pico_local_recipe_put(n, &recipe, &created);
+    PicoLocalStoreResult result = pico_local_recipe_put(n, &recipe, create_only, &created);
     if (result != PICO_LOCAL_STORE_OK) return storage_error(w, result);
     pico_local_event(n, "recipe_saved", id); recipe_json(w, &recipe); return created ? 201 : 200;
 }
 static int restore_recipes(PicoLocalApi *api, Writer *w, size_t length)
 {
     if (length) return error(w, 400, "unexpected_body", "Restoring starter recipes takes no body");
-    if (pico_local_control_busy()) return error(w, 409, "busy", "Edit recipes only while the appliance is idle");
+    if (pico_local_control_busy()) return error(w, 409, "busy", "Wait until the brewer is idle");
     unsigned added = 0, preserved = 0;
     PicoLocalStoreResult result = pico_local_recipes_restore_defaults(&api->application->network,
                                                                     &added, &preserved);
@@ -435,7 +439,7 @@ static int settings(PicoLocalApi *api, Writer *w, const char *method, const char
     PicoNetwork *n = &api->application->network;
     if (!strcmp(method, "GET")) { settings_json(w, n->settings); return 200; }
     if (strcmp(method, "PATCH")) return error(w, 405, "method_not_allowed", "Use GET or PATCH for settings");
-    if (pico_local_control_busy()) return error(w, 409, "busy", "Change settings only while the appliance is idle");
+    if (pico_local_control_busy()) return error(w, 409, "busy", "Wait until the brewer is idle");
     PicoSettings changed = *n->settings, previous = *n->settings;
     Json j = {body, body + length, true}; unsigned seen = 0;
     if (!token(&j, '{') || peek(&j, '}')) goto bad;
@@ -604,7 +608,7 @@ static int telemetry(Writer *w, const char *method, const char *body, size_t len
         PicoTelemetryConfigureResult result = pico_telemetry_configure(&config);
         if (result == PICO_TELEMETRY_CONFIG_INVALID) goto bad;
         if (result == PICO_TELEMETRY_CONFIG_BUSY)
-            return error(w, 409, "busy", "Edit the telemetry destination while the brewer is idle");
+            return error(w, 409, "busy", "Wait until the brewer is idle");
         if (result != PICO_TELEMETRY_CONFIG_OK)
             return error(w, 503, "storage_io", "Could not verify saved telemetry settings");
     }
@@ -683,7 +687,7 @@ static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
     if (api->restart_pending || api->ota_trial || !pico_local_control_is_ready() || pico_local_control_busy() ||
         pico_local_control_stopped() || a->state.control_signals.enabled ||
         a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
-        return error(w, 409, "busy", "Restart requires an idle brewer");
+        return error(w, 409, "busy", "Wait until the brewer is idle");
     static const uint8_t outputs[] = {
         PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
     };
@@ -712,23 +716,23 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
     }
     bool get = !strcmp(method, "GET");
     if (!strcmp(path, "/api/v1/health")) result = get ? health(api, &w) :
-        error(&w, 405, "method_not_allowed", "Use GET for health");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1")) result = get ? discovery(api, &w) :
-        error(&w, 405, "method_not_allowed", "Use GET for discovery");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/system/restart"))
         result = restart_system(api, &w, method, body, length);
     else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w) :
-        error(&w, 405, "method_not_allowed", "Use GET for status");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strncmp(path, "/api/v1/ota", 11)) result = ota(api, &w, method, path, body, length);
     else if (!strcmp(path, "/api/v1/display")) result = get ? display(api, &w) :
-        error(&w, 405, "method_not_allowed", "Use GET for display");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/events")) result = get ? events(api, &w) :
-        error(&w, 405, "method_not_allowed", "Use GET for events");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/telemetry")) result = telemetry(&w, method, body, length);
     else if (!strcmp(path, "/api/v1/history")) result = get ? history(&w) :
-        error(&w, 405, "method_not_allowed", "Use GET for brew history");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strncmp(path, "/api/v1/history/samples/", 24)) result = get ? history_samples(&w, path + 24) :
-        error(&w, 405, "method_not_allowed", "Use GET for recorded samples");
+        error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/recipes")) result = recipes(api, &w, method, NULL, body, length);
     else if (!strcmp(path, "/api/v1/recipes/restore-defaults") && !strcmp(method, "POST"))
         result = restore_recipes(api, &w, length);

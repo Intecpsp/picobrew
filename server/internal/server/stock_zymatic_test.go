@@ -7,6 +7,7 @@ import (
 	"io"
 	"net"
 	"net/http"
+	"reflect"
 	"strings"
 	"testing"
 
@@ -69,7 +70,7 @@ func TestStockRecipeSyncAndRecovery(t *testing.T) {
 	}
 	params := "?machine=ABC123XYZ999&user=" + user
 	wire := rawGet("SyncUser" + params)
-	if got := rawGet("SyncUSer" + params); got != wire || !strings.Contains(wire, "/Mash,153,60,1,0/Boil,203,60,1,0/|#") {
+	if got := rawGet("SyncUSer" + params); got != wire || !strings.Contains(wire, "/Mash,153,60,1,0/Boil,203,60,0,0/|#") {
 		t.Fatalf("Wi-Fi/Ethernet mismatch or bad record %q", wire)
 	}
 	if rawGet("SyncUser?machine=OTHER&user="+user) != "##" || rawGet("SyncUser?machine=ABC123XYZ999&user="+cleaningUser) != "##" {
@@ -95,6 +96,65 @@ func TestStockRecipeSyncAndRecovery(t *testing.T) {
 	submit.Recipes[0].Revision = 2
 	if code, _ := request(t, c, "POST", owner, token, submit, nil); code != 409 {
 		t.Fatal("stale revision", code)
+	}
+}
+
+func TestStockManualPathsVerifyMeasuredHopTiming(t *testing.T) {
+	s, h, c := newTestServer(t)
+	token := signIn(t, c, h.URL)
+	r := validRecipe()
+	r.ID, r.Revision = "hop-recipe", 1
+	r.Steps[0].Location, r.Steps[1].Location = 0, 0
+	r.Steps[1].TargetC = 95
+	r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: "Cascade", Kind: "hop", Unit: "g", Amount: 10, Use: "boil", Minutes: 30})
+	if _, err := s.db.Put("recipe", r.ID, r, 0); err != nil {
+		t.Fatal(err)
+	}
+	owner := h.URL + "/api/v1/stock-zymatics/TEST/recipes"
+	submit := stockSubmission{Recipes: []stockReference{{RecipeID: r.ID, Revision: r.Revision}}}
+	if code, b := request(t, c, "POST", owner, token, submit, nil); code != 200 || !strings.Contains(string(b), "Hop slot 1") {
+		t.Fatal(code, string(b))
+	}
+	submit.Recipes[0].Locations = []int{2, 1}
+	for _, publish := range []bool{false, true} {
+		submit.Publish = publish
+		if code, b := request(t, c, "POST", owner, token, submit, nil); code != 422 || !strings.Contains(string(b), "Cascade") {
+			t.Fatal(code, string(b))
+		}
+	}
+}
+
+func TestEquivalentStockManualPathsKeepSourceDrainConversion(t *testing.T) {
+	s, h, c := newTestServer(t)
+	token := signIn(t, c, h.URL)
+	r := validRecipe()
+	r.ID = "small-brewer"
+	r.Revision = 1
+	r.SourceModel = "pico-s"
+	r.Steps[0].Location = 2
+	r.Steps[0].DrainMinutes = 2
+	r.Steps[1].Location = 1
+	r.Steps[1].TargetC = 95
+	if _, err := s.db.Put("recipe", r.ID, r, 0); err != nil {
+		t.Fatal(err)
+	}
+	submit := stockSubmission{Recipes: []stockReference{{RecipeID: r.ID, Revision: r.Revision}}}
+	fetch := func() domain.MachineRecipe {
+		t.Helper()
+		code, body := request(t, c, "POST", h.URL+"/api/v1/stock-zymatics/TEST/recipes", token, submit, nil)
+		var response struct {
+			Items []stockItem `json:"items"`
+		}
+		if code != 200 || json.Unmarshal(body, &response) != nil || len(response.Items) != 1 {
+			t.Fatal(code, string(body))
+		}
+		return response.Items[0].Program
+	}
+	auto := fetch()
+	submit.Recipes[0].Locations = []int{2, 1}
+	manual := fetch()
+	if auto.Steps[0].DrainMinutes != 8 || !reflect.DeepEqual(auto, manual) {
+		t.Fatal(auto, manual)
 	}
 }
 

@@ -5,8 +5,8 @@ const PicoHttpAsset pico_web_assets[] = {
     /* gzip SHA-256: cfff3573506363dbbda8b109b146a7d32afcf9f20c0a028031389fbccf036f86 */
     {"/", "text/html; charset=utf-8", "gzip", NULL, 4032, "/local/web/i.gz"},
     {"/index.html", "text/html; charset=utf-8", "gzip", NULL, 4032, "/local/web/i.gz"},
-    /* gzip SHA-256: 090e0a0bb5741926ae13fbb523ed674134e312a6a849074a4fbc3545c4e2837e */
-    {"/app.js", "application/javascript; charset=utf-8", "gzip", NULL, 6954, "/local/web/a.gz"},
+    /* gzip SHA-256: a1d3259f4d3afb020e1c8424c10d077ec07e1ad044f5aaed5b24e5908dac92d1 */
+    {"/app.js", "application/javascript; charset=utf-8", "gzip", NULL, 7023, "/local/web/a.gz"},
     /* gzip SHA-256: 3fadaa37da3a0a7087e3f0d29d5472312cfbc57166d413d0461bae85359215d1 */
     {"/api-explorer.js", "application/javascript; charset=utf-8", "gzip", NULL, 2764, "/local/web/e.gz"},
     /* gzip SHA-256: 78f8900a3efcc8b8130a62aa9df2f1f7b36f344f49bf878ef2644a5cec87898f */

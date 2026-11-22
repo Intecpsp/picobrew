@@ -118,6 +118,8 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
       0,
       scheduled[0].slot + 2
     )
+  else if (scheduled.length && beforeHops === 0)
+    add('Heat to boil', 'heat', z ? (202 - 32) / 1.8 : largeBrewer ? (207 - 32) / 1.8 : 95, 0, 1)
   if (beforeHops > 0) add('Boil', 'boil', z ? (202 - 32) / 1.8 : 95, beforeHops, 1)
   scheduled.forEach((addition, i) =>
     add(
@@ -193,14 +195,17 @@ export function hopRoute(hops: HopAddition[]) {
     .sort((a, b) => b.minutes - a.minutes)
 }
 
-// Times count down to boil end. Only successive visits to the same slot have
-// a local ordering constraint. Every slot shares the single direct inlet.
+// Times count down to boil end. Each visit uses the single direct inlet.
 export function slotTimes(hops: HopAddition[], slot: number, boil: number, visitIndex = 0) {
   if (!Number.isInteger(boil) || boil < 1 || boil > 599) return []
   const used = new Set<number>()
   let upper = boil,
     lower = 1
   for (const hop of hops) {
+    // Flow to a higher slot also wets the loaded slots below it. Return visits
+    // can follow any route after the first exposure.
+    if (visitIndex === 0 && hop.slot < slot) upper = Math.min(upper, Number(hop.minutes) - 1)
+    if (visitIndex === 0 && hop.slot > slot) lower = Math.max(lower, Number(hop.minutes) + 1)
     visitStarts(hop).forEach((minutes, index) => {
       const time = Number(minutes)
       if (hop.slot !== slot) used.add(time)
@@ -258,7 +263,7 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
         (time, index) => !slotTimes(draft.hops, hop.slot, boil, index).includes(Number(time))
       )
     )
-      return 'Choose a separate available minute within the boil for each visit.'
+      return 'Choose a separate available minute within the boil for each visit. Start loaded slots in ascending order so wort reaches each addition on time.'
   }
   if (recipe.steps.length > (profile.max_steps || 15))
     return 'The schedule exceeds this brewer’s step limit. Remove a return visit or a mash rest.'

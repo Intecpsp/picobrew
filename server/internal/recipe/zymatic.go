@@ -33,6 +33,12 @@ func StockZymaticProgram(r domain.Recipe, profile domain.Profile) (domain.Machin
 		if r.SourceModel != "zymatic" {
 			return p, errors.New("choose each step’s Zymatic flow path before transfer")
 		}
+		if len(r.Ingredients) > 0 {
+			r.Steps = prepareBoilStart(r, profile)
+			if reason := checkRoutedIngredients(r, firstHopRoutes(r.Steps)); reason != "" {
+				return p, errors.New(reason)
+			}
+		}
 		if err := ValidateCapacity(r, profile); err != nil {
 			return p, err
 		}

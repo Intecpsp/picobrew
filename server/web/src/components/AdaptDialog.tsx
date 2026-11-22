@@ -1,3 +1,4 @@
+import { unmeasuredYeast } from '../lib/beerCrafter'
 import { StockZymaticTransfer, stockTarget } from './StockZymaticTransfer'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Send } from 'lucide-react'
@@ -6,7 +7,7 @@ import { api, APIError, errorMessage } from '../lib/api'
 import { isNative, routeLabel } from '../lib/programs'
 import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
 import { beerStats } from '../lib/beerCrafter'
-import type { Adapted, Recipe } from '../types'
+import type { Adapted, MachineRecipe, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
 
 export function AdaptDialog({
@@ -37,7 +38,11 @@ export function AdaptDialog({
   const target = hub.devices.find((d) => d.id === deviceID)
   const profile = hub.profiles.find((p) => target && p.id === modelProfile(target.model))
   const profileID = profile?.id
-  const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
+  const [previewResult, setPreviewResult] = useState<{
+    key: string
+    value: Adapted
+    existing?: MachineRecipe
+  } | null>(null)
   const [sent, setSent] = useState<{ machine: string; path: string; program: string } | null>(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
@@ -48,6 +53,7 @@ export function AdaptDialog({
     recipe: [recipe.id, recipe.revision, recipe.kind],
     deviceID,
     profile,
+    machineReady: !!target?.online && !needsReady,
   })
   const latestKey = useRef(inputKey)
   latestKey.current = inputKey
@@ -96,8 +102,17 @@ export function AdaptDialog({
         body: { profile_id: profileID, batch_liters: 0 },
         signal: controller.signal,
       })
+      if (id !== requestID.current || controller.signal.aborted) return
+      let existing: MachineRecipe | undefined
+      if (result.can_deploy && result.machine_recipe && target?.online && !needsReady) {
+        const inventory = await api<{ recipes: MachineRecipe[] | null }>(
+          `/devices/${deviceID}/recipes`,
+          { signal: controller.signal }
+        )
+        existing = (inventory.recipes ?? []).find((item) => item.id === result.machine_recipe!.id)
+      }
       if (id === requestID.current && key === latestKey.current && !controller.signal.aborted)
-        setPreviewResult({ key, value: result })
+        setPreviewResult({ key, value: result, existing })
     } catch (error) {
       if (id === requestID.current && key === latestKey.current && !controller.signal.aborted)
         setError(errorMessage(error))
@@ -124,6 +139,7 @@ export function AdaptDialog({
             batch_liters: 0,
             source_revision: adapted.source_revision,
             profile_fingerprint: adapted.profile_fingerprint,
+            ...(previewResult.existing && { replace_expected: previewResult.existing }),
           },
         }
       )
@@ -136,7 +152,13 @@ export function AdaptDialog({
       setError(errorMessage(error))
       if (
         error instanceof APIError &&
-        ['profile_changed', 'revision_conflict'].includes(error.code)
+        [
+          'profile_changed',
+          'revision_conflict',
+          'recipe_changed',
+          'recipe_exists',
+          'device_recipe_exists',
+        ].includes(error.code)
       ) {
         setPreviewResult(null)
         void hub.refresh()
@@ -196,7 +218,11 @@ export function AdaptDialog({
           {adapted ? (
             <Button disabled={!canSend} onClick={() => void deploy()}>
               <Send size={16} />
-              {busy === 'deploy' ? 'Sending…' : 'Send to machine'}
+              {busy === 'deploy'
+                ? 'Sending…'
+                : previewResult?.existing
+                  ? 'Replace on machine'
+                  : 'Send to machine'}
             </Button>
           ) : (
             <Button disabled={!profile || !!busy} onClick={() => void preview()}>
@@ -212,6 +238,11 @@ export function AdaptDialog({
           ? 'The original PicoPak schedule is sent as recorded.'
           : 'Ingredients scale together to fit the selected brewer’s grain and hop capacities. The preview shows quantities and estimated yield.'}
       </p>
+      {adapted && previewResult?.existing && (
+        <p className="notice">
+          This will replace “{previewResult.existing.name}” on {target?.name}.
+        </p>
+      )}
       <Field label="Target machine">
         <select
           value={deviceID}
@@ -302,6 +333,13 @@ export function AdaptDialog({
                   </tr>
                 </thead>
                 <tbody>
+                  {unmeasuredYeast(adapted.recipe) && (
+                    <tr>
+                      <td>{unmeasuredYeast(adapted.recipe)}</td>
+                      <td>Pitch amount unspecified</td>
+                      <td>Pitch amount unspecified</td>
+                    </tr>
+                  )}
                   {adapted.recipe.ingredients.map((item, index) => (
                     <tr key={index}>
                       <td>{item.name}</td>

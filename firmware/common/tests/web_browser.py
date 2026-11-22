@@ -110,7 +110,9 @@ def main():
                         status['ready']=False
                         expect(page.locator('#runProgram')).to_be_disabled()
                         expect(page.locator('#stopButton')).to_be_enabled()
-                        status['ready']=True
+                        expect(page.locator('#operationTitle')).to_have_text('Waiting for the brewer.')
+                        status.update(ready=True,busy=True,phase=3)
+                        expect(page.locator('#phaseName')).to_have_text('Holding temperature')
                     else:
                         expect(page.locator('#recoveryPanel')).to_be_hidden()
                         expect(page.locator('[data-tab="recipes"]')).to_be_hidden()
@@ -127,9 +129,25 @@ def main():
                             assert commands[-1]=={'command':'calibrate','confirm':True}
                             page.locator('[name="value"]').fill('900');page.get_by_role('button',name='Set sampling interval',exact=True).click()
                             expect(page.locator('#notice')).to_contain_text('accepted');assert commands[-1]=={'command':'set-sampling-interval','value':900}
+                            status.update(ready=False,busy=False,state='sensor-fault')
+                            expect(page.locator('#modeBadge')).to_have_text('NOT READY')
+                            expect(page.get_by_role('button',name='Take a reading',exact=True)).to_be_enabled()
+                            expect(page.get_by_role('button',name='Start recording',exact=True)).to_be_disabled()
+                            status.update(ready=True,busy=True,state='recording')
+                            expect(page.get_by_role('button',name='Set sampling interval',exact=True)).to_be_disabled()
                         else:
+                            expect(page.get_by_role('button',name='Set pump',exact=True)).to_be_disabled()
+                            status.update(busy=True,state='running')
+                            expect(page.get_by_role('button',name='Set pump',exact=True)).to_be_enabled()
+                            expect(page.get_by_label('Fan level (%)',exact=True)).to_have_value('25')
+                            expect(page.get_by_label('Fan enabled',exact=True)).to_be_checked()
                             page.get_by_role('button',name='Set pump',exact=True).click();expect(page.locator('#notice')).to_contain_text('accepted');assert commands[-1]=={'command':'set-pump','enabled':False}
-                            page.get_by_label('Fan channel',exact=True).fill('2');page.get_by_label('Fan level (%)',exact=True).fill('35');page.get_by_label('Fan enabled',exact=True).check();page.get_by_role('button',name='Set fan',exact=True).click()
+                            page.get_by_label('Fan channel',exact=True).fill('2')
+                            expect(page.get_by_label('Fan level (%)',exact=True)).to_have_value('0')
+                            expect(page.get_by_label('Fan enabled',exact=True)).not_to_be_checked()
+                            page.get_by_label('Fan level (%)',exact=True).fill('35')
+                            expect(page.get_by_label('Fan enabled',exact=True)).to_be_checked()
+                            page.get_by_role('button',name='Set fan',exact=True).click()
                             expect(page.locator('#notice')).to_contain_text('accepted');assert commands[-1]=={'command':'set-fan','channel':2,'level':35,'enabled':True}
                     page.screenshot(path=str(output/f'{model}-{width}.png'),full_page=True)
                     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), 'Horizontal page overflow'
@@ -139,6 +157,7 @@ def main():
                     with page.expect_download() as download:page.locator('#historyExportJson').click()
                     exported=json.loads(Path(download.value.path()).read_text())
                     assert exported['metadata']['id']==1 and exported['metadata']['sample_interval_ms']==60000
+                    if brewing:expect(page.locator('#historyReadout')).to_contain_text('Paused')
                     page.locator('#historyMetric').select_option('sensor_pressure_native')
                     expect(page.locator('#historyReadout')).to_contain_text('Native pressure')
                     assert page.locator('#historyMetric option').all_text_contents().count('Native pressure')==1

@@ -73,7 +73,7 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.1";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.2";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
@@ -442,6 +442,10 @@ bool Adapter::start_effect(const CoreAction& action,std::uint32_t& result,std::u
             elapsed_before_resume_=0;
         }
     }
+    // The legacy builder uses 11.36 L to estimate heating time. Local API
+    // recipes contain no starting water volume. Leave the session quantity
+    // unspecified so the native loading screen gives its generic water prompt.
+    if(local_brew)core_.program.parameters.water={0,Unit::Liter};
     const bool ok=original_core_.perform(original_core_.context,action,result);
     if(recordable(id)&&(!ok||core_.core.state.id!=CoreStateId::Starting||core_.core.state.program_id!=id)){engine_->cancel_prepared_session();native_prepared_=false;}
     if(local_brew&&ok&&core_.core.state.id==CoreStateId::Starting){recovery_active_=true;recovery_date_=ports_.millis(ports_.context);recovery_instruction_=0;}

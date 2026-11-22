@@ -173,13 +173,15 @@ async function refreshRecipes() {
   updateControls();
 }
 
+const flowPaths = ['Keg circulation', 'Mash', 'Hop addition 1', 'Hop addition 2', 'Hop addition 3', 'Hop addition 4'];
+
 function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
   if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
   const row=document.createElement('tr');
   const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',0,599],['drain_minutes','number',0,120]];
   for (const [field,type,min,max] of definitions) {
     const cell=document.createElement('td');let input;
-    if(type==='select') {input=document.createElement('select');for(let i=1;i<=6;i++)input.add(new Option(String(i),String(i)));}
+    if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
     else {input=document.createElement('input');input.type=type;if(type==='text')input.maxLength=21;else{input.min=min;input.max=max;input.step=1;}}
     input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
     input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
@@ -193,7 +195,7 @@ function editRecipe(recipe, existing=false) {
   $('recipeName').value=recipe.name || '';$('recipeId').value=recipe.id || '';$('recipeId').readOnly=existing;
   $('recipeId').dataset.auto=existing ? 'false' : 'true';
   $('editorHeading').textContent=existing ? 'Edit recipe' : 'New recipe';$('steps').replaceChildren();
-  for(const step of recipe.steps || [{name:'Mash',location:1,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
+  for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
   updateControls();
 }
 
@@ -322,7 +324,7 @@ $('recipeName').addEventListener('input',()=>{if($('recipeId').dataset.auto==='t
 $('recipeId').addEventListener('input',()=>{$('recipeId').dataset.auto='false';});
 $('recipeForm').addEventListener('submit',async event=>{
   event.preventDefault();const recipe=recipeFromForm();if(!recipe)return;
-  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{name:recipe.name,steps:recipe.steps});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
+  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{name:recipe.name,steps:recipe.steps,...(!state.editorId && {create_only:true})});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
   catch(error){notify(error.message,true);}
 });
 $('deleteRecipe').addEventListener('click',async()=>{

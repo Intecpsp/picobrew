@@ -56,3 +56,23 @@ test('malformed display continuation never yields a partially valid image',async
   }
   await assert.rejects(device.readDisplay(async()=>({...page(0),next_offset:4096,data:'00'.repeat(4096)})));
 });
+
+
+test('Z phases follow the native instruction set', () => {
+  assert.equal(device.phaseLabel('z-series', 0), 'Paused');
+  assert.equal(device.phaseLabel('z-series', 3), 'Holding temperature');
+  assert.equal(device.phaseLabel('z-series', 5), 'Draining');
+  assert.equal(device.phaseLabel('z-series', 255), 'Phase 255');
+  assert.equal(device.phaseLabel('pico-s', 3), 'Draining');
+});
+
+test('accessory controls follow the current operating state', () => {
+  const idle = { state: 'idle', ready: true, busy: false };
+  const fault = { state: 'sensor-fault', ready: false, busy: false };
+  assert.equal(device.accessoryActionAllowed('sample', fault), true);
+  assert.equal(device.accessoryActionAllowed('sample', {...fault, state:'sampling'}), false);
+  assert.equal(device.accessoryActionAllowed('set-sampling-interval', {...idle, busy:true}), false);
+  assert.equal(device.accessoryActionAllowed('start', {...idle, state:'calibration-required'}), false);
+  assert.equal(device.accessoryActionAllowed('set-pump', idle), false);
+  assert.equal(device.accessoryActionAllowed('set-fan', {...idle, state:'running', busy:true}), true);
+});

@@ -26,7 +26,7 @@
   "target_heap_start": "0x3fff4db0",
   "target_heap_end": "0x3fffc000",
   "target_heap_bytes": 29264,
-  "elf_sha256": "f2a9af2399ac2fff9aa424974bce43f538d3ebbf689fda23bacf10ee283b0d25",
+  "elf_sha256": "8597e48c987c722fb59e4d8578ddc688230ff96127d789e55cc988470f6286d5",
   "build_source_entries_verified": 112,
   "native_type_bytes": {
     "engine_impl": 2508,
@@ -81,8 +81,8 @@
     "final_free_bytes": 29256,
     "passed": true
   },
-  "native_compiler": "g++ (Debian 14.2.0-19) 14.2.0",
-  "native_execution": "Pinned extracted multilib/qemu-i386",
+  "native_compiler": "g++ (Debian 12.2.0-14+deb12u1) 12.2.0",
+  "native_execution": "System multilib compiler and native 32-bit execution",
   "phase_names": [
     "startup",
     "telemetry frame",
@@ -95,15 +95,15 @@
   "application_peak_excluding_sdk_reservation": 10648,
   "source_sha256": {
     "picoferm/modified/tests/memory_native.cpp": "5462a4d87c606ba97c0f7d5fc39b64e7f9fe719ac36ae171df9631fcdaca4ce7",
-    "picoferm/modified/src/standalone.cpp": "08a1726e80cdf5adbdc5003732300a5688e9c77eedb5f1fa76fd2acc51914ed1",
+    "picoferm/modified/src/standalone.cpp": "dd8d33b316db528a5f2e289b73e9144e906191c5afcd31a8c1aed96389bce82b",
     "picoferm/modified/src/calibration_store.cpp": "076a142139079bb3b63e9b84c49f3805d6fc8b1674fc941dd6267dc931ccbab6",
     "picoferm/modified/src/bounded_acquisition.cpp": "6352f8485047de417ebc069ee318fdd3e67e446a61b1bf4677a9d0e8324fbae9",
     "picoferm/reverse-engineered/src/hardware.cpp": "21229e08540302786909e7b34c5654c2dc6f789fa18e790e22456a2708b84a30",
     "picoferm/reverse-engineered/src/core.cpp": "e240bbf86afc795f67308bb188f0d61c2310217e314256a82eab2dd0af956d6b",
     "common/platform/esp8266/storage.cpp": "5b6762c959f9101116c059be820c5c18261f1e8c9e312209fe2b0f0a71fb90c4",
-    "common/src/engine.cpp": "8c4fd8224a95c0e312fde16892f44a8e97b007a5f5ba3d90f5b661c63fd56768",
-    "common/src/api.cpp": "1d339af8cd34bdb871ad716592da246dcb737a6050deb07b76eacb15bcacf193",
-    "common/src/values.cpp": "c83ca984fad2c640229d604ee14c04b33a675d5c341900af7268b4280bf63e88",
+    "common/src/engine.cpp": "ca69c2ca120b0ca37b1a58fbd04524aa068c0f3a3a1bef36bd1615e482090693",
+    "common/src/api.cpp": "64b3787d69173796b5afdff59d744d82d0fe4fa3412a69a42d19e9ccfd952e44",
+    "common/src/values.cpp": "0014b947a040ac8f2fd31030c3cc3f6940841c48df64972efa9d8a71b8d14100",
     "common/src/records.cpp": "9deec7864ea4dbfb9dcfad9a24ed9c52416724fb67af0c89ac6c7a000151ccc2",
     "common/src/history.cpp": "b66d329d4a860a3e0dc5f44e3a9eef8e76795f360fefbcdb31eaf091ce308d71",
     "common/src/history_records.cpp": "0336a037dcdb32ca4f4d8f237839a4e412b6030d91d8fd676e22ea02a4296e2b",
@@ -112,8 +112,8 @@
     "common/src/verified_storage.cpp": "e59bb0d690fab10ab3b13dc8c7bcbcccae8699ccadf897f6246f1bc17461c1c8",
     "picoferm/modified/tests/memory_host/allocator_config.h": "837fc88d5a6ea8f8858e0e05c4ad7b864d363195043771bd369b528009d65e3c",
     "picoferm/modified/tests/memory_host/pgmspace.h": "efa40c7eacc169fe4e456c72aa4eb7df9ef2f8d7d1303074a3004e39b76c2820",
-    "picoferm/modified/tools/validate_memory.py": "f927bacc7d3488a15009a5bfa66ca898ffeebf8929773041ab512efe637941d3",
-    "common/src/engine_internal.hpp": "57521041b6c10f7ce3a2af9d0d909db47568d43ef1e0f2fae1c385faa99adb79",
+    "picoferm/modified/tools/validate_memory.py": "4e5f5fdb1111c25417c5ad94a41c24b4a378c7f138f7135acebca87e58f69744",
+    "common/src/engine_internal.hpp": "90768531c3fa31ea3c5171296982341e783280a67a26c199ad1e49ca23a55944",
     "common/src/json.hpp": "5ee0a5b00b92a6f5c3070fc0b29114fb707cc686380f0ab6abf28589c65c6654",
     "common/src/records.hpp": "19dc25a561479648e6bae02d8157f6e6d47678acd313d4a37d9c7350ecd5c6bd",
     "common/include/picobrew/device_services.hpp": "428b31a12cc5803289595c472b005352756fb86c442cd38d4e6f526f868185ef"
@@ -131,6 +131,5 @@
     "cores/esp8266/cont.h": "5ab043a4f33741e6e01d35cb35bb6b8fcbd30d4097345ec0008bef0ba6080e68"
   },
   "boundary": "Actual 32-bit Controller, Engine, Provisioning, VerifiedStorage and pinned SPIFFS/UMM sources. NOR, ADC, time and transport are test ports. A fragmented 16-KiB SDK/network reservation is held throughout; it is a budget test, not executed private Wi-Fi firmware. Target static owner includes HTTP arena and SDK continuation stack.",
-  "hardware_high_water_measured": false,
-  "i386_runtime_pin_sha256": "f567d1a035fbc0d2775893589a6a546f7eff7b71628fde47f22333fff54543fc"
+  "hardware_high_water_measured": false
 }

@@ -978,6 +978,10 @@
             },
             "maxItems": 15,
             "minItems": 1
+          },
+          "create_only": {
+            "type": "boolean",
+            "description": "Reject an existing recipe ID with HTTP 409. Omit to create or replace."
           }
         },
         "required": [
@@ -1340,6 +1344,10 @@
           "system_restart": {
             "type": "boolean",
             "description": "Supports authenticated restart from the idle main menu."
+          },
+          "recipe_create_only": {
+            "type": "boolean",
+            "description": "Accepts create_only on a recipe PUT to protect a saved recipe with the same ID."
           }
         },
         "required": [
@@ -1363,7 +1371,8 @@
           "zero_minute_steps",
           "restore_default_recipes",
           "starter_recipe_count",
-          "system_restart"
+          "system_restart",
+          "recipe_create_only"
         ]
       },
       "Status": {

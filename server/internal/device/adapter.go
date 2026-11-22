@@ -16,6 +16,7 @@ type Adapter interface {
 	Status(context.Context) (domain.Status, error)
 	Display(context.Context) (domain.Display, error)
 	Recipes(context.Context) ([]domain.MachineRecipe, error)
+	CreateRecipe(context.Context, domain.MachineRecipe) error
 	PutRecipe(context.Context, domain.MachineRecipe) error
 	DeleteRecipe(context.Context, string) error
 	Command(context.Context, domain.Command) error
@@ -76,6 +77,10 @@ type Error struct {
 }
 
 func (e *Error) Error() string { return e.Code + ": " + e.Message }
+
+func existsError() error {
+	return &Error{StatusCode: 409, Code: "recipe_exists", Message: "This recipe ID is already on the machine. Review the existing program before replacing it."}
+}
 
 func invalid(message string) error {
 	return &Error{StatusCode: 400, Code: "invalid_request", Message: message}
