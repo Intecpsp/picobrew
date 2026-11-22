@@ -124,6 +124,9 @@ def brew_sheet(entry, raw):
 
 
 def generate():
+    # A machine-valid recipe can still omit required additions in the ingredient
+    # table. Only reviewed source bytes may enter the main catalog.
+    reviews = json.loads(Path(__file__).with_name("catalog-brew-reviews.json").read_bytes())
     sheets = {}
     with ZipFile(DATA / "catalog.zip") as archive:
         for path in sorted(archive.namelist()):
@@ -135,8 +138,16 @@ def generate():
             if hashlib.sha256(data).hexdigest() != record["sha256"]:
                 raise ValueError(f"Source hash mismatch for {path}")
             sheet = brew_sheet(entry, json.loads(data))
-            if sheet:
+            review = reviews.get(entry["id"])
+            if review:
+                if not sheet or review["source_sha256"] != record["sha256"]:
+                    raise ValueError(f"Recheck the reviewed brew sheet for {path}")
+                sheet["instructions"].extend(review.get("instructions", []))
+                if review.get("ingredients"):
+                    sheet["note_ingredients"] = review["ingredients"]
                 sheets[entry["id"]] = sheet
+    if set(reviews) != set(sheets):
+        raise ValueError("Brew review references an unavailable recipe")
     return json.dumps(sheets, ensure_ascii=False, indent=2, sort_keys=True) + "\n"
 
 

@@ -307,10 +307,12 @@ func (a *Archive) Detail(id string) (Detail, error) {
 		return Detail{}, fmt.Errorf("catalog: invalid detail %q", id)
 	}
 	if sheet, ok := a.sheets[id]; ok {
-		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" {
+		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" || result.Recipe == nil {
 			return Detail{}, fmt.Errorf("catalog: brew sheet source mismatch for %s", id)
 		}
 		sheet.Instructions = slices.Clone(sheet.Instructions)
+		sheet.NoteIngredients = slices.Clone(sheet.NoteIngredients)
+		result.Recipe.Ingredients = append(result.Recipe.Ingredients, sheet.NoteIngredients...)
 		program, err := publicStockProgram(result)
 		if err != nil {
 			return Detail{}, err

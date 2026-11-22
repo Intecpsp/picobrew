@@ -447,3 +447,21 @@ test('an archived PicoPak shows the published ingredients and shares an editable
     await request.delete('/api/v1/recipes/' + id, { headers: { 'X-CSRF-Token': 'demo' } })
   }
 })
+
+test('brew-ready catalog carries the author’s dry hop and original program to a stock preview', async ({
+  page,
+}) => {
+  await page.goto('/#/catalog?q=UB08')
+  await page.getByRole('button', { name: 'UB08 Summer IPA' }).click()
+  await expect(page.getByText('Dry hop with 25 g Citra for 7 days.', { exact: true })).toBeVisible()
+  const ingredients = page.getByRole('table', { name: 'Recipe ingredients' })
+  await expect(ingredients.getByRole('row').filter({ hasText: 'dry-hop' })).toContainText('25 g')
+  await page.getByRole('button', { name: 'Save Zymatic program' }).click()
+  await expect(page.getByLabel('Program notes')).toContainText('Dry hop with 25 g Citra')
+  await page.getByRole('button', { name: 'Preview & send' }).click()
+  await page.getByLabel('Transfer to machine').selectOption('stock-zymatic-menu')
+  const dialog = page.getByRole('dialog')
+  await dialog.getByLabel('Zymatic serial number').fill('CATALOGPREVIEW')
+  await dialog.getByRole('button', { name: 'Preview stock menu' }).click()
+  await expect(dialog.getByRole('cell', { name: 'Hop addition 1' }).first()).toBeVisible()
+})

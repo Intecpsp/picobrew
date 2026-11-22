@@ -254,6 +254,10 @@ function CatalogBrowse() {
                     <Button
                       variant="secondary"
                       onClick={() => {
+                        if (!kind) {
+                          change(setKind, 'archive')
+                          return
+                        }
                         setQuery('')
                         setSource('')
                         setKind('')
@@ -262,7 +266,7 @@ function CatalogBrowse() {
                         setOffset(0)
                       }}
                     >
-                      Clear filters
+                      {kind ? 'Clear filters' : 'Search all source records'}
                     </Button>
                   }
                 />

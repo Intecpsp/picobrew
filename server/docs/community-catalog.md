@@ -14,7 +14,7 @@ recipe to a brewer or starts a program.
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-There are **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+The main catalog opens with 68 reviewed stock Zymatic brew sheets. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
 programs and three maintenance programs. Of these, 5,206 can be copied into the
 library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
@@ -95,9 +95,9 @@ protection.
 
 | Method and path | Result |
 | --- | --- |
-| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). Returns entries, total and source/style metadata. |
+| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). Use `kind=brew-ready` for reviewed recipes. An omitted kind includes the whole archive. Returns entries, total and source/style metadata. |
 | `GET /api/v1/catalog/{id}` | Recipe/program detail, original record list, provenance and source parameters. |
-| `POST /api/v1/catalog/{id}/copy` | Empty JSON object; returns a new saved library recipe and initial revision. |
+| `POST /api/v1/catalog/{id}/copy` | Send `{}` for the editable recipe or `{"stock_program":true}` for a qualified stock Zymatic program with its brew sheet. Returns a new library record and initial revision. |
 | `GET /api/v1/catalog/{id}/source` | Exact original JSON attachment; `record` selects another original listed on the entry. |
 | `GET /api/v1/catalog/references` | Support references and asset metadata, optionally filtered by `model`. |
 | `GET /api/v1/catalog/assets/*` | Manifest-listed local image/text/PDF, with pinned checksum verification. |

@@ -70,11 +70,12 @@ type MarketplaceIngredients struct {
 }
 
 type BrewSheet struct {
-	Instructions    []string `json:"instructions"`
-	YeastGuide      string   `json:"yeast_guide"`
-	OriginalGravity float64  `json:"original_gravity,omitempty"`
-	FinalGravity    float64  `json:"final_gravity,omitempty"`
-	SourceSHA256    string   `json:"source_sha256"`
+	NoteIngredients []domain.Ingredient `json:"note_ingredients,omitempty"`
+	Instructions    []string            `json:"instructions"`
+	YeastGuide      string              `json:"yeast_guide"`
+	OriginalGravity float64             `json:"original_gravity,omitempty"`
+	FinalGravity    float64             `json:"final_gravity,omitempty"`
+	SourceSHA256    string              `json:"source_sha256"`
 }
 
 type Detail struct {

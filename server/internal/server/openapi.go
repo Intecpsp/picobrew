@@ -50,7 +50,7 @@ var endpoints = []endpoint{
 	{"GET", "/catalog/references", "List attributed support references and bundled artwork", nil},
 	{"GET", "/catalog/assets/{asset_path}", "Read a manifest-listed local image or support reference", nil},
 	{"GET", "/catalog/{id}", "Read an immutable source entry and conversion provenance", nil},
-	{"POST", "/catalog/{id}/copy", "Create an independent editable library copy", map[string]any{}},
+	{"POST", "/catalog/{id}/copy", "Copy the ingredient recipe or its matched stock Zymatic program", map[string]any{"stock_program": false}},
 	{"GET", "/catalog/{id}/source", "Download the exact original source JSON", nil},
 	{"GET", "/firmware/updates", "Read the daily version check and registered machine update notices", nil},
 	{"POST", "/firmware/updates", "Refresh firmware version metadata now", nil},
@@ -705,7 +705,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[400] = "Invalid catalog filters, pagination or request body."
 		statuses[404] = "Entry, original record or local asset is unavailable."
 		if e.path == "/catalog/{id}/copy" {
-			statuses[422] = "This entry has no verified editable conversion; its original source remains available."
+			statuses[422] = "This entry has no verified conversion for the requested copy type."
 		}
 	}
 	if e.path == "/ai/assist" {
