@@ -7,6 +7,13 @@
     "size": 162792,
     "origin": "Application image extracted from the verified Pico Pro flash backup; matches the existing original reference. This is not the complete flash backup."
   },
+  "oem_recovery": {
+    "path": "oem/device/mcuimg1.bin",
+    "version": "0.0.3",
+    "sha256": "26829ef97df46e6d3667afe8352fa86492f3ddf667371f2d19eafa8468862c63",
+    "size": 50504,
+    "origin": "Unmodified PicoBrew OEM recovery executable from /sys/mcuimg1.bin on the profiled Pico S, historically recorded as Pico Pro. The 2026-11-17 firmware-only export, extracted full-backup slot and live filesystem readback have the same SHA-256. Filesystem headers, allocation padding and personal files are excluded."
+  },
   "reverse_engineered": {
     "path": "reverse-engineered",
     "source_commit": "ea887709e72c493456583114034cde4aad746099",

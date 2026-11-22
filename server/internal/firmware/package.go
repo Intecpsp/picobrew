@@ -519,7 +519,7 @@ func ReadUpdatePayload(archive []byte) (UpdatePayload, error) {
 	if err != nil {
 		return payload, err
 	}
-	if (c.Model != "pico-s" && c.Model != "pico-pro") || c.HubOTAProtocol != 1 {
+	if !c.SupportsHubOTA() {
 		return payload, invalid("Choose an S/Pro package that supports Hub OTA trial confirmation")
 	}
 	payload.Candidate = c

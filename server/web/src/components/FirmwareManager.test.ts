@@ -103,11 +103,17 @@ describe('Hub firmware packages', () => {
       firmware_version: '1.3.0',
       hub_ota_protocol: 1,
     }
-    const older = {
+    const usbOnly = {
       ...release,
       firmware_version: '1.2.0',
       hub_ota_protocol: 0,
       archive_sha256: '2'.repeat(64),
+    }
+    const downgrade = {
+      ...uploaded,
+      id: '4'.repeat(64),
+      firmware_version: '1.2.8',
+      hub_ota_protocol: 1,
     }
     const installed = { ...release, firmware_version: '1.2.9', archive_sha256: '3'.repeat(64) }
     let current = installed.firmware_version
@@ -119,19 +125,45 @@ describe('Hub firmware packages', () => {
           device_uid: 'test-uid',
           current_version: current,
           install_supported: true,
-          packages: [uploaded],
+          packages: [
+            downgrade,
+            { ...downgrade, id: '5'.repeat(64), model: 'pico-pro' },
+            { ...uploaded, id: '6'.repeat(64) },
+            { ...downgrade, id: 'a'.repeat(64), model_family: 'pico-c' },
+            { ...downgrade, id: 'b'.repeat(64), display_variant: 'ssd1325' },
+          ],
         })
       if (String(url).endsWith('/firmware/updates'))
-        return json({ releases: [older, installed, release], notices: [] })
+        return json({
+          releases: [
+            usbOnly,
+            installed,
+            release,
+            { ...release, archive_sha256: '7'.repeat(64), model: 'pico-s-pro', kind: 'historical' },
+            { ...release, archive_sha256: '8'.repeat(64), model: 'pico-pro' },
+            { ...release, archive_sha256: '9'.repeat(64), model: 'z-series', kind: 'reference' },
+          ],
+          notices: [],
+        })
       if (String(url).endsWith('/stage')) return json(uploaded)
       if (String(url).endsWith('/install')) {
-        current = release.firmware_version
+        current =
+          JSON.parse(String(opts?.body)).package_id === downgrade.id
+            ? downgrade.firmware_version
+            : release.firmware_version
         return json({ state: 'running' }, 202)
       }
       return response(url, opts)
     })
     show(createElement(MachineFirmwareDialog, { deviceID: 'pico-s', onClose: close }))
     const versions = await screen.findByLabelText('Firmware version')
+    await waitFor(() =>
+      expect(Array.from((versions as HTMLSelectElement).options, (o) => o.value)).toEqual([
+        release.archive_sha256,
+        installed.archive_sha256,
+        downgrade.id,
+      ])
+    )
     await user.selectOptions(versions, '1.2.9 · Current version')
     const disabledInstall = screen.getByRole('button', { name: 'Already installed' })
     expect((disabledInstall as HTMLButtonElement).disabled).toBe(true)
@@ -141,8 +173,6 @@ describe('Hub firmware packages', () => {
     await user.click(disabledInstall)
     expect(calls('/stage', 'POST')).toHaveLength(0)
     expect(calls(path + '/install', 'POST')).toHaveLength(0)
-    await user.selectOptions(versions, older.archive_sha256)
-    expect(screen.queryByRole('button', { name: 'Install' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Check for Updates' }))
     expect(calls('/firmware/updates', 'POST')).toHaveLength(1)
     const stage = '/firmware/releases/' + uploaded.id + '/stage'
@@ -160,6 +190,13 @@ describe('Hub firmware packages', () => {
       ((await screen.findByRole('button', { name: 'Already installed' })) as HTMLButtonElement)
         .disabled
     ).toBe(true)
+    await user.selectOptions(versions, downgrade.id)
+    await user.click(screen.getByRole('button', { name: 'Install' }))
+    await waitFor(() => expect(calls(path + '/install', 'POST')).toHaveLength(2))
+    expect(calls('/stage', 'POST')).toHaveLength(1)
+    expect(JSON.parse(String(calls(path + '/install', 'POST')[1][1]?.body)).package_id).toBe(
+      downgrade.id
+    )
   })
   it('allows finishing a pinned interrupted update even when the trial app reports the target version', async () => {
     const path = '/devices/pico-s/firmware'
@@ -171,14 +208,32 @@ describe('Hub firmware packages', () => {
           current_version: uploaded.firmware_version,
           install_supported: true,
           retry_package_id: uploaded.id,
-          packages: [{ ...uploaded, hub_ota_protocol: 1 }],
+          packages: [
+            { ...uploaded, hub_ota_protocol: 1 },
+            { ...uploaded, id: 'd'.repeat(64), firmware_version: '9.9.0', hub_ota_protocol: 1 },
+          ],
+        })
+      if (String(url).endsWith('/firmware/updates'))
+        return json({
+          releases: [
+            { ...candidate, archive_sha256: uploaded.id, kind: 'standalone', hub_ota_protocol: 1 },
+          ],
+          notices: [],
         })
       if (String(url).endsWith('/install')) return json({ state: 'running' }, 202)
       return response(url, opts)
     })
     show(createElement(MachineFirmwareDialog, { deviceID: 'pico-s', onClose: close }))
-    await userEvent.setup().click(await screen.findByRole('button', { name: 'Resume update' }))
+    const user = userEvent.setup()
+    const versions = await screen.findByLabelText('Firmware version')
+    expect((versions as HTMLSelectElement).value).toBe(uploaded.id)
+    await user.selectOptions(versions, '9.9.0')
+    expect(screen.queryByRole('button', { name: 'Install' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Resume update' })).toBeNull()
+    await user.selectOptions(versions, uploaded.id)
+    await user.click(await screen.findByRole('button', { name: 'Resume update' }))
     expect(calls(path + '/install', 'POST')).toHaveLength(1)
+    expect(calls('/stage', 'POST')).toHaveLength(0)
   })
   it('requires an independent controller selection once and never installs firmware', async () => {
     const user = userEvent.setup()
@@ -203,7 +258,15 @@ describe('Hub firmware packages', () => {
           hardware_verification_required: !verified,
           install_supported: false,
           reason: 'Network installation is not available yet.',
-          packages: [],
+          packages: [
+            {
+              ...uploaded,
+              model: 'pico-c',
+              model_family: 'pico-c',
+              display_variant: 'ssd1309',
+              hub_ota_protocol: 1,
+            },
+          ],
         })
       return response(url, options)
     })
@@ -221,6 +284,9 @@ describe('Hub firmware packages', () => {
     )
     await user.click(save)
     await waitFor(() => expect(notify).toHaveBeenCalledWith('Verified display controller saved.'))
+    expect(((await screen.findByLabelText('Firmware version')) as HTMLSelectElement).disabled).toBe(
+      true
+    )
     expect(JSON.parse(String(calls('/devices/c/firmware/hardware', 'PUT')[0][1]?.body))).toEqual({
       device_uid: 'pinned-c',
       display_variant: 'ssd1309',
@@ -230,4 +296,63 @@ describe('Hub firmware packages', () => {
     ).toHaveLength(0)
     expect(screen.queryByRole('button', { name: /install firmware/i })).toBeNull()
   })
+  it('requires both acknowledgments before showing the local USB restore command', async () => {
+    fetchMock.mockImplementation(async (url, opts) => {
+      if (String(url).endsWith('/devices/s/firmware'))
+        return json({
+          model: 'pico-s',
+          device_uid: 'pinned-s',
+          current_version: '1.3.4',
+          stock_restore_guide: true,
+          packages: [],
+        })
+      return response(url, opts)
+    })
+    show(createElement(MachineFirmwareDialog, { deviceID: 's', onClose: close }))
+    const user = userEvent.setup()
+    const restore = () => screen.findByRole('button', { name: 'Restore original firmware via USB' })
+    await user.click(await restore())
+    expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
+    const review = screen.getByRole('button', {
+      name: 'Review USB requirements',
+    }) as HTMLButtonElement
+    expect(review.disabled).toBe(true)
+    await user.click(screen.getByRole('checkbox', { name: /returning to standalone firmware/ }))
+    await user.click(review)
+    expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
+    const guide = screen.getByRole('button', {
+      name: 'Show USB restore instructions',
+    }) as HTMLButtonElement
+    expect(guide.disabled).toBe(true)
+    await user.click(
+      screen.getByRole('checkbox', { name: /can connect the idle brewer to my Mac by USB/ })
+    )
+    await user.click(guide)
+    expect(screen.getByText('./picobrew-hub usb-restore --data ./data --checkout ..')).toBeTruthy()
+    expect(screen.getByText(/publicly archived PicoBrew application and recovery/)).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: /macOS USB restoration guide/ }).getAttribute('href')
+    ).toContain('#restore-all-oem-firmware-slots')
+    await user.click(screen.getByRole('button', { name: 'Back to machine firmware' }))
+    await user.click(await restore())
+    expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false)
+    expect(fetchMock.mock.calls.every(([, opts]) => (opts?.method || 'GET') === 'GET')).toBe(true)
+  })
+  it.each([
+    { model: 'pico-s', device_uid: 's' },
+    { model: 'pico-pro', stock_restore_guide: true },
+    { model: 'z-series', device_uid: 'z', stock_restore_guide: true },
+  ])(
+    'hides the USB restore guide without a supported model and pinned identity: %j',
+    async (device) => {
+      fetchMock.mockImplementation(async (url, opts) =>
+        String(url).endsWith('/devices/m/firmware')
+          ? json({ ...device, current_version: '1.3.4', packages: [] })
+          : response(url, opts)
+      )
+      show(createElement(MachineFirmwareDialog, { deviceID: 'm', onClose: close }))
+      await screen.findByLabelText('Firmware version')
+      expect(screen.queryByRole('button', { name: 'Restore original firmware via USB' })).toBeNull()
+    }
+  )
 })

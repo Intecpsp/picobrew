@@ -382,6 +382,7 @@ export interface FirmwarePackage extends FirmwareCandidate {
   }
 }
 export interface MachineFirmware {
+  stock_restore_guide?: boolean
   device_id: string
   model: string
   current_version: string

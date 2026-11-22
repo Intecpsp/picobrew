@@ -1,0 +1,121 @@
+package server
+
+import (
+	"context"
+	"encoding/json"
+	"net/http"
+	"strings"
+	"testing"
+	"time"
+
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware/firmwaretest"
+)
+
+func TestReleaseChoicesExcludeNonOTAFirmwareFromOldAndRefreshedCatalogs(t *testing.T) {
+	s, h, client, stop := startFirmwareServer(t, newTestDataDir(t))
+	defer stop()
+	csrf := signIn(t, client, h.URL)
+	commit := strings.Repeat("a", 40)
+	makeRelease := func(version string, protocol int) (firmware.Release, []byte) {
+		files := firmwaretest.Files("pico-s")
+		firmwaretest.ChangeReport(files, func(r map[string]any) {
+			r["firmware_version"], r["hub_ota_protocol"] = version, protocol
+		})
+		data := firmwaretest.Archive(files)
+		c, err := firmware.ValidateArchive(data)
+		if err != nil {
+			t.Fatal(err)
+		}
+		return firmware.Release{Candidate: c, ArchiveSHA256: firmware.Digest(data), Kind: "standalone", SourceCommit: commit}, data
+	}
+	downgrade, archive := makeRelease("1.3.0", 1)
+	update, _ := makeRelease("1.3.4", 1)
+	usb, _ := makeRelease("1.4.0", 0)
+	history := firmware.Release{Candidate: firmware.Candidate{Model: "pico-s-pro", ModelFamily: "pico-s-pro", FirmwareVersion: "1.5.0", BinaryBytes: 1, BinarySHA256: strings.Repeat("1", 64)}, Kind: "historical", SourceCommit: commit, ArchiveSHA256: strings.Repeat("2", 64)}
+	ref := firmware.Release{Candidate: firmware.Candidate{Model: "z-series", ModelFamily: "z-series", FirmwareVersion: "2.0.0", BinaryBytes: 1, BinarySHA256: strings.Repeat("3", 64)}, Kind: "reference", SourceCommit: commit, ArchiveSHA256: strings.Repeat("4", 64)}
+	pro := update
+	pro.Model = "pico-pro"
+	pro.ArchiveSHA256 = strings.Repeat("5", 64)
+	releases := []firmware.Release{downgrade, history, usb, ref, pro, update}
+	catalog := firmware.ReleaseCatalog{Settings: firmware.Settings{Repository: firmware.DefaultRepository}, Commit: commit, Checked: time.Now().UTC(), Releases: releases}
+	if _, err := s.db.Put("config", "firmware-releases", catalog, 0); err != nil {
+		t.Fatal(err)
+	}
+	for _, model := range []string{"pico-s", "z-series"} {
+		d := &runtimeDevice{cancel: func() {}, view: domain.DeviceView{Device: domain.Device{ID: model, Name: model, Adapter: "pico-standalone", Model: model}, Capabilities: &domain.Capabilities{Model: model, FirmwareVersion: "1.3.3"}}}
+		s.mu.Lock()
+		s.devices[model] = d
+		s.mu.Unlock()
+	}
+	index := firmwaretest.JSON(map[string]any{"schema_version": 1, "releases": releases})
+	fixtures := map[string][]byte{"releases.json": index, firmware.DefaultRepository: []byte(`{"default_branch":"master"}`), "commits/master": []byte(`{"sha":"` + commit + `"}`), downgrade.FirmwareVersion + ".zip": archive}
+	var downloads int
+	s.firmwareGitHub.HTTP = &http.Client{Transport: firmwareTransport(func(r *http.Request) (*http.Response, error) {
+		if strings.HasSuffix(r.URL.Path, ".zip") {
+			downloads++
+		}
+		return fixtureGitHubResponse(r, fixtures), nil
+	})}
+	for _, method := range []string{"GET", "POST"} {
+		code, b := request(t, client, method, h.URL+"/api/v1/firmware/updates", csrf, nil, nil)
+		var got releaseView
+		if code != 200 || json.Unmarshal(b, &got) != nil || len(got.Releases) != 2 || got.Releases[0] != downgrade || got.Releases[1] != update || len(got.Notices) != 1 || got.Notices[0].Version != update.FirmwareVersion || got.Notices[0].DeviceID != "pico-s" {
+			t.Fatalf("%s firmware choices: %d %s", method, code, b)
+		}
+		for _, r := range []firmware.Release{history, usb, ref} {
+			code, b = request(t, client, "POST", h.URL+"/api/v1/firmware/releases/"+r.ArchiveSHA256+"/stage", csrf, nil, nil)
+			if code != 404 || downloads != 0 {
+				t.Fatalf("staging %s: %d %s (downloads %d)", r.FirmwareVersion, code, b, downloads)
+			}
+		}
+	}
+	var saved firmware.ReleaseCatalog
+	if _, err := s.db.Get("config", "firmware-releases", &saved); err != nil || len(saved.Releases) != 3 {
+		t.Fatal("refresh retained non-OTA releases", saved, err)
+	}
+	for range 2 {
+		code, b := request(t, client, "POST", h.URL+"/api/v1/firmware/releases/"+downgrade.ArchiveSHA256+"/stage", csrf, nil, nil)
+		if code != 200 || parseFirmwarePackage(t, b).Candidate != downgrade.Candidate || downloads != 1 {
+			t.Fatalf("compatible downgrade stage: %d %s; downloads %d", code, b, downloads)
+		}
+	}
+}
+
+func TestStagingRechecksLegacyCachedArchiveAgainstOTAMetadata(t *testing.T) {
+	s, h, c, stop := startFirmwareServer(t, newTestDataDir(t))
+	defer stop()
+	csrf := signIn(t, c, h.URL)
+	files := firmwaretest.Files("pico-s")
+	firmwaretest.ChangeReport(files, func(r map[string]any) { delete(r, "hub_ota_protocol") })
+	archive := firmwaretest.Archive(files)
+	candidate, err := firmware.ValidateArchive(archive)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// Model a stale package on disk and an index that claims the old image supports OTA.
+	candidate.HubOTAProtocol = 1
+	id := firmware.Digest(archive)
+	r := firmware.Release{Candidate: candidate, Kind: "standalone", ArchiveSHA256: id, SourceCommit: strings.Repeat("a", 40)}
+	if _, err = s.db.Put("config", "firmware-releases", firmware.ReleaseCatalog{Settings: firmware.Settings{Repository: firmware.DefaultRepository}, Commit: r.SourceCommit, Releases: []firmware.Release{r}}, 0); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.ensureFirmwareCache(); err != nil {
+		t.Fatal(err)
+	}
+	if err = s.publishFirmwareArchive(id, archive); err != nil {
+		t.Fatal(err)
+	}
+	if _, err = s.db.Put(firmwareRecordKind, id, firmware.Package{ID: id, Candidate: candidate}, 0); err != nil {
+		t.Fatal(err)
+	}
+	s.firmwareGitHub.HTTP = &http.Client{Transport: firmwareTransport(func(*http.Request) (*http.Response, error) {
+		t.Error("unexpected download")
+		return nil, context.Canceled
+	})}
+	code, b := request(t, c, "POST", h.URL+"/api/v1/firmware/releases/"+id+"/stage", csrf, nil, nil)
+	if code != 422 {
+		t.Fatalf("non-OTA archive with conflicting staged metadata: %d %s", code, b)
+	}
+}

@@ -3614,9 +3614,25 @@ hr,
   white-space: normal;
 }
 .firmware-upload,
+.stock-restore-entry,
 .firmware-manager > section {
   border-top: 1px solid $line;
   padding-top: 24px;
+}
+.stock-setup-entry {
+  margin-bottom: 1rem;
+}
+.stock-usb-steps {
+  padding-inline-start: 1.5rem;
+  li + li {
+    margin-top: 0.75rem;
+  }
+}
+.stock-usb-command {
+  overflow-x: auto;
+  padding: 0.75rem;
+  border: 1px solid $line;
+  border-radius: 6px;
 }
 .firmware-manager h3,
 .machine-firmware h3 {

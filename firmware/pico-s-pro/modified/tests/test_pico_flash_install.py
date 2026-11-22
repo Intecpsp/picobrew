@@ -88,6 +88,8 @@ def backup_fixture(files, web_allocations=None):
     ]
     if KEY_NAME in files:
         entries.append((20, KEY_NAME, 81, 1, False))
+    if "sys/uid.txt" in files:
+        entries.append((11, "sys/uid.txt", 106, 1, False))
     if "/sys/mcuimg3.bin" in files:
         entries.append((21, "/sys/mcuimg3.bin", 82, 1, False))
     block = 83
@@ -108,6 +110,7 @@ def backup_fixture(files, web_allocations=None):
         entries.append((index, name, start, blocks, False))
         occupied.update(range(start, start + blocks))
     add_fat(image, 1, 225, entries)
+    image[4096 + 7] = 0  # OEM bootloader file has flags 0 on the profiled board.
     for _, name, block, _, _ in entries:
         data = files[name]
         offset = block * 4096
@@ -313,6 +316,20 @@ class MemoryJournal:
         self.events.append({"event": event, **fields})
 
 
+class PackagedInstallTests(unittest.TestCase):
+    def test_usb_payload_pins_match_the_shipped_wifi_update_packages(self):
+        manifest, assets = installer.load_web_bundle(installer.WEB_DIRECTORY)
+        for model in ("pico-s", "pico-pro"):
+            directory = installer.RECOVERY_FILE.parent / model
+            release = json.loads((directory / "firmware-report.json").read_text())["firmware_version"]
+            filename = model + "-standalone.bin"
+            with zipfile.ZipFile(ROOT / "releases" / model / (release + ".zip")) as archive:
+                self.assertEqual(archive.read(filename), installer.load_candidate(directory / filename, model))
+                self.assertEqual(archive.read("web/manifest.json"), manifest)
+                for source, name in installer.WEB_FILES:
+                    self.assertEqual(archive.read("web/" + source + ".gz"), assets[name])
+
+
 class InstallWireTests(unittest.TestCase):
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
@@ -375,7 +392,7 @@ class InstallWireTests(unittest.TestCase):
             argv += ["--firmware", str(self.candidate_path)]
         return argv
 
-    def run_main(self, fake, mode="provision-key", output=None, model=None):
+    def run_main(self, fake, mode="provision-key", output=None, model=None, verify_uid=False, oem_directory=None):
         output = output or self.output_path()
         transcript = io.StringIO()
         port_class = backup.USBSerialPort
@@ -389,9 +406,14 @@ class InstallWireTests(unittest.TestCase):
              mock.patch.object(backup, "QueuedUSBReceive", PassthroughReceive), \
              mock.patch.object(backup, "USBSerialPort", side_effect=short_timeout_port), \
              contextlib.redirect_stdout(transcript), contextlib.redirect_stderr(transcript):
-            result = installer.main(self.cli(mode, output) + (["--model", model] if model else []))
+            args = self.cli(mode, output) + (["--model", model] if model else [])
+            if oem_directory is not None:
+                args[1:3] = ["--oem-directory", str(oem_directory)]
+            if verify_uid:
+                args.append("--verify-backup-uid")
+            result = installer.main(args)
         manifest = json.loads(output.read_text()) if output.exists() else None
-        self.assert_protected_unchanged(fake, recovery=mode=="install-recovery")
+        self.assert_protected_unchanged(fake, recovery=mode=="install-recovery", stock=mode=="restore-stock")
         self.assert_secrets_absent(transcript.getvalue())
         for path in self.folder.iterdir():
             if path.name.startswith("operation-") and path.is_file():
@@ -428,7 +450,7 @@ class InstallWireTests(unittest.TestCase):
 
     def test_previous_ota_release_is_approved_only_for_its_model(self):
         for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3"):
+            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4"):
                 archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
                 with zipfile.ZipFile(archive) as bundle:
                     old = bundle.read(model + "-standalone.bin")
@@ -450,9 +472,9 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(fake.files[KEY_NAME], KEY)
         self.assertEqual(report["operation_verified"], True)
 
-    def assert_protected_unchanged(self, fake, recovery=False):
+    def assert_protected_unchanged(self, fake, recovery=False, stock=False):
         for name in PROTECTED:
-            if recovery and name == installer.RECOVERY_NAME:
+            if (recovery or stock) and name == installer.RECOVERY_NAME:
                 continue
             self.assertEqual(fake.files.get(name), fake.original_files.get(name), name)
         for command in fake.trace:
@@ -463,7 +485,121 @@ class InstallWireTests(unittest.TestCase):
                 flags, token = struct.unpack(">II", command[1:9])
                 self.assertEqual(token, 0)
                 if flags != 0:
-                    self.assertIn(command[9:-2].decode(), (installer.RECOVERY_NAME,) if recovery else (KEY_NAME, APP_NAME, *WEB_NAMES))
+                    allowed = (KEY_NAME, APP_NAME, *WEB_NAMES)
+                    if stock:
+                        allowed = (APP_NAME, installer.RECOVERY_NAME)
+                    elif recovery:
+                        allowed = (installer.RECOVERY_NAME,)
+                    self.assertIn(command[9:-2].decode(), allowed)
+
+    def stock_device(self, *, app=None, recovery=None, uid=None, **options):
+        original_files = {**self.files, "sys/uid.txt": b"ab" * 16 + b"\0"}
+        image = backup_fixture(original_files)
+        self.backup_path.write_bytes(image)
+        mock.patch.object(installer, "BACKUP_SHA256", hashlib.sha256(image).hexdigest()).start()
+        live = {**original_files, APP_NAME: self.candidate if app is None else app,
+                installer.RECOVERY_NAME: installer.RECOVERY_FILE.read_bytes() if recovery is None else recovery,
+                KEY_NAME: KEY, "ssid.txt": b"test-network"}
+        if uid is not None:
+            live["sys/uid.txt"] = uid
+        fake = FakeInstallUSB(live, **options)
+        fake.writable_names = (APP_NAME, installer.RECOVERY_NAME)
+        return fake
+
+    def test_stock_restore_verifies_every_slot_without_changing_settings_or_boot(self):
+        fake = self.stock_device()
+        result, report, output, _ = self.run_main(fake, "restore-stock")
+        self.assertEqual(result, 0, (report, output))
+        self.assertEqual([name for name, mode in fake.file_opens if mode], [APP_NAME, installer.RECOVERY_NAME])
+        for name in (APP_NAME, installer.RECOVERY_NAME):
+            self.assertEqual(fake.files[name], self.files[name])
+        for name in fake.original_files.keys() - {APP_NAME, installer.RECOVERY_NAME}:
+            self.assertEqual(fake.files[name], fake.original_files[name], name)
+        self.assertTrue(report["postcheck"]["layout"]["profile_uid_matches"])
+        self.assertNotIn("ab" * 16, json.dumps(report) + output)
+        finished = self.stock_device(app=self.original, recovery=self.files[installer.RECOVERY_NAME])
+        result, report, _, _ = self.run_main(finished, "restore-stock")
+        self.assertEqual(result, 0, report)
+        self.assertEqual(finished.mutations, [])
+
+    def test_stock_restore_refuses_wrong_brewer_or_unexpected_slot_before_writes(self):
+        wrong_uid = self.stock_device(uid=b"cd" * 16)
+        extra_slot = self.stock_device()
+        extra_slot.files["/sys/mcuimg3.bin"] = b"unexpected"
+        extra_slot.refresh_layout()
+        wrong_boot = self.stock_device()
+        wrong_boot.files[preflight.BOOT_INFO_NAME] = bytes(8)
+        wrong_boot.original_files[preflight.BOOT_INFO_NAME] = bytes(8)
+        broken_pair = self.stock_device(app=b"partial", recovery=b"partial")
+        for fake in (wrong_uid, wrong_boot, extra_slot, broken_pair):
+            result, report, _, _ = self.run_main(fake, "restore-stock")
+            self.assertNotEqual(result, 0, report)
+            self.assertEqual(fake.mutations, [])
+
+    def test_install_modes_can_require_same_backup_identity_before_any_write(self):
+        for mode in ("provision-key", "install", "install-recovery"):
+            with self.subTest(mode=mode):
+                fake = self.stock_device(uid=b"cd" * 16)
+                result, report, _, _ = self.run_main(fake, mode, verify_uid=True)
+                self.assertNotEqual(result, 0)
+                self.assertIn("brewer identity differs", report["error"]["message"])
+                self.assertEqual(fake.mutations, [])
+        matched = self.stock_device(app=self.original, recovery=self.files[installer.RECOVERY_NAME])
+        matched.writable_names = (KEY_NAME,)
+        result, report, _, _ = self.run_main(matched, "provision-key", verify_uid=True)
+        self.assertEqual(result, 0, report)
+        self.assertTrue(report["postcheck"]["layout"]["profile_uid_matches"])
+
+    def test_stock_directory_validates_both_images_and_pinned_brewer_without_backup(self):
+        files = self.folder / "oem"
+        files.mkdir()
+        for name in (APP_NAME, installer.RECOVERY_NAME):
+            (files / Path(name).name).write_bytes(self.files[name])
+        wrong = self.stock_device(uid=b"cd" * 16)
+        matched = self.stock_device()
+        self.backup_path.unlink()
+        with mock.patch.object(installer, "PROFILE_UID_SHA256", hashlib.sha256(b"ab" * 16).hexdigest()):
+            result, report, _, _ = self.run_main(wrong, "restore-stock", oem_directory=files)
+            self.assertNotEqual(result, 0)
+            self.assertIn("brewer identity differs", report["error"]["message"])
+            self.assertEqual(wrong.mutations, [])
+            result, report, _, _ = self.run_main(matched, "restore-stock", oem_directory=files)
+            self.assertEqual(result, 0, report)
+            self.assertNotIn("backup", report)
+            self.assertTrue(report["postcheck"]["layout"]["profile_uid_matches"])
+            self.assertEqual(matched.files[APP_NAME], self.original)
+            self.assertEqual(matched.files[installer.RECOVERY_NAME], self.files[installer.RECOVERY_NAME])
+            for name in (APP_NAME, installer.RECOVERY_NAME):
+                with self.subTest(name=name):
+                    slot = files / Path(name).name
+                    slot.write_bytes(b"unapproved")
+                    result, report, _, factory = self.run_main(wrong, "restore-stock", oem_directory=files)
+                    self.assertNotEqual(result, 0)
+                    factory.assert_not_called()
+                    slot.write_bytes(self.files[name])
+
+    def test_prepare_install_checks_all_local_inputs_without_opening_usb(self):
+        self.stock_device()
+        args = ["prepare-install", "--backup", str(self.backup_path), "--model", "pico-s"]
+        with mock.patch.object(probe, "CH340USBTransport") as transport, contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(installer.main(args), 0)
+            (self.web_path / "app.js.gz").write_bytes(b"corrupt")
+            self.assertEqual(installer.main(args), 1)
+            transport.assert_not_called()
+
+    def test_stock_restore_stops_on_failed_readback_and_resumes_each_slot(self):
+        for slot in (APP_NAME, installer.RECOVERY_NAME):
+            with self.subTest(slot=slot):
+                fake = self.stock_device(fault="write-close:corrupt-content", fault_target=slot)
+                result, report, _, _ = self.run_main(fake, "restore-stock")
+                self.assertNotEqual(result, 0, report)
+                self.assertEqual(fake.mutations[-1]["name"], slot)
+                self.assertFalse(report["operation_verified"])
+                retry = self.stock_device(app=fake.files[APP_NAME], recovery=fake.files[installer.RECOVERY_NAME])
+                result, report, _, _ = self.run_main(retry, "restore-stock")
+                self.assertEqual(result, 0, report)
+                self.assertEqual(retry.files[APP_NAME], self.original)
+                self.assertEqual(retry.files[installer.RECOVERY_NAME], self.files[installer.RECOVERY_NAME])
 
     def assert_protected_verified_before_mutations(self, fake, include_main=True):
         required = set(PROTECTED)

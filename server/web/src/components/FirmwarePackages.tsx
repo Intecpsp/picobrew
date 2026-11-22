@@ -4,6 +4,7 @@ import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import type { FirmwareCandidate, FirmwarePackage, MachineFirmware, FirmwareUpdates } from '../types'
 import { Button, ErrorBanner, Field, Loading, Modal } from './ui'
+import { StockRestoreGuide } from './StockRestoreGuide'
 
 function firmwareModelName(model: string) {
   return model === 'pico-s'
@@ -13,13 +14,22 @@ function firmwareModelName(model: string) {
       : model === 'pico-c'
         ? 'Pico C'
         : {
-            'pico-s-pro': 'Historical Pico S/Pro',
             'z-series': 'Pico Z',
             picoferm: 'PicoFerm',
             picostill: 'PicoStill',
           }[model] ||
           model ||
           'Not identified'
+}
+
+function matchesWirelessPackage(item: FirmwareCandidate, machine: MachineFirmware | null) {
+  return (
+    (item.model === 'pico-s' || item.model === 'pico-pro') &&
+    item.model === machine?.model &&
+    item.model_family === 'pico-s-pro' &&
+    item.hub_ota_protocol === 1 &&
+    !item.display_variant
+  )
 }
 
 export function MachineFirmwareDialog({
@@ -41,25 +51,24 @@ export function MachineFirmwareDialog({
   const updates = useResource<FirmwareUpdates>('/firmware/updates', 60000)
   const [chosen, setChosen] = useState('')
   const [activity, setActivity] = useState('')
+  const [restoreUID, setRestoreUID] = useState('')
   const machine = firmware.data
-  const model = machine?.model || hub.devices?.find((d) => d.id === deviceID)?.model
-  const items = new Map<string, FirmwareCandidate & { remote: boolean; kind?: string }>()
+  const eligibleRestoreUID =
+    machine?.stock_restore_guide === true &&
+    (machine.model === 'pico-s' || machine.model === 'pico-pro')
+      ? machine.device_uid
+      : undefined
+  const items = new Map<string, FirmwareCandidate & { remote: boolean }>()
   for (const item of updates.data?.releases || []) {
-    const same =
-      item.model === model &&
-      (model !== 'pico-c' ||
-        (!machine?.hardware_verification_required &&
-          item.display_variant === machine?.display_variant))
-    if (same || (item.kind === 'historical' && (model === 'pico-s' || model === 'pico-pro'))) {
+    if (item.kind === 'standalone' && matchesWirelessPackage(item, machine)) {
       items.set(item.archive_sha256, { ...item, remote: true })
     }
   }
   for (const item of machine?.packages || []) {
-    if (!items.has(item.id)) items.set(item.id, { ...item, remote: false })
+    if (matchesWirelessPackage(item, machine)) items.set(item.id, { ...item, remote: false })
   }
   const versions = [...items].sort(
     ([, a], [, b]) =>
-      Number(b.kind !== 'historical') - Number(a.kind !== 'historical') ||
       Number(a.firmware_version.startsWith('preview')) -
         Number(b.firmware_version.startsWith('preview')) ||
       b.firmware_version.localeCompare(a.firmware_version, 'en', { numeric: true })
@@ -72,9 +81,7 @@ export function MachineFirmwareDialog({
   const selected = id ? items.get(id) : undefined
   const resuming = !!id && machine?.retry_package_id === id
   const supportsInstall =
-    machine?.install_supported &&
-    selected?.hub_ota_protocol === 1 &&
-    (!machine.retry_package_id || resuming)
+    machine?.install_supported && !!selected && (!machine.retry_package_id || resuming)
   const alreadyInstalled =
     !!selected && selected.firmware_version === machine?.current_version && !resuming
   async function checkUpdates() {
@@ -139,6 +146,14 @@ export function MachineFirmwareDialog({
       setSaving(false)
     }
   }
+  if (machine && eligibleRestoreUID && restoreUID === eligibleRestoreUID) {
+    return (
+      <StockRestoreGuide
+        model={firmwareModelName(machine.model)}
+        onClose={() => setRestoreUID('')}
+      />
+    )
+  }
   return (
     <Modal title="Machine firmware" onClose={onClose} wide>
       <ErrorBanner message={firmware.error} retry={firmware.reload} />
@@ -150,7 +165,7 @@ export function MachineFirmwareDialog({
             <div className="firmware-current">
               <strong>
                 {hub.devices?.find((d) => d.id === deviceID)?.name ||
-                  firmwareModelName(model || '')}
+                  firmwareModelName(firmware.data.model)}
               </strong>
               <span>Current version: {firmware.data.current_version || 'Not reported'}</span>
             </div>
@@ -170,8 +185,7 @@ export function MachineFirmwareDialog({
                   {firmware.data.display_variant?.toUpperCase() || 'an unknown controller'}. This is
                   a build setting, not hardware detection. Check the physical controller or a
                   documented hardware identification before marking its firmware packages as
-                  matching. This check is saved for this machine; it is not required to connect or
-                  download packages.
+                  matching. The Hub saves this check for this machine.
                 </p>
                 {firmware.data.verified_display_variant && (
                   <p>Verified hardware: {firmware.data.verified_display_variant.toUpperCase()}</p>
@@ -216,17 +230,14 @@ export function MachineFirmwareDialog({
                 disabled={!versions.length || !!activity}
                 onChange={(e) => setChosen(e.target.value)}
               >
-                {!versions.length && <option value="">No versions available</option>}
+                {!versions.length && (
+                  <option value="">No compatible wireless firmware available</option>
+                )}
                 {versions.map(([key, v]) => (
                   <option key={key} value={key}>
                     {v.firmware_version}
                     {v.display_variant ? ' · ' + v.display_variant.toUpperCase() : ''}
                     {v.firmware_version === machine?.current_version ? ' · Current version' : ''}
-                    {v.kind === 'historical'
-                      ? ' · Historical S/Pro build'
-                      : v.kind === 'reference'
-                        ? ' · Reference package'
-                        : ''}
                   </option>
                 ))}
               </select>
@@ -260,6 +271,17 @@ export function MachineFirmwareDialog({
               </p>
             )}
             <ErrorBanner message={updates.error} />
+            {eligibleRestoreUID && (
+              <section className="stock-restore-entry">
+                <Button
+                  variant="secondary"
+                  disabled={!!activity || saving}
+                  onClick={() => setRestoreUID(eligibleRestoreUID)}
+                >
+                  Restore original firmware via USB
+                </Button>
+              </section>
+            )}
           </div>
         )
       )}

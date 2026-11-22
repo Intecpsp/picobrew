@@ -14,6 +14,7 @@ Successful readback alone does not establish safe boot or output behavior.
 | `install` | `/local/api.key`, the five `/local/web/*.gz` files, `/sys/mcuimg2.bin` | Verify the key, install/read back the pinned browser bundle, then install/read back the pinned application |
 | `install-recovery` | `/sys/mcuimg1.bin` | Install and read back the Hub recovery application on the pinned profile after main installation. See [OTA setup](hub-ota.md). |
 | `restore` | `/sys/mcuimg2.bin` | Restore and read back the exact stock application extracted from the verified original backup |
+| `restore-stock` | `/sys/mcuimg2.bin`, `/sys/mcuimg1.bin` | Return the profiled brewer to its original application and recovery, then verify every firmware slot |
 
 The writer never writes the secondary bootloader, boot
 record, service pack or Wi-Fi configuration. It does not format flash,
@@ -29,9 +30,9 @@ backup must be reviewed before support is added. Do not alter the checksum
 allowlist to force an installation. Keep backup identity and installation
 reports private.
 
-Every mutation command verifies that entire local backup before opening
-USB. It extracts and verifies the original image 2 locally; the backup
-and its Wi-Fi credentials are never uploaded anywhere by this tool.
+Commands using `--backup` verify that entire local backup before opening
+USB. For stock restoration the two pinned OEM executables can also be
+provided through `--oem-directory`. The tool reads all source files locally.
 Keep the backup and its original checksum/metadata files unchanged.
 
 The examples use a placeholder checkout and private backup path. Set them to
@@ -52,6 +53,14 @@ offline-inspection and private-file modules. The latter use this component's
 `tools/pico_private_files.py` and the repository root's `tools/private_files.py`;
 both must accompany any standalone copies of the scripts. Run the writer from
 the complete checkout. The initial prompt describes both power-on and reset-button entry.
+
+To check a custom installation offline, run `tools/pico_flash_install.py prepare-install
+--model pico-s --backup /absolute/path/to/original-serial-flash.bin` with the
+component's Python environment. It verifies the local backup, target firmware,
+browser files, recovery image and USB helper. The three installation commands
+accept `--verify-backup-uid` to require a match between the live brewer and
+the original backup before each operation. `restore-stock` always performs
+that identity check.
 
 ## Enter a fresh programming session
 
@@ -141,7 +150,7 @@ command needs a fresh programming session using the procedure above.
 ## Stage 2: install the pinned standalone candidate
 
 The commands below install the **1.3.4 Pico Pro update**. Approved earlier
-standalone releases, including 1.0.0, 1.1.0, 1.2.0, 1.3.0, 1.3.1, 1.3.2 and 1.3.3, are separately pinned as upgrade
+standalone releases, including 1.0.0, 1.1.0, 1.2.0, 1.3.0, 1.3.1, 1.3.2, 1.3.3 and 1.3.4, are separately pinned as upgrade
 sources. Their bytes must match an allowed source exactly.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after
@@ -337,6 +346,56 @@ corrupt/interrupted state; it does not authorize deletion, recreation,
 formatting or raw writes. **This bounded restore command has not yet been
 tested on the physical Pico, and cannot guarantee recovery from every
 interrupted write.** Do not use Factory Reset as an offline restore method.
+
+## Restore all OEM firmware slots
+
+Use this procedure to return the profiled Pico S to the original PicoBrew
+application and recovery. Both images were verified against the same
+original full-flash backup. The backup historically carries a Pico Pro label.
+This procedure is qualified in software for that single brewer and layout. Other brewers,
+including other units of the same model, require their own verified profile.
+
+After the restore, the brewer runs the OEM software. Custom Hub controls,
+the standalone device website and wireless firmware updates become unavailable.
+Reinstalling custom firmware requires USB. The tool leaves personal files
+(including Wi-Fi settings and the custom device key) on the brewer.
+
+With the brewer idle, follow the USB setup above. From the
+`firmware/pico-s-pro/modified` directory, use the original images from
+`../oem/device` and a new absolute report path in an existing private directory.
+
+```sh
+sudo .venv/bin/python tools/pico_flash_install.py restore-stock \
+    --oem-directory ../oem/device \
+    --output /absolute/path/to/new-restore-report.json
+```
+
+Alternatively, replace `--oem-directory ../oem/device` with
+`--backup /absolute/path/to/original-serial-flash.bin` to use your original backup.
+The tool checks both raw images against their pinned hashes or verifies the
+complete backup before opening USB.
+
+At the initial `BREAK asserted` prompt, power on the brewer or press and
+release RESET once. Leave power and USB connected through verification.
+Before writing, the tool compares the live brewer identity to the verified profile,
+checks the flash layout, verifies the OEM bootloader and the active boot record,
+and confirms slot 3 is absent. It restores slot 2 (the main application)
+before slot 1 (recovery), reads both back, and skips slots that already
+contain the correct bytes. It verifies the bootloader, boot record and absent
+slot 3 again before reporting success.
+
+```text
+SUCCESS: OEM bootloader, boot selection, recovery and application verified; image3 absent
+```
+
+After success, restart the brewer and check its startup screen. If a write
+is interrupted, keep the backup and the report. Start a fresh programming
+session with a new report path. A retry requires the original allocations
+and a readable bootloader and boot record. Restoring a damaged application
+also requires an intact recovery slot. Restoring damaged recovery requires
+the verified OEM application in slot 2. Tests cover these cases with a
+simulated USB device. A complete OEM restore and subsequent boot still
+await a physical trial.
 
 ## Reports and failures
 

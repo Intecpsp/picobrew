@@ -416,8 +416,12 @@ func TestMachineFirmwareIsReadOnlyAndAvailableForUnreadyMachines(t *testing.T) {
 	s, h, client := newTestServer(t)
 	csrf := signIn(t, client, h.URL)
 	for _, model := range []string{"pico-s", "pico-pro"} {
-		if code, data := uploadFirmware(t, client, h.URL, csrf, firmwaretest.Archive(firmwaretest.Files(model)), nil); code != 201 {
-			t.Fatalf("setup package: %d %s", code, data)
+		files := firmwaretest.Files(model)
+		for _, protocol := range []int{0, 1} {
+			firmwaretest.ChangeReport(files, func(report map[string]any) { report["hub_ota_protocol"] = protocol })
+			if code, data := uploadFirmware(t, client, h.URL, csrf, firmwaretest.Archive(files), nil); code != 201 {
+				t.Fatalf("setup package: %d %s", code, data)
+			}
 		}
 	}
 	for _, test := range []struct {
@@ -457,6 +461,56 @@ func TestMachineFirmwareIsReadOnlyAndAvailableForUnreadyMachines(t *testing.T) {
 		if test.want == 0 && got.Model != "" {
 			t.Fatalf("%s incorrectly implies model matching: %+v", test.id, got)
 		}
+		for _, p := range got.Packages {
+			if !p.SupportsHubOTA() || p.Model != test.reported {
+				t.Fatalf("offered inapplicable cached package: %+v", p)
+			}
+		}
+		if got.StockRestoreGuide {
+			t.Fatal("advertised a stock restore for an unreviewed identity")
+		}
+	}
+	code, data := request(t, client, "GET", h.URL+"/api/v1/firmware/packages", "", nil, nil)
+	var archived []firmware.Package
+	if err := json.Unmarshal(data, &archived); err != nil || code != 200 || len(archived) != 4 {
+		t.Fatalf("archive inventory: %d %s (%v)", code, data, err)
+	}
+}
+
+func TestStockRestoreGuideRequiresReviewedPinnedPhysicalBrewer(t *testing.T) {
+	s, d, _ := identityFixture(t, filepath.Join(t.TempDir(), "identity.sqlite"), "test-unit")
+	d.identityMismatch = false
+	d.view.ModelSource = "firmware"
+	d.view.Capabilities = &domain.Capabilities{Model: "pico-s", ModelFamily: "pico-s-pro"}
+	d.view.Status = &domain.Status{DeviceUID: "test-unit", Model: "pico-s"}
+	read := func(reviewed func(string) bool) bool {
+		t.Helper()
+		w := httptest.NewRecorder()
+		s.serveMachineFirmware(w, identityRequest("GET", "/api/v1/devices/registered/firmware", ""), reviewed)
+		var got firmware.MachineFirmware
+		if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil || w.Code != 200 {
+			t.Fatalf("firmware response: %d %s (%v)", w.Code, w.Body.Bytes(), err)
+		}
+		return got.StockRestoreGuide
+	}
+	reviewed := func(uid string) bool { return uid == "test-unit" }
+	if read(reviewed) {
+		t.Fatal("missing identity pin allowed restore guide")
+	}
+	if _, err := s.db.Put("device-identity", d.view.ID, deviceIdentity{UID: d.view.Status.DeviceUID}, 0); err != nil {
+		t.Fatal(err)
+	}
+	if !read(reviewed) || read(firmware.ReviewedStockUID) {
+		t.Fatal("restore guide did not distinguish the matching profile from an unreviewed unit")
+	}
+	s.cfg.Demo = true
+	if read(reviewed) {
+		t.Fatal("demo offered restore guide")
+	}
+	s.cfg.Demo = false
+	d.identityMismatch = true
+	if read(reviewed) {
+		t.Fatal("mismatched machine offered restore guide")
 	}
 }
 
@@ -494,7 +548,9 @@ func TestVersionCheckUsesMetadataAndStagesOnlySelectedArchive(t *testing.T) {
 	s, h, c, close := startFirmwareServer(t, newTestDataDir(t))
 	defer close()
 	csrf := signIn(t, c, h.URL)
-	archive := firmwaretest.Archive(firmwaretest.Files("pico-s"))
+	parts := firmwaretest.Files("pico-s")
+	firmwaretest.ChangeReport(parts, func(r map[string]any) { r["hub_ota_protocol"] = 1 })
+	archive := firmwaretest.Archive(parts)
 	candidate, err := firmware.ValidateArchive(archive)
 	if err != nil {
 		t.Fatal(err)

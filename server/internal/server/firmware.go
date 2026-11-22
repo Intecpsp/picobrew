@@ -546,13 +546,17 @@ func (s *Server) downloadFirmwarePackage(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
+	s.serveMachineFirmware(w, r, firmware.ReviewedStockUID)
+}
+
+func (s *Server) serveMachineFirmware(w http.ResponseWriter, r *http.Request, reviewedUID func(string) bool) {
 	d, ok := s.lookupRuntime(w, r)
 	if !ok {
 		return
 	}
 	out := firmware.MachineFirmware{
 		Packages: []firmware.Package{},
-		Reason:   "Network installation requires Hub OTA firmware and provisioned recovery on this brewer.",
+		Reason:   "Connect and identify a brewer to check wireless update availability.",
 	}
 	d.mu.RLock()
 	out.DeviceID = d.view.ID
@@ -567,14 +571,33 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			out.DisplayVariant = d.view.Capabilities.DisplayVariant
 			out.DeviceUID = d.view.Status.DeviceUID
 			out.InstallSupported = !s.cfg.Demo && otaEligible(d.view)
-			if out.InstallSupported {
+			switch {
+			case s.cfg.Demo:
+				out.Reason = "Firmware installation is unavailable in simulation."
+			case out.Model != "pico-s" && out.Model != "pico-pro":
+				out.Reason = "Hub wireless firmware installation is unavailable for this model."
+			case out.InstallSupported:
 				out.Reason = "The Hub can install a matching OTA package after the brewer verifies its recovery image and boot layout."
+			case !d.view.Capabilities.HubOTAV1:
+				out.Reason = "Wireless installation requires firmware with Hub OTA support and the separate recovery image."
+			default:
+				out.Reason = "Wireless installation requires an enabled, connected, idle brewer with its own device key."
 			}
 		}
 	}
 	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && (!d.identityMismatch || d.awaitingIdentity) && (!d.view.Online || out.InstallSupported)
 	active := d.updatingFirmware
+	canShowRestore := !s.cfg.Demo && !active && !d.awaitingIdentity && !d.view.KeyReused &&
+		d.view.Adapter == "pico-standalone" && (out.Model == "pico-s" || out.Model == "pico-pro") && reviewedUID(out.DeviceUID)
 	d.mu.RUnlock()
+	if canShowRestore {
+		matches, err := s.savedFirmwareIdentity(out.DeviceID, out.DeviceUID)
+		if err != nil {
+			s.storeError(w, err)
+			return
+		}
+		out.StockRestoreGuide = matches
+	}
 	var receipt firmware.InstallReceipt
 	if _, err := s.db.Get("firmware-install", out.DeviceID, &receipt); err == nil {
 		if receipt.State == "running" && !active {
@@ -613,12 +636,12 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 		out.VerifiedDisplayVariant = verified
 		out.HardwareVerificationRequired = verified == "" || verified != out.DisplayVariant
 		if verified == "" {
-			out.Reason += " Verify the C display controller once before packages are marked as matching."
+			out.Reason += " Record the display controller fitted to this Pico C."
 		} else if verified != out.DisplayVariant {
 			out.Reason += " The firmware-reported display differs from the independently verified controller."
 		}
 	}
-	if out.Model != "" {
+	if out.Model == "pico-s" || out.Model == "pico-pro" {
 		s.firmwareMu.Lock()
 		packages, err := s.listFirmwarePackages()
 		s.firmwareMu.Unlock()
@@ -627,7 +650,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range packages {
-			if p.Model == out.Model && (out.Model != "pico-c" || !out.HardwareVerificationRequired && p.DisplayVariant == out.DisplayVariant) {
+			if p.Model == out.Model && p.SupportsHubOTA() {
 				out.Packages = append(out.Packages, p)
 			}
 		}

@@ -1,6 +1,6 @@
 # Firmware packages in PicoBrew Hub
 
-Open a machine's **Firmware** view, choose a version, and click **Install**. The Hub downloads the chosen archive on demand, verifies it, and reuses it on subsequent requests. **Download** saves that version to your computer. Only compatible, idle machines and packages that implement trial confirmation offer **Install**. Historical family builds and reference packages are available for download.
+Open a machine's **Firmware** view to see wireless update versions for its exact model. Choose a version and click **Install**. The Hub fetches the selected archive, validates it and saves it for reuse. **Download** saves that version to your computer. You can downgrade to an earlier compatible OTA release. The running version cannot be reinstalled through the normal Install action.
 
 ## GitHub source and version checks
 
@@ -8,7 +8,9 @@ Open a machine's **Firmware** view, choose a version, and click **Install**. The
 
 While physical devices are registered, the Hub checks daily. The Brewery page displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
-The catalog includes separately targeted S, Pro and C display builds, historical S/Pro family images, and reference packages for the generic Z, PicoFerm and PicoStill. Each catalog entry identifies the release type, model, version, and SHA-256 of the ZIP and application. Named historical versions and pre-release snapshots retain their original bytes. For a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
+The repository release index also preserves historical family builds, Pico C display variants and reference packages for the generic Z, PicoFerm and PicoStill. Each entry records the model, version and SHA-256 of the ZIP and application. The Hub's update catalog and machine version picker include only S and Pro standalone releases with Hub OTA protocol 1. The same rule applies to packages previously uploaded or cached on the Hub. The administrative package API can still list and download saved archives. On Pico C, owners can record their actual display controller independently of wireless update availability.
+
+To publish a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
 The earlier package upload and single-revision acquisition APIs remain available for external tools. The current source layout is:
 
@@ -17,7 +19,7 @@ The earlier package upload and single-revision acquisition APIs remain available
 - `firmware/pico-s-pro/modified/firmware/web/manifest.json` and its five gzip
   payloads.
 
-The standalone package API accepts Pico S, Pico Pro, and both supported Pico C display variants. Reference and historical builds use the version catalog.
+The standalone package API accepts Pico S, Pico Pro, and both supported Pico C display variants. Reference and historical builds remain accessible in the repository.
 
 ## Upload a package
 
@@ -81,7 +83,29 @@ match compares declared package and machine model information.
 
 An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
-The first installation on older firmware requires USB. The bootstrap tool supports one pinned appliance layout and an explicit Pico S application target. See the [setup, recovery and physical validation limits](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
+### Initial USB setup
+
+Stock firmware and older custom installations without provisioned Hub recovery require a computer connected directly by USB. The current writer verifies one physical Pico S in the S/Pro family against its original backup, identity and layout. The original backup is historically labeled Pico Pro. A matching model name alone cannot qualify a different brewer.
+
+Run the local Hub executable from the full checkout on the Mac connected to the brewer, with the USB Python dependencies installed. From `server/`:
+
+```sh
+./picobrew-hub usb-install --model pico-s --key-file /absolute/private/path/api.key --data ./data --checkout ..
+```
+
+Use the same data directory as the Hub. The command uses the saved original backup, or prompts to capture the stock flash when needed. You can also supply the original backup with `--backup /absolute/path/to/original.bin`. It validates the files locally, provisions the private key, installs the application and matching website, and installs the separate Hub recovery. Each write requires its own USB programming session. After verification, restart the brewer and add it to the Hub using that same key. See the [USB setup instructions](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md) and [OTA qualification notes](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
+
+### Return to stock
+
+On the reviewed physical brewer, the machine firmware view provides a separate stock restore guide with confirmations. The browser explains the consequences and gives the local USB command. Run it from `server/` on the computer connected to the idle brewer:
+
+```sh
+./picobrew-hub usb-restore --data ./data --checkout ..
+```
+
+The Hub uses its private saved original backup first. If the backup is missing or fails its integrity check, the Hub preserves any existing backup and looks for the two verified OEM images in its cache. For each missing or damaged image, it fetches the pinned Git blob from the canonical firmware repository and verifies its length and SHA-256 before caching it. The USB writer independently verifies the live brewer identity, flash layout, bootloader and boot selection before writing. It restores the original application and recovery, reads both back and confirms that the unused third slot is absent. The final restart is manual.
+
+Stock software removes the standalone website, custom Hub controls and Hub wireless update capability. Wi-Fi settings and the stored device key are preserved. Returning to custom firmware requires the initial USB setup again. The restore procedure has passed simulated USB tests. Physical restoration and subsequent boot are pending. [USB restore procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md#restore-all-oem-firmware-slots)
 
 ## Storage and API
 
@@ -107,7 +131,7 @@ executes code from a package.
 | POST | `/api/v1/firmware/packages` | Upload a ZIP as multipart field `file` |
 | GET / DELETE | `/api/v1/firmware/packages/{packageID}` | Read metadata or remove a package |
 | GET | `/api/v1/firmware/packages/{packageID}/download` | Download the cached ZIP after checking its hash |
-| GET | `/api/v1/devices/{id}/firmware` | Read model-scoped packages and installation availability |
+| GET | `/api/v1/devices/{id}/firmware` | Read OTA packages for the identified model, installation availability, and stock restore guide eligibility |
 | POST | `/api/v1/devices/{id}/firmware/install` | Confirm the package and brewer with `package_id`, `device_uid` and `confirm: true`. HTTP 202 starts a tracked update. |
 
 New imports return HTTP 201; an identical saved archive returns HTTP 200.

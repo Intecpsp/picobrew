@@ -41,7 +41,7 @@ import { TemperatureChart } from '../components/Charts'
 import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
 import AccessoryMachine from './AccessoryMachine'
 import { DevicePreferences } from '../components/DevicePreferences'
-import { isAccessory, sensorValue, supports } from '../lib/capabilities'
+import { brewerOutputsIdle, isAccessory, sensorValue, supports } from '../lib/capabilities'
 import { SensorHistory } from '../components/SensorHistory'
 const programNames: Record<string, string> = {
   'sous-vide': 'Sous vide',
@@ -59,6 +59,12 @@ const programNames: Record<string, string> = {
   chill: 'Chill',
   utilities: 'Utilities',
   settings: 'Settings',
+}
+const lockReasons: Record<string, string> = {
+  'filter-removed': 'The filter was removed.',
+  'sensor-io': 'The brewer reported a sensor error.',
+  'recovery-storage': 'The brew checkpoint could not be saved.',
+  initializing: 'The brewer is starting up.',
 }
 type MachineProps = { id: string; initialRecipe?: string }
 export default function Machine({ id, initialRecipe }: MachineProps) {
@@ -89,6 +95,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const monitor = useResource<AIMonitorState>(device ? `/devices/${id}/ai-monitor` : null, 5000)
   const [selection, setRecipeID] = useState(initialRecipe || '')
   const [pending, setPending] = useState('')
+  const [lastCommandAt, setLastCommandAt] = useState(0)
   const [confirm, setConfirm] = useState<{
     command: string
     recipe_id?: string
@@ -120,18 +127,26 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   async function command(command: string, extra: Record<string, unknown> = {}) {
     setPending(command)
     setError('')
+    const changesActivity = command !== 'encoder' || extra.click === true
+    function awaitStatusAfter(time?: string | null) {
+      const timestamp = Date.parse(time ?? '')
+      if (changesActivity && Number.isFinite(timestamp))
+        setLastCommandAt((previous) => Math.max(previous, timestamp))
+    }
+    awaitStatusAfter(device?.last_seen)
     try {
-      await api(`/devices/${id}/commands`, {
+      const receipt = await api<{ at?: string }>(`/devices/${id}/commands`, {
         method: 'POST',
         body: { command, ...extra },
         command: true,
       })
+      awaitStatusAfter(receipt?.at)
       if (command !== 'encoder')
         hub.notify(
           command === 'stop'
-            ? 'Stop command acknowledged.'
+            ? 'Output lock acknowledged.'
             : command === 'clear-stop'
-              ? 'Stop latch cleared.'
+              ? 'Outputs unlocked.'
               : 'Command acknowledged by the brewer.'
         )
       setConfirm(null)
@@ -209,7 +224,26 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const allowed = (name: string) => device.online && commands.includes(name)
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
-  const state = deviceState(device)
+  const state = live?.stopped ? 'Outputs locked' : deviceState(device)
+  const idle = hub.connected && !pending && brewerOutputsIdle(device, lastCommandAt)
+  const lockLabel = live?.stopped
+    ? 'Outputs locked'
+    : idle
+      ? 'Lock outputs'
+      : 'Stop and lock outputs'
+  const reason = live?.stop_reason
+  const lockReason =
+    reason && !['none', 'requested'].includes(reason)
+      ? lockReasons[reason] || `The brewer reported ${reason}.`
+      : ''
+  const lockDescription = live?.stopped
+    ? 'Heating and pumping stay off until you choose Unlock outputs.'
+    : (idle
+        ? 'Prevent heating and pumping until you choose Unlock outputs.'
+        : 'Stop heating and pumping now and keep them off until you choose Unlock outputs.') +
+      (device.model === 'z-series' && interrupted
+        ? ' Locking outputs also discards the interrupted brew checkpoint.'
+        : '')
   return (
     <>
       <PageTitle
@@ -247,10 +281,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                 variant="danger"
                 disabled={!allowed('stop') || pending === 'stop' || !!live?.stopped}
                 onClick={() => void command('stop')}
-                aria-label="Stop machine outputs"
-                title="Immediately latch heating and pumping off"
+                title={lockDescription}
               >
-                <Square size={14} fill="currentColor" /> Stop outputs
+                <Square aria-hidden="true" size={14} fill="currentColor" /> {lockLabel}
               </Button>
             )}
           </>
@@ -384,7 +417,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               !device.online
                 ? 'Machine offline'
                 : live?.stopped
-                  ? 'Outputs stopped'
+                  ? 'Outputs locked'
                   : live?.busy
                     ? 'Current session'
                     : live
@@ -397,7 +430,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   ? 'Power on the brewer to reconnect.'
                   : 'Monitoring is off for this machine.'
                 : live?.stopped
-                  ? live.stop_reason || 'Heating and pumping are latched off.'
+                  ? [lockReason, 'Heating and pumping stay off until you unlock the outputs.']
+                      .filter(Boolean)
+                      .join(' ')
                   : live?.busy
                     ? live.recipe_name || programNames[live.command] || live.command
                     : undefined
@@ -426,9 +461,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               variant="secondary"
               className="full-width"
               disabled={!allowed('clear-stop') || !!pending}
-              onClick={() => requestStart({ command: 'clear-stop', label: 'clear the stop latch' })}
+              onClick={() => requestStart({ command: 'clear-stop', label: 'unlock outputs' })}
             >
-              Clear stop latch
+              Unlock outputs
             </Button>
           )}
           {live?.busy && (commands.includes('pause') || commands.includes('resume')) && (
@@ -701,7 +736,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
         <Confirm
           title={
             confirm.command === 'clear-stop'
-              ? 'Clear the stop latch?'
+              ? 'Unlock outputs?'
               : confirm.command === 'resume-interrupted'
                 ? `Resume ${confirm.label}?`
                 : confirm.command === 'discard-interrupted'
@@ -710,7 +745,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           }
           description={
             confirm.command === 'clear-stop'
-              ? 'This re-enables machine controls. Confirm that the operation has ended and the brewer is ready.'
+              ? 'Unlocking allows the brewer to heat and pump again. Confirm the operation has ended and the brewer is ready.'
               : confirm.command === 'resume-interrupted'
                 ? 'Verify the water, vessel and filter before resuming. Saved progress can be up to 30 seconds behind the interruption. The brewer resumes with its saved remaining step time and may return to preparation prompts.'
                 : confirm.command === 'discard-interrupted'
@@ -719,7 +754,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           }
           label={
             confirm.command === 'clear-stop'
-              ? 'Clear stop'
+              ? 'Unlock outputs'
               : confirm.command === 'resume-interrupted'
                 ? 'Resume brew'
                 : confirm.command === 'discard-interrupted'

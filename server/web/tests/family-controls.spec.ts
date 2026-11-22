@@ -21,6 +21,7 @@ for (const width of [1280, 390]) {
           ? [
               'encoder',
               'stop',
+              'clear-stop',
               'manual',
               'clean',
               'drain',
@@ -240,8 +241,10 @@ for (const width of [1280, 390]) {
         reads.push(request.method() + ' ' + path)
         let result: unknown,
           code = 200
-        if (path === '/api/v1/devices') result = [device]
-        else if (path.endsWith('/display')) {
+        if (path === '/api/v1/devices') {
+          if (device.online && device.status) device.last_seen = new Date().toISOString()
+          result = [device]
+        } else if (path.endsWith('/display')) {
           expect(brewing).toBe(true)
           result = {
             width: 128,
@@ -279,6 +282,16 @@ for (const width of [1280, 390]) {
           commands.push(body)
           if (['resume-interrupted', 'discard-interrupted'].includes(body.command))
             Object.assign(status.recovery!, { available: false, valid: true })
+          if (brewing && body.command === 'stop')
+            Object.assign(status, {
+              stopped: true,
+              busy: false,
+              state: 'idle',
+              command: 'idle',
+              stop_reason: 'requested',
+            })
+          if (brewing && body.command === 'clear-stop')
+            Object.assign(status, { stopped: false, stop_reason: 'none' })
           code = 202
           result = { id: 'receipt', state: 'accepted', command: body }
         } else if (path.endsWith('/sync-history')) result = { synced: true }
@@ -290,6 +303,14 @@ for (const width of [1280, 390]) {
       await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
       expect(commands).toEqual([])
       if (brewing) {
+        const idleLock = page.getByRole('button', { name: 'Lock outputs', exact: true })
+        await expect(idleLock).toBeEnabled()
+        await expect(idleLock).toHaveAccessibleDescription(
+          /Prevent heating and pumping until you choose Unlock outputs/
+        )
+        await expect(idleLock).toHaveAccessibleDescription(
+          /discards the interrupted brew checkpoint/
+        )
         await page.getByLabel('Recipe on this machine', { exact: true }).selectOption(installed.id)
         await page.getByText('Manage saved recipes', { exact: true }).click()
         await page.getByRole('button', { name: 'Edit saved program', exact: true }).click()
@@ -376,7 +397,23 @@ for (const width of [1280, 390]) {
         await expect(page.getByRole('button', { name: 'Pause session' })).toBeEnabled()
         await expect(page.getByRole('button', { name: 'Resume session' })).toBeEnabled()
         await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
-        await expect(page.getByRole('button', { name: 'Stop machine outputs' })).toBeEnabled()
+        const activeLock = page.getByRole('button', { name: 'Stop and lock outputs', exact: true })
+        await expect(activeLock).toBeEnabled()
+        await activeLock.click()
+        await expect(
+          page.getByRole('button', { name: 'Outputs locked', exact: true })
+        ).toBeDisabled()
+        expect(commands.at(-1)).toEqual({ command: 'stop' })
+        await page.getByRole('button', { name: 'Unlock outputs', exact: true }).click()
+        dialog = page.getByRole('dialog', { name: 'Unlock outputs?' })
+        await dialog.getByRole('button', { name: 'Unlock outputs', exact: true }).click()
+        await expect(idleLock).toBeEnabled()
+        expect(commands.at(-1)).toEqual({ command: 'clear-stop', confirm: true })
+        await idleLock.click()
+        await expect(
+          page.getByRole('button', { name: 'Outputs locked', exact: true })
+        ).toBeDisabled()
+        expect(commands.at(-1)).toEqual({ command: 'stop' })
         Object.assign(device, { status: null })
         await page.getByRole('button', { name: 'Manage machine' }).click()
         await page.getByRole('button', { name: 'Test connection', exact: true }).click()
@@ -384,11 +421,13 @@ for (const width of [1280, 390]) {
           page.getByRole('heading', { name: 'Waiting for machine status' })
         ).toBeVisible()
         await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
+        await expect(activeLock).toBeEnabled()
         Object.assign(device, { status })
         Object.assign(device, { online: false })
         await page.getByRole('button', { name: 'Manage machine' }).click()
         await page.getByRole('button', { name: 'Test connection', exact: true }).click()
         await expect(page.getByRole('heading', { name: 'Machine offline' })).toBeVisible()
+        await expect(activeLock).toBeDisabled()
         await expect(canvas).toBeHidden()
         await expect(page.getByText('LIVE OLED', { exact: false })).toHaveCount(0)
         await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toBeDisabled()

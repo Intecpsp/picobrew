@@ -91,6 +91,26 @@ afterEach(() => {
 })
 
 describe('automatic physical-machine connections', () => {
+  it('guides the first install on a USB-connected Mac before registering a stock brewer', async () => {
+    const user = userEvent.setup()
+    show()
+    await user.type(screen.getByLabelText('Machine name'), 'My brewer')
+    await user.click(screen.getByRole('button', { name: 'Set up a stock brewer via USB' }))
+    const select = screen.getByLabelText('Brewer to set up')
+    expect((select as HTMLSelectElement).value).toBe('')
+    expect(screen.queryByText(/picobrew-hub usb-install/)).toBeNull()
+    for (const model of ['pico-s', 'pico-pro']) {
+      await user.selectOptions(select, model)
+      const command = screen.getByText(new RegExp('picobrew-hub usb-install --model ' + model))
+      expect(command.textContent).toContain('--data ./data')
+      expect(command.textContent).not.toContain('--backup')
+    }
+    await user.click(screen.getByRole('button', { name: 'Back to Add machine' }))
+    expect((screen.getByLabelText('Machine name') as HTMLInputElement).value).toBe('My brewer')
+    await user.selectOptions(screen.getByLabelText('Connection type'), 'simulator')
+    expect(screen.queryByRole('button', { name: 'Set up a stock brewer via USB' })).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
   it('registers a physical brewer without making the user choose or assume a model', async () => {
     fetchMock.mockResolvedValue(json(machine({ model: '', model_source: 'pending' })))
     const user = userEvent.setup()

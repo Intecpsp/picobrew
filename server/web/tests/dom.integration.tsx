@@ -106,7 +106,9 @@ describe('UI interactions against the real isolated Go simulator', () => {
     await waitFor(() => expect(down.disabled).toBe(false))
     await user.click(down)
     await waitFor(() => expect(down.disabled).toBe(false))
-    expect(screen.getByRole('button', { name: 'Stop machine outputs' })).toBeTruthy()
+    expect(
+      screen.getByRole('button', { name: /^(lock outputs|stop and lock outputs)$/i })
+    ).toBeTruthy()
   })
   it('manages an offline machine from Overview and its detail page while retaining brew history', async () => {
     let id = ''
