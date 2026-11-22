@@ -70,6 +70,10 @@ export default function NativeRecipeEditor({
     setDirty(true)
   }
   async function save() {
+    if (recipe.source_model === 'zymatic' && program.steps.at(-1)?.location === 6) {
+      setError('Add a step after the pause or remove it.')
+      return
+    }
     setBusy(true)
     setError('')
     try {
