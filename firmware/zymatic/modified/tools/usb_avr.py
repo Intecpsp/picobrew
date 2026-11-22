@@ -54,7 +54,7 @@ class Controller:
         if usb_identity(self.port) != self.identity:
             raise ValueError("Zymatic USB identity changed; select the connected brewer again")
         if not read_only and not any(self.identity[1:]):
-            raise ValueError("USB location or serial number is required for a native restore; use PicoFlash")
+            raise ValueError("A USB location or serial number is required before writing to the Zymatic")
         command = [self.executable, "-N", "-c", "arduino", "-p", "m1284p",
                    "-P", self.port, "-b", "115200", "-D", "-A"]
         if read_only:
@@ -154,6 +154,12 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
 
         import usb_application
         installed = usb_application.build.recognize_private_application(before)
+        identity = getattr(controller, "identity", None)
+        previous = usb_application.latest_transaction(directory, usb_application.transaction_prefix(identity))
+        pending = previous and not usb_application.verified_transaction(previous)
+        stock_prefix = stock.is_original_app(prefix)
+        if action == "install" and not installed and not stock_prefix and not previous:
+            raise ValueError("Initial conversion requires verified Zymatic stock 1.1.14")
         if stock.is_original_app(prefix):
             stock.save_private(directory / OEM_PREFIX, prefix)
         application = supplied
@@ -166,14 +172,13 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
                     stock.prepare(data), stock.MAX_HEX, private=True))
         if not stock.is_original_app(application):
             raise ValueError("Restoration requires the verified stock application")
-        identity = getattr(controller, "identity", None)
         # Recover the paired identity even if a previous attempt stopped in
         # its configuration/recipe page. Model the next write from the actual
         # double-read, never by replaying a saved full-flash dump.
         standalone = before if installed else None
-        if not installed and (not stock.is_original_app(prefix)
-                              or before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff")):
-            interrupted = usb_application.interrupted_standalone(directory, identity, before, application)
+        unknown = not installed and (not stock_prefix or before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff"))
+        if previous and (pending or unknown):
+            interrupted = usb_application.interrupted_standalone(previous, before, application, pending=bool(pending))
             if interrupted:
                 standalone, installed = interrupted
         if action == "install":
@@ -187,7 +192,11 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
                 pages = application.ljust(usb_application.end_page(installed["application_bytes"]), b"\xff")
             version = "1.1.14"
             confirmations = ("RESTORE ZYMATIC", "WRITE 1.1.14")
+        if action == "restore" and not installed and before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff"):
+            print("Unidentified bytes follow the stock application. This restore preserves that data.")
         if pages == before[:len(pages)]:
+            if pending:
+                usb_application.finish_transaction(previous, before)
             print(f"The installed application already matches {version}. No write needed.")
             return
         write_input(work / "app-pages.bin", pages)
@@ -201,11 +210,14 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
         for phrase in confirmations:
             if confirm("Type " + phrase + ": ") != phrase:
                 raise ValueError("USB operation canceled")
+        transaction = None
         if action == "install" or installed:
-            usb_application.remember_transaction(directory, identity, before, expected,
-                                                 expected if action == "install" else standalone, len(pages))
+            transaction = usb_application.remember_transaction(
+                directory, identity, before, expected, expected if action == "install" else standalone, len(pages))
         controller.run(work, ["flash:v:read-1.bin:r", "flash:w:app-pages.bin:r"], read_only=False)
         if read_flash(controller, work, 3) != expected:
             raise ValueError("Final flash readback differs; installation is unverified")
+        if transaction:
+            usb_application.finish_transaction(transaction, expected)
         print(f"Verified the entire readable program flash for Zymatic {version}. Disconnect USB "
               "and restart the brewer.")

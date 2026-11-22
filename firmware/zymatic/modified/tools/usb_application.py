@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
 import secrets
@@ -14,6 +15,8 @@ EXTENSION_LIMIT = 0x1e000
 
 
 def read_key(path, *, create):
+    if not path:
+        raise ValueError("Use an absolute private key file path")
     path = Path(path)
     if not path.is_absolute():
         raise ValueError("Use an absolute private key file path")
@@ -37,6 +40,8 @@ def end_page(length):
 
 
 def install_pages(before, original, installed, key_file, host, offline_program=None):
+    if len(before) != 128 * 1024:
+        raise ValueError("Standalone installation requires a complete 128 KiB flash read")
     if not installed and not stock.is_original_app(before[:stock.APP_SIZE]):
         raise ValueError("Initial conversion requires verified Zymatic stock 1.1.14 on the connected brewer")
     if not stock.is_original_app(original):
@@ -94,8 +99,15 @@ def remember_transaction(directory, identity, before, target, standalone, extent
         stock.save_private(directory / ("avr-flash-" + digest + ".bin"), contents)
         record[name] = digest
     # Publish the immutable record last, before the first programmer write.
-    stock.save_private(directory / f"{prefix}{sequence:08d}.json",
-                       (json.dumps(record, sort_keys=True) + "\n").encode())
+    path = directory / f"{prefix}{sequence:08d}.json"
+    stock.save_private(path, (json.dumps(record, sort_keys=True) + "\n").encode())
+    if os.name == "posix":
+        fd = os.open(directory, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+    return path
 
 
 def matches_interrupted_write(live, before, target, end):
@@ -114,10 +126,22 @@ def matches_interrupted_write(live, before, target, end):
     return True
 
 
-def interrupted_standalone(directory, identity, live, original):
-    path = latest_transaction(directory, transaction_prefix(identity))
-    if not path:
-        return None
+def verified_transaction(path):
+    try:
+        digest = stock.private_files.read_regular(path.with_suffix(".verified"), 64, private=True)
+    except FileNotFoundError:
+        return False
+    if not re.fullmatch(rb"[0-9a-f]{64}", digest):
+        raise ValueError("Invalid private Zymatic USB verification record")
+    return True
+
+
+def finish_transaction(path, live):
+    stock.save_private(path.with_suffix(".verified"), hashlib.sha256(live).hexdigest().encode())
+
+
+def interrupted_standalone(path, live, original, *, pending):
+    directory = path.parent
     record = json.loads(stock.private_files.read_regular(path, 1024, private=True))
     if not isinstance(record, dict) or set(record) != {"before", "target", "standalone", "extent"}:
         raise ValueError("Invalid private Zymatic USB transaction")
@@ -141,6 +165,10 @@ def interrupted_standalone(directory, identity, live, original):
             or (target != standalone and target[:end] != original.ljust(end, b"\xff"))):
         raise ValueError("Saved Zymatic USB transaction target or bounds failed verification")
     if live[end:] != before[end:] or not matches_interrupted_write(live, before, target, end):
+        if not pending:
+            # A completed historical transaction cannot authorize or block a
+            # stock-prefix restore after another application was installed.
+            return None
         raise ValueError("The live flash differs from the last USB transaction for this brewer; "
                          "its custom application area cannot be safely restored")
     return standalone, metadata

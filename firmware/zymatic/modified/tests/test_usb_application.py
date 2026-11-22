@@ -1,5 +1,6 @@
 """USB program and undo a real provisioned image using a memory-backed programmer."""
 
+import json
 import os
 from pathlib import Path
 import sys
@@ -20,6 +21,7 @@ class MemoryProgrammer:
         self.identity = ("virtual", "synthetic-device", "usb:1")
         self.writes = 0
         self.interrupt = False
+        self.tear_page = None
 
     def run(self, work, operations, *, read_only):
         if read_only:
@@ -33,6 +35,11 @@ class MemoryProgrammer:
         pages = (work / "app-pages.bin").read_bytes()
         assert len(pages) <= avr.BOOT_MIN and len(pages) % avr.PAGE == 0
         self.writes += 1
+        if self.tear_page is not None:
+            start = self.tear_page * avr.PAGE
+            assert start + avr.PAGE <= len(pages)
+            self.flash = pages[:start] + bytes([0x79]) * avr.PAGE + self.flash[start+avr.PAGE:]
+            raise ValueError("Power lost during page programming")
         if self.interrupt:
             start = usb_application.end_page(len(pages)) - 3 * avr.PAGE
             self.flash = pages[:start] + self.flash[start:]
@@ -106,6 +113,81 @@ class ApplicationTest(unittest.TestCase):
         self.device.interrupt = False
         self.restore()
         self.assertEqual(self.device.flash, self.before)
+
+    def test_interrupted_install_resumes_original_paired_identity_and_recipe(self):
+        self.device.tear_page = 4
+        with self.assertRaisesRegex(ValueError, "Power lost"):
+            self.install(hub_host="brewing.lan:8080")
+        directory = self.data / "usb-stock" / "zymatic"
+        record = next(directory.glob("transaction-*.json"))
+        target_id = json.loads(record.read_text())["target"]
+        target = (directory / ("avr-flash-" + target_id + ".bin")).read_bytes()
+        self.device.tear_page = None
+        self.install()
+        self.assertEqual(self.device.flash, target)
+
+    def test_reconfigure_and_restore_through_two_independent_torn_pages(self):
+        self.install(hub_host="one.lan")
+        self.device.tear_page = usb_application.end_page(
+            build.recognize_private_application(self.device.flash)["application_bytes"]) // avr.PAGE - 1
+        with self.assertRaisesRegex(ValueError, "Power lost"):
+            self.install(hub_host="two.lan:8080")
+        self.assertIsNone(build.recognize_private_application(self.device.flash))
+        # Retry recovery, with a second independent power loss after restoring
+        # the complete stock application but before clearing the private data.
+        self.device.tear_page = 450
+        with self.assertRaisesRegex(ValueError, "Power lost"):
+            self.restore()
+        self.assertEqual(self.device.flash[:stock.APP_SIZE], self.original)
+        self.assertNotEqual(self.device.flash, self.before)
+        self.device.tear_page = None
+        self.restore()
+        self.assertEqual(self.device.flash, self.before)
+        self.restore()
+        self.assertEqual(self.device.writes, 4)
+
+    def test_scope_and_postwrite_tail_change_fail_before_write(self):
+        self.device.tear_page = 345
+        with self.assertRaisesRegex(ValueError, "Power lost"):
+            self.install()
+        self.device.tear_page = None
+        self.device.identity = ("virtual", "other-unit", "usb:1")
+        with self.assertRaisesRegex(ValueError, "requires verified"):
+            self.install()
+        self.device.identity = ("virtual2", "synthetic-device", "usb:2")
+        saved = self.device.flash
+        self.device.flash = saved[:-1] + bytes([saved[-1] ^ 2])
+        with self.assertRaisesRegex(ValueError, "differs from the last USB transaction"):
+            self.restore()
+        self.assertEqual(self.device.writes, 1)
+        self.device.flash = saved
+        self.restore()
+        self.assertEqual(self.device.flash, self.before)
+
+    def test_non_ordered_or_multiple_unexplained_pages_are_rejected(self):
+        old = bytes(4 * avr.PAGE)
+        new = bytes([1]) * (4 * avr.PAGE)
+        correct = new[:avr.PAGE] + bytes([0x39]) * avr.PAGE + old[2*avr.PAGE:]
+        self.assertTrue(usb_application.matches_interrupted_write(correct, old, new, len(new)))
+        invalid = bytearray(correct)
+        invalid[3 * avr.PAGE] = 0x34
+        self.assertFalse(usb_application.matches_interrupted_write(invalid, old, new, len(new)))
+
+    def test_completed_transaction_preserves_unrelated_later_upper_flash(self):
+        self.install()
+        self.restore()
+        other = bytearray(self.before)
+        other[400:1100] = bytes(700)
+        other[avr.BOOT_MIN - 1000:avr.BOOT_MIN-900] = bytes(range(100))
+        self.device.flash = bytes(other)
+        self.restore()
+        self.assertEqual(self.device.flash[:stock.APP_SIZE], self.original)
+        self.assertEqual(self.device.flash[stock.APP_SIZE:], other[stock.APP_SIZE:])
+
+    def test_unknown_subcommand_has_no_usb_effects(self):
+        with self.assertRaisesRegex(ValueError, "Unknown"):
+            self.perform("update", [])
+        self.assertFalse(self.data.exists())
 
 
 if __name__ == '__main__':
