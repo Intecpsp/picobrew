@@ -90,6 +90,8 @@ class EngineTests(unittest.TestCase):
     def test_discovery_capabilities_and_no_fictional_routes(self):
         ferm = self.request("/api/v1")
         self.assertFalse(ferm["capabilities"]["recipes"])
+        self.assertFalse(ferm["recipe_create_only"])
+        self.assertTrue(self.request("/api/v1", world=self.new(0))["recipe_create_only"])
         self.assertTrue(ferm["capabilities"]["fermentation"])
         self.assertEqual(ferm["history_capacity_records"], 4224)
         self.assertEqual(ferm["command_fields"]["calibrate"]["required"], ["confirm"])
@@ -196,7 +198,10 @@ class EngineTests(unittest.TestCase):
 
     def test_recipe_transactions_full_catalogue_native_validation(self):
         brewer = self.new(0)
-        self.request("/api/v1/recipes/mash", self.recipe(), 2, expected=201, world=brewer)
+        self.request("/api/v1/recipes/mash", dict(self.recipe(), create_only=True), 2, expected=201, world=brewer)
+        self.request("/api/v1/recipes/mash", dict(self.recipe("Duplicate"), create_only=True), 2, expected=409, world=brewer)
+        self.assertEqual(self.request("/api/v1/recipes/mash", world=brewer)["name"], "Test mash")
+        self.request("/api/v1/recipes/mash", dict(self.recipe(), create_only="true"), 2, expected=400, world=brewer)
         self.request("/api/v1/recipes/bad", self.recipe(location=6), 2, expected=400, world=brewer)
         self.fault(0, 2, brewer)
         self.request("/api/v1/recipes/mash", self.recipe("Replacement"), 2, expected=503, world=brewer)

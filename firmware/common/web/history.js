@@ -2,7 +2,6 @@
 
 function setupHistory({session,enqueue}) {
   const el=id=>document.getElementById(id), canvas=el('historyChart'), selector=el('historySession');
-  const phases=['Heating','Holding','Cooling','Draining','Idle','Circulating','Cooling thermoblock','Pump hold','Heating'];
   let series=[],metric='temperature';const colors=['#1e5947','#b45e34','#765ba0','#227b9a','#a37b25','#ba4e74','#557e46','#6e6a9d'];
   const fieldInfo=name=>metadata?.field_metadata?.[name] || ({wort_f:{label:'Wort',unit:'F'},thermoblock_f:{label:'Thermoblock',unit:'F'},target_f:{label:'Target',unit:'F'},temperature_f:{label:'Temperature',unit:'F'},pressure_kpa:{label:'Pressure',unit:'kPa'},battery_v:{label:'Battery',unit:'V'}}[name]) || {label:name.replaceAll('_',' '),unit:'raw'};
   const axisUnit=()=>metric==='temperature'?unit:fieldInfo(metric).unit;
@@ -27,7 +26,7 @@ function setupHistory({session,enqueue}) {
     const number=value(row,name);
     return !Number.isFinite(number) || (name==='target_f' && number===0)?null:fieldInfo(name).unit==='F' && unit==='C'?(number-32)*5/9:number;
   };
-  const phase=row=>session().brewing?(phases[value(row,'phase')] || 'Phase '+value(row,'phase')):'State '+value(row,'device_state');
+  const phase=row=>session().brewing?PicoDevice.phaseLabel(session().model,value(row,'phase')):'State '+value(row,'device_state');
   const discardRecording=()=>{
     metadata=null;rows=[];fields=[];selected=0;geometry=null;
     el('historyReadout').textContent='';el('historyValues').textContent='';

@@ -136,6 +136,7 @@ void owned_recipe(){World w;auto r=recipe();assert(w.engine.recipe_store(r).ok()
     assert(unheated);const auto before=w.writes;assert(w.dispatch());assert(w.writes>before);
     assert(w.core.core.state.id==CoreStateId::Starting&&w.core.core.state.program_id==24);
     assert(w.core.core.state.session_mode==SessionMode::Offline&&w.core.core.state.runtime_start_pending);
+    assert(w.core.commands.session.parameters.water.value==0&&w.core.commands.session.stats.duration_seconds>0);
     w.engine.poll();auto sessions=w.request(PICO_HTTP_GET,"/api/v1/history",nullptr,200);assert(sessions.find("Owned recipe")!=std::string::npos);
 }
 void storage_preflight(){World w;auto r=recipe();assert(w.adapter.load_recipe(r,true).ok());const auto frames=w.frames.size();
@@ -227,6 +228,7 @@ void recovery_restart(){World before;running_hold(before);
     resume.confirm=true;after.core.safeties.filter_missing=true;assert(after.adapter.execute(resume).status==409);
     after.core.safeties.filter_missing=false;assert(after.adapter.execute(resume).status==202);assert(after.dispatch());
     assert(after.core.core.state.id==CoreStateId::Starting&&after.core.program.parameters.resumed_session);
+    assert(after.core.commands.session.parameters.water.value==0);
     const auto& program=after.core.program.record().view;bool heat=false,wait=false;
     for(std::size_t i=0;i<program.code_size;++i){if(program.code[i].opcode==OpCode::ReachTarget)heat=true;
         if(program.code[i].opcode==OpCode::WaitFor&&program.code[i].argument==43){assert(heat);wait=true;}}

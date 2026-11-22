@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6954,
+      "length": 7023,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "090e0a0bb5741926ae13fbb523ed674134e312a6a849074a4fbc3545c4e2837e",
-      "source_length": 21773,
-      "source_sha256": "090d5fbed3d6bdda7d981bdccdfa3e757b5b35fd2dc91711f0e90d6b70bf17d0"
+      "sha256": "a1d3259f4d3afb020e1c8424c10d077ec07e1ad044f5aaed5b24e5908dac92d1",
+      "source_length": 21951,
+      "source_sha256": "eec28e7e914d2ef27d93c02fe9a27d6a76f1ada5dbccbacfa07b41d2982b5676"
     },
     {
       "source": "api-explorer.js",

@@ -241,7 +241,7 @@ Result Engine::recipe_get(const char* id, Recipe& output) const {
     for (unsigned i = 0; i < RecipeCapacity; ++i) if (!std::strcmp(impl_->recipes[i].id, id)) return impl_->recipe_read(i, output);
     return Result(404, "recipe_not_found", "Recipe not found");
 }
-Result Engine::Impl::recipe_write(const Recipe& recipe, bool* created) {
+Result Engine::Impl::recipe_write(const Recipe& recipe, bool* created, bool create_only) {
     if (created) *created = false;
     if (!(capabilities.flags & Recipes)) return Result(404, "not_found", "Recipes are unavailable");
     if (!persistent) return storage_error();
@@ -255,6 +255,7 @@ Result Engine::Impl::recipe_write(const Recipe& recipe, bool* created) {
         if (!std::strcmp(recipes[i].id, recipe.id)) { slot = i; existing = true; break; }
         if (!recipes[i].id[0] && slot < 0) slot = i;
     }
+    if (existing && create_only) return Result(409, "recipe_exists", "Recipe ID is already in use. Choose another ID or open the saved recipe to edit it.");
     if (slot < 0) return Result(507, "recipe_capacity", "The recipe catalogue is full");
     RecipeEntry staged[RecipeCapacity]; std::memcpy(staged, recipes, sizeof(staged));
     std::uint32_t generation = 0;

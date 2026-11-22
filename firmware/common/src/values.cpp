@@ -82,7 +82,7 @@ bool telemetry_valid(const TelemetryConfig& config) {
     }
     return address && address != UINT32_MAX;
 }
-bool parse_recipe(Json& json, const char* id, Recipe& recipe) {
+bool parse_recipe(Json& json, const char* id, Recipe& recipe, bool& create_only) {
     if (!valid_id(id) || !json.token('{') || json.peek('}')) return false;
     copy(recipe.id, sizeof(recipe.id), id);
     unsigned seen = 0;
@@ -92,6 +92,8 @@ bool parse_recipe(Json& json, const char* id, Recipe& recipe) {
         if (!std::strcmp(key, "id")) {
             char supplied[21]; bit = 1;
             if (!json.string(supplied, sizeof(supplied)) || std::strcmp(supplied, id)) return false;
+        } else if (!std::strcmp(key, "create_only")) {
+            bit = 8; if (!json.boolean(create_only)) return false;
         } else if (!std::strcmp(key, "name")) {
             bit = 2; if (!json.string(recipe.name, sizeof(recipe.name))) return false;
         } else if (!std::strcmp(key, "steps")) {

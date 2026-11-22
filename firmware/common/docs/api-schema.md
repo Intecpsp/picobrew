@@ -99,6 +99,7 @@ locations 1..6, target 0 or 60..212 F, active minutes 0..599 and drain minutes
 0..120. An adapter must additionally validate the native conversion. Locations
 keep device-specific recovered meaning; they are not interchangeable physical
 compartments across models. `zero_minute_steps` is explicitly advertised.
+When discovery advertises `recipe_create_only`, send `create_only: true` in a recipe PUT when creating a new recipe or importing a copy. An existing ID returns 409 `recipe_exists` and keeps the saved recipe. Omitting the field preserves the usual create-or-update behavior.
 The common engine exposes catalogue reads to the local front panel and passes
 the full selected recipe to the adapter's brew command. Mutations require an
 idle device and verified persistent writes. Defaults are offered only when an

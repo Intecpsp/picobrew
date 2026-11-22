@@ -15,20 +15,20 @@
       "source": "device.js",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 1878,
-      "source_length": 4712,
-      "source_sha256": "c0f911f816561ad5547e1ac6ad7f463142406fa88623002aeff61aa8b0c4313f",
-      "sha256": "6c70dd885b740e02a50d6905404d9eb2724be8b73f908bb4557bdc7a06a9a53a",
+      "length": 2551,
+      "source_length": 6867,
+      "source_sha256": "871ca76d80fcc2d97cad36b7f39c52dc5962f18f8f6927ab62a52b1dbeba7bbf",
+      "sha256": "893effd070e8ab2943ee2063db2ba93ddb9fa2a18e54fc69b5eeacc7d95eae4e",
       "file_path": "/common/web/device.js.gz"
     },
     {
       "source": "app.js",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 9774,
-      "source_length": 32909,
-      "source_sha256": "2dc815b945a2d9b58426e854bde2b5a2ace1308f011f9e8ea1dd48c7dc41bc2c",
-      "sha256": "a0aa9358ca5f6e986171915159a99ef3a1637d7bf7c9082c11d436ab240b45d6",
+      "length": 10130,
+      "source_length": 34338,
+      "source_sha256": "ffc2bb0996d2eda9f780b0cbdfd8142903cd5d405109b74961696dd1f15e9bac",
+      "sha256": "6ba555e3591feb07cc3122d83f7e4de24732852266a791171c40f0c456427a25",
       "file_path": "/common/web/app.js.gz"
     },
     {
@@ -45,10 +45,10 @@
       "source": "history.js",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 5320,
-      "source_length": 15812,
-      "source_sha256": "0900eb9d5f3678e386f0c515134a74986d35865de30933f27fca85aa36dd6669",
-      "sha256": "37e00219502086c47bc8d451371557594fbbb0ed3c8d862a0be3edf323c5a698",
+      "length": 5273,
+      "source_length": 15686,
+      "source_sha256": "fd40d7eab2ef2585ff79a22df9d894dfe49317034a9cdfc1360722583f8f0cce",
+      "sha256": "b1088dd63296b67634a3366da655a697cde5c4cf05d7b3233a5fd2dd1f25a5ff",
       "file_path": "/common/web/history.js.gz"
     },
     {
