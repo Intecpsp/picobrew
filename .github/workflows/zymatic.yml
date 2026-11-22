@@ -46,6 +46,15 @@ jobs:
         working-directory: firmware/zymatic/modified
         run: |
           sudo apt-get update -qq
-          sudo apt-get install -y libsimavr-dev libelf-dev pkg-config
+          # Ubuntu's simavr 1.6 uses a fixed 100 µs per SPI byte. The active
+          # brew timing check needs the ATmega's configured clock divider.
+          sudo apt-get install -y libelf-dev pkg-config
+          curl --fail --location --retry 3 -o "$RUNNER_TEMP/simavr.tgz" https://codeload.github.com/buserror/simavr/tar.gz/refs/tags/v1.8
+          echo "51e2682d23fb4843191ee81dadcb5488fa6194553a108bbd6e60e8b1260269d6  $RUNNER_TEMP/simavr.tgz" | sha256sum --check
+          tar xf "$RUNNER_TEMP/simavr.tgz" -C "$RUNNER_TEMP"
+          prefix="$RUNNER_TEMP/simavr"
+          make -j2 -C "$RUNNER_TEMP/simavr-1.8/simavr" install SIMAVR_VERSION=1.8 RELEASE=1 PREFIX="$prefix" DESTDIR="$prefix"
+          export PKG_CONFIG_PATH="$prefix/lib/pkgconfig"
+          export LD_LIBRARY_PATH="$prefix/lib"
           python -m unittest discover -s tests
           python tests/run_simavr.py --oem-file "$ZYMATIC_TEST_HEX"

@@ -21,6 +21,8 @@ Set `--hub-host brewery.lan:8080` during USB setup to point both network clients
 
 In a saved recipe’s **Send** dialog, choose **Zymatic · offline program for USB setup**, then **Preview offline programs**. Review the steps and select **Download offline program**. The Hub compiles the saved recipe revision locally. You can download separate files for several recipes, and each USB installation accepts one of them with `--offline-program PATH`. No brewer serial or network connection to a brewer is needed to compile a recipe. [Zymatic USB setup](../../firmware/zymatic/modified/README.md)
 
+To prepare a persistent offline recipe, select **Send → Zymatic · offline program for USB setup**, review the compiled steps and download the program. No brewer serial is required. Pass that file to the installer with `--offline-program`.
+
 ## Compatibility beyond Zymatic
 
 Standalone S, Pro, C and generic Z use the Hub's REST adapters. PicoStill and PicoFerm expose their respective standalone capabilities. The community server documents separate stock protocols for the Pico, Z-series, Still and Ferm families, so additional adapters are feasible on a model-by-model basis. A stock protocol can expose telemetry or fetch recipes without providing remote controls or OTA. [Community implementation](https://github.com/chiefwigms/picobrew_pico/tree/36acae3003845b72568ef5f7d6cf168acb6f9b69/app/main)
