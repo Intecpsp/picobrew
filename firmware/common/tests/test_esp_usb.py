@@ -66,7 +66,9 @@ class USBTest(unittest.TestCase):
     def setUp(self):
         tmp = tempfile.TemporaryDirectory()
         self.addCleanup(tmp.cleanup)
-        self.data = Path(tmp.name).absolute()
+        # The Windows runner's temporary directory may inherit a shared ACL.
+        # Exercise the same private Hub data directory creation used in service.
+        self.data = Path(tmp.name).absolute() / "hub-data"
         output = io.StringIO()
         redirects = redirect_stdout(output)
         redirects.__enter__()
