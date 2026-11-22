@@ -50,7 +50,7 @@ export function StockRestoreGuide({
           <p>
             {step === 1
               ? model === 'zymatic'
-                ? 'PicoFlash reinstalls the original Zymatic application over USB. Keep the original HEX and use stock recipe sync after restarting.'
+                ? 'This restores the original Zymatic 1.1.14 application over USB. The Zymatic can sync recipes with the Hub after restarting.'
                 : 'Returning your ' +
                   usbLabel(model) +
                   ' to stock removes its standalone controls, custom API and any Hub wireless updates. A future conversion requires USB.'

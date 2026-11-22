@@ -1,6 +1,14 @@
-# PicoBrew Zymatic: OEM firmware
+# Zymatic OEM firmware
 
-The requested upstream `app/firmware` directory contains no Zymatic image.
-This OEM directory remains a placeholder for a separately acquired image.
+PicoBrew’s original 1.1.14 application and Windows updater are publicly preserved in the pinned upstream project's `app/static/support/legacy` directory. The separately imported `app/firmware` tree has no Zymatic entry. The Hub retrieves the application into its private data directory when needed. These files are PicoBrew-distributed materials with their original notices. This repository does not redistribute the archive or the Windows executables, or grant a new license to them. [Firmware ZIP](https://github.com/chiefwigms/picobrew_pico/blob/36acae3003845b72568ef5f7d6cf168acb6f9b69/app/static/support/legacy/zymatic/Zymatic_1_1_14.zip) · [PicoFlash archive](https://github.com/chiefwigms/picobrew_pico/blob/36acae3003845b72568ef5f7d6cf168acb6f9b69/app/static/support/legacy/common/PicoFlash.zip) · [PicoBrew download page](https://picobrew.com/Members/Software/Zymatic/Installation.cshtml)
 
-PicoBrew distributed the 1.1.14 update through its [signed-in installer page](https://picobrew.com/Members/Software/Zymatic/Installation.cshtml). The [1.1.14 protocol analysis](https://github.com/hotzenklotz/picobrew-server/blob/33bff7fd2234d26a911895acfcd54b741955cd1e/docs/PicoBrew-API.md) reports SHA-256 `eb04c9dafdae032e7770b142f868246caf82eed4d80a0989552fdfd5dfee7b7c` for the original Intel HEX file. A device flash readback may contain bootloader bytes and different padding. Compare decoded address ranges when both artifacts are available. Keep private full-device backups outside the repository.
+| Evidence | Bytes | SHA-256 |
+|---|---:|---|
+| Zymatic_1_1_14.zip | 107,312 | `961db98db6b73a1c91c5eea7495db2b0343ff76dc9af142f23cc921d008e2d1f` |
+| Zymatic_1_1_14.hex, including original line endings | 319,563 | `eb04c9dafdae032e7770b142f868246caf82eed4d80a0989552fdfd5dfee7b7c` |
+| Contiguous decoded application starting at byte 0 | 113,610 | `d6bff3e9c49c092a9ed825b91790c0adbc46be7112f3d79f26d9a30d28e0a4cd` |
+| PicoFlash.zip, inspected as a reference | 1,261,521 | `0a1e7d3060daee50708ffca996998e6d108f9de0473fad5bf8a46cea44041ec3` |
+
+The original `PicoFlash.exe` specifies an ATmega1284P, the `arduino` serial bootloader, the selected COM port, `-D` and a flash write from Intel HEX. It uses bundled AVRDUDE 5.11’s Arduino default of 115200 baud. The included `ZymaticVirtualSerial.inf` identifies the PicoBrew USB port as `20a0:421e`. PicoBrew’s troubleshooting guide shows a successful 113,610-byte upload and AVR signature `1e9705`. An independent analysis reports the same original HEX SHA-256. [PicoBrew guide, page 16](https://picobrewcontent.blob.core.windows.net/content/zymatic/ZYMATIC_TROUBLESHOOTING.pdf#page=16) · [Independent analysis](https://github.com/hotzenklotz/picobrew-server/blob/33bff7fd2234d26a911895acfcd54b741955cd1e/docs/PicoBrew-API.md)
+
+The HEX covers byte addresses `[0, 0x1bbca)`. The MCU has 128 KiB of flash in 256-byte pages, with a separate 4 KiB EEPROM. Its largest possible boot section starts at `0x1e000`. A host write of the original application thus spans 444 pages ending at `0x1bc00` exclusive. The recovery tool retains the 54 bytes from the live controller between the end of the application and the end of its final page. A private flash capture also contains bytes outside the vendor program. Only the independently pinned 113,610-byte application qualifies as a stock restore source. [Microchip ATmega1284P data sheet, Boot Loader Support and Memory Programming](https://ww1.microchip.com/downloads/en/DeviceDoc/Atmel-42719-ATmega1284P_Datasheet.pdf)

@@ -30,7 +30,7 @@ func parseUSBRestoreOptions(args []string, out io.Writer) (usbRestoreOptions, er
 		flags.PrintDefaults()
 	}
 	flags.StringVar(&opts.model, "model", "", "Physical brewer or module model")
-	flags.StringVar(&opts.port, "port", "", "ESP local serial port")
+	flags.StringVar(&opts.port, "port", "", "Local ESP service port or Zymatic USB serial port (omit for Zymatic PicoFlash preparation)")
 	flags.StringVar(&opts.display, "display", "", "Pico C display controller")
 	flags.StringVar(&opts.device, "device", "", "CC3200 brewer UID for identifying its saved original")
 	flags.StringVar(&opts.oemFile, "oem-file", "", "Original vendor Zymatic 1.1.14 HEX or ZIP (absolute path)")

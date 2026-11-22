@@ -39,6 +39,23 @@ func TestUSBModelOperationEligibility(t *testing.T) {
 	}
 }
 
+func TestZymaticUSBOperations(t *testing.T) {
+	if err := checkUSBTarget("zymatic", "", "", "", "backup"); err == nil {
+		t.Fatal("backup allowed without a port")
+	}
+	for _, action := range []string{"backup", "restore"} {
+		if err := checkUSBTarget("zymatic", "", "COM3", "", action); err != nil {
+			t.Fatal(err)
+		}
+	}
+	if err := checkUSBTarget("zymatic", "", "", "", "restore"); err != nil {
+		t.Fatal("prepare PicoFlash copy", err)
+	}
+	if err := checkUSBTarget("zymatic", "", "COM3", "", "install"); err == nil {
+		t.Fatal("standalone installation offered without a Zymatic image")
+	}
+}
+
 func TestPicoCUSBStages(t *testing.T) {
 	dir := t.TempDir()
 	key := filepath.Join(dir, "key")

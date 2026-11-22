@@ -1,4 +1,5 @@
 import hashlib
+import io
 from pathlib import Path
 import sys
 import tempfile
@@ -59,13 +60,41 @@ class ZymaticStockTests(unittest.TestCase):
         self.assertFalse(self.data.exists())
 
     def test_missing_held_or_substituted_firmware(self):
-        with self.assertRaisesRegex(ValueError, "PicoFlash"):
+        with patch.object(usb_stock, "fetch_source", side_effect=OSError("offline")), self.assertRaisesRegex(OSError, "offline"):
             usb_stock.prepare(self.data)
         source = self.root / usb_stock.FILENAME
         source.write_bytes(self.contents.replace(b"\r", b""))
         with self.assertRaisesRegex(ValueError, "SHA-256"):
             usb_stock.prepare(self.data, source)
         self.assertFalse(self.data.exists())
+
+    def test_pinned_download_verifies_archive_then_hex_and_prefers_cache(self):
+        data = io.BytesIO()
+        with zipfile.ZipFile(data, "w") as archive:
+            archive.writestr("vendor.hex", self.contents)
+        raw = data.getvalue()
+        with patch.object(usb_stock, "ARCHIVE_SIZE", len(raw)), patch.object(
+                usb_stock, "ARCHIVE_SHA256", hashlib.sha256(raw).hexdigest()), patch(
+                    "urllib.request.urlopen", side_effect=[io.BytesIO(raw + b"!"), io.BytesIO(raw)]) as get:
+            with self.assertRaisesRegex(ValueError, "pinned original"):
+                usb_stock.prepare(self.data)
+            self.assertFalse(self.data.exists())
+            path = usb_stock.prepare(self.data)
+            self.assertEqual(usb_stock.prepare(self.data), path)
+            self.assertEqual(get.call_count, 2)
+            get.assert_called_with(usb_stock.ARCHIVE_URL, timeout=20)
+            self.assertEqual(path.read_bytes(), self.contents)
+
+    def test_decoder_checks_contiguity_checksum_and_decoded_identity(self):
+        with patch.object(usb_stock, "APP_SIZE", 2), patch.object(
+                usb_stock, "APP_SHA256", hashlib.sha256(bytes.fromhex("0102")).hexdigest()):
+            self.assertEqual(usb_stock.decode_application(self.contents), bytes.fromhex("0102"))
+            with patch.object(usb_stock, "verify"):
+                for bad in [self.contents.replace(b"FB", b"FC"), self.contents.replace(
+                        b"020000000102FB", b"020001000102FA"), self.contents.splitlines()[0],
+                        self.contents.replace(b"0102FB", b"0202FA")]:
+                    with self.assertRaises(ValueError):
+                        usb_stock.decode_application(bad)
 
 
 if __name__ == "__main__":

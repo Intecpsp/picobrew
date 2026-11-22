@@ -24,7 +24,7 @@ jobs:
         run: python tools/verify_firmware_import.py
       - name: Check portable repository tools
         run: python -m unittest discover -s tools -p 'test_*.py'
-      - name: Check USB stock image selection and Zymatic PicoFlash preparation
+      - name: Check USB stock image selection and Zymatic application service
         run: |
           python firmware/z-series/modified/tests/test_usb_profile.py
-          python firmware/zymatic/modified/tests/test_usb_stock.py
+          python -m unittest discover -s firmware/zymatic/modified/tests

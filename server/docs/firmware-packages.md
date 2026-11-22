@@ -94,7 +94,7 @@ Open **Add machine → USB setup and recovery** to select a machine and action. 
 | PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
 | PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
 | Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
-| Zymatic | Standalone conversion is pending a custom image and verified USB programming procedure. | Import the original 1.1.14 HEX or vendor ZIP, then write the verified application with PicoFlash on Windows. Full-board backup and restore remain unavailable. |
+| Zymatic | Standalone conversion is pending a custom image and verified USB programming procedure. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
 
 #### Pico S, Pro and C
 
@@ -122,11 +122,16 @@ Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Set
 
 #### Zymatic
 
+Connect the idle, powered Zymatic through its rear USB port. Install the AVRDUDE and Python dependencies in the [Zymatic USB guide](../../firmware/zymatic/modified/README.md), and substitute the machine’s actual local serial port:
+
 ```sh
-./picobrew-hub usb-restore --model zymatic --oem-file /absolute/path/to/original.zip --data ./data --checkout ..
+./picobrew-hub usb-backup --model zymatic --port SERIAL_PORT --data ./data --checkout ..
+./picobrew-hub usb-restore --model zymatic --port SERIAL_PORT --data ./data --checkout ..
 ```
 
-This command verifies and stores the vendor HEX locally and prints its path. Omit `--oem-file` on subsequent runs to use the saved copy. Complete the application write and check **About Zymatic** using the [PicoFlash procedure](../../firmware/zymatic/modified/README.md). The [stock Zymatic Hub adapter](stock-zymatic.md) can serve recipes to an unmodified machine.
+The backup compares two reads of the ATmega1284P program flash. A stable read can include protected or unreadable regions, and the AVR signature identifies the processor model rather than an individual machine. Stock restoration uses a verified factory application. If the installed program matches the factory 1.1.14 application byte for byte, backup also saves its verified application bytes for future offline restoration. The tool can use that copy, a saved original HEX, a vendor HEX/ZIP supplied with `--oem-file`, or the verified ZIP from the pinned support archive. Omit `--port` to prepare a local HEX for Windows PicoFlash. After restarting, confirm **1.1.14** under **About Zymatic** and disconnect the USB cable before running any program.
+
+The [stock Zymatic adapter](stock-zymatic.md) can serve recipes to the unmodified machine. A custom Zymatic runtime is still unavailable.
 
 Full end-to-end hardware qualification is pending for the expanded USB profiles. Host checks exercise the original artifacts, transfer plans, refusal paths and readback with simulated devices.
 

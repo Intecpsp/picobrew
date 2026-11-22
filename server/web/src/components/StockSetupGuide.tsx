@@ -44,20 +44,28 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
       </Field>
       {model && (
         <>
-          {model === 'zymatic' ? (
+          {model === 'zymatic' && (
             <p>
-              Zymatic supports stock application restoration with PicoFlash. A custom firmware image
-              is unavailable.
+              Zymatic can connect to the Hub with its original firmware. A standalone image is
+              unavailable.{' '}
+              <a
+                href="https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/blob/master/server/docs/stock-zymatic.md"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Set up stock recipe sync
+              </a>
             </p>
-          ) : (
-            <Field label="USB operation">
-              <select value={action} onChange={(e) => setAction(e.target.value as USBAction)}>
-                <option value="install">Install standalone firmware</option>
-                <option value="backup">Back up stock firmware</option>
-                <option value="restore">Restore original firmware</option>
-              </select>
-            </Field>
           )}
+          <Field label="USB operation">
+            <select value={action} onChange={(e) => setAction(e.target.value as USBAction)}>
+              {model !== 'zymatic' && <option value="install">Install standalone firmware</option>}
+              <option value="backup">
+                {model === 'zymatic' ? 'Back up readable program flash' : 'Back up stock firmware'}
+              </option>
+              <option value="restore">Restore original firmware</option>
+            </select>
+          </Field>
           {action === 'restore' ? (
             <Button variant="secondary" onClick={() => setRestoring(true)}>
               Review stock restoration

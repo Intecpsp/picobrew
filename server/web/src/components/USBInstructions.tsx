@@ -41,7 +41,7 @@ export function USBInstructions({
   if (cc && action === 'install') args.push('--key-file', '"/absolute/path/to/api.key"')
   if (cc && action === 'restore' && uid && /^[a-f0-9]{32}$/i.test(uid))
     args.push('--device', uid.toLowerCase())
-  if (serial) args.push('--port', 'SERIAL_PORT')
+  if (serial || zymatic) args.push('--port', 'SERIAL_PORT')
   args.push('--data', './data', '--checkout', '..')
   const doc = zymatic
     ? 'firmware/zymatic/modified/README.md'
@@ -81,9 +81,9 @@ export function USBInstructions({
               ? 'on the USB-connected Mac'
               : serial
                 ? 'on the computer connected to the service port'
-                : 'on the computer that stores your Hub data'}
+                : 'on the computer connected to the Zymatic’s built-in USB port'}
             . Set <code>--data</code> to your Hub data directory.
-            {serial && (
+            {(serial || zymatic) && (
               <>
                 {' '}
                 Replace <code>SERIAL_PORT</code> with the attached device’s serial port.
@@ -141,17 +141,25 @@ export function USBInstructions({
               full-flash backup. The tool writes and verifies that device’s saved flash contents.
             </p>
           )}
-          {zymatic && (
+          {zymatic && action === 'backup' && (
             <p>
-              The Hub verifies its saved Zymatic 1.1.14 application. For the first import, add{' '}
-              <code>--oem-file "/absolute/path/to/vendor.zip"</code> or supply the original HEX. On
-              a Windows computer, connect the idle Zymatic by USB and select the verified HEX in
-              PicoFlash. Confirm 1.1.14 in About Zymatic after restarting.
+              The tool uses AVRDUDE to read the Zymatic’s program flash twice and saves matching
+              bytes privately. The bootloader determines what can be read. Keep the capture with
+              your machine’s records.
+            </p>
+          )}
+          {zymatic && action === 'restore' && (
+            <p>
+              The tool uses your saved 1.1.14 application or retrieves the verified original from
+              the pinned archive. To import your own vendor HEX or ZIP, add{' '}
+              <code>--oem-file "/absolute/path/to/original.zip"</code>. Omit{' '}
+              <code>--port SERIAL_PORT</code> to prepare the HEX for Windows PicoFlash. After
+              restarting, confirm 1.1.14 in About Zymatic.
             </p>
           )}
           <a href={source + doc} target="_blank" rel="noreferrer">
             {zymatic
-              ? 'Zymatic PicoFlash instructions'
+              ? 'Zymatic USB instructions'
               : cc
                 ? 'macOS USB instructions'
                 : 'ESP USB instructions'}

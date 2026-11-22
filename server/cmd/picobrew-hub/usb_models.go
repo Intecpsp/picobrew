@@ -40,12 +40,13 @@ func checkUSBTarget(model, display, port, device, action string) error {
 	}
 	switch model {
 	case "zymatic":
-		if action != "restore" {
-			return errors.New("Zymatic supports preparation of vendor stock firmware for PicoFlash. A standalone image and verified full-device backup procedure are unavailable")
+		if action == "install" {
+			return errors.New("a standalone Zymatic image is unavailable; stock Zymatic can sync recipes to the Hub")
 		}
-		if port != "" {
-			return errors.New("Zymatic restoration uses PicoFlash to select its USB port")
+		if action == "backup" && port == "" {
+			return errors.New("Zymatic backup requires the built-in USB serial device selected with --port")
 		}
+
 		return nil
 	case "z1", "z2", "z3", "z4":
 		if action == "install" {
@@ -118,6 +119,9 @@ func runFamilyUSB(action, checkout, data, model, port, oemFile string) error {
 	if model == "zymatic" {
 		script = "firmware/zymatic/modified/tools/usb_stock.py"
 		args = []string{"--data", data}
+		if port != "" {
+			args = append(args, "--action", action, "--port", port)
+		}
 		if oemFile != "" {
 			args = append(args, "--oem-file", oemFile)
 		}
@@ -169,7 +173,7 @@ func usbBackupCommand(args []string, out io.Writer) error {
 	fs.SetOutput(out)
 	fs.StringVar(&opts.model, "model", "", "Physical model")
 	fs.StringVar(&opts.display, "display", "", "Pico C display controller")
-	fs.StringVar(&opts.port, "port", "", "ESP local serial port")
+	fs.StringVar(&opts.port, "port", "", "Local ESP service port or Zymatic USB serial port")
 	fs.StringVar(&opts.checkout, "checkout", "", "Full firmware checkout")
 	fs.StringVar(&opts.dataDir, "data", "data", "Hub data directory")
 	if err := fs.Parse(args); err != nil {
