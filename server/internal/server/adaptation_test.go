@@ -256,9 +256,15 @@ func TestGeneratedRecipesUseTheSameProgramChecksAsSend(t *testing.T) {
 		check(model, true)
 	}
 	check("picoferm", false)
-	r.Steps[0].Location = 1
+	r.Steps[0].Location = 2
 	r.Steps[1].Location = 1
+	check("pico-s", true)
+	r.Steps[1].TargetC = 20
 	check("pico-s", false)
+	r.Steps[1].TargetC = 100
+	r.Steps[0].Location = 1
+	check("pico-s", false)
+	r.Steps[0].Location = 2
 	r.SourceYeast = ""
 	check("", false)
 }

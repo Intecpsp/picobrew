@@ -10,6 +10,8 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 )
 
+const minBoilTargetC = 85
+
 // Translate derives a model version from the canonical recipe. Native programs
 // keep their original encoding and follow the existing compatibility rules.
 func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapted, error) {
@@ -182,6 +184,9 @@ func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
 			}
 		}
 		if step.Kind == "boil" || step.Kind == "hop" {
+			if step.Minutes > 0 && step.TargetC < minBoilTargetC {
+				return fmt.Sprintf("The timed boil step %q needs a target of at least %d °C.", step.Name, minBoilTargetC)
+			}
 			remaining -= step.Minutes
 		}
 	}
@@ -260,7 +265,7 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 			s.Location = 2
 			rests = append(rests, s)
 		case "boil":
-			if boil.Minutes != 0 || s.TargetC < 85 || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || s.Type != "" && s.Type != "Temperature" {
+			if boil.Minutes != 0 || s.TargetC < minBoilTargetC || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || s.Type != "" && s.Type != "Temperature" {
 				return nil, "Review the source boil stages and temperatures."
 			}
 			boil = s
