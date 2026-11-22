@@ -1,3 +1,4 @@
+import { RecipeStyleField } from './RecipeStyleField'
 import { MeasureChoice, QuantityField, useRecipeQuantity } from './RecipeMeasures'
 import { BeerCrafter, ReferenceLists } from './BeerCrafter'
 import { useEffect, useRef, useState } from 'react'
@@ -93,6 +94,53 @@ function IngredientFields({
   )
 }
 
+function BrewSchedule({ recipe, hops, unit }: { recipe: Recipe; hops: HopAddition[]; unit: Unit }) {
+  let remaining = recipe.boil_minutes ?? 0
+  const visited = new Set<number>()
+  return (
+    <section className="guide-schedule" aria-label="Brew schedule">
+      <h3>Brew schedule</h3>
+      <ol>
+        {recipe.steps.map((step, i) => {
+          const boil = step.kind === 'boil' || step.kind === 'hop'
+          const timing = boil ? remaining + ' min left' : step.kind === 'heat' ? 'Heat-up' : 'Mash'
+          if (boil) remaining -= step.minutes
+          const load = hops.find((h) => h.slot === step.location - 2)
+          let action = step.name
+          if (step.kind === 'hop' && load) {
+            const names = load.varieties.map((v) => v.name.trim()).join(' + ')
+            action =
+              (visited.has(load.slot) ? 'Return to slot ' : 'Slot ') + load.slot + ' · ' + names
+            visited.add(load.slot)
+          } else if (step.kind === 'heat' && load) {
+            action =
+              'First wort · heat through slot ' +
+              load.slot +
+              ' · ' +
+              load.varieties.map((v) => v.name.trim()).join(' + ')
+          }
+          const target = Number(
+            (unit === 'F' ? step.target_c * 1.8 + 32 : step.target_c).toFixed(1)
+          )
+          return (
+            <li key={i}>
+              <span className="schedule-when">{timing}</span>
+              <strong>{action}</strong>
+              <span>
+                {target} °{unit}
+              </span>
+              <span>
+                {step.minutes ? step.minutes + ' min' : 'Until target'}
+                {step.drain_minutes > 0 && ' · drain ' + step.drain_minutes + ' min'}
+              </span>
+            </li>
+          )
+        })}
+      </ol>
+    </section>
+  )
+}
+
 export function RecipeWizard({
   busy,
   error,
@@ -160,7 +208,7 @@ export function RecipeWizard({
   const nextReturn = savedSlot
     ? slotTimes(draft.hops, savedSlot.slot, Number(draft.boil), returns.length + 1)[0]
     : undefined
-  const stepLimit = Math.min(15, profile?.max_steps || 15)
+  const stepLimit = profile?.max_steps || 15
   const route = hopRoute(draft.hops)
   const slotLimit = profile?.max_hop_slot_g || 0
   const overweightSlot = draft.hops.find(
@@ -243,7 +291,13 @@ export function RecipeWizard({
                     <select
                       value={profile.id}
                       onChange={(e) => {
-                        patch({ batch: '', ...(draft.customMash ? {} : { rests: [] }) })
+                        patch({
+                          batch: '',
+                          ...(draft.customMash ? {} : { rests: [] }),
+                          ...(draft.mashPreset === 'infusion' && !usesPicoPakRouting(e.target.value)
+                            ? { mashPreset: 'standard' }
+                            : {}),
+                        })
                         setSelected(e.target.value)
                       }}
                     >
@@ -269,13 +323,11 @@ export function RecipeWizard({
                   />
                   <MeasureChoice />
                 </div>
-                <Field label="Beer style">
-                  <input
-                    list="crafter-style"
-                    value={draft.style}
-                    onChange={(e) => patch({ style: e.target.value })}
-                  />
-                </Field>
+                <RecipeStyleField
+                  label="Beer style"
+                  value={draft.style}
+                  change={(style) => patch({ style })}
+                />
                 {usesPicoPakRouting(profile.id) && (
                   <Button
                     variant="secondary"
@@ -633,7 +685,7 @@ export function RecipeWizard({
                         <input
                           type="number"
                           min="1"
-                          max="599"
+                          max={profile.id === 'zymatic' ? 255 : 599}
                           value={rest.minutes}
                           onChange={(e) =>
                             patch({
@@ -677,9 +729,9 @@ export function RecipeWizard({
                       ? ' · Planning only'
                       : ''}
                 </p>
-                <BeerCrafter recipe={recipe} />
                 <div className="guide-review">
-                  <div>
+                  <BrewSchedule recipe={recipe} hops={draft.hops} unit={hub.unit} />
+                  <section className="guide-loading">
                     <h3>Ingredients by compartment</h3>
                     <dl>
                       <dt>Grain compartment</dt>
@@ -715,22 +767,15 @@ export function RecipeWizard({
                           </div>
                         ))}
                     </dl>
-                  </div>
-                  <div>
-                    <h3>Brew schedule</h3>
-                    <ol>
-                      {recipe.steps.map((s, i) => (
-                        <li key={i}>
-                          <strong>{s.name}</strong> ·{' '}
-                          {Math.round(hub.unit === 'F' ? s.target_c * 1.8 + 32 : s.target_c)}°
-                          {hub.unit}
-                          {s.minutes > 0 ? ` · ${s.minutes} min` : ' · until heated'}
-                          {s.drain_minutes > 0 ? ` · drain ${s.drain_minutes} min` : ''}
-                        </li>
-                      ))}
-                    </ol>
-                  </div>
+                    {profile.id === 'zymatic' && draft.hops.length > 1 && (
+                      <p className="help-text">
+                        Wort cascades through the hop cages. Earlier additions can keep boiling when
+                        the Zymatic moves to the next cage.
+                      </p>
+                    )}
+                  </section>
                 </div>
+                <BeerCrafter recipe={recipe} />
               </>
             )}
             <footer>

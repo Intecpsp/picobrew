@@ -34,7 +34,6 @@ export function ReferenceLists() {
         hop: brewingReference.hops,
         yeast: brewingReference.yeasts,
         misc: brewingReference.misc,
-        style: brewingReference.styles,
       }).map(([kind, rows]) => (
         <datalist key={kind} id={'crafter-' + kind}>
           {rows.map((r, i) => (

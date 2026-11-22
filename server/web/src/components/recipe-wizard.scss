@@ -32,8 +32,7 @@
   h2:focus {
     outline: none;
   }
-  .guide-fields,
-  .guide-review {
+  .guide-fields {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 1rem;
@@ -112,11 +111,48 @@
   dd {
     margin: 0.25rem 0 1rem;
   }
-  .guide-review ol {
-    padding-left: 1.25rem;
+  .guide-review {
+    display: grid;
+    grid-template-columns: minmax(0, 2fr) minmax(14rem, 1fr);
+    gap: 1.5rem;
+    margin: 1.5rem 0;
+    h3 {
+      margin: 0 0 0.75rem;
+    }
   }
-  .guide-review li {
-    padding-bottom: 0.5rem;
+  .guide-schedule ol {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .guide-schedule li {
+    display: grid;
+    grid-template-columns: 6rem minmax(0, 1fr) 5rem minmax(6rem, auto);
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--hub-line);
+    overflow-wrap: anywhere;
+    span {
+      color: var(--hub-muted);
+      font-variant-numeric: tabular-nums;
+    }
+    .schedule-when {
+      color: var(--hub-accent);
+    }
+  }
+  .guide-loading dl {
+    margin: 0;
+  }
+  @media (max-width: 1150px) {
+    .guide-review {
+      grid-template-columns: 1fr;
+    }
+  }
+  @media (max-width: 650px) {
+    .guide-schedule li {
+      grid-template-columns: 6rem minmax(0, 1fr);
+    }
   }
   footer {
     display: flex;

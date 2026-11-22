@@ -4392,3 +4392,69 @@ hr,
     }
   }
 }
+
+.style-control {
+  position: relative;
+  input {
+    width: 100%;
+    padding-right: 2.75rem;
+  }
+  .style-toggle {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 0;
+    width: 2.75rem;
+    display: grid;
+    place-items: center;
+    color: var(--hub-muted);
+  }
+  ul {
+    position: absolute;
+    z-index: 10;
+    inset: 100% 0 auto;
+    list-style: none;
+    padding: 4px;
+    margin: 3px 0 0;
+    max-height: min(16rem, 40vh);
+    overflow: auto;
+    overscroll-behavior: contain;
+    background: var(--hub-surface);
+    border: 1px solid var(--hub-line);
+    border-radius: 6px;
+    box-shadow: 0 6px 18px #0002;
+  }
+  li {
+    cursor: pointer;
+    padding: 8px 10px;
+    border-radius: 4px;
+    overflow-wrap: anywhere;
+  }
+  li:hover,
+  li[aria-selected='true'] {
+    background: var(--hub-hover);
+  }
+}
+
+.archived-ingredients {
+  margin: 1.25rem 0;
+  dl {
+    margin: 0.5rem 0;
+  }
+  dl > div {
+    display: grid;
+    grid-template-columns: 4rem minmax(0, 1fr);
+    gap: 0.6rem;
+    margin: 0.3rem 0;
+  }
+  dt,
+  p {
+    color: var(--hub-muted);
+  }
+  dd {
+    margin: 0;
+  }
+  p {
+    margin: 0.4rem 0;
+  }
+}

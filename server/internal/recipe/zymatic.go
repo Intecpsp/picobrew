@@ -41,7 +41,7 @@ func StockZymaticProgram(r domain.Recipe, profile domain.Profile) (domain.Machin
 			if s.Location < 1 || s.Location > 6 {
 				return p, fmt.Errorf("choose the flow path for step %d in the advanced editor", i+1)
 			}
-			if s.InfuseLiters != 0 || s.RampMinutes != 0 || s.Kind == "fermentation" || (s.Type != "" && s.Type != "Temperature") {
+			if s.InfuseLiters != 0 || s.RampMinutes != 0 || s.Kind == "cool" || s.Kind == "fermentation" || (s.Type != "" && s.Type != "Temperature") {
 				return p, fmt.Errorf("step %d needs an operation the stock hot-side protocol cannot encode", i+1)
 			}
 			f := 0

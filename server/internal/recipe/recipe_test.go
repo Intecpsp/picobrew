@@ -244,3 +244,14 @@ func TestCStandaloneProfileProducesExplicitReviewedNativePlan(t *testing.T) {
 		t.Fatalf("C plan %+v %v", plan, err)
 	}
 }
+
+func TestFirstWortAndBoilAtSameTimeShareSlotCapacity(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.BatchLiters = p.BatchLiters
+		r.Ingredients = []domain.Ingredient{{Kind: "hop", Use: "boil", Amount: 25, Minutes: 60}, {Kind: "hop", Use: "first-wort", Amount: 20, Minutes: 60}}
+		if err := recipe.ValidateCapacity(r, p); err == nil || !strings.Contains(err.Error(), "combined hops") {
+			t.Fatalf("%s: %v", p.ID, err)
+		}
+	}
+}

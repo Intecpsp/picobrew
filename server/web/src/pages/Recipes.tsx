@@ -1,3 +1,4 @@
+import { RecipeStyleField } from '../components/RecipeStyleField'
 import { MeasureChoice, QuantityField, RecipeMeasures } from '../components/RecipeMeasures'
 import { FermentationPlan } from '../components/FermentationPlan'
 import { BeerCrafter, ReferenceLists } from '../components/BeerCrafter'
@@ -412,14 +413,7 @@ function RecipeEditor({ id }: { id: string }) {
                   required
                 />
               </Field>
-              <Field label="Style">
-                <input
-                  list="crafter-style"
-                  value={recipe.style}
-                  onChange={(event) => update({ style: event.target.value })}
-                  placeholder="American Pale Ale"
-                />
-              </Field>
+              <RecipeStyleField value={recipe.style} change={(style) => update({ style })} />
             </div>
             <Field label="Description">
               <textarea

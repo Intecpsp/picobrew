@@ -72,7 +72,9 @@ func (s *Server) getCatalogEntry(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
-	var in struct{}
+	var in struct {
+		StockProgram bool `json:"stock_program"`
+	}
 	if !s.decode(w, r, &in) {
 		return
 	}
@@ -90,6 +92,15 @@ func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := *detail.Recipe
+	if in.StockProgram {
+		if detail.StockProgram == nil {
+			s.fail(w, 422, "stock_program", "This source has no matched Zymatic brew sheet and program")
+			return
+		}
+		v = detail.StockRecipe()
+	} else if detail.BrewSheet != nil {
+		v.Notes = detail.BrewingNotes() + "\n\n" + v.Notes
+	}
 	if err := recipe.Validate(v); err != nil {
 		s.internal(w, err)
 		return

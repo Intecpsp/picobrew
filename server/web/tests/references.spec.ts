@@ -214,6 +214,6 @@ test('recipe detail presents readable quantities and credits without losing cata
   const source = await (await request.get(`/api/v1/catalog/${id}`)).json()
   expect(source.recipe.batch_liters).toBe(9.46352946)
   await page.getByRole('button', { name: 'Back', exact: true }).click()
-  await expect(page.getByPlaceholder('Search community recipes and programs')).toHaveValue('Alpine')
+  await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Alpine')
   await expect(page.getByLabel('Catalog type', { exact: true })).toHaveValue('recipe')
 })

@@ -15,7 +15,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(views.getByRole('link')).toHaveCount(2)
   await expect(page.getByRole('button', { name: /community catalog/i })).toHaveCount(0)
   await views.getByRole('link', { name: 'Browse all' }).click()
-  await page.getByPlaceholder('Search community recipes and programs').fill('Pico Pale')
+  await page.getByPlaceholder('Search community recipes').fill('Pico Pale')
   await page.getByLabel('Catalog type').selectOption('native-program')
   await expect(page).toHaveURL(/q=Pico\+Pale/)
   await page.getByRole('button', { name: 'Pico Pale', exact: true }).first().click()
@@ -24,9 +24,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   ).toBeVisible()
   await expect(page).toHaveURL(/catalog\/picopak-64\?.*q=Pico\+Pale/)
   await views.getByRole('link', { name: 'Browse all' }).click()
-  await expect(page.getByPlaceholder('Search community recipes and programs')).toHaveValue(
-    'Pico Pale'
-  )
+  await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Pico Pale')
   await expect(page.getByLabel('Catalog type')).toHaveValue('native-program')
   await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
   await page.goto('/#/recipes/weekend-pale')
@@ -196,7 +194,10 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
   await page.getByLabel('Weight (g)').fill('8')
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
-  await expect(page.getByText('Hop slot 4 · 15 min before boil ends')).toBeVisible()
+  const schedule = page.getByRole('region', { name: 'Brew schedule' })
+  const addition = schedule.getByRole('listitem').filter({ hasText: 'Slot 4 · Cascade + Amarillo' })
+  await expect(addition).toContainText('15 min left')
+  await expect(addition).toContainText('drain 10 min')
   await page.getByRole('button', { name: 'Save recipe' }).click()
   const entry = page.getByRole('link', { name: new RegExp(name) })
   await expect(entry).toBeVisible()
@@ -291,6 +292,10 @@ test('four loaded slots support eight distinct visits through save and adaptatio
   )
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: 'Continue' }).click()
+  const schedule = page.getByRole('region', { name: 'Brew schedule' })
+  await expect(
+    schedule.getByRole('listitem').filter({ hasText: 'Return to slot 2 · Citra' })
+  ).toContainText('29 min left')
   await page.getByRole('button', { name: 'Save recipe' }).click()
   const id = (await page.getByRole('link', { name: new RegExp(name) }).getAttribute('href'))!
     .split('/')
@@ -407,4 +412,38 @@ test('preview and publish a Zymatic recipe from the real transfer dialog', async
   await expect(dialog.getByRole('cell', { name: 'Keg circulation' }).first()).toBeVisible()
   await dialog.getByRole('button', { name: 'Publish to brewer menu' }).click()
   await expect(dialog.getByText(/Published for ABC123XYZ999/)).toBeVisible()
+})
+
+test('an archived PicoPak shows the published ingredients and shares an editable style list', async ({
+  page,
+  request,
+}) => {
+  await page.goto('/#/catalog/picopak-46')
+  const ingredients = page.getByRole('region', { name: 'Published ingredients' })
+  await expect(ingredients).toContainText('Bohemian Pilsner')
+  await expect(ingredients).toContainText('Crystal')
+  await page.getByRole('button', { name: 'Copy to my library' }).click()
+  const style = page.getByRole('combobox', { name: 'Style', exact: true })
+  await expect(style).toHaveValue('Helles')
+  const id = page.url().split('/recipes/').at(-1)!
+  try {
+    await style.fill('light lager')
+    await expect(
+      page.getByRole('option', { name: 'American Light Lager (BJCP 2015 1A)', exact: true })
+    ).toBeVisible()
+    await style.press('ArrowDown')
+    await style.press('Enter')
+    await expect(style).toHaveValue(/lager/i)
+    await style.fill('My cellar lager')
+    await page.getByRole('option', { name: 'Use “My cellar lager”' }).click()
+    await page.getByRole('button', { name: 'Save program' }).click()
+    await expect(page.getByText('PicoPak saved to your library.')).toBeVisible()
+    await page.goto('/#/recipes/new')
+    const picker = page.getByRole('combobox', { name: 'Beer style' })
+    await picker.fill('cellar')
+    await page.getByRole('option', { name: 'My cellar lager', exact: true }).click()
+    await expect(picker).toHaveValue('My cellar lager')
+  } finally {
+    await request.delete('/api/v1/recipes/' + id, { headers: { 'X-CSRF-Token': 'demo' } })
+  }
 })

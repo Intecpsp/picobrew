@@ -12,7 +12,9 @@ test('Beer Crafter charts, measurements, print sheet and scaling share the edita
   await page.getByLabel('Batch size (US gal)').fill('1')
   await page.getByLabel('Recipe measurements').selectOption('metric')
   await expect(page.getByLabel('Batch size (L)')).toHaveValue('3.785411784')
-  await page.getByLabel('Beer style').fill('American Light Lager (BJCP 2015 1A)')
+  await page
+    .getByRole('combobox', { name: 'Beer style', exact: true })
+    .fill('American Light Lager (BJCP 2015 1A)')
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByLabel('Grain', { exact: true }).fill('American Black Barley')
   await page.getByLabel('Weight (kg)').fill('0.8')
