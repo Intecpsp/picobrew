@@ -1,0 +1,10 @@
+{
+  "name": "zymatic-stock-control-tests",
+  "private": true,
+  "scripts": {
+    "test": "node stock-controls.cjs"
+  },
+  "dependencies": {
+    "avr8js": "0.21.1"
+  }
+}

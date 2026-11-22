@@ -1,0 +1,118 @@
+// @vitest-environment jsdom
+import { createElement } from 'react'
+import { cleanup, render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
+import * as api from '../lib/api'
+import { HubContext, type HubState } from '../context'
+import type { Recipe } from '../types'
+import { StockZymaticTransfer, offlineTarget } from './StockZymaticTransfer'
+import { TransferDialog } from './TransferDialog'
+
+const program = {
+  id: '0123456789abcdef0123456789abcdef',
+  name: 'Offline ale',
+  steps: [{ name: 'Mash', location: 1, target_f: 150, minutes: 60, drain_minutes: 2 }],
+}
+const saved = {
+  id: 'library-ale',
+  revision: 3,
+  name: 'Library ale',
+  source_model: 'zymatic',
+  steps: [],
+  ingredients: [],
+  native_program: program,
+} as unknown as Recipe
+const props = { recipes: [saved], initialSelection: [saved.id], back: vi.fn(), close: vi.fn() }
+const fetchMock = vi.fn<typeof fetch>()
+const json = (value: unknown) =>
+  new Response(JSON.stringify(value), { headers: { 'Content-Type': 'application/json' } })
+const showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal')
+beforeEach(() => {
+  localStorage.setItem('stock-zymatic-serial', 'AAAAAAAAAAAA')
+  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+    configurable: true,
+    value(this: HTMLDialogElement) {
+      this.open = true
+    },
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  fetchMock.mockImplementation(async (url, opts) =>
+    opts?.method === 'POST'
+      ? json({ items: [{ recipe_id: saved.id, revision: saved.revision, program }] })
+      : json({ machine: String(url).split('/').at(-2), items: [] })
+  )
+})
+afterEach(() => {
+  cleanup()
+  localStorage.clear()
+  fetchMock.mockReset()
+  vi.unstubAllGlobals()
+  vi.restoreAllMocks()
+  if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal)
+  else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
+})
+it('downloads an offline program from the normal target chooser without a brewer, serial, or menu requests', async () => {
+  const hub = {
+    devices: [],
+    profiles: [],
+    recipes: [saved],
+    session: { demo: false },
+  } as unknown as HubState
+  const click = userEvent.setup()
+  const save = vi.spyOn(api, 'saveBlob').mockImplementation(() => {})
+  render(
+    createElement(
+      HubContext.Provider,
+      { value: hub },
+      createElement(TransferDialog, {
+        recipes: [saved],
+        initialSelection: [saved.id],
+        onClose: vi.fn(),
+      })
+    )
+  )
+  await click.selectOptions(screen.getByLabelText('Transfer to machine'), offlineTarget)
+  expect(screen.queryByLabelText(/Zymatic serial number/)).toBeNull()
+  await click.click(screen.getByRole('button', { name: 'Preview offline programs' }))
+  await click.click(await screen.findByRole('button', { name: 'Download offline program' }))
+  expect(fetchMock.mock.calls.map((r) => String(r[0]))).toEqual(['/api/v1/stock-zymatics/preview'])
+  expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toEqual({
+    recipes: [{ recipe_id: saved.id, revision: 3 }],
+  })
+  expect(screen.queryByRole('button', { name: 'Publish to brewer menu' })).toBeNull()
+  const [blob, filename] = save.mock.calls[0]
+  expect(filename).toBe('zymatic-' + program.id + '.json')
+  const contents = await new Promise<string>((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onerror = reject
+    reader.onload = () => resolve(String(reader.result))
+    reader.readAsText(blob)
+  })
+  expect(JSON.parse(contents)).toEqual({ model: 'zymatic', ...program })
+})
+it('routes both preview and publish exclusively to the selected paired brewer', async () => {
+  const click = userEvent.setup()
+  const serial = '012345ABCDEF'
+  render(
+    createElement(StockZymaticTransfer, {
+      ...props,
+      paired: { name: 'Cellar Zymatic', serial: serial.toLowerCase() },
+    })
+  )
+  expect((screen.getByLabelText(/Zymatic serial number/) as HTMLInputElement).value).toBe(serial)
+  await click.click(screen.getByRole('button', { name: 'Preview stock menu' }))
+  await click.click(await screen.findByRole('button', { name: 'Publish to brewer menu' }))
+  await waitFor(() => expect(screen.getByRole('status').textContent).toContain(serial))
+  expect(
+    fetchMock.mock.calls.every(
+      ([url]) => String(url) === '/api/v1/stock-zymatics/' + serial + '/recipes'
+    )
+  ).toBe(true)
+  expect(
+    fetchMock.mock.calls
+      .filter(([, options]) => options?.method === 'POST')
+      .map(([, options]) => JSON.parse(String(options?.body)).publish)
+  ).toEqual([false, true])
+  expect(localStorage.getItem('stock-zymatic-serial')).toBe('AAAAAAAAAAAA')
+})

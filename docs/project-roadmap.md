@@ -25,7 +25,7 @@ the same fleet, recipe and brew-history workflows across supported machines.
 | Pico C | Both upstream 0.1.34 images preserved; OEM C reconstruction and standalone 1.2.0 source builds for explicit SSD1325/SSD1309 variants are implemented. Native/host software tests pass; physical installation, brewing and OTA recovery qualification remain outstanding. | C API adapter, model/variant discovery, telemetry, geometry-aware display and variant-scoped package management implemented |
 | Z1 and Z2 | Physical mappings remain unassigned; shared recovered/modified implementation is under z-series | Generic family identity only; no model-specific compatibility claim |
 | Z-series | Two originals preserved; recovered Core/Head SDK application and modified standalone reference image implement local control, persistent recipes/history and explicit restart recovery | Authenticated discovery, canonical recipe deployment, commands, grayscale display, settings, telemetry, recovery and history |
-| Zymatic | Reconstruction and custom firmware unimplemented; no image in the pinned upstream archive | Recipe planning only |
+| Zymatic | 1.1.14 original control and network paths reconstructed; 1.2.0 AVR extension built and simulated | Offline recipe, Wi-Fi/Ethernet sync, Ethernet read-only monitoring; hardware qualification pending |
 | PicoFerm | All 16 originals preserved; recovered SDK application and modified bounded acquisition/calibration/recording runtime implemented | Named sensors, explicit recording, calibration, cadence, history and telemetry; no brewer controls |
 | PicoStill | All six originals preserved; recovered SDK application and modified native accessory controller implemented | Native modes, pump/two fan channels, named sensors/actuators, history and telemetry; no heater/recipe claim |
 
@@ -69,8 +69,7 @@ source/image builds and the shared local API/browser/Hub are implemented for
 the available S/Pro, C, generic Z and accessory targets. Physical qualification
 still requires matching device backups/layouts, real sensor/output tests,
 heap/stack timing measurements, controlled restart tests and operating trials.
-Zymatic cannot be reconstructed from the other families' images; its original
-application and hardware mapping are still required. The separate S/Pro recovery
+Zymatic has its own original AVR application and requires trials on its own hardware. The separate S/Pro recovery
 candidate and C OTA/bootstrap remain outside the verified installation scope.
 
 Older community servers and archives are read-only research sources. Live

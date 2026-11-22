@@ -63,9 +63,6 @@ func StockZymaticProgram(r domain.Recipe, profile domain.Profile) (domain.Machin
 	p.Name = stockLabel(p.Name, "Recipe")
 	for i := range p.Steps {
 		s := &p.Steps[i]
-		if s.TargetF > 207 || s.Minutes > 255 || s.DrainMinutes > 255 {
-			return p, fmt.Errorf("step %d exceeds the Zymatic limit of 207 °F or 255 minutes", i+1)
-		}
 		s.Name = stockLabel(s.Name, fmt.Sprintf("Step %d", i+1))
 	}
 	// Pin each wire identifier to the contents so recovery cannot change after an edit.
@@ -88,8 +85,47 @@ func StockZymaticProgram(r domain.Recipe, profile domain.Profile) (domain.Machin
 		}
 		p.Steps[longest].Name = name[:len(name)-1]
 	}
-	return p, nil
+	return p, ValidateStockZymaticProgram(p)
 }
+
+// ValidateStockZymaticProgram checks the serialized native form at both
+// compilation and delivery. Previously saved menus or recovery snapshots may
+// predate these checks. The original 1.1.14 and custom controller use this ABI.
+func ValidateStockZymaticProgram(p domain.MachineRecipe) error {
+	if p.ZProgram != nil || len(p.Steps) == 0 || len(p.Steps) > 25 {
+		return errors.New("a Zymatic program needs 1–25 native steps")
+	}
+	if _, err := hex.DecodeString(p.ID); err != nil || len(p.ID) != 32 || p.ID != strings.ToLower(p.ID) {
+		return errors.New("invalid Zymatic program ID")
+	}
+	validLabel := func(value string) bool {
+		return len(value) <= 20 && strings.TrimSpace(value) != "" && strings.IndexFunc(value, func(c rune) bool {
+			return c < ' ' || c > '~' || strings.ContainsRune("#|/,", c)
+		}) < 0
+	}
+	if !validLabel(p.Name) {
+		return errors.New("invalid Zymatic program name")
+	}
+	for i, s := range p.Steps {
+		if !validLabel(s.Name) || s.Location < 0 || s.Location > 6 {
+			return fmt.Errorf("step %d needs a valid Zymatic name and flow path", i+1)
+		}
+		if s.TargetF < 0 || s.TargetF > 207 || s.Minutes < 0 || s.Minutes > 255 || s.DrainMinutes < 0 || s.DrainMinutes > 255 {
+			return fmt.Errorf("step %d exceeds the Zymatic limit of 207 °F or 255 minutes", i+1)
+		}
+		if s.Location == 6 {
+			// 1.1.14 at 0xfa56 uses steps[current+1].name in the pause prompt.
+			if i+1 == len(p.Steps) {
+				return fmt.Errorf("Zymatic pause step %d needs a following step for the confirmation screen", i+1)
+			}
+		}
+	}
+	if len(StockZymaticRecord(p)) > 511 {
+		return errors.New("recipe exceeds the 511-byte stock Ethernet record limit")
+	}
+	return nil
+}
+
 func stockLabel(s, fallback string) string {
 	s = strings.Map(func(c rune) rune {
 		if c < ' ' || c > '~' || strings.ContainsRune("#|/,", c) {

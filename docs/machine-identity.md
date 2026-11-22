@@ -14,7 +14,7 @@ The canonical identifiers are recorded in [`firmware/models.json`](../firmware/m
 | `z-series` | Pico Z | `z-series` | Complete source/reference image build; physical Z1/Z2 mapping unassigned |
 | `picostill` | PicoStill | `picostill` | Complete standalone accessory source/reference package |
 | `picoferm` | PicoFerm | `picoferm` | Complete standalone sensor source/reference package |
-| `zymatic` | PicoBrew Zymatic | `zymatic` | Planned |
+| `zymatic` | PicoBrew Zymatic | `zymatic` | OEM-based 1.2.0 application, Ethernet monitoring, USB installation and stock restoration; pending hardware qualification |
 
 The root build router accepts a model through `MODEL` or `MACHINE`:
 
@@ -26,6 +26,7 @@ make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1309
 make firmware MODEL=z-series
 make firmware MODEL=picostill
 make firmware MODEL=picoferm
+make firmware MODEL=zymatic HUB_HOST=brewery.lan:8080
 make firmware MACHINE=pico-s
 make firmware-test MODEL=pico-s
 make firmware-models

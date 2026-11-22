@@ -17,17 +17,17 @@ func TestUSBModelOperationEligibility(t *testing.T) {
 		switch {
 		case model == "pico-c":
 			args = append(args, "--display", "ssd1309")
-		case model != "zymatic" && !isCC(model):
+		case !isCC(model):
 			args = append(args, "--port", "COM3")
 		}
 		if _, err := parseUSBRestoreOptions(args, io.Discard); err != nil {
 			t.Errorf("%s restore: %v", model, err)
 		}
-		if isCC(model) {
+		if isCC(model) || model == "zymatic" {
 			args = append(args, "--key-file", key)
 		}
 		_, err := parseUSBInstallOptions(args, io.Discard)
-		want := isCC(model) || slices.Contains([]string{"picoferm", "picostill", "z-series"}, model)
+		want := isCC(model) || slices.Contains([]string{"picoferm", "picostill", "z-series", "zymatic"}, model)
 		if (err == nil) != want {
 			t.Errorf("%s install: %v", model, err)
 		}
@@ -51,8 +51,8 @@ func TestZymaticUSBOperations(t *testing.T) {
 	if err := checkUSBTarget("zymatic", "", "", "", "restore"); err != nil {
 		t.Fatal("prepare PicoFlash copy", err)
 	}
-	if err := checkUSBTarget("zymatic", "", "COM3", "", "install"); err == nil {
-		t.Fatal("standalone installation offered without a Zymatic image")
+	if err := checkUSBTarget("zymatic", "", "COM3", "", "install"); err != nil {
+		t.Fatal(err)
 	}
 }
 

@@ -25,7 +25,7 @@ import {
 import { DeviceDialog, RemoveDeviceDialog } from '../components/DeviceDialogs'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { SensorHistory } from '../components/SensorHistory'
-import { isAccessory } from '../lib/capabilities'
+import { isAccessory, supports } from '../lib/capabilities'
 import { Sparkline, TemperatureChart } from '../components/Charts'
 import {
   dateLabel,
@@ -227,6 +227,10 @@ function MachineCard({
   const status = device.online ? device.status : undefined
   const busy = !!status?.busy && !status.stopped
   const accessory = isAccessory(device)
+  const readOnly =
+    supports(device.capabilities, 'display') &&
+    !supports(device.capabilities, 'front_panel') &&
+    !device.capabilities?.commands?.length
   const attention = deviceAttention(device)
   const step =
     busy && status.current_step >= 0 && status.current_step < status.step_count
@@ -272,7 +276,9 @@ function MachineCard({
                   ? 'Outputs stopped'
                   : status?.ready
                     ? 'Ready for the next session'
-                    : 'Waiting for machine status'}
+                    : readOnly && status
+                      ? 'Programs start at the brewer'
+                      : 'Waiting for machine status'}
         </strong>
         {attention && <span>{attention.instruction}</span>}
         {busy && !attention && (
@@ -311,9 +317,9 @@ function MachineCard({
         <a
           className="machine-card-link"
           href={`#/devices/${device.id}`}
-          aria-label={`Open ${device.name} controls`}
+          aria-label={readOnly ? `View ${device.name}` : `Open ${device.name} controls`}
         >
-          Open controls <ArrowUpRight size={16} />
+          {readOnly ? 'View machine' : 'Open controls'} <ArrowUpRight size={16} />
         </a>
         <div className="machine-card-actions">
           <IconButton label={`Edit ${device.name}`} onClick={onEdit}>

@@ -95,41 +95,95 @@ func (s *Server) stockMenu(w http.ResponseWriter, r *http.Request) {
 	if !s.decode(w, r, &in) {
 		return
 	}
-	if len(in.Recipes) == 0 || len(in.Recipes) > 10 {
-		s.fail(w, 422, "stock_selection", "Select one to ten saved recipes")
+	changes, ok := s.compileStockSelection(w, in.Recipes)
+	if !ok {
 		return
+	}
+	for _, item := range changes {
+		replaced := false
+		for i, existing := range b.Items {
+			if existing.RecipeID == item.RecipeID {
+				b.Items[i] = item
+				replaced = true
+				break
+			}
+		}
+		if !replaced {
+			b.Items = append(b.Items, item)
+		}
+	}
+	counts := map[bool]int{}
+	for _, item := range b.Items {
+		if recipe.ValidateStockZymaticProgram(item.Program) == nil {
+			counts[item.Maintenance]++
+		}
+	}
+	if counts[false] > 10 || counts[true] > 10 {
+		s.fail(w, 422, "stock_limit", "A stock menu holds ten programs. Remove an entry before adding another.")
+		return
+	}
+	if in.Publish {
+		if b.User == "" {
+			b.User = randomID()
+		}
+		if _, err := s.db.Put(stockKind, id, b, v); err != nil {
+			s.storeError(w, err)
+			return
+		}
+	}
+	s.json(w, 200, map[string]any{"items": changes, "published": in.Publish})
+}
+
+// Offline provisioning compiles saved revisions without looking up or mutating a brewer.
+func (s *Server) stockOfflinePreview(w http.ResponseWriter, r *http.Request) {
+	var in struct {
+		Recipes []stockReference `json:"recipes"`
+	}
+	if !s.decode(w, r, &in) {
+		return
+	}
+	items, ok := s.compileStockSelection(w, in.Recipes)
+	if ok {
+		s.json(w, http.StatusOK, map[string]any{"items": items})
+	}
+}
+
+func (s *Server) compileStockSelection(w http.ResponseWriter, refs []stockReference) ([]stockItem, bool) {
+	if len(refs) == 0 || len(refs) > 10 {
+		s.fail(w, 422, "stock_selection", "Select one to ten saved recipes")
+		return nil, false
 	}
 	profile, ok := s.selectProfile("zymatic")
 	if !ok {
 		s.fail(w, 500, "profile", "Could not load the Zymatic profile")
-		return
+		return nil, false
 	}
-	changes := make([]stockItem, 0, len(in.Recipes))
+	changes := make([]stockItem, 0, len(refs))
 	seen := map[string]bool{}
-	for _, ref := range in.Recipes {
+	for _, ref := range refs {
 		var saved domain.Recipe
 		if _, err := s.db.Get("recipe", ref.RecipeID, &saved); err != nil {
 			s.storeError(w, err)
-			return
+			return nil, false
 		}
 		if ref.Revision != saved.Revision {
 			s.fail(w, 409, "recipe_revision", "The recipe changed. Reopen the transfer to review it.")
-			return
+			return nil, false
 		}
 		if seen[ref.RecipeID] {
 			s.fail(w, 400, "stock_selection", "A recipe was selected twice")
-			return
+			return nil, false
 		}
 		seen[ref.RecipeID] = true
 		if ref.Locations != nil {
 			if recipe.IsNative(saved) || len(ref.Locations) != len(saved.Steps) {
 				s.fail(w, 422, "stock_routing", "Provide one flow path for each ingredient recipe step")
-				return
+				return nil, false
 			}
 			for i, location := range ref.Locations {
 				if location < 1 || location > 6 {
 					s.fail(w, 422, "stock_routing", "Choose each Zymatic flow path")
-					return
+					return nil, false
 				}
 				saved.Steps[i].Location = location
 			}
@@ -154,40 +208,12 @@ func (s *Server) stockMenu(w http.ResponseWriter, r *http.Request) {
 		}
 		if err != nil {
 			s.fail(w, 422, "stock_program", saved.Name+": "+err.Error())
-			return
+			return nil, false
 		}
 		item := stockItem{saved.ID, saved.Revision, p, saved.Kind == "maintenance"}
-		replaced := false
-		for i, existing := range b.Items {
-			if existing.RecipeID == saved.ID {
-				b.Items[i] = item
-				replaced = true
-				break
-			}
-		}
-		if !replaced {
-			b.Items = append(b.Items, item)
-		}
 		changes = append(changes, item)
 	}
-	counts := map[bool]int{}
-	for _, item := range b.Items {
-		counts[item.Maintenance]++
-	}
-	if counts[false] > 10 || counts[true] > 10 {
-		s.fail(w, 422, "stock_limit", "A stock menu holds ten programs. Remove an entry before adding another.")
-		return
-	}
-	if in.Publish {
-		if b.User == "" {
-			b.User = randomID()
-		}
-		if _, err := s.db.Put(stockKind, id, b, v); err != nil {
-			s.storeError(w, err)
-			return
-		}
-	}
-	s.json(w, 200, map[string]any{"items": changes, "published": in.Publish})
+	return changes, true
 }
 
 func stockReply(w http.ResponseWriter, body string) {
@@ -288,7 +314,7 @@ func (s *Server) stockWire(w http.ResponseWriter, r *http.Request) {
 		list.WriteByte('#')
 		var served []stockItem
 		for _, item := range b.Items {
-			if item.Maintenance == (user == cleaningUser) {
+			if item.Maintenance == (user == cleaningUser) && recipe.ValidateStockZymaticProgram(item.Program) == nil {
 				served = append(served, item)
 				list.WriteString(recipe.StockZymaticRecord(item.Program))
 				list.WriteByte('|')
@@ -305,6 +331,14 @@ func (s *Server) stockWire(w http.ResponseWriter, r *http.Request) {
 			stockReply(w, list.String())
 		}
 	case "recoversession":
+		if b.Session.Ended || recipe.ValidateStockZymaticProgram(b.Session.Program) != nil {
+			if q.Get("code") == "1" {
+				stockReply(w, "#!#")
+			} else {
+				http.Error(w, "no recoverable Zymatic program", http.StatusNotFound)
+			}
+			return
+		}
 		if q.Get("code") == "0" {
 			stockReply(w, "#"+recipe.StockZymaticRecord(b.Session.Program)+"|!#")
 		} else if q.Get("code") == "1" {
@@ -329,7 +363,7 @@ func (s *Server) stockWire(w http.ResponseWriter, r *http.Request) {
 				served = b.ServedCleaning
 			}
 			for _, item := range served {
-				if item.Program.ID == q.Get("recipe") {
+				if item.Program.ID == q.Get("recipe") && recipe.ValidateStockZymaticProgram(item.Program) == nil {
 					b.Session = stockSession{ID: randomID(), Program: item.Program}
 					if !save() {
 						return

@@ -1,5 +1,5 @@
 import { unmeasuredYeast } from '../lib/beerCrafter'
-import { StockZymaticTransfer, stockTarget } from './StockZymaticTransfer'
+import { StockZymaticTransfer, offlineTarget, stockTarget } from './StockZymaticTransfer'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Send } from 'lucide-react'
 import { useHub } from '../context'
@@ -33,7 +33,7 @@ export function AdaptDialog({
     candidates.find((d) => d.online) ||
     candidates[0]
   const [deviceID, setDeviceID] = useState(
-    initialModel === 'zymatic' ? stockTarget : first?.id || ''
+    first?.id || (initialModel === 'zymatic' ? stockTarget : '')
   )
   const target = hub.devices.find((d) => d.id === deviceID)
   const profile = hub.profiles.find((p) => target && p.id === modelProfile(target.model))
@@ -168,9 +168,16 @@ export function AdaptDialog({
     }
   }
 
-  if (deviceID === stockTarget)
+  const pairedZymatic =
+    target?.adapter === 'pico-standalone' && target.model === 'zymatic' ? target : undefined
+  if ([stockTarget, offlineTarget].includes(deviceID) || pairedZymatic)
     return (
       <StockZymaticTransfer
+        offline={deviceID === offlineTarget}
+        key={deviceID + (pairedZymatic?.status?.stock_serial || '')}
+        paired={
+          pairedZymatic && { name: pairedZymatic.name, serial: pairedZymatic.status?.stock_serial }
+        }
         recipes={[recipe]}
         initialSelection={[recipe.id]}
         back={() => setDeviceID('')}
@@ -256,6 +263,7 @@ export function AdaptDialog({
             Choose a machine
           </option>
           <option value={stockTarget}>Stock Zymatic · sync menu</option>
+          <option value={offlineTarget}>Zymatic · offline program for USB setup</option>
           {hub.devices.map((device) => (
             <option
               key={device.id}

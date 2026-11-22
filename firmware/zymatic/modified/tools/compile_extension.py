@@ -1,0 +1,72 @@
+"""Reproduce the public, unprovisioned Zymatic AVR extension from source."""
+
+import argparse
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import tempfile
+
+import build
+
+
+def compile_extension(toolchain, destination):
+    src = build.ROOT / "src"
+    compiler = str(toolchain / "avr-gcc") if toolchain else shutil.which("avr-gcc")
+    if not compiler:
+        raise ValueError("Install the Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 toolchain")
+    tools = Path(compiler).resolve().parent
+    def invoke(tool, *args, cwd=None):
+        return subprocess.check_output([str(tools / tool), *map(str, args)], cwd=cwd, text=True).strip()
+    if invoke("avr-gcc", "-dumpversion") != "7.3.0" or "2.26.20160125" not in invoke("avr-ld", "--version"):
+        raise ValueError("Use Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 and its binutils")
+    with tempfile.TemporaryDirectory() as temporary:
+        work = Path(temporary)
+        sources = sorted(src.glob("*.c")) + sorted(src.glob("*.S")) + sorted(build.ROOT.glob("zymatic_api*.c"))
+        flags = ["-mmcu=atmega1284p", "-Os", "-std=gnu11", "-Wall", "-Wextra", "-Werror",
+                 "-ffunction-sections", "-fdata-sections", "-fno-jump-tables",
+                 "-fno-tree-switch-conversion", "-mcall-prologues", "-flto"]
+        for path in sources:
+            invoke("avr-gcc", *flags, "-I", build.ROOT, "-c", path, "-o", path.stem + ".o", cwd=work)
+        entry_points = [*build.OFFLINE, "zymatic_factory_compare", "zymatic_factory_stamp", "zymatic_after_loop",
+                        "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
+        invoke("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-flto",
+               "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
+               *[f"-Wl,--undefined={symbol}" for symbol in entry_points],
+               "-Wl,-T," + str(src / "overlay.ld"),
+               *[p.stem + ".o" for p in sources], "-Wl,--start-group", "-lc", "-lgcc", "-Wl,--end-group",
+               "-o", "extension.elf", cwd=work)
+        invoke("avr-objcopy", "-j", ".text", "-O", "binary", "extension.elf", "extension.bin", cwd=work)
+        symbols = {}
+        wanted = set(entry_points) | set(build.FIELDS) | set(build.DERIVED) | {
+            "zymatic_image_invalid", "__extension_bss_end", "zymatic_setup",
+            "zymatic_hub_host", "zymatic_hub_authority",
+        }
+        for line in invoke("avr-nm", "extension.elf", cwd=work).splitlines():
+            parts = line.split()
+            if len(parts) == 3 and parts[2] in wanted:
+                symbols[parts[2]] = int(parts[0], 16)
+            if len(parts) == 3 and parts[2] in ("malloc", "calloc", "realloc", "free"):
+                raise ValueError("AVR foreground extension must not have a separate heap")
+        if symbols.keys() != wanted:
+            raise ValueError("Missing AVR integration symbols")
+        build.patch_list(symbols)
+        output = (work / "extension.bin").read_bytes()
+        record = {"compiler": "Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7",
+                  "source_sha256": build.sources_sha(), "extension_sha256": build.sha(output),
+                  "extension_bytes": len(output), "symbols": symbols}
+        destination.mkdir(parents=True, exist_ok=True)
+        (destination / "extension.bin").write_bytes(output)
+        (destination / "extension.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
+        print(f"Compiled {len(output)} bytes of code/config and {symbols['__extension_bss_end']-0x800000-build.BSS} bytes of SRAM")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--toolchain", type=Path, help="Directory containing avr-gcc and avr-binutils")
+    parser.add_argument("--out-dir", required=True, type=Path)
+    args = parser.parse_args()
+    try:
+        compile_extension(args.toolchain, args.out_dir)
+    except (ValueError, OSError, subprocess.CalledProcessError) as exc:
+        parser.exit(1, f"{exc}\n")

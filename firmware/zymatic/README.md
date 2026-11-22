@@ -1,14 +1,8 @@
 # PicoBrew Zymatic
 
-The Hub supports recipe sync with stock firmware and USB service of the
-original ATmega1284P application. The original 1.1.14 update is archived
-outside the upstream `app/firmware` tree. Its hash, download source and
-address range are documented in the [OEM archive notes](oem/README.md).
+The 1.2.0 application extends PicoBrew’s original 1.1.14 brew controller with local recipe selection, a configurable Hub address, and Ethernet monitoring. Its separate AVR, W5100 Ethernet and CC3000 Wi-Fi hardware require a Zymatic-specific build. Physical installation and a supervised brew are still pending.
 
-Use the [USB service tools](modified/README.md) to back up readable AVR
-flash or restore 1.1.14 through the rear USB port. Original firmware
-reconstruction and a standalone Zymatic application are still pending.
-
-The reserved build/API identity is `zymatic` / **PicoBrew Zymatic**, in family
-`zymatic`. The [model identity contract](../../docs/machine-identity.md) and
-root build router reserve this identity for a future board implementation.
+- [Original 1.1.14 archive, checksum and provenance](oem/README.md)
+- [Reconstructed controls and verification against original AVR instructions](reverse-engineered/README.md)
+- [Custom firmware, private build and network capabilities](modified/application.md)
+- [Install through the rear USB port, back up, or return to stock](modified/README.md)

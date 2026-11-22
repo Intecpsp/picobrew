@@ -7,6 +7,6 @@
     {"id": "z-series", "name": "Pico Z", "family": "z-series", "custom_firmware": true, "reference_package": true},
     {"id": "picostill", "name": "PicoStill", "family": "picostill", "custom_firmware": true, "reference_package": true},
     {"id": "picoferm", "name": "PicoFerm", "family": "picoferm", "custom_firmware": true, "reference_package": true},
-    {"id": "zymatic", "name": "PicoBrew Zymatic", "family": "zymatic", "custom_firmware": false}
+    {"id": "zymatic", "name": "PicoBrew Zymatic", "family": "zymatic", "custom_firmware": true}
   ]
 }

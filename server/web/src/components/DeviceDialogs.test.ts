@@ -119,17 +119,13 @@ describe('automatic physical-machine connections', () => {
       }
     }
     await user.selectOptions(select, 'zymatic')
+    expect(screen.getByText(/picobrew-hub usb-install/).textContent).toContain('--key-file')
     const actions = screen.getByLabelText('USB operation')
-    expect(Array.from((actions as HTMLSelectElement).options, (o) => o.value)).toEqual([
-      'backup',
-      'restore',
-    ])
     await user.selectOptions(actions, 'backup')
     expect(screen.getByText(/picobrew-hub usb-backup/).textContent).toContain(
       '--model zymatic --port SERIAL_PORT'
     )
     await user.selectOptions(actions, 'restore')
-    expect(screen.queryByText(/picobrew-hub usb-install/)).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Review stock restoration' }))
     await user.click(screen.getByRole('checkbox'))
     await user.click(screen.getByRole('button', { name: 'Review USB requirements' }))

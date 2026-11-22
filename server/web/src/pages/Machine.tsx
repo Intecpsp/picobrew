@@ -1,5 +1,5 @@
 import { MachineManagement } from '../components/MachineManagement'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import {
   ArrowDown,
   ArrowUp,
@@ -66,6 +66,46 @@ const lockReasons: Record<string, string> = {
   'recovery-storage': 'The brew checkpoint could not be saved.',
   initializing: 'The brewer is starting up.',
 }
+const displayPaused = 'The display mirror will resume when the program ends.'
+
+function useBrewerDisplay(path: string | null, interval: number) {
+  const [frame, setFrame] = useState<{ path: string; data: Display | null; error: string } | null>(
+    null
+  )
+  const [version, setVersion] = useState(0)
+  useEffect(() => {
+    if (!path) {
+      setFrame(null)
+      return
+    }
+    const controller = new AbortController()
+    let timer: ReturnType<typeof setTimeout>
+    async function readFrame(source: string) {
+      let delay = interval
+      try {
+        const data = await api<Display>(source, { signal: controller.signal })
+        if (!controller.signal.aborted) setFrame({ path: source, data, error: '' })
+      } catch (failure) {
+        if (controller.signal.aborted) return
+        const busy = failure instanceof APIError && failure.code === 'device_display_busy'
+        setFrame({ path: source, data: null, error: busy ? displayPaused : errorMessage(failure) })
+        if (busy) delay = Math.max(5000, interval)
+      }
+      if (!controller.signal.aborted) timer = setTimeout(() => void readFrame(source), delay)
+    }
+    void readFrame(path)
+    return () => {
+      controller.abort()
+      clearTimeout(timer)
+    }
+  }, [path, interval, version])
+  return {
+    data: frame?.path === path ? frame.data : null,
+    error: frame?.path === path ? frame.error : '',
+    reload: () => setVersion((n) => n + 1),
+  }
+}
+
 type MachineProps = { id: string; initialRecipe?: string }
 export default function Machine({ id, initialRecipe }: MachineProps) {
   const hub = useHub()
@@ -80,11 +120,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const hub = useHub()
   const device = hub.devices.find((device) => device.id === id)
   const simulated = device?.adapter === 'simulator'
-  const display = useResource<Display>(
-    device?.online && supports(device.capabilities, 'front_panel')
-      ? `/devices/${id}/display`
-      : null,
-    2500
+  const hasPanel = supports(device?.capabilities, 'front_panel')
+  const hasMirror = supports(device?.capabilities, 'display')
+  const readOnly = hasMirror && !hasPanel && !device?.capabilities?.commands?.length
+  const pausedMirror = device?.model === 'zymatic' && readOnly && !!device.status?.busy
+  const display = useBrewerDisplay(
+    device?.online && (hasPanel || hasMirror) && !pausedMirror ? `/devices/${id}/display` : null,
+    readOnly ? 5000 : 2500
   )
   const native = useResource<MachineRecipe[] | { recipes: MachineRecipe[] }>(
     device?.online && supports(device.capabilities, 'recipes') ? `/devices/${id}/recipes` : null
@@ -273,7 +315,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               test={() => void testConnection()}
               edit={() => setEditing(true)}
               preferences={() => setSettings(true)}
-              preferencesDisabled={!device.online && device.adapter !== 'pico-standalone'}
+              preferencesDisabled={
+                readOnly || (!device.online && device.adapter !== 'pico-standalone')
+              }
               remove={() => setRemoving(true)}
             />
             {commands.includes('stop') && (
@@ -371,32 +415,36 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           <OLED
             simulated={simulated}
             display={display.data}
-            error={!device.online ? 'Machine offline' : display.error}
+            error={
+              !device.online ? 'Machine offline' : pausedMirror ? displayPaused : display.error
+            }
           />
-          <div className="dial-controls">
-            <Button
-              variant="secondary"
-              aria-label="Move selection up"
-              disabled={!allowed('encoder') || !!pending}
-              onClick={() => void command('encoder', { delta: -1 })}
-            >
-              <ArrowUp size={16} /> Up
-            </Button>
-            <Button
-              disabled={!allowed('encoder') || !!pending}
-              onClick={() => void command('encoder', { click: true })}
-            >
-              Press dial
-            </Button>
-            <Button
-              variant="secondary"
-              aria-label="Move selection down"
-              disabled={!allowed('encoder') || !!pending}
-              onClick={() => void command('encoder', { delta: 1 })}
-            >
-              Down <ArrowDown size={16} />
-            </Button>
-          </div>
+          {commands.includes('encoder') && (
+            <div className="dial-controls">
+              <Button
+                variant="secondary"
+                aria-label="Move selection up"
+                disabled={!allowed('encoder') || !!pending}
+                onClick={() => void command('encoder', { delta: -1 })}
+              >
+                <ArrowUp size={16} /> Up
+              </Button>
+              <Button
+                disabled={!allowed('encoder') || !!pending}
+                onClick={() => void command('encoder', { click: true })}
+              >
+                Press dial
+              </Button>
+              <Button
+                variant="secondary"
+                aria-label="Move selection down"
+                disabled={!allowed('encoder') || !!pending}
+                onClick={() => void command('encoder', { delta: 1 })}
+              >
+                Down <ArrowDown size={16} />
+              </Button>
+            </div>
+          )}
 
           <footer className="machine-footnotes" aria-label="Machine information">
             {device.adapter === 'pico-standalone' ? (
@@ -421,7 +469,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   : live?.busy
                     ? 'Current session'
                     : live
-                      ? 'Run a program'
+                      ? readOnly
+                        ? 'Machine status'
+                        : 'Run a program'
                       : 'Waiting for machine status'
             }
             description={
@@ -441,7 +491,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           {!device.online && device.last_seen && (
             <p className="help-text">Last connected {dateLabel(device.last_seen)}</p>
           )}
-          {live?.busy && (
+          {live?.busy && !readOnly && (
             <div className="session-step">
               <span>{stepNumber || 'Current step'}</span>
               <strong>{live.step_name || 'Check the brewer display'}</strong>
@@ -635,7 +685,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   </Button>
                 </>
               )}
-              {!hasRecipes && !programs.length && <p>Use the front panel to select a program.</p>}
+              {!hasRecipes && !programs.length && (
+                <p>
+                  {readOnly
+                    ? 'Select and start programs at the brewer.'
+                    : 'Use the front panel to select a program.'}
+                </p>
+              )}
             </>
           )}
           {live && (
@@ -648,24 +704,30 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   accent
                 />
                 <Metric label="Thermoblock" value={temperature(live.thermoblock_f, hub.unit)} />
-                <Metric
-                  label="Target"
-                  value={
-                    live.target_f == null
-                      ? '—'
-                      : live.target_f
-                        ? temperature(live.target_f, hub.unit)
-                        : 'Unheated'
-                  }
-                  note={live.step_name || ''}
-                />
-                <Metric
-                  label="Step time"
-                  value={
-                    live.busy && live.step_seconds > 0 ? duration(live.step_seconds * 1000) : '—'
-                  }
-                  note={stepNumber}
-                />
+                {!readOnly && (
+                  <>
+                    <Metric
+                      label="Target"
+                      value={
+                        live.target_f == null
+                          ? '—'
+                          : live.target_f
+                            ? temperature(live.target_f, hub.unit)
+                            : 'Unheated'
+                      }
+                      note={live.step_name || ''}
+                    />
+                    <Metric
+                      label="Step time"
+                      value={
+                        live.busy && live.step_seconds > 0
+                          ? duration(live.step_seconds * 1000)
+                          : '—'
+                      }
+                      note={stepNumber}
+                    />
+                  </>
+                )}
               </div>
             </section>
           )}
@@ -693,14 +755,16 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           }
           actions={
             <div className="inline-actions">
-              <Button
-                variant="ghost"
-                disabled={!device.online || !!pending}
-                onClick={() => void sync()}
-              >
-                <RefreshCw size={15} />
-                Import retained history
-              </Button>
+              {(!readOnly || supports(device.capabilities, 'history_persistent')) && (
+                <Button
+                  variant="ghost"
+                  disabled={!device.online || !!pending}
+                  onClick={() => void sync()}
+                >
+                  <RefreshCw size={15} />
+                  Import retained history
+                </Button>
+              )}
               {history && (
                 <Button variant="secondary" onClick={() => hub.navigate(`/history/${history.id}`)}>
                   Open journal
@@ -720,7 +784,11 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           <Empty
             icon={<Radio size={24} />}
             title="Waiting for brew readings"
-            description="Run a program to begin recording temperatures, phases and controller state."
+            description={
+              readOnly
+                ? 'Recorded temperatures appear here during a program.'
+                : 'Run a program to begin recording temperatures, phases and controller state.'
+            }
           />
         )}
       </section>

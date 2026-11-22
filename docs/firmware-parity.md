@@ -9,7 +9,7 @@ their own recovered control and hardware code.
 This comparison concerns implemented source and software evidence. It does not
 turn a generic Z image into a verified Z1/Z2 image or establish physical
 installation, sensor accuracy, operating safety or a completed brewing trial.
-Zymatic still requires an original application image and hardware evidence.
+Zymatic 1.2.0 retains the original 1.1.14 brew controller. Its narrower capability set is listed below.
 
 ## Common behavior
 
@@ -28,6 +28,18 @@ History capacity is a shared pool, not a guarantee that every retained session
 contains 4,224 samples. Each session preserves its sampling interval and channel
 metadata. Storage exhaustion, interrupted sessions and truncation are reported.
 PicoFerm's longer default interval is intentional for fermentation recording.
+
+## Zymatic 1.2.0
+
+| Capability | Available behavior |
+| --- | --- |
+| Brewing at the machine | Original dial, safety checks, heat, pumps and valve routing. One USB-provisioned program works offline on a commissioned brewer. |
+| Hub recipes and sessions | Select the Hub address at setup. The original Wi-Fi and Ethernet clients fetch menus and send session requests. |
+| Device website and API | Authenticated, read-only monitoring over Ethernet. The Hub can read temperatures and view the actual OLED when the interpreter permits display capture. |
+| Firmware service | Rear USB install, backup and return to stock 1.1.14. |
+| Outstanding parity and qualification | Remote dial and actuator control, Wi-Fi inbound API, on-device sample history and OTA remain unimplemented. Physical USB, network, sensor and brew trials remain outstanding. |
+
+See the [firmware architecture and verification](../firmware/zymatic/modified/application.md).
 
 ## Controls that depend on the machine
 
@@ -77,8 +89,8 @@ display variant. No build, package or test target flashes an appliance.
 
 ## Inputs still required for physical qualification
 
-The available OEM archive contains no Zymatic firmware. The Z1/Z2 mappings and
-complete device flash layouts are also unverified. Those gaps require original
+The Zymatic 1.1.14 application is preserved in a separately pinned support archive. The Z1/Z2 mappings and
+complete device flash layouts are unverified. Those gaps require original
 device evidence; another family's image cannot supply it. Each current image
 still needs its corresponding physical installation and operating checks.
 

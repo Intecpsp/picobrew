@@ -20,6 +20,7 @@ export interface DeviceStatus {
   uptime_ms: number
   ready: boolean
   device_uid: string
+  stock_serial?: string
   busy: boolean
   stopped: boolean
   command: string

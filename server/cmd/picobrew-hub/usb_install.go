@@ -16,7 +16,7 @@ import (
 )
 
 type usbInstallOptions struct {
-	checkout, model, backup, keyFile, startAt, dataDir, display, port, device string
+	checkout, model, backup, keyFile, startAt, dataDir, display, port, device, hubHost, offlineProgram string
 }
 
 const usbComponent = "firmware/pico-s-pro/modified"
@@ -27,13 +27,15 @@ func parseUSBInstallOptions(args []string, out io.Writer) (usbInstallOptions, er
 	flags.SetOutput(out)
 	flags.Usage = func() {
 		fmt.Fprintln(out, "Usage: picobrew-hub usb-install --model MODEL [model options] --data ./data")
-		fmt.Fprintln(out, "Pico S/Pro/C use a USB-connected Mac and --key-file. Pico C also needs --display. ESP machines use --port on the connected computer.")
+		fmt.Fprintln(out, "Pico S/Pro/C use a USB-connected Mac and --key-file. Pico C also needs --display. ESP machines use --port. Zymatic uses --port and --key-file and can set the Hub recipe host with --hub-host.")
 		flags.PrintDefaults()
 	}
 	flags.StringVar(&opts.checkout, "checkout", "", "Full firmware checkout (defaults to the checkout containing the current directory)")
 	flags.StringVar(&opts.model, "model", "", "Physical brewer or module model")
 	flags.StringVar(&opts.display, "display", "", "Pico C display controller: ssd1325 or ssd1309")
-	flags.StringVar(&opts.port, "port", "", "Local ESP serial port")
+	flags.StringVar(&opts.port, "port", "", "Local ESP or Zymatic USB serial port")
+	flags.StringVar(&opts.hubHost, "hub-host", "", "Zymatic recipe server hostname or IPv4 address with optional :port")
+	flags.StringVar(&opts.offlineProgram, "offline-program", "", "Absolute path to a compiled Zymatic program JSON for the offline menu")
 	flags.StringVar(&opts.device, "device", "", "CC3200 brewer UID for a saved stock backup")
 	flags.StringVar(&opts.backup, "backup", "", "Existing original full flash backup (absolute path); otherwise use the Hub copy or capture stock flash over USB")
 	flags.StringVar(&opts.dataDir, "data", "data", "Persistent data directory used by your Hub")
@@ -48,7 +50,17 @@ func parseUSBInstallOptions(args []string, out io.Writer) (usbInstallOptions, er
 	if flags.NArg() != 0 || opts.dataDir == "" {
 		return opts, errors.New("specify a Hub data directory and named options")
 	}
-	if isCC(opts.model) {
+	if opts.hubHost != "" && opts.model != "zymatic" {
+		return opts, errors.New("--hub-host applies to Zymatic recipe sync")
+	}
+	if opts.offlineProgram != "" && (opts.model != "zymatic" || !filepath.IsAbs(opts.offlineProgram)) {
+		return opts, errors.New("--offline-program requires a Zymatic and an absolute program JSON path")
+	}
+	if opts.model == "zymatic" {
+		if !filepath.IsAbs(opts.keyFile) || opts.backup != "" || opts.startAt != "provision-key" {
+			return opts, errors.New("Zymatic setup requires an absolute --key-file and captures the connected brewer before installation")
+		}
+	} else if isCC(opts.model) {
 		if !filepath.IsAbs(opts.keyFile) || opts.backup != "" && !filepath.IsAbs(opts.backup) {
 			return opts, errors.New("supply an absolute key-file path and an absolute path for any existing backup")
 		}
@@ -97,6 +109,16 @@ func runUSBInstallCommand(args []string) error {
 	opts, err := parseUSBInstallOptions(args, os.Stderr)
 	if err != nil {
 		return err
+	}
+	if opts.model == "zymatic" {
+		extra := []string{"--key-file", opts.keyFile}
+		if opts.hubHost != "" {
+			extra = append(extra, "--hub-host", opts.hubHost)
+		}
+		if opts.offlineProgram != "" {
+			extra = append(extra, "--offline-program", opts.offlineProgram)
+		}
+		return runFamilyUSB("install", opts.checkout, opts.dataDir, opts.model, opts.port, "", extra...)
 	}
 	if !isCC(opts.model) {
 		return runFamilyUSB("install", opts.checkout, opts.dataDir, opts.model, opts.port, "")

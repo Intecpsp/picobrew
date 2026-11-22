@@ -14,7 +14,7 @@ and the device's 64-character hexadecimal API key. Discovery requires API versio
 Firmware semantic versions are reported independently of the API version.
 
 The adapter accepts authenticated C/S/Pro, generic `z-series`, `picostill` and
-`picoferm` identities. It verifies matching model/family and device UID rather
+`picoferm` identities, plus the read-only Ethernet API on Zymatic 1.2.0. Its OLED is available at menus. While the brew interpreter is busy, use the temperature and status readings. It verifies matching model/family and device UID rather
 than treating an accessory as a brewer. Nested capability flags override legacy
 defaults; the original C/S/Pro discovery shape remains supported. Command
 descriptors supply allowed/required fields, and settings advertise their own

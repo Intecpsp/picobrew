@@ -59,7 +59,7 @@ func (p *pico) Display(ctx context.Context) (domain.Display, error) {
 		return domain.Display{}, err
 	}
 	defer p.unlock()
-	if p.capabilities != nil && !p.capabilities.Supports("front_panel") {
+	if p.capabilities != nil && !p.capabilities.Supports("front_panel") && !p.capabilities.Supports("display") {
 		return domain.Display{}, &Error{StatusCode: 404, Code: "unsupported_capability", Message: "This device has no front panel"}
 	}
 	for attempt := 0; attempt < 3; attempt++ {

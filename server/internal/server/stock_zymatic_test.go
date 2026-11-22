@@ -13,6 +13,7 @@ import (
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 )
 
 func TestStockRecipeSyncAndRecovery(t *testing.T) {
@@ -182,5 +183,106 @@ func TestAssistantSourcesAreIndependent(t *testing.T) {
 		if _, err := s.aiContext(input); err == nil {
 			t.Fatal("accepted invalid context", input)
 		}
+	}
+}
+
+func TestZymaticDoesNotServeAnUnsafeSavedProgram(t *testing.T) {
+	s, h, client := newTestServer(t)
+	user, sid := strings.Repeat("a", 32), strings.Repeat("b", 32)
+	valid := stockItem{RecipeID: "valid", Program: domain.MachineRecipe{
+		ID: strings.Repeat("c", 32), Name: "Valid", Steps: []domain.MachineStep{{Name: "Mash", TargetF: 152, Location: 1, Minutes: 60}},
+	}}
+	bad := stockItem{RecipeID: "invalid", Program: domain.MachineRecipe{
+		ID: strings.Repeat("d", 32), Name: "Unsafe", Steps: []domain.MachineStep{{Name: "Pause", Location: 6}},
+	}}
+	clean := bad
+	clean.Maintenance = true
+	b := stockBrewer{
+		Machine: "TEST", User: user, Items: []stockItem{valid, bad, clean},
+		Served: []stockItem{valid, bad}, ServedCleaning: []stockItem{clean},
+		Session: stockSession{ID: sid, Program: bad.Program, Snapshot: "0/1/2/3/4/5/6/1"},
+	}
+	if _, err := s.db.Put(stockKind, "TEST", b, 0); err != nil {
+		t.Fatal(err)
+	}
+	get := func(path string, status int) string {
+		t.Helper()
+		resp, err := client.Get(h.URL + "/API/" + path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		defer resp.Body.Close()
+		body, err := io.ReadAll(resp.Body)
+		if err != nil || resp.StatusCode != status {
+			t.Fatalf("%s: %d %s %v", path, resp.StatusCode, body, err)
+		}
+		return strings.TrimSpace(string(body))
+	}
+	for _, version := range []string{"1.1.14", "1.2.0"} {
+		for _, account := range []string{user, cleaningUser} {
+			get("logSession?machine=TEST&user="+account+"&code=0&recipe="+bad.Program.ID+"&firm="+version, 404)
+		}
+		if got := get("RecoverSession?session="+sid+"&code=1&firm="+version, 200); got != "#!#" {
+			t.Fatal("returned an unsafe reset point", got)
+		}
+		get("RecoverSession?session="+sid+"&code=0&firm="+version, 404)
+	}
+	menu := get("SyncUser?machine=TEST&user="+user, 200)
+	if strings.Contains(menu, bad.Program.ID) || !strings.Contains(menu, valid.Program.ID) {
+		t.Fatal("incorrect old menu filtering", menu)
+	}
+	if got := get("SyncUser?machine=TEST&user="+cleaningUser, 200); got != "##" {
+		t.Fatal("unsafe maintenance menu entry", got)
+	}
+	session := strings.Trim(get("logSession?machine=TEST&user="+user+"&code=0&recipe="+valid.Program.ID, 200), "#")
+	get("LogSession?code=3&session="+session, 200)
+	get("RecoverSession?code=0&session="+session, 404)
+}
+
+func TestStockOfflinePreviewUsesSameCompilerWithoutMachineState(t *testing.T) {
+	s, h, c := newTestServer(t)
+	base := h.URL + "/api/v1/stock-zymatics"
+	preview := base + "/preview"
+	source := validRecipe()
+	source.ID, source.SourceModel, source.Revision = "offline-library", "zymatic", 1
+	source.Steps[0].Location = 2
+	source.Steps[1].TargetC = 95
+	if _, err := s.db.Put("recipe", source.ID, source, 0); err != nil {
+		t.Fatal(err)
+	}
+	ref := stockReference{RecipeID: source.ID, Revision: 1}
+	payload := map[string]any{"recipes": []stockReference{ref}}
+	if code, _ := request(t, c, "POST", preview, "", payload, nil); code != 401 {
+		t.Fatalf("unauthed preview %d", code)
+	}
+	token := signIn(t, c, h.URL)
+	want := stockSubmission{Recipes: []stockReference{ref}, Publish: false}
+	code, menuJSON := request(t, c, "POST", base+"/ABC123/recipes", token, want, nil)
+	if code != 200 {
+		t.Fatal(code, string(menuJSON))
+	}
+	code, offlineJSON := request(t, c, "POST", preview, token, payload, nil)
+	if code != 200 {
+		t.Fatal(code, string(offlineJSON))
+	}
+	var menu, offline struct {
+		Items []stockItem `json:"items"`
+	}
+	if json.Unmarshal(menuJSON, &menu) != nil || json.Unmarshal(offlineJSON, &offline) != nil || len(offline.Items) != 1 || !reflect.DeepEqual(menu.Items, offline.Items) {
+		t.Fatalf("offline program differs from menu: %s", offlineJSON)
+	}
+	if err := recipe.ValidateStockZymaticProgram(offline.Items[0].Program); err != nil {
+		t.Fatal(err)
+	}
+	if code, _ := request(t, c, "POST", preview, token, stockSubmission{Recipes: []stockReference{ref}, Publish: true}, nil); code != 400 {
+		t.Fatalf("accepted publish in offline mode: %d", code)
+	}
+	ref.Revision = 2
+	if code, _ := request(t, c, "POST", preview, token, map[string]any{"recipes": []stockReference{ref}}, nil); code != 409 {
+		t.Fatalf("accepted stale recipe: %d", code)
+	}
+	rows, err := s.db.List(stockKind)
+	if err != nil || len(rows) != 0 {
+		t.Fatalf("offline preview modified store: %d / %v", len(rows), err)
 	}
 }

@@ -38,7 +38,8 @@ export function USBInstructions({
   const needsDisplay = model === 'pico-c'
   const args = ['./picobrew-hub', 'usb-' + action, '--model', model]
   if (needsDisplay) args.push('--display', controller)
-  if (cc && action === 'install') args.push('--key-file', '"/absolute/path/to/api.key"')
+  if ((cc || zymatic) && action === 'install')
+    args.push('--key-file', '"/absolute/path/to/api.key"')
   if (cc && action === 'restore' && uid && /^[a-f0-9]{32}$/i.test(uid))
     args.push('--device', uid.toLowerCase())
   if (serial || zymatic) args.push('--port', 'SERIAL_PORT')
@@ -139,6 +140,14 @@ export function USBInstructions({
             <p>
               Connect the same device and use the Hub data directory that holds its verified
               full-flash backup. The tool writes and verifies that device’s saved flash contents.
+            </p>
+          )}
+          {zymatic && action === 'install' && (
+            <p>
+              Setup backs up the brewer, verifies stock 1.1.14, and provisions a unique API key. To
+              use the Hub for recipe sync on Wi-Fi or Ethernet, add{' '}
+              <code>--hub-host YOUR_HUB_HOST:8080</code>. Connect Ethernet to use the device website
+              and authenticated local API.
             </p>
           )}
           {zymatic && action === 'backup' && (

@@ -25,6 +25,7 @@ type Status struct {
 	UptimeMS         uint64     `json:"uptime_ms"`
 	Ready            bool       `json:"ready"`
 	DeviceUID        string     `json:"device_uid"`
+	StockSerial      string     `json:"stock_serial,omitempty"`
 	Busy             bool       `json:"busy"`
 	Stopped          bool       `json:"stopped"`
 	Command          string     `json:"command"`

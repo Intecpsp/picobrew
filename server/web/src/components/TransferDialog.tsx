@@ -1,4 +1,4 @@
-import { StockZymaticTransfer, stockTarget } from './StockZymaticTransfer'
+import { StockZymaticTransfer, offlineTarget, stockTarget } from './StockZymaticTransfer'
 import { useState } from 'react'
 import { ArrowRight, Check, RefreshCw, Send } from 'lucide-react'
 import { useHub } from '../context'
@@ -44,9 +44,12 @@ export function TransferDialog({
   const [selection, setSelection] = useState(initialSelection || [])
   const chosen = recipes.filter((recipe) => selection.includes(recipe.id))
   const requiresZ = chosen.some((r) => !!r.native_program?.z_program)
+  const pairedMenu = (d: Device) =>
+    d.adapter === 'pico-standalone' && d.model === 'zymatic' && !requiresZ
   const canReceive = (d: Device) =>
-    supports(d.capabilities, 'recipes') &&
-    (!requiresZ || (d.model === 'z-series' && supports(d.capabilities, 'z_program_maker')))
+    pairedMenu(d) ||
+    (supports(d.capabilities, 'recipes') &&
+      (!requiresZ || (d.model === 'z-series' && supports(d.capabilities, 'z_program_maker'))))
   const [deviceID, setDeviceID] = useState(
     initialDeviceID ||
       hub.devices.find(
@@ -161,9 +164,15 @@ export function TransferDialog({
       setBusy('')
     }
   }
-  if (deviceID === stockTarget && !requiresZ)
+  const pairedZymatic = target && pairedMenu(target) ? target : undefined
+  if (([stockTarget, offlineTarget].includes(deviceID) && !requiresZ) || pairedZymatic)
     return (
       <StockZymaticTransfer
+        offline={deviceID === offlineTarget}
+        key={deviceID + (pairedZymatic?.status?.stock_serial || '')}
+        paired={
+          pairedZymatic && { name: pairedZymatic.name, serial: pairedZymatic.status?.stock_serial }
+        }
         recipes={recipes}
         initialSelection={selection}
         back={() => setDeviceID('')}
@@ -246,7 +255,12 @@ export function TransferDialog({
               onChange={(event) => setDeviceID(event.target.value)}
             >
               <option value="">Choose a machine</option>
-              {!requiresZ && <option value={stockTarget}>Stock Zymatic · sync menu</option>}
+              {!requiresZ && (
+                <>
+                  <option value={stockTarget}>Stock Zymatic · sync menu</option>
+                  <option value={offlineTarget}>Zymatic · offline program for USB setup</option>
+                </>
+              )}
               {hub.devices.filter(canReceive).map((device) => (
                 <option key={device.id} value={device.id}>
                   {device.name}

@@ -40,11 +40,8 @@ func checkUSBTarget(model, display, port, device, action string) error {
 	}
 	switch model {
 	case "zymatic":
-		if action == "install" {
-			return errors.New("a standalone Zymatic image is unavailable; stock Zymatic can sync recipes to the Hub")
-		}
-		if action == "backup" && port == "" {
-			return errors.New("Zymatic backup requires the built-in USB serial device selected with --port")
+		if action != "restore" && port == "" {
+			return errors.New("select the Zymatic built-in USB serial port with --port")
 		}
 
 		return nil
@@ -113,7 +110,7 @@ func ccCache(checkout, model, display, device string, fresh bool) (usbBackupCach
 	}, nil
 }
 
-func runFamilyUSB(action, checkout, data, model, port, oemFile string) error {
+func runFamilyUSB(action, checkout, data, model, port, oemFile string, extra ...string) error {
 	script := "firmware/common/tools/esp_usb.py"
 	args := []string{action, "--model", model, "--port", port, "--data", data}
 	if model == "zymatic" {
@@ -154,6 +151,7 @@ func runFamilyUSB(action, checkout, data, model, port, oemFile string) error {
 			return errors.New("install Python 3 and the USB requirements from the full checkout")
 		}
 	}
+	args = append(args, extra...)
 	cmd := exec.Command(python, append([]string{filepath.Join(root, script)}, args...)...)
 	cmd.Dir = root
 	cmd.Stdin, cmd.Stdout, cmd.Stderr = os.Stdin, os.Stdout, os.Stderr

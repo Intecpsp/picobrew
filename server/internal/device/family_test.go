@@ -17,7 +17,7 @@ import (
 func ptr[T any](value T) *T { return &value }
 
 func TestFamilyIdentityAndUnsupportedSurfaces(t *testing.T) {
-	for _, model := range []string{"z-series", "picostill", "picoferm"} {
+	for _, model := range []string{"z-series", "picostill", "picoferm", "zymatic"} {
 		t.Run(model, func(t *testing.T) {
 			caps := domain.Capabilities{Model: model, ModelFamily: model, Features: map[string]bool{"recipes": false, "front_panel": false}}
 			if got, err := ReportedModel(caps); err != nil || got != model {
