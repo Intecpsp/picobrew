@@ -415,26 +415,31 @@ func (s *Server) brewDetail(id string) (domain.BrewDetail, error) {
 	// Earlier seeded demo samples used synthetic phase numbers as step indices.
 	// Only the newer seed records its actual schedule alongside the trace.
 	legacyDemo := b.Source == "simulation" && strings.HasPrefix(b.ID, "demo-history-") && len(b.StepNames) == 0
-	if !legacyDemo && b.Command == "brew" && b.RecipeID != "" && b.RecipeRevision > 0 {
+	if b.Command == "brew" && b.RecipeID != "" && b.RecipeRevision > 0 {
 		var archived domain.Recipe
 		_, err := s.db.Get("recipe-revision", b.RecipeID+":"+strconv.FormatInt(b.RecipeRevision, 10), &archived)
 		if err != nil && !errors.Is(err, store.ErrNotFound) {
 			return domain.BrewDetail{}, err
 		}
 		if err == nil && archived.ID == b.RecipeID && archived.Revision == b.RecipeRevision {
-			if b.StepNames == nil {
-				b.StepNames = make(map[int]string)
+			if b.Conditioning == nil {
+				b.Conditioning = conditioningPlan(archived)
 			}
-			if archived.NativeProgram != nil {
-				for i, step := range archived.NativeProgram.Steps {
-					if b.StepNames[i] == "" {
-						b.StepNames[i] = step.Name
-					}
+			if !legacyDemo {
+				if b.StepNames == nil {
+					b.StepNames = make(map[int]string)
 				}
-			} else {
-				for i, step := range archived.Steps {
-					if b.StepNames[i] == "" {
-						b.StepNames[i] = step.Name
+				if archived.NativeProgram != nil {
+					for i, step := range archived.NativeProgram.Steps {
+						if b.StepNames[i] == "" {
+							b.StepNames[i] = step.Name
+						}
+					}
+				} else {
+					for i, step := range archived.Steps {
+						if b.StepNames[i] == "" {
+							b.StepNames[i] = step.Name
+						}
 					}
 				}
 			}

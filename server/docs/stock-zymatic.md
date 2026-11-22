@@ -5,7 +5,7 @@ A stock Zymatic fetches its recipes from an HTTP server. The Hub can serve this 
 ## Send a recipe
 
 1. Read the machine serial in **About Zymatic**. Connect the stock brewer to your LAN. Configure the brewer's LAN DNS to resolve `picobrew.com` to the Hub or a local reverse proxy. Older clients may also use `www.picobrew.com`. The brewer connects to TCP port **80**. For a Hub listening on 8080, forward the uppercase `/API/` routes from LAN port 80 to the Hub. Keep the owner interface on its usual address. This protocol uses plain HTTP and machine/account identifiers on the local network. Keep the stock routes off the public internet.
-2. Save a recipe from the wizard using the **Zymatic** profile, or copy an original Zymatic program from the community catalog. For a saved ingredient recipe choose **Adapt & send**. For a native program or library selection use the recipe transfer action.
+2. Save a recipe from the wizard using the **Zymatic** profile, or copy an original Zymatic program from the community catalog. For a saved ingredient recipe choose **Send**. For a native program or library selection use the recipe transfer action.
 3. Choose **Stock Zymatic · sync menu**, enter the serial, and preview. For older unmapped steps or ingredient recipes designed for another model, choose a keg, mash, or hop path for each step. The preview shows the actual transmitted names, whole-degree Fahrenheit targets, hold and drain times. A program compiled for another machine stays in its original format.
 4. Choose **Publish to brewer menu**. Select the **PicoBrew Hub** account on the brewer and open or refresh its recipe list. Published maintenance programs appear in the brewer’s cleaning list. Select a program on the machine to begin.
 

@@ -206,11 +206,11 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
   await expect(entry).toBeVisible()
   const id = (await entry.getAttribute('href'))!.split('/').at(-1)!
   await entry.click()
-  await page.getByRole('button', { name: 'Adapt & send' }).click()
-  await expect(page.getByLabel('Equipment profile')).toHaveValue('z')
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
+  await expect(page.getByLabel('Target machine')).toBeVisible()
   await expect(
     page.getByRole('dialog').getByLabel('Target batch size (L)', { exact: true })
-  ).toHaveValue('')
+  ).toHaveCount(0)
   try {
     const saved = await (await request.get('/api/v1/recipes/' + id)).json()
     expect(saved).toMatchObject({ name, source_model: 'z', batch_liters: 8, boil_minutes: 60 })
@@ -408,7 +408,7 @@ test('preview and publish a Zymatic recipe from the real transfer dialog', async
   await page.getByRole('button', { name: 'Continue' }).click()
   await page.getByRole('button', { name: /save recipe/i }).click()
   await page.getByRole('link', { name: /^Stock sync test ale/ }).click()
-  await page.getByRole('button', { name: /adapt.*send/i }).click()
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
   await page.getByLabel('Target machine').selectOption('stock-zymatic-menu')
   const dialog = page.getByRole('dialog')
   await dialog.getByLabel('Zymatic serial number').fill('ABC123XYZ999')
@@ -458,11 +458,11 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
   await page.goto('/#/catalog?q=UB08')
   await page.getByRole('button', { name: 'UB08 Summer IPA' }).click()
   await expect(page.getByText('Dry hop with 25 g Citra for 7 days.', { exact: true })).toBeVisible()
-  const ingredients = page.getByRole('table', { name: 'Recipe ingredients' })
-  await expect(ingredients.getByRole('row').filter({ hasText: 'dry-hop' })).toContainText('25 g')
+  const ingredients = page.getByRole('table', { name: 'Scaled ingredient bill' })
+  await expect(ingredients.getByRole('row').filter({ hasText: 'dry-hop' })).toContainText('Citra')
   await page.getByRole('button', { name: 'Save Zymatic program' }).click()
   await expect(page.getByLabel('Program notes')).toContainText('Dry hop with 25 g Citra')
-  await page.getByRole('button', { name: 'Preview & send' }).click()
+  await page.getByRole('button', { name: 'Send' }).click()
   await page.getByLabel('Transfer to machine').selectOption('stock-zymatic-menu')
   const dialog = page.getByRole('dialog')
   await dialog.getByLabel('Zymatic serial number').fill('CATALOGPREVIEW')
@@ -495,4 +495,54 @@ test('catalog and library show five automatic versions from one measured recipe'
   await expect(versions.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText(
     'Hop slot'
   )
+})
+
+test('a recipe plan can be recorded separately for each batch after brew day', async ({
+  page,
+  request,
+}) => {
+  const headers = { 'X-CSRF-Token': 'demo' }
+  const source = await (await request.get('/api/v1/recipes/weekend-pale')).json()
+  const response = await request.post('/api/v1/recipes', {
+    headers,
+    data: {
+      ...source,
+      id: '',
+      revision: 0,
+      name: 'Journal test pale',
+      fermentation: [{ name: 'Primary fermentation', target_c: 18, days: 10 }],
+      carbonation: { method: 'natural', volumes: 2.4 },
+    },
+  })
+  expect(response.ok()).toBe(true)
+  const r = await response.json()
+  try {
+    await page.goto('/#/history/demo-history-demo-s')
+    await page.getByLabel('Use a recipe plan').selectOption(r.id)
+    await page.getByRole('button', { name: 'Use plan', exact: true }).click()
+    await page.getByRole('button', { name: 'Start Primary fermentation' }).click()
+    await page.getByRole('button', { name: 'Complete Primary fermentation' }).click()
+    await page.reload()
+    await expect(page.getByRole('row').filter({ hasText: 'Primary fermentation' })).toContainText(
+      '10 days'
+    )
+    await expect(
+      page.getByRole('button', { name: 'Start Bottle or keg conditioning' })
+    ).toBeVisible()
+    const brew = await (
+      await request.get('/api/v1/brews/demo-history-demo-s/export?format=json')
+    ).json()
+    expect(brew.conditioning.stages[0].completed_at).toBeTruthy()
+    expect(brew.conditioning.stages[1].started_at).toBeUndefined()
+    const stale = await request.post('/api/v1/brews/demo-history-demo-s/conditioning', {
+      headers,
+      data: { revision: 0, action: 'add', name: 'Duplicate' },
+    })
+    expect(stale.status()).toBe(409)
+    expect(
+      (await (await request.get('/api/v1/brews/demo-history-demo-z')).json()).conditioning
+    ).toBeUndefined()
+  } finally {
+    await request.delete('/api/v1/recipes/' + r.id, { headers })
+  }
 })

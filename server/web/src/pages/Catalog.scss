@@ -125,3 +125,7 @@
     gap: 0.2rem;
   }
 }
+
+.recipe-card-content footer button:only-child {
+  margin-inline-start: auto;
+}

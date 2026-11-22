@@ -292,6 +292,7 @@ func (s *Server) routes() http.Handler {
 			r.Get("/brews", s.listBrews)
 			r.Get("/brews/{id}", s.getBrew)
 			r.Patch("/brews/{id}", s.updateBrew)
+			r.Post("/brews/{id}/conditioning", s.updateConditioning)
 			r.Get("/brews/{id}/export", s.exportBrew)
 			r.Get("/events", s.events)
 			r.Get("/ai/subscription", s.aiSubscription)

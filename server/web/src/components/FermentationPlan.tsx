@@ -24,25 +24,12 @@ export function FermentationPlan({
   recipe: Recipe
   change: (v: Partial<Recipe>) => void
 }) {
-  const { unit } = useHub(),
-    stages = recipe.fermentation ?? [],
-    carbonation = recipe.carbonation ?? {}
-  const display = (c: number) => Number((unit === 'F' ? c * 1.8 + 32 : c).toFixed(2))
-  const toC = (v: number) => (unit === 'F' ? celsius(v) : v)
-  const add = (name: string, f: number, days: number) => ({ name, target_c: celsius(f), days })
   const [absorption, setAbsorption] = useState(''),
     [loss, setLoss] = useState('')
   const grainKg = recipe.ingredients
     .filter((i) => i.kind === 'fermentable' && !goesInKeg(i.type))
     .reduce((n, i) => n + i.amount, 0)
   const water = recipe.ingredients.filter((i) => i.kind === 'water')
-  const pitch = recipe.ingredients
-    .filter((i) => i.kind === 'yeast')
-    .map((i) => yeastInfo(i.name)?.pitchF)
-  const pitchF = pitch.length && pitch.every((f) => f === pitch[0]) ? pitch[0] : undefined
-  const hasPitchStep = recipe.steps.some(
-    (s) => s.kind === 'cool' && s.name === 'Chill to pitching temperature'
-  )
   const estimate = (recipe.boil_liters || 0) + grainKg * Number(absorption) + Number(loss)
   const ready =
     (recipe.boil_liters || 0) > 0 &&
@@ -69,19 +56,9 @@ export function FermentationPlan({
           ],
     })
   }
-  function preset(kind: string) {
-    if (!kind || (stages.length && !window.confirm('Replace the current fermentation stages?')))
-      return
-    change({
-      fermentation:
-        kind === 'ale'
-          ? [add('Primary fermentation', 68, 10), add('Crash chill', 44, 0)]
-          : [add('Primary fermentation', 68, 21), add('Lagering', 35, 28)],
-    })
-  }
   return (
     <section className="panel recipe-plan">
-      <SectionHeading title="Water and fermentation" />
+      <SectionHeading title="Water" />
       <h4>Starting water</h4>
       <p>Start with the pre-boil volume and add the water your grain and equipment retain.</p>
       <div className="form-grid thirds">
@@ -133,8 +110,47 @@ export function FermentationPlan({
           Add the water volume to the ingredient bill to include this profile in BeerXML.
         </small>
       )}
+    </section>
+  )
+}
+
+export function ConditioningFields({
+  recipe,
+  change,
+  allowPitchStep = false,
+}: {
+  recipe: Recipe
+  change: (v: Partial<Recipe>) => void
+  allowPitchStep?: boolean
+}) {
+  const { unit } = useHub(),
+    stages = recipe.fermentation ?? [],
+    carbonation = recipe.carbonation ?? {}
+  const display = (c: number) => Number((unit === 'F' ? c * 1.8 + 32 : c).toFixed(2))
+  const toC = (v: number) => (unit === 'F' ? celsius(v) : v)
+  const add = (name: string, f: number, days: number) => ({ name, target_c: celsius(f), days })
+  const pitch = (recipe.ingredients ?? [])
+    .filter((i) => i.kind === 'yeast')
+    .map((i) => yeastInfo(i.name)?.pitchF)
+  const pitchF = pitch.length && pitch.every((f) => f === pitch[0]) ? pitch[0] : undefined
+  const hasPitchStep = (recipe.steps ?? []).some(
+    (s) => s.kind === 'cool' && s.name === 'Chill to pitching temperature'
+  )
+  function preset(kind: string) {
+    if (!kind || (stages.length && !window.confirm('Replace the current fermentation stages?')))
+      return
+    change({
+      fermentation:
+        kind === 'ale'
+          ? [add('Primary fermentation', 68, 10), add('Crash chill', 44, 0)]
+          : [add('Primary fermentation', 68, 21), add('Lagering', 35, 28)],
+    })
+  }
+  return (
+    <section className="panel recipe-plan">
+      <SectionHeading title="Fermentation and carbonation" />
       <h4>Fermentation stages</h4>
-      {pitchF !== undefined && pitchF > 32 && (
+      {allowPitchStep && pitchF !== undefined && pitchF > 32 && (
         <Button
           variant="ghost"
           disabled={hasPitchStep}

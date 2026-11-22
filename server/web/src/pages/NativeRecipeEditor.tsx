@@ -1,3 +1,4 @@
+import { ConditioningFields } from '../components/FermentationPlan'
 import { ArchivedIngredients } from '../components/ArchivedIngredients'
 import { RecipeStyleField } from '../components/RecipeStyleField'
 import { BeerCrafter } from '../components/BeerCrafter'
@@ -107,7 +108,7 @@ export default function NativeRecipeEditor({
                 onClick={() => setTransfer(true)}
               >
                 <Send size={16} />
-                Preview & send
+                Send
               </Button>
             )}
             <Button disabled={busy} onClick={() => void save()}>
@@ -135,6 +136,7 @@ export default function NativeRecipeEditor({
       <div className={isNew ? undefined : 'editor-layout'}>
         <div className="editor-main">
           <BeerCrafter recipe={recipe} />
+          {recipe.kind !== 'maintenance' && <ConditioningFields recipe={recipe} change={update} />}
           <section className="panel">
             <SectionHeading
               title={recipe.kind === 'maintenance' ? 'Program details' : 'Recipe details'}

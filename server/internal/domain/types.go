@@ -353,7 +353,22 @@ type HistoryPage struct {
 	Fields        []string
 	FieldMetadata map[string]FieldMetadata
 }
+type ConditioningStage struct {
+	Name        string     `json:"name"`
+	TargetC     *float64   `json:"target_c,omitempty"`
+	Days        float64    `json:"days,omitempty"`
+	Volumes     float64    `json:"volumes,omitempty"`
+	StartedAt   *time.Time `json:"started_at,omitempty"`
+	CompletedAt *time.Time `json:"completed_at,omitempty"`
+}
+type Conditioning struct {
+	Revision       int64               `json:"revision"`
+	RecipeName     string              `json:"recipe_name,omitempty"`
+	RecipeRevision int64               `json:"recipe_revision,omitempty"`
+	Stages         []ConditioningStage `json:"stages"`
+}
 type Brew struct {
+	Conditioning     *Conditioning            `json:"conditioning,omitempty"`
 	StepNames        map[int]string           `json:"step_names,omitempty"`
 	ID               string                   `json:"id"`
 	DeviceID         string                   `json:"device_id"`

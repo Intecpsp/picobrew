@@ -368,7 +368,7 @@ test('community catalog preserves source schedules through copy, bulk transfer a
     expect(saved.ingredients).toEqual([])
     expect(saved.provenance.catalog_id).toBe('picopak-64')
 
-    await page.getByRole('button', { name: 'Preview & send', exact: true }).click()
+    await page.getByRole('button', { name: 'Send', exact: true }).click()
     let dialog = page.getByRole('dialog', { name: 'Send recipes & programs', exact: true })
     await dialog.getByLabel('Transfer to machine', { exact: true }).selectOption(deviceID)
     await dialog.getByRole('button', { name: 'Preview transfer', exact: true }).click()
@@ -411,7 +411,7 @@ test('community catalog preserves source schedules through copy, bulk transfer a
 
     // A second preview preserves the machine edit unless the user elects to update matching IDs.
     await page.goto(`/#/recipes/${recipeID}`)
-    await page.getByRole('button', { name: 'Preview & send', exact: true }).click()
+    await page.getByRole('button', { name: 'Send', exact: true }).click()
     dialog = page.getByRole('dialog', { name: 'Send recipes & programs', exact: true })
     await dialog.getByLabel('Transfer to machine', { exact: true }).selectOption(deviceID)
     await dialog.getByRole('button', { name: 'Preview transfer', exact: true }).click()
@@ -694,9 +694,9 @@ test('send a recipe and start it directly from the Hub', async ({ page, request 
     )
     await page.goto('/#/recipes')
     await page.getByRole('link', { name: /Weekend Pale/ }).click()
-    await page.getByRole('button', { name: 'Adapt & send' }).click()
+    await page.getByRole('button', { name: 'Send', exact: true }).click()
     await page.getByLabel('Target machine').selectOption(id)
-    await page.getByRole('button', { name: 'Preview adaptation' }).click()
+    await page.getByRole('button', { name: 'Preview recipe' }).click()
     const receipt = page.waitForResponse((response) =>
       response.url().endsWith(`/devices/${id}/deploy`)
     )
