@@ -1,0 +1,912 @@
+{
+  "public-00fef07983ee4de88278dde9bf3ad255": {
+    "source_sha256": "0ccf61a4e8b6f541748f529f9f4b4a6867c56ca18df7401baa613e09cc7ae108"
+  },
+  "public-0612cd2907ac447cbccbf170e46c0bf1": {
+    "source_sha256": "b5521bfb320fef5bd856eafc12df20caaf0aae6f4d08c9920cedfbab9642cb23"
+  },
+  "public-0c8263346d6544628f3b7e03ee0e178b": {
+    "additions": [
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 7200,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "After the boil, add the Mosaic hop bag directly to the brew keg. The original program targets 185°F (85°C) for a 35-minute steep before chilling. Transfer needs a way to prompt for the bag and preserve that rest.",
+    "source_sha256": "089bc92aed4d87d332054a5cf1e8f8fefc654c6a06f8e5a23c368e0a1120460d"
+  },
+  "public-0db975dfd30048998b91e9eb1f75cc00": {
+    "source_sha256": "31ffe0c1c731b8d560636f4be5f38189a5b256de84035099bd3cfd4f9387e6b4"
+  },
+  "public-11178f18c5b145838cc276d383d19006": {
+    "additions": [
+      {
+        "amount": 0.25,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Sodium chloride",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "b735ba18096a23be164e020a56fad2e7a33788f0c55caeb14b64522e4d2deb7a"
+  },
+  "public-18ca88411d574fec9e971a76ec5d3622": {
+    "additions": [
+      {
+        "amount": 3,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Madagascar vanilla beans",
+        "type": "Spice",
+        "unit": "count",
+        "use": "secondary"
+      }
+    ],
+    "blocker": "The author requires bagged grains to be steeped separately before the mash.",
+    "source_sha256": "67a870da3e53b71527678eea0f47ef3bc7823deb69bae2aa82fb96b125665886"
+  },
+  "public-1bec7f4c65484491b87a08e3487667e4": {
+    "source_sha256": "d99c1a136ec89237cb3eceb33cade4cc98bd6ff51a69f3f4cc2f15b627f91160"
+  },
+  "public-1c0cb358effc4f20a260e26f5a3e79ab": {
+    "source_sha256": "93518e485e20a963df94180394bbde4e90bd0b95390981612f517e088cb94de2"
+  },
+  "public-1de04a3336f648358ed5359f7c89b52c": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "cff2c1dc4af3daf6f6b85c6246004af8599328383407b91dcf36325bb46a4ecd"
+  },
+  "public-20e8c7b28c33450096add48c5acf609c": {
+    "additions": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Fresh orange peel",
+        "type": "Spice",
+        "unit": "count",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The author specifies a manual addition to the keg at the start of the boil.",
+    "source_sha256": "5f4ab0ea22df0ff53b018700590d164d8e21dabcd3ce43544e034869e96593c3"
+  },
+  "public-25809d63f7c545febf5accafffdda647": {
+    "source_sha256": "19ea5e879cf852099480b6f6e8fe8cf2240b516a495e955baa318e5173156736"
+  },
+  "public-2feae19cf4ad4028bb4f57633661470f": {
+    "source_sha256": "db21bdd676edbca44f4d29fbc3105da07d4f5a891deb597600f4938d6073bcc4"
+  },
+  "public-36959385870c4592b05b860a49f2922f": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "d4f10e2776254265a7657fe10103fdd0422f8ac6caf004bd233f596f6ba1a87b"
+  },
+  "public-3e7287b4f91544edb1e87d7cbf76a4d5": {
+    "additions": [
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "8024b5320f28f860b597a5622ad48c9901abce4743d16d8cd1d66f9c50c9bfbd"
+  },
+  "public-3e7ccbc9d38449b5b6bc8e42bee4791a": {
+    "source_sha256": "b3c301fe115cc5e5c8d283153a2b20870e7a2eaaaa81911f67a02eab449b9d77"
+  },
+  "public-3ff9cb6b414145aa937aa8ee28a48e60": {
+    "additions": [
+      {
+        "amount": 9.8578431875,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "5.2 pH stabilizer",
+        "type": "Water Agent",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 14.78676478125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Burton water salts",
+        "type": "Water Agent",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "5e15ca3380e75511e6b495cbc89063d5fee13f129b0856f852aadf1d523e7ad2"
+  },
+  "public-402298151b874c8a8cd0b1981d5c17ac": {
+    "additions": [
+      {
+        "amount": 14,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 10,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Prepare the separate yeast starter using the DME and water specified in the author’s notes.",
+    "source_sha256": "b8f5646df4065bd73a639eebc368cbc5387adfdff7726e95bac0cced06d8e9a2"
+  },
+  "public-4c8881c1508746deac12aa9f3c30eec3": {
+    "source_sha256": "0fb75b711762277f8d243e9f1672fb96483927405172f8a752c43ecbf5c9b7a0"
+  },
+  "public-550aa50d19e94c409c3120504e684474": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Kona coffee",
+        "type": "Other",
+        "unit": "g",
+        "use": "secondary"
+      }
+    ],
+    "source_sha256": "20d82d3b06447c6822d0ad2e45a157e1361cad45d75683d861a4efdb5e26875a"
+  },
+  "public-6c0382b5c4a24a5795fa002c1f9a152d": {
+    "source_sha256": "d96f08159a69a712651ad25ae7266ccff4d5dcdbb22602a7919a6884e35f2752"
+  },
+  "public-72a70dbd68654ae6a4987b2948af94d5": {
+    "additions": [
+      {
+        "amount": 85.048569375,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "68b44bd1ce815a988fa9dc17296f91d6af8f8938f59b73f6ed385dbab9589be0"
+  },
+  "public-743e4b1cd6964a7a8f5e0199a04fbb3b": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The two water salts have no recorded units. Confirm their doses before brewing.",
+    "source_sha256": "54ad0d47a1d9b4abbd0e767aa75e9ac02c826cf1ebb6dc055752b6edab1a395c"
+  },
+  "public-8334eb09ed3e46adb9c1d59b5beff499": {
+    "additions": [
+      {
+        "amount": 85.048569375,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "9263b6849d26ac614a12f7b7472c2dad08fc10038546be06c6f1b222ff259ff8"
+  },
+  "public-845dcbe627b741d98f999d832770b83b": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Chinook",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Chinook",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "3953b78bded89c2541298feaa0d21a6522c21bbed083c9c7d5559bad003488e3"
+  },
+  "public-85df0a30b10c4aba96581e4d877e8f9f": {
+    "additions": [
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Chinook",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "97d8e9a6876674a68004c3c72817bb81e09f6f6bb2f5216dfcf277cd0e0ac877"
+  },
+  "public-88bf8def40bf483d8ffaa9d802ecdfb1": {
+    "additions": [
+      {
+        "amount": 16,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 16,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 16,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 30,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "dbd3b38f1e2e85dde9034293b52f27043c20d267b6faee56edeec4545d5c74b7"
+  },
+  "public-89b10368a5d74704b69ea1c5af40b0d2": {
+    "additions": [
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "ffdd065a5986f3545b5f132331b33d0bd41ce16c01d8c1398adaf46b659f8cdc"
+  },
+  "public-8a7fd120f5144eb69d64a490be997151": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Willamette",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "ad44222a676ca29c8bfdcb2ef904a825c3a6f7a042dd54ae24f3171c47af190d"
+  },
+  "public-90ba9a8fc9d94ca3915598bf7c7a8737": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "ed45efd069d94c6816861af0da12c2ff27687d1012332f400fe6298fe73a81f8"
+  },
+  "public-97174ee6c51a49bdb72117bacd1cae1c": {
+    "source_sha256": "f318431726953172cf4f443785685c47ad08a77c07044895af530c3c3e44f405"
+  },
+  "public-98457ba682f44db28bb1748643f4920f": {
+    "additions": [
+      {
+        "amount": 5.3,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lactic acid",
+        "type": "Water Agent",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 3,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 1.5,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium sulfate (gypsum)",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "9f040150d4daf347e1d0e882af491c194e3b40af547cc2655fdb80f0d7ee94c7"
+  },
+  "public-9fe7e5e06263437b92ff5cd7f796fcc9": {
+    "additions": [
+      {
+        "amount": 35.43690390625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Nelson Sauvin",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 35.43690390625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "6af204baaaaac80c28190076bcbe1c147519f73661734bd0659befcf22822144"
+  },
+  "public-a7be5d95992c43e7b23440cb52f1de63": {
+    "source_sha256": "40ccc1cf46fda6b38b430ecddad83d918ca00cf8e24ecb9ab0f86b939e478d8b"
+  },
+  "public-ad4c64e9d3cf43fbabfb9dba19f9b164": {
+    "source_sha256": "d677da93893503a586232ee1b62a1dfef37af5f30a5068d44a4d24de13e2c319"
+  },
+  "public-aea344d81fc14fa4b8358668663edc90": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "e9485ef1be7f961651f94c537e5e4b6a0b6a1f88e44112ea505eb2ea29cef48f"
+  },
+  "public-b4f7b78ffffe4b1aa7da0ea5ba8e0478": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Calypso",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "a371c4fd1313ec55382f4bfbaa534f9bb0021508d093b985c3360bbaf4f19d3c"
+  },
+  "public-b627d64a79604911a8e70422462aa497": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "d18c2444bb9661ec30550e78b4e77c26755c2a415b696f742b609fa2bcf1faa5"
+  },
+  "public-bb6fc1e8ab6e4966b2f60b3684c32079": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "228dc70ffc7f4ec1ff05f0e750acce0ad447a53567aefa26b97ef44c651ebd77"
+  },
+  "public-bd89a0a284b24287983f1ff49d586742": {
+    "source_sha256": "b322c9a7d446b9d8b82485190871ccd03de9ce2befe97a420844250006019095"
+  },
+  "public-c6eb105f6bfd4775b4bf15d3aad65995": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 7200,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 7200,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "b09bd1138327cee2ebbf427539b89582fb1e79f75751bf035c3fc1eba8b34b38"
+  },
+  "public-c8fc5d58f0c545c89409d3ecf4cdecde": {
+    "additions": [
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Saaz",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Northern Brewer",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 3.543690390625,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "afcba1a7508cc91edeaff0071f5af141c95ae3c131bf7f73673ada112d26211a"
+  },
+  "public-cbbb448615264d6db4804f38b03e69ac": {
+    "source_sha256": "18f9821c8b176406016264759c1886a80db6dc3c7c7fea2db361d02e012ff791"
+  },
+  "public-cca60d1ec10d4ece8ce458861d9cb34e": {
+    "additions": [
+      {
+        "amount": 1500,
+        "kind": "misc",
+        "minutes": 7200,
+        "name": "Strawberries",
+        "type": "Other",
+        "unit": "g",
+        "use": "secondary"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 7200,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 7200,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "960ec4765c0f7af97c8140b51f782eb78423a3255410f236e2ffd917b05de028"
+  },
+  "public-d642bd5ba504417183c628c18bb70220": {
+    "source_sha256": "554821a01e365f3f4d1593f2fe4a3549900eca9b46c494f2365938880c6f64ef"
+  },
+  "public-d9e954a684fe42f39408f0c7fb2e89b9": {
+    "additions": [
+      {
+        "amount": 73.93382390625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Burton water salts",
+        "type": "Water Agent",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 29.5735295625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "5.2 pH stabilizer",
+        "type": "Water Agent",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "0eb45c4d48d12ac648ff2961b0ad94ddb36b87176a036af859309c3c1f7e335a"
+  },
+  "public-db90a856c4af4b1f87d55eaa1e3b4e2d": {
+    "source_sha256": "5203719cce77308287a5224f1f9a315e88e9e3d8e5745ed13ec3d302999b8e27"
+  },
+  "public-e97ea1017d01475e8b5cfa9846ecc947": {
+    "additions": [
+      {
+        "amount": 0.85,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 0.9,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Epsom salt",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 1.65,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Baking soda",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 0.37,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Slaked lime",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 2.7,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lactic acid (88%)",
+        "type": "Water Agent",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "af0a7a2c91f40475e22cf10c9b6c523d02c79e91cc77b295ced387383166fa1c"
+  },
+  "public-ef106ac3bbb84411ae9098744531f960": {
+    "additions": [
+      {
+        "amount": 21.26214234375,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "85fd91abe72ef7fd240b6bff68bb60d9c2f056da0c313927489c68d54ddc60cc"
+  },
+  "public-f2343c895d664436aa653292606298de": {
+    "source_sha256": "9b9fed8210c192a89373fa7d5068d0ce310436ce054e70e21cd183a9ff1af672"
+  },
+  "public-fc271203438e4264ba3472b3abf76b82": {
+    "additions": [
+      {
+        "amount": 0.06236895087500001,
+        "kind": "fermentable",
+        "minutes": 0,
+        "name": "Midnight wheat or chocolate wheat",
+        "type": "Grain",
+        "unit": "kg",
+        "use": "mash"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 11520,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 11520,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "7e0ad95d22f5129b35d6439a8a962a150dd33eb992659ce2f8d2a318cd8a8959"
+  },
+  "public-fd2527301a3e4244b6c89af7ad65d174": {
+    "source_sha256": "6db9c1af400cddfe5b9a0a1a9aa8630f0aaf0bc52b9acb49fbd2e2816e3655ec"
+  },
+  "public-fe7445b15b0f493ebfcc09716d107518": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "61792fcf7a89166581acff30bd7646a50a3d8edc7ee24fc280d4059b0149acf1"
+  }
+}

@@ -417,7 +417,7 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 	}
 	for _, profile := range profiles {
 		shared := a.List(Query{Kind: "all-brewers", Model: profile.ID})
-		if shared.Total != 787 || counts[profile.ID] != shared.Total {
+		if shared.Total != 876 || counts[profile.ID] != shared.Total {
 			t.Fatalf("%s: %d shared recipes, %d working programs", profile.ID, shared.Total, counts[profile.ID])
 		}
 	}

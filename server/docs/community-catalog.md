@@ -14,7 +14,7 @@ recipe to a brewer or starts a program.
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-The main catalog lists 787 measured recipes whose schedules compile for all five brewing profiles. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+The main catalog lists 876 measured recipes whose schedules compile for all five brewing profiles. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
 programs and three maintenance programs. Of these, 5,206 can be copied into the
 library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
@@ -30,6 +30,14 @@ illustrations, machine drawings and support text. Illustration credits and kinds
 are available in source details; they are not photographs of named beers. An additional
 27 original PDF assets are optional local references. The references API reports
 which files are actually available.
+
+## Recovered recipes
+
+The Hub checks archived loading sheets against the ingredient list and the first flow to each occupied slot in the original machine program. Ingredients loaded together share the slot’s weight limit. A confirmed first-wort addition receives flow during heat-up. Capacity errors in the original batch can be resolved by scaling all measured ingredients together.
+
+The recovery index covers 138 records. Of these, 89 now have programs for all five profiles. The remaining 49 have corrected ingredient or source information and still require review. Recipes with conflicting instructions, unmeasured additions or unsupported manual operations remain in the source archive. The 68 reviewed original stock brew sheets use their own verification criteria. Existing library copies retain the user’s edits. Open the catalog entry to copy its recovered version.
+
+Run `python3 server/tools/catalog_recovery.py --check` to reproduce the index from the bundled records and checksum-pinned author-note reviews.
 
 ## Catalog curation
 
