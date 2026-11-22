@@ -36,6 +36,18 @@ func Import(data []byte, format string) ([]domain.Recipe, error) {
 				return nil, err
 			}
 		} else {
+			var keys map[string]json.RawMessage
+			if err := json.Unmarshal(trimmed, &keys); err != nil {
+				return nil, err
+			}
+			if _, oem := keys["Steps"]; oem {
+				r, err := importZProgram(trimmed)
+				if err != nil {
+					return nil, err
+				}
+				recipes = []domain.Recipe{r}
+				break
+			}
 			var r domain.Recipe
 			if err := decoder.Decode(&r); err != nil {
 				return nil, err
@@ -74,6 +86,9 @@ func Export(r domain.Recipe, format string) ([]byte, error) {
 	switch strings.ToLower(strings.TrimSpace(format)) {
 	case "json", "application/json":
 		data, err = json.MarshalIndent(r, "", "  ")
+	case "z-program":
+		profile, _ := supportedProfile("z")
+		return ExportZProgram(r, profile)
 	case "native", "native-json":
 		if !IsNative(r) || r.NativeProgram == nil {
 			return nil, errors.New("native JSON export requires an explicit native program; adapt a canonical recipe for a specific machine first")

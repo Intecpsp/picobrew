@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.1
+# Pico Z standalone firmware 1.2.3
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -33,6 +33,12 @@ movement. Original setup, filter and completion prompts remain interactive.
 The local recipe format carries no starting-water quantity. For these programs,
 the loading screen prompts the operator to add water according to the recipe.
 The native duration estimator still uses its nominal heating volume.
+
+The alternate Z Program Maker format preserves Celsius targets, seconds, the
+PicoPak adjunct setting, beer setup prompts and scheduled operator pauses. A
+program can use the keg (1), mash basket (2) and adjunct compartments (3–6).
+Step type 2 requests an operator acknowledgement. Uploading a program saves
+it for a separate start action. See the [recipe wire format](../../common/docs/api-schema.md#z-program-maker-recipes).
 
 Archived native Z programs use a different grammar: locations 0–5 map to
 valves 1–6, and location 6 means pause. They are retained as reference/export

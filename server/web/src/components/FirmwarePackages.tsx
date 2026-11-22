@@ -70,10 +70,13 @@ export function MachineFirmwareDialog({
       ? machine.retry_package_id
       : versions[0]?.[0]
   const selected = id ? items.get(id) : undefined
-  const canInstall =
+  const resuming = !!id && machine?.retry_package_id === id
+  const supportsInstall =
     machine?.install_supported &&
     selected?.hub_ota_protocol === 1 &&
-    (!machine.retry_package_id || machine.retry_package_id === id)
+    (!machine.retry_package_id || resuming)
+  const alreadyInstalled =
+    !!selected && selected.firmware_version === machine?.current_version && !resuming
   async function checkUpdates() {
     setActivity('Checking…')
     setVerificationError('')
@@ -86,7 +89,7 @@ export function MachineFirmwareDialog({
     }
   }
   async function useVersion(install: boolean) {
-    if (!id || !selected || !machine || (install && !canInstall)) return
+    if (!id || !selected || !machine || (install && (!supportsInstall || alreadyInstalled))) return
     setVerificationError('')
     setActivity(install ? 'Preparing update…' : 'Downloading…')
     try {
@@ -218,6 +221,7 @@ export function MachineFirmwareDialog({
                   <option key={key} value={key}>
                     {v.firmware_version}
                     {v.display_variant ? ' · ' + v.display_variant.toUpperCase() : ''}
+                    {v.firmware_version === machine?.current_version ? ' · Current version' : ''}
                     {v.kind === 'historical'
                       ? ' · Historical S/Pro build'
                       : v.kind === 'reference'
@@ -228,9 +232,12 @@ export function MachineFirmwareDialog({
               </select>
             </Field>
             <div className="inline-actions">
-              {canInstall && (
-                <Button disabled={!!activity || saving} onClick={() => void useVersion(true)}>
-                  Install
+              {supportsInstall && (
+                <Button
+                  disabled={alreadyInstalled || !!activity || saving}
+                  onClick={() => void useVersion(true)}
+                >
+                  {resuming ? 'Resume update' : alreadyInstalled ? 'Already installed' : 'Install'}
                 </Button>
               )}
               <Button

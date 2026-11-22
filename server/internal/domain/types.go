@@ -90,6 +90,7 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	ZProgramMaker         bool                     `json:"z_program_maker,omitempty"`
 	HubOTAV1              bool                     `json:"hub_ota_v1,omitempty"`
 	APIVersion            int                      `json:"api_version"`
 	FirmwareVersion       string                   `json:"firmware_version"`
@@ -192,9 +193,10 @@ type MachineStep struct {
 	DrainMinutes int    `json:"drain_minutes"`
 }
 type MachineRecipe struct {
-	ID    string        `json:"id"`
-	Name  string        `json:"name"`
-	Steps []MachineStep `json:"steps"`
+	ZProgram *ZProgram     `json:"z_program,omitempty"`
+	ID       string        `json:"id"`
+	Name     string        `json:"name"`
+	Steps    []MachineStep `json:"steps"`
 }
 type Ingredient struct {
 	SlotAddition bool    `json:"slot_addition,omitempty"`

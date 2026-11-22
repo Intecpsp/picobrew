@@ -404,8 +404,12 @@ func operationParameters(e endpoint) []any {
 		query("record", "Original record ID within this grouped catalog entry.", stringSchema())
 	case "/catalog/assets/{asset_path}":
 		params[0].(schemaMap)["description"] = "Full manifest asset path, including its source prefix and nested directories."
+	case "/recipes", "/recipes/{id}":
+		if e.method == "POST" || e.method == "PUT" {
+			query("validate_for_model", "Require the recipe to compile for this brewer before saving its revision.", stringSchema())
+		}
 	case "/recipes/{id}/export":
-		query("format", "JSON preserves every library field; native-json exports a compatible machine program. BeerXML requires a complete recipe.", schemaMap{"type": "string", "enum": []string{"json", "beerxml", "native-json"}, "default": "json"})
+		query("format", "JSON preserves every library field; native-json exports a compatible Pico program and z-program exports original Z Program Maker JSON. BeerXML requires a complete recipe.", schemaMap{"type": "string", "enum": []string{"json", "beerxml", "native-json", "z-program"}, "default": "json"})
 	case "/brews/{id}/export":
 		query("format", "Full recorded samples without graph downsampling.", schemaMap{"type": "string", "enum": []string{"json", "csv"}, "default": "json"})
 	case "/shopping-list":

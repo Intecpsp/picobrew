@@ -56,11 +56,20 @@ static bool ota_boot_state(const uint8_t record[8], bool trial)
            !memcmp(record + 4, trial ? "\x21\x43\x34\x12" : "\xba\xdc\xcd\xab", 4);
 }
 
+static void ota_banner(const char *stage)
+{
+    // Leave the menu usable on trial boot, including when the Hub disconnects.
+    pico_display_clear_row(0);
+    pico_display_center_text(0, stage);
+    pico_display_flush();
+}
+
 static bool ota_inspect(bool *trial, char digest[65], uint32_t *size)
 {
     uint8_t record[8];
     if (!ota_record(record)) return false;
     *trial = ota_boot_state(record, true);
+    if (*trial) ota_banner("Verifying firmware");
     if (!*trial && !ota_boot_state(record, false)) return false;
     if (!ota_digest("/sys/mcuimg.bin", 14956, digest, size) || *size != 14956 ||
         strcmp(digest, "67e22913fd7805a84d965928198f7d8cb795af125b81f1e0c29479a84980b975")) return false;
@@ -78,6 +87,12 @@ static bool ota_commit(bool confirm)
     _i32 handle = -1;
     if (sl_FsOpen(ota_boot_file, FS_MODE_OPEN_WRITE, NULL, &handle) != 0) return false;
     int n = sl_FsWrite(handle, 0, record, sizeof record);
-    return sl_FsClose(handle, NULL, NULL, 0) == 0 && n == 8 &&
-           ota_record(readback) && !memcmp(record, readback, 8);
+    if (sl_FsClose(handle, NULL, NULL, 0) != 0 || n != 8 ||
+        !ota_record(readback) || memcmp(record, readback, 8)) return false;
+    if (!confirm) {
+        pico_display_clear();
+        pico_display_center_text(4, "Keep power on");
+    }
+    ota_banner(confirm ? "Update confirmed" : "Installing firmware");
+    return true;
 }

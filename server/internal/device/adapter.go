@@ -102,6 +102,15 @@ func validLabel(value string, max int) bool {
 }
 
 func validateRecipe(recipe domain.MachineRecipe) error {
+	if recipe.ZProgram != nil {
+		if !recipeID.MatchString(recipe.ID) || len(recipe.Steps) != 0 || recipe.Name != recipe.ZProgram.Name {
+			return invalid("check the Z program identity and schedule")
+		}
+		if err := recipe.ZProgram.Validate(); err != nil {
+			return invalid(err.Error())
+		}
+		return nil
+	}
 	if !recipeID.MatchString(recipe.ID) || !validLabel(recipe.Name, 31) || len(recipe.Steps) < 1 || len(recipe.Steps) > 15 {
 		return invalid("Recipe ID, name or step count is invalid")
 	}

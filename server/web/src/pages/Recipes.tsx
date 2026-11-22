@@ -31,11 +31,13 @@ import {
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { dateLabel, modelLabel, newRecipe, slug } from '../lib/utils'
-import { isNative, kindLabel, programTiming } from '../lib/programs'
+import { isNative, kindLabel, programTiming, recipeSavePath } from '../lib/programs'
 import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
 import { BrewerPlan } from '../components/MachineVersions'
 import { OriginalRecipeLink } from '../components/OriginalRecipe'
 import NativeRecipeEditor from './NativeRecipeEditor'
+import ZProgramEditor from './ZProgramEditor'
+import { newZRecipe } from '../lib/zProgram'
 import { TransferDialog } from '../components/TransferDialog'
 import { AdaptDialog } from '../components/AdaptDialog'
 import type { Recipe, Ingredient } from '../types'
@@ -52,6 +54,15 @@ import {
   SectionHeading,
 } from '../components/ui'
 export default function Recipes({ id }: { id?: string }) {
+  const query = new URLSearchParams(location.hash.split('?')[1])
+  if (id === 'new' && query.get('mode') === 'program')
+    return (
+      <NewMachineProgram
+        key={query.toString()}
+        model={query.get('model') || ''}
+        name={query.get('name') || ''}
+      />
+    )
   return id ? (
     <RecipeMeasures>
       <RecipeEditor id={id} />
@@ -60,6 +71,70 @@ export default function Recipes({ id }: { id?: string }) {
     <RecipeLibrary />
   )
 }
+function ZEditor({ initial }: { initial: Recipe }) {
+  const [importing, setImporting] = useState(false)
+  return (
+    <>
+      <ZProgramEditor initial={initial} onImport={() => setImporting(true)} />
+      {importing && <ImportDialog initialFormat="json" onClose={() => setImporting(false)} />}
+    </>
+  )
+}
+
+function NewMachineProgram({ model, name }: { model: string; name: string }) {
+  const hub = useHub()
+  const models = ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']
+  const [chosen, setChosen] = useState('')
+  if (!models.includes(model))
+    return (
+      <>
+        <PageTitle title="Create a machine program" back={() => hub.navigate('/recipes')} />
+        <section className="panel">
+          <Field label="Brewer">
+            <select value={chosen} onChange={(e) => setChosen(e.target.value)}>
+              <option value="">Choose a brewer</option>
+              {models.map((id) => (
+                <option key={id} value={id}>
+                  {modelLabel(id)}
+                </option>
+              ))}
+            </select>
+          </Field>
+          <Button
+            disabled={!chosen}
+            onClick={() => hub.navigate('/recipes/new?mode=program&model=' + chosen)}
+          >
+            Continue
+          </Button>
+        </section>
+      </>
+    )
+  if (model === 'z') return <ZEditor initial={newZRecipe(name)} />
+  const program = {
+    ...newRecipe(),
+    kind: 'native-program',
+    source_model: model,
+    name,
+    batch_liters: 0,
+    efficiency: 0,
+    steps: [],
+    native_program: {
+      id: '',
+      name,
+      steps: [
+        {
+          name: 'Mash',
+          location: model === 'zymatic' ? 1 : 2,
+          target_f: 152,
+          minutes: 60,
+          drain_minutes: 2,
+        },
+      ],
+    },
+  }
+  return <NativeRecipeEditor initial={program} isNew />
+}
+
 function AddRecipeMenu({ onImport }: { onImport: () => void }) {
   const details = useRef<HTMLDetailsElement>(null)
   const trigger = useRef<HTMLElement>(null)
@@ -102,6 +177,10 @@ function AddRecipeMenu({ onImport }: { onImport: () => void }) {
         <a href="#/recipes/new">
           <Plus size={16} />
           Create for a brewer
+        </a>
+        <a href="#/recipes/new?mode=program">
+          <Plus size={16} />
+          Create a machine program
         </a>
         <a href="#/recipes/create-with-ai">
           <Sparkles size={16} />
@@ -167,7 +246,7 @@ function RecipeLibrary() {
             const native = isNative(recipe)
             const timing = native
               ? recipe.native_program
-                ? programTiming(recipe.native_program)
+                ? programTiming(recipe.native_program, recipe.source_model)
                 : 'Schedule unavailable'
               : `${(recipe.steps || []).reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)} min`
             return (
@@ -190,7 +269,9 @@ function RecipeLibrary() {
                     <small>
                       {native
                         ? [
-                            kindLabel(recipe.kind, recipe.source_model),
+                            recipe.native_program?.z_program
+                              ? 'Z Program Maker'
+                              : kindLabel(recipe.kind, recipe.source_model),
                             recipe.source_model && modelLabel(recipe.source_model),
                           ]
                             .filter(Boolean)
@@ -350,7 +431,12 @@ function RecipeEditor({ id }: { id: string }) {
           throw new Error('Advanced metadata must be a JSON object.')
         payload = { ...payload, ...extras, id: recipe.id, revision: recipe.revision }
       }
-      const saved = await api<Recipe>(isNew ? '/recipes' : `/recipes/${id}`, {
+      const targetModel =
+        !draft.provenance &&
+        ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic'].includes(draft.source_model || '')
+          ? draft.source_model
+          : undefined
+      const saved = await api<Recipe>(recipeSavePath(isNew ? '' : id, targetModel), {
         method: isNew ? 'POST' : 'PUT',
         body: { ...payload, machine_versions: undefined },
       })
@@ -359,7 +445,8 @@ function RecipeEditor({ id }: { id: string }) {
       setDirty(false)
       await hub.refresh()
       hub.notify(
-        saved.machine_versions?.length
+        saved.machine_versions?.length === 5 &&
+          saved.machine_versions.every((v) => v.machine_recipe && !v.deployment_blockers?.length)
           ? 'Recipe saved with versions for all five brewers.'
           : 'Recipe saved to your library.'
       )
@@ -383,6 +470,7 @@ function RecipeEditor({ id }: { id: string }) {
   if (!isNew && loaded.loading) return <Loading label="Opening your recipe…" />
   if (!isNew && loaded.error) return <ErrorBanner message={loaded.error} retry={loaded.reload} />
   const nativeRecipe = isNew ? recipe : loaded.data
+  if (nativeRecipe?.native_program?.z_program) return <ZEditor initial={nativeRecipe} />
   if (nativeRecipe && isNative(nativeRecipe))
     return <NativeRecipeEditor initial={nativeRecipe} isNew={isNew} />
   if (guided && isNew)
@@ -464,7 +552,15 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
             )}
             {plan ? (
-              <BrewerPlan plan={plan} />
+              <>
+                <BrewerPlan plan={plan} />
+                {plan.profile.id === 'z' && plan.machine_recipe && (
+                  <Button variant="secondary" onClick={() => void exportRecipe('z-program')}>
+                    <Download size={16} />
+                    Export for Z Program Maker
+                  </Button>
+                )}
+              </>
             ) : (
               <>
                 <MeasureChoice />
@@ -727,9 +823,15 @@ function RecipeEditor({ id }: { id: string }) {
     </>
   )
 }
-function ImportDialog({ onClose }: { onClose: () => void }) {
+function ImportDialog({
+  onClose,
+  initialFormat = 'beerxml',
+}: {
+  onClose: () => void
+  initialFormat?: string
+}) {
   const hub = useHub()
-  const [format, setFormat] = useState('beerxml')
+  const [format, setFormat] = useState(initialFormat)
   const [data, setData] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
@@ -768,12 +870,15 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
         </>
       }
     >
-      <p>Import BeerXML or PicoBrew Hub JSON. Recipes are added as new library entries.</p>
+      <p>
+        Import BeerXML, PicoBrew Hub JSON, or Z Program Maker JSON. Recipes are added as new library
+        entries.
+      </p>
       <div className="form-grid">
         <Field label="Format">
           <select value={format} onChange={(event) => setFormat(event.target.value)}>
             <option value="beerxml">BeerXML (.xml)</option>
-            <option value="json">Recipe JSON (.json)</option>
+            <option value="json">Hub or Z Program Maker JSON (.json)</option>
           </select>
         </Field>
         <Field label="Choose a file">

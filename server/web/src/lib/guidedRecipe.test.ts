@@ -207,3 +207,44 @@ test('stock Zymatic reviews up to 25 steps and each transmitted hold must fit on
   expect(guideProblem({ ...d, hops: [], boil: '256' }, stock, 1)).toContain('255')
   expect(guideProblem({ ...d, rests: [] }, stock, 3)).toContain('mash rest')
 })
+
+test('extract goes into the keg and grain requires an actual mash on all brewers', () => {
+  const extract = { name: 'Light Dry Malt Extract', amount: '0.7' }
+  const grain = { name: 'Oak Smoked Wheat', amount: '1.1' }
+  for (const id of ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']) {
+    const p = { ...profile, id }
+    const base = { ...draft(), grains: [extract], customMash: true, rests: [] }
+    expect(guideProblem(base, p, 3)).toBe('')
+    const extractBeer = guidedRecipe(base, p)
+    expect(extractBeer.type).toBe('Extract')
+    expect(extractBeer.steps.some((s) => s.location === 2)).toBe(false)
+    const mix = { ...base, grains: [extract, grain] }
+    expect(guideProblem(mix, p, 3)).toContain('mash rest')
+    const partial = guidedRecipe({ ...mix, customMash: false }, p)
+    expect(partial.type).toBe('Partial Mash')
+    expect(partial.ingredients[1]).toMatchObject({ use: 'mash', type: 'Grain' })
+    expect(partial.steps.some((s) => s.location === 2 && s.minutes > 0)).toBe(true)
+    expect(guideProblem({ ...mix, grains: [{ ...grain, amount: '100' }] }, p, 3)).toContain(
+      'capacity'
+    )
+  }
+})
+
+test('rejects drafts beyond the saved recipe format limits at the input stage', () => {
+  expect(guideProblem({ ...draft(), name: 'è'.repeat(257) }, profile, 0)).toContain('512 bytes')
+  const d = { ...draft(), grains: [{ name: 'Light Dry Malt Extract', amount: '1e999' }] }
+  expect(guideProblem(d, profile, 1)).toContain('finite weight')
+  expect(
+    guideProblem(
+      {
+        ...d,
+        grains: Array.from({ length: 513 }, () => ({
+          name: 'Light Dry Malt Extract',
+          amount: '0.001',
+        })),
+      },
+      profile,
+      1
+    )
+  ).toContain('512 ingredients')
+})

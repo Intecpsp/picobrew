@@ -1,4 +1,5 @@
 #include "zseries/standalone.hpp"
+#include "recipe_record.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstdio>
@@ -34,13 +35,22 @@ template<std::size_t N>void copy(char(&out)[N],const char* input){
 bool step(void* context,std::size_t index,LocalRecipeStep& out){
     const auto& recipe=*static_cast<const api::Recipe*>(context);
     if(index>=recipe.step_count)return false;
-    const auto& in=recipe.steps[index];out.name=in.name;out.type=0;out.location=in.location;
+    const auto& in=recipe.steps[index];out.name=in.name;out.location=in.location;
+    if(recipe.z_program) {
+        out.type=in.z.pause?2:1;
+        out.temperature_celsius=in.z.target_c;
+        out.seconds=in.z.seconds;
+        out.drain_seconds=in.z.drain_seconds;
+        return true;
+    }
+    out.type=0;
     out.temperature_celsius=in.target_f?(static_cast<double>(in.target_f)-32.0)/1.8:0;
     out.seconds=static_cast<std::int32_t>(in.minutes)*60;out.drain_seconds=static_cast<std::int32_t>(in.drain_minutes)*60;
     return true;
 }
 ProgramBuildResult build(ProgramBuffer& buffer,const api::Recipe& recipe,double pressure,double boil){
-    oem::LocalRecipe input;input.name=recipe.name;input.is_beer=true;input.step_count=recipe.step_count;
+    oem::LocalRecipe input;input.name=recipe.name;input.is_beer=!recipe.z_program||recipe.is_beer;
+    input.use_pico_pak_mode=recipe.z_program&&recipe.use_pico_pak;input.step_count=recipe.step_count;
     input.context=const_cast<api::Recipe*>(&recipe);input.step=step;
     const auto result=build_local_recipe(buffer,input,RecipeEnvironment(pressure,boil));
     if(result!=ProgramBuildResult::Ok)return result;
@@ -52,8 +62,10 @@ ProgramBuildResult build(ProgramBuffer& buffer,const api::Recipe& recipe,double 
     for(std::size_t i=0;i<view.code_size;++i){
         if(count==code.size())return ProgramBuildResult::CodeFull;
         code[count++]=view.code[i];
-        if(view.code[i].opcode==OpCode::StepName&&view.code[i].argument>=1&&view.code[i].argument<=recipe.step_count&&
-           recipe.steps[view.code[i].argument-1].target_f==0){
+        if(view.code[i].opcode==OpCode::StepName&&view.code[i].argument>=1&&view.code[i].argument<=recipe.step_count){
+            const auto& step=recipe.steps[view.code[i].argument-1];
+            const bool unheated=recipe.z_program?(!step.z.pause&&step.z.target_c<=0):step.target_f==0;
+            if(!unheated)continue;
             if(count==code.size())return ProgramBuildResult::CodeFull;
             code[count++]={OpCode::NoTarget,0};
         }
@@ -61,11 +73,6 @@ ProgramBuildResult build(ProgramBuffer& buffer,const api::Recipe& recipe,double 
     return buffer.set_code(code.data(),count);
 }
 bool recordable(std::uint32_t id){return id==24||id==28||id==5||id==6||(id>=20&&id<=23);}
-bool bounded_label(const char* data,std::size_t capacity){
-    if(!data[0])return false;
-    for(std::size_t i=0;i<capacity;++i){const unsigned c=static_cast<unsigned char>(data[i]);if(!c)return true;if(c<32||c>126)return false;}
-    return false;
-}
 }
 Adapter::Adapter(CoreApplication& core,HeadApplication& head) noexcept:core_(core),head_(head){}
 const char* Adapter::text(const char* en,const char* es,const char* fr) const noexcept {
@@ -73,9 +80,9 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.2";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.3";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
-        caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.dedicated_pause_resume=true;return caps;};
+        caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.z_program_maker=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
     out.execute=[](void* p,const api::Command& value){return static_cast<Adapter*>(p)->execute(value);};
     out.idle=[](void* p){return static_cast<Adapter*>(p)->idle();};
@@ -221,10 +228,7 @@ bool Adapter::clear_stop(){
     return true;
 }
 api::Result Adapter::validate_recipe(const api::Recipe& recipe){
-    if(!bounded_label(recipe.name,sizeof recipe.name)||!recipe.step_count||recipe.step_count>api::RecipeStepCapacity)return {400,"invalid_recipe","Invalid recipe name or step count"};
-    for(std::size_t i=0;i<recipe.step_count;++i){const auto& s=recipe.steps[i];
-        if(!bounded_label(s.name,sizeof s.name)||s.location<1||s.location>6||(s.target_f&&s.target_f<60)||s.target_f>212||s.minutes>599||s.drain_minutes>120)
-            return {400,"invalid_recipe","Step exceeds supported Z recipe bounds"};}
+    if(!api::detail::recipe_valid(recipe,true,true))return {400,"invalid_recipe","Recipe exceeds supported Z program bounds"};
     ProgramBuffer temporary;
     if(build(temporary,recipe,101325,100)!=ProgramBuildResult::Ok)return {400,"invalid_recipe","Recipe cannot be represented by the native Z program"};
     return {};

@@ -274,6 +274,9 @@ func (p *pico) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 		if err := p.request(ctx, http.MethodGet, "/api/v1/recipes/"+summary.ID, nil, &recipe, 200); err != nil {
 			return nil, err
 		}
+		if recipe.ZProgram != nil {
+			recipe.Name = recipe.ZProgram.Name
+		}
 		if recipe.ID != summary.ID || validateRecipe(recipe) != nil {
 			return nil, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe"}
 		}
@@ -308,13 +311,16 @@ func (p *pico) writeRecipe(ctx context.Context, recipe domain.MachineRecipe, cre
 			break
 		}
 	}
-	if create || zeroMinute {
+	if create || zeroMinute || recipe.ZProgram != nil {
 		capabilities, err := p.discover(ctx)
 		if err != nil {
 			return err
 		}
 		if !capabilities.Supports("recipes") {
 			return unsupportedCapability("recipes")
+		}
+		if recipe.ZProgram != nil && (capabilities.Model != "z-series" || !capabilities.ZProgramMaker || recipe.StepCount() > capabilities.StepCapacity) {
+			return unsupportedCapability("z_program_maker")
 		}
 		if zeroMinute && !capabilities.ZeroMinuteSteps {
 			return &Error{StatusCode: 409, Code: "unsupported_zero_minute_steps", Message: "This firmware does not advertise zero-minute heating steps. Update the brewer firmware before sending the original program."}
@@ -341,12 +347,23 @@ func (p *pico) writeRecipe(ctx context.Context, recipe domain.MachineRecipe, cre
 			}
 		}
 	}
+	if recipe.ZProgram != nil {
+		body = struct {
+			ID         string           `json:"id"`
+			Z          *domain.ZProgram `json:"z_program"`
+			CreateOnly bool             `json:"create_only,omitempty"`
+		}{recipe.ID, recipe.ZProgram, create && p.capabilities.RecipeCreateOnly}
+		recipe.Steps = nil
+	}
 	if err := p.request(ctx, http.MethodPut, path, body, nil, accepted...); err != nil {
 		return err
 	}
 	var observed domain.MachineRecipe
 	if err := p.request(ctx, http.MethodGet, path, nil, &observed, 200); err != nil {
 		return &Error{Code: "verification_failed", Message: "Recipe write was accepted but readback failed", UnknownOutcome: true}
+	}
+	if observed.ZProgram != nil {
+		observed.Name = observed.ZProgram.Name
 	}
 	if !reflect.DeepEqual(recipe, observed) {
 		return &Error{Code: "verification_failed", Message: "Recipe readback does not match the intended recipe", UnknownOutcome: true}

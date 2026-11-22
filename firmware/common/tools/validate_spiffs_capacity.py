@@ -27,7 +27,7 @@ def main():
            'include/picobrew/verified_storage.hpp','src/verified_storage.cpp',
            'include/picobrew/standalone_engine.hpp','include/picobrew/device_services.hpp',
            'include/picobrew/http_server.h','src/http_server.c','src/engine_internal.hpp','src/records.hpp',
-           'src/json.hpp','tools/validate_spiffs_capacity.py','dependencies/esp8266-adapters.json',
+           'src/json.hpp','src/recipe_record.hpp','tools/validate_spiffs_capacity.py','dependencies/esp8266-adapters.json',
            'dependencies/esp32-spiffs-sizing.json']
     files+=['src/'+name+'.cpp' for name in ('engine','api','values','records','history','history_records','telemetry')]
     report=dict(schema_version=1,results=results,all_supported_profiles_pass=all(r['passed'] for r in results.values()),

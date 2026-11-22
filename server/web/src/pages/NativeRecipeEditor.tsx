@@ -7,7 +7,7 @@ import { Copy, Download, History, Save, Send, Trash2 } from 'lucide-react'
 import type { CatalogDetail, Recipe } from '../types'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
-import { copyProgram, kindLabel, programTiming } from '../lib/programs'
+import { copyProgram, kindLabel, programTiming, recipeSavePath } from '../lib/programs'
 import { dateLabel, modelLabel, slug } from '../lib/utils'
 import {
   Button,
@@ -20,6 +20,7 @@ import {
   SectionHeading,
 } from '../components/ui'
 import { ProgramFields, Provenance } from '../components/Program'
+import { stockTarget } from '../components/StockZymaticTransfer'
 import { TransferDialog } from '../components/TransferDialog'
 
 export default function NativeRecipeEditor({
@@ -48,6 +49,11 @@ export default function NativeRecipeEditor({
   const original = useResource<CatalogDetail>(
     catalogID ? '/catalog/' + encodeURIComponent(catalogID) : null
   )
+  const targetModel =
+    !recipe.provenance &&
+    ['pico-s', 'pico-pro', 'pico-c', 'zymatic'].includes(recipe.source_model || '')
+      ? recipe.source_model
+      : undefined
   const program = recipe.native_program!
   useEffect(() => {
     const listener = (event: BeforeUnloadEvent) => {
@@ -67,11 +73,15 @@ export default function NativeRecipeEditor({
     setBusy(true)
     setError('')
     try {
-      const saved = await api<Recipe>(isNew ? '/recipes' : `/recipes/${recipe.id}`, {
+      const saved = await api<Recipe>(recipeSavePath(isNew ? '' : recipe.id, targetModel), {
         method: isNew ? 'POST' : 'PUT',
         body: {
           ...recipe,
-          native_program: { ...program, name: recipe.name },
+          native_program: {
+            ...program,
+            id: program.id || slug(recipe.name).slice(0, 20),
+            name: recipe.name,
+          },
           tags: tags
             .split(',')
             .map((tag) => tag.trim())
@@ -96,7 +106,7 @@ export default function NativeRecipeEditor({
           if (!dirty || window.confirm('Leave this program without saving your changes?'))
             hub.navigate('/recipes')
         }}
-        eyebrow={`${kindLabel(recipe.kind, recipe.source_model).toUpperCase()} · ${isNew ? 'NEW COPY' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
+        eyebrow={`${kindLabel(recipe.kind, recipe.source_model).toUpperCase()} · ${isNew ? 'NEW PROGRAM' : `REVISION ${recipe.revision}`}${dirty ? ' · UNSAVED CHANGES' : ''}`}
         title={recipe.name || 'Untitled program'}
         description="Preview a transfer to check the brewer’s firmware and available recipe slots."
         actions={
@@ -130,7 +140,7 @@ export default function NativeRecipeEditor({
         </div>
         <div>
           <dt>Schedule</dt>
-          <dd>{programTiming(program)}</dd>
+          <dd>{programTiming(program, recipe.source_model)}</dd>
         </div>
       </dl>
       <div className={isNew ? undefined : 'editor-layout'}>
@@ -145,7 +155,7 @@ export default function NativeRecipeEditor({
               <Field label="Program name">
                 <input
                   value={recipe.name}
-                  maxLength={100}
+                  maxLength={targetModel ? (targetModel === 'zymatic' ? 20 : 31) : 100}
                   onChange={(event) =>
                     update({
                       name: event.target.value,
@@ -200,6 +210,7 @@ export default function NativeRecipeEditor({
               title={kindLabel(recipe.kind, recipe.source_model)}
               model={recipe.source_model}
               archived
+              targetModel={targetModel}
               program={program}
               onChange={(value) => update({ native_program: value })}
             />
@@ -270,6 +281,7 @@ export default function NativeRecipeEditor({
       {transfer && (
         <TransferDialog
           recipes={[recipe]}
+          initialDeviceID={recipe.source_model === 'zymatic' ? stockTarget : undefined}
           initialSelection={[recipe.id]}
           onClose={() => setTransfer(false)}
         />

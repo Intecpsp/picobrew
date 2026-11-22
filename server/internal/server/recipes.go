@@ -3,6 +3,7 @@ package server
 import (
 	"encoding/json"
 	"errors"
+	"fmt"
 	"net/http"
 	"reflect"
 	"sort"
@@ -77,6 +78,41 @@ func (s *Server) validateLibraryRecipe(v domain.Recipe) error {
 	}
 	return nil
 }
+
+// Explicit authoring targets must compile before a new library revision is
+// stored. Imports and planning-only archives can retain unsupported source data.
+func validateAuthoredProgram(v domain.Recipe, p domain.Profile) error {
+	if recipe.IsNative(v) && p.ID == "zymatic" {
+		program, err := recipe.StockZymaticProgram(v, p)
+		if err != nil {
+			return err
+		}
+		for i, step := range program.Steps {
+			if step.Location == 6 && (step.TargetF != 0 || step.Minutes != 0 || step.DrainMinutes != 0) {
+				return fmt.Errorf("stock Zymatic pause step %d waits for the operator and cannot set heating, hold or drain", i+1)
+			}
+			if step.Name != v.NativeProgram.Steps[i].Name {
+				return fmt.Errorf("shorten or simplify the name of step %d to fit the stock Zymatic menu", i+1)
+			}
+		}
+		if program.Name != v.Name {
+			return errors.New("shorten or simplify the program name to fit the stock Zymatic menu")
+		}
+		return nil
+	}
+	plan, err := recipe.Translate(v, p, 0)
+	if err != nil {
+		return err
+	}
+	if len(plan.DeploymentBlockers) > 0 {
+		return errors.New(strings.Join(plan.DeploymentBlockers, "; "))
+	}
+	if plan.MachineRecipe == nil {
+		return errors.New("this brewer cannot run the program")
+	}
+	return nil
+}
+
 func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) {
 	var input struct {
 		domain.Recipe
@@ -95,6 +131,17 @@ func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) {
 	if e := s.validateLibraryRecipe(v); e != nil {
 		s.fail(w, 400, "invalid_recipe", e.Error())
 		return
+	}
+	if target := r.URL.Query().Get("validate_for_model"); target != "" {
+		p, ok := s.selectProfile(target)
+		if !ok {
+			s.fail(w, 422, "profile", "Choose a supported brewing model")
+			return
+		}
+		if err := validateAuthoredProgram(v, p); err != nil {
+			s.fail(w, 422, "unsupported_program", err.Error())
+			return
+		}
 	}
 	s.recipeMu.Lock()
 	defer s.recipeMu.Unlock()
@@ -343,7 +390,18 @@ func (s *Server) exportRecipe(w http.ResponseWriter, r *http.Request) {
 	if format == "" {
 		format = "json"
 	}
-	data, e := recipe.Export(v, format)
+	var data []byte
+	var e error
+	if format == "z-program" {
+		p, ok := s.selectProfile("z")
+		if !ok {
+			s.fail(w, 400, "profile", "Z equipment profile unavailable")
+			return
+		}
+		data, e = recipe.ExportZProgram(v, p)
+	} else {
+		data, e = recipe.Export(v, format)
+	}
 	if e != nil {
 		s.fail(w, 400, "format", e.Error())
 		return

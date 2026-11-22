@@ -1,3 +1,4 @@
+import { zDuration } from './zProgram'
 import type { MachineRecipe, Recipe } from '../types'
 
 export function isNative(recipe: Recipe) {
@@ -22,9 +23,12 @@ export const picoPakStepUses = [
 ]
 
 // Archived Z/Zymatic schedules encode valves from zero and reserve 6 for a pause.
+export function archivePause(location: number, model?: string) {
+  return location === 6 && (model === 'z' || model === 'zymatic')
+}
 export function routeLabel(location: number, model?: string, archived = false) {
   if (archived && (model === 'z' || model === 'zymatic'))
-    return location === 6
+    return archivePause(location, model)
       ? 'Pause'
       : model === 'zymatic' && location >= 0 && location <= 5
         ? [
@@ -51,9 +55,22 @@ export function routeLabel(location: number, model?: string, archived = false) {
     return picoPakStepUses[location - 1]
   return `Valve position ${location}`
 }
-export function programTiming(program: MachineRecipe) {
-  const minutes = program.steps.reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)
-  return `${minutes} min${program.steps.some((step) => step.target_f > 0) ? ' + heating' : ''}`
+export function programTiming(program: MachineRecipe, archivedModel?: string) {
+  if (program.z_program) {
+    const steps = program.z_program.Steps
+    const seconds = steps.reduce(
+      (sum, step) => sum + (step.StepType === 1 ? step.Time + step.Drain : 0),
+      0
+    )
+    return (
+      zDuration(seconds) +
+      (steps.some((s) => s.StepType === 1 && (s.Temp ?? 0) > 0) ? ' + heating' : '') +
+      (steps.some((s) => s.StepType === 2) ? ' + pauses' : '')
+    )
+  }
+  const active = program.steps.filter((step) => !archivePause(step.location, archivedModel))
+  const minutes = active.reduce((sum, step) => sum + step.minutes + step.drain_minutes, 0)
+  return `${minutes} min${active.some((step) => step.target_f > 0) ? ' + heating' : ''}${active.length < program.steps.length ? ' + pauses' : ''}`
 }
 export function externalURL(value?: string) {
   if (!value) return undefined
@@ -68,5 +85,10 @@ export function catalogAssetURL(value?: string) {
   return value?.startsWith('/api/v1/catalog/assets/') && !value.includes('..') ? value : undefined
 }
 export function copyProgram(program: MachineRecipe): MachineRecipe {
-  return { ...program, steps: program.steps.map((step) => ({ ...step })) }
+  return structuredClone(program)
+}
+
+export function recipeSavePath(id: string, model?: string) {
+  const path = id ? '/recipes/' + encodeURIComponent(id) : '/recipes'
+  return model ? path + '?validate_for_model=' + encodeURIComponent(model) : path
 }

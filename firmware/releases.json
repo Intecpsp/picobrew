@@ -316,6 +316,38 @@
       "archive_sha256": "49f547cb9a8f0034f981eae5a6d35cbcc2af997a91b4212b3f532841fb2dbc73",
       "binary_sha256": "0a4ef1edf93fae4a013c110c4614680148b4c512d9c463bda2785aae807efdf2",
       "binary_bytes": 797984
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.4",
+      "kind": "standalone",
+      "source_commit": "dcff24a03445a38cec4957592e8d2bfe733a7a8d",
+      "archive_sha256": "b926d5539696c3499195f52e6cfbfbdcf4dfd7b496c618a132bae48420bf7e0c",
+      "binary_sha256": "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94",
+      "binary_bytes": 166488,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.4",
+      "kind": "standalone",
+      "source_commit": "dcff24a03445a38cec4957592e8d2bfe733a7a8d",
+      "archive_sha256": "fa9f4d21fc81638292af15c9ee616e888a3fdcaccaa86ef88f7072fe4b9b724c",
+      "binary_sha256": "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b",
+      "binary_bytes": 166496,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.3",
+      "kind": "reference",
+      "source_commit": "55392ce956a07ce430180a0c25559b24b90de99d",
+      "archive_sha256": "fde1c633c9ee77cf35323d6ebbc04ff6ee4c985c7580e34c6591c74a10144b98",
+      "binary_sha256": "21eb9d54e78dafb511cb3bc7840573b48143539428ac5edb755492380c2f9635",
+      "binary_bytes": 1642048
     }
   ]
 }

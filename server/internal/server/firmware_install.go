@@ -105,6 +105,7 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	model := prior.Model
+	var currentVersion string
 	if resume {
 		// A restarted Hub can find the brewer in recovery, which has no normal
 		// status endpoint. Require the original persisted pin; the adapter
@@ -126,12 +127,19 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 		d.mu.RLock()
 		ready := otaEligible(d.view)
+		if ready {
+			currentVersion = d.view.Capabilities.FirmwareVersion
+		}
 		d.mu.RUnlock()
 		if !ready || status.DeviceUID != in.UID {
 			s.fail(w, 409, "ota_unavailable", "Use an idle S/Pro with Hub OTA support, its pinned identity and a unique device key")
 			return
 		}
 		model = status.Model
+		if currentVersion == "" {
+			s.fail(w, 409, "firmware_version_unknown", "The brewer did not report its installed firmware version")
+			return
+		}
 	}
 	var saved firmware.Package
 	s.firmwareMu.Lock()
@@ -152,6 +160,10 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 	}
 	if payload.Model != model {
 		s.fail(w, 409, "firmware_model", "The package model does not match this brewer")
+		return
+	}
+	if !resume && currentVersion == payload.FirmwareVersion {
+		s.fail(w, 409, "firmware_already_installed", "This firmware version is already installed on the brewer")
 		return
 	}
 	receipt := firmware.InstallReceipt{UID: in.UID, Model: model, PackageID: in.PackageID, Started: time.Now().UTC(), State: "running", Message: "Checking recovery, transferring the package and confirming the new boot."}

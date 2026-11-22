@@ -122,8 +122,7 @@ function renderIdentity(info) {
 function applyCapabilities(info) {
   state.info=info;
   document.body.classList.toggle("accessory",!hasFeature("brewing"));
-  $("recipeRoutingHeader").textContent=info.model==="z-series"?"Direct valve":"Location";
-  $("recipeRoutingHint").textContent=info.model==="z-series"?"Choose the flow path for each step. Convert archived Z or Zymatic programs before importing them; their route and pause codes differ.":"Use verified locations 1–6 for this device.";
+  $("recipeRoutingHeader").textContent="Flow path";
   document.querySelectorAll('[data-feature]').forEach(node=>node.hidden=!hasFeature(node.dataset.feature));
   document.querySelectorAll('[data-accessory]').forEach(node=>node.hidden=hasFeature('brewing') ||
     (node.dataset.feature && !hasFeature(node.dataset.feature)));
@@ -303,6 +302,103 @@ async function refreshRecipes() {
 
 const flowPaths = ['Keg circulation', 'Mash', 'Hop addition 1', 'Hop addition 2', 'Hop addition 3', 'Hop addition 4'];
 
+function programId(name) {
+  return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20);
+}
+
+function validZProgram(program) {
+  const fields=(object,allowed)=>object && typeof object==='object' && Object.keys(object).every(key=>allowed.includes(key));
+  const name=value=>typeof value==='string' && /^[ -~]{1,20}$/.test(value) && value.trim().length>0;
+  const seconds=(value,max)=>Number.isInteger(value) && value>=0 && value<=max;
+  return fields(program,['Name','IsBeer','UsePicoPakMode','Steps','IsMetric']) && name(program.Name) &&
+    typeof program.IsBeer==='boolean' && typeof program.UsePicoPakMode==='boolean' &&
+    (program.IsMetric===undefined || typeof program.IsMetric==='boolean') &&
+    Array.isArray(program.Steps) && program.Steps.length>=1 && program.Steps.length<=15 &&
+    program.Steps.every(s=>s && name(s.Name) && (s.StepType===2
+      ? fields(s,['Name','StepType','Time']) && (s.Time===undefined || seconds(s.Time,86400))
+      : s.StepType===1 && fields(s,['Name','StepType','Location','Temp','Time','Drain']) &&
+        Number.isInteger(s.Location) && s.Location>=1 && s.Location<=6 &&
+        (s.Temp===null || Number.isFinite(s.Temp) && s.Temp>=-29 && s.Temp<=98) &&
+        seconds(s.Time,86400) && seconds(s.Drain,7200)));
+}
+
+function addZStep(step={Name:'Mash',StepType:1,Location:2,Temp:65,Time:3600,Drain:0}) {
+  if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
+  const row=$('steps').insertRow();
+  function field(tag,label) {
+    const control=document.createElement(tag);
+    control.setAttribute('aria-label',label);
+    row.insertCell().append(control);
+    return control;
+  }
+  const name=field('input','Step name');
+  name.maxLength=20;name.required=true;name.value=step.Name;
+  const type=field('select','Step type');
+  type.add(new Option('Brew step','1'));type.add(new Option('Pause for operator','2'));
+  type.value=String(step.StepType);
+  const route=field('select','Flow path');
+  flowPaths.forEach((label,i)=>route.add(new Option(label,String(i+1))));
+  route.value=String(step.Location ?? 1);
+  const target=field('input','Target temperature');
+  target.type='number';target.step='any';target.placeholder='Unheated';
+  let celsius=step.Temp ?? null;
+  const fahrenheit=()=>$('zUnits').value==='F';
+  row.renderTemperature=()=>{
+    target.min=fahrenheit() ? -20.2 : -29;
+    target.max=fahrenheit() ? 208.4 : 98;
+    target.value=celsius===null ? '' : Number((fahrenheit() ? celsius*1.8+32 : celsius).toFixed(8));
+  };
+  row.renderTemperature();
+  target.addEventListener('input',()=>{
+    celsius=target.value==='' ? null : fahrenheit() ? Number(((Number(target.value)-32)/1.8).toFixed(8)) : Number(target.value);
+  });
+  function time(label,value,limit) {
+    const input=field('input',label);
+    input.value=value===undefined ? '' : duration(value);
+    input.placeholder='min:sec';
+    input.pattern='[0-9]+(:[0-5][0-9])?';
+    input.seconds=()=>{
+      if(input.value==='')return undefined;
+      const [minutes,sec='0']=input.value.split(':');
+      return Number(minutes)*60+Number(sec);
+    };
+    input.addEventListener('input',()=>input.setCustomValidity(
+      input.seconds()>limit ? 'Maximum '+duration(limit)+' (minutes:seconds).' : ''));
+    return input;
+  }
+  const hold=time('Duration in minutes and seconds',step.Time,86400);
+  const drain=time('Drain in minutes and seconds',step.Drain ?? 0,7200);
+  function updateType() {
+    const pause=type.value==='2';
+    route.disabled=target.disabled=drain.disabled=pause;
+    hold.required=!pause;drain.required=!pause;
+  }
+  type.addEventListener('change',updateType);updateType();
+  row.readStep=()=>{
+    const value={Name:name.value,StepType:Number(type.value)};
+    if(hold.value!=='')value.Time=hold.seconds();
+    if(value.StepType===1)Object.assign(value,{Location:Number(route.value),Temp:celsius,Drain:drain.seconds()});
+    return value;
+  };
+  const remove=field('button','Remove step');
+  remove.type='button';remove.textContent='×';remove.className='remove';
+  remove.addEventListener('click',()=>{row.remove();state.dirty=true;});
+}
+
+function newZProgram() {
+  return {Name:'',IsBeer:true,UsePicoPakMode:false,Steps:[{Name:'Mash',StepType:1,Location:2,Temp:65,Time:3600,Drain:0}]};
+}
+
+function zSampleProgram() {
+  const active=(Name,Location,Temp,Time,Drain=0)=>({Name,StepType:1,Location,Temp,Time,Drain});
+  // Match the seven-stage example in the original Z Program Maker.
+  return {Name:'My Sample Recipe',IsMetric:true,IsBeer:true,UsePicoPakMode:false,Steps:[
+    active('Heat Water',1,67.1,0),active('Mash',2,67,5400,480),active('Heat to Boil',1,97,0),
+    active('Boil Adjunct 1',3,97,2700),active('Boil Adjunct 2',4,97,300),
+    active('Boil Adjunct 3',5,97,300),active('Boil Adjunct 4',6,97,300,300)
+  ]};
+}
+
 function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
   if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
   const row=document.createElement('tr');
@@ -319,11 +415,25 @@ function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_
 }
 
 function editRecipe(recipe, existing=false) {
+  const program=recipe.z_program || (state.info.z_program_maker===true && !recipe.steps ? newZProgram() : null);
+  state.zProgram=!!program;
+  state.zHasUnit=program?.IsMetric!==undefined;
+  $('zStepType').hidden=$('zProgramOptions').hidden=!program;
+  $('zUnits').value=state.zHasUnit ? (program.IsMetric ? 'C' : 'F') : state.settings.temperature_unit;
+  $('zPak').checked=program?.UsePicoPakMode===true;
+  $('zBeer').checked=program?.IsBeer===true;
+  $('recipeName').maxLength=program ? 20 : 31;
+  $('stepTarget').textContent='Target °'+(program ? $('zUnits').value : 'F');
+  $('stepTime').textContent=program ? 'Hold (min:sec)' : 'Minutes';
+  $('stepDrain').textContent=program ? 'Drain (min:sec)' : 'Drain min';
+  $('recipeLimits').textContent=program ? 'Up to 15 steps. A pause waits for the operator to continue.' : 'Up to 15 steps. A target of 0 means unheated circulation.';
+  $('recipeRoutingHint').textContent=program ? 'Import or export Z Program Maker JSON. Use minutes:seconds for exact timing.' : 'Choose the flow path for each step.';
   state.editorId=existing ? recipe.id : null;state.dirty=false;
-  $('recipeName').value=recipe.name || '';$('recipeId').value=recipe.id || '';$('recipeId').readOnly=existing;
+  $('recipeName').value=program?.Name || recipe.name || '';$('recipeId').value=recipe.id || programId($('recipeName').value);$('recipeId').readOnly=existing;
   $('recipeId').dataset.auto=existing ? 'false' : 'true';
   $('editorHeading').textContent=existing ? 'Edit recipe' : 'New recipe';$('steps').replaceChildren();
-  for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
+  if(program)program.Steps.forEach(addZStep);
+  else for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
   updateControls();
 }
 
@@ -335,6 +445,13 @@ async function loadRecipe(id) {
 
 function recipeFromForm() {
   if(!$('recipeForm').reportValidity())return null;
+  if(state.zProgram) {
+    const z_program={Name:$('recipeName').value,IsBeer:$('zBeer').checked,UsePicoPakMode:$('zPak').checked,
+      Steps:Array.from($('steps').children,row=>row.readStep())};
+    if(state.zHasUnit)z_program.IsMetric=$('zUnits').value==='C';
+    if(!validZProgram(z_program)){notify('Check the program names, step count, temperatures and durations.',true);return null;}
+    return {id:$('recipeId').value,z_program};
+  }
   const steps=Array.from($('steps').children).map(row=>{
     const step={};row.querySelectorAll('[data-field]').forEach(input=>step[input.dataset.field]=input.dataset.field==='name'?input.value:Number(input.value));return step;
   });
@@ -417,7 +534,7 @@ async function connect(key) {
   renderIdentity(info);
   state.restoreDefaults=info.restore_default_recipes === true;
   $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
-  renderSettings(await api('/settings'));renderStatus(await api('/status'));if(hasFeature('recipes'))await refreshRecipes();
+  renderSettings(await api('/settings'));if(!state.dirty && !state.editorId)editRecipe({});renderStatus(await api('/status'));if(hasFeature('recipes'))await refreshRecipes();
   try{sessionStorage.setItem('pico-api-key',key);}catch(_){}
   connected(true);notify('');$('connectDialog').close();$('apiKey').value='';poll();
 }
@@ -465,13 +582,21 @@ $('restoreRecipes').addEventListener('click',async()=>{
   try{const result=await api('/recipes/restore-defaults','POST');await refreshRecipes();notify(result.added ? result.added+' starter recipes added. Existing recipes preserved.' : 'All starter recipes are already on the Pico.');}
   catch(error){notify(error.message,true);}finally{updateControls();}
 });
-$('addStep').addEventListener('click',()=>{addStep();state.dirty=true;});
+$('zUnits').addEventListener('change',()=>{
+  $('stepTarget').textContent='Target °'+$('zUnits').value;
+  for(const row of $('steps').children)row.renderTemperature();
+});
+$('zSample').addEventListener('click',()=>{
+  if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
+  editRecipe({z_program:zSampleProgram()});state.dirty=true;
+});
+$('addStep').addEventListener('click',()=>{if(state.zProgram)addZStep();else addStep();state.dirty=true;});
 $('recipeForm').addEventListener('input',()=>{state.dirty=true;});
-$('recipeName').addEventListener('input',()=>{if($('recipeId').dataset.auto==='true')$('recipeId').value=$('recipeName').value.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20);});
+$('recipeName').addEventListener('input',()=>{if($('recipeId').dataset.auto==='true')$('recipeId').value=programId($('recipeName').value);});
 $('recipeId').addEventListener('input',()=>{$('recipeId').dataset.auto='false';});
 $('recipeForm').addEventListener('submit',async event=>{
   event.preventDefault();const recipe=recipeFromForm();if(!recipe)return;
-  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{name:recipe.name,steps:recipe.steps,...(!state.editorId && {create_only:true})});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
+  try{await api('/recipes/'+encodeURIComponent(recipe.id),'PUT',{...(recipe.z_program ? {z_program:recipe.z_program} : {name:recipe.name,steps:recipe.steps}),...(!state.editorId && {create_only:true})});editRecipe(recipe,true);await refreshRecipes();notify('Recipe saved on the Pico.');}
   catch(error){notify(error.message,true);}
 });
 $('deleteRecipe').addEventListener('click',async()=>{
@@ -480,17 +605,28 @@ $('deleteRecipe').addEventListener('click',async()=>{
   catch(error){notify(error.message,true);}
 });
 $('importRecipe').addEventListener('click',()=>$('importFile').click());
-$('importFile').addEventListener('change',async event=>{
-  const file=event.target.files[0];event.target.value='';if(!file)return;
+async function importRecipeFile(file) {
+  if(!file)return;
   try{
     if(file.size>16384)throw new Error('Recipe file is too large.');
-    const recipe=JSON.parse(await file.text());
-    if(!recipe || !Array.isArray(recipe.steps) || recipe.steps.length<1 || recipe.steps.length>15 || typeof recipe.name!=='string' || typeof recipe.id!=='string' || !/^[A-Za-z0-9_-]{1,20}$/.test(recipe.id) || recipe.steps.some(step=>!step || typeof step!=='object'))throw new Error('Choose a recipe JSON file exported by Pico Local.');
+    let recipe=JSON.parse(await file.text());
+    if(recipe && Array.isArray(recipe.Steps)) {
+      if(state.info.z_program_maker!==true)throw new Error('This brewer does not support Z Program Maker files.');
+      if(!validZProgram(recipe))throw new Error('This Z program contains unsupported fields or values. No steps were imported.');
+      recipe={id:programId(recipe.Name),z_program:recipe};
+    } else if(!recipe || !Array.isArray(recipe.steps) || recipe.steps.length<1 || recipe.steps.length>15 || typeof recipe.name!=='string' || typeof recipe.id!=='string' || !/^[A-Za-z0-9_-]{1,20}$/.test(recipe.id) || recipe.steps.some(step=>!step || typeof step!=='object'))throw new Error('Choose a recipe JSON file exported by Pico Local.');
     if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
     editRecipe(recipe,false);state.dirty=true;notify('Recipe imported into the editor. Review it, then save to the Pico.');
   }catch(error){notify(error instanceof SyntaxError?'The file is not valid JSON.':error.message,true);}
+}
+$('importFile').addEventListener('change',event=>{
+  const file=event.target.files[0];event.target.value='';importRecipeFile(file);
 });
-$('exportRecipe').addEventListener('click',()=>{const recipe=recipeFromForm();if(recipe)download(recipe.id+'.json',recipe);});
+$('importRecipe').addEventListener('dragover',event=>event.preventDefault());
+$('importRecipe').addEventListener('drop',event=>{
+  event.preventDefault();importRecipeFile(event.dataTransfer.files[0]);
+});
+$('exportRecipe').addEventListener('click',()=>{const recipe=recipeFromForm();if(recipe)download(recipe.id+'.json',recipe.z_program || recipe);});
 $('settingsForm').addEventListener('submit',async event=>{
   event.preventDefault();try{const available={temperature_unit:$('temperatureUnit').value,language:$('language').value,detailed_status:$('detailedStatus').checked};const keys=state.info.settings_fields || Object.keys(available);const patch=Object.fromEntries(keys.filter(key=>key in available).map(key=>[key,available[key]]));const settings=await api('/settings','PATCH',patch);renderSettings(settings);if(state.status)renderStatus(state.status);notify('Preferences saved on the Pico.');}catch(error){notify(error.message,true);}
 });

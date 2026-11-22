@@ -28,6 +28,12 @@ The wizard review follows the actual sequence of mash, boil and hop visits. Boil
 
 The style picker includes all 200 guide-and-code entries in PicoBrew’s Beer Crafter, plus styles used in saved library recipes. Entering a custom style leaves its analytical targets unspecified.
 
+## Machine programs
+
+In **Recipes → Add recipe → Create a machine program**, choose the intended brewer. Pico S, Pro and C use direct keg, mash and adjunct routes. The stock Zymatic editor uses its menu protocol, including operator pauses. Z Program Maker supports active steps, operator pauses, beer setup and the PicoPak adjunct setting. Locations 1 and 2 on a Z are the keg and mash basket. Locations 3–6 select hop compartments 1–4. The file records Celsius and seconds regardless of the units displayed in the editor.
+
+Import original Program Maker JSON from the library. Use the Z export to open a program in a stock 0.0.119 brewer’s Program Maker. That export checks the stock receiver’s 2,048-byte body and 64-entry JSON pool. Programs that fit the standalone Z can exceed those stock limits. For a connected standalone Z advertising Program Maker support, **Send** checks the device capabilities and verifies the saved program by reading it back. A successful transfer leaves brewing under the operator’s control.
+
 ## Ingredient sources
 
 The 1,316 public ingredient recipes in the bundled catalog are archived PicoBrew public recipes. Their detail pages link to the corresponding [PicoBrew Public Recipes](https://picobrew.com/publicrecipes/publicrecipes) record by GUID. Recipes originating in kits retain their original machine schedules. Published ingredient names and styles for matched kits are stored separately in [Marketplace facts](../internal/catalog/data/marketplace.json), with a link to each [PicoBrew Marketplace](https://picobrew.com/BrewMarketplace/Index.cshtml) product. Each match requires the kit name and the original PicoBeerID across every grouped source record. The generic ID 50 is excluded. Published names without weights are displayed as ingredient references and do not contribute invented quantities to shopping lists, brewing calculations or machine instructions.

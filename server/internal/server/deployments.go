@@ -229,7 +229,9 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				switch {
 				case seen[native.ID]:
 					item.Reason = "Another selected recipe uses this machine recipe ID"
-				case len(native.Steps) > caps.StepCapacity:
+				case native.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker):
+					item.Reason = "This brewer does not support Z Program Maker programs"
+				case native.StepCount() > caps.StepCapacity:
 					item.Reason = "Recipe exceeds the machine's step capacity"
 				case hasZeroMinuteSteps(native) && !caps.ZeroMinuteSteps:
 					item.Reason = "Update the machine firmware to support zero-minute heating steps"
@@ -347,7 +349,7 @@ func (s *Server) executeDeployment(w http.ResponseWriter, r *http.Request) {
 		if item.Status != "ready" {
 			continue
 		}
-		if item.Native == nil || len(item.Native.Steps) > caps.StepCapacity || hasZeroMinuteSteps(*item.Native) && !caps.ZeroMinuteSteps {
+		if item.Native == nil || item.Native.StepCount() > caps.StepCapacity || item.Native.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker) || hasZeroMinuteSteps(*item.Native) && !caps.ZeroMinuteSteps {
 			s.fail(w, 409, "capabilities_changed", "The machine's step capabilities changed after this preview; prepare it again")
 			return
 		}

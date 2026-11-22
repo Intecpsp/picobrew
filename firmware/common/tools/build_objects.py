@@ -9,7 +9,7 @@ import subprocess
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ("api.cpp", "engine.cpp", "history.cpp", "history_records.cpp", "records.cpp", "telemetry.cpp", "values.cpp", "http_server.c")
 HEADERS = ("include/picobrew/device_services.hpp", "include/picobrew/standalone_engine.hpp", "include/picobrew/http_server.h",
-           "src/engine_internal.hpp", "src/json.hpp", "src/records.hpp")
+           "src/engine_internal.hpp", "src/json.hpp", "src/records.hpp", "src/recipe_record.hpp")
 
 
 def digest(path):

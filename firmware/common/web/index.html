@@ -75,8 +75,13 @@
         <div class="recipe-grid"><article class="card recipe-list-card"><div class="card-heading"><h2>Saved recipes</h2><span id="recipeCapacity" class="badge neutral">0 / 16</span></div><div id="recipeList" class="recipe-list"><p class="empty">Connect to load your collection.</p></div></article>
           <article class="card editor"><div class="card-heading"><h2 id="editorHeading">Recipe editor</h2><div class="button-group"><button id="importRecipe" class="button small">Import JSON</button><button id="exportRecipe" class="button small">Export</button></div></div>
             <form id="recipeForm"><div class="form-grid"><div><label for="recipeName">Recipe name</label><input id="recipeName" maxlength="31" required placeholder="My house pale ale"></div><div><label for="recipeId">Recipe ID</label><input id="recipeId" maxlength="20" pattern="[A-Za-z0-9_-]+" required placeholder="house-pale"></div></div>
-              <div class="steps-heading"><label>Brewing steps</label><button id="addStep" type="button" class="button small">+ Add step</button></div><div class="table-scroll"><table class="steps-table"><thead><tr><th>Step</th><th id="recipeRoutingHeader">Location</th><th>Target °F</th><th>Minutes</th><th>Drain min</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody id="steps"></tbody></table></div>
-              <p id="recipeRoutingHint" class="hint">Use verified locations 1–6 for this device.</p><p class="hint">Up to 15 steps. A target of 0 means unheated circulation. Changes can be saved while the brewer is idle.</p>
+              <div id="zProgramOptions" hidden>
+                <div class="form-grid"><label>Temperature units<select id="zUnits"><option value="C">Celsius (°C)</option><option value="F">Fahrenheit (°F)</option></select></label><button id="zSample" class="button small" type="button">Load sample program</button></div>
+                <label><input type="checkbox" id="zBeer"> Show beer setup instructions</label>
+                <label><input type="checkbox" id="zPak"> Use PicoPak adjunct compartments</label>
+              </div>
+              <div class="steps-heading"><label>Brewing steps</label><button id="addStep" type="button" class="button small">+ Add step</button></div><div class="table-scroll"><table class="steps-table"><thead><tr><th>Step</th><th id="zStepType" hidden>Type</th><th id="recipeRoutingHeader">Location</th><th id="stepTarget">Target °F</th><th id="stepTime">Minutes</th><th id="stepDrain">Drain min</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody id="steps"></tbody></table></div>
+              <p id="recipeRoutingHint" class="hint">Use verified locations 1–6 for this device.</p><p id="recipeLimits" class="hint">Up to 15 steps. A target of 0 means unheated circulation. Changes can be saved while the brewer is idle.</p>
               <div class="editor-actions"><button id="deleteRecipe" type="button" class="button text-danger" disabled>Delete recipe</button><button id="saveRecipe" type="submit" class="button primary" disabled>Save to Pico</button></div>
             </form>
           </article>

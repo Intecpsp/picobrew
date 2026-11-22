@@ -39,6 +39,8 @@ def main():
                     for name,fields in {'brew':['recipe_id'],'encoder':['delta','click'],'calibrate':['confirm'],'resume-interrupted':['confirm'],'set-sampling-interval':['value'],'set-pump':['enabled'],'set-fan':['channel','level','enabled']}.items():
                         if name in descriptors: descriptors[name]={'allowed':fields,'required':[] if name=='encoder' else fields[:2] if name=='set-fan' else fields}
                     info = {'api_version':1,'mode':'standalone','model':model,'model_name':{'z-series':'Pico Z','picoferm':'PicoFerm','picostill':'PicoStill'}[model],'model_family':model,'firmware_version':'1.2.0-fixture','commands':allowed,'command_fields':descriptors,'settings_fields':['temperature_unit','language','detailed_status'] if brewing else ['temperature_unit'],'recipe_capacity':16 if brewing else 0,'step_capacity':15 if brewing else 0,'front_panel':brewing,'telemetry_forwarding':True,'capabilities':{'recipes':brewing,'brewing':brewing,'heating':brewing,'front_panel':brewing,'temperature':True,'pressure':not brewing,'battery':model=='picoferm','fermentation':model=='picoferm','pump':model!='picoferm','fans':model=='picostill'}}
+                    info['z_program_maker']=brewing
+                    saved_recipes={}
                     sensors = [{'id':'temperature','label':'Temperature','kind':'temperature','unit':'F','value':68.5},{'id':'pressure_native','label':'Pressure','kind':'pressure','unit':'raw','value':532.125},{'id':'battery','label':'Battery','kind':'voltage','unit':'V','value':3.8}] if model=='picoferm' else [{'id':'inlet','label':'Inlet','kind':'temperature','unit':'F','value':152.1},{'id':'outlet','label':'Outlet','kind':'temperature','unit':'F','value':145.2},{'id':'pot','label':'Pot','kind':'temperature','unit':'F','value':170.4},{'id':'ambient','label':'Ambient','kind':'temperature','unit':'F','value':68.1},{'id':'pressure','label':'Pressure','kind':'pressure','unit':'kPa','value':6.89}]
                     actuators=[] if model!='picostill' else [{'id':'pump','label':'Pump','kind':'pump','enabled':False,'level':None,'rpm':None},{'id':'fan1','label':'Fan 1','kind':'fan','enabled':True,'level':25,'rpm':1200},{'id':'fan2','label':'Fan 2','kind':'fan','enabled':False,'level':0,'rpm':0}]
                     status={'model':model,'model_name':info['model_name'],'model_family':model,'ready':True,'busy':False,'stopped':False,'state':'idle','device_uid':'fixture-device','command':'idle','device_state':0,'phase':4,'current_step':-1,'step_count':0,'step_seconds':0,'wort_f':72 if brewing else None,'thermoblock_f':73 if brewing else None,'target_f':0 if brewing else None,'temperature_f':68.5,'pressure_kpa':None if model=='picoferm' else 6.89,'battery_v':3.8 if model=='picoferm' else None,'filter_inserted':None,'sensors':[] if brewing else sensors,'actuators':actuators}
@@ -55,7 +57,15 @@ def main():
                         if path=='': result=info
                         elif path=='/status':result=status
                         elif path=='/settings':result={'temperature_unit':'F','language':'en','detailed_status':False} if brewing else {'temperature_unit':'F'}
-                        elif path=='/recipes':result={'capacity':16,'recipes':[]}
+                        elif path=='/recipes':
+                            result={'capacity':16,'recipes':[{'id':key,'name':program['Name'],'steps':len(program['Steps'])} for key,program in saved_recipes.items()]}
+                        elif path.startswith('/recipes/'):
+                            key=path.rsplit('/',1)[1]
+                            if request.method=='PUT':
+                                payload=request.post_data_json
+                                assert payload.get('create_only') == (True if key not in saved_recipes else None)
+                                saved_recipes[key]=payload['z_program']
+                            result={'id':key,'z_program':saved_recipes[key]}
                         elif path=='/telemetry':result={'enabled':False,'host':'','port':8080,'status':{'state':'disabled'}}
                         elif path=='/commands':
                             body=request.post_data_json;commands.append(body);result={'accepted':True,'command':body['command']};code=202
@@ -107,6 +117,31 @@ def main():
                         expect(page.locator('#recoveryPanel')).to_be_hidden()
                         assert commands[-1]=={'command':'discard-interrupted'}
                         expect(page.locator('#runProgram')).to_be_enabled()
+                        page.locator('[data-tab="recipes"]').click()
+                        page.locator('#newRecipe').click()
+                        expect(page.locator('#zProgramOptions')).to_be_visible()
+                        page.locator('#zSample').click()
+                        expect(page.locator('#steps tr')).to_have_count(7)
+                        original={'Name':'Original hops','IsBeer':False,'UsePicoPakMode':True,'IsMetric':True,
+                                  'Steps':[{'Name':'Fourth compartment','StepType':1,'Location':6,'Temp':67.1,'Time':5401,'Drain':61},
+                                           {'Name':'Add berries','StepType':2},{'Name':'Cold','StepType':1,'Location':1,'Temp':None,'Time':86400,'Drain':7200}]}
+                        page.once('dialog',lambda d:d.accept())
+                        page.locator('#importFile').set_input_files({'name':'program.json','mimeType':'application/json','buffer':json.dumps(original).encode()})
+                        expect(page.locator('#steps tr')).to_have_count(3)
+                        expect(page.get_by_label('Duration in minutes and seconds').first).to_have_value('90:01')
+                        expect(page.get_by_label('Flow path').nth(1)).to_be_disabled()
+                        page.locator('#zUnits').select_option('F')
+                        expect(page.get_by_label('Target temperature').first).to_have_value('152.78')
+                        page.locator('#zUnits').select_option('C')
+                        with page.expect_download() as downloaded:
+                            page.locator('#exportRecipe').click()
+                        assert json.loads(downloaded.value.path().read_text()) == original
+                        page.locator('#saveRecipe').click()
+                        expect(page.locator('#notice')).to_contain_text('Recipe saved')
+                        assert saved_recipes['original-hops']==original
+                        page.locator('#recipeList button').first.click()
+                        expect(page.locator('#editorHeading')).to_have_text('Edit recipe')
+                        page.locator('[data-tab="overview"]').click()
                         status['ready']=False
                         expect(page.locator('#runProgram')).to_be_disabled()
                         expect(page.locator('#stopButton')).to_be_enabled()

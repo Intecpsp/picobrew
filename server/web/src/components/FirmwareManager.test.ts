@@ -109,24 +109,38 @@ describe('Hub firmware packages', () => {
       hub_ota_protocol: 0,
       archive_sha256: '2'.repeat(64),
     }
+    const installed = { ...release, firmware_version: '1.2.9', archive_sha256: '3'.repeat(64) }
+    let current = installed.firmware_version
     const path = '/devices/pico-s/firmware'
     fetchMock.mockImplementation(async (url, opts) => {
       if (String(url).endsWith(path))
         return json({
           model: 'pico-s',
           device_uid: 'test-uid',
-          current_version: '1.3.0',
+          current_version: current,
           install_supported: true,
           packages: [uploaded],
         })
       if (String(url).endsWith('/firmware/updates'))
-        return json({ releases: [older, release], notices: [] })
+        return json({ releases: [older, installed, release], notices: [] })
       if (String(url).endsWith('/stage')) return json(uploaded)
-      if (String(url).endsWith('/install')) return json({ state: 'running' }, 202)
+      if (String(url).endsWith('/install')) {
+        current = release.firmware_version
+        return json({ state: 'running' }, 202)
+      }
       return response(url, opts)
     })
     show(createElement(MachineFirmwareDialog, { deviceID: 'pico-s', onClose: close }))
     const versions = await screen.findByLabelText('Firmware version')
+    await user.selectOptions(versions, '1.2.9 · Current version')
+    const disabledInstall = screen.getByRole('button', { name: 'Already installed' })
+    expect((disabledInstall as HTMLButtonElement).disabled).toBe(true)
+    expect((screen.getByRole('button', { name: 'Download' }) as HTMLButtonElement).disabled).toBe(
+      false
+    )
+    await user.click(disabledInstall)
+    expect(calls('/stage', 'POST')).toHaveLength(0)
+    expect(calls(path + '/install', 'POST')).toHaveLength(0)
     await user.selectOptions(versions, older.archive_sha256)
     expect(screen.queryByRole('button', { name: 'Install' })).toBeNull()
     await user.click(screen.getByRole('button', { name: 'Check for Updates' }))
@@ -142,6 +156,29 @@ describe('Hub firmware packages', () => {
       device_uid: 'test-uid',
       confirm: true,
     })
+    expect(
+      ((await screen.findByRole('button', { name: 'Already installed' })) as HTMLButtonElement)
+        .disabled
+    ).toBe(true)
+  })
+  it('allows finishing a pinned interrupted update even when the trial app reports the target version', async () => {
+    const path = '/devices/pico-s/firmware'
+    fetchMock.mockImplementation(async (url, opts) => {
+      if (String(url).endsWith(path))
+        return json({
+          model: 'pico-s',
+          device_uid: 'test-uid',
+          current_version: uploaded.firmware_version,
+          install_supported: true,
+          retry_package_id: uploaded.id,
+          packages: [{ ...uploaded, hub_ota_protocol: 1 }],
+        })
+      if (String(url).endsWith('/install')) return json({ state: 'running' }, 202)
+      return response(url, opts)
+    })
+    show(createElement(MachineFirmwareDialog, { deviceID: 'pico-s', onClose: close }))
+    await userEvent.setup().click(await screen.findByRole('button', { name: 'Resume update' }))
+    expect(calls(path + '/install', 'POST')).toHaveLength(1)
   })
   it('requires an independent controller selection once and never installs firmware', async () => {
     const user = userEvent.setup()

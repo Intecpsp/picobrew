@@ -21,6 +21,34 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 )
 
+func TestMatchingLiveVersionNeverEntersRecovery(t *testing.T) {
+	pkg := firmware.UpdatePayload{Candidate: firmware.Candidate{Model: "pico-s", FirmwareVersion: "1.3.3", BinarySHA256: strings.Repeat("b", 64)}}
+	identity := otaIdentity{UID: "brewer", Model: pkg.Model, Digest: strings.Repeat("a", 64)}
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == "GET" && r.URL.Path == "/api/v1/ota":
+			json.NewEncoder(w).Encode(otaState{otaIdentity: identity, Size: 256, OK: true})
+		case r.Method == "GET" && r.URL.Path == "/api/v1":
+			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "firmware_version": pkg.FirmwareVersion, "hub_ota_v1": true})
+		default:
+			t.Errorf("unexpected request: %s %s", r.Method, r.URL.Path)
+			w.WriteHeader(404)
+		}
+	}))
+	defer server.Close()
+	p, err := newPico(server.URL, strings.Repeat("a", 64), true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, stage := range []string{"", "transferring", "selecting", "confirming"} {
+		err := p.InstallFirmware(context.Background(), identity.UID, pkg, stage, nil)
+		problem, ok := err.(*Error)
+		if !ok || problem.Code != "firmware_already_installed" {
+			t.Fatalf("stage %q: %v", stage, err)
+		}
+	}
+}
+
 // The component's standalone tests run without a compiler or firmware checkout.
 // CI also runs this test against the actual recovery dispatcher and flash model.
 func TestHubOTAWithNativeRecovery(t *testing.T) {
@@ -126,7 +154,11 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 		case "/api/v1/status":
 			json.NewEncoder(w).Encode(map[string]any{"device_uid": uid, "model": pkg.Model, "ready": true})
 		case "/api/v1":
-			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "firmware_version": pkg.FirmwareVersion, "hub_ota_v1": true})
+			version := pkg.FirmwareVersion
+			if state == "normal" {
+				version = "1.2.0"
+			}
+			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "firmware_version": version, "hub_ota_v1": true})
 		default:
 			w.WriteHeader(404)
 		}

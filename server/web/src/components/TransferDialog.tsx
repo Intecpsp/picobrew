@@ -6,7 +6,7 @@ import { api, errorMessage } from '../lib/api'
 import { formatVolume } from '../lib/recipeDisplay'
 import { supports } from '../lib/capabilities'
 import { isNative, kindLabel } from '../lib/programs'
-import type { BulkDeployment, Recipe } from '../types'
+import type { BulkDeployment, Device, Recipe } from '../types'
 import { Badge, Button, Empty, ErrorBanner, Field, Modal } from './ui'
 import { ProgramTable } from './Program'
 
@@ -41,11 +41,17 @@ export function TransferDialog({
   onComplete?: () => void
 }) {
   const hub = useHub()
+  const [selection, setSelection] = useState(initialSelection || [])
+  const chosen = recipes.filter((recipe) => selection.includes(recipe.id))
+  const requiresZ = chosen.some((r) => !!r.native_program?.z_program)
+  const canReceive = (d: Device) =>
+    supports(d.capabilities, 'recipes') &&
+    (!requiresZ || (d.model === 'z-series' && supports(d.capabilities, 'z_program_maker')))
   const [deviceID, setDeviceID] = useState(
     initialDeviceID ||
       hub.devices.find(
         (device) =>
-          supports(device.capabilities, 'recipes') &&
+          canReceive(device) &&
           device.online &&
           device.status?.ready &&
           !device.status?.busy &&
@@ -53,7 +59,6 @@ export function TransferDialog({
       )?.id ||
       ''
   )
-  const [selection, setSelection] = useState(initialSelection || [])
   const [batches, setBatches] = useState<Record<string, string>>({})
   const [overwrite, setOverwrite] = useState(false)
   const [plan, setPlan] = useState<BulkDeployment | null>(null)
@@ -62,7 +67,7 @@ export function TransferDialog({
   const [error, setError] = useState('')
   const [query, setQuery] = useState('')
   const [readingReceipt, setReadingReceipt] = useState(false)
-  const target = hub.devices.find((device) => device.id === deviceID)
+  const target = hub.devices.find((device) => device.id === deviceID && canReceive(device))
   const ready =
     supports(target?.capabilities, 'recipes') &&
     target?.online &&
@@ -74,7 +79,6 @@ export function TransferDialog({
       .toLowerCase()
       .includes(query.toLowerCase())
   )
-  const chosen = recipes.filter((recipe) => selection.includes(recipe.id))
   const lastReceipt = savedReceipt(deviceID)
   async function preview() {
     if (!target) return
@@ -157,7 +161,7 @@ export function TransferDialog({
       setBusy('')
     }
   }
-  if (deviceID === stockTarget)
+  if (deviceID === stockTarget && !requiresZ)
     return (
       <StockZymaticTransfer
         recipes={recipes}
@@ -229,8 +233,8 @@ export function TransferDialog({
       }
     >
       <p>
-        Send saved recipes to the machine’s local catalog. Programs remain available from its Brew
-        PicoPak menu and its browser interface.
+        Send saved recipes to the machine’s local catalog. Programs remain available from its front
+        panel and browser interface.
       </p>
       <ErrorBanner message={error} />
       {!plan ? (
@@ -238,21 +242,25 @@ export function TransferDialog({
           <Field label="Transfer to machine">
             <select
               disabled={!!busy}
-              value={deviceID}
+              value={target?.id || ''}
               onChange={(event) => setDeviceID(event.target.value)}
             >
               <option value="">Choose a machine</option>
-              <option value={stockTarget}>Stock Zymatic · sync menu</option>
-              {hub.devices
-                .filter((device) => supports(device.capabilities, 'recipes'))
-                .map((device) => (
-                  <option key={device.id} value={device.id}>
-                    {device.name}
-                    {device.online ? '' : ' (offline)'}
-                  </option>
-                ))}
+              {!requiresZ && <option value={stockTarget}>Stock Zymatic · sync menu</option>}
+              {hub.devices.filter(canReceive).map((device) => (
+                <option key={device.id} value={device.id}>
+                  {device.name}
+                  {device.online ? '' : ' (offline)'}
+                </option>
+              ))}
             </select>
           </Field>
+          {requiresZ && !hub.devices.some(canReceive) && (
+            <p className="notice">
+              This program requires a Z that reports Z Program Maker support. For an original Z with
+              Program Maker, export the program JSON and import it on the brewer.
+            </p>
+          )}
           {target && !ready && (
             <p className="notice">
               {target.name} must be online and idle at its ready main menu before a transfer can be
@@ -320,7 +328,10 @@ export function TransferDialog({
                     <span>
                       <strong>{recipe.name}</strong>
                       <small>
-                        {kindLabel(recipe.kind, recipe.source_model)} · revision {recipe.revision}
+                        {recipe.native_program?.z_program
+                          ? 'Z Program Maker'
+                          : kindLabel(recipe.kind, recipe.source_model)}{' '}
+                        · revision {recipe.revision}
                         {isNative(recipe) ? ' · exact schedule' : ''}
                       </small>
                     </span>

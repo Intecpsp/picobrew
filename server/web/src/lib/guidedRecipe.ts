@@ -40,6 +40,7 @@ export function initialGuide(): GuidedDraft {
 // Most frequent four-rest mash in the archived PicoPak programs. The Z and
 // Zymatic base recipes use a single infusion for 11 of their 12 beer styles.
 export function mashSchedule(draft: GuidedDraft, profile: Profile): MashRest[] {
+  if (kegOnly(draft.grains)) return []
   if (draft.customMash) return draft.rests
   const rest = (name: string, fahrenheit: number, minutes: number) => ({
     name,
@@ -139,7 +140,11 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
     batch_liters: draft.batch === '' ? profile.batch_liters : Number(draft.batch),
     efficiency: profile.efficiency,
     boil_minutes: boil,
-    type: 'All Grain',
+    type: kegOnly(grains)
+      ? 'Extract'
+      : grains.some((g) => /extract/i.test(grainInfo(g.name)?.type ?? ''))
+        ? 'Partial Mash'
+        : 'All Grain',
     ingredients: [
       ...grains.map((g) => ({
         ...ingredientDefaults('fermentable', g.name),
@@ -223,6 +228,7 @@ export function totalWeight(grains: Grain[]) {
 }
 
 export const isKegAddition = (g: Grain) => goesInKeg(grainInfo(g.name)?.type)
+export const kegOnly = (grains: Grain[]) => grains.length > 0 && grains.every(isKegAddition)
 export const basketWeight = (grains: Grain[]) =>
   totalWeight(grains.filter((g) => !isKegAddition(g)))
 
@@ -232,12 +238,19 @@ export function grainOverLimit(grains: Grain[], profile: Profile) {
 
 export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number): string {
   const recipe = guidedRecipe(draft, profile)
+  const validText = (value: string) =>
+    !value.includes('\0') && new TextEncoder().encode(value).length <= 512
+  if (!validText(recipe.name))
+    return 'Use a recipe name of at most 512 bytes without null characters.'
   if (!recipe.name) return 'Give the recipe a name.'
   if (!(recipe.batch_liters > 0 && recipe.batch_liters <= profile.batch_liters))
     return 'Choose a batch size within the brewer’s capacity.'
   if (stage === 0) return ''
   if (!draft.grains.length || draft.grains.some((g) => !g.name.trim() || !(Number(g.amount) > 0)))
     return 'Enter a name and weight for each grain.'
+  if (recipe.ingredients.length > 512) return 'Use at most 512 ingredients in one recipe.'
+  if (recipe.ingredients.some((item) => !validText(item.name) || !Number.isFinite(item.amount)))
+    return 'Each ingredient needs a valid name of at most 512 bytes and a finite weight.'
   if (grainOverLimit(draft.grains, profile))
     return 'The grain bill exceeds this brewer’s configured capacity.'
   const boil = Number(draft.boil)
@@ -279,7 +292,8 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
   )
     return 'Stock Zymatic allows at most 255 minutes in one boil or hop step.'
   if (stage === 1) return ''
-  if (!mashSchedule(draft, profile).length) return 'Add at least one mash rest.'
+  if (!kegOnly(draft.grains) && !mashSchedule(draft, profile).length)
+    return 'Add at least one mash rest.'
   if (profile.id === 'zymatic' && mashSchedule(draft, profile).some((r) => Number(r.minutes) > 255))
     return 'Stock Zymatic allows at most 255 minutes in one mash rest.'
   if (

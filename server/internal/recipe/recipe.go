@@ -471,6 +471,18 @@ func NativeJSON(r domain.MachineRecipe) ([]byte, error) {
 		}
 		return true
 	}
+	if r.ZProgram != nil {
+		if !nativeID.MatchString(r.ID) || r.Name != r.ZProgram.Name || len(r.Steps) != 0 {
+			return nil, errors.New("invalid Z program identity or conflicting steps")
+		}
+		if err := r.ZProgram.Validate(); err != nil {
+			return nil, err
+		}
+		return json.Marshal(struct {
+			ID string           `json:"id"`
+			Z  *domain.ZProgram `json:"z_program"`
+		}{r.ID, r.ZProgram})
+	}
 	if !nativeID.MatchString(r.ID) || !validLabel(r.Name, 31) || len(r.Steps) < 1 || len(r.Steps) > 15 {
 		return nil, errors.New("invalid native recipe id, name or step count")
 	}
