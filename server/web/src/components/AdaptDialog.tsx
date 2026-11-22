@@ -5,51 +5,41 @@ import { useHub } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
 import { isNative, routeLabel } from '../lib/programs'
 import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
-import type { Adapted, Profile, Recipe } from '../types'
+import { beerStats } from '../lib/beerCrafter'
+import type { Adapted, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
-
-function validBatch(value: string, profile?: Profile) {
-  const amount = Number(value)
-  return !!profile && Number.isFinite(amount) && amount > 0 && amount <= profile.batch_liters
-}
 
 export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
   const hub = useHub()
   const native = isNative(recipe)
   const modelProfile = (model: string) => (model === 'z-series' ? 'z' : model)
-  const source = !native && hub.profiles.find((p) => p.id === recipe.source_model)
-  const first = hub.devices.find(
-    (device) =>
-      device.online &&
-      (source
-        ? modelProfile(device.model) === source.id
-        : hub.profiles.some((p) => p.id === modelProfile(device.model)))
+  const supported = hub.devices.filter((d) =>
+    hub.profiles.some((p) => p.id === modelProfile(d.model))
   )
+  const first =
+    supported.find((d) => d.online && modelProfile(d.model) === recipe.source_model) ||
+    supported.find((d) => d.online) ||
+    supported[0]
   const [deviceID, setDeviceID] = useState(first?.id || '')
-  const [profileID, setProfileID] = useState(
-    (source && source.id) || (first && modelProfile(first.model)) || hub.profiles[0]?.id || ''
-  )
-  const profile = hub.profiles.find((item) => item.id === profileID)
-  const [batch, setBatch] = useState('')
+  const target = hub.devices.find((d) => d.id === deviceID)
+  const profile = hub.profiles.find((p) => target && p.id === modelProfile(target.model))
+  const profileID = profile?.id
   const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
   const [sent, setSent] = useState<{ machine: string; path: string; program: string } | null>(null)
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
   const requestID = useRef(0)
   const previewController = useRef<AbortController | null>(null)
-  const target = hub.devices.find((device) => device.id === deviceID)
   const needsReady = target?.status?.busy || target?.status?.stopped || !target?.status?.ready
-  const batchLiters = native ? 0 : Number(batch)
-  const batchValid = native || batch === '' || validBatch(batch, profile)
   const inputKey = JSON.stringify({
     recipe: [recipe.id, recipe.revision, recipe.kind],
     deviceID,
     profile,
-    batch: native ? 0 : batch,
   })
   const latestKey = useRef(inputKey)
   latestKey.current = inputKey
   const adapted = previewResult?.key === inputKey ? previewResult.value : null
+  const stats = adapted && !native ? beerStats(adapted.recipe) : null
   const canSend = !!(
     adapted?.can_deploy &&
     adapted.machine_recipe &&
@@ -57,7 +47,6 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     target?.online &&
     !needsReady &&
     modelProfile(target.model) === profileID &&
-    batchValid &&
     !busy
   )
 
@@ -71,10 +60,6 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   }
 
   useEffect(() => {
-    setBatch((current) => (validBatch(current, profile) ? current : ''))
-  }, [profileID, profile?.batch_liters])
-
-  useEffect(() => {
     invalidatePreview()
     return () => {
       requestID.current++
@@ -83,7 +68,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   }, [inputKey])
 
   async function preview() {
-    if (!profile || !batchValid || busy) return
+    if (!profile || busy) return
     const key = inputKey
     const id = ++requestID.current
     const controller = new AbortController()
@@ -95,7 +80,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     try {
       const result = await api<Adapted>(`/recipes/${recipe.id}/adapt`, {
         method: 'POST',
-        body: { profile_id: profileID, batch_liters: batchLiters },
+        body: { profile_id: profileID, batch_liters: 0 },
         signal: controller.signal,
       })
       if (id === requestID.current && key === latestKey.current && !controller.signal.aborted)
@@ -123,7 +108,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
           body: {
             recipe_id: recipe.id,
             profile_id: adapted.profile.id,
-            batch_liters: batchLiters,
+            batch_liters: 0,
             source_revision: adapted.source_revision,
             profile_fingerprint: adapted.profile_fingerprint,
           },
@@ -187,7 +172,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     )
   return (
     <Modal
-      title="Adapt the recipe. Choose its brewer."
+      title="Send recipe"
       onClose={onClose}
       wide
       actions={
@@ -201,8 +186,8 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
               {busy === 'deploy' ? 'Sending…' : 'Send to machine'}
             </Button>
           ) : (
-            <Button disabled={!profile || !batchValid || !!busy} onClick={() => void preview()}>
-              {busy === 'preview' ? 'Adapting…' : 'Preview adaptation'}
+            <Button disabled={!profile || !!busy} onClick={() => void preview()}>
+              {busy === 'preview' ? 'Adapting…' : 'Preview recipe'}
               <ArrowUpRight size={16} />
             </Button>
           )}
@@ -211,81 +196,40 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     >
       <p>
         {native
-          ? 'This native program retains its exact temperatures, timing and routing. No batch or ingredient scaling is performed.'
-          : 'Ingredient amounts are scaled for the selected batch and equipment profile. Recipes without verified chamber mappings remain available for planning.'}{' '}
-        Sending a recipe never starts the brewer.
+          ? 'The original PicoPak schedule is sent as recorded.'
+          : 'Ingredients scale together to fit the selected brewer’s grain and hop capacities. The preview shows quantities and estimated yield.'}
       </p>
-      <div className="form-grid">
-        <Field label="Target machine">
-          <select
-            value={deviceID}
-            disabled={busy === 'deploy'}
-            onChange={(event) => {
-              invalidatePreview()
-              const machine = hub.devices.find((device) => device.id === event.target.value)
-              setDeviceID(event.target.value)
-              if (machine) setProfileID(modelProfile(machine.model))
-            }}
-          >
-            <option value="">Planning only</option>
-            <option value={stockTarget}>Stock Zymatic · sync menu</option>
-            {hub.devices.map((device) => (
-              <option key={device.id} value={device.id} disabled={!device.model}>
-                {device.name}
-                {!device.model ? ' (model not identified)' : device.online ? '' : ' (offline)'}
-              </option>
-            ))}
-          </select>
-        </Field>
-        <Field label="Equipment profile">
-          <select
-            value={profileID}
-            disabled={busy === 'deploy'}
-            onChange={(event) => {
-              invalidatePreview()
-              const nextProfileID = event.target.value
-              setProfileID(nextProfileID)
-              if (target && modelProfile(target.model) !== nextProfileID) setDeviceID('')
-            }}
-          >
-            {hub.profiles.map((item) => (
-              <option key={item.id} value={item.id}>
-                {item.name}
-                {item.control_supported
-                  ? ''
-                  : item.id === 'zymatic'
-                    ? ' · stock menu'
-                    : ' · planning & export'}
-              </option>
-            ))}
-          </select>
-        </Field>
-        {!native && (
-          <Field
-            label="Target batch size (L)"
-            hint={`Leave blank to fit the grain bill and hop slots. Source yield: ${formatVolume(recipe.batch_liters)}.`}
-          >
-            <input
-              type="number"
-              min="0"
-              max={profile?.batch_liters}
-              step="any"
-              value={batch}
-              placeholder="Automatic"
-              disabled={busy === 'deploy'}
-              onChange={(event) => {
-                invalidatePreview()
-                setBatch(event.target.value)
-              }}
-            />
-          </Field>
-        )}
-      </div>
-      {!batchValid && profile && (
-        <ErrorBanner
-          message={`Enter a positive target batch no larger than the profile's ${profile.batch_liters} L limit.`}
-        />
-      )}
+      <Field label="Target machine">
+        <select
+          value={deviceID}
+          disabled={busy === 'deploy'}
+          onChange={(event) => {
+            invalidatePreview()
+            setDeviceID(event.target.value)
+          }}
+        >
+          <option value="" disabled>
+            Choose a machine
+          </option>
+          <option value={stockTarget}>Stock Zymatic · sync menu</option>
+          {hub.devices.map((device) => (
+            <option
+              key={device.id}
+              value={device.id}
+              disabled={!supported.some((d) => d.id === device.id)}
+            >
+              {device.name}
+              {!device.model
+                ? ' (model not identified)'
+                : !supported.some((d) => d.id === device.id)
+                  ? ' (unsupported model)'
+                  : device.online
+                    ? ''
+                    : ' (offline)'}
+            </option>
+          ))}
+        </select>
+      </Field>
       <ErrorBanner message={error} />
       {adapted && (
         <>
@@ -299,6 +243,17 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                 : `Estimated yield ${formatVolume(adapted.recipe.batch_liters)} · ${formatNumber(adapted.recipe.efficiency)}% efficiency`}
             </strong>
           </div>
+          {stats && (stats.og !== null || stats.ibu !== null) && (
+            <p>
+              {[
+                stats.og !== null && 'Estimated original gravity ' + stats.og.toFixed(3),
+                stats.ibu !== null &&
+                  'Estimated boil bitterness ' + formatNumber(stats.ibu, 1) + ' IBU',
+              ]
+                .filter(Boolean)
+                .join(' · ')}
+            </p>
+          )}
           {!!adapted.deployment_blockers?.length && (
             <section aria-label="Deployment blockers">
               <h3>Deployment blocked</h3>
@@ -314,7 +269,10 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
               {warning}
             </p>
           ))}
-          {needsReady && target && (
+          {target && !target.online && (
+            <p className="notice">{target.name} is offline. Reconnect it to send this recipe.</p>
+          )}
+          {needsReady && target?.online && (
             <p className="notice">
               {target.name} must be idle and ready at its main menu before deployment.
             </p>

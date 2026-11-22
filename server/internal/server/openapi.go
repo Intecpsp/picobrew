@@ -28,7 +28,7 @@ var endpoints = []endpoint{
 	{"GET", "/devices", "List fleet status", nil}, {"POST", "/devices", "Register a machine", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "api_key": "64-hex-character-device-key", "location": "Brew room"}},
 	{"GET", "/devices/{id}", "Read one machine", nil}, {"PUT", "/devices/{id}", "Update a machine connection", map[string]any{"name": "My Pico", "model": "", "adapter": "pico-standalone", "base_url": "http://192.168.1.50", "location": "Brew room"}}, {"DELETE", "/devices/{id}", "Remove an idle machine", nil}, {"POST", "/devices/{id}/test", "Probe connection and discover capabilities", map[string]any{}}, {"GET", "/devices/{id}/display", "Read raw OLED framebuffer and display geometry", nil}, {"POST", "/devices/{id}/commands", "Queue a capability-checked command once", map[string]any{"command": "encoder", "delta": 1}}, {"GET", "/devices/{id}/recipes", "Read recipes stored on the appliance", nil}, {"GET", "/devices/{id}/settings", "Read device preferences", nil}, {"PATCH", "/devices/{id}/settings", "Update device preferences", map[string]any{"temperature_unit": "F"}}, {"GET", "/devices/{id}/telemetry", "Read the saved live-data receiver settings", nil}, {"PUT", "/devices/{id}/telemetry", "Save live-data receiver settings and apply them when the machine is available", map[string]any{"enabled": true, "host": "192.168.1.20", "port": 8080}}, {"POST", "/devices/{id}/sync-history", "Archive retained device history", map[string]any{}}, {"POST", "/devices/{id}/deploy", "Compile and deploy a reviewed recipe without starting it", map[string]any{"recipe_id": "recipe-id", "profile_id": "pico-pro", "batch_liters": 5, "source_revision": 1}},
 	{"GET", "/profiles", "List planning and control capabilities by model", nil}, {"GET", "/recipes", "List shared recipes", nil}, {"POST", "/recipes", "Create a recipe", map[string]any{"name": "New recipe", "batch_liters": 5, "efficiency": 55, "ingredients": []any{}, "steps": []any{map[string]any{"name": "Mash", "kind": "mash", "target_c": 67, "minutes": 60, "location": 0, "drain_minutes": 0}}}}, {"GET", "/recipes/{id}", "Read a recipe", nil}, {"PUT", "/recipes/{id}", "Save a recipe using its current revision", map[string]any{"revision": 1}}, {"DELETE", "/recipes/{id}", "Remove a recipe from the library", nil}, {"POST", "/recipes/import", "Import JSON or BeerXML", map[string]any{"format": "beerxml", "data": "<RECIPES>...</RECIPES>"}}, {"POST", "/recipes/{id}/adapt", "Preview a machine-specific recipe adaptation", map[string]any{"profile_id": "pico-pro", "batch_liters": 5}}, {"GET", "/recipes/{id}/export", "Export recipe as JSON or BeerXML (?format=)", nil}, {"GET", "/recipes/{id}/revisions", "Read saved recipe revisions", nil},
-	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
+	{"GET", "/brews", "List aggregated brew history", nil}, {"GET", "/brews/{id}", "Read all recorded sensors and phases for a brew", nil}, {"PATCH", "/brews/{id}", "Save tasting notes and rating", map[string]any{"notes": "", "rating": 4}}, {"POST", "/brews/{id}/conditioning", "Update manual fermentation and carbonation progress", nil}, {"GET", "/brews/{id}/export", "Export full telemetry (?format=csv|json)", nil}, {"GET", "/events", "Stream fleet updates using server-sent events", nil},
 	{"POST", "/telemetry", "Receive unsigned observation-only Pico forwarding", map[string]any{"schema_version": 1, "firmware_version": "1.0.0", "status": map[string]any{"device_uid": "known-uid"}}}, {"GET", "/ai/settings", "Read redacted AI provider configuration", nil}, {"PUT", "/ai/settings", "Configure optional subscription or API-key access", map[string]any{"provider": "openai", "model": "your-model", "api_key": "your-api-key", "enabled": true, "monitor_enabled": false}}, {"POST", "/ai/assist", "Generate a draft, assess live telemetry, or analyze a completed brew", map[string]any{"mode": "recipe", "prompt": "Draft a five-liter porter"}}, {"GET", "/backup", "Export records and telemetry without credentials", nil}, {"GET", "/shopping-list", "Aggregate ingredients (?recipes=id1,id2)", nil}, {"GET", "/openapi.json", "Read this API catalog", nil},
 	{"GET", "/ai/advice", "Read up to 500 retained AI advice records, filtered by machine, brew and mode", nil},
 	{"GET", "/devices/{id}/ai-monitor", "Read session-specific AI monitoring and current verified brew", nil},
@@ -195,7 +195,7 @@ func (r *schemaRegistry) properties(name string) schemaMap {
 
 func buildSchemas() schemaMap {
 	r := &schemaRegistry{values: schemaMap{}}
-	for _, value := range []any{domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, ai.SubscriptionStatus{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
+	for _, value := range []any{ConditioningInput{}, domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, ai.SubscriptionStatus{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
 		r.describe(reflect.TypeOf(value))
 	}
 	// Preserve the previously published schema name while sharing this record
@@ -459,6 +459,8 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "AdaptInput"
 	case "/recipes/import":
 		name = "ImportInput"
+	case "/brews/{id}/conditioning":
+		name = "ConditioningInput"
 	case "/brews/{id}":
 		name = "BrewNotes"
 	case "/telemetry":
@@ -582,6 +584,8 @@ func successResponses(e endpoint) schemaMap {
 		schema = schemaArray(schemaRef("Recipe"))
 	case "/brews":
 		schema = schemaArray(schemaRef("Brew"))
+	case "/brews/{id}/conditioning":
+		schema = schemaRef("Conditioning")
 	case "/brews/{id}":
 		if e.method == "PATCH" {
 			schema = schemaRef("Brew")

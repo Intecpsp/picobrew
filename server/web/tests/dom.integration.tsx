@@ -326,7 +326,7 @@ describe('community catalog and local recipe slots', () => {
       expect(saved.provenance.catalog_id).toBe('picopak-64')
       expect(saved.notes).toBe('Exact original program retained.')
 
-      await user.click(screen.getByRole('button', { name: 'Preview & send' }))
+      await user.click(screen.getByRole('button', { name: 'Send' }))
       let dialog = await screen.findByRole('dialog', { name: 'Send recipes & programs' })
       await user.selectOptions(
         within(dialog).getByLabelText('Transfer to machine', { exact: true }),
@@ -382,7 +382,7 @@ describe('community catalog and local recipe slots', () => {
       ).toBe('Pico Pale')
 
       window.location.hash = `/recipes/${recipeID}`
-      await user.click(await screen.findByRole('button', { name: 'Preview & send' }))
+      await user.click(await screen.findByRole('button', { name: 'Send' }))
       dialog = await screen.findByRole('dialog', { name: 'Send recipes & programs' })
       await user.selectOptions(
         within(dialog).getByLabelText('Transfer to machine', { exact: true }),

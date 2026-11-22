@@ -49,10 +49,13 @@ func validateNativeLibrary(r domain.Recipe) error {
 	default:
 		return errors.New("native program requires an explicit supported source_model")
 	}
+	if r.Kind == "maintenance" && (len(r.Fermentation) > 0 || r.Carbonation != (domain.Carbonation{})) {
+		return errors.New("cleaning programs cannot have a fermentation or carbonation plan")
+	}
 	if r.NativeProgram == nil {
 		return errors.New("native program data is required")
 	}
-	if len(r.Steps) != 0 || len(r.Ingredients) != 0 || len(r.Fermentation) != 0 || len(r.Water) != 0 || r.BoilLiters != 0 || r.BoilMinutes != 0 || r.Type != "" || r.Carbonation != (domain.Carbonation{}) {
+	if len(r.Steps) != 0 || len(r.Ingredients) != 0 || len(r.Water) != 0 || r.BoilLiters != 0 || r.BoilMinutes != 0 || r.Type != "" {
 		return errors.New("program-only records cannot also contain a canonical ingredient/step plan; keep source notes or create a separate complete recipe")
 	}
 	if r.BatchLiters != 0 || r.Efficiency != 0 {

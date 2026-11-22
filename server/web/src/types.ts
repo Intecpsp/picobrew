@@ -252,7 +252,21 @@ export interface Sample {
   device_state: number
   source: string
 }
+export interface Conditioning {
+  revision: number
+  recipe_name?: string
+  recipe_revision?: number
+  stages: {
+    name: string
+    target_c?: number
+    days?: number
+    volumes?: number
+    started_at?: string
+    completed_at?: string
+  }[]
+}
 export interface Brew {
+  conditioning?: Conditioning
   step_names?: Record<number, string>
   sample_fields?: string[]
   sample_interval_ms?: number

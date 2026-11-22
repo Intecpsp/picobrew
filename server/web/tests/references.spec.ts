@@ -185,11 +185,27 @@ test('recipe detail presents readable quantities and credits without losing cata
     .first()
   await card.getByRole('button', { name: /Alpine Delight/ }).click()
   await expect(page.getByRole('heading', { level: 1, name: /Alpine Delight/ })).toBeVisible()
-  await expect(page.locator('.catalog-recipe-meta')).toContainText('9.46 L')
-  const table = page.getByRole('table', { name: 'Recipe ingredients' })
-  await expect(table.getByRole('cell', { name: '13.97 L', exact: true })).toBeVisible()
-  await expect(table.getByRole('cell', { name: '136.1 g', exact: true })).toBeVisible()
-  await expect(page.locator('.catalog-schedule')).toContainText('65.6 °C')
+  const versions = page.getByRole('region', { name: 'Machine versions' })
+  const pages = page.context().pages().length
+  const opener = versions.getByRole('button', { name: 'View original recipe' })
+  await page.route('https://picobrew.com/**', (route) => route.abort())
+  await opener.click()
+  const original = page.getByRole('dialog', { name: 'Original recipe' })
+  await expect(original.getByRole('heading', { name: /Alpine Delight/ })).toBeVisible()
+  await expect(original).toContainText('2.5 US gal')
+  await expect(original.getByRole('heading', { name: 'Brew schedule' })).toBeVisible()
+  expect(page.context().pages()).toHaveLength(pages)
+  await page.keyboard.press('Escape')
+  await expect(original).toHaveCount(0)
+  await expect(opener).toBeFocused()
+  await expect(versions.getByRole('option', { name: /Original/i })).toHaveCount(0)
+  const table = versions.getByRole('table', { name: 'Scaled ingredient bill' })
+  await expect(
+    table
+      .getByRole('cell', { name: 'Source starting water', exact: false })
+      .or(table.getByRole('cell', { name: 'Scaled source water (reference)', exact: true }))
+      .first()
+  ).toBeVisible()
   expect(await table.innerText()).not.toMatch(/\d+\.\d{5,}/)
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
     true

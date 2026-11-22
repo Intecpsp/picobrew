@@ -1,3 +1,4 @@
+import { ConditioningFields } from './FermentationPlan'
 import { RecipeStyleField } from './RecipeStyleField'
 import { MeasureChoice, QuantityField, useRecipeQuantity } from './RecipeMeasures'
 import { BeerCrafter, ReferenceLists } from './BeerCrafter'
@@ -178,7 +179,8 @@ export function RecipeWizard({
   useEffect(() => {
     if (entered.current) heading.current?.focus()
   }, [stage])
-  const recipe = profile && guidedRecipe(draft, profile)
+  const [conditioning, setConditioning] = useState<Pick<Recipe, 'fermentation' | 'carbonation'>>({})
+  const recipe = profile && { ...guidedRecipe(draft, profile), ...conditioning }
   function next() {
     if (!profile || !recipe) return
     const message = guideProblem(draft, profile, stage)
@@ -775,6 +777,13 @@ export function RecipeWizard({
                     )}
                   </section>
                 </div>
+                <ConditioningFields
+                  recipe={recipe}
+                  change={(patch) => {
+                    entered.current = true
+                    setConditioning((current) => ({ ...current, ...patch }))
+                  }}
+                />
                 <BeerCrafter recipe={recipe} />
               </>
             )}

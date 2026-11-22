@@ -1,3 +1,4 @@
+import { ConditioningJournal } from '../components/ConditioningJournal'
 import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useState } from 'react'
 import {
@@ -338,6 +339,15 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
           />
         )}
       </section>
+      {brew.command === 'brew' && (
+        <ConditioningJournal
+          brew={brew}
+          update={(conditioning) =>
+            resource.setData((current) => (current ? { ...current, conditioning } : current))
+          }
+          reload={resource.reload}
+        />
+      )}
       <div className="journal-bottom">
         <section className="panel">
           <SectionHeading

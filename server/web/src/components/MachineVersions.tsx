@@ -1,3 +1,4 @@
+import { OriginalRecipeLink } from './OriginalRecipe'
 import { useState } from 'react'
 import { useHub } from '../context'
 import { modelLabel } from '../lib/utils'
@@ -9,8 +10,10 @@ import { Field, SectionHeading } from './ui'
 export function MachineVersions({
   versions,
   initialModel,
+  sourceID,
 }: {
   versions?: Adapted[]
+  sourceID?: string
   initialModel?: string
 }) {
   const hub = useHub()
@@ -24,7 +27,10 @@ export function MachineVersions({
   const { recipe, profile, machine_recipe: program } = plan
   return (
     <section className="panel" aria-label="Machine versions">
-      <SectionHeading title="Machine versions" />
+      <SectionHeading
+        title="Machine versions"
+        actions={sourceID && <OriginalRecipeLink id={sourceID} />}
+      />
       <Field label="View brewer version">
         <select value={profile.id} onChange={(e) => setSelection(e.target.value)}>
           {versions?.map((v) => (
@@ -37,12 +43,8 @@ export function MachineVersions({
       {recipe.batch_liters > 0 && (
         <p>
           Estimated yield <strong>{formatVolume(recipe.batch_liters)}</strong> ·{' '}
-          {formatNumber(recipe.efficiency)}% efficiency ·{' '}
-          {program
-            ? profile.id === 'zymatic'
-              ? 'Stock Zymatic menu program'
-              : 'Standalone firmware program'
-            : 'Needs recipe review'}
+          {formatNumber(recipe.efficiency)}% efficiency
+          {!program && ' · Needs recipe review'}
         </p>
       )}
       {plan.deployment_blockers?.map((reason) => (

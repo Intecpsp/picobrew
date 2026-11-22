@@ -71,6 +71,26 @@ func text(value string, max int) bool {
 	return utf8.ValidString(value) && strings.TrimSpace(value) != "" && len(value) <= max && !strings.ContainsRune(value, '\x00')
 }
 
+func validateConditioning(r domain.Recipe) error {
+	if len(r.Fermentation) > 32 {
+		return errors.New("too many fermentation stages")
+	}
+	for i, phase := range r.Fermentation {
+		if !text(phase.Name, 512) || !finite(phase.TargetC) || phase.TargetC < -10 || phase.TargetC > 60 || !finite(phase.Days) || phase.Days < 0 || (phase.Days == 0 && i != len(r.Fermentation)-1) || phase.Days > 3650 {
+			return errors.New("invalid fermentation phase")
+		}
+	}
+	if !finite(r.Carbonation.Volumes) || r.Carbonation.Volumes < 0 || r.Carbonation.Volumes > 10 || !finite(r.Carbonation.TemperatureC) || r.Carbonation.TemperatureC < -10 || r.Carbonation.TemperatureC > 60 {
+		return errors.New("invalid carbonation plan")
+	}
+	if r.Carbonation.Method != "" {
+		if _, err := enum(r.Carbonation.Method, "forced", "natural"); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 // Validate accepts canonical plans, including unmapped location zero. Native
 // timing, label and routing constraints are checked by Adapt/NativeJSON instead.
 // Canonical units: fermentable kg; hop g; water L; yeast/misc g, mL or count.
@@ -82,6 +102,9 @@ func Validate(r domain.Recipe) error {
 		return errors.New("invalid recipe id")
 	}
 	if err := validateOrigin(r); err != nil {
+		return err
+	}
+	if err := validateConditioning(r); err != nil {
 		return err
 	}
 	if IsNative(r) {
@@ -110,25 +133,12 @@ func Validate(r domain.Recipe) error {
 	if !finite(r.BoilLiters) || r.BoilLiters < 0 || r.BoilLiters > 10000 || !finite(r.BoilMinutes) || r.BoilMinutes < 0 || r.BoilMinutes > 43200 {
 		return errors.New("invalid boil volume or duration")
 	}
-	if len(r.Water) > 32 || len(r.Fermentation) > 32 {
-		return errors.New("too many water parameters or fermentation phases")
+	if len(r.Water) > 32 {
+		return errors.New("too many water parameters")
 	}
 	for name, value := range r.Water {
 		if !text(name, 64) || !finite(value) || value < 0 || name == "ph" && value > 14 {
 			return errors.New("invalid water chemistry parameter")
-		}
-	}
-	for i, phase := range r.Fermentation {
-		if !text(phase.Name, 512) || !finite(phase.TargetC) || phase.TargetC < -10 || phase.TargetC > 60 || !finite(phase.Days) || phase.Days < 0 || (phase.Days == 0 && i != len(r.Fermentation)-1) || phase.Days > 3650 {
-			return errors.New("invalid fermentation phase")
-		}
-	}
-	if !finite(r.Carbonation.Volumes) || r.Carbonation.Volumes < 0 || r.Carbonation.Volumes > 10 || !finite(r.Carbonation.TemperatureC) || r.Carbonation.TemperatureC < -10 || r.Carbonation.TemperatureC > 60 {
-		return errors.New("invalid carbonation plan")
-	}
-	if r.Carbonation.Method != "" {
-		if _, err := enum(r.Carbonation.Method, "forced", "natural"); err != nil {
-			return err
 		}
 	}
 	if len(r.Ingredients) > 512 || len(r.Steps) == 0 || len(r.Steps) > 256 {
@@ -320,13 +330,13 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 		return plan, nil
 	}
 	if hops {
-		plan.Warnings = append(plan.Warnings, "Hops scale by batch volume only; utilization, gravity, boil-off and IBU changes are not modeled.")
+		plan.Warnings = append(plan.Warnings, "Hop amounts keep their original proportions. Estimated bitterness depends on hop alpha acids, boil time and wort gravity; actual utilization varies by brewer.")
 	}
 	if yeast {
 		plan.Warnings = append(plan.Warnings, "Yeast scales by volume only; verify cell count, viability and pitch rate separately.")
 	}
 	if len(r.Fermentation) > 0 || r.Carbonation.Volumes > 0 {
-		plan.Warnings = append(plan.Warnings, "Fermentation and carbonation remain in the recipe plan; the hot-side machine program does not control them.")
+		plan.Warnings = append(plan.Warnings, "Track fermentation and carbonation manually in the brew journal.")
 	}
 	plan.Warnings = append(plan.Warnings, "Verify the profile efficiency and actual grain/water capacity. Water absorption, dead space and boil-off are not modeled.")
 	if profile.MaxGrainKG == 0 {

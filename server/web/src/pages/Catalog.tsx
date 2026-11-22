@@ -1,3 +1,4 @@
+import { OriginalRecipeLink } from '../components/OriginalRecipe'
 import { MachineVersions } from '../components/MachineVersions'
 import { ArchivedIngredients } from '../components/ArchivedIngredients'
 import { modelLabel } from '../lib/utils'
@@ -199,23 +200,20 @@ function CatalogBrowse() {
                       ) : (
                         <Wheat size={58} strokeWidth={1.1} />
                       )}
-                      <span>{entry.style || kindLabel(entry.kind, entry.source_model)}</span>
+                      <span>
+                        {entry.style ||
+                          (entry.kind !== 'recipe' && kindLabel(entry.kind, entry.source_model))}
+                      </span>
                       {entry.featured && (
                         <strong className="catalog-featured">Featured source</strong>
                       )}
                     </div>
                     <div className="recipe-card-content">
-                      <Badge
-                        tone={
-                          entry.kind === 'recipe'
-                            ? 'green'
-                            : entry.kind === 'maintenance'
-                              ? 'neutral'
-                              : 'copper'
-                        }
-                      >
-                        {entryLabel(entry)}
-                      </Badge>
+                      {entry.kind !== 'recipe' && (
+                        <Badge tone={entry.kind === 'maintenance' ? 'neutral' : 'copper'}>
+                          {entryLabel(entry)}
+                        </Badge>
+                      )}
                       <h3>
                         <button
                           onClick={() =>
@@ -241,15 +239,11 @@ function CatalogBrowse() {
                         {archive && <span>{(entry.models || []).map(modelLabel).join(' · ')}</span>}
                       </div>
                       <footer>
-                        <small>
-                          {entry.brew_ready
-                            ? 'Includes stock Zymatic program'
-                            : entry.kind === 'recipe'
-                              ? 'View machine versions'
-                              : entry.can_deploy
-                                ? 'Review before transfer'
-                                : 'Reference & planning'}
-                        </small>
+                        {entry.kind !== 'recipe' && (
+                          <small>
+                            {entry.can_deploy ? 'Review before transfer' : 'Reference & planning'}
+                          </small>
+                        )}
                         <button
                           onClick={() =>
                             hub.navigate(
@@ -356,6 +350,10 @@ function CatalogEntry({ id }: { id: string }) {
   }
   if (resource.loading) return <Loading label="Opening the source record…" />
   if (!entry) return <ErrorBanner message={resource.error} retry={resource.reload} />
+  const sourceID =
+    entry.source_id === 'public-recipes' && /^public-[0-9a-f]{32}$/.test(entry.id)
+      ? entry.id
+      : undefined
   const program = entry.native_program || entry.recipe?.native_program
   return (
     <>
@@ -390,102 +388,96 @@ function CatalogEntry({ id }: { id: string }) {
         }
       />
       <ErrorBanner message={error || resource.error} />
-      <MachineVersions
-        versions={entry.machine_versions}
-        initialModel={new URLSearchParams(catalogQuery()).get('model') || undefined}
-      />
       <div className="editor-layout catalog-detail">
         <div className="editor-main">
-          <section className="panel">
-            <SectionHeading
-              title={program ? 'The original machine schedule' : 'The original recipe'}
-              description={
-                entry.kind === 'recipe'
-                  ? 'Review this source recipe before adapting it to your equipment.'
-                  : entry.kind === 'maintenance'
-                    ? 'Follow this cleaning program’s preparation instructions for its source machine. Cleaning routines are kept separate from beer recipes.'
-                    : undefined
-              }
+          {entry.machine_versions?.length ? (
+            <MachineVersions
+              versions={entry.machine_versions}
+              sourceID={sourceID}
+              initialModel={new URLSearchParams(catalogQuery()).get('model') || undefined}
             />
-            {entry.kind === 'recipe' && entry.marketplace && (
-              <p>
-                {entry.marketplace.creator} also offered this beer as a{' '}
-                <a href={entry.marketplace.url} target="_blank" rel="noreferrer">
-                  PicoPak
-                </a>
-                . The quantities below are for the published{' '}
-                {formatVolume(entry.recipe?.batch_liters ?? 0)} recipe.
-              </p>
-            )}
-            {entry.kind === 'native-program' && <ArchivedIngredients product={entry.marketplace} />}
-            {entry.source_id === 'public-recipes' && /^public-[0-9a-f]{32}$/.test(entry.id) && (
-              <p>
-                <a
-                  href={
-                    'https://picobrew.com/PublicRecipes/PublicRecipe.cshtml?id=' + entry.id.slice(7)
-                  }
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Original PicoBrew public recipe
-                </a>
-              </p>
-            )}
-            {program ? (
-              <ProgramTable program={program} model={entry.source_model} archived />
-            ) : (
-              entry.recipe && (
-                <>
-                  <p className="catalog-recipe-meta">
-                    {formatVolume(entry.recipe.batch_liters)} ·{' '}
-                    {formatNumber(entry.recipe.efficiency, 1)}% efficiency ·{' '}
-                    {entry.recipe.ingredients?.length || 0} ingredients
-                  </p>
-                  <div className="catalog-ingredients-scroll">
-                    <table className="catalog-ingredients" aria-label="Recipe ingredients">
-                      <thead>
-                        <tr>
-                          <th>Ingredient</th>
-                          <th>Amount</th>
-                          <th>Use</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {entry.recipe.ingredients?.map((ingredient, index) => (
-                          <tr key={index}>
-                            <td data-label="Ingredient">{ingredient.name}</td>
-                            <td data-label="Amount" className="catalog-quantity">
-                              {formatQuantity(ingredient.amount, ingredient.unit)}
-                            </td>
-                            <td data-label="Use">{ingredient.use}</td>
+          ) : (
+            <section className="panel">
+              <SectionHeading
+                title={program ? 'The original machine schedule' : 'The original recipe'}
+                description={
+                  entry.kind === 'recipe'
+                    ? 'Review this source recipe before adapting it to your equipment.'
+                    : entry.kind === 'maintenance'
+                      ? 'Follow this cleaning program’s preparation instructions for its source machine. Cleaning routines are kept separate from beer recipes.'
+                      : undefined
+                }
+              />
+              {entry.kind === 'recipe' && entry.marketplace && (
+                <p>
+                  {entry.marketplace.creator} also offered this beer as a{' '}
+                  <a href={entry.marketplace.url} target="_blank" rel="noreferrer">
+                    PicoPak
+                  </a>
+                  . The quantities below are for the published{' '}
+                  {formatVolume(entry.recipe?.batch_liters ?? 0)} recipe.
+                </p>
+              )}
+              {entry.kind === 'native-program' && (
+                <ArchivedIngredients product={entry.marketplace} />
+              )}
+              {sourceID && <OriginalRecipeLink id={sourceID} />}
+              {program ? (
+                <ProgramTable program={program} model={entry.source_model} archived />
+              ) : (
+                entry.recipe && (
+                  <>
+                    <p className="catalog-recipe-meta">
+                      {formatVolume(entry.recipe.batch_liters)} ·{' '}
+                      {formatNumber(entry.recipe.efficiency, 1)}% efficiency ·{' '}
+                      {entry.recipe.ingredients?.length || 0} ingredients
+                    </p>
+                    <div className="catalog-ingredients-scroll">
+                      <table className="catalog-ingredients" aria-label="Recipe ingredients">
+                        <thead>
+                          <tr>
+                            <th>Ingredient</th>
+                            <th>Amount</th>
+                            <th>Use</th>
                           </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                  <ol className="catalog-schedule">
-                    {entry.recipe.steps?.map((step, index) => (
-                      <li key={index}>
-                        <strong>{step.name}</strong>
-                        <span>
-                          {formatTemperature(step.target_c)} · {formatNumber(step.minutes)} min
-                          {step.drain_minutes
-                            ? ` · drain ${formatNumber(step.drain_minutes)} min`
-                            : ''}
-                        </span>
-                      </li>
-                    ))}
-                  </ol>
-                </>
-              )
-            )}
-            {!entry.can_copy && (
-              <p className="warning-note">
-                This source record needs further conversion before it can become an editable recipe.
-                The original remains available below.
-              </p>
-            )}
-          </section>
+                        </thead>
+                        <tbody>
+                          {entry.recipe.ingredients?.map((ingredient, index) => (
+                            <tr key={index}>
+                              <td data-label="Ingredient">{ingredient.name}</td>
+                              <td data-label="Amount" className="catalog-quantity">
+                                {formatQuantity(ingredient.amount, ingredient.unit)}
+                              </td>
+                              <td data-label="Use">{ingredient.use}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                    <ol className="catalog-schedule">
+                      {entry.recipe.steps?.map((step, index) => (
+                        <li key={index}>
+                          <strong>{step.name}</strong>
+                          <span>
+                            {formatTemperature(step.target_c)} · {formatNumber(step.minutes)} min
+                            {step.drain_minutes
+                              ? ` · drain ${formatNumber(step.drain_minutes)} min`
+                              : ''}
+                          </span>
+                        </li>
+                      ))}
+                    </ol>
+                  </>
+                )
+              )}
+              {!entry.can_copy && (
+                <p className="warning-note">
+                  This source record needs further conversion before it can become an editable
+                  recipe. The original remains available below.
+                </p>
+              )}
+            </section>
+          )}
           {entry.brew_sheet && entry.stock_program && (
             <section className="panel">
               <SectionHeading
@@ -571,7 +563,7 @@ function CatalogEntry({ id }: { id: string }) {
               {entry.brew_ready
                 ? 'Matched to the original stock Zymatic schedule.'
                 : entry.kind === 'recipe'
-                  ? 'View machine versions'
+                  ? null
                   : entry.can_deploy
                     ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
                     : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}

@@ -134,10 +134,6 @@ function element(hub: HubState, recipe = source) {
   )
 }
 
-function batchInput() {
-  return screen.getByRole('spinbutton', { name: 'Target batch size (L)' }) as HTMLInputElement
-}
-
 function requests(suffix: string) {
   return fetchMock.mock.calls.filter(([path]) => String(path).endsWith(suffix))
 }
@@ -182,11 +178,10 @@ describe('recipe adaptation planning and deployment review', () => {
   it('defaults a 14 L imported recipe to the 5 L Pro profile and retains an unmapped planning schedule', async () => {
     fetchMock.mockResolvedValue(json(plan()))
     const user = userEvent.setup()
-    const hub = state()
+    const hub = state({ devices })
     render(element(hub))
-    expect(batchInput().value).toBe('')
-    expect((screen.getByLabelText('Target machine') as HTMLSelectElement).value).toBe('')
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    expect((screen.getByLabelText('Target machine') as HTMLSelectElement).value).toBe('pico-pro')
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await screen.findByRole('heading', { name: 'Recipe schedule' })
     expect(JSON.parse(String(requests('/adapt')[0][1]?.body))).toEqual({
       profile_id: 'pico-pro',
@@ -210,34 +205,28 @@ describe('recipe adaptation planning and deployment review', () => {
     expect(requests('/deploy')).toHaveLength(0)
   })
 
-  it('uses each profile default, retains explicit valid sizes and replaces sizes that no longer fit', async () => {
+  it('derives the profile from an offline target and allows preview only', async () => {
     const user = userEvent.setup()
-    render(element(state({ devices })))
-    await user.selectOptions(screen.getByLabelText('Equipment profile'), 'z')
-    expect(batchInput().value).toBe('')
-    expect(Number(batchInput().value)).toBeLessThanOrEqual(z.batch_liters)
-    await user.clear(batchInput())
-    await user.type(batchInput(), '8')
-    await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-pro')
-    expect(batchInput().value).toBe('')
-    expect((screen.getByLabelText('Equipment profile') as HTMLSelectElement).value).toBe('pico-pro')
-    await user.clear(batchInput())
-    await user.type(batchInput(), '4.25')
-    await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-s')
-    expect(batchInput().value).toBe('4.25')
-    await user.selectOptions(screen.getByLabelText('Equipment profile'), 'z')
-    expect(batchInput().value).toBe('4.25')
-    expect((screen.getByLabelText('Target machine') as HTMLSelectElement).value).toBe('')
+    fetchMock.mockResolvedValue(json(plan(5, true, s)))
+    render(element(state({ devices: [{ ...devices[1], online: false }] })))
+    expect(screen.queryByLabelText('Equipment profile')).toBeNull()
+    expect(screen.queryByRole('spinbutton')).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
+    await screen.findByText(/Reconnect it to send/)
+    expect(JSON.parse(String(requests('/adapt')[0][1]?.body))).toEqual({
+      profile_id: 'pico-s',
+      batch_liters: 0,
+    })
+    expect(
+      (screen.getByRole('button', { name: 'Send to machine' }) as HTMLButtonElement).disabled
+    ).toBe(true)
   })
-
-  it('invalidates reviewed plans on calibration changes even when the explicit batch still fits', async () => {
+  it('invalidates reviewed plans on calibration changes for the selected machine', async () => {
     fetchMock.mockResolvedValue(json(plan(4.25, true)))
     const user = userEvent.setup()
     const hub = state({ devices })
     const view = render(element(hub))
-    await user.clear(batchInput())
-    await user.type(batchInput(), '4.25')
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await screen.findByText('Machine recipe ready')
     expect(
       (screen.getByRole('button', { name: 'Send to machine' }) as HTMLButtonElement).disabled
@@ -245,11 +234,9 @@ describe('recipe adaptation planning and deployment review', () => {
     view.rerender(
       element({ ...hub, profiles: [{ ...pro, efficiency: 60, batch_liters: 4.8 }, s, z] })
     )
-    await screen.findByRole('button', { name: 'Preview adaptation' })
-    expect(batchInput().value).toBe('4.25')
+    await screen.findByRole('button', { name: 'Preview recipe' })
     expect(screen.queryByRole('button', { name: 'Send to machine' })).toBeNull()
     view.rerender(element({ ...hub, profiles: [{ ...pro, batch_liters: 4 }, s, z] }))
-    await waitFor(() => expect(batchInput().value).toBe(''))
     expect(requests('/deploy')).toHaveLength(0)
   })
 
@@ -267,16 +254,15 @@ describe('recipe adaptation planning and deployment review', () => {
         return new Promise<Response>((resolve) => {
           resolveOld = resolve
         })
-      return json(plan(4, true))
+      return json(plan(4, true, s))
     })
     const user = userEvent.setup()
     render(element(state({ devices })))
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     const oldSignal = requests('/adapt')[0][1]?.signal
-    await user.clear(batchInput())
-    await user.type(batchInput(), '4')
+    await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-s')
     expect(oldSignal?.aborted).toBe(true)
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await screen.findByText('Machine recipe ready')
     await act(async () => {
       resolveOld(json(plan(5, true)))
@@ -285,8 +271,8 @@ describe('recipe adaptation planning and deployment review', () => {
     await waitFor(() => expect(requests('/deploy')).toHaveLength(1))
     expect(JSON.parse(String(requests('/deploy')[0][1]?.body))).toEqual({
       recipe_id: source.id,
-      profile_id: 'pico-pro',
-      batch_liters: 4,
+      profile_id: 'pico-s',
+      batch_liters: 0,
       source_revision: source.revision,
       profile_fingerprint: 'profile-4',
     })
@@ -302,40 +288,20 @@ describe('recipe adaptation planning and deployment review', () => {
     )
     const user = userEvent.setup()
     render(element(state({ devices })))
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-s')
     await act(async () => {
       resolveOld(json(plan(5, true)))
     })
-    expect(batchInput().value).toBe('')
     expect(screen.queryByRole('button', { name: 'Send to machine' })).toBeNull()
     fetchMock.mockResolvedValue(
       json({ error: { code: 'adaptation', message: 'Old capacity error' } }, 422)
     )
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await screen.findByRole('alert')
-    await user.selectOptions(screen.getByLabelText('Equipment profile'), 'pico-pro')
+    await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-pro')
     expect(screen.queryByRole('alert')).toBeNull()
     expect(requests('/deploy')).toHaveLength(0)
-  })
-
-  it('clearing the override restores automatic loading and explicit batches must fit', async () => {
-    const user = userEvent.setup()
-    render(element(state()))
-    for (const value of ['', '0', '6']) {
-      await user.clear(batchInput())
-      if (value) await user.type(batchInput(), value)
-      expect(
-        (screen.getByRole('button', { name: 'Preview adaptation' }) as HTMLButtonElement).disabled
-      ).toBe(value !== '')
-    }
-    expect(requests('/adapt')).toHaveLength(0)
-    await user.clear(batchInput())
-    await user.type(batchInput(), '4.2')
-    expect(screen.queryByRole('alert')).toBeNull()
-    expect(
-      (screen.getByRole('button', { name: 'Preview adaptation' }) as HTMLButtonElement).disabled
-    ).toBe(false)
   })
 
   it('keeps native programs at batch zero with their exact source schedule and no invented ingredients', async () => {
@@ -365,7 +331,7 @@ describe('recipe adaptation planning and deployment review', () => {
     const hub = state({ devices })
     render(element(hub, native))
     expect(screen.queryByRole('spinbutton', { name: 'Target batch size (L)' })).toBeNull()
-    await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
     await screen.findByText('Exact native schedule')
     expect(JSON.parse(String(requests('/adapt')[0][1]?.body)).batch_liters).toBe(0)
     expect(screen.getByText('152°F')).toBeTruthy()

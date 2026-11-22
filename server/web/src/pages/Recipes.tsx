@@ -1,6 +1,6 @@
 import { RecipeStyleField } from '../components/RecipeStyleField'
 import { MeasureChoice, QuantityField, RecipeMeasures } from '../components/RecipeMeasures'
-import { FermentationPlan } from '../components/FermentationPlan'
+import { FermentationPlan, ConditioningFields } from '../components/FermentationPlan'
 import { BeerCrafter, ReferenceLists } from '../components/BeerCrafter'
 import { RecipeWizard } from '../components/RecipeWizard'
 import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
@@ -390,10 +390,10 @@ function RecipeEditor({ id }: { id: string }) {
                 variant="secondary"
                 disabled={dirty}
                 onClick={() => setDeploy(true)}
-                title={dirty ? 'Save your changes before adapting this recipe' : ''}
+                title={dirty ? 'Save your changes before sending this recipe' : ''}
               >
                 <Send size={16} />
-                Adapt & send
+                Send
               </Button>
             )}
             <Button disabled={busy} onClick={() => void save()}>
@@ -499,6 +499,7 @@ function RecipeEditor({ id }: { id: string }) {
             </div>
           </section>
           <FermentationPlan recipe={recipe} change={update} />
+          <ConditioningFields recipe={recipe} change={update} allowPitchStep />
           <section className="panel">
             <SectionHeading title="Notes for brew day" />
             <Field label="Recipe notes">
@@ -605,7 +606,15 @@ function RecipeEditor({ id }: { id: string }) {
         </aside>
       </div>
       {!isNew && !dirty && (
-        <MachineVersions versions={recipe.machine_versions} initialModel={recipe.source_model} />
+        <MachineVersions
+          versions={recipe.machine_versions}
+          initialModel={recipe.source_model}
+          sourceID={
+            recipe.provenance?.source_id === 'public-recipes'
+              ? recipe.provenance.catalog_id
+              : undefined
+          }
+        />
       )}
       {deploy && <AdaptDialog recipe={recipe} onClose={() => setDeploy(false)} />}{' '}
       {remove && (
