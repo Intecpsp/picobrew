@@ -16,14 +16,13 @@ import {
   beerStats,
   brewingReference,
   ingredientBill,
-  scaleBill,
   styleInfo,
   wortCurve,
 } from '../lib/beerCrafter'
 import { useRecipeQuantity } from './RecipeMeasures'
 import { formatNumber } from '../lib/recipeDisplay'
 import { routeLabel } from '../lib/programs'
-import { Button, Field } from './ui'
+import { Button } from './ui'
 import './beer-crafter.scss'
 
 export function ReferenceLists() {
@@ -193,41 +192,9 @@ function metricValue(k: keyof typeof labels, n: number) {
     ? n.toFixed(3)
     : formatNumber(n, 1) + (k === 'abv' ? '%' : k === 'ibu' ? ' IBU' : ' SRM')
 }
-function Statistics({
-  recipe,
-  change,
-}: {
-  recipe: Recipe
-  change?: (items: Ingredient[]) => void
-}) {
+function Statistics({ recipe }: { recipe: Recipe }) {
   const stats = beerStats(recipe),
     style = styleInfo(recipe.style)
-  const [metric, setMetric] = useState<'og' | 'ibu'>('og'),
-    [target, setTarget] = useState('')
-  const scaled = target ? scaleBill(recipe, metric, Number(target)) : null
-  const { profiles } = useHub()
-  const model = profiles.find(
-    (p) => p.id === (recipe.source_model === 'z-series' ? 'z' : recipe.source_model)
-  )
-  let capacity = ''
-  if (scaled && model) {
-    const grain = scaled
-      .filter(
-        (i) => i.kind === 'fermentable' && !/^(sugar|extract|dry extract)$/i.test(i.type || '')
-      )
-      .reduce((n, i) => n + i.amount, 0)
-    if (model.max_grain_kg > 0 && grain > model.max_grain_kg + 1e-9)
-      capacity = 'Target exceeds the grain limit for this brewer.'
-    const groups = new Map<string, number>()
-    for (const i of scaled.filter(
-      (i) => i.kind === 'hop' && ['boil', 'first-wort', 'first wort'].includes(i.use.toLowerCase())
-    )) {
-      const group = i.use.trim().toLowerCase().replace(' ', '-') + ':' + i.minutes
-      groups.set(group, (groups.get(group) ?? 0) + i.amount)
-    }
-    if (model.max_hop_slot_g && [...groups.values()].some((w) => w > model.max_hop_slot_g! + 1e-9))
-      capacity = 'Target exceeds the hop slot limit for this brewer.'
-  }
   return (
     <section className="beer-statistics">
       <h4>Estimated beer statistics</h4>
@@ -248,49 +215,6 @@ function Statistics({
         Gravity uses fermentable yields and efficiency. Final gravity and alcohol use yeast
         attenuation. Bitterness estimates use Tinseth for timed kettle hops. Color uses Morey.
       </small>
-      {change && (
-        <div className="crafter-scale">
-          <Field label="Scale ingredient weights to">
-            <select
-              value={metric}
-              onChange={(e) => {
-                setMetric(e.target.value as typeof metric)
-                setTarget('')
-              }}
-            >
-              <option value="og">Target original gravity</option>
-              <option value="ibu">Target bitterness</option>
-            </select>
-          </Field>
-          <Field label={metric === 'og' ? 'Target OG' : 'Target IBU'}>
-            <input
-              type="number"
-              step={metric === 'og' ? 0.001 : 'any'}
-              min={metric === 'og' ? 1.001 : 0.1}
-              value={target}
-              onChange={(e) => setTarget(e.target.value)}
-            />
-          </Field>
-          <Button
-            variant="secondary"
-            disabled={!scaled || !!capacity}
-            onClick={() => {
-              if (scaled && !capacity) {
-                change(scaled)
-                setTarget('')
-              }
-            }}
-          >
-            Scale {metric === 'og' ? 'fermentables' : 'boil hops'}
-          </Button>
-          {target && (capacity || !scaled) && (
-            <span role="status">
-              {capacity ||
-                'Enter a positive target and complete the ingredient properties needed for this estimate.'}
-            </span>
-          )}
-        </div>
-      )}
     </section>
   )
 }
@@ -390,13 +314,7 @@ function PrintSheet({ recipe }: { recipe: Recipe }) {
     </article>
   )
 }
-export function BeerCrafter({
-  recipe,
-  change,
-}: {
-  recipe: Recipe
-  change?: (items: Ingredient[]) => void
-}) {
+export function BeerCrafter({ recipe }: { recipe: Recipe }) {
   const native = !!recipe.native_program
   const [printing, setPrinting] = useState(false)
   useEffect(() => {
@@ -424,7 +342,7 @@ export function BeerCrafter({
             <Bill items={recipe.ingredients} kind="fermentable" />
             <Bill items={recipe.ingredients} kind="hop" />
           </div>
-          <Statistics recipe={recipe} change={change} />
+          <Statistics recipe={recipe} />
         </>
       )}
       <Curve recipe={recipe} />

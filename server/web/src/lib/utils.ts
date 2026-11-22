@@ -125,7 +125,7 @@ export function newRecipe(): Recipe {
     name: '',
     style: '',
     description: '',
-    batch_liters: 5,
+    batch_liters: 2.5 * 3.785411784, // Standard PicoBrew recipe size in US liquid gallons.
     efficiency: 70,
     ingredients: [],
     steps: [

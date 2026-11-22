@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test'
 
-test('Beer Crafter charts, measurements, print sheet and scaling share the editable recipe', async ({
+test('Beer Crafter charts, measurements and print sheet share the editable recipe', async ({
   page,
   request,
 }) => {
@@ -32,9 +32,11 @@ test('Beer Crafter charts, measurements, print sheet and scaling share the edita
   await expect(analysis.getByText('American Black Barley · 800 g')).toBeVisible()
   await expect(analysis.getByText(/1.028–1.040/)).toBeVisible()
   await page.getByRole('button', { name: 'Advanced editor' }).click()
-  await page.getByLabel('Target OG', { exact: true }).fill('1.030')
-  await page.getByRole('button', { name: 'Scale fermentables' }).click()
-  await expect(analysis.getByText('1.030', { exact: true })).toBeVisible()
+  await expect(analysis.getByText('Original gravity', { exact: true })).toBeVisible()
+  await expect(analysis.getByText('Bitterness', { exact: true })).toBeVisible()
+  await expect(analysis.getByRole('button', { name: /^Scale / })).toHaveCount(0)
+  await analysis.getByRole('button', { name: /American Black Barley/ }).focus()
+  await expect(analysis.getByText('American Black Barley · 800 g')).toBeVisible()
   await page.getByLabel('Apply fermentation preset').selectOption('ale')
   await expect(page.getByLabel('Stage 1 days')).toHaveValue('10')
   await page.evaluate(() => window.dispatchEvent(new Event('beforeprint')))

@@ -105,19 +105,6 @@
     font-variant-numeric: tabular-nums;
     font-weight: 600;
   }
-  .crafter-scale {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: end;
-    gap: 0.65rem;
-    margin: 0.9rem 0;
-  }
-  .crafter-scale .field {
-    margin: 0;
-  }
-  .crafter-scale input {
-    max-width: 8rem;
-  }
   .curve-plot {
     height: 170px;
     margin: 0.6rem 0;

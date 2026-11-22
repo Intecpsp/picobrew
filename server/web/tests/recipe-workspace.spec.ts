@@ -115,8 +115,11 @@ test('an empty library has one create action and the editor names each PicoPak f
   await expect(page.getByLabel('Existing recipe to build on (optional)')).toHaveValue('')
   await page.goBack()
   await add.click()
-  await page.getByRole('link', { name: 'Create a recipe', exact: true }).click()
+  await page.getByRole('link', { name: 'Create for a brewer', exact: true }).click()
+  const brewerBatch = await page.getByLabel('Batch size (L)').getAttribute('placeholder')
+  expect(brewerBatch).toBeTruthy()
   await page.getByRole('button', { name: 'Advanced editor' }).click()
+  await expect(page.getByLabel('Batch size (L)')).toHaveValue(brewerBatch!)
   const valve = page.getByLabel('Flow path', { exact: true }).first()
   await expect(valve).toHaveValue('0')
   await expect(valve.getByRole('option', { name: 'Hop addition 1', exact: true })).toHaveAttribute(
@@ -472,6 +475,7 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
 
 test('catalog and library show five automatic versions from one measured recipe', async ({
   page,
+  request,
 }) => {
   await page.goto('/#/catalog?kind=brew-ready&q=UB08&model=pico-s')
   await expect(page.getByRole('heading', { name: 'Community recipes' })).toBeVisible()
@@ -490,11 +494,22 @@ test('catalog and library show five automatic versions from one measured recipe'
     await expect(versions.getByRole('columnheader', { name: 'Flow path' })).toBeVisible()
   }
   await page.getByRole('button', { name: 'Copy ingredient recipe' }).click()
-  await expect(versions.getByLabel('View brewer version').locator('option')).toHaveCount(5)
-  await versions.getByLabel('View brewer version').selectOption('pico-c')
-  await expect(versions.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText(
+  const view = page.getByRole('combobox', { name: 'Recipe view', exact: true })
+  await expect(view.locator('option')).toHaveCount(6)
+  const sourceVolume = await page.getByLabel('Batch size (L)').inputValue()
+  await view.selectOption('pico-c')
+  await expect(page.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText(
     'Hop slot'
   )
+  await view.selectOption('pico-s')
+  await page.getByRole('button', { name: 'Send', exact: true }).click()
+  const deviceID = await page.getByLabel('Target machine').inputValue()
+  expect(deviceID).toBeTruthy()
+  const device = await request.get('/api/v1/devices/' + encodeURIComponent(deviceID))
+  expect(await device.json()).toMatchObject({ model: 'pico-s' })
+  await page.getByRole('button', { name: 'Cancel', exact: true }).click()
+  await view.selectOption('')
+  await expect(page.getByLabel('Batch size (L)')).toHaveValue(sourceVolume)
 })
 
 test('a recipe plan can be recorded separately for each batch after brew day', async ({
@@ -545,4 +560,29 @@ test('a recipe plan can be recorded separately for each batch after brew day', a
   } finally {
     await request.delete('/api/v1/recipes/' + r.id, { headers })
   }
+})
+
+test('a shared recipe defaults to 2.5 US gallons and preserves a custom yield across brewer views', async ({
+  page,
+}) => {
+  await page.goto('/#/recipes')
+  await page.getByText('Add recipe', { exact: true }).click()
+  await page.getByRole('link', { name: 'Create by batch size' }).click()
+  await page.getByLabel('Recipe measurements').selectOption('us')
+  await expect(page.getByLabel('Batch size (US gal)')).toHaveValue('2.5')
+  await page.getByLabel('Batch size (US gal)').fill('5')
+  await expect(page.getByLabel('2. Step name')).toHaveValue('Boil')
+  await page.getByLabel('Recipe name', { exact: true }).fill('Five gallon base')
+  await page.getByRole('button', { name: 'Add grain' }).click()
+  await page.getByLabel('Ingredient 1 name').fill('Pale malt')
+  await page.getByLabel('Amount (lb)', { exact: true }).fill('10')
+  await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
+  const view = page.getByRole('combobox', { name: 'Recipe view', exact: true })
+  await expect(view).toBeVisible()
+  await view.selectOption('pico-s')
+  await expect(page.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText('4.41 lb')
+  await expect(page.getByRole('columnheader', { name: 'Flow path' })).toBeVisible()
+  await view.selectOption('')
+  await expect(page.getByLabel('Amount (lb)', { exact: true })).toHaveValue('10')
+  await expect(page.getByLabel('Batch size (US gal)')).toHaveValue('5')
 })

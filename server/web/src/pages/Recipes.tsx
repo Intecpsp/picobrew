@@ -1,5 +1,10 @@
 import { RecipeStyleField } from '../components/RecipeStyleField'
-import { MeasureChoice, QuantityField, RecipeMeasures } from '../components/RecipeMeasures'
+import {
+  MeasureChoice,
+  QuantityField,
+  RecipeMeasures,
+  useRecipeQuantity,
+} from '../components/RecipeMeasures'
 import { FermentationPlan, ConditioningFields } from '../components/FermentationPlan'
 import { BeerCrafter, ReferenceLists } from '../components/BeerCrafter'
 import { RecipeWizard } from '../components/RecipeWizard'
@@ -27,7 +32,8 @@ import { api, download, errorMessage } from '../lib/api'
 import { dateLabel, modelLabel, newRecipe, slug } from '../lib/utils'
 import { isNative, kindLabel, programTiming } from '../lib/programs'
 import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
-import { MachineVersions } from '../components/MachineVersions'
+import { BrewerPlan } from '../components/MachineVersions'
+import { OriginalRecipeLink } from '../components/OriginalRecipe'
 import NativeRecipeEditor from './NativeRecipeEditor'
 import { TransferDialog } from '../components/TransferDialog'
 import { AdaptDialog } from '../components/AdaptDialog'
@@ -88,9 +94,13 @@ function AddRecipeMenu({ onImport }: { onImport: () => void }) {
         <Plus size={16} /> Add recipe <ChevronDown size={16} />
       </summary>
       <div className="recipe-options">
+        <a href="#/recipes/new?mode=batch">
+          <Plus size={16} />
+          Create by batch size
+        </a>
         <a href="#/recipes/new">
           <Plus size={16} />
-          Create a recipe
+          Create for a brewer
         </a>
         <a href="#/recipes/create-with-ai">
           <Sparkles size={16} />
@@ -251,18 +261,35 @@ function metadata(recipe: Recipe) {
     water,
     fermentation,
     carbonation,
+    machine_versions,
     ...extras
   } = recipe as Recipe & Record<string, unknown>
   return extras
 }
 function RecipeEditor({ id }: { id: string }) {
+  const quantity = useRecipeQuantity()
   const hub = useHub()
   const isNew = id === 'new'
   const loaded = useResource<Recipe>(isNew ? null : `/recipes/${id}`)
-  const [recipe, setRecipe] = useState<Recipe>(() =>
-    isNew && hub.draft ? { ...hub.draft, id: '', revision: 0 } : newRecipe()
-  )
-  const [guided, setGuided] = useState(isNew && !hub.draft)
+  const generic = isNew && new URLSearchParams(location.hash.split('?')[1]).get('mode') === 'batch'
+  const [recipe, setRecipe] = useState<Recipe>(() => {
+    if (isNew && hub.draft) return { ...hub.draft, id: '', revision: 0 }
+    const base = newRecipe()
+    if (generic) {
+      base.boil_minutes = 60
+      base.steps.push({
+        name: 'Boil',
+        kind: 'boil',
+        target_c: 100,
+        minutes: 60,
+        location: 0,
+        drain_minutes: 0,
+      })
+    }
+    return base
+  })
+  const [guided, setGuided] = useState(isNew && !hub.draft && !generic)
+  const [viewModel, setViewModel] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [dirty, setDirty] = useState(isNew)
@@ -370,6 +397,11 @@ function RecipeEditor({ id }: { id: string }) {
         back={() => hub.navigate('/recipes')}
       />
     )
+  const versions = recipe.machine_versions || []
+  const plan = dirty ? undefined : versions.find((v) => v.profile.id === viewModel)
+  const shown = plan ? (plan.recipe.ingredients?.length ? plan.recipe : undefined) : recipe
+  const sourceID =
+    recipe.provenance?.source_id === 'public-recipes' ? recipe.provenance.catalog_id : undefined
   return (
     <>
       <PageTitle
@@ -396,7 +428,7 @@ function RecipeEditor({ id }: { id: string }) {
                 Send
               </Button>
             )}
-            <Button disabled={busy} onClick={() => void save()}>
+            <Button disabled={busy || !!plan} onClick={() => void save()}>
               {busy ? <Loader2 size={16} className="spin" /> : <Save size={16} />}Save recipe
             </Button>
           </>
@@ -407,158 +439,197 @@ function RecipeEditor({ id }: { id: string }) {
       <div className="editor-layout">
         <div className="editor-main">
           <section className="panel">
-            <SectionHeading title="Recipe details" />
-            <MeasureChoice />
-            <div className="form-grid">
-              <Field label="Recipe name">
-                <input
-                  value={recipe.name}
-                  onChange={(event) => update({ name: event.target.value })}
-                  placeholder="Sunday afternoon pale ale"
-                  maxLength={100}
-                  required
-                />
-              </Field>
-              <RecipeStyleField value={recipe.style} change={(style) => update({ style })} />
-            </div>
-            <Field label="Description">
-              <textarea
-                rows={2}
-                value={recipe.description}
-                onChange={(event) => update({ description: event.target.value })}
-                placeholder="The flavors and character you're aiming for…"
-              />
-            </Field>
-            <div className="form-grid thirds">
-              <QuantityField
-                label={recipe.estimated_yield ? 'Estimated yield' : 'Batch size'}
-                unit="L"
-                value={recipe.batch_liters}
-                change={(v) => update({ batch_liters: Number(v), estimated_yield: false })}
-              />
-              <Field label="Brewhouse efficiency (%)">
-                <input
-                  type="number"
-                  min="1"
-                  max="100"
-                  value={recipe.efficiency}
-                  onChange={(event) => update({ efficiency: Number(event.target.value) })}
-                />
-              </Field>
-              <Field label="Tags">
-                <input
-                  value={tagsInput}
-                  onChange={(event) => {
-                    setTagsInput(event.target.value)
-                    setDirty(true)
-                  }}
-                  placeholder="citrus, weekend"
-                />
-              </Field>
-            </div>
-          </section>
-          <BeerCrafter recipe={recipe} change={(ingredients) => update({ ingredients })} />
-          <RecipeIngredients
-            items={recipe.ingredients}
-            change={(ingredients) => update({ ingredients })}
-          />
-          <RecipeSchedule
-            model={recipe.source_model}
-            steps={recipe.steps}
-            unit={hub.unit}
-            change={(steps) => update({ steps })}
-          />
-          <section className="panel">
-            <SectionHeading title="Boil planning" />
-            <div className="form-grid thirds">
-              <Field label="Recipe type">
+            <SectionHeading
+              title="Recipe details"
+              actions={sourceID && <OriginalRecipeLink id={sourceID} />}
+            />
+            {!isNew && versions.length > 0 && (
+              <Field
+                label="Recipe view"
+                hint={dirty ? 'Save your changes to update the brewer quantities.' : undefined}
+              >
                 <select
-                  value={recipe.type || ''}
-                  onChange={(event) => update({ type: event.target.value })}
+                  value={plan ? plan.profile.id : ''}
+                  onChange={(e) => setViewModel(e.target.value)}
                 >
-                  <option value="">Not specified</option>
-                  <option>All Grain</option>
-                  <option>Partial Mash</option>
-                  <option>Extract</option>
+                  <option value="">Edit base recipe</option>
+                  {versions.map((v) => (
+                    <option key={v.profile.id} value={v.profile.id} disabled={dirty}>
+                      {modelLabel(v.profile.id)}
+                    </option>
+                  ))}
                 </select>
               </Field>
-              <QuantityField
-                label="Boil volume"
-                unit="L"
-                value={recipe.boil_liters || ''}
-                change={(v) => update({ boil_liters: Number(v) })}
-              />
-              <Field label="Boil duration (min)">
-                <input
-                  type="number"
-                  min="0"
-                  value={recipe.boil_minutes || ''}
-                  onChange={(event) => update({ boil_minutes: Number(event.target.value) })}
-                />
-              </Field>
-            </div>
+            )}
+            {plan ? (
+              <BrewerPlan plan={plan} />
+            ) : (
+              <>
+                <MeasureChoice />
+                <div className="form-grid">
+                  <Field label="Recipe name">
+                    <input
+                      value={recipe.name}
+                      onChange={(event) => update({ name: event.target.value })}
+                      placeholder="Sunday afternoon pale ale"
+                      maxLength={100}
+                      required
+                    />
+                  </Field>
+                  <RecipeStyleField value={recipe.style} change={(style) => update({ style })} />
+                </div>
+                <Field label="Description">
+                  <textarea
+                    rows={2}
+                    value={recipe.description}
+                    onChange={(event) => update({ description: event.target.value })}
+                    placeholder="The flavors and character you're aiming for…"
+                  />
+                </Field>
+                <div className="form-grid thirds">
+                  <QuantityField
+                    label={recipe.estimated_yield ? 'Estimated yield' : 'Batch size'}
+                    unit="L"
+                    value={recipe.batch_liters}
+                    change={(v) => update({ batch_liters: Number(v), estimated_yield: false })}
+                  />
+                  <Field label="Brewhouse efficiency (%)">
+                    <input
+                      type="number"
+                      min="1"
+                      max="100"
+                      value={recipe.efficiency}
+                      onChange={(event) => update({ efficiency: Number(event.target.value) })}
+                    />
+                  </Field>
+                  <Field label="Tags">
+                    <input
+                      value={tagsInput}
+                      onChange={(event) => {
+                        setTagsInput(event.target.value)
+                        setDirty(true)
+                      }}
+                      placeholder="citrus, weekend"
+                    />
+                  </Field>
+                </div>
+              </>
+            )}
           </section>
-          <FermentationPlan recipe={recipe} change={update} />
-          <ConditioningFields recipe={recipe} change={update} allowPitchStep />
-          <section className="panel">
-            <SectionHeading title="Notes for brew day" />
-            <Field label="Recipe notes">
-              <textarea
-                rows={4}
-                value={recipe.notes}
-                onChange={(event) => update({ notes: event.target.value })}
-                placeholder="Water treatment, preparation, tasting goals…"
+          {shown && <BeerCrafter recipe={shown} />}
+          {plan ? (
+            <>
+              {shown?.notes && (
+                <section className="panel">
+                  <SectionHeading title="Notes for brew day" />
+                  <p className="preserve-lines">{shown.notes}</p>
+                </section>
+              )}
+            </>
+          ) : (
+            <>
+              <RecipeIngredients
+                items={recipe.ingredients}
+                change={(ingredients) => update({ ingredients })}
               />
-            </Field>
-            <Field
-              label="Additional recipe metadata"
-              hint="Additional source and exchange fields, stored as JSON."
-            >
-              <textarea
-                className="code-input"
-                rows={5}
-                value={advanced ?? JSON.stringify(metadata(recipe), null, 2)}
-                onChange={(event) => {
-                  setAdvanced(event.target.value)
-                  setDirty(true)
-                }}
+              <RecipeSchedule
+                model={recipe.source_model}
+                steps={recipe.steps}
+                unit={hub.unit}
+                change={(steps) => update({ steps })}
               />
-            </Field>
-          </section>
+              <section className="panel">
+                <SectionHeading title="Boil planning" />
+                <div className="form-grid thirds">
+                  <Field label="Recipe type">
+                    <select
+                      value={recipe.type || ''}
+                      onChange={(event) => update({ type: event.target.value })}
+                    >
+                      <option value="">Not specified</option>
+                      <option>All Grain</option>
+                      <option>Partial Mash</option>
+                      <option>Extract</option>
+                    </select>
+                  </Field>
+                  <QuantityField
+                    label="Boil volume"
+                    unit="L"
+                    value={recipe.boil_liters || ''}
+                    change={(v) => update({ boil_liters: Number(v) })}
+                  />
+                  <Field label="Boil duration (min)">
+                    <input
+                      type="number"
+                      min="0"
+                      value={recipe.boil_minutes || ''}
+                      onChange={(event) => update({ boil_minutes: Number(event.target.value) })}
+                    />
+                  </Field>
+                </div>
+              </section>
+              <FermentationPlan recipe={recipe} change={update} />
+              <ConditioningFields recipe={recipe} change={update} allowPitchStep />
+              <section className="panel">
+                <SectionHeading title="Notes for brew day" />
+                <Field label="Recipe notes">
+                  <textarea
+                    rows={4}
+                    value={recipe.notes}
+                    onChange={(event) => update({ notes: event.target.value })}
+                    placeholder="Water treatment, preparation, tasting goals…"
+                  />
+                </Field>
+                <Field
+                  label="Additional recipe metadata"
+                  hint="Additional source and exchange fields, stored as JSON."
+                >
+                  <textarea
+                    className="code-input"
+                    rows={5}
+                    value={advanced ?? JSON.stringify(metadata(recipe), null, 2)}
+                    onChange={(event) => {
+                      setAdvanced(event.target.value)
+                      setDirty(true)
+                    }}
+                  />
+                </Field>
+              </section>
+            </>
+          )}
         </div>
         <aside className="editor-aside">
-          <div className="recipe-summary">
-            <p className="eyebrow">ON THE BREW SHEET</p>
-            <Wheat size={38} strokeWidth={1.2} />
-            <h3>{recipe.name || 'A recipe in the making'}</h3>
-            <dl>
-              <div>
-                <dt>Batch</dt>
-                <dd>{formatVolume(recipe.batch_liters)}</dd>
-              </div>
-              <div>
-                <dt>Ingredients</dt>
-                <dd>{recipe.ingredients.length}</dd>
-              </div>
-              <div>
-                <dt>Schedule</dt>
-                <dd>
-                  {recipe.steps.reduce(
-                    (total, step) => total + step.minutes + step.drain_minutes,
-                    0
-                  )}{' '}
-                  min
-                </dd>
-              </div>
-              <div>
-                <dt>Steps</dt>
-                <dd>{recipe.steps.length}</dd>
-              </div>
-            </dl>
-            <p>
-              Save your recipe, then preview how it adapts to a specific machine before sending it.
-            </p>
-          </div>
+          {shown && (
+            <div className="recipe-summary">
+              <p className="eyebrow">ON THE BREW SHEET</p>
+              <Wheat size={38} strokeWidth={1.2} />
+              <h3>{shown.name || 'A recipe in the making'}</h3>
+              <dl>
+                <div>
+                  <dt>{plan ? 'Estimated yield' : 'Batch'}</dt>
+                  <dd>{quantity(shown.batch_liters, 'L')}</dd>
+                </div>
+                <div>
+                  <dt>Ingredients</dt>
+                  <dd>{shown.ingredients.length}</dd>
+                </div>
+                <div>
+                  <dt>Schedule</dt>
+                  <dd>
+                    {shown.steps.reduce(
+                      (total, step) => total + step.minutes + step.drain_minutes,
+                      0
+                    )}{' '}
+                    min
+                  </dd>
+                </div>
+                <div>
+                  <dt>Steps</dt>
+                  <dd>{shown.steps.length}</dd>
+                </div>
+              </dl>
+            </div>
+          )}
           <div className="panel small-panel">
             <h3>Make it your own.</h3>
             <p>Need a starting point or another perspective?</p>
@@ -605,18 +676,13 @@ function RecipeEditor({ id }: { id: string }) {
           )}
         </aside>
       </div>
-      {!isNew && !dirty && (
-        <MachineVersions
-          versions={recipe.machine_versions}
-          initialModel={recipe.source_model}
-          sourceID={
-            recipe.provenance?.source_id === 'public-recipes'
-              ? recipe.provenance.catalog_id
-              : undefined
-          }
+      {deploy && (
+        <AdaptDialog
+          recipe={recipe}
+          initialModel={plan ? plan.profile.id : undefined}
+          onClose={() => setDeploy(false)}
         />
       )}
-      {deploy && <AdaptDialog recipe={recipe} onClose={() => setDeploy(false)} />}{' '}
       {remove && (
         <Confirm
           title="Delete this recipe?"

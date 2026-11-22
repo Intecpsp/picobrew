@@ -5,7 +5,6 @@ import {
   ingredientBill,
   ingredientDefaults,
   renameIngredient,
-  scaleBill,
   styleInfo,
   wortCurve,
 } from './beerCrafter'
@@ -63,16 +62,7 @@ test('beer estimates use the entered yield, preboil gravity, color and attenuati
   })
   expect(missing).toEqual({ og: null, fg: null, abv: null, srm: null, ibu: null })
 })
-test('scaling hits the target, preserves dry hops and leaves the source bill untouched', () => {
-  for (const [metric, target] of [
-    ['og', 1.061],
-    ['ibu', 27],
-  ] as const) {
-    const ingredients = scaleBill(recipe, metric, target)!
-    expect(beerStats({ ...recipe, ingredients })[metric]).toBeCloseTo(target, 6)
-    expect(ingredients[2]).toBe(recipe.ingredients[2])
-  }
-  expect(scaleBill(recipe, 'og', 0.9)).toBeNull()
+test('the hop chart combines kettle and dry additions of the same variety', () => {
   expect(ingredientBill(recipe.ingredients, 'hop')).toEqual([{ name: 'Cascade', amount: 16 }])
   expect(recipe.ingredients[0].amount).toBe(1)
 })
