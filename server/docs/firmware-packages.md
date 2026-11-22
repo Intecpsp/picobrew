@@ -93,7 +93,9 @@ Run the local Hub executable from the full checkout on the Mac connected to the 
 ./picobrew-hub usb-install --model pico-s --key-file /absolute/private/path/api.key --data ./data --checkout ..
 ```
 
-Use the same data directory as the Hub. The command uses the saved original backup, or prompts to capture the stock flash when needed. You can also supply the original backup with `--backup /absolute/path/to/original.bin`. It validates the files locally, provisions the private key, installs the application and matching website, and installs the separate Hub recovery. Each write requires its own USB programming session. After verification, restart the brewer and add it to the Hub using that same key. See the [USB setup instructions](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md) and [OTA qualification notes](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
+Use the same data directory as the Hub. The command uses its saved original backup, accepts one supplied with `--backup /absolute/path/to/original.bin`, or prompts to capture the stock flash. A fresh capture qualifies only if every byte matches the reviewed original backup. Changes to settings or files on the same brewer can change that hash.
+
+The installer validates the files locally, provisions the private key, installs the application and matching website, and installs the separate Hub recovery. Each write requires its own USB programming session. After verification, restart the brewer and add it to the Hub using that same key. See the [USB setup instructions](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md) and [OTA qualification notes](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
 
 ### Return to stock
 
@@ -105,7 +107,7 @@ On the reviewed physical brewer, the machine firmware view provides a separate s
 
 The Hub uses its private saved original backup first. If the backup is missing or fails its integrity check, the Hub preserves any existing backup and looks for the two verified OEM images in its cache. For each missing or damaged image, it fetches the pinned Git blob from the canonical firmware repository and verifies its length and SHA-256 before caching it. The USB writer independently verifies the live brewer identity, flash layout, bootloader and boot selection before writing. It restores the original application and recovery, reads both back and confirms that the unused third slot is absent. The final restart is manual.
 
-Stock software removes the standalone website, custom Hub controls and Hub wireless update capability. Wi-Fi settings and the stored device key are preserved. Returning to custom firmware requires the initial USB setup again. The restore procedure has passed simulated USB tests. Physical restoration and subsequent boot are pending. [USB restore procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md#restore-all-oem-firmware-slots)
+Stock software removes the standalone website, custom Hub controls and Hub wireless update capability. Wi-Fi settings and the stored device key are preserved. To reinstall custom firmware later, keep the brewer’s original private full-flash backup and the matching host API key file. The USB installer needs both, even if you restored stock using the public OEM images. The restore procedure has passed simulated USB tests. Physical restoration and subsequent boot are pending. [USB restore procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md#restore-all-oem-firmware-slots)
 
 ## Storage and API
 

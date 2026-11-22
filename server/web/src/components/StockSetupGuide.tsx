@@ -21,8 +21,9 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
       <ol className="stock-usb-steps">
         <li>
           Choose a private key file for this brewer. The installer reuses that key or creates one
-          securely. Keep the key and a permanent private copy of your Hub data directory, which
-          stores the original backup.
+          securely. Keep this key and a private copy of the original full-flash backup saved in your
+          Hub data directory. You’ll need both to reinstall standalone firmware after restoring
+          stock.
         </li>
         <li>
           Prepare the component’s Python environment and USB dependencies using the{' '}
@@ -55,8 +56,9 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
           <p>
             If you already have this brewer’s original full-flash backup, add{' '}
             <code>--backup "/absolute/path/to/original.bin"</code> to verify and store it. Otherwise
-            the installer uses the backup saved in the Hub or, on a stock brewer, reads the flash
-            twice over USB and verifies the new backup before writing.
+            the installer uses the Hub’s saved backup or reads the stock flash twice over USB. A
+            fresh capture is accepted only if every byte matches the reviewed original backup.
+            Changes to settings or files can make a newer capture ineligible.
           </p>
           <p>
             The tool requests administrator access for USB writes. Follow its prompts to provision

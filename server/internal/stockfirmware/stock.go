@@ -118,8 +118,16 @@ func SaveBackup(dataDir, backupPath string) (string, error) {
 }
 
 func saveBackup(dataDir, source string, expected image) (string, error) {
-	data, err := expected.read(source)
+	f, err := privatefs.OpenSource(source)
 	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+	data, err := io.ReadAll(io.LimitReader(f, expected.size+1))
+	if err != nil {
+		return "", err
+	}
+	if err = expected.check(data); err != nil {
 		return "", err
 	}
 	dir, err := cacheDirectory(dataDir)

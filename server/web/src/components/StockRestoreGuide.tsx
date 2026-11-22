@@ -44,8 +44,8 @@ export function StockRestoreGuide({ model, onClose }: { model: string; onClose: 
               checked={confirmed}
               onChange={(e) => setConfirmed(e.target.checked)}
             />
-            I understand that returning to standalone firmware will require a computer and a USB
-            connection.
+            I understand that returning to standalone firmware requires USB, the original private
+            full-flash backup and the API key that matches this brewer.
           </label>
         </>
       )}
