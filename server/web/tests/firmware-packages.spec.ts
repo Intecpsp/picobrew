@@ -169,7 +169,7 @@ for (const viewport of [
     await restore.getByRole('button', { name: 'Show USB restore instructions' }).click()
     restore = page.getByRole('dialog', { name: 'Restore using your computer' })
     await expect(restore.locator('pre')).toHaveText(
-      './picobrew-hub usb-restore --data ./data --checkout ..'
+      './picobrew-hub usb-restore --model pico-s --data ./data --checkout ..'
     )
     expect(await restore.evaluate((d) => d.scrollWidth <= d.clientWidth + 1)).toBe(true)
     await restore.getByRole('button', { name: 'Back to machine firmware' }).click()

@@ -124,7 +124,8 @@ cloud/update application symbols are absent.
 The image fits the explicit common ESP32 layout: minimum 4 MiB flash, factory
 application at `0x10000` with size `0x1f0000`, and SPIFFS at `0x200000` with size
 `0x200000`. This is a reproducible **custom reference layout**, not a recovered
-OEM partition table. The tools never flash a device. Flash capacity, wiring,
+OEM partition table. The [USB service procedure](../../common/docs/esp-usb.md)
+checks the installed layout and preserves a private same-unit flash backup before conversion. Flash capacity, wiring,
 existing partition contents, controller behavior and runtime stack/heap
 high-water require physical installation qualification before appliance use.
 

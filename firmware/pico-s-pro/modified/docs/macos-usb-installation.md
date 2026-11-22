@@ -1,8 +1,7 @@
 # Guarded Pico S/Pro writes from macOS
 
 `tools/pico_flash_install.py` provides separate key provisioning, application
-installation and stock restoration operations. It is restricted to one pinned
-appliance backup and layout, historically labeled Pico Pro. Use the explicit `--model pico-s` for the owner-identified Pico S. See the [tested two-stage Pico S procedure](hub-ota.md).
+installation and stock restoration. The historical fixed profile covers the owner-identified Pico S whose backup was labeled Pico Pro. The Hub can also enroll individual stock S/Pro brewers by qualifying their own backups. Both model labels use the same known OEM application. Select the label on the brewer when choosing the standalone image. See the [tested Pico S procedure](hub-ota.md).
 
 The Pico S application and recovery passed USB installation and readback. Physical brewing and interlock qualification remain pending.
 Stock restoration and interrupted-write recovery remain physically unverified.
@@ -24,16 +23,11 @@ session checks.
 
 ## Required local files
 
-Use the original full backup that matches the installer's pinned profile.
-The tool checks its exact size and SHA-256 before opening USB; a different
-backup must be reviewed before support is added. Do not alter the checksum
-allowlist to force an installation. Keep backup identity and installation
-reports private.
+**Enrolling another Pico S or Pro.** Capture a complete 1 MiB stock backup with the two-pass USB reader. Use `tools/pico_flash_install.py inspect-stock --model pico-s --backup /absolute/path/to/stock.bin` to verify its identity file, filesystem allocations, bootloader, boot selection, recovery and original application offline. Use `pico-pro` for a Pico Pro. The report contains digests used to match this brewer’s private backup.
 
-Commands using `--backup` verify that entire local backup before opening
-USB. For stock restoration the two pinned OEM executables can also be
-provided through `--oem-directory`. The tool reads all source files locally.
-Keep the backup and its original checksum/metadata files unchanged.
+Pass `--stock-profile --model pico-s --backup /absolute/path/to/stock.bin` (or `pico-pro`) to `prepare-install`, `provision-key`, `install`, `install-recovery` and `restore-stock`. The tool checks the live identity and named allocations against the qualified backup at every USB stage. It reads both bootloader and boot-record copies and requires the logical boot selection to point to the main application. A partially erased table, an unexpected third slot, or conflicting file allocations stops the operation. It accepts different block addresses but requires the supported flash size, slot capacities, protection flags and boot format. Keep the original backup for subsequent restoration. Per-unit setup and restoration have been tested with simulated USB traffic.
+
+**Historical fixed profile.** The examples below omit `--stock-profile` and require the exact previously verified backup. Only this historical brewer can also use the public pair of raw OEM executables via `--oem-directory`. Keep all private backups and installation reports out of shared logs and source control.
 
 The examples use a placeholder checkout and private backup path. Set them to
 your actual locations and keep the same API key throughout provisioning and
@@ -352,8 +346,7 @@ interrupted write.** Do not use Factory Reset as an offline restore method.
 Use this procedure to return the profiled Pico S to the original PicoBrew
 application and recovery. Both images were verified against the same
 original full-flash backup. The backup historically carries a Pico Pro label.
-This procedure is qualified in software for that single brewer and layout. Other brewers,
-including other units of the same model, require their own verified profile.
+This public-image fallback is restricted to that brewer. For another supported unit, use its original full backup with the per-brewer profile options above.
 
 After the restore, the brewer runs the OEM software. Custom Hub controls,
 the standalone device website and wireless firmware updates become unavailable.

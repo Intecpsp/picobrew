@@ -90,7 +90,7 @@ func TestCDisplayInventoryIsIndependentOfWirelessFirmwareSupport(t *testing.T) {
 		t.Fatalf("verification status %d", code)
 	}
 	got = read()
-	if got.HardwareVerificationRequired || got.VerifiedDisplayVariant != "ssd1309" || len(got.Packages) != 0 || got.StockRestoreGuide {
+	if got.HardwareVerificationRequired || got.VerifiedDisplayVariant != "ssd1309" || len(got.Packages) != 0 || !got.StockRestoreGuide {
 		t.Fatalf("verified C inventory and wireless eligibility: %+v", got)
 	}
 	if a.writes != writes || a.commands != 0 {

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Independent wire-level mutation tests for the constrained Pico installer.
 
-All firmware, keys, filesystem contents, and raw backups are synthetic. The
+Private keys and full-flash contents are synthetic. Release tests use the shipped public images. The
 real cc3200tool packet framing is used against an independent fake device.
 No USB device is opened. Existing-write opens erase the fake file immediately,
 matching the destructive behavior that the installer must journal and guard.
@@ -10,6 +10,7 @@ import contextlib
 import hashlib
 import gzip
 import io
+import importlib.util
 import json
 import logging
 import os
@@ -392,7 +393,8 @@ class InstallWireTests(unittest.TestCase):
             argv += ["--firmware", str(self.candidate_path)]
         return argv
 
-    def run_main(self, fake, mode="provision-key", output=None, model=None, verify_uid=False, oem_directory=None):
+    def run_main(self, fake, mode="provision-key", output=None, model=None, verify_uid=False, oem_directory=None,
+                 stock_profile=False, display=None):
         output = output or self.output_path()
         transcript = io.StringIO()
         port_class = backup.USBSerialPort
@@ -407,6 +409,10 @@ class InstallWireTests(unittest.TestCase):
              mock.patch.object(backup, "USBSerialPort", side_effect=short_timeout_port), \
              contextlib.redirect_stdout(transcript), contextlib.redirect_stderr(transcript):
             args = self.cli(mode, output) + (["--model", model] if model else [])
+            if stock_profile:
+                args.append("--stock-profile")
+            if display:
+                args.extend(("--display", display))
             if oem_directory is not None:
                 args[1:3] = ["--oem-directory", str(oem_directory)]
             if verify_uid:
@@ -505,6 +511,142 @@ class InstallWireTests(unittest.TestCase):
         fake = FakeInstallUSB(live, **options)
         fake.writable_names = (APP_NAME, installer.RECOVERY_NAME)
         return fake
+
+    def test_new_stock_profile_matches_live_brewer_before_mutation_and_can_restore(self):
+        original = {**self.files, "sys/uid.txt": b"12" * 16}
+        capture = backup_fixture(original)
+        self.backup_path.write_bytes(capture)
+        self.assertNotEqual(hashlib.sha256(capture).hexdigest(), installer.BACKUP_SHA256)
+        profile = installer.inspect_stock(self.backup_path, "pico-pro", cc)
+        self.assertEqual(profile.uid_digest, hashlib.sha256(original["sys/uid.txt"]).digest())
+        for mode in ("provision-key", "install", "install-recovery", "restore-stock"):
+            wrong = FakeInstallUSB({**original, "sys/uid.txt": b"cd" * 16})
+            result, report, _, _ = self.run_main(wrong, mode, model="pico-pro", stock_profile=True)
+            self.assertEqual(result, 1, mode)
+            self.assertIn("identity", report["error"]["message"])
+            self.assertFalse(wrong.mutations)
+        with self.subTest("restore"):
+            device = FakeInstallUSB({**original, APP_NAME: self.candidate,
+                                     installer.RECOVERY_NAME: installer.RECOVERY_FILE.read_bytes()})
+            device.writable_names = (APP_NAME, installer.RECOVERY_NAME)
+            result, report, _, _ = self.run_main(device, "restore-stock", model="pico-pro", stock_profile=True)
+            self.assertEqual(result, 0, report)
+            self.assertEqual(device.files, original)
+
+    def test_profiled_pico_c_setup_and_restore_both_displays(self):
+        path = installer.C_FIRMWARE.parents[1] / "reverse-engineered/tools/inspect_oem.py"
+        spec = importlib.util.spec_from_file_location("pico_c_stock", path)
+        oem = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(oem)
+        for display, alternate in (("ssd1309", "ssd1325"), ("ssd1325", "ssd1309")):
+            with self.subTest(display=display):
+                model = "pico-c-" + display
+                self.candidate_path.write_bytes(
+                    installer.load_candidate(installer.C_FIRMWARE / "standalone/pico-c" / display /
+                                             "pico-c-standalone.bin", model))
+                original = {**self.files, APP_NAME: oem.read_variant(display),
+                            "sys/uid.txt": b"34" * 16, "ssid.txt": b"private"}
+                self.backup_path.write_bytes(backup_fixture(original))
+                device = FakeInstallUSB(original)
+                for wrong in ("pico-c-" + alternate, "pico-pro"):
+                    with self.assertRaisesRegex(installer.InstallError, "selected brewer and display"):
+                        installer.inspect_stock(self.backup_path, wrong, cc)
+                result, report, output, factory = self.run_main(device, "install", model="pico-c",
+                                                                stock_profile=True, display=alternate)
+                self.assertEqual(result, 1, (report, output))
+                factory.assert_not_called()
+                for mode in ("provision-key", "install", "restore-stock"):
+                    device = FakeInstallUSB(device.files)
+                    result, report, output, _ = self.run_main(device, mode, model="pico-c",
+                                                               stock_profile=True, display=display)
+                    self.assertEqual(result, 0, (report, output))
+                    self.assertTrue(report["postcheck"]["layout"]["profile_uid_matches"])
+                    self.assertNotIn(installer.RECOVERY_NAME, device.mutated_names)
+                    self.assertEqual(device.files[installer.RECOVERY_NAME], original[installer.RECOVERY_NAME])
+                    self.assertEqual(device.files["ssid.txt"], original["ssid.txt"])
+                    if mode == "install":
+                        self.assertEqual(report["web_bundle"]["manifest_sha256"], installer.C_WEB_MANIFEST_SHA256)
+                        self.assertEqual(device.files[APP_NAME], self.candidate_path.read_bytes())
+                        self.assertTrue(WEB_NAMES <= device.files.keys())
+                self.assertEqual(device.files[APP_NAME], original[APP_NAME])
+                interrupted = FakeInstallUSB({**original, APP_NAME: b"incomplete"})
+                result, report, _, _ = self.run_main(interrupted, "restore-stock", model="pico-c",
+                                                     stock_profile=True, display=display)
+                self.assertEqual(result, 0, report)
+                self.assertEqual(interrupted.files[APP_NAME], original[APP_NAME])
+                self.assertEqual(interrupted.mutated_names, {APP_NAME})
+                damaged = FakeInstallUSB({**original, installer.RECOVERY_NAME: b"damaged"})
+                result, report, _, _ = self.run_main(damaged, "restore-stock", model="pico-c",
+                                                     stock_profile=True, display=display)
+                self.assertEqual(result, 1, report)
+                self.assertFalse(damaged.mutations)
+
+    def test_conflicting_boot_mirrors_and_partially_erased_fat_fail_before_writes(self):
+        original = {**self.files, "sys/uid.txt": b"56" * 16}
+        self.backup_path.write_bytes(backup_fixture(original))
+        for location in (8, 75 * 4096 + 25, 79 * 4096 + 11):
+            with self.subTest(location=location):
+                fake = FakeInstallUSB(original)
+                bad = bytearray(fake.flash)
+                bad[location] ^= 1
+                fake.flash = bytes(bad)
+                result, report, _, _ = self.run_main(fake, "provision-key", model="pico-s", stock_profile=True)
+                self.assertEqual(result, 1, report)
+                self.assertFalse(fake.mutations)
+                path = self.folder / "untrusted.bin"
+                path.write_bytes(fake.flash)
+                with self.assertRaises(installer.InstallError):
+                    installer.inspect_stock(path, "pico-s", cc)
+        # A confirmed S/Pro OTA can leave the previous trial in the other
+        # copy. Its live logical boot record must still select the OEM app slot.
+        fake = FakeInstallUSB(original)
+        raw = bytearray(fake.flash)
+        raw[79 * 4096 + 12:79 * 4096 + 16] = struct.pack("<I", 0x12344321)
+        fake.flash = bytes(raw)
+        result, report, _, _ = self.run_main(fake, "restore-stock", model="pico-s", stock_profile=True)
+        self.assertEqual(result, 0, report)
+        self.assertFalse(fake.mutations)
+
+    def test_existing_key_uses_a_compatible_allocation_in_all_fats(self):
+        original = {**self.files, "sys/uid.txt": b"56" * 16}
+        self.backup_path.write_bytes(backup_fixture(original))
+        for conflict in ("wrong flags", "occupied by another file"):
+            with self.subTest(conflict=conflict):
+                fake = FakeInstallUSB({**original, KEY_NAME: KEY})
+                raw = bytearray(fake.flash)
+                entry = 4 * (20 + 1)
+                if conflict == "wrong flags":
+                    raw[4096 + entry + 3] = 0x80
+                else:
+                    raw[:4096] = raw[4096:8192]
+                    # Same block in the previous valid table, unrelated name.
+                    offset = raw.index(KEY_NAME.encode(), 0x774, 4096)
+                    raw[offset:offset + len(KEY_NAME)] = b"/local/old.key"
+                fake.flash = bytes(raw)
+                result, report, _, _ = self.run_main(fake, "provision-key", model="pico-pro", stock_profile=True)
+                self.assertEqual(result, 1, report)
+                self.assertFalse(fake.mutations)
+
+    def test_qualified_backup_and_live_allocations_must_match(self):
+        original = {**self.files, "sys/uid.txt": b"12" * 16}
+        capture = bytearray(backup_fixture(original))
+        # Move the UID in the saved capture, retaining its real data and name.
+        capture[4096 + 4 * (11 + 1) + 2] = 107
+        capture[107 * 4096:108 * 4096] = capture[106 * 4096:107 * 4096]
+        self.backup_path.write_bytes(capture)
+        profile = installer.inspect_stock(self.backup_path, "pico-s", cc)
+        self.assertEqual(profile.starts[installer.UID_NAME], 107)
+        fake = FakeInstallUSB(original)
+        result, report, _, _ = self.run_main(fake, "provision-key", model="pico-s", stock_profile=True)
+        self.assertEqual(result, 1)
+        self.assertIn("allocations differ", report["error"]["message"])
+        self.assertFalse(fake.mutations)
+        # A second valid FAT conflicting with the first also blocks enrollment.
+        capture[:4096] = capture[4096:8192]
+        capture[4 * (11 + 1) + 2] = 106
+        self.backup_path.write_bytes(capture)
+        with self.assertRaisesRegex(installer.InstallError, "FAT copies disagree"):
+            installer.inspect_stock(self.backup_path, "pico-s", cc)
 
     def test_stock_restore_verifies_every_slot_without_changing_settings_or_boot(self):
         fake = self.stock_device()
@@ -1268,7 +1410,9 @@ class InstallWireTests(unittest.TestCase):
         # actual wire reads before every destructive operation.
         connection.layout = {"application_allocation_verified": True,
                              "image3_absent_in_all_fats": True,
-                             "key_absent_in_all_fats": KEY_NAME not in fake.files}
+                             "key_absent_in_all_fats": KEY_NAME not in fake.files,
+                             "key_existing_write_compatible": KEY_NAME in fake.files,
+                             "free_blocks_min": 1, "free_file_slots_min": 1}
         connection.file_infos = {
             name: {"exists": name in fake.files, "size_bytes": len(fake.files.get(name, b""))}
             for name in ALLOWED_NAMES

@@ -1,11 +1,23 @@
 import { useState } from 'react'
 import { Button, Field, Modal } from './ui'
+import { StockRestoreGuide } from './StockRestoreGuide'
+import { USBInstructions, usbLabel, usbModels, type USBAction } from './USBInstructions'
 
 export function StockSetupGuide({ onClose }: { onClose: () => void }) {
   const [model, setModel] = useState('')
+  const [action, setAction] = useState<USBAction>('install')
+  const [restoring, setRestoring] = useState(false)
+  if (restoring)
+    return (
+      <StockRestoreGuide
+        model={model}
+        onClose={() => setRestoring(false)}
+        returnLabel="Back to USB setup"
+      />
+    )
   return (
     <Modal
-      title="Set up a stock brewer via USB"
+      title="USB setup and recovery"
       wide
       onClose={onClose}
       actions={
@@ -14,58 +26,45 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
         </Button>
       }
     >
-      <p>
-        Use a USB-connected Mac for the first install. The USB installer supports one reviewed Pico
-        S/Pro brewer. It verifies the original backup and the connected hardware before writing.
-      </p>
-      <ol className="stock-usb-steps">
-        <li>
-          Choose a private key file for this brewer. The installer reuses that key or creates one
-          securely. Keep this key and a private copy of the original full-flash backup saved in your
-          Hub data directory. You’ll need both to reinstall standalone firmware after restoring
-          stock.
-        </li>
-        <li>
-          Prepare the component’s Python environment and USB dependencies using the{' '}
-          <a
-            href="https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/blob/master/firmware/pico-s-pro/modified/docs/macos-usb-installation.md"
-            target="_blank"
-            rel="noreferrer"
-          >
-            macOS USB setup guide
-          </a>
-          . Build the Hub in the checkout’s <code>server</code> directory.
-        </li>
-      </ol>
-      <Field label="Brewer to set up">
-        <select value={model} onChange={(e) => setModel(e.target.value)}>
-          <option value="">Choose your brewer</option>
-          <option value="pico-s">Pico S</option>
-          <option value="pico-pro">Pico Pro</option>
+      <Field label="Machine model">
+        <select
+          value={model}
+          onChange={(e) => {
+            setModel(e.target.value)
+            setAction(e.target.value === 'zymatic' ? 'restore' : 'install')
+          }}
+        >
+          <option value="">Choose your machine</option>
+          {usbModels.map((m) => (
+            <option key={m} value={m}>
+              {usbLabel(m)}
+            </option>
+          ))}
         </select>
       </Field>
       {model && (
         <>
-          <p>
-            In the Mac’s terminal, run this command from <code>server</code>. Set the private key
-            path and the Hub data directory you use.
-          </p>
-          <pre className="stock-usb-command">
-            <code>{`./picobrew-hub usb-install --model ${model} \\\n  --key-file "/absolute/path/to/api.key" --data ./data --checkout ..`}</code>
-          </pre>
-          <p>
-            If you already have this brewer’s original full-flash backup, add{' '}
-            <code>--backup "/absolute/path/to/original.bin"</code> to verify and store it. Otherwise
-            the installer uses the Hub’s saved backup or reads the stock flash twice over USB. A
-            fresh capture is accepted only if every byte matches the reviewed original backup.
-            Changes to settings or files can make a newer capture ineligible.
-          </p>
-          <p>
-            The tool requests administrator access for USB writes. Follow its prompts to provision
-            the key, install the application and website, and install recovery. Each programming
-            session requires a fresh power-on or reset. After the brewer boots and joins Wi-Fi,
-            return to Add machine and enter its URL and API key.
-          </p>
+          {model === 'zymatic' ? (
+            <p>
+              Zymatic supports stock application restoration with PicoFlash. A custom firmware image
+              is unavailable.
+            </p>
+          ) : (
+            <Field label="USB operation">
+              <select value={action} onChange={(e) => setAction(e.target.value as USBAction)}>
+                <option value="install">Install standalone firmware</option>
+                <option value="backup">Back up stock firmware</option>
+                <option value="restore">Restore original firmware</option>
+              </select>
+            </Field>
+          )}
+          {action === 'restore' ? (
+            <Button variant="secondary" onClick={() => setRestoring(true)}>
+              Review stock restoration
+            </Button>
+          ) : (
+            <USBInstructions key={model} model={model} action={action} />
+          )}
         </>
       )}
     </Modal>

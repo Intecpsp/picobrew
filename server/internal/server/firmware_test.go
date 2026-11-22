@@ -477,40 +477,57 @@ func TestMachineFirmwareIsReadOnlyAndAvailableForUnreadyMachines(t *testing.T) {
 	}
 }
 
-func TestStockRestoreGuideRequiresReviewedPinnedPhysicalBrewer(t *testing.T) {
+func TestStockRestoreGuideRequiresPinnedPhysicalMachine(t *testing.T) {
 	s, d, _ := identityFixture(t, filepath.Join(t.TempDir(), "identity.sqlite"), "test-unit")
 	d.identityMismatch = false
 	d.view.ModelSource = "firmware"
 	d.view.Capabilities = &domain.Capabilities{Model: "pico-s", ModelFamily: "pico-s-pro"}
 	d.view.Status = &domain.Status{DeviceUID: "test-unit", Model: "pico-s"}
-	read := func(reviewed func(string) bool) bool {
+	read := func() firmware.MachineFirmware {
 		t.Helper()
 		w := httptest.NewRecorder()
-		s.serveMachineFirmware(w, identityRequest("GET", "/api/v1/devices/registered/firmware", ""), reviewed)
+		s.machineFirmware(w, identityRequest("GET", "/api/v1/devices/registered/firmware", ""))
 		var got firmware.MachineFirmware
 		if err := json.Unmarshal(w.Body.Bytes(), &got); err != nil || w.Code != 200 {
 			t.Fatalf("firmware response: %d %s (%v)", w.Code, w.Body.Bytes(), err)
 		}
-		return got.StockRestoreGuide
+		return got
 	}
-	reviewed := func(uid string) bool { return uid == "test-unit" }
-	if read(reviewed) {
-		t.Fatal("missing identity pin allowed restore guide")
+	if read().StockRestoreGuide {
+		t.Fatal("missing identity pin allowed machine-specific restore guide")
 	}
 	if _, err := s.db.Put("device-identity", d.view.ID, deviceIdentity{UID: d.view.Status.DeviceUID}, 0); err != nil {
 		t.Fatal(err)
 	}
-	if !read(reviewed) || read(firmware.ReviewedStockUID) {
-		t.Fatal("restore guide did not distinguish the matching profile from an unreviewed unit")
+	for _, model := range []string{"pico-s", "pico-pro", "z-series", "picoferm", "picostill"} {
+		family := model
+		if model == "pico-s" || model == "pico-pro" {
+			family = "pico-s-pro"
+		}
+		d.view.Model = model
+		d.view.Capabilities = &domain.Capabilities{Model: model, ModelFamily: family}
+		d.view.Status = &domain.Status{DeviceUID: "test-unit", Model: model, ModelFamily: family}
+		got := read()
+		if !got.StockRestoreGuide || got.USBRestoreTarget == nil || got.USBRestoreTarget.UID != "test-unit" || got.USBRestoreTarget.Model != model || got.InstallSupported {
+			t.Fatalf("%s USB eligibility: %+v", model, got)
+		}
 	}
 	s.cfg.Demo = true
-	if read(reviewed) {
+	if read().StockRestoreGuide {
 		t.Fatal("demo offered restore guide")
 	}
 	s.cfg.Demo = false
 	d.identityMismatch = true
-	if read(reviewed) {
+	if read().StockRestoreGuide {
 		t.Fatal("mismatched machine offered restore guide")
+	}
+	d.awaitingIdentity = true
+	d.view.Online = false
+	d.view.Capabilities, d.view.Status = nil, nil
+	offline := read()
+	if !offline.StockRestoreGuide || offline.USBRestoreTarget == nil || offline.USBRestoreTarget.Model != d.view.Model ||
+		offline.USBRestoreTarget.UID != "test-unit" || offline.InstallSupported || offline.Model != "" {
+		t.Fatalf("offline guidance must be independent of wireless eligibility: %+v", offline)
 	}
 }
 

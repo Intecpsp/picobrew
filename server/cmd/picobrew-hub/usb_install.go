@@ -13,11 +13,10 @@ import (
 	"strings"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
-	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/stockfirmware"
 )
 
 type usbInstallOptions struct {
-	checkout, model, backup, keyFile, startAt, dataDir string
+	checkout, model, backup, keyFile, startAt, dataDir, display, port, device string
 }
 
 const usbComponent = "firmware/pico-s-pro/modified"
@@ -27,12 +26,15 @@ func parseUSBInstallOptions(args []string, out io.Writer) (usbInstallOptions, er
 	flags := flag.NewFlagSet("usb-install", flag.ContinueOnError)
 	flags.SetOutput(out)
 	flags.Usage = func() {
-		fmt.Fprintln(out, "Usage: picobrew-hub usb-install --model pico-s|pico-pro --key-file /path/to/api.key [--backup /path/to/original.bin] [--data ./data]")
-		fmt.Fprintln(out, "Guided macOS USB installation for the reviewed brewer and its exact original backup. Run from the firmware checkout as your usual user.")
+		fmt.Fprintln(out, "Usage: picobrew-hub usb-install --model MODEL [model options] --data ./data")
+		fmt.Fprintln(out, "Pico S/Pro/C use a USB-connected Mac and --key-file. Pico C also needs --display. ESP machines use --port on the connected computer.")
 		flags.PrintDefaults()
 	}
 	flags.StringVar(&opts.checkout, "checkout", "", "Full firmware checkout (defaults to the checkout containing the current directory)")
-	flags.StringVar(&opts.model, "model", "", "Physical brewer model: pico-s or pico-pro")
+	flags.StringVar(&opts.model, "model", "", "Physical brewer or module model")
+	flags.StringVar(&opts.display, "display", "", "Pico C display controller: ssd1325 or ssd1309")
+	flags.StringVar(&opts.port, "port", "", "Local ESP serial port")
+	flags.StringVar(&opts.device, "device", "", "CC3200 brewer UID for a saved stock backup")
 	flags.StringVar(&opts.backup, "backup", "", "Existing original full flash backup (absolute path); otherwise use the Hub copy or capture stock flash over USB")
 	flags.StringVar(&opts.dataDir, "data", "data", "Persistent data directory used by your Hub")
 	flags.StringVar(&opts.keyFile, "key-file", "", "Absolute path to the private device key (created on initial setup if missing)")
@@ -40,10 +42,21 @@ func parseUSBInstallOptions(args []string, out io.Writer) (usbInstallOptions, er
 	if err := flags.Parse(args); err != nil {
 		return opts, err
 	}
-	if flags.NArg() != 0 || (opts.model != "pico-s" && opts.model != "pico-pro") ||
-		(opts.backup != "" && !filepath.IsAbs(opts.backup)) || !filepath.IsAbs(opts.keyFile) || opts.dataDir == "" {
-		flags.Usage()
-		return opts, errors.New("select a supported model, a Hub data directory and an absolute key file path; an explicit backup path must also be absolute")
+	if err := checkUSBTarget(opts.model, opts.display, opts.port, opts.device, "install"); err != nil {
+		return opts, err
+	}
+	if flags.NArg() != 0 || opts.dataDir == "" {
+		return opts, errors.New("specify a Hub data directory and named options")
+	}
+	if isCC(opts.model) {
+		if !filepath.IsAbs(opts.keyFile) || opts.backup != "" && !filepath.IsAbs(opts.backup) {
+			return opts, errors.New("supply an absolute key-file path and an absolute path for any existing backup")
+		}
+		if opts.model == "pico-c" && opts.startAt == "install-recovery" {
+			return opts, errors.New("Pico C preserves its original recovery")
+		}
+	} else if opts.keyFile != "" || opts.backup != "" || opts.startAt != "provision-key" {
+		return opts, errors.New("ESP setup uses its ROM serial port and saves its own matched stock backup; --key-file, --backup and --start-at are CC3200 options")
 	}
 	switch opts.startAt {
 	case "provision-key", "install", "install-recovery":
@@ -85,12 +98,18 @@ func runUSBInstallCommand(args []string) error {
 	if err != nil {
 		return err
 	}
+	if !isCC(opts.model) {
+		return runFamilyUSB("install", opts.checkout, opts.dataDir, opts.model, opts.port, "")
+	}
 	component, tty, run, err := openUSBTools(opts.checkout)
 	if err != nil {
 		return err
 	}
 	defer tty.Close()
-	cache := usbBackupCache{stored: stockfirmware.StoredBackup, save: stockfirmware.SaveBackup}
+	cache, err := ccCache(opts.checkout, opts.model, opts.display, opts.device, opts.startAt == "provision-key")
+	if err != nil {
+		return err
+	}
 	return installOverUSB(opts, component, tty, tty, run, cache)
 }
 
@@ -139,7 +158,7 @@ func confirmUSBStage(input *bufio.Reader, out io.Writer, action string) bool {
 
 const usbResetPrompt = "Wait for BREAK asserted, then power on or press and release RESET once. Keep power and USB connected until the tool exits."
 
-func prepareUSBBackup(opts usbInstallOptions, input *bufio.Reader, out io.Writer, run usbToolRunner, cache usbBackupCache) (string, error) {
+func stockBackupSource(opts usbInstallOptions, input *bufio.Reader, out io.Writer, run usbToolRunner, cache usbBackupCache) (string, error) {
 	source := opts.backup
 	if source == "" {
 		var err error
@@ -170,8 +189,17 @@ func prepareUSBBackup(opts usbInstallOptions, input *bufio.Reader, out io.Writer
 			}
 		}
 	}
-	fmt.Fprintf(out, "Preparing %s and verifying the original backup, application, website, recovery image and USB tools locally.\n", opts.model)
-	if err := run(false, "pico_flash_install.py", "prepare-install", "--model", opts.model, "--backup", source); err != nil {
+	return source, nil
+}
+
+func prepareUSBBackup(opts usbInstallOptions, input *bufio.Reader, out io.Writer, run usbToolRunner, cache usbBackupCache) (string, error) {
+	source, err := stockBackupSource(opts, input, out, run, cache)
+	if err != nil {
+		return "", err
+	}
+	fmt.Fprintf(out, "Preparing %s and checking its original backup and installation files.\n", opts.model)
+	args := append([]string{"prepare-install", "--backup", source}, targetArgs(opts.model, opts.display)...)
+	if err := run(false, "pico_flash_install.py", args...); err != nil {
 		return "", fmt.Errorf("USB preparation failed before installation: %w", err)
 	}
 	path, err := cache.save(opts.dataDir, source)
@@ -202,13 +230,16 @@ func installOverUSB(opts usbInstallOptions, component string, input io.Reader, o
 	if err != nil {
 		return fmt.Errorf("creating a private reports directory beside the backup: %w", err)
 	}
-	fmt.Fprintf(out, "Installation reports: %s\nConnect only the reviewed brewer's CH340 adapter. Keep the idle brewer powered off, or ready for a manual reset.\n", reports)
+	fmt.Fprintf(out, "Installation reports: %s\nConnect only this brewer's CH340 adapter. Keep the idle brewer powered off, or ready for a manual reset.\n", reports)
 	stages := []struct {
 		command, purpose string
 	}{
 		{"provision-key", "Write and verify the device key on the stock brewer"},
 		{"install", "Install and verify the standalone application and its website"},
 		{"install-recovery", "Install and verify the separate OTA recovery image"},
+	}
+	if opts.model == "pico-c" {
+		stages = stages[:2]
 	}
 	started := false
 	for _, stage := range stages {
@@ -225,15 +256,21 @@ func installOverUSB(opts usbInstallOptions, component string, input io.Reader, o
 		fmt.Fprintln(out, usbResetPrompt)
 		args := []string{stage.command, "--verify-backup-uid", "--backup", backup, "--key-file", opts.keyFile,
 			"--output", filepath.Join(reports, stage.command+".json")}
-		if stage.command != "provision-key" {
-			args = append(args, "--model", opts.model)
-		}
+		args = append(args, targetArgs(opts.model, opts.display)...)
 		if stage.command == "install" {
-			args = append(args, "--firmware", filepath.Join(component, "firmware", "standalone", opts.model, opts.model+"-standalone.bin"))
+			image := filepath.Join(component, "firmware", "standalone", opts.model, opts.model+"-standalone.bin")
+			if opts.model == "pico-c" {
+				image = filepath.Join(filepath.Dir(filepath.Dir(component)), "pico-c", "modified", "firmware", "standalone", "pico-c", opts.display, "pico-c-standalone.bin")
+			}
+			args = append(args, "--firmware", image)
 		}
 		if err := run(true, "pico_flash_install.py", args...); err != nil {
 			return fmt.Errorf("%s did not complete; inspect its report and journal before starting another session: %w", stage.command, err)
 		}
+	}
+	if opts.model == "pico-c" {
+		fmt.Fprintln(out, "Pico C application and website verified. Power off, disconnect USB, then boot normally. Add the brewer to the Hub with its IP address and the same private API key. Its original recovery is retained.")
+		return nil
 	}
 	fmt.Fprintln(out, "Recovery verified. Power off, disconnect USB, then boot normally. Read the brewer's IP address under Network → Status. Add it in the Hub with the same private key, and check its reported model, firmware version and OTA capability.")
 	return nil

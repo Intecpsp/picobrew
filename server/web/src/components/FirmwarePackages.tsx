@@ -5,6 +5,7 @@ import { api, download, errorMessage } from '../lib/api'
 import type { FirmwareCandidate, FirmwarePackage, MachineFirmware, FirmwareUpdates } from '../types'
 import { Button, ErrorBanner, Field, Loading, Modal } from './ui'
 import { StockRestoreGuide } from './StockRestoreGuide'
+import { usbModels } from './USBInstructions'
 
 function firmwareModelName(model: string) {
   return model === 'pico-s'
@@ -53,11 +54,11 @@ export function MachineFirmwareDialog({
   const [activity, setActivity] = useState('')
   const [restoreUID, setRestoreUID] = useState('')
   const machine = firmware.data
+  const restoreTarget = machine?.stock_restore_guide
+    ? machine.usb_restore_target || { model: machine.model, device_uid: machine.device_uid }
+    : undefined
   const eligibleRestoreUID =
-    machine?.stock_restore_guide === true &&
-    (machine.model === 'pico-s' || machine.model === 'pico-pro')
-      ? machine.device_uid
-      : undefined
+    restoreTarget && usbModels.includes(restoreTarget.model) ? restoreTarget.device_uid : undefined
   const items = new Map<string, FirmwareCandidate & { remote: boolean }>()
   for (const item of updates.data?.releases || []) {
     if (item.kind === 'standalone' && matchesWirelessPackage(item, machine)) {
@@ -146,10 +147,12 @@ export function MachineFirmwareDialog({
       setSaving(false)
     }
   }
-  if (machine && eligibleRestoreUID && restoreUID === eligibleRestoreUID) {
+  if (machine && restoreTarget && eligibleRestoreUID && restoreUID === eligibleRestoreUID) {
     return (
       <StockRestoreGuide
-        model={firmwareModelName(machine.model)}
+        model={restoreTarget.model}
+        uid={eligibleRestoreUID}
+        display={machine.verified_display_variant}
         onClose={() => setRestoreUID('')}
       />
     )

@@ -91,12 +91,12 @@ afterEach(() => {
 })
 
 describe('automatic physical-machine connections', () => {
-  it('guides the first install on a USB-connected Mac before registering a stock brewer', async () => {
+  it('offers model-specific offline USB setup and restoration before registration', async () => {
     const user = userEvent.setup()
     show()
     await user.type(screen.getByLabelText('Machine name'), 'My brewer')
-    await user.click(screen.getByRole('button', { name: 'Set up a stock brewer via USB' }))
-    const select = screen.getByLabelText('Brewer to set up')
+    await user.click(screen.getByRole('button', { name: 'USB setup and recovery' }))
+    const select = screen.getByLabelText('Machine model', { selector: 'select' })
     expect((select as HTMLSelectElement).value).toBe('')
     expect(screen.queryByText(/picobrew-hub usb-install/)).toBeNull()
     for (const model of ['pico-s', 'pico-pro']) {
@@ -105,10 +105,33 @@ describe('automatic physical-machine connections', () => {
       expect(command.textContent).toContain('--data ./data')
       expect(command.textContent).not.toContain('--backup')
     }
+    await user.selectOptions(select, 'pico-c')
+    expect(screen.queryByText(/picobrew-hub usb-install/)).toBeNull()
+    await user.selectOptions(screen.getByLabelText('Physical Pico C display controller'), 'ssd1309')
+    expect(screen.getByText(/picobrew-hub usb-install/).textContent).toContain('--display ssd1309')
+    for (const model of ['z-series', 'picostill', 'picoferm']) {
+      await user.selectOptions(select, model)
+      for (const action of ['install', 'backup']) {
+        await user.selectOptions(screen.getByLabelText('USB operation'), action)
+        const command = screen.getByText(new RegExp('picobrew-hub usb-' + action))
+        expect(command.textContent).toContain('--model ' + model + ' --port SERIAL_PORT')
+        expect(command.textContent).not.toContain('--key-file')
+      }
+    }
+    await user.selectOptions(select, 'zymatic')
+    expect(screen.queryByText(/picobrew-hub usb-install/)).toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Review stock restoration' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Review USB requirements' }))
+    await user.click(screen.getByRole('checkbox'))
+    await user.click(screen.getByRole('button', { name: 'Show USB restore instructions' }))
+    expect(screen.getByText(/picobrew-hub usb-restore/).textContent).toContain('--model zymatic')
+    expect(screen.getByText(/--oem-file/)).toBeTruthy()
+    await user.click(screen.getByRole('button', { name: 'Back to USB setup' }))
     await user.click(screen.getByRole('button', { name: 'Back to Add machine' }))
     expect((screen.getByLabelText('Machine name') as HTMLInputElement).value).toBe('My brewer')
     await user.selectOptions(screen.getByLabelText('Connection type'), 'simulator')
-    expect(screen.queryByRole('button', { name: 'Set up a stock brewer via USB' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'USB setup and recovery' })).toBeNull()
     expect(fetchMock).not.toHaveBeenCalled()
   })
   it('registers a physical brewer without making the user choose or assume a model', async () => {

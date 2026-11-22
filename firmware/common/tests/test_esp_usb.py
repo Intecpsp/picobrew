@@ -1,0 +1,282 @@
+"""Exercise complete ESP service operations on in-memory chips with real package bytes."""
+
+from contextlib import redirect_stdout
+from dataclasses import replace
+import hashlib
+import importlib.util
+import io
+import os
+import struct
+from pathlib import Path
+import sys
+import tempfile
+import unittest
+from unittest.mock import MagicMock, patch
+import zipfile
+import zlib
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
+import esp_usb as usb
+
+
+class MemoryDevice:
+    def __init__(self, chip, contents):
+        self.contents = bytearray(contents)
+        self.identity = usb.Identity(chip, "102030405060", 0x1540ef if chip == "ESP8266" else 0x1640ef,
+                                     len(contents))
+        self.reads = 0
+        self.writes = []
+
+    def verify_identity(self):
+        pass
+
+    def read(self):
+        self.reads += 1
+        return bytes(self.contents)
+
+    def write(self, offset, data):
+        if offset % usb.SECTOR or len(data) % usb.SECTOR or offset + len(data) > len(self.contents):
+            raise AssertionError("physical write outside sector-aligned flash")
+        self.writes.append(offset)
+        self.contents[offset:offset+len(data)] = data
+
+
+def device(model, version=None):
+    if model == "picoferm":
+        version = version or "0_2_7"
+        chip = MemoryDevice("ESP8266", b"\xff" * (2*usb.MIB))
+        origin = 0
+        chip.contents[-12:] = b"saved-RF-cal"
+    else:
+        version = version or ("0_0_35" if model == "picostill" else "0_0_119")
+        chip = MemoryDevice("ESP32", b"\xff" * (4*usb.MIB))
+        _, parts = usb.reference(model)
+        for key in ("bootloader.bin", "partitions.bin"):
+            offset, _ = usb.ESP32_LAYOUT[key]
+            chip.contents[offset:offset+len(parts[key])] = parts[key]
+        chip.contents[0x9030:0x9040] = b"WiFi calibration"
+        origin = 0x10000
+    filename = model.replace("-", "") + "_" + version + ".bin"
+    stock = next((usb.ROOT / "firmware" / model / "oem").rglob(filename)).read_bytes()
+    chip.contents[origin:origin+len(stock)] = stock
+    return chip
+
+
+class USBTest(unittest.TestCase):
+    def setUp(self):
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        self.data = Path(tmp.name).absolute()
+        output = io.StringIO()
+        redirects = redirect_stdout(output)
+        redirects.__enter__()
+        self.addCleanup(redirects.__exit__, None, None, None)
+
+    def run_action(self, action, model, target, replies=()):
+        def ask(_):
+            return next(answers)
+        answers = iter(replies)
+        usb.operation(action, model, target, self.data, ask=ask)
+
+    def test_all_three_full_roundtrips_with_real_releases_and_oem(self):
+        for model in ("picoferm", "picostill", "z-series"):
+            with self.subTest(model=model):
+                chip = device(model)
+                self.data = self.data / model
+                before = bytes(chip.contents)
+                self.run_action("install", model, chip, [chip.identity.mac])
+                self.assertGreaterEqual(chip.reads, 3)
+                self.assertTrue(chip.writes)
+                version, components = usb.reference(model)
+                target = components["application.bin"]
+                start = 0 if model == "picoferm" else 0x10000
+                self.assertEqual(chip.contents[start:start+len(target)], target)
+                self.assertEqual(chip.contents[-0x5000:] if model == "picoferm" else chip.contents[0x9000:0x10000],
+                                 before[-0x5000:] if model == "picoferm" else before[0x9000:0x10000])
+                if model != "picoferm":
+                    self.assertEqual(chip.contents[0x1000:0x8000], before[0x1000:0x8000])
+                # Restore even when neither application's boot metadata is readable.
+                chip.contents[:0x10000] = bytes(0x10000)
+                self.run_action("restore", model, chip, ["RESTORE", chip.identity.mac])
+                self.assertEqual(chip.contents, before)
+                path = usb.backup_path(self.data, chip.identity)
+                usb.private_files.assert_private(path)
+                self.assertEqual(usb.load_original(path, chip.identity, model), before)
+
+    def test_refuse_wrong_model_and_unknown_active_flash_before_any_write(self):
+        for model, selection in (("picostill", "picoferm"), ("picostill", "z-series"), ("picoferm", "picoferm")):
+            chip = device(model)
+            if model == selection:
+                chip.contents[0] ^= 1
+            with self.assertRaises(ValueError):
+                self.run_action("install", selection, chip)
+            self.assertEqual(chip.writes, [])
+            self.assertFalse(list(self.data.rglob("*.zip")))
+
+    def test_z_stack_label_is_eligible_to_capture_but_not_qualified_for_install(self):
+        chip = device("z-series")
+        for model in usb.Z_STACKS:
+            with self.subTest(model=model), self.assertRaisesRegex(ValueError, "physical Z model"):
+                self.run_action("install", model, chip)
+        self.assertEqual(chip.writes, [])
+        path = usb.backup_path(self.data, chip.identity)
+        self.assertEqual(usb.load_original(path, chip.identity, "z2"), chip.contents)
+
+    def test_picostill_refuses_mixed_stock_and_custom_slots(self):
+        chip = device("picostill")
+        table = chip.contents[0x8000:0x8080]
+        struct.pack_into("<I", table, 2*32 + 8, usb.MIB)
+        table += struct.pack("<HBBII16sI", 0x50aa, 0, 0x10, 0x110000, 0xe0000, b"ota_0", 0)
+        chip.contents[0x8000:0x8c00] = table.ljust(0xc00, b"\xff")
+        _, components = usb.reference("picostill")
+        custom = components["application.bin"]
+        chip.contents[0x110000:0x110000 + len(custom)] = custom
+        with self.assertRaises(ValueError):
+            self.run_action("backup", "picostill", chip)
+        self.assertFalse(list(self.data.rglob("*.zip")))
+        self.assertEqual(chip.writes, [])
+
+    def test_picoferm_unknown_geometry_or_occupied_regions_preserve_a_backup(self):
+        for index in (None, usb.MIB + 5):
+            chip = device("picoferm", "0_1_0" if index is None else None)
+            if index is not None:
+                chip.contents[index] = 0x5a
+            self.data = self.data / str(index)
+            with self.assertRaisesRegex(ValueError, "boot parameters|Unidentified"):
+                self.run_action("install", "picoferm", chip)
+            self.assertEqual(chip.writes, [])
+            self.assertEqual(usb.load_original(usb.backup_path(self.data, chip.identity), chip.identity, "picoferm"),
+                             chip.contents)
+
+    def test_unstable_read_and_denied_confirmations_never_write(self):
+        chip = device("picoferm")
+        contents = bytes(chip.contents)
+        with patch.object(chip, "read", side_effect=[contents, bytes(len(contents))]), self.assertRaisesRegex(ValueError, "disagree"):
+            self.run_action("install", "picoferm", chip)
+        self.assertFalse(list(self.data.rglob("*.zip")))
+        with self.assertRaisesRegex(ValueError, "confirmation"):
+            self.run_action("install", "picoferm", chip, ["no"])
+        chip.contents[0] = 0
+        for answers in (["no"], ["RESTORE", "no"]):
+            with self.assertRaisesRegex(ValueError, "cancelled"):
+                self.run_action("restore", "picoferm", chip, answers)
+        with patch.object(chip, "verify_identity", side_effect=ValueError("device changed")), self.assertRaisesRegex(ValueError, "changed"):
+            self.run_action("restore", "picoferm", chip, ["RESTORE", chip.identity.mac])
+        self.assertEqual(chip.writes, [])
+
+    def test_private_archive_wrong_uid_geometry_or_corruption_rejected(self):
+        chip = device("picoferm")
+        self.run_action("backup", "picoferm", chip)
+        path = usb.backup_path(self.data, chip.identity)
+        for identity in (replace(chip.identity, mac="112233445566"), replace(chip.identity, jedec=0x1540aa)):
+            with self.assertRaisesRegex(ValueError, "identity"):
+                usb.load_original(path, identity, "picoferm")
+        chip.identity = replace(chip.identity, mac="223344556677")
+        with self.assertRaisesRegex(ValueError, "no private"):
+            self.run_action("restore", "picoferm", chip)
+        with path.open("r+b") as file:
+            file.seek(200000)
+            file.write(b"invalid archive bytes")
+        with self.assertRaises(zipfile.BadZipFile):
+            usb.load_original(path, replace(chip.identity, mac="102030405060"), "picoferm")
+        self.assertEqual(chip.writes, [])
+
+    def test_failed_write_or_verification_remains_recoverable(self):
+        chip = device("picoferm")
+        before = bytes(chip.contents)
+        writes = chip.write
+
+        def interrupt(offset, data):
+            writes(offset, data)
+            raise OSError("serial disconnected")
+        with patch.object(chip, "write", side_effect=interrupt), self.assertRaises(OSError):
+            self.run_action("install", "picoferm", chip, [chip.identity.mac])
+        with patch.object(chip, "write"), self.assertRaisesRegex(ValueError, "verification failed"):
+            self.run_action("restore", "picoferm", chip, ["RESTORE", chip.identity.mac])
+        self.run_action("restore", "picoferm", chip, ["RESTORE", chip.identity.mac])
+        self.assertEqual(chip.contents, before)
+
+    @unittest.skipUnless(importlib.util.find_spec("esptool"), "Install requirements-usb.txt for SDK integration")
+    def test_real_sdk_compressed_write_and_closed_device_session(self):
+        import esptool
+        import serial
+        # Only the transport and the attached chip are simulated. Espressif's
+        # full image/security checks, compressor, block writer and MD5 verifier run.
+        for model in ("picostill", "picoferm"):
+            with self.subTest(model=model):
+                chip = device(model)
+                rom = MagicMock()
+                rom.CHIP_NAME = chip.identity.chip
+                rom.secure_download_mode = rom.stub_is_disabled = rom.IS_STUB = False
+                rom.get_secure_boot_enabled.return_value = False
+                rom.get_flash_encryption_enabled.return_value = False
+                rom.read_mac.return_value = bytes.fromhex(chip.identity.mac)
+                stub = rom.run_stub.return_value
+                stub.CHIP_NAME = chip.identity.chip
+                stub.IMAGE_CHIP_ID = 0
+                stub.get_major_chip_version.return_value = 3
+                stub.secure_download_mode = False
+                stub.get_encrypted_download_disabled.return_value = False
+                stub.get_secure_boot_enabled.return_value = False
+                stub.flash_id.return_value = chip.identity.jedec
+                stub.read_mac.return_value = bytes.fromhex(chip.identity.mac)
+                stub.IS_STUB = True
+                stub.FLASH_SECTOR_SIZE = usb.SECTOR
+                stub.FLASH_WRITE_SIZE = 16384
+                stub.BOOTLOADER_FLASH_OFFSET = 0 if model == "picoferm" else 0x1000
+                pending = bytearray()
+                def begin(_size, compressed, _address):
+                    return (compressed + stub.FLASH_WRITE_SIZE - 1) // stub.FLASH_WRITE_SIZE
+                stub.flash_defl_begin.side_effect = begin
+                stub.flash_defl_block.side_effect = lambda block, _seq, timeout: pending.extend(block)
+                def verify_written(_address, _size):
+                    return hashlib.md5(zlib.decompress(pending)).hexdigest()
+                stub.flash_md5sum.side_effect = verify_written
+                port = "COM42" if os.name == "nt" else "/dev/null"
+                with patch.object(esptool, "detect_chip", return_value=rom) as detect, patch.object(serial, "Serial") as serial_open:
+                    with usb.open_device(port, model) as link:
+                        self.assertEqual(link.identity, chip.identity)
+                        link.verify_identity()
+                        self.assertEqual(stub.WRITE_FLASH_ATTEMPTS, 1)
+                        _, components = usb.reference(model)
+                        payload = components["application.bin"].ljust(usb.MIB, b"\xff")
+                        link.write(0 if model == "picoferm" else 0x10000, payload)
+                        self.assertEqual(zlib.decompress(pending), payload)
+                    serial_open.assert_called_once_with(port=None, baudrate=115200, exclusive=True)
+                    self.assertFalse(serial_open.return_value.dtr)
+                    self.assertFalse(serial_open.return_value.rts)
+                    detect.assert_called_once_with(serial_open.return_value, 115200, connect_mode="no_reset", connect_attempts=1)
+                    self.assertFalse(stub.flash_defl_finish.call_args.kwargs["reboot"])
+                    serial_open.return_value.__exit__.assert_called_once()
+
+    @unittest.skipUnless(importlib.util.find_spec("esptool"), "Install requirements-usb.txt for SDK integration")
+    def test_rom_security_and_chip_checks_precede_every_flash_access(self):
+        import esptool
+        import serial
+        port = "COM42" if os.name == "nt" else "/dev/null"
+        for chip, encryption, secure_boot in (("ESP32", True, False), ("ESP32", False, True), ("ESP32-S3", False, False)):
+            rom = MagicMock()
+            rom.CHIP_NAME = chip
+            rom.secure_download_mode = rom.IS_STUB = rom.stub_is_disabled = False
+            rom.get_secure_boot_enabled.return_value = secure_boot
+            rom.get_flash_encryption_enabled.return_value = encryption
+            with patch.object(esptool, "detect_chip", return_value=rom), patch.object(serial, "Serial"):
+                with self.assertRaises(ValueError), usb.open_device(port, "picostill"):
+                    self.fail("Protected or incompatible device accepted")
+            rom.run_stub.assert_not_called()
+
+    def test_multiple_captures_keep_first_original_and_changed_machine_settings(self):
+        chip = device("picoferm")
+        original = bytes(chip.contents)
+        self.run_action("backup", "picoferm", chip)
+        path = usb.backup_path(self.data, chip.identity)
+        chip.contents[-1] ^= 1
+        self.run_action("backup", "picoferm", chip)
+        self.run_action("backup", "picoferm", chip)
+        self.assertEqual(usb.load_original(path, chip.identity, "picoferm"), original)
+        self.assertEqual(usb.load_original(next(path.parent.glob("stock-*.zip")), chip.identity, "picoferm"), chip.contents)
+        self.assertFalse(chip.writes)
+
+
+if __name__ == "__main__":
+    unittest.main()

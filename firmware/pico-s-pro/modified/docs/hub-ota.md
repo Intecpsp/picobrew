@@ -6,7 +6,7 @@ The feature is enabled in a normally started Hub. An online Pico running standal
 
 ## One-time USB setup
 
-A brewer running stock or standalone 1.0–1.2 needs a one-time USB upgrade. The guarded installer targets one appliance with a pinned original backup and allocation layout. The owner identified the brewer previously recorded under the Pico Pro backup filename as a Pico S. Both first-install commands accept an explicit model. The backup filename is historical and does not determine model selection.
+A brewer running stock or standalone 1.0–1.2 needs a one-time USB upgrade. The guarded installer supports a pinned historical appliance and individual units with a qualified stock backup and matching live identity and allocation layout. See [USB setup and stock restoration](macos-usb-installation.md). The owner identified the brewer previously recorded under the Pico Pro backup filename as a Pico S. Both first-install commands accept an explicit model. The backup filename is historical and does not determine model selection.
 
 Follow the [USB guide](macos-usb-installation.md) for power-on timing, the backup, a new private report path per session and the existing API key. For that Pico S, use the following commands from this component, one programming session at a time:
 

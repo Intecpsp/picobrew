@@ -116,7 +116,7 @@ func TestUSBInstallStageSequence(t *testing.T) {
 				} else if script != "pico_flash_install.py" {
 					t.Fatalf("unexpected tool %s", script)
 				} else if stage == "prepare-install" {
-					if usb || !slices.Equal(args, []string{"prepare-install", "--model", opts.model, "--backup", opts.backup}) {
+					if usb || !slices.Equal(args, []string{"prepare-install", "--backup", opts.backup, "--stock-profile", "--model", opts.model}) {
 						t.Fatalf("unexpected preparation: usb=%v, %v", usb, args)
 					}
 				} else {
@@ -214,7 +214,7 @@ func TestUSBBackupUsesStoredOriginalOrCapturesBeforeInstall(t *testing.T) {
 						return errors.New("adapter unavailable")
 					}
 				case "pico_flash_install.py":
-					if usb || !slices.Equal(args, []string{"prepare-install", "--model", opts.model, "--backup", source}) {
+					if usb || !slices.Equal(args, []string{"prepare-install", "--backup", source, "--stock-profile", "--model", opts.model}) {
 						t.Fatal(args)
 					}
 					commands = append(commands, args[0])

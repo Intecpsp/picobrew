@@ -83,31 +83,52 @@ match compares declared package and machine model information.
 
 An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
-### Initial USB setup
+### USB setup, backup and stock restoration
 
-Stock firmware and older custom installations without provisioned Hub recovery require a computer connected directly by USB. The current writer verifies one physical Pico S in the S/Pro family against its original backup, identity and layout. The original backup is historically labeled Pico Pro. A matching model name alone cannot qualify a different brewer.
+Open **Add machine → USB setup and recovery** to select a machine and action. You can also open the stock restore guide from a paired machine's firmware panel. Run the displayed command in a local terminal on the attached computer, from the full checkout’s `server/` directory. Point `--data` at the persistent Hub data directory. When the USB computer and Hub are separate, setup writes the backup on the USB computer. Copy its private `stock-firmware/` directory (Zymatic uses `usb-stock/`) into the Hub’s persistent data and retain a second private copy. To restore from a different USB computer, copy the saved directory back and use its parent for `--data`. For Docker Compose, the persistent Hub data is the volume mounted at `/data`; give the Hub service user access and preserve private permissions. A checkout’s `./data` points to a separate location unless you mounted it explicitly. The running Hub needs neither USB permission nor a special startup mode.
 
-Run the local Hub executable from the full checkout on the Mac connected to the brewer, with the USB Python dependencies installed. From `server/`:
+| Hardware | Initial conversion | Return to stock |
+| --- | --- | --- |
+| Pico S and Pico Pro | On macOS, the CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |
+| Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application and website. | Restore the original application and verify the retained recovery against this brewer’s backup. A separate authenticated OEM recovery image for Pico C is unavailable. |
+| PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
+| PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
+| Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
+| Zymatic | Standalone conversion is pending a custom image and verified USB programming procedure. | Import the original 1.1.14 HEX or vendor ZIP, then write the verified application with PicoFlash on Windows. Full-board backup and restore remain unavailable. |
+
+#### Pico S, Pro and C
+
+Prepare the Python environment and CH340 dependencies in the [macOS USB procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md). For example:
 
 ```sh
-./picobrew-hub usb-install --model pico-s --key-file /absolute/private/path/api.key --data ./data --checkout ..
+./picobrew-hub usb-backup --model pico-s --data ./data --checkout ..
+./picobrew-hub usb-install --model pico-s --key-file /absolute/private/path/api.key --backup /absolute/path/to/saved-original.bin --data ./data --checkout ..
+./picobrew-hub usb-restore --model pico-s --data ./data --checkout ..
 ```
 
-Use the same data directory as the Hub. The command uses its saved original backup, accepts one supplied with `--backup /absolute/path/to/original.bin`, or prompts to capture the stock flash. A fresh capture qualifies only if every byte matches the reviewed original backup. Changes to settings or files on the same brewer can change that hash.
+For Pico C, use `--model pico-c --display ssd1325` or `--model pico-c --display ssd1309` on each command. Initial setup can capture the original directly when you omit `--backup`. The CC3200 adapter accepts the supported 1 MiB ROM4 layout with a 48-block application slot and 16-block recovery slot. Newly captured full-flash originals are read twice and stored by model, display and device identity. Restoration uses the saved original; use `--device UID` to select a particular brewer, or `--backup PATH` to select a specific capture. Firmware, boot selection and live identity must pass independent verification before writing. Each programming session requires a manual power-on or reset. Keep the private original and matching API key. The older `usb-restore` command without a model remains specific to the historically documented S/Pro device.
 
-The installer validates the files locally, provisions the private key, installs the application and matching website, and installs the separate Hub recovery. Each write requires its own USB programming session. After verification, restart the brewer and add it to the Hub using that same key. See the [USB setup instructions](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md) and [OTA qualification notes](../../firmware/pico-s-pro/modified/docs/hub-ota.md).
+#### PicoFerm, PicoStill and Z
 
-### Return to stock
-
-On the reviewed physical brewer, the machine firmware view provides a separate stock restore guide with confirmations. The browser explains the consequences and gives the local USB command. Run it from `server/` on the computer connected to the idle brewer:
+Use a verified USB-to-serial service connection and put the *idle* appliance into its ROM download mode. Install the pinned dependencies in the checkout's root virtual environment. From the repository root, run `.venv/bin/python -m pip install -r firmware/common/requirements-usb.txt` (Windows uses `.venv\Scripts\python.exe`). If no root environment exists, create it with `python -m venv .venv`. Example commands from `server/`:
 
 ```sh
-./picobrew-hub usb-restore --data ./data --checkout ..
+./picobrew-hub usb-backup --model picoferm --port SERIAL_PORT --data ./data --checkout ..
+./picobrew-hub usb-install --model picoferm --port SERIAL_PORT --data ./data --checkout ..
+./picobrew-hub usb-restore --model picoferm --port SERIAL_PORT --data ./data --checkout ..
 ```
 
-The Hub uses its private saved original backup first. If the backup is missing or fails its integrity check, the Hub preserves any existing backup and looks for the two verified OEM images in its cache. For each missing or damaged image, it fetches the pinned Git blob from the canonical firmware repository and verifies its length and SHA-256 before caching it. The USB writer independently verifies the live brewer identity, flash layout, bootloader and boot selection before writing. It restores the original application and recovery, reads both back and confirms that the unused third slot is absent. The final restart is manual.
+Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. On a normal boot after conversion, provision the device key and Wi-Fi over its serial console. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
 
-Stock software removes the standalone website, custom Hub controls and Hub wireless update capability. Wi-Fi settings and the stored device key are preserved. To reinstall custom firmware later, keep the brewer’s original private full-flash backup and the matching host API key file. The USB installer needs both, even if you restored stock using the public OEM images. The restore procedure has passed simulated USB tests. Physical restoration and subsequent boot are pending. [USB restore procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md#restore-all-oem-firmware-slots)
+#### Zymatic
+
+```sh
+./picobrew-hub usb-restore --model zymatic --oem-file /absolute/path/to/original.zip --data ./data --checkout ..
+```
+
+This command verifies and stores the vendor HEX locally and prints its path. Omit `--oem-file` on subsequent runs to use the saved copy. Complete the application write and check **About Zymatic** using the [PicoFlash procedure](../../firmware/zymatic/modified/README.md). The [stock Zymatic Hub adapter](stock-zymatic.md) can serve recipes to an unmodified machine.
+
+Full end-to-end hardware qualification is pending for the expanded USB profiles. Host checks exercise the original artifacts, transfer plans, refusal paths and readback with simulated devices.
 
 ## Storage and API
 

@@ -20,6 +20,8 @@ func main() {
 	if len(os.Args) > 1 {
 		var command func([]string) error
 		switch os.Args[1] {
+		case "usb-backup":
+			command = runUSBBackupCommand
 		case "usb-install":
 			command = runUSBInstallCommand
 		case "usb-restore":
@@ -40,7 +42,7 @@ func main() {
 	demo := flag.Bool("demo", false, "Use local simulation without hardware access")
 	secure := flag.Bool("secure-cookies", false, "Require HTTPS for owner cookies (enable behind TLS proxy)")
 	flag.Usage = func() {
-		fmt.Fprintln(flag.CommandLine.Output(), "Usage: picobrew-hub [server options]\n       picobrew-hub usb-install --help\n       picobrew-hub usb-restore --help")
+		fmt.Fprintln(flag.CommandLine.Output(), "Usage: picobrew-hub [server options]\n       picobrew-hub usb-install --help\n       picobrew-hub usb-backup --help\n       picobrew-hub usb-restore --help")
 		flag.PrintDefaults()
 	}
 	flag.Parse()
