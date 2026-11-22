@@ -6,6 +6,7 @@ import { copyProgram } from '../lib/programs'
 import type { MachineRecipe } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
 import { ProgramFields } from './Program'
+import { ZProgramFields } from './ZProgramFields'
 
 export function InstalledProgramDialog({
   deviceID,
@@ -20,6 +21,7 @@ export function InstalledProgramDialog({
 }) {
   const hub = useHub()
   const [program, setProgram] = useState(() => copyProgram(initial))
+  const [generation, setGeneration] = useState(0)
   const [expected, setExpected] = useState(() => copyProgram(initial))
   const [busy, setBusy] = useState('')
   const [error, setError] = useState('')
@@ -55,6 +57,7 @@ export function InstalledProgramDialog({
         throw new Error(
           'This program is no longer on the machine. Close the editor and refresh its recipe list.'
         )
+      setGeneration((value) => value + 1)
       setProgram(copyProgram(current))
       setExpected(copyProgram(current))
       setRefreshRequired(false)
@@ -83,7 +86,7 @@ export function InstalledProgramDialog({
               {busy === 'reload' ? 'Reading…' : 'Reload current machine copy'}
             </Button>
           ) : (
-            <Button disabled={!!busy || !ready} onClick={() => void save()}>
+            <Button disabled={!!busy || !ready} type="submit" form="installed-program-form">
               <Save size={16} />
               {busy === 'save' ? 'Saving & verifying…' : 'Save to machine'}
             </Button>
@@ -91,10 +94,7 @@ export function InstalledProgramDialog({
         </>
       }
     >
-      <p>
-        These changes update the same saved program shown in Brew PicoPak and the brewer’s browser
-        interface.
-      </p>
+      <p>Changes are saved to this brewer and are available from its front panel and browser.</p>
       <ErrorBanner message={error} />
       {refreshRequired && (
         <p className="notice">
@@ -107,16 +107,37 @@ export function InstalledProgramDialog({
           The brewer must be online, idle and ready before its saved programs can be edited.
         </p>
       )}
-      <fieldset disabled={!!busy || refreshRequired} className="program-fieldset">
-        <Field label="Saved program name">
-          <input
-            value={program.name}
-            maxLength={31}
-            onChange={(event) => setProgram((value) => ({ ...value, name: event.target.value }))}
-          />
-        </Field>
-        <ProgramFields program={program} onChange={setProgram} device model={target?.model} />
-      </fieldset>
+      <form
+        id="installed-program-form"
+        onSubmit={(e) => {
+          e.preventDefault()
+          if (!busy && ready && !refreshRequired) void save()
+        }}
+      >
+        <fieldset disabled={!!busy || refreshRequired} className="program-fieldset">
+          {program.z_program ? (
+            <ZProgramFields
+              key={generation}
+              confirmSample
+              program={program.z_program}
+              update={(z) => setProgram({ ...program, name: z.Name, z_program: z })}
+            />
+          ) : (
+            <>
+              <Field label="Saved program name">
+                <input
+                  value={program.name}
+                  maxLength={31}
+                  onChange={(event) =>
+                    setProgram((value) => ({ ...value, name: event.target.value }))
+                  }
+                />
+              </Field>
+              <ProgramFields program={program} onChange={setProgram} device model={target?.model} />
+            </>
+          )}
+        </fieldset>
+      </form>
     </Modal>
   )
 }

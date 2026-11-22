@@ -1,6 +1,7 @@
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { MachineRecipe, MachineStep, RecipeProvenance } from '../types'
-import { externalURL, programTiming, routeLabel } from '../lib/programs'
+import { archivePause, externalURL, programTiming, routeLabel } from '../lib/programs'
+import { zDuration } from '../lib/zProgram'
 import { Button, Field, IconButton, SectionHeading } from './ui'
 
 export function ProgramTable({
@@ -25,28 +26,62 @@ export function ProgramTable({
           </tr>
         </thead>
         <tbody>
-          {program.steps.map((step, index) => (
-            <tr key={index}>
+          {program.z_program?.Steps.map((step, i) => (
+            <tr key={i}>
               <td>
-                <span className="muted">{index + 1}. </span>
-                {step.name}
+                {i + 1}. {step.Name}
               </td>
-              <td>{routeLabel(step.location, model, archived)}</td>
-              <td>{step.target_f === 0 ? 'Unheated' : `${step.target_f} °F`}</td>
-              <td>
-                {step.minutes === 0
-                  ? step.target_f === 0
-                    ? 'Advance immediately'
-                    : 'Reach target'
-                  : `${step.minutes} min`}
-              </td>
-              <td>{step.drain_minutes} min</td>
+              {step.StepType === 2 ? (
+                <td colSpan={4}>Pause until operator continues</td>
+              ) : (
+                <>
+                  <td>{routeLabel(step.Location, 'z')}</td>
+                  <td>{(step.Temp ?? 0) > 0 ? step.Temp + ' °C' : 'Unheated'}</td>
+                  <td>
+                    {step.Time
+                      ? zDuration(step.Time)
+                      : (step.Temp ?? 0) > 0
+                        ? 'Reach target'
+                        : 'Advance immediately'}
+                  </td>
+                  <td>{zDuration(step.Drain)}</td>
+                </>
+              )}
             </tr>
           ))}
+          {!program.z_program &&
+            program.steps.map((step, index) => {
+              const path = routeLabel(step.location, model, archived)
+              return (
+                <tr key={index}>
+                  <td>
+                    <span className="muted">{index + 1}. </span>
+                    {step.name}
+                  </td>
+                  {archived && archivePause(step.location, model) ? (
+                    <td colSpan={4}>{path}</td>
+                  ) : (
+                    <>
+                      <td>{path}</td>
+                      <td>{step.target_f === 0 ? 'Unheated' : `${step.target_f} °F`}</td>
+                      <td>
+                        {step.minutes === 0
+                          ? step.target_f === 0
+                            ? 'Advance immediately'
+                            : 'Reach target'
+                          : `${step.minutes} min`}
+                      </td>
+                      <td>{step.drain_minutes} min</td>
+                    </>
+                  )}
+                </tr>
+              )
+            })}
         </tbody>
       </table>
       <p className="help-text">
-        {program.steps.length} steps · {programTiming(program)}. Heating time depends on the brewer.
+        {program.z_program?.Steps.length ?? program.steps.length} steps ·{' '}
+        {programTiming(program, archived ? model : undefined)}. Heating time depends on the brewer.
       </p>
     </div>
   )
@@ -56,6 +91,7 @@ export function ProgramFields({
   program,
   onChange,
   device = false,
+  targetModel,
   title = 'Brew schedule',
   model,
   archived = false,
@@ -63,10 +99,14 @@ export function ProgramFields({
   program: MachineRecipe
   onChange: (program: MachineRecipe) => void
   device?: boolean
+  targetModel?: string
   title?: string
   model?: string
   archived?: boolean
 }) {
+  const stock = targetModel === 'zymatic'
+  const bounded = device || !!targetModel
+  const maxSteps = stock ? 25 : bounded ? 15 : 256
   function updateStep(index: number, patch: Partial<MachineStep>) {
     onChange({
       ...program,
@@ -85,14 +125,21 @@ export function ProgramFields({
         description="A zero-minute hold reaches the target temperature, then advances."
         actions={
           <Button
+            type="button"
             variant="secondary"
-            disabled={program.steps.length >= (device ? 15 : 256)}
+            disabled={program.steps.length >= maxSteps}
             onClick={() =>
               onChange({
                 ...program,
                 steps: [
                   ...program.steps,
-                  { name: 'New step', location: 1, target_f: 152, minutes: 10, drain_minutes: 0 },
+                  {
+                    name: 'New step',
+                    location: stock ? 1 : 2,
+                    target_f: 152,
+                    minutes: 10,
+                    drain_minutes: 0,
+                  },
                 ],
               })
             }
@@ -121,7 +168,7 @@ export function ProgramFields({
               <Field label={`Program step ${index + 1} name`}>
                 <input
                   value={step.name}
-                  maxLength={device ? 21 : 512}
+                  maxLength={stock ? 20 : bounded ? 21 : 512}
                   onChange={(event) => updateStep(index, { name: event.target.value })}
                 />
               </Field>
@@ -129,9 +176,15 @@ export function ProgramFields({
                 <Field label={`Step ${index + 1} flow path`}>
                   <select
                     value={step.location}
-                    onChange={(event) =>
-                      updateStep(index, { location: Number(event.target.value) })
-                    }
+                    onChange={(event) => {
+                      const location = Number(event.target.value)
+                      updateStep(
+                        index,
+                        stock && location === 6
+                          ? { location, target_f: 0, minutes: 0, drain_minutes: 0 }
+                          : { location }
+                      )
+                    }}
                   >
                     {[0, 1, 2, 3, 4, 5, 6]
                       .filter((n) => n !== 0 || (!device && !model?.startsWith('pico')))
@@ -146,7 +199,8 @@ export function ProgramFields({
                   <input
                     type="number"
                     min="0"
-                    max="212"
+                    disabled={stock && step.location === 6}
+                    max={stock ? 207 : 212}
                     step="1"
                     value={step.target_f}
                     onChange={(event) =>
@@ -158,7 +212,8 @@ export function ProgramFields({
                   <input
                     type="number"
                     min="0"
-                    max={device ? 599 : 43200}
+                    disabled={stock && step.location === 6}
+                    max={stock ? 255 : bounded ? 599 : 43200}
                     step="1"
                     value={step.minutes}
                     onChange={(event) => updateStep(index, { minutes: Number(event.target.value) })}
@@ -168,7 +223,8 @@ export function ProgramFields({
                   <input
                     type="number"
                     min="0"
-                    max={device ? 120 : 1440}
+                    disabled={stock && step.location === 6}
+                    max={stock ? 255 : bounded ? 120 : 1440}
                     step="1"
                     value={step.drain_minutes}
                     onChange={(event) =>
@@ -180,6 +236,7 @@ export function ProgramFields({
             </div>
             <div className="step-actions">
               <IconButton
+                type="button"
                 label={`Move program step ${index + 1} up`}
                 disabled={!index}
                 onClick={() => move(index, -1)}
@@ -187,6 +244,7 @@ export function ProgramFields({
                 <ArrowUp size={15} />
               </IconButton>
               <IconButton
+                type="button"
                 label={`Move program step ${index + 1} down`}
                 disabled={index === program.steps.length - 1}
                 onClick={() => move(index, 1)}
@@ -194,6 +252,7 @@ export function ProgramFields({
                 <ArrowDown size={15} />
               </IconButton>
               <IconButton
+                type="button"
                 label={`Remove program step ${index + 1}`}
                 disabled={program.steps.length <= 1}
                 onClick={() =>

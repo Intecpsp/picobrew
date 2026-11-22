@@ -6,8 +6,12 @@ const poundsPerKg = 2.20462262
 const litersPerGallon = 3.785411784
 const sucrosePPG = 46
 const key = (s: string) => s.trim().toLowerCase()
-export const grainInfo = (name: string) =>
-  reference.fermentables.find((i) => key(i.name) === key(name))
+export function grainInfo(name: string) {
+  const grain = reference.fermentables.find((i) => key(i.name) === key(name))
+  // The archived reference misclassifies this whole-kernel wheat malt as dry extract.
+  // https://www.weyermann.de/en-us/product/weyermann-oak-smoked-wheat-malt-6/
+  return grain?.name === 'Oak Smoked Wheat' ? { ...grain, type: 'Grain' } : grain
+}
 export const hopInfo = (name: string) => reference.hops.find((i) => key(i.name) === key(name))
 export const yeastInfo = (name: string) => reference.yeasts.find((i) => key(i.name) === key(name))
 export function styleInfo(name: string) {

@@ -468,3 +468,41 @@ func TestSimulatorCreateRecipePreservesExistingProgram(t *testing.T) {
 	}
 	t.Fatalf("original missing from inventory %+v", items)
 }
+
+func TestZProgramWriteRequiresLiveCapabilityAndExactReadback(t *testing.T) {
+	const program = `{"Name":"Pale","IsBeer":true,"UsePicoPakMode":false,"Steps":[{"Name":"Adjunct 4","StepType":1,"Location":6,"Time":47,"Drain":4,"Temp":64.25},{"Name":"Sample","StepType":2}]}`
+	var z domain.ZProgram
+	if err := json.Unmarshal([]byte(program), &z); err != nil {
+		t.Fatal(err)
+	}
+	for _, capable := range []bool{false, true} {
+		writes := 0
+		p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+			if r.URL.Path == "/api/v1" {
+				replyJSON(w, 200, map[string]any{"mode": "standalone", "api_version": 1, "model": "z-series", "model_family": "z-series", "recipe_capacity": 16, "step_capacity": 15, "recipe_create_only": true, "z_program_maker": capable})
+				return
+			}
+			if r.Method == "PUT" {
+				writes++
+				var body map[string]json.RawMessage
+				if err := json.NewDecoder(r.Body).Decode(&body); err != nil {
+					t.Error(err)
+				}
+				if len(body) != 3 || string(body["create_only"]) != "true" || string(body["id"]) != "\"local\"" {
+					t.Errorf("wrong Z wire body %s", body)
+				}
+				var sent domain.ZProgram
+				if err := json.Unmarshal(body["z_program"], &sent); err != nil || !reflect.DeepEqual(sent, z) {
+					t.Errorf("Z program changed %v %v", sent, err)
+				}
+				replyJSON(w, 201, map[string]any{})
+				return
+			}
+			replyJSON(w, 200, map[string]any{"id": "local", "z_program": z})
+		})
+		err := p.CreateRecipe(context.Background(), domain.MachineRecipe{ID: "local", Name: "Pale", ZProgram: &z})
+		if capable && (err != nil || writes != 1) || !capable && (err == nil || writes != 0) {
+			t.Fatal(capable, writes, err)
+		}
+	}
+}

@@ -22,6 +22,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware/firmwaretest"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
 func startFirmwareServer(t *testing.T, dir string) (*Server, *httptest.Server, *http.Client, func()) {
@@ -575,6 +576,46 @@ type resumeFirmwareAdapter struct {
 func (a *resumeFirmwareAdapter) InstallFirmware(_ context.Context, _ string, _ firmware.UpdatePayload, stage string, _ func(string) error) error {
 	a.stages <- stage
 	return nil
+}
+
+func TestInstallUsesTheConnectedBrewersVersion(t *testing.T) {
+	s, h, c, stop := startFirmwareServer(t, newTestDataDir(t))
+	defer stop()
+	csrf := signIn(t, c, h.URL)
+	files := firmwaretest.Files("pico-s")
+	firmwaretest.ChangeReport(files, func(report map[string]any) { report["hub_ota_protocol"] = 1 })
+	code, body := uploadFirmware(t, c, h.URL, csrf, firmwaretest.Archive(files), nil)
+	if code != 201 {
+		t.Fatalf("upload: %d %s", code, body)
+	}
+	pkg := parseFirmwarePackage(t, body)
+	registered := domain.Device{ID: "brewer", Model: "pico-s", ModelSource: "firmware", Enabled: true, Adapter: "pico-standalone"}
+	a := &resumeFirmwareAdapter{pairingAdapter: &pairingAdapter{
+		status: domain.Status{Model: registered.Model, ModelFamily: "pico-s-pro", DeviceUID: "uid", Ready: true},
+		caps:   domain.Capabilities{Model: registered.Model, ModelFamily: "pico-s-pro", HubOTAV1: true, FirmwareVersion: "1.0.0"},
+	}, stages: make(chan string, 1)}
+	d := s.attach(registered)
+	d.adapter = a
+	if _, err := s.verifiedStatus(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	install := func() (int, []byte) {
+		return request(t, c, "POST", h.URL+"/api/v1/devices/brewer/firmware/install", csrf,
+			map[string]any{"package_id": pkg.ID, "device_uid": "uid", "confirm": true}, nil)
+	}
+	a.caps.FirmwareVersion = pkg.FirmwareVersion
+	if code, body := install(); code != 409 || !bytes.Contains(body, []byte("firmware_already_installed")) {
+		t.Fatalf("same-version install: %d %s", code, body)
+	}
+	var receipt firmware.InstallReceipt
+	if _, err := s.db.Get("firmware-install", registered.ID, &receipt); !errors.Is(err, store.ErrNotFound) {
+		t.Fatalf("unexpected install receipt: %+v, %v", receipt, err)
+	}
+	// Deliberate downgrades still work, even when the cached view matches the package.
+	a.caps.FirmwareVersion = "2.0.0"
+	if code, body := install(); code != 202 {
+		t.Fatalf("downgrade: %d %s", code, body)
+	}
 }
 
 func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *testing.T) {

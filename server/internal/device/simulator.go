@@ -277,6 +277,9 @@ func (s *simulator) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) 
 	return s.writeRecipe(ctx, recipe, false)
 }
 func (s *simulator) writeRecipe(ctx context.Context, recipe domain.MachineRecipe, create bool) error {
+	if recipe.ZProgram != nil {
+		return unsupportedCapability("z_program_maker")
+	}
 	if err := simulationContext(ctx); err != nil {
 		return err
 	}

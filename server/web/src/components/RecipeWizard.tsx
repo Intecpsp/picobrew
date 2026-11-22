@@ -10,6 +10,7 @@ import {
   grainOverLimit,
   basketWeight,
   isKegAddition,
+  kegOnly,
   totalWeight,
   hopLimit,
   slotTimes,
@@ -334,6 +335,26 @@ export function RecipeWizard({
                   />
                   <MeasureChoice />
                 </div>
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    if (
+                      entered.current &&
+                      !window.confirm(
+                        'Open the machine program editor? Only the name carries over from this draft.'
+                      )
+                    )
+                      return
+                    hub.navigate(
+                      '/recipes/new?mode=program&model=' +
+                        profile.id +
+                        '&name=' +
+                        encodeURIComponent(draft.name)
+                    )
+                  }}
+                >
+                  {profile.id === 'z' ? 'Open Z Program Maker' : 'Create a machine program'}
+                </Button>
                 <RecipeStyleField
                   label="Beer style"
                   value={draft.style}
@@ -632,7 +653,10 @@ export function RecipeWizard({
                 />
               </div>
             )}
-            {stage === 2 && (
+            {stage === 2 && kegOnly(draft.grains) && (
+              <p>All fermentables go into the keg. This brew starts with the boil.</p>
+            )}
+            {stage === 2 && !kegOnly(draft.grains) && (
               <div className="guide-group">
                 <Field label="Mash schedule">
                   <select
@@ -742,13 +766,17 @@ export function RecipeWizard({
                   <section className="guide-loading">
                     <h3>Ingredients by compartment</h3>
                     <dl>
-                      <dt>Grain compartment</dt>
-                      <dd>
-                        {draft.grains
-                          .filter((g) => !isKegAddition(g))
-                          .map((g) => g.name + ' · ' + formatQuantity(Number(g.amount), 'kg'))
-                          .join(', ')}
-                      </dd>
+                      {!kegOnly(draft.grains) && (
+                        <>
+                          <dt>Grain compartment</dt>
+                          <dd>
+                            {draft.grains
+                              .filter((g) => !isKegAddition(g))
+                              .map((g) => g.name + ' · ' + formatQuantity(Number(g.amount), 'kg'))
+                              .join(', ')}
+                          </dd>
+                        </>
+                      )}
                       {draft.grains.some(isKegAddition) && (
                         <>
                           <dt>Keg additions</dt>

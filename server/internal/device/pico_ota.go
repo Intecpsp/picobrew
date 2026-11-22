@@ -90,6 +90,18 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 			return remote.awaitApplication(ctx, before.otaIdentity, pkg.FirmwareVersion, false)
 		}
 		if !before.Trial {
+			// A retry can find an ordinary application after recovery. Verify its
+			// current version before requesting another reboot or writing flash.
+			var caps domain.Capabilities
+			if err := remote.request(ctx, "GET", "/api/v1", nil, &caps, 200); err != nil {
+				return err
+			}
+			if !caps.HubOTAV1 || caps.Model != pkg.Model || caps.FirmwareVersion == "" {
+				return otaFailure("The brewer did not confirm its model, installed version and OTA support")
+			}
+			if caps.FirmwareVersion == pkg.FirmwareVersion {
+				return &Error{StatusCode: 409, Code: "firmware_already_installed", Message: "This firmware version is already installed on the brewer"}
+			}
 			var entered otaState
 			if err := remote.request(ctx, "POST", "/api/v1/ota/enter", before.otaIdentity, &entered, 200); err != nil {
 				return err

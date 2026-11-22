@@ -44,6 +44,7 @@ for (const width of [1280, 390]) {
         settings_fields: brewing
           ? ['temperature_unit', 'language', 'detailed_status']
           : ['temperature_unit'],
+        z_program_maker: brewing,
         recipe_capacity: brewing ? 16 : 0,
         step_capacity: brewing ? 15 : 0,
         front_panel: brewing,
@@ -219,6 +220,20 @@ for (const width of [1280, 390]) {
           json: new URL(route.request().url()).pathname === '/api/v1/brews' ? [history] : history,
         })
       )
+      let installed = {
+        id: 'oem-program',
+        name: 'Adjunct pause',
+        steps: [],
+        z_program: {
+          Name: 'Adjunct pause',
+          IsBeer: true,
+          UsePicoPakMode: true,
+          Steps: [
+            { Name: 'Hops', StepType: 1, Location: 6, Temp: 96.25, Time: 185, Drain: 7 },
+            { Name: 'Inspect', StepType: 2, Time: 31 },
+          ],
+        },
+      }
       await page.route('**/api/v1/devices**', async (route) => {
         const request = route.request(),
           path = new URL(request.url()).pathname
@@ -237,7 +252,16 @@ for (const width of [1280, 390]) {
           }
         } else if (path.endsWith('/recipes')) {
           expect(brewing).toBe(true)
-          result = []
+          result = { recipes: [installed] }
+        } else if (path.endsWith('/recipes/oem-program') && request.method() === 'PUT') {
+          const body = request.postDataJSON()
+          expect(body.expected).toEqual(installed)
+          expect(body.recipe.z_program.Steps).toEqual([
+            { ...installed.z_program.Steps[0], Time: 187 },
+            installed.z_program.Steps[1],
+          ])
+          installed = body.recipe
+          result = { verified: true }
         } else if (path.endsWith('/ai-monitor')) {
           expect(brewing).toBe(true)
           result = { configured: false, enabled: false, state: 'off' }
@@ -266,6 +290,17 @@ for (const width of [1280, 390]) {
       await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
       expect(commands).toEqual([])
       if (brewing) {
+        await page.getByLabel('Recipe on this machine', { exact: true }).selectOption(installed.id)
+        await page.getByText('Manage saved recipes', { exact: true }).click()
+        await page.getByRole('button', { name: 'Edit saved program', exact: true }).click()
+        const editor = page.getByRole('dialog', { name: 'Edit the machine’s saved program' })
+        await expect(editor.getByLabel('Flow path')).toHaveValue('6')
+        await expect(
+          editor.getByText('The Z waits here until the operator continues.')
+        ).toBeVisible()
+        await editor.getByLabel('Hold (min:sec)').fill('3:07')
+        await editor.getByRole('button', { name: 'Save to machine' }).click()
+        await expect(editor).not.toBeVisible()
         const canvas = page.locator('canvas[aria-label="Live Pico OLED display"]')
         await expect(canvas).toBeVisible()
         await expect(page.getByRole('button', { name: 'Pause session' })).toHaveCount(0)

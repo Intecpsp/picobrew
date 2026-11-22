@@ -141,8 +141,7 @@ test('machine management stays on the Overview and works offline on mobile', asy
 })
 
 test('create, revise and import a recipe through the working editor', async ({ page }) => {
-  await page.goto('/#/recipes/new')
-  await page.getByRole('button', { name: 'Advanced editor' }).click()
+  await page.goto('/#/recipes/new?mode=batch')
   await expect(page.getByRole('heading', { name: 'What will you brew next?' })).toBeVisible()
   await page.getByLabel('Recipe name', { exact: true }).fill('Browser test porter')
   await page.getByLabel('Style', { exact: true }).fill('Porter')
@@ -154,7 +153,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await page.getByLabel('Minutes before boil ends').fill('12.5')
   await page.getByLabel('New step type').selectOption('mash-out')
   await page.getByRole('button', { name: 'Add step', exact: true }).click()
-  const mashOut = page.locator('.plan-row').filter({ has: page.getByLabel('2. Step name') })
+  const mashOut = page.locator('.plan-row').filter({ has: page.getByLabel('3. Step name') })
   await expect(page.getByRole('button', { name: 'Remove ingredient' }).first()).toBeVisible()
   await expect(page.getByLabel('Boil volume (L)')).toBeVisible()
   await mashOut.getByLabel('Flow path', { exact: true }).selectOption('3')
@@ -163,7 +162,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await expect(
     page.getByRole('heading', { name: 'Browser test porter', exact: true, level: 1 })
   ).toBeVisible()
-  await expect(page.getByText('Recipe saved with versions for all five brewers.')).toBeVisible()
+  await expect(page.getByText('Recipe saved to your library.')).toBeVisible()
   await page.getByLabel('Recipe notes').fill('Integration note: retained after save.')
   await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
   await page.reload()

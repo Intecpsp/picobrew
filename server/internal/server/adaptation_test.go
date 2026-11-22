@@ -268,3 +268,28 @@ func TestGeneratedRecipesUseTheSameProgramChecksAsSend(t *testing.T) {
 	r.SourceYeast = ""
 	check("", false)
 }
+
+func TestSaveCompilesForExplicitBrewerBeforeWriting(t *testing.T) {
+	s, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	v := validRecipe()
+	v.Steps[0].Location = 1
+	url := h.URL + "/api/v1/recipes"
+	for _, target := range []string{"pico-s", "pico-pro", "pico-c", "zymatic", "z", "picostill", "picoferm"} {
+		status, _ := request(t, c, "POST", url+"?validate_for_model="+target, csrf, v, nil)
+		if status != 422 {
+			t.Fatalf("%s accepted incorrect mash route: %d", target, status)
+		}
+	}
+	rows, err := s.db.List("recipe")
+	if err != nil || len(rows) != 0 {
+		t.Fatal("failed compiles left recipes", err, rows)
+	}
+	v.Steps[0].Location = 2
+	for _, target := range []string{"pico-s", "pico-pro", "pico-c", "zymatic", "z"} {
+		status, b := request(t, c, "POST", url+"?validate_for_model="+target, csrf, v, nil)
+		if status != 201 {
+			t.Fatalf("%s: %d %s", target, status, b)
+		}
+	}
+}

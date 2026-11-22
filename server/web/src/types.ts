@@ -86,6 +86,7 @@ export interface Capabilities {
   history_persistent: boolean
   telemetry_forwarding: boolean
   dedicated_pause_resume: boolean
+  z_program_maker?: boolean
   recipe_create_only?: boolean
   zero_minute_steps?: boolean
 }
@@ -139,7 +140,25 @@ export interface MachineStep {
   minutes: number
   drain_minutes: number
 }
+export type ZProgramStep =
+  | {
+      Name: string
+      StepType: 1
+      Location: number
+      Temp: number | null
+      Time: number
+      Drain: number
+    }
+  | { Name: string; StepType: 2; Time?: number }
+export interface ZProgram {
+  IsMetric?: boolean
+  Name: string
+  IsBeer: boolean
+  UsePicoPakMode: boolean
+  Steps: ZProgramStep[]
+}
 export interface MachineRecipe {
+  z_program?: ZProgram
   id: string
   name: string
   steps: MachineStep[]

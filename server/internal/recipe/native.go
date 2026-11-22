@@ -68,6 +68,12 @@ func validateNativeLibrary(r domain.Recipe) error {
 	if !nativeID.MatchString(p.ID) || p.Name != r.Name {
 		return errors.New("native program requires a valid ID and the same name as its library record")
 	}
+	if p.ZProgram != nil {
+		if r.Kind != "native-program" || r.SourceModel != "z" || len(p.Steps) != 0 || p.ZProgram.Name != p.Name {
+			return errors.New("a Z Program Maker program requires a matching Z record and one original schedule")
+		}
+		return p.ZProgram.Validate()
+	}
 	if len(p.Steps) < 1 || len(p.Steps) > 256 {
 		return errors.New("native program requires 1–256 source steps")
 	}
@@ -108,6 +114,24 @@ func adaptNative(r domain.Recipe, profile, builtIn domain.Profile, batchLiters f
 	}}
 	if r.Provenance != nil {
 		plan.Warnings = append(plan.Warnings, r.Provenance.Warnings...)
+	}
+	if z := copy.NativeProgram.ZProgram; z != nil {
+		if profile.ID != "z" || !profile.ControlSupported || !builtIn.ControlSupported {
+			plan.DeploymentBlockers = []string{"This program requires a Z brewer with Program Maker support."}
+			return plan, nil
+		}
+		if len(z.Steps) > profile.MaxSteps {
+			return plan, errors.New("program exceeds the Z profile step limit")
+		}
+		for _, s := range z.Steps {
+			var c float64
+			if len(s.Temp) > 0 && json.Unmarshal(s.Temp, &c) == nil && c > profile.MaxTargetC {
+				return plan, fmt.Errorf("step %q exceeds the Z profile temperature limit", s.Name)
+			}
+		}
+		plan.MachineRecipe = copy.NativeProgram
+		plan.CanDeploy = true
+		return plan, nil
 	}
 	if r.SourceModel == "z" || r.SourceModel == "zymatic" {
 		plan.Profile.ControlSupported = false

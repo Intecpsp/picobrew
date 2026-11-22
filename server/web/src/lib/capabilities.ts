@@ -3,6 +3,7 @@ import { temperature } from './utils'
 
 export function supports(info: Capabilities | null | undefined, name: string): boolean {
   if (typeof info?.capabilities?.[name] === 'boolean') return info.capabilities[name]
+  if (name === 'z_program_maker') return info?.z_program_maker === true
   if (name === 'front_panel') return info?.front_panel === true
   if (name === 'telemetry_forwarding') return info?.telemetry_forwarding === true
   if (name === 'history_persistent') return info?.history_persistent === true
