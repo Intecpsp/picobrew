@@ -13,6 +13,7 @@ const groups = [
   { title: 'Hop additions', kind: 'hop', add: 'Add hops' },
   { title: 'Yeast, water & other additions', kind: 'misc', add: 'Add other ingredient' },
 ]
+const grainUses = { mash: 'Mash', boil: 'Boil' }
 const hopUses = {
   boil: 'Boil',
   'first-wort': 'First wort',
@@ -99,6 +100,7 @@ export function RecipeIngredients({
             {members.map(({ item, index }) => {
               const hop = item.kind === 'hop',
                 units = ingredientUnits(item.kind)
+              const uses = hop ? hopUses : item.kind === 'fermentable' ? grainUses : null
               return (
                 <div className="plan-row" key={index}>
                   <div className="ingredient-fields">
@@ -186,15 +188,15 @@ export function RecipeIngredients({
                       </Field>
                     )}
                     <Field label="Use">
-                      {hop ? (
+                      {uses ? (
                         <select
                           value={item.use}
                           onChange={(e) => patch(index, { use: e.target.value })}
                         >
-                          {!Object.hasOwn(hopUses, item.use) && (
+                          {!Object.hasOwn(uses, item.use) && (
                             <option value={item.use}>{item.use || 'Choose how to add'}</option>
                           )}
-                          {Object.entries(hopUses).map(([value, label]) => (
+                          {Object.entries(uses).map(([value, label]) => (
                             <option key={value} value={value}>
                               {label}
                             </option>
