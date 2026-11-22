@@ -59,6 +59,7 @@ type indexed struct {
 type Archive struct {
 	sheets      map[string]BrewSheet
 	marketplace map[string]MarketplaceIngredients
+	kitEditions map[string]MarketplaceIngredients
 	files       map[string]*zip.File
 	entries     []indexed
 	byID        map[string]Summary
@@ -118,7 +119,11 @@ func openBytes(data []byte) (*Archive, error) {
 		return nil, err
 	}
 	a.marketplace = make(map[string]MarketplaceIngredients)
+	a.kitEditions = make(map[string]MarketplaceIngredients)
 	for _, product := range products {
+		if product.IngredientRecipeID != "" {
+			a.kitEditions[product.IngredientRecipeID] = product.MarketplaceIngredients
+		}
 		for _, id := range product.CatalogIDs {
 			a.marketplace[id] = product.MarketplaceIngredients
 		}
@@ -144,6 +149,12 @@ func openBytes(data []byte) (*Archive, error) {
 				entry.Style = product.Style
 			}
 			entry.Search += " " + strings.ToLower(product.Style+" "+product.Grains+" "+product.Hops)
+		}
+		if product, ok := a.kitEditions[entry.ID]; ok {
+			if entry.SourceID != "public-recipes" || entry.Kind != "recipe" || !strings.EqualFold(entry.Name, product.Name) {
+				return nil, fmt.Errorf("catalog: mismatched ingredient recipe for %s", entry.ID)
+			}
+			entry.Search += " picopak " + strings.ToLower(product.Creator)
 		}
 		_, entry.BrewReady = a.sheets[entry.ID]
 		a.byID[entry.ID] = entry.Summary
@@ -325,6 +336,9 @@ func (a *Archive) Detail(id string) (Detail, error) {
 		if result.Recipe != nil && result.Recipe.Style == "" {
 			result.Recipe.Style = result.Style
 		}
+	}
+	if product, ok := a.kitEditions[id]; ok {
+		result.Marketplace = &product
 	}
 	return result, nil
 }

@@ -290,6 +290,7 @@ type ProfileSource struct {
 	Description string `json:"description"`
 }
 type Adapted struct {
+	HopSlotsByMinute   map[int]int    `json:"hop_slots_by_minute,omitempty"`
 	Recipe             Recipe         `json:"recipe"`
 	MachineRecipe      *MachineRecipe `json:"machine_recipe"`
 	Profile            Profile        `json:"profile"`

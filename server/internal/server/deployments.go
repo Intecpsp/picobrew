@@ -208,7 +208,7 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 			item.Reason = "Recipe changed; reload its current revision"
 		} else {
 			item.Name = source.Name
-			adapted, err := recipe.Adapt(source, profile, selection.BatchLiters)
+			adapted, err := recipe.Translate(source, profile, selection.BatchLiters)
 			if err != nil {
 				item.Reason = safeMessage(err.Error())
 			} else if !adapted.CanDeploy || adapted.MachineRecipe == nil {

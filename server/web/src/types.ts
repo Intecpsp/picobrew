@@ -180,6 +180,7 @@ export interface RecipeProvenance {
   warnings: string[]
 }
 export interface Recipe {
+  machine_versions?: Adapted[]
   id: string
   name: string
   style: string
@@ -220,6 +221,7 @@ export interface Profile {
   user_configured?: boolean
 }
 export interface Adapted {
+  hop_slots_by_minute?: Record<number, number>
   recipe: Recipe
   machine_recipe: MachineRecipe | null
   profile: Profile
@@ -433,6 +435,7 @@ export interface CatalogSummary {
   official: boolean
 }
 export interface CatalogDetail extends CatalogSummary {
+  machine_versions?: Adapted[]
   brew_sheet?: {
     instructions: string[]
     yeast_guide: string
@@ -441,6 +444,8 @@ export interface CatalogDetail extends CatalogSummary {
   }
   stock_program?: MachineRecipe
   marketplace?: {
+    creator?: string
+    ingredient_recipe_id?: string
     pico_beer_id: number
     name: string
     url: string

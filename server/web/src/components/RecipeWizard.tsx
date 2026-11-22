@@ -287,7 +287,10 @@ export function RecipeWizard({
                   />
                 </Field>
                 <div className="guide-fields">
-                  <Field label="Brewer">
+                  <Field
+                    label="Brewer"
+                    hint="Sets the starting batch size. Saving prepares versions for all five brewing models."
+                  >
                     <select
                       value={profile.id}
                       onChange={(e) => {
@@ -328,23 +331,20 @@ export function RecipeWizard({
                   value={draft.style}
                   change={(style) => patch({ style })}
                 />
-                {usesPicoPakRouting(profile.id) && (
-                  <Button
-                    variant="secondary"
-                    onClick={() => {
-                      if (
-                        !entered.current ||
-                        window.confirm('Leave this draft and browse original PicoPaks?')
+                <Button
+                  variant="secondary"
+                  onClick={() => {
+                    if (
+                      !entered.current ||
+                      window.confirm('Leave this draft and browse ingredient recipes?')
+                    )
+                      hub.navigate(
+                        '/catalog?kind=recipe&model=' + encodeURIComponent(profile?.id || 'pico-s')
                       )
-                        hub.navigate(
-                          '/catalog?source=picopak-library&kind=native-program&model=' +
-                            encodeURIComponent(profile.id)
-                        )
-                    }}
-                  >
-                    Start from an original PicoPak
-                  </Button>
-                )}
+                  }}
+                >
+                  Start from an ingredient recipe
+                </Button>
               </>
             )}
             {stage === 1 && (

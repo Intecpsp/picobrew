@@ -16,6 +16,9 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(page.getByRole('button', { name: /community catalog/i })).toHaveCount(0)
   await views.getByRole('link', { name: 'Browse all' }).click()
   await page.getByPlaceholder('Search community recipes').fill('Pico Pale')
+  await expect(page.getByRole('option', { name: 'Machine schedules' })).toHaveCount(0)
+  await page.getByRole('button', { name: 'Sources & credits' }).click()
+  await page.getByRole('button', { name: 'Browse source archive' }).click()
   await page.getByLabel('Catalog type').selectOption('native-program')
   await expect(page).toHaveURL(/q=Pico\+Pale/)
   await page.getByRole('button', { name: 'Pico Pale', exact: true }).first().click()
@@ -336,8 +339,8 @@ test('starting with an archived PicoPak preserves every original step through tr
   request,
 }) => {
   await page.goto('/#/recipes/new')
-  await page.getByRole('button', { name: 'Start from an original PicoPak' }).click()
-  await expect(page).toHaveURL(/catalog\?[^#]*source=picopak-library/)
+  await page.getByRole('button', { name: 'Start from an ingredient recipe' }).click()
+  await expect(page).toHaveURL(/catalog\?kind=recipe/)
   const path = '/api/v1/catalog/picopak-1557'
   const original = await (await request.get(path + '/source?record=1557')).json()
   const headers = { 'X-CSRF-Token': 'demo' }
@@ -378,11 +381,12 @@ test('assistant filters both recipe sources and can change a catalog selection t
   await search.fill('pale')
   const results = page.locator('[aria-label="Recipe search results"]')
   await expect(results.getByRole('button', { name: /Weekend Pale/ }).first()).toBeVisible()
+  await search.fill('Dead Guy Clone')
   await results
-    .getByRole('button', { name: /Pico Pale/i })
+    .getByRole('button', { name: /Dead Guy Clone/i })
     .first()
     .click()
-  await expect(search).toHaveValue(/Pico Pale/i)
+  await expect(search).toHaveValue(/Dead Guy Clone/i)
   await expect(page.getByText(/^Community catalog ·/)).toBeVisible()
   await page.getByRole('button', { name: 'Clear selection' }).click()
   await search.fill('studio porter')
@@ -464,4 +468,28 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
   await dialog.getByLabel('Zymatic serial number').fill('CATALOGPREVIEW')
   await dialog.getByRole('button', { name: 'Preview stock menu' }).click()
   await expect(dialog.getByRole('cell', { name: 'Hop addition 1' }).first()).toBeVisible()
+})
+
+test('catalog and library show five automatic versions from one measured recipe', async ({
+  page,
+}) => {
+  await page.goto('/#/catalog?q=UB08&model=pico-s')
+  await page.getByRole('button', { name: 'UB08 Summer IPA', exact: true }).click()
+  const versions = page.getByRole('region', { name: 'Machine versions' })
+  const target = versions.getByLabel('View brewer version')
+  await expect(target).toHaveValue('pico-s')
+  await expect(target.locator('option')).toHaveCount(5)
+  await expect(versions.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText(
+    'Citra'
+  )
+  for (const id of ['pico-s', 'pico-c', 'pico-pro', 'z', 'zymatic']) {
+    await target.selectOption(id)
+    await expect(versions.getByRole('columnheader', { name: 'Flow path' })).toBeVisible()
+  }
+  await page.getByRole('button', { name: 'Copy ingredient recipe' }).click()
+  await expect(versions.getByLabel('View brewer version').locator('option')).toHaveCount(5)
+  await versions.getByLabel('View brewer version').selectOption('pico-c')
+  await expect(versions.getByRole('table', { name: 'Scaled ingredient bill' })).toContainText(
+    'Hop slot'
+  )
 })

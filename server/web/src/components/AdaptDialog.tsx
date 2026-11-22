@@ -41,10 +41,16 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     (source && source.id) || (first && modelProfile(first.model)) || hub.profiles[0]?.id || ''
   )
   const profile = hub.profiles.find((item) => item.id === profileID)
+  function fittingProfile(p?: Profile) {
+    const match = recipe.machine_versions?.find((v) => v.profile.id === p?.id)
+    return match?.recipe.batch_liters && p ? { ...p, batch_liters: match.recipe.batch_liters } : p
+  }
   const [batch, setBatch] = useState<BatchSelection>(() =>
     profileBatch(
-      source ? { value: String(recipe.batch_liters), explicit: true } : undefined,
-      profile
+      source && !recipe.machine_versions
+        ? { value: String(recipe.batch_liters), explicit: true }
+        : undefined,
+      fittingProfile(profile)
     )
   )
   const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
@@ -87,7 +93,11 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   }
 
   useEffect(() => {
-    setBatch((current) => profileBatch(current, profile))
+    setBatch((current) =>
+      current.explicit && validBatch(current.value, profile)
+        ? current
+        : profileBatch(undefined, fittingProfile(profile))
+    )
   }, [profileID, profile?.batch_liters])
 
   useEffect(() => {
@@ -281,7 +291,11 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
             {hub.profiles.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.name}
-                {item.control_supported ? '' : ' · planning & export'}
+                {item.control_supported
+                  ? ''
+                  : item.id === 'zymatic'
+                    ? ' · stock menu'
+                    : ' · planning & export'}
               </option>
             ))}
           </select>
@@ -398,7 +412,11 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                           <td>{step.drain_minutes} min</td>
                           <td>
                             {adapted.machine_recipe
-                              ? routeLabel(step.location, adapted.profile.id)
+                              ? routeLabel(
+                                  step.location,
+                                  adapted.profile.id,
+                                  adapted.profile.id === 'zymatic'
+                                )
                               : routeLabel(step.location, adapted.recipe.source_model, true)}
                           </td>
                         </tr>
@@ -434,7 +452,13 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
                         <td>{step.target_c ? formatTemperature(step.target_c) : 'Unheated'}</td>
                         <td>{step.minutes} min</td>
                         <td>{step.drain_minutes} min</td>
-                        <td>{routeLabel(step.location, adapted.profile.id)}</td>
+                        <td>
+                          {routeLabel(
+                            step.location,
+                            adapted.profile.id,
+                            adapted.profile.id === 'zymatic'
+                          )}
+                        </td>
                         <td>
                           {[
                             step.type || step.kind,

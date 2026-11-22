@@ -326,7 +326,13 @@ def assert_recipe_persisted(server, recipe):
                                     ('recipe', recipe['id']))
         try:
             row = cursor.fetchone()
-            assert row is not None and json.loads(row[0]) == recipe, 'Drained recipe was not persisted'
+            # The GET check after restart compares the complete response, including
+            # model versions generated from the stored recipe and calibration.
+            canonical = dict(recipe)
+            versions = canonical.pop('machine_versions')
+            assert {v['profile']['id'] for v in versions} == {'pico-c', 'pico-s', 'pico-pro', 'z', 'zymatic'}
+            assert all(v['source_revision'] == canonical['revision'] for v in versions)
+            assert row is not None and json.loads(row[0]) == canonical, 'Drained recipe was not persisted'
         finally:
             cursor.close()
     finally:

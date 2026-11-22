@@ -1,0 +1,115 @@
+import { useState } from 'react'
+import { useHub } from '../context'
+import { modelLabel } from '../lib/utils'
+import { formatQuantity, formatVolume, formatTemperature, formatNumber } from '../lib/recipeDisplay'
+import type { Adapted } from '../types'
+import { ProgramTable } from './Program'
+import { Field, SectionHeading } from './ui'
+
+export function MachineVersions({
+  versions,
+  initialModel,
+}: {
+  versions?: Adapted[]
+  initialModel?: string
+}) {
+  const hub = useHub()
+  const [selection, setSelection] = useState(
+    initialModel || hub.devices.find((d) => d.online)?.model || 'pico-s'
+  )
+  const plan =
+    versions?.find((v) => v.profile.id === (selection === 'z-series' ? 'z' : selection)) ||
+    versions?.[0]
+  if (!plan) return null
+  const { recipe, profile, machine_recipe: program } = plan
+  return (
+    <section className="panel" aria-label="Machine versions">
+      <SectionHeading title="Machine versions" />
+      <Field label="View brewer version">
+        <select value={profile.id} onChange={(e) => setSelection(e.target.value)}>
+          {versions?.map((v) => (
+            <option key={v.profile.id} value={v.profile.id}>
+              {modelLabel(v.profile.id)}
+            </option>
+          ))}
+        </select>
+      </Field>
+      {recipe.batch_liters > 0 && (
+        <p>
+          <strong>{formatVolume(recipe.batch_liters)}</strong> · {formatNumber(recipe.efficiency)}%
+          efficiency ·{' '}
+          {program
+            ? profile.id === 'zymatic'
+              ? 'Stock Zymatic menu program'
+              : 'Standalone firmware program'
+            : 'Needs recipe review'}
+        </p>
+      )}
+      {plan.deployment_blockers?.map((reason) => (
+        <p key={reason} className="warning-note">
+          {reason}
+        </p>
+      ))}
+      {!!recipe.ingredients?.length && (
+        <div className="table-scroll">
+          <table className="data-table" aria-label="Scaled ingredient bill">
+            <thead>
+              <tr>
+                <th>Ingredient</th>
+                <th>Amount</th>
+                <th>When to add</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recipe.ingredients.map((i, n) => (
+                <tr key={n}>
+                  <td>{i.name}</td>
+                  <td>{formatQuantity(i.amount, i.unit)}</td>
+                  <td>
+                    {i.kind === 'hop' && (i.use === 'boil' || i.use === 'first-wort')
+                      ? [
+                          plan.hop_slots_by_minute?.[i.minutes]
+                            ? 'Hop slot ' + plan.hop_slots_by_minute[i.minutes]
+                            : '',
+                          i.use === 'first-wort'
+                            ? 'First wort'
+                            : i.minutes + ' min before boil ends',
+                        ]
+                          .filter(Boolean)
+                          .join(' · ')
+                      : i.use}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+      {program && (
+        <ProgramTable program={program} model={profile.id} archived={profile.id === 'zymatic'} />
+      )}
+      {!!recipe.fermentation?.length && (
+        <p>
+          {recipe.fermentation
+            .map(
+              (s) =>
+                s.name +
+                ' · ' +
+                formatTemperature(s.target_c) +
+                ' · ' +
+                formatNumber(s.days) +
+                ' days'
+            )
+            .join(' / ')}
+        </p>
+      )}
+      {plan.warnings
+        ?.filter((w) => !w.startsWith('Native recipe ID') && !w.includes('temperature rounds'))
+        .map((w) => (
+          <p className="help-text" key={w}>
+            {w}
+          </p>
+        ))}
+    </section>
+  )
+}

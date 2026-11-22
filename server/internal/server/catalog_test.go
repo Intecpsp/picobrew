@@ -24,7 +24,7 @@ func TestCatalogBrowseCopyAndOriginal(t *testing.T) {
 		t.Fatalf("unauthenticated catalogue: %d", status)
 	}
 	csrf := signIn(t, c, h.URL)
-	status, body := request(t, c, "GET", h.URL+"/api/v1/catalog?source=picopak-library&model=pico-pro&limit=2", "", nil, nil)
+	status, body := request(t, c, "GET", h.URL+"/api/v1/catalog?kind=archive&source=picopak-library&model=pico-pro&limit=2", "", nil, nil)
 	var page catalog.Page
 	if status != 200 || json.Unmarshal(body, &page) != nil || len(page.Items) != 2 || page.Total <= 2 {
 		t.Fatalf("browse %d: %s", status, body)
@@ -85,7 +85,7 @@ func TestCatalogBrowseCopyAndOriginal(t *testing.T) {
 func TestCatalogReferencesAndUnsupportedCopy(t *testing.T) {
 	_, h, c := newTestServer(t)
 	csrf := signIn(t, c, h.URL)
-	status, body := request(t, c, "GET", h.URL+"/api/v1/catalog?source=chiefwigms&model=pico-pro", "", nil, nil)
+	status, body := request(t, c, "GET", h.URL+"/api/v1/catalog?kind=archive&source=chiefwigms&model=pico-pro", "", nil, nil)
 	var page catalog.Page
 	if status != 200 || json.Unmarshal(body, &page) != nil || len(page.Items) == 0 {
 		t.Fatalf("chief sources %d: %s", status, body)
@@ -193,7 +193,7 @@ func TestCatalogStockProgramCopyPreviewsWithoutRoutingInput(t *testing.T) {
 	base := h.URL + "/api/v1"
 	code, body := request(t, c, "GET", base+"/catalog?kind=brew-ready&limit=1", "", nil, nil)
 	var page catalog.Page
-	if code != 200 || json.Unmarshal(body, &page) != nil || len(page.Items) != 1 {
+	if code != 200 || json.Unmarshal(body, &page) != nil || len(page.Items) != 1 || !page.Items[0].BrewReady {
 		t.Fatal(code, string(body))
 	}
 	code, body = request(t, c, "POST", base+"/catalog/"+page.Items[0].ID+"/copy", token, map[string]bool{"stock_program": true}, nil)

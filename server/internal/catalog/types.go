@@ -61,12 +61,14 @@ type SourceRecord struct {
 
 // MarketplaceIngredients describes published kit ingredients without assuming weights or batch size.
 type MarketplaceIngredients struct {
-	ProductID int    `json:"pico_beer_id"`
-	Name      string `json:"name"`
-	URL       string `json:"url"`
-	Style     string `json:"style,omitempty"`
-	Grains    string `json:"grains,omitempty"`
-	Hops      string `json:"hops,omitempty"`
+	Creator            string `json:"creator,omitempty"`
+	IngredientRecipeID string `json:"ingredient_recipe_id,omitempty"`
+	ProductID          int    `json:"pico_beer_id"`
+	Name               string `json:"name"`
+	URL                string `json:"url"`
+	Style              string `json:"style,omitempty"`
+	Grains             string `json:"grains,omitempty"`
+	Hops               string `json:"hops,omitempty"`
 }
 
 type BrewSheet struct {

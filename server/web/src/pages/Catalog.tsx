@@ -1,3 +1,4 @@
+import { MachineVersions } from '../components/MachineVersions'
 import { ArchivedIngredients } from '../components/ArchivedIngredients'
 import { modelLabel } from '../lib/utils'
 import { useEffect, useState } from 'react'
@@ -34,8 +35,8 @@ import './Catalog.scss'
 function entryLabel(entry: CatalogSummary) {
   if (entry.brew_ready) return 'Brew-ready · Stock Zymatic'
   if (entry.kind === 'maintenance') return 'Cleaning program'
-  if (entry.source_id === 'picopak-library') return 'Recipe from a PicoPak'
-  return entry.kind === 'native-program' ? 'Archived brew program' : 'Archived recipe'
+  if (entry.source_id === 'picopak-library') return 'Archived PicoPak schedule'
+  return entry.kind === 'native-program' ? 'Archived brew program' : 'Ingredient recipe'
 }
 
 const catalogQuery = () => {
@@ -52,7 +53,12 @@ function CatalogBrowse() {
   const [query, setQuery] = useState(params.get('q') || '')
   const [debounced, setDebounced] = useState(query)
   const [source, setSource] = useState(params.get('source') || '')
-  const [kind, setKind] = useState(params.get('kind') || '')
+  const [kind, setKind] = useState(() => {
+    const requested = params.get('kind') || 'recipe'
+    return ['brew-ready', 'recipe', 'archive', 'native-program', 'maintenance'].includes(requested)
+      ? requested
+      : 'recipe'
+  })
   const [model, setModel] = useState(params.get('model') || '')
   const [style, setStyle] = useState(params.get('style') || '')
   const [offset, setOffset] = useState(0)
@@ -62,11 +68,12 @@ function CatalogBrowse() {
     const timer = setTimeout(() => setDebounced(query), 200)
     return () => clearTimeout(timer)
   }, [query])
+  const archive = ['archive', 'native-program', 'maintenance'].includes(kind)
   const filters = new URLSearchParams({
     q: debounced,
-    source,
-    kind: kind === 'archive' ? '' : kind || 'brew-ready',
-    model,
+    source: archive ? source : '',
+    kind,
+    model: archive ? model : '',
     style,
     offset: String(offset),
     limit: '24',
@@ -85,8 +92,14 @@ function CatalogBrowse() {
   return (
     <>
       <PageTitle
-        title="Community recipes"
-        description="Brew-ready recipes include measured ingredients, loading instructions, fermentation guidance and a matching machine program."
+        title={archive ? 'Source archive' : 'Community recipes'}
+        description={
+          archive
+            ? 'Original records, including PicoPak schedules and cleaning programs.'
+            : kind === 'recipe'
+              ? 'Measured recipes with versions for Pico C, S, Pro, Z-series and Zymatic.'
+              : 'Measured ingredients, loading instructions, fermentation guidance and a matching stock Zymatic program.'
+        }
       />
       <div className="catalog-intro panel">
         <div>
@@ -97,6 +110,17 @@ function CatalogBrowse() {
           </div>
         </div>
         <div className="inline-actions">
+          {archive && (
+            <Button
+              variant="secondary"
+              onClick={() => {
+                change(setKind, 'recipe')
+                setSource('')
+              }}
+            >
+              Back to recipes
+            </Button>
+          )}
           <Button variant="ghost" onClick={() => setSourcesOpen(true)}>
             Sources & credits
           </Button>
@@ -114,24 +138,33 @@ function CatalogBrowse() {
         <div className="form-grid quarters">
           <Field label="Catalog type">
             <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
-              <option value="">Brew-ready recipes</option>
-              <option value="archive">Archive · All source records</option>
-              <option value="recipe">Archive · Ingredient recipes</option>
-              <option value="native-program">Archive · Machine programs</option>
-              <option value="maintenance">Archive · Cleaning programs</option>
+              {archive ? (
+                <>
+                  <option value="archive">All source records</option>
+                  <option value="native-program">Machine schedules</option>
+                  <option value="maintenance">Cleaning programs</option>
+                </>
+              ) : (
+                <>
+                  <option value="brew-ready">Verified for stock Zymatic</option>
+                  <option value="recipe">All ingredient recipes</option>
+                </>
+              )}
             </select>
           </Field>
-          <Field label="Source archive">
-            <select value={source} onChange={(event) => change(setSource, event.target.value)}>
-              <option value="">All archives</option>
-              {page?.sources.map((item) => (
-                <option key={item.id} value={item.id}>
-                  {item.name}
-                </option>
-              ))}
-            </select>
-          </Field>
-          <Field label="Source machine">
+          {archive && (
+            <Field label="Source archive">
+              <select value={source} onChange={(event) => change(setSource, event.target.value)}>
+                <option value="">All archives</option>
+                {page?.sources.map((item) => (
+                  <option key={item.id} value={item.id}>
+                    {item.name}
+                  </option>
+                ))}
+              </select>
+            </Field>
+          )}
+          <Field label={archive ? 'Source machine' : 'Adapt for'}>
             <select value={model} onChange={(event) => change(setModel, event.target.value)}>
               <option value="">All machines</option>
               {['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic'].map((key) => (
@@ -178,7 +211,7 @@ function CatalogBrowse() {
                       )}
                       <span>{entry.style || kindLabel(entry.kind, entry.source_model)}</span>
                       {entry.featured && (
-                        <strong className="catalog-featured">Starter program</strong>
+                        <strong className="catalog-featured">Featured source</strong>
                       )}
                     </div>
                     <div className="recipe-card-content">
@@ -215,15 +248,17 @@ function CatalogBrowse() {
                       <div className="recipe-meta">
                         {entry.abv != null && <span>{formatNumber(entry.abv, 1)}% ABV</span>}
                         {entry.ibu != null && <span>{formatNumber(entry.ibu, 1)} IBU</span>}
-                        <span>{(entry.models || []).map(modelLabel).join(' · ')}</span>
+                        {archive && <span>{(entry.models || []).map(modelLabel).join(' · ')}</span>}
                       </div>
                       <footer>
                         <small>
                           {entry.brew_ready
                             ? 'Includes stock Zymatic program'
-                            : entry.can_deploy
-                              ? 'Review before transfer'
-                              : 'Reference & planning'}
+                            : entry.kind === 'recipe'
+                              ? 'View machine versions'
+                              : entry.can_deploy
+                                ? 'Review before transfer'
+                                : 'Reference & planning'}
                         </small>
                         <button
                           onClick={() =>
@@ -245,28 +280,24 @@ function CatalogBrowse() {
                 <Empty
                   icon={<Search size={26} />}
                   title="No entries match these filters."
-                  description={
-                    kind
-                      ? 'Try a different name, archive or machine.'
-                      : 'Search the archive for source recipes and programs that still need preparation details.'
-                  }
+                  description="Try a different name, source or style."
                   action={
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        if (!kind) {
-                          change(setKind, 'archive')
+                        if (kind === 'brew-ready') {
+                          change(setKind, 'recipe')
                           return
                         }
                         setQuery('')
                         setSource('')
-                        setKind('')
+                        setKind(archive ? 'archive' : kind)
                         setModel('')
                         setStyle('')
                         setOffset(0)
                       }}
                     >
-                      {kind ? 'Clear filters' : 'Search all source records'}
+                      {kind === 'brew-ready' ? 'Search all ingredient recipes' : 'Clear filters'}
                     </Button>
                   }
                 />
@@ -299,7 +330,14 @@ function CatalogBrowse() {
         )
       )}
       {sourcesOpen && (
-        <Sources sources={page?.sources || []} onClose={() => setSourcesOpen(false)} />
+        <Sources
+          sources={page?.sources || []}
+          onClose={() => setSourcesOpen(false)}
+          browseArchive={() => {
+            setSourcesOpen(false)
+            change(setKind, 'archive')
+          }}
+        />
       )}
       {referencesOpen && (
         <ReferenceLibrary model={model} onClose={() => setReferencesOpen(false)} />
@@ -366,6 +404,10 @@ function CatalogEntry({ id }: { id: string }) {
         }
       />
       <ErrorBanner message={error || resource.error} />
+      <MachineVersions
+        versions={entry.machine_versions}
+        initialModel={new URLSearchParams(catalogQuery()).get('model') || undefined}
+      />
       <div className="editor-layout catalog-detail">
         <div className="editor-main">
           <section className="panel">
@@ -379,6 +421,16 @@ function CatalogEntry({ id }: { id: string }) {
                     : undefined
               }
             />
+            {entry.kind === 'recipe' && entry.marketplace && (
+              <p>
+                {entry.marketplace.creator} also offered this beer as a{' '}
+                <a href={entry.marketplace.url} target="_blank" rel="noreferrer">
+                  PicoPak
+                </a>
+                . The quantities below are for the published{' '}
+                {formatVolume(entry.recipe?.batch_liters ?? 0)} recipe.
+              </p>
+            )}
             {entry.kind === 'native-program' && <ArchivedIngredients product={entry.marketplace} />}
             {entry.source_id === 'public-recipes' && /^public-[0-9a-f]{32}$/.test(entry.id) && (
               <p>
@@ -532,9 +584,11 @@ function CatalogEntry({ id }: { id: string }) {
             <p>
               {entry.brew_ready
                 ? 'Matched to the original stock Zymatic schedule.'
-                : entry.can_deploy
-                  ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
-                  : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}
+                : entry.kind === 'recipe'
+                  ? 'View machine versions'
+                  : entry.can_deploy
+                    ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
+                    : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}
             </p>
           </div>
         </aside>
@@ -542,13 +596,24 @@ function CatalogEntry({ id }: { id: string }) {
     </>
   )
 }
-function Sources({ sources, onClose }: { sources: CatalogSource[]; onClose: () => void }) {
+function Sources({
+  sources,
+  onClose,
+  browseArchive,
+}: {
+  sources: CatalogSource[]
+  onClose: () => void
+  browseArchive: () => void
+}) {
   return (
     <Modal title="Catalog sources & credits" onClose={onClose} wide>
       <p>
         Source records are bundled at the revisions shown here. Copying a recipe creates an
         independent library entry; it keeps the source attribution.
       </p>
+      <Button variant="secondary" onClick={browseArchive}>
+        Browse source archive
+      </Button>
       {sources.map((source) => (
         <section className="catalog-source" key={source.id}>
           <h3>{source.name}</h3>
