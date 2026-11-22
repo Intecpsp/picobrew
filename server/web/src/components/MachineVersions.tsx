@@ -2,7 +2,8 @@ import { OriginalRecipeLink } from './OriginalRecipe'
 import { useState } from 'react'
 import { useHub } from '../context'
 import { modelLabel } from '../lib/utils'
-import { formatQuantity, formatVolume, formatTemperature, formatNumber } from '../lib/recipeDisplay'
+import { useRecipeQuantity } from './RecipeMeasures'
+import { formatTemperature, formatNumber } from '../lib/recipeDisplay'
 import type { Adapted } from '../types'
 import { ProgramTable } from './Program'
 import { Field, SectionHeading } from './ui'
@@ -24,7 +25,6 @@ export function MachineVersions({
     versions?.find((v) => v.profile.id === (selection === 'z-series' ? 'z' : selection)) ||
     versions?.[0]
   if (!plan) return null
-  const { recipe, profile, machine_recipe: program } = plan
   return (
     <section className="panel" aria-label="Machine versions">
       <SectionHeading
@@ -32,7 +32,7 @@ export function MachineVersions({
         actions={sourceID && <OriginalRecipeLink id={sourceID} />}
       />
       <Field label="View brewer version">
-        <select value={profile.id} onChange={(e) => setSelection(e.target.value)}>
+        <select value={plan.profile.id} onChange={(e) => setSelection(e.target.value)}>
           {versions?.map((v) => (
             <option key={v.profile.id} value={v.profile.id}>
               {modelLabel(v.profile.id)}
@@ -40,9 +40,19 @@ export function MachineVersions({
           ))}
         </select>
       </Field>
+      <BrewerPlan plan={plan} />
+    </section>
+  )
+}
+
+export function BrewerPlan({ plan }: { plan: Adapted }) {
+  const formatQuantity = useRecipeQuantity()
+  const { recipe, profile, machine_recipe: program } = plan
+  return (
+    <>
       {recipe.batch_liters > 0 && (
         <p>
-          Estimated yield <strong>{formatVolume(recipe.batch_liters)}</strong> ·{' '}
+          Estimated yield <strong>{formatQuantity(recipe.batch_liters, 'L')}</strong> ·{' '}
           {formatNumber(recipe.efficiency)}% efficiency
           {!program && ' · Needs recipe review'}
         </p>
@@ -113,6 +123,6 @@ export function MachineVersions({
             {w}
           </p>
         ))}
-    </section>
+    </>
   )
 }

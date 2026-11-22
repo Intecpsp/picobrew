@@ -9,18 +9,31 @@ import { beerStats } from '../lib/beerCrafter'
 import type { Adapted, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
 
-export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
+export function AdaptDialog({
+  recipe,
+  onClose,
+  initialModel,
+}: {
+  recipe: Recipe
+  onClose: () => void
+  initialModel?: string
+}) {
   const hub = useHub()
   const native = isNative(recipe)
   const modelProfile = (model: string) => (model === 'z-series' ? 'z' : model)
   const supported = hub.devices.filter((d) =>
     hub.profiles.some((p) => p.id === modelProfile(d.model))
   )
+  const candidates = initialModel
+    ? supported.filter((d) => modelProfile(d.model) === initialModel)
+    : supported
   const first =
-    supported.find((d) => d.online && modelProfile(d.model) === recipe.source_model) ||
-    supported.find((d) => d.online) ||
-    supported[0]
-  const [deviceID, setDeviceID] = useState(first?.id || '')
+    candidates.find((d) => d.online && modelProfile(d.model) === recipe.source_model) ||
+    candidates.find((d) => d.online) ||
+    candidates[0]
+  const [deviceID, setDeviceID] = useState(
+    initialModel === 'zymatic' ? stockTarget : first?.id || ''
+  )
   const target = hub.devices.find((d) => d.id === deviceID)
   const profile = hub.profiles.find((p) => target && p.id === modelProfile(target.model))
   const profileID = profile?.id

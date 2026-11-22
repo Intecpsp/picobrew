@@ -1,6 +1,6 @@
 # Beer Crafter in the Hub
 
-The shared recipe wizard follows PicoBrew’s grain, mash, boil, hop-bin and yeast workflow. Open **Recipes → Create recipe**. Review the grain and hop bills, predicted beer statistics and wort-temperature curve before saving. **Advanced editor** lets you edit ingredients and plan the brew, fermentation and carbonation. Existing ingredient recipes open directly in that editor.
+The shared recipe wizard follows PicoBrew’s grain, mash, boil, hop-bin and yeast workflow. Open **Recipes → Add recipe → Create for a brewer**. Review the grain and hop bills, predicted beer statistics and wort-temperature curve before saving. **Advanced editor** lets you edit ingredients and plan the brew, fermentation and carbonation. For a recipe authored at a conventional batch size, choose **Add recipe → Create by batch size** and enter the source volume. It starts at five US gallons. In a saved recipe, **Recipe view** switches between editing the base recipe and showing the quantities and schedule for each brewer.
 
 | Original Crafter task | Where to do it |
 | --- | --- |
