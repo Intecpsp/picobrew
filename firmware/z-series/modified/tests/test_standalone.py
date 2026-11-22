@@ -30,6 +30,7 @@ class StandaloneTests(unittest.TestCase):
             '-I'+str(ROOT/'include'),'-I'+str(OEM/'include'),'-I'+str(COMMON/'include'),'-I'+str(COMMON/'src')]+
             [str(p) for p in sources]+[str(http),str(OEM/'build/libzseries_oem_json.a'),'-o',str(cls.binary)],check=True)
     def run_case(self,name):subprocess.run([str(self.binary),name],check=True,timeout=15)
+    def test_program_maker_storage_execution_and_recovery_match_original(self):self.run_case('maker')
     def test_owned_recipe_native_program_and_reserved_history(self):self.run_case('recipe')
     def test_storage_failure_precedes_native_program_start(self):self.run_case('storage')
     def test_unheated_step_executes_real_runtime_pid_stop(self):self.run_case('unheated')

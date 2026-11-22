@@ -106,6 +106,25 @@ idle device and verified persistent writes. Defaults are offered only when an
 adapter provides a reviewed, attributed starter set; no Z defaults are inferred
 from S/Pro compartment numbers. Accessories do not advertise recipe capacity.
 
+### Z Program Maker recipes
+
+When discovery reports `z_program_maker: true`, the same recipe PUT accepts
+`{"id":"my-program","create_only":true,"z_program":{...}}`. GET returns the
+ID and the original-format program under `z_program`. Regular recipes continue
+to use `name` and `steps`. A stored program starts through the usual brew
+command and machine preparation prompts.
+
+The program has `Name`, `IsBeer`, `UsePicoPakMode`, `Steps` and optionally
+`IsMetric` for display. Program and step names take 1–20 printable ASCII
+characters. The catalog supports up to 15 steps. For active steps, `StepType`
+is 1 and `Location` is 1 for keg, 2 for mash, or 3–6 for adjuncts 1–4.
+`Temp` is Celsius, with an accepted range of −29 to 98 to cover original
+metric and imperial entries. A null or nonpositive target turns heating off.
+`Time` and `Drain` are integer seconds (up to 86,400 and 7,200). A pause uses
+`StepType: 2`, `Name` and optional `Time`; the native runtime waits for
+acknowledgement. Unknown fields, mixed program encodings and out-of-range
+values are rejected before storage.
+
 Settings use the existing `temperature_unit` (`F`/`C`), `language`
 (`en`/`es`/`fr`) and `detailed_status` fields, only where advertised. PATCH is a
 nonempty subset and preserves unrelated fields. Common persistence validates

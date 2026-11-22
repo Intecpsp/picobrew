@@ -1,4 +1,5 @@
 #include "zseries/standalone.hpp"
+#include "zseries/program_recipe_json.hpp"
 #include "zseries/program_runtime_heater.hpp"
 #include <algorithm>
 #include <cassert>
@@ -139,6 +140,54 @@ void owned_recipe(){World w;auto r=recipe();assert(w.engine.recipe_store(r).ok()
     assert(w.core.commands.session.parameters.water.value==0&&w.core.commands.session.stats.duration_seconds>0);
     w.engine.poll();auto sessions=w.request(PICO_HTTP_GET,"/api/v1/history",nullptr,200);assert(sessions.find("Owned recipe")!=std::string::npos);
 }
+void maker_program() {
+    World world;
+    const char* path = "/api/v1/recipes/maker";
+    char source[] = R"({"Name":"Adjunct run","IsBeer":false,"UsePicoPakMode":true,"IsMetric":false,"Steps":[{"Name":"Adjunct four","StepType":1,"Time":86400,"Location":6,"Drain":47,"Temp":67.125},{"Name":"Wait for me","StepType":2,"Time":17}]})";
+    const std::string put = std::string("{\"create_only\":true,\"z_program\":") + source + "}";
+    assert(world.request(PICO_HTTP_GET, "/api/v1", nullptr, 200).find("\"z_program_maker\":true") != std::string::npos);
+    const auto result = world.request(PICO_HTTP_PUT, path, put.c_str(), 201);
+    assert(result.find("\"Temp\":67.125") != std::string::npos);
+    assert(result.find("\"IsBeer\":false,\"UsePicoPakMode\":true,\"IsMetric\":false") != std::string::npos);
+    assert(result.find("\"StepType\":2,\"Time\":17}") != std::string::npos);
+    world.request(PICO_HTTP_PUT, path, put.c_str(), 409);
+    const std::string incompatible = std::string("{\"steps\":[],\"z_program\":") + source + "}";
+    world.request(PICO_HTTP_PUT, path, incompatible.c_str(), 400);
+    const std::string invalid = R"({"z_program":{"Name":"X","IsBeer":true,"UsePicoPakMode":false,"Steps":[{"Name":"Pause","StepType":2,"Location":6}]}})";
+    world.request(PICO_HTTP_PUT, path, invalid.c_str(), 400);
+    auto stored = world.files;
+    World reopened(&stored);
+    assert(reopened.request(PICO_HTTP_GET, path, nullptr, 200) == result);
+    // Compare actual recovered parser/compiler instructions with the program
+    // chosen through the standard standalone recipe/start API.
+    ProgramBuffer original;
+    assert(parse_local_recipe(original, source, std::strlen(source), RecipeEnvironment(101325,100)).ready);
+    reopened.request(PICO_HTTP_POST, "/api/v1/commands", R"({"command":"brew","recipe_id":"maker"})", 202);
+    reopened.adapter.poll();
+    const auto& native = reopened.core.program.record().view;
+    const auto& expected = original.record().view;
+    assert(native.code_size == expected.code_size && native.string_count == expected.string_count);
+    for (std::size_t i = 0; i < native.code_size; ++i)
+        assert(native.code[i].opcode == expected.code[i].opcode && native.code[i].argument == expected.code[i].argument);
+    for (std::size_t i = 0; i < native.string_count; ++i)
+        assert(std::strcmp(native.strings[i], expected.strings[i]) == 0);
+    assert(reopened.dispatch());
+    zseries::standalone::BrewRecovery restart;
+    assert(restart.load(reopened.storage()).ok() && restart.present());
+    const auto& checkpoint = restart.recipe();
+    assert(checkpoint.z_program && !checkpoint.is_beer && checkpoint.use_pico_pak);
+    assert(checkpoint.steps[0].z.target_c == 67.125 && checkpoint.steps[0].z.seconds == 86400 &&
+           checkpoint.steps[0].z.drain_seconds == 47 && checkpoint.steps[1].z.pause);
+
+    const char* nullable = R"({"z_program":{"Name":"Cold","IsBeer":true,"UsePicoPakMode":false,"Steps":[{"Name":"Cold","StepType":1,"Time":10,"Drain":0,"Location":1,"Temp":null},{"Name":"Wait","StepType":2}]}})";
+    const auto cold = world.request(PICO_HTTP_PUT, path, nullable, 200);
+    assert(cold.find("\"Temp\":null") != std::string::npos && cold.find("\"StepType\":2}") != std::string::npos);
+    api::Recipe r;
+    assert(world.engine.recipe_get("maker", r).ok() && world.adapter.load_recipe(r, false).ok());
+    const auto& instructions = world.core.program.record().view;
+    assert(instructions.code[2].opcode == OpCode::NoTarget);
+}
+
 void storage_preflight(){World w;auto r=recipe();assert(w.adapter.load_recipe(r,true).ok());const auto frames=w.frames.size();
     w.fail_write=1;assert(w.dispatch());assert(w.core.core.state.id==CoreStateId::Idle&&!w.core.core.state.runtime_start_pending);
     assert(w.frames.size()==frames);assert(w.adapter.show_home());w.core.runtime_commands.pending=false;
@@ -422,7 +471,7 @@ void recovery_preflight_has_no_diagnostics(){World w;running_hold(w);
 }
 }
 int main(int argc,char** argv){assert(argc==2);const std::string test=argv[1];
-    if(test=="recipe")owned_recipe();else if(test=="storage")storage_preflight();else if(test=="unheated")no_target();
+    if(test=="maker")maker_program();else if(test=="recipe")owned_recipe();else if(test=="storage")storage_preflight();else if(test=="unheated")no_target();
     else if(test=="stop")stop_guard();else if(test=="input")input_order();else if(test=="offline")offline_and_reservation();
     else if(test=="settings")settings_and_display();else if(test=="status")status_fields();
     else if(test=="recovery")recovery_restart();else if(test=="recovery-pause")recovery_unheated_and_pause();

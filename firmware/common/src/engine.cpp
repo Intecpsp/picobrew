@@ -1,22 +1,17 @@
 #include "engine_internal.hpp"
+#include "recipe_record.hpp"
 
 namespace picobrew { namespace standalone {
 using namespace detail;
 namespace {
-constexpr unsigned RecipeBytes = 54 + RecipeStepCapacity * 28;
 constexpr unsigned CatalogueBytes = RecipeCapacity * 58;
 Result storage_error() { return Result(503, "storage_io", "Persistent state could not be read or verified"); }
 bool encode_recipe(const Records& records, unsigned slot, const Recipe& recipe,
                    std::uint32_t previous, std::uint32_t& generation) {
-    std::uint8_t bytes[RecipeBytes] = {};
-    std::memcpy(bytes, recipe.id, 21); std::memcpy(bytes + 21, recipe.name, 32); bytes[53] = recipe.step_count;
-    for (unsigned i = 0; i < recipe.step_count; ++i) {
-        const RecipeStep& s = recipe.steps[i]; std::uint8_t* p = bytes + 54 + i * 28;
-        std::memcpy(p, s.name, 22); p[22] = s.location; p[23] = s.target_f;
-        p[24] = s.minutes; p[25] = s.minutes >> 8; p[26] = s.drain_minutes; p[27] = s.drain_minutes >> 8;
-    }
+    std::uint8_t bytes[ZRecipeBytes] = {};
+    const auto size = write_recipe_record(bytes, recipe);
     char name[12]; ::snprintf(name, sizeof(name), "r%02u", slot);
-    return records.save(name, bytes, sizeof(bytes), previous, generation) == RecordResult::Ok;
+    return records.save(name, bytes, size, previous, generation) == RecordResult::Ok;
 }
 }
 Engine::Engine(DeviceServices device, Storage storage, Clock clock) noexcept
@@ -206,17 +201,11 @@ bool Engine::Impl::load_recipes() {
 }
 Result Engine::Impl::recipe_read(unsigned slot, Recipe& recipe) const {
     if (!recipes || slot >= RecipeCapacity || !recipes[slot].id[0]) return Result(404, "recipe_not_found", "Recipe not found");
-    std::uint8_t bytes[RecipeBytes]; std::size_t length = 0; std::uint32_t generation = 0;
+    std::uint8_t bytes[ZRecipeBytes]; std::size_t length = 0; std::uint32_t generation = 0;
     char name[12]; ::snprintf(name, sizeof(name), "r%02u", slot);
-    if (records.load(name, bytes, sizeof(bytes), length, generation, recipes[slot].generation) != RecordResult::Ok || length != sizeof(bytes)) return storage_error();
-    std::memcpy(recipe.id, bytes, 21); std::memcpy(recipe.name, bytes + 21, 32); recipe.step_count = bytes[53];
-    if (recipe.step_count > RecipeStepCapacity) return storage_error();
-    for (unsigned i = 0; i < recipe.step_count; ++i) {
-        const std::uint8_t* p = bytes + 54 + i * 28; RecipeStep& s = recipe.steps[i];
-        std::memcpy(s.name, p, 22); s.location = p[22]; s.target_f = p[23];
-        s.minutes = p[24] | (unsigned(p[25]) << 8); s.drain_minutes = p[26] | (unsigned(p[27]) << 8);
-    }
-    if (!recipe_valid(recipe, capabilities.zero_minute_steps) || std::strcmp(recipe.id, recipes[slot].id) ||
+    if (records.load(name, bytes, sizeof(bytes), length, generation, recipes[slot].generation) != RecordResult::Ok ||
+        !read_recipe_record(recipe, bytes, length)) return storage_error();
+    if (!recipe_valid(recipe, capabilities.zero_minute_steps, capabilities.z_program_maker) || std::strcmp(recipe.id, recipes[slot].id) ||
         std::strcmp(recipe.name, recipes[slot].name) || recipe.step_count != recipes[slot].steps) return storage_error();
     return owner.device_.validate_recipe ? owner.device_.validate_recipe(owner.device_.context, recipe) : Result();
 }
@@ -246,7 +235,7 @@ Result Engine::Impl::recipe_write(const Recipe& recipe, bool* created, bool crea
     if (!(capabilities.flags & Recipes)) return Result(404, "not_found", "Recipes are unavailable");
     if (!persistent) return storage_error();
     if (!idle()) return Result(409, "busy", "Change recipes only while the appliance is idle");
-    if (!recipe_valid(recipe, capabilities.zero_minute_steps)) return Result(400, "invalid_recipe", "Invalid recipe fields or bounds");
+    if (!recipe_valid(recipe, capabilities.zero_minute_steps, capabilities.z_program_maker)) return Result(400, "invalid_recipe", "Invalid recipe fields or bounds");
     if (owner.device_.validate_recipe) {
         const Result valid = owner.device_.validate_recipe(owner.device_.context, recipe); if (!valid.ok()) return valid;
     }
@@ -317,7 +306,7 @@ Result Engine::Impl::restore_defaults(unsigned& added, unsigned& preserved) {
     for (const RecipeEntry& entry : staged) if (!entry.id[0]) ++empty;
     for (std::size_t n = 0; n < capabilities.starter_recipe_count; ++n) {
         const Recipe& recipe = capabilities.starter_recipes[n]; bool found = false;
-        if (!recipe_valid(recipe, capabilities.zero_minute_steps)) return Result(503, "invalid_defaults", "Invalid native starter recipe");
+        if (!recipe_valid(recipe, capabilities.zero_minute_steps, capabilities.z_program_maker)) return Result(503, "invalid_defaults", "Invalid native starter recipe");
         if (owner.device_.validate_recipe) { const Result valid = owner.device_.validate_recipe(owner.device_.context, recipe); if (!valid.ok()) return valid; }
         for (const RecipeEntry& entry : staged) if (!std::strcmp(entry.id, recipe.id)) found = true;
         for (std::size_t j = 0; j < n; ++j) if (!std::strcmp(recipe.id, capabilities.starter_recipes[j].id)) return Result(503, "invalid_defaults", "Duplicate starter recipe ID");

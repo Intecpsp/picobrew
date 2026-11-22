@@ -33,11 +33,22 @@ bool valid_text(const char* value, std::size_t capacity) {
     }
     return false;
 }
-bool recipe_valid(const Recipe& recipe, bool zero_minutes) {
+bool recipe_valid(const Recipe& recipe, bool zero_minutes, bool z_program_maker) {
     if (!valid_id(recipe.id) || !valid_text(recipe.name, sizeof(recipe.name)) ||
         !recipe.step_count || recipe.step_count > RecipeStepCapacity) return false;
+    if (recipe.z_program && (!z_program_maker || !valid_text(recipe.name, 21))) return false;
     for (unsigned i = 0; i < recipe.step_count; ++i) {
         const RecipeStep& s = recipe.steps[i];
+        if (recipe.z_program) {
+            const auto& z = s.z;
+            if (!valid_text(s.name, 21) || z.seconds > 86400 || (!z.has_time && z.seconds)) return false;
+            if (z.pause) {
+                if (s.location || z.target_c != 0 || z.null_target || z.drain_seconds) return false;
+            } else if (s.location < 1 || s.location > 6 || !std::isfinite(z.target_c) ||
+                       z.target_c < -29 || z.target_c > 98 || (z.null_target && z.target_c != 0) ||
+                       !z.has_time || z.drain_seconds > 7200) return false;
+            continue;
+        }
         if (!valid_text(s.name, sizeof(s.name)) || s.location < 1 || s.location > 6 ||
             (s.target_f && (s.target_f < 60 || s.target_f > 212)) ||
             s.minutes > 599 || (!s.minutes && !zero_minutes) || s.drain_minutes > 120) return false;
@@ -82,6 +93,96 @@ bool telemetry_valid(const TelemetryConfig& config) {
     }
     return address && address != UINT32_MAX;
 }
+namespace {
+bool parse_z_step(Json& json, RecipeStep& step) {
+    if (!json.token('{') || json.peek('}')) return false;
+    enum { Name=1, Type=2, Time=4, Location=8, Temp=16, Drain=32 };
+    unsigned seen = 0;
+    do {
+        char key[40];
+        unsigned bit = 0;
+        std::int64_t value = 0;
+        if (!json.key(key)) return false;
+        if (!std::strcmp(key, "Name")) {
+            bit = Name; if (!json.string(step.name, 21)) return false;
+        } else if (!std::strcmp(key, "StepType")) {
+            bit = Type; if (!json.integer(1, 2, value)) return false;
+            step.z.pause = value == 2;
+        } else if (!std::strcmp(key, "Time")) {
+            bit = Time; if (!json.integer(0, 86400, value)) return false;
+            step.z.seconds = value; step.z.has_time = true;
+        } else if (!std::strcmp(key, "Location")) {
+            bit = Location; if (!json.integer(1, 6, value)) return false;
+            step.location = value;
+        } else if (!std::strcmp(key, "Temp")) {
+            bit = Temp;
+            if (json.peek('n')) {
+                if (json.end - json.p < 4 || std::memcmp(json.p, "null", 4)) return false;
+                json.p += 4; step.z.null_target = true;
+            } else if (!json.number(step.z.target_c)) return false;
+        } else if (!std::strcmp(key, "Drain")) {
+            bit = Drain; if (!json.integer(0, 7200, value)) return false;
+            step.z.drain_seconds = value;
+        } else return false;
+        if (seen & bit) return false;
+        seen |= bit;
+    } while (json.next('}'));
+    if (!json.token('}')) return false;
+    if (step.z.pause) return (seen & ~Time) == (Name | Type);
+    return seen == (Name | Type | Time | Location | Temp | Drain);
+}
+
+bool parse_z_program(Json& json, Recipe& recipe) {
+    if (!json.token('{') || json.peek('}')) return false;
+    unsigned seen = 0;
+    recipe.z_program = true;
+    do {
+        char key[40]; unsigned bit = 0;
+        if (!json.key(key)) return false;
+        if (!std::strcmp(key, "Name")) {
+            bit = 1; if (!json.string(recipe.name, 21)) return false;
+        } else if (!std::strcmp(key, "IsBeer")) {
+            bit = 2; if (!json.boolean(recipe.is_beer)) return false;
+        } else if (!std::strcmp(key, "UsePicoPakMode")) {
+            bit = 4; if (!json.boolean(recipe.use_pico_pak)) return false;
+        } else if (!std::strcmp(key, "Steps")) {
+            bit = 8;
+            if (!json.token('[') || json.peek(']')) return false;
+            do {
+                if (recipe.step_count >= RecipeStepCapacity || !parse_z_step(json, recipe.steps[recipe.step_count++])) return false;
+            } while (json.next(']'));
+            if (!json.token(']')) return false;
+        } else if (!std::strcmp(key, "IsMetric")) {
+            bit = 16; if (!json.boolean(recipe.is_metric)) return false;
+            recipe.has_metric = true;
+        } else return false;
+        if (seen & bit) return false;
+        seen |= bit;
+    } while (json.next('}'));
+    return json.token('}') && (seen & 15) == 15;
+}
+void z_program_json(Writer& writer, const Recipe& recipe) {
+    writer.text("{\"Name\":"); writer.quote(recipe.name);
+    writer.text(",\"IsBeer\":"); writer.boolean(recipe.is_beer);
+    writer.text(",\"UsePicoPakMode\":"); writer.boolean(recipe.use_pico_pak);
+    if (recipe.has_metric) { writer.text(",\"IsMetric\":"); writer.boolean(recipe.is_metric); }
+    writer.text(",\"Steps\":[");
+    for (unsigned i = 0; i < recipe.step_count; ++i) {
+        if (i) writer.text(",");
+        const auto& step = recipe.steps[i];
+        writer.text("{\"Name\":"); writer.quote(step.name);
+        writer.format(",\"StepType\":%u", step.z.pause ? 2u : 1u);
+        if (step.z.has_time) writer.format(",\"Time\":%lu", static_cast<unsigned long>(step.z.seconds));
+        if (!step.z.pause) {
+            writer.format(",\"Location\":%u,\"Drain\":%u,\"Temp\":", unsigned(step.location), unsigned(step.z.drain_seconds));
+            if (step.z.null_target) writer.text("null"); else writer.format("%.17g", step.z.target_c);
+        }
+        writer.text("}");
+    }
+    writer.text("]}");
+}
+}
+
 bool parse_recipe(Json& json, const char* id, Recipe& recipe, bool& create_only) {
     if (!valid_id(id) || !json.token('{') || json.peek('}')) return false;
     copy(recipe.id, sizeof(recipe.id), id);
@@ -96,6 +197,8 @@ bool parse_recipe(Json& json, const char* id, Recipe& recipe, bool& create_only)
             bit = 8; if (!json.boolean(create_only)) return false;
         } else if (!std::strcmp(key, "name")) {
             bit = 2; if (!json.string(recipe.name, sizeof(recipe.name))) return false;
+        } else if (!std::strcmp(key, "z_program")) {
+            bit = 16; if ((seen & 6) || !parse_z_program(json, recipe)) return false;
         } else if (!std::strcmp(key, "steps")) {
             bit = 4;
             if (!json.token('[') || json.peek(']')) return false;
@@ -127,7 +230,7 @@ bool parse_recipe(Json& json, const char* id, Recipe& recipe, bool& create_only)
         if (seen & bit) return false;
         seen |= bit;
     } while (json.next('}'));
-    return json.token('}') && json.done() && (seen & 6) == 6;
+    return json.token('}') && json.done() && ((seen & 22) == 6 || (seen & 22) == 16);
 }
 bool parse_command(Json& json, Command& command) {
     if (!json.token('{') || json.peek('}')) return false;
@@ -171,7 +274,11 @@ void reading(Writer& writer, Reading value) {
     if (value.valid) writer.number(value.value); else writer.text("null");
 }
 void recipe_json(Writer& writer, const Recipe& recipe) {
-    writer.text("{\"id\":"); writer.quote(recipe.id); writer.text(",\"name\":"); writer.quote(recipe.name);
+    writer.text("{\"id\":"); writer.quote(recipe.id);
+    if (recipe.z_program) {
+        writer.text(",\"z_program\":"); z_program_json(writer, recipe); writer.text("}"); return;
+    }
+    writer.text(",\"name\":"); writer.quote(recipe.name);
     writer.text(",\"steps\":[");
     for (unsigned i = 0; i < recipe.step_count; ++i) {
         const RecipeStep& step = recipe.steps[i];

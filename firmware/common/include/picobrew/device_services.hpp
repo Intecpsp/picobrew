@@ -44,6 +44,7 @@ struct Capabilities {
     std::size_t command_count = 0;
     bool zero_minute_steps = false;
     bool dedicated_pause_resume = false;
+    bool z_program_maker = false;
     // Advertise only when the adapter supplies attributed, validated defaults.
     const struct Recipe* starter_recipes = nullptr;
     std::size_t starter_recipe_count = 0;
@@ -112,16 +113,27 @@ struct Snapshot {
     // never starts outputs; resumption requires its advertised explicit command.
     Recovery recovery;
 };
+// Only the Z Program Maker format carries exact Celsius, seconds and explicit
+// pause steps. Keep its values separate from the legacy integer-F/minute API.
+struct ZProgramStep {
+    double target_c = 0;
+    std::uint32_t seconds = 0;
+    std::uint16_t drain_seconds = 0;
+    bool pause = false, null_target = false, has_time = false;
+};
 struct RecipeStep {
     char name[22] = {};
     std::uint8_t location = 0, target_f = 0;
     std::uint16_t minutes = 0, drain_minutes = 0;
+    ZProgramStep z;
 };
 struct Recipe {
     char id[21] = {};
     char name[32] = {};
     RecipeStep steps[RecipeStepCapacity];
     std::uint8_t step_count = 0;
+    bool z_program = false, is_beer = true, use_pico_pak = false;
+    bool has_metric = false, is_metric = false;
 };
 struct Settings {
     char temperature_unit = 'F';

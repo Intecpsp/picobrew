@@ -161,8 +161,7 @@ unbounded OEM acquisition and cloud application paths.
 `analysis/memory-validation.json` binds the actual target ELF and pinned compiler
 size probes to a 32-bit execution of the real controller, Engine, provisioning,
 verified transaction layer, all five pinned SPIFFS C sources and the original
-SDK UMM allocator. The 1.2.1 release replay used Debian’s multilib compiler
-and QEMU to run the 32-bit Linux test. The packaged ELF has **29,264 bytes** between
+SDK UMM allocator. The current shared-engine build has **29,008 bytes** between
 `_heap_start` and the SDK heap end. The 5,788-byte application owner is already in
 static RAM; it includes the 4,936-byte HTTP server and its 4,096-byte arena. The
 SDK's 4 KiB continuation stack is also static, so neither is counted twice as a
@@ -184,7 +183,7 @@ allocator's rounding and reserves the measured 140-byte difference between the
 native and target Engine ABI. It uses a maximum-length forwarding hostname,
 extreme valid 24-bit ADC readings, clock rollover, a stalled transmission, active
 sample pages and retained pages while another session records. All **14,238
-allocations** succeed; the peak is **27,160 bytes**, leaving **2,104 bytes**.
+allocations** succeed; the peak is **27,160 bytes**, leaving **1,848 bytes**. The published 1.2.1 ELF retained 2,104 bytes in its release replay.
 The largest serialized forwarding frame in that replay is 1,200 bytes. Every
 allocation returns to the allocator on teardown, apart from its fixed 8-byte
 sentinel. Real filesystem calls also verify the actual `ferm-cal` key; a

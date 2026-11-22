@@ -23,3 +23,8 @@
 #recoveryPanel .button { max-width:100%; white-space:normal; }
 .accessory .parameter-controls { grid-template-columns:repeat(auto-fit,minmax(250px,1fr)); align-items:start; }
 .device-actions { margin-top:14px; }
+
+#zProgramOptions {margin:1rem 0}
+#zProgramOptions label:has(input[type=checkbox]) {display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
+#zProgramOptions input[type=checkbox] {width:auto;min-height:auto}
+#zProgramOptions button {align-self:end;justify-self:start}

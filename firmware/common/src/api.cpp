@@ -30,6 +30,7 @@ void metadata_json(Writer& writer, const Session& session, bool storage_error, s
 }
 unsigned Engine::Impl::discovery_json(Writer& writer) {
     writer.text("{"); identity_json(writer, identity);
+    if (capabilities.z_program_maker) writer.text(",\"z_program_maker\":true");
     writer.text(",\"api_version\":1,\"firmware_version\":"); writer.quote(identity.firmware_version);
     writer.format(",\"mode\":\"standalone\",\"recipe_capacity\":%u,\"step_capacity\":%u,\"recipe_create_only\":%s,\"zero_minute_steps\":%s,\"restore_default_recipes\":%s,\"starter_recipe_count\":%u,\"recipe_labels\":\"printable ASCII\",\"commands\":[",
         capabilities.flags & Recipes ? unsigned(RecipeCapacity) : 0u, capabilities.flags & Recipes ? unsigned(RecipeStepCapacity) : 0u,

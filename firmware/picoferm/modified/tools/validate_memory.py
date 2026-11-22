@@ -132,7 +132,7 @@ def main():
     result=json.loads(subprocess.check_output(emulator+[str(executable),str(heap_bytes),'16384',str(platform)],text=True,timeout=120))
     if result['pointer_bytes']!=4 or result['allocation_failures'] or not result['passed']:raise ValueError('Finite 32-bit heap replay failed')
     files=sources+[ROOT/'tests/memory_host/allocator_config.h',ROOT/'tests/memory_host/pgmspace.h',Path(__file__),
-        COMMON/'src/engine_internal.hpp',COMMON/'src/json.hpp',COMMON/'src/records.hpp',COMMON/'include/picobrew/device_services.hpp']
+        COMMON/'src/engine_internal.hpp',COMMON/'src/json.hpp',COMMON/'src/records.hpp',COMMON/'src/recipe_record.hpp',COMMON/'include/picobrew/device_services.hpp']
     output=dict(schema_version=1,target_type_bytes=sizes,target_heap_start=hex(heap_start),target_heap_end='0x3fffc000',target_heap_bytes=heap_bytes,
         elf_sha256=report['elf_sha256'],build_source_entries_verified=count,native_type_bytes=native_sizes,target_abi_gap_reserved=abi_gap,
         platform_allocation_payloads=platform_allocations,native=result,

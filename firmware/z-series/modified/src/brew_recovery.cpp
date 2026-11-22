@@ -1,5 +1,6 @@
 #include "zseries/brew_recovery.hpp"
 #include "records.hpp"
+#include "recipe_record.hpp"
 #include <algorithm>
 #include <cmath>
 #include <cstring>
@@ -9,8 +10,8 @@ namespace zseries { namespace standalone {
 using namespace oem;
 namespace detail = api::detail;
 namespace {
-constexpr std::size_t HeaderBytes=96,RecipeBytes=21+32+1+api::RecipeStepCapacity*28;
-constexpr std::size_t MaximumBytes=HeaderBytes+RecipeBytes+InstructionStack::capacity*8;
+constexpr std::size_t HeaderBytes=96;
+constexpr std::size_t MaximumBytes=HeaderBytes+detail::ZRecipeBytes+InstructionStack::capacity*8;
 constexpr std::uint32_t Magic=0x31525a50u;
 api::Result error(){return {503,"recovery_storage","The interrupted brew checkpoint could not be verified; discard it explicitly before starting another brew"};}
 api::Result invalid(){return {503,"recovery_invalid","The native brew continuation cannot be represented safely"};}
@@ -19,17 +20,11 @@ bool label(const char* text,std::size_t capacity,bool empty=false){
     for(std::size_t i=0;i<capacity;++i){const auto c=static_cast<unsigned char>(text[i]);if(!c)return true;if(c<32||c>126)return false;}
     return false;
 }
-bool recipe_valid(const api::Recipe& recipe){
-    if(!label(recipe.id,sizeof recipe.id)||!label(recipe.name,sizeof recipe.name)||!recipe.step_count||recipe.step_count>api::RecipeStepCapacity)return false;
-    for(std::size_t i=0;i<recipe.step_count;++i){const auto& s=recipe.steps[i];
-        if(!label(s.name,sizeof s.name)||s.location<1||s.location>6||(s.target_f&&s.target_f<60)||s.target_f>212||s.minutes>599||s.drain_minutes>120)return false;}
-    return true;
-}
 bool code_valid(const Instruction* code,std::size_t count,const api::Recipe& recipe){
     if(!count||count>InstructionStack::capacity)return false;
     for(std::size_t i=0;i<count;++i){const auto& op=code[i];if(!instruction_valid(op))return false;
         if((op.opcode==OpCode::StepName||op.opcode==OpCode::SubStepName)&&!is_common_string_reference(op.argument)&&op.argument>recipe.step_count)return false;
-        // Recovery is exclusively a local beer program. Never accept unrelated
+        // Recovery is exclusively a local recipe program. Never accept unrelated
         // Still, manual-input, test, or indefinite-wait instruction families.
         switch(op.opcode){
         case OpCode::StillScan:case OpCode::StillStart:case OpCode::StSetTargetHL:case OpCode::StFindHeatLoss:
@@ -42,18 +37,6 @@ bool code_valid(const Instruction* code,std::size_t count,const api::Recipe& rec
     }
     return true;
 }
-void write_recipe(std::uint8_t* bytes,const api::Recipe& recipe){
-    std::memcpy(bytes,recipe.id,21);std::memcpy(bytes+21,recipe.name,32);bytes[53]=recipe.step_count;
-    for(std::size_t i=0;i<api::RecipeStepCapacity;++i){const auto& step=recipe.steps[i];auto* p=bytes+54+i*28;
-        std::memcpy(p,step.name,22);p[22]=step.location;p[23]=step.target_f;
-        p[24]=step.minutes;p[25]=step.minutes>>8;p[26]=step.drain_minutes;p[27]=step.drain_minutes>>8;}
-}
-void read_recipe(api::Recipe& recipe,const std::uint8_t* bytes){
-    std::memcpy(recipe.id,bytes,21);std::memcpy(recipe.name,bytes+21,32);recipe.step_count=bytes[53];
-    for(std::size_t i=0;i<api::RecipeStepCapacity;++i){auto& step=recipe.steps[i];const auto* p=bytes+54+i*28;
-        std::memcpy(step.name,p,22);step.location=p[22];step.target_f=p[23];
-        step.minutes=p[24]|(std::uint16_t(p[25])<<8);step.drain_minutes=p[26]|(std::uint16_t(p[27])<<8);}
-}
 std::uint32_t saturating_add(std::uint32_t a,std::uint32_t b){return b>0xffffffffu-a?0xffffffffu:a+b;}
 }
 api::Result BrewRecovery::load(api::Storage storage){
@@ -65,12 +48,13 @@ api::Result BrewRecovery::load(api::Storage storage){
     if(length<HeaderBytes||detail::get32(bytes)!=Magic||bytes[4]>1)return error();
     if(!bytes[4]){if(length!=HeaderBytes)return error();ready_=true;return {};}
     const auto count=detail::get32(bytes+8);
-    if(count>InstructionStack::capacity||length!=HeaderBytes+RecipeBytes+count*8)return error();
-    read_recipe(saved_.recipe,bytes+HeaderBytes);
+    if(count>InstructionStack::capacity||length<HeaderBytes+count*8)return error();
+    const auto recipe_bytes=length-HeaderBytes-count*8;
+    if(!detail::read_recipe_record(saved_.recipe,bytes+HeaderBytes,recipe_bytes))return error();
     saved_.count=count;saved_.elapsed=detail::get32(bytes+12);saved_.seconds=detail::get32(bytes+16);
     saved_.step=static_cast<std::int32_t>(detail::get32(bytes+20));std::memcpy(saved_.step_name,bytes+24,sizeof saved_.step_name);
-    if(!recipe_valid(saved_.recipe)||!label(saved_.step_name,sizeof saved_.step_name,true)||saved_.step<-1||saved_.step>=saved_.recipe.step_count||saved_.seconds>0x7fffffffu)return error();
-    for(std::size_t i=0;i<count;++i){const auto* p=bytes+HeaderBytes+RecipeBytes+i*8;saved_.code[i]={static_cast<OpCode>(detail::get32(p)),detail::get32(p+4)};}
+    if(!detail::recipe_valid(saved_.recipe,true,true)||!label(saved_.step_name,sizeof saved_.step_name,true)||saved_.step<-1||saved_.step>=saved_.recipe.step_count||saved_.seconds>0x7fffffffu)return error();
+    for(std::size_t i=0;i<count;++i){const auto* p=bytes+HeaderBytes+recipe_bytes+i*8;saved_.code[i]={static_cast<OpCode>(detail::get32(p)),detail::get32(p+4)};}
     if(!code_valid(saved_.code.data(),saved_.count,saved_.recipe))return error();
     ready_=present_=true;return {};
 }
@@ -78,10 +62,10 @@ api::Result BrewRecovery::save(const Checkpoint& value,bool present){
     std::uint8_t bytes[MaximumBytes]{};detail::put32(bytes,Magic);bytes[4]=present;
     std::size_t length=HeaderBytes;
     if(present){
-        if(!recipe_valid(value.recipe)||!code_valid(value.code.data(),value.count,value.recipe))return invalid();
+        if(!detail::recipe_valid(value.recipe,true,true)||!code_valid(value.code.data(),value.count,value.recipe))return invalid();
         detail::put32(bytes+8,value.count);detail::put32(bytes+12,value.elapsed);detail::put32(bytes+16,value.seconds);
         detail::put32(bytes+20,static_cast<std::uint32_t>(value.step));std::memcpy(bytes+24,value.step_name,sizeof value.step_name);
-        write_recipe(bytes+HeaderBytes,value.recipe);length+=RecipeBytes;
+        length+=detail::write_recipe_record(bytes+HeaderBytes,value.recipe);
         for(std::size_t i=0;i<value.count;++i){detail::put32(bytes+length,static_cast<std::uint32_t>(value.code[i].opcode));detail::put32(bytes+length+4,value.code[i].argument);length+=8;}
     }
     detail::Records records(storage_);std::uint32_t next=0;
