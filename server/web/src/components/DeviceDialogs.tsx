@@ -146,7 +146,7 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
           disabled={locked}
           onClick={() => setUSBSetup(true)}
         >
-          Set up a stock brewer via USB
+          USB setup and recovery
         </Button>
       )}
       <form id="device-form" onSubmit={submit}>

@@ -39,13 +39,6 @@ func (c Candidate) SupportsHubOTA() bool {
 	return c.HubOTAProtocol == 1 && c.ModelFamily == "pico-s-pro" && c.DisplayVariant == "" && (c.Model == "pico-s" || c.Model == "pico-pro")
 }
 
-// ReviewedStockUID identifies the one S/Pro-family brewer whose OEM boot
-// layout and both firmware slots are documented. The USB writer independently
-// reads and verifies the connected brewer before opening any slot for writing.
-func ReviewedStockUID(uid string) bool {
-	return Digest([]byte(uid)) == "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
-}
-
 type Catalog struct {
 	Repository string      `json:"repository"`
 	Ref        string      `json:"ref"`
@@ -79,20 +72,29 @@ type InstallReceipt struct {
 	State     string    `json:"state"`
 	Message   string    `json:"message"`
 }
+
+// USBRestoreTarget identifies the physical registration for a local guide.
+// A USB writer verifies the attached hardware and backup before any write.
+type USBRestoreTarget struct {
+	Model string `json:"model"`
+	UID   string `json:"device_uid"`
+}
+
 type MachineFirmware struct {
-	StockRestoreGuide            bool            `json:"stock_restore_guide,omitempty"`
-	RetryPackageID               string          `json:"retry_package_id,omitempty"`
-	LastInstall                  *InstallReceipt `json:"last_install,omitempty"`
-	DeviceID                     string          `json:"device_id"`
-	Model                        string          `json:"model"`
-	CurrentVersion               string          `json:"current_version"`
-	DisplayVariant               string          `json:"display_variant,omitempty"`
-	VerifiedDisplayVariant       string          `json:"verified_display_variant,omitempty"`
-	DeviceUID                    string          `json:"device_uid,omitempty"`
-	HardwareVerificationRequired bool            `json:"hardware_verification_required,omitempty"`
-	InstallSupported             bool            `json:"install_supported"`
-	Reason                       string          `json:"reason"`
-	Packages                     []Package       `json:"packages"`
+	StockRestoreGuide            bool              `json:"stock_restore_guide,omitempty"`
+	USBRestoreTarget             *USBRestoreTarget `json:"usb_restore_target,omitempty"`
+	RetryPackageID               string            `json:"retry_package_id,omitempty"`
+	LastInstall                  *InstallReceipt   `json:"last_install,omitempty"`
+	DeviceID                     string            `json:"device_id"`
+	Model                        string            `json:"model"`
+	CurrentVersion               string            `json:"current_version"`
+	DisplayVariant               string            `json:"display_variant,omitempty"`
+	VerifiedDisplayVariant       string            `json:"verified_display_variant,omitempty"`
+	DeviceUID                    string            `json:"device_uid,omitempty"`
+	HardwareVerificationRequired bool              `json:"hardware_verification_required,omitempty"`
+	InstallSupported             bool              `json:"install_supported"`
+	Reason                       string            `json:"reason"`
+	Packages                     []Package         `json:"packages"`
 }
 
 // Error contains a bounded, user-facing diagnostic, without a remote response

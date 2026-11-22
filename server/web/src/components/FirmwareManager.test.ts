@@ -301,7 +301,7 @@ describe('Hub firmware packages', () => {
       if (String(url).endsWith('/devices/s/firmware'))
         return json({
           model: 'pico-s',
-          device_uid: 'pinned-s',
+          device_uid: '12345678901234567890123456789012',
           current_version: '1.3.4',
           stock_restore_guide: true,
           packages: [],
@@ -317,31 +317,70 @@ describe('Hub firmware packages', () => {
       name: 'Review USB requirements',
     }) as HTMLButtonElement
     expect(review.disabled).toBe(true)
-    await user.click(screen.getByRole('checkbox', { name: /returning to standalone firmware/ }))
+    await user.click(screen.getByRole('checkbox', { name: /effect of restoring/ }))
     await user.click(review)
     expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
     const guide = screen.getByRole('button', {
       name: 'Show USB restore instructions',
     }) as HTMLButtonElement
     expect(guide.disabled).toBe(true)
-    await user.click(
-      screen.getByRole('checkbox', { name: /can connect the idle brewer to my Mac by USB/ })
-    )
+    await user.click(screen.getByRole('checkbox', { name: /can connect this machine by USB/ }))
     await user.click(guide)
-    expect(screen.getByText('./picobrew-hub usb-restore --data ./data --checkout ..')).toBeTruthy()
-    expect(screen.getByText(/publicly archived PicoBrew application and recovery/)).toBeTruthy()
     expect(
-      screen.getByRole('link', { name: /macOS USB restoration guide/ }).getAttribute('href')
-    ).toContain('#restore-all-oem-firmware-slots')
+      screen.getByText(
+        './picobrew-hub usb-restore --model pico-s --device 12345678901234567890123456789012 --data ./data --checkout ..'
+      )
+    ).toBeTruthy()
+    expect(screen.getByText(/pinned GitHub fallback/)).toBeTruthy()
+    expect(
+      screen.getByRole('link', { name: /macOS USB instructions/ }).getAttribute('href')
+    ).toContain('macos-usb-installation.md')
     await user.click(screen.getByRole('button', { name: 'Back to machine firmware' }))
     await user.click(await restore())
     expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false)
     expect(fetchMock.mock.calls.every(([, opts]) => (opts?.method || 'GET') === 'GET')).toBe(true)
   })
+  it.each(['pico-c', 'picoferm', 'picostill', 'z-series'])(
+    'offers %s restoration after an offline Hub restart',
+    async (model) => {
+      fetchMock.mockImplementation(async (url, opts) =>
+        String(url).endsWith('/devices/m/firmware')
+          ? json({
+              model: '',
+              stock_restore_guide: true,
+              usb_restore_target: { model, device_uid: 'saved' },
+              packages: [],
+            })
+          : response(url, opts)
+      )
+      show(createElement(MachineFirmwareDialog, { deviceID: 'm', onClose: close }))
+      const user = userEvent.setup()
+      await user.click(
+        await screen.findByRole('button', { name: 'Restore original firmware via USB' })
+      )
+      await user.click(screen.getByRole('checkbox'))
+      await user.click(screen.getByRole('button', { name: 'Review USB requirements' }))
+      await user.click(screen.getByRole('checkbox'))
+      await user.click(screen.getByRole('button', { name: 'Show USB restore instructions' }))
+      if (model === 'pico-c') {
+        expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
+        await user.selectOptions(
+          screen.getByLabelText('Physical Pico C display controller'),
+          'ssd1325'
+        )
+      }
+      const command = screen.getByText(/picobrew-hub usb-restore/).textContent
+      expect(command).toContain(
+        '--model ' + model + (model === 'pico-c' ? ' --display ssd1325' : ' --port SERIAL_PORT')
+      )
+      expect(command).not.toContain('saved')
+      expect(fetchMock.mock.calls.every(([, opts]) => (opts?.method || 'GET') === 'GET')).toBe(true)
+    }
+  )
   it.each([
     { model: 'pico-s', device_uid: 's' },
     { model: 'pico-pro', stock_restore_guide: true },
-    { model: 'z-series', device_uid: 'z', stock_restore_guide: true },
+    { model: 'unrecognized', device_uid: 'z', stock_restore_guide: true },
   ])(
     'hides the USB restore guide without a supported model and pinned identity: %j',
     async (device) => {

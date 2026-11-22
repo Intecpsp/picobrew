@@ -1,0 +1,382 @@
+#!/usr/bin/env python3
+"""Back up, convert or restore one identified PicoBrew ESP service port."""
+
+import argparse
+from contextlib import contextmanager
+from dataclasses import asdict, dataclass
+import hashlib
+import io
+import json
+import os
+from pathlib import Path
+import re
+import stat
+import sys
+import uuid
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(ROOT / "firmware/z-series/modified/tools"))
+import private_files
+import esp_stock_partitions
+import usb_profile as z_profile
+
+MIB = 1024 * 1024
+SECTOR = 4096
+Z_STACKS = ("z1", "z2", "z3", "z4")
+MODELS = ("picoferm", "picostill", "z-series", *Z_STACKS)
+ESP32_LAYOUT = {"bootloader.bin": (0x1000, 0x7000), "partitions.bin": (0x8000, SECTOR),
+                "application.bin": (0x10000, 0x1f0000), "spiffs.bin": (0x200000, 0x200000)}
+FERM_LAYOUT = {"application.bin": (0, MIB), "spiffs.bin": (MIB, 0xfb000)}
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def family(model):
+    if model not in MODELS:
+        raise ValueError("Unsupported ESP appliance model")
+    return "z-series" if model in Z_STACKS else model
+
+
+@dataclass(frozen=True)
+class Identity:
+    chip: str
+    mac: str
+    jedec: int
+    size: int
+
+    def check(self, model):
+        if self.chip != ("ESP8266" if model == "picoferm" else "ESP32"):
+            raise ValueError("The ROM chip does not match the requested model")
+        if not re.fullmatch(r"[0-9a-f]{12}", self.mac) or int(self.mac[:2], 16) & 1 or int(self.mac, 16) == 0:
+            raise ValueError("Invalid hardware MAC")
+        if self.size not in (MIB, 2*MIB, 4*MIB, 8*MIB, 16*MIB) or not 0 < self.jedec < 0xffffff:
+            raise ValueError("Unrecognized physical flash geometry")
+
+
+def recognized_original(flash, model):
+    prefix = f"firmware/{model}/oem/upstream/{model}_"
+    manifest = json.loads((ROOT / "firmware/upstream-manifest.json").read_bytes())
+    originals = [item for item in manifest["files"] if item["destination_path"].startswith(prefix)]
+
+    def match(app):
+        return next((item for item in originals if item["size"] <= len(app)
+                     and sha(app[:item["size"]]) == item["sha256"]), None)
+
+    app = memoryview(flash)
+    if model == "picostill":
+        app = app[esp_stock_partitions.selected_app_slice(flash)]
+        esp_stock_partitions.verify_app_slots(flash, match)
+    original = match(app)
+    if original is None:
+        raise ValueError("The active application does not match a preserved OEM image for this model")
+    return original["destination_path"][len(prefix):-4].replace("_", "."), original["size"]
+
+
+def stock_version(flash, model):
+    if family(model) == "z-series":
+        return z_profile.qualify_stock(flash, model)
+    return recognized_original(flash, model)[0]
+
+
+def reference(model):
+    release_index = json.loads((ROOT / "firmware/releases.json").read_bytes())["releases"]
+    entries = [r for r in release_index if r["model"] == model and r["kind"] == "reference"
+               and re.fullmatch(r"[0-9]+\.[0-9]+\.[0-9]+", r["firmware_version"])]
+    if not entries:
+        raise ValueError("No reference package is published for this model")
+    release = max(entries, key=lambda r: tuple(map(int, r["firmware_version"].split("."))))
+    version = release["firmware_version"]
+    path = ROOT / f"firmware/{model}/modified/releases/{model}/{version}.zip"
+    archive = private_files.read_regular(path, 32*MIB)
+    if sha(archive) != release["archive_sha256"]:
+        raise ValueError("The USB reference archive differs from the release index")
+    layout = FERM_LAYOUT if model == "picoferm" else ESP32_LAYOUT
+    components = {}
+    with zipfile.ZipFile(io.BytesIO(archive)) as package:
+        manifest = json.loads(package.read("manifest.json"))
+        if manifest.get("schema_version") != 1 or manifest.get("model") != model:
+            raise ValueError("Invalid USB package model or schema")
+        for item in manifest["components"]:
+            name = item["file"]
+            if name in components or layout.get(name) != (item["offset"], item["maximum_bytes"]):
+                raise ValueError("Invalid USB package component address")
+            data = package.read(name)
+            if not 0 < len(data) == item["bytes"] <= item["maximum_bytes"] or sha(data) != item["sha256"]:
+                raise ValueError("Invalid USB package component")
+            components[name] = data
+    if set(components) != set(layout) or sha(components["application.bin"]) != release["binary_sha256"]:
+        raise ValueError("Invalid USB package application or component list")
+    return version, components
+
+
+def install_target(flash, model):
+    if model in Z_STACKS:
+        raise ValueError("This physical Z model has no independently mapped installation package")
+    version, parts = reference(model)
+    layout = FERM_LAYOUT if model == "picoferm" else ESP32_LAYOUT
+    if model == "picoferm":
+        if len(flash) != 2*MIB or flash[:4] != parts["application.bin"][:4]:
+            raise ValueError("The live PicoFerm boot parameters or flash size differ from the reference package")
+        # ESP8266 has no readable partition table. The OEM app proves its own
+        # extent, not the purpose of other populated bytes in the candidate ranges.
+        _, original_size = recognized_original(flash, model)
+        expansion = flash[original_size:len(parts["application.bin"])]
+        fs = parts["spiffs.bin"]
+        old_fs = flash[MIB:MIB + len(fs)]
+        if expansion.strip(b"\xff") or old_fs != fs and old_fs.strip(b"\xff"):
+            raise ValueError("Unidentified PicoFerm data overlaps the proposed application or filesystem")
+    else:
+        if model == "z-series":
+            z_profile.qualify_install_layout(flash, model)
+        else:
+            esp_stock_partitions.qualify_install_layout(flash)
+        # Reuse the physical bootloader, which carries the unit's flash settings.
+        # The stock loader has passed checksum/digest verification. A different
+        # loader is accepted only if it already runs this exact factory layout.
+        pinned = parts.pop("bootloader.bin")
+        live = flash[0x1000:0x1000 + len(pinned)]
+        end = -32 if pinned[23] else len(pinned)
+        same_loader = live[:2] == pinned[:2] and live[4:end] == pinned[4:end]
+        table = parts["partitions.bin"]
+        existing_layout = flash[0x8000:0x8000 + len(table)] == table
+        if live[2] != pinned[2]:
+            raise ValueError("The stock ESP32 bootloader flash mode differs from the reference")
+        if not same_loader and not existing_layout:
+            raise ValueError("The stock bootloader has no verified match for this factory layout")
+    desired = bytearray(flash)
+    for name, data in parts.items():
+        start, _ = layout[name]
+        desired[start:start + len(data)] = data
+    if model != "picoferm" and esp_stock_partitions.selected_app_slice(desired).start != 0x10000:
+        raise ValueError("Installed partition metadata would not select the reference application")
+    return version, bytes(desired)
+
+
+def backup_path(root, identity):
+    if not root.is_absolute():
+        raise ValueError("Pass an absolute Hub data directory")
+    private_files.ensure_private_directory(root, parents=True, exist_ok=True)
+    directory = root
+    for name in ("stock-firmware", "esp", identity.mac):
+        directory /= name
+        private_files.ensure_private_directory(directory, exist_ok=True)
+        private_files.assert_private(directory, directory=True)
+    return directory / "original.zip"
+
+
+def load_original(path, identity, model):
+    data = private_files.read_regular(path, identity.size + 8192, private=True)
+    with zipfile.ZipFile(io.BytesIO(data)) as archive:
+        entries = archive.infolist()
+        if (sorted(i.filename for i in entries) != ["flash.bin", "identity.json"]
+                or any(i.compress_type != zipfile.ZIP_STORED for i in entries)
+                or archive.getinfo("flash.bin").file_size != identity.size
+                or archive.getinfo("identity.json").file_size > 4096):
+            raise ValueError("Invalid full-flash backup archive")
+        metadata = json.loads(archive.read("identity.json"))
+        flash = archive.read("flash.bin")
+    if metadata != backup_metadata(flash, identity, model):
+        raise ValueError("Backup model, ROM identity, geometry or digest differs")
+    return flash
+
+
+def backup_metadata(flash, identity, model):
+    return {"schema_version": 1, "model_family": family(model), "hardware": asdict(identity),
+            "oem_version": stock_version(flash, model), "flash_sha256": sha(flash)}
+
+
+def save_original(path, flash, identity, model):
+    # All publication paths are exclusive. A second backup job cannot replace an original.
+    tmp = path.parent / (".capture-" + uuid.uuid4().hex)
+    file = private_files.new_private_file(tmp)
+    try:
+        with zipfile.ZipFile(file, "w", compression=zipfile.ZIP_STORED) as archive:
+            archive.writestr("identity.json", json.dumps(backup_metadata(flash, identity, model)))
+            archive.writestr("flash.bin", flash)
+        private_files.publish(file, tmp, path)
+    except BaseException:
+        private_files.discard(file, tmp)
+        raise
+    file.close()
+    if os.name == "posix":
+        fd = os.open(path.parent, os.O_RDONLY)
+        try:
+            os.fsync(fd)
+        finally:
+            os.close(fd)
+
+
+def changed_ranges(current, desired, boot_sector):
+    """Coalesce adjacent changed erase sectors; publish the boot entry last."""
+    start = None
+    for offset in range(0, len(current) + SECTOR, SECTOR):
+        changed = offset != boot_sector and current[offset:offset+SECTOR] != desired[offset:offset+SECTOR]
+        if changed and start is None:
+            start = offset
+        if not changed and start is not None:
+            yield start, desired[start:offset]
+            start = None
+    boot = slice(boot_sector, boot_sector + SECTOR)
+    if current[boot] != desired[boot]:
+        yield boot_sector, desired[boot]
+
+
+def operation(action, model, device, root, ask=input):
+    ident = device.identity
+    ident.check(model)
+    path = backup_path(root, ident)
+    print(f"{model} · {ident.chip} · MAC {ident.mac} · {ident.size // MIB} MiB.")
+    original = None
+    try:
+        original = load_original(path, ident, model)
+    except FileNotFoundError:
+        if action == "restore":
+            raise ValueError("This unit has no private full-flash original. Public OEM files are application updates.")
+    print("Reading the complete physical flash…", flush=True)
+    current = device.read()
+    if len(current) != ident.size:
+        raise ValueError("Short physical flash read")
+    if action in ("install", "backup"):
+        version = stock_version(current, model)
+        print(f"Identified active OEM firmware {version}. Verifying with a second full read…", flush=True)
+        if device.read() != current:
+            raise ValueError("The full-device reads disagree; capture failed")
+        if original is None:
+            save_original(path, current, ident, model)
+            original = load_original(path, ident, model)
+            if original != current:
+                raise ValueError("Private archive readback differs from the physical capture")
+        if original != current:
+            # An OEM update or settings change must not discard either physical capture.
+            newer = path.with_name("stock-" + sha(current) + ".zip")
+            try:
+                captured = load_original(newer, ident, model)
+            except FileNotFoundError:
+                save_original(newer, current, ident, model)
+                captured = load_original(newer, ident, model)
+            if captured != current:
+                raise ValueError("Current stock capture could not be verified")
+            print(f"Also preserved the current stock contents in {newer}")
+        print(f"Verified original for this device: {path}")
+        if action == "backup":
+            return
+        version, target = install_target(current, model)
+        print(f"USB setup will install {model} {version} and initialize the machine filesystem. "
+              "This reference build still needs operating trials on physical hardware.")
+    else:
+        target = original
+        if ask("Restore all original slots, settings and calibration, and remove the custom Hub interface? Type RESTORE: ") != "RESTORE":
+            raise ValueError("Restore cancelled before writing")
+    if current == target:
+        print("The complete flash already matches the requested contents.")
+        return
+    if ask(f"Type the device MAC {ident.mac} to confirm {action}: ").strip().lower() != ident.mac:
+        raise ValueError("Device confirmation did not match; cancelled before writing")
+    device.verify_identity()
+    boot = 0 if ident.chip == "ESP8266" else 0x8000
+    for offset, data in changed_ranges(current, target, boot):
+        device.write(offset, data)
+    if device.read() != target:
+        raise ValueError("Full-flash verification failed. Keep the unit in download mode and run restore.")
+    print("Full physical flash verified. Exit download mode and reset the idle appliance.")
+
+
+class EspDevice:
+    def __init__(self, stub, identity):
+        self.stub = stub
+        self.identity = identity
+
+    def verify_identity(self):
+        # flash_id() caches its first reply. Read the physical JEDEC ID and
+        # eFuse MAC again after the user confirms and before the first erase.
+        self.stub.cache["flash_id"] = None
+        if bytes(self.stub.read_mac()).hex() != self.identity.mac or self.stub.flash_id() != self.identity.jedec:
+            raise ValueError("The connected device changed; cancelled before writing")
+
+    def read(self):
+        percent_reported = 0
+
+        def progress(done, total):
+            nonlocal percent_reported
+            percent = 10 * ((done * 10) // total)
+            if percent > percent_reported:
+                print(f"Flash read {percent}%", flush=True)
+                percent_reported = percent
+        try:
+            return self.stub.read_flash(0, self.identity.size, progress)
+        except RuntimeError:
+            # Some SDK packet errors include unparsed bytes in their messages.
+            raise ValueError("A complete verified flash read failed. Check the service connection.") from None
+
+    def write(self, address, data):
+        import esptool
+        file = io.BytesIO(data)
+        file.name = "verified flash sectors"
+        args = argparse.Namespace(addr_filename=[(address, file)], chip=self.identity.chip.lower(),
+                                  compress=True, no_compress=False, no_stub=False, force=False,
+                                  encrypt=False, encrypt_files=None, ignore_flash_encryption_efuse_setting=False,
+                                  erase_all=False, flash_size="keep", flash_freq="keep", flash_mode="keep")
+        esptool.write_flash(self.stub, args)
+
+
+@contextmanager
+def open_device(port, model):
+    try:
+        import serial
+        import esptool
+        from esptool.cmds import detect_flash_size
+        from esptool.util import flash_size_bytes
+    except ImportError as exc:
+        raise ValueError("Install firmware/common/requirements-usb.txt with this Python interpreter") from exc
+    if esptool.__version__ != "4.11.0":
+        raise ValueError("Install the pinned version from firmware/common/requirements-usb.txt")
+    if os.name == "nt":
+        if not re.fullmatch(r"COM[1-9][0-9]*", port, re.I):
+            raise ValueError("Choose an explicit local COM port")
+    elif not port.startswith("/dev/") or not stat.S_ISCHR(os.stat(port).st_mode):
+        raise ValueError("Choose an explicit local serial device under /dev")
+    session = serial.Serial(port=None, baudrate=115200, exclusive=True)
+    session.dtr = session.rts = False
+    session.port = port
+    with session:
+        rom = esptool.detect_chip(session, 115200, connect_mode="no_reset", connect_attempts=1)
+        expected = "ESP8266" if model == "picoferm" else "ESP32"
+        if rom.CHIP_NAME != expected or rom.secure_download_mode or rom.stub_is_disabled:
+            raise ValueError("Unexpected chip or restricted ROM download mode")
+        if rom.IS_STUB:
+            raise ValueError("Re-enter the chip ROM download mode before starting a new operation")
+        if expected == "ESP32" and (rom.get_secure_boot_enabled() or rom.get_flash_encryption_enabled()):
+            raise ValueError("This device has protected boot or encrypted flash")
+        mac = bytes(rom.read_mac()).hex()
+        stub = rom.run_stub()
+        # esptool's normal command can reopen a lost port. Retrying must repeat hardware identification.
+        stub.WRITE_FLASH_ATTEMPTS = 1
+        size = detect_flash_size(stub)
+        if not size:
+            raise ValueError("Unknown JEDEC flash capacity")
+        ident = Identity(expected, mac, stub.flash_id(), flash_size_bytes(size))
+        ident.check(model)
+        stub.flash_set_parameters(ident.size)
+        yield EspDevice(stub, ident)
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("action", choices=("backup", "install", "restore"))
+    parser.add_argument("--port", required=True)
+    parser.add_argument("--model", choices=MODELS, required=True)
+    parser.add_argument("--data", type=Path, required=True)
+    args = parser.parse_args()
+    try:
+        with open_device(args.port, args.model) as device:
+            operation(args.action, args.model, device, args.data)
+    except (OSError, ValueError, EOFError, RuntimeError, zipfile.BadZipFile) as exc:
+        parser.exit(1, f"USB operation stopped: {exc}\n")
+
+
+if __name__ == "__main__":
+    main()

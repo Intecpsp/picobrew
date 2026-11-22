@@ -10,7 +10,8 @@ This operation defines a custom reference layout. It does not recover an OEM
 partition table, assign Z-series images to Z1 or Z2, establish an individual
 device's flash capacity, or qualify physical operation. A private complete
 backup and device-specific layout/wiring checks remain necessary before any
-installation is planned.
+installation is planned. The [USB service workflow](esp-usb.md) performs these
+flash identity and backup checks for individual appliances.
 
 ## Command
 

@@ -94,15 +94,16 @@ def _footer(data: bytes, position: int, checksum: int) -> int:
     return checksum_offset
 
 
-def _entry(header: dict, segments: list):
+def _entry(header: dict, segments: list, bootloader=False):
     address = header["entry_address"]
-    if not any(s["memory_kind"] in ("IRAM", "IROM", "RTC_IRAM") and
+    if not any((s["memory_kind"] in ("IRAM", "IROM", "RTC_IRAM") or
+                bootloader and 0x40070000 <= address < 0x40080000) and
                s["load_address"] <= address < s["load_address"] + s["size_bytes"]
                for s in segments):
         raise ImageError("entry point is not in an executable segment")
 
 
-def parse_esp32(data: bytes) -> dict:
+def parse_esp32(data: bytes, *, bootloader=False) -> dict:
     """Read the original ESP32 (chip ID zero) application image format."""
     _bounds(data, 24)
     header = _header(data, 0)
@@ -116,8 +117,8 @@ def parse_esp32(data: bytes) -> dict:
     digest = hashlib.sha256(data[:digest_offset]).digest()
     if data[23] and data[digest_offset:] != digest:
         raise ImageError("appended SHA-256 mismatch")
-    _entry(header, segments)
-    return {"format": "Espressif ESP32 application image", "architecture": "Xtensa LX6",
+    _entry(header, segments, bootloader)
+    return {"format": "Espressif ESP32 bootloader image" if bootloader else "Espressif ESP32 application image", "architecture": "Xtensa LX6",
             "size_bytes": len(data), "sha256": _sha(data), **header,
             "segments": segments, "checksum_offset": checksum_offset,
             "checksum": checksum, "checksum_verified": True,

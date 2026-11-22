@@ -546,10 +546,6 @@ func (s *Server) downloadFirmwarePackage(w http.ResponseWriter, r *http.Request)
 }
 
 func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
-	s.serveMachineFirmware(w, r, firmware.ReviewedStockUID)
-}
-
-func (s *Server) serveMachineFirmware(w http.ResponseWriter, r *http.Request, reviewedUID func(string) bool) {
 	d, ok := s.lookupRuntime(w, r)
 	if !ok {
 		return
@@ -587,16 +583,26 @@ func (s *Server) serveMachineFirmware(w http.ResponseWriter, r *http.Request, re
 	}
 	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && (!d.identityMismatch || d.awaitingIdentity) && (!d.view.Online || out.InstallSupported)
 	active := d.updatingFirmware
-	canShowRestore := !s.cfg.Demo && !active && !d.awaitingIdentity && !d.view.KeyReused &&
-		d.view.Adapter == "pico-standalone" && (out.Model == "pico-s" || out.Model == "pico-pro") && reviewedUID(out.DeviceUID)
+	// A previously identified offline machine can still use its local USB guide.
+	// The guide never enables a wireless install or initiates a hardware write.
+	restoreModel := out.Model
+	if restoreModel == "" && d.awaitingIdentity && !d.view.Online && d.view.ModelSource == "firmware" {
+		restoreModel = d.view.Model
+	}
+	canShowRestore := !s.cfg.Demo && !active && (!d.identityMismatch || d.awaitingIdentity) &&
+		!d.view.KeyReused && d.view.ModelError == "" && d.view.Adapter == "pico-standalone" && device.SupportedModel(restoreModel)
 	d.mu.RUnlock()
 	if canShowRestore {
-		matches, err := s.savedFirmwareIdentity(out.DeviceID, out.DeviceUID)
-		if err != nil {
+		var pin deviceIdentity
+		_, err := s.db.Get("device-identity", out.DeviceID, &pin)
+		if err != nil && !errors.Is(err, store.ErrNotFound) {
 			s.storeError(w, err)
 			return
 		}
-		out.StockRestoreGuide = matches
+		if pin.UID != "" && (out.DeviceUID == pin.UID || out.Model == "") {
+			out.StockRestoreGuide = true
+			out.USBRestoreTarget = &firmware.USBRestoreTarget{Model: restoreModel, UID: pin.UID}
+		}
 	}
 	var receipt firmware.InstallReceipt
 	if _, err := s.db.Get("firmware-install", out.DeviceID, &receipt); err == nil {

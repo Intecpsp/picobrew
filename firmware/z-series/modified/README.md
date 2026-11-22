@@ -153,3 +153,23 @@ layout and generated image checks. The [reference-package validation](../../comm
 binds the Z, PicoStill and PicoFerm packages to their actual ELFs and build
 reports, including deterministic rebuilds, filesystem readback and rejection
 of corrupted images, changed addresses and stale build inputs.
+
+## USB identification and stock restoration
+
+Connect one serviceable ESP32 module at a time. A Z1–Z4 stack count does not
+identify a firmware build. Use the [ESP USB procedure](../../common/docs/esp-usb.md)
+to capture and verify the entire flash of each module. Qualification reads the
+classic ESP32 bootloader, partition table, factory/OTA selection records and
+compares the selected application to the archived Z-series 0.0.116 or 0.0.119
+image. A stock application alone omits the original partition table,
+per-device data and inactive slots.
+
+Generic reference setup requires the module's active stock 0.0.119 application
+and a flash layout that preserves its NVS. The SDK geometry and initial
+filesystem are documented in the [reference package](../../common/docs/reference-packages.md).
+Readback and package checks do not qualify the machine's physical operation.
+A full same-module restore replays the captured ESP flash. The separate MSP
+controller uses the production image embedded in stock 0.0.119. At startup
+the controller owner checks its version and may update it via I²C. The ESP
+backup does not contain a readback of auxiliary MSP flash. See the
+[MSP reconstruction](../reverse-engineered/analysis/msp-protocol.md).

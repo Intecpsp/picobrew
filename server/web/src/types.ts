@@ -383,6 +383,7 @@ export interface FirmwarePackage extends FirmwareCandidate {
 }
 export interface MachineFirmware {
   stock_restore_guide?: boolean
+  usb_restore_target?: { model: string; device_uid: string }
   device_id: string
   model: string
   current_version: string

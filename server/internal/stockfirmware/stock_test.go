@@ -70,7 +70,7 @@ func TestPreferPrivateOriginalAndRecoverMissingPublicSlots(t *testing.T) {
 	if err := os.Remove(saved); err != nil {
 		t.Fatal(err)
 	}
-	if got, err = resolveSource(); !errors.Is(err, errIntegrity) || got != (Source{}) {
+	if got, err = resolveSource(); !errors.Is(err, ErrIntegrity) || got != (Source{}) {
 		t.Fatal("partial/corrupt download accepted", got, err)
 	}
 	secondResponse = "two"
@@ -85,7 +85,7 @@ func TestPreferPrivateOriginalAndRecoverMissingPublicSlots(t *testing.T) {
 	if err != nil || got.Backup != "" || len(calls) != 3 || !strings.Contains(got.Description, "failed verification") {
 		t.Fatal("cached public slots were not reused", got, err, calls)
 	}
-	if _, err := saveBackup(dir, sourcePath, backup); !errors.Is(err, errIntegrity) {
+	if _, err := saveBackup(dir, sourcePath, backup); !errors.Is(err, ErrIntegrity) {
 		t.Fatal("overwrote an existing damaged backup", err)
 	}
 	data, err := os.ReadFile(saved)
@@ -97,7 +97,7 @@ func TestPreferPrivateOriginalAndRecoverMissingPublicSlots(t *testing.T) {
 		t.Fatal(err)
 	}
 	secondResponse = "two-too-long"
-	if _, err = resolveSource(); !errors.Is(err, errIntegrity) {
+	if _, err = resolveSource(); !errors.Is(err, ErrIntegrity) {
 		t.Fatal("accepted oversized public image", err)
 	}
 	secondResponse = "two"
@@ -115,7 +115,7 @@ func TestRejectUnqualifiedBackupBeforeCaching(t *testing.T) {
 	if err := os.WriteFile(source, []byte("other brewer"), 0600); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := SaveBackup(dir, source); !errors.Is(err, errIntegrity) {
+	if _, err := SaveBackup(dir, source); !errors.Is(err, ErrIntegrity) {
 		t.Fatal(err)
 	}
 	if _, err := StoredBackup(dir); !errors.Is(err, os.ErrNotExist) {

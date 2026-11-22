@@ -1,4 +1,4 @@
-// Package stockfirmware retains originals for the one reviewed CC3200 USB profile.
+// Package stockfirmware retains CC3200 originals and verifies the public fallback for its documented device.
 // The full flash capture is private to the local Hub. Only immutable, public OEM
 // application and recovery blobs can be fetched from GitHub.
 package stockfirmware
@@ -29,12 +29,12 @@ var (
 		{name: "mcuimg1.bin", size: 50504, sha256: "26829ef97df46e6d3667afe8352fa86492f3ddf667371f2d19eafa8468862c63", blob: "708a70b27c5a1171e7321360013e78071e1bfeb2"},
 		{name: "mcuimg2.bin", size: 162792, sha256: "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702", blob: "205f96477f9af5fd05e5506304d4e4b79e753c94"},
 	}
-	errIntegrity = errors.New("original firmware size or SHA-256 differs from the reviewed USB profile")
+	ErrIntegrity = errors.New("original firmware size or SHA-256 differs from the expected backup or OEM image")
 )
 
 func (i image) check(data []byte) error {
 	if int64(len(data)) != i.size || fmt.Sprintf("%x", sha256.Sum256(data)) != i.sha256 {
-		return fmt.Errorf("%s: %w", i.name, errIntegrity)
+		return fmt.Errorf("%s: %w", i.name, ErrIntegrity)
 	}
 	return nil
 }
@@ -157,6 +157,12 @@ type Source struct {
 	Backup, OEMDirectory, Description string
 }
 
+// HasPublicSlots identifies the unit whose original application, recovery and
+// allocation/boot layout were independently recorded with the GitHub blobs.
+func HasPublicSlots(uid string) bool {
+	return firmware.Digest([]byte(uid)) == "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
+}
+
 func Resolve(ctx context.Context, dataDir string, g *firmware.GitHub) (Source, error) {
 	return resolve(ctx, dataDir, g, fullBackup, oemSlots)
 }
@@ -172,7 +178,7 @@ func resolve(ctx context.Context, dataDir string, g *firmware.GitHub, backup ima
 		return Source{Backup: path, Description: "Verified original full-flash backup stored in this Hub"}, nil
 	}
 	note := ""
-	if errors.Is(err, errIntegrity) {
+	if errors.Is(err, ErrIntegrity) {
 		note = "The stored full-flash backup failed verification and was preserved. "
 	} else if !errors.Is(err, os.ErrNotExist) {
 		return Source{}, err
@@ -187,7 +193,7 @@ func resolve(ctx context.Context, dataDir string, g *firmware.GitHub, backup ima
 		if err == nil {
 			continue
 		}
-		corrupt := errors.Is(err, errIntegrity)
+		corrupt := errors.Is(err, ErrIntegrity)
 		if !errors.Is(err, os.ErrNotExist) && !corrupt {
 			return Source{}, err
 		}

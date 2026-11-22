@@ -46,7 +46,7 @@ func TestUSBRestoreRequiresTwoConfirmationsAndOneVerifiedSource(t *testing.T) {
 		{"ambiguous source", both, "both", "", false, false, "resolve"},
 		{"writer stopped", both, "local", "write", false, false, "resolve,write"},
 		{"existing backup", both, "local", "", false, true, "resolve,write"},
-		{"import original", both, "local", "", true, true, "save,resolve,write"},
+		{"import original", both, "local", "", true, true, "save,write"},
 		{"verified OEM pair", both, "github", "", false, true, "resolve,write"},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -97,7 +97,11 @@ func TestUSBRestoreRequiresTwoConfirmationsAndOneVerifiedSource(t *testing.T) {
 				if _, err := os.Stat(filepath.Dir(args[4])); err != nil {
 					t.Fatal(err)
 				}
-				if !strings.Contains(out.String(), from.Description) || strings.Count(out.String(), "press Return") != 2 {
+				description := from.Description
+				if tc.userBackup {
+					description = "verified original full-flash backup"
+				}
+				if !strings.Contains(out.String(), description) || strings.Count(out.String(), "press Return") != 2 {
 					t.Fatal(out.String())
 				}
 				if tc.fail == "write" {

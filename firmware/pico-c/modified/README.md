@@ -54,8 +54,7 @@ telemetry setup and package downloads do not require that hardware confirmation.
 
 PicoStill is not advertised. The legacy factory recovery action is disabled.
 `firmware_update` is **false**: package upload/download and the legacy-format
-update envelope are not an in-place installer. A C recovery/bootstrap and
-safe OTA installation path remain separate work. No build or test command
+update envelope are not an in-place installer. The [USB setup and stock restoration tool](docs/standalone-provisioning.md) uses a per-device stock backup and keeps the existing recovery slot. C OTA installation and physical USB qualification remain open. No build or test command
 connects to, programs or operates a brewer.
 
 ## Build and package
@@ -129,5 +128,5 @@ substitute S/Pro hardware source for C-specific behavior.
 
 - [API and application behavior](docs/standalone-api.md)
 - [Machine-readable API](docs/openapi.json)
-- [Private API key provisioning boundary](docs/standalone-provisioning.md)
+- [USB setup, API key and stock restoration](docs/standalone-provisioning.md)
 - [Hub connection and optional telemetry receiver](docs/telemetry.md)

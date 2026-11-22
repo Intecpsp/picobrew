@@ -209,6 +209,8 @@ The unmodified `eagle.flash.2m.ld` is a reference corresponding to the OEM image
 header; it does not establish the flash geometry or data layout of an individual
 unit. The image is for the explicit 2-MiB reference profile; common packaging
 supplies its ready-to-mount empty filesystem and exact component manifest without
-flashing a device. Physical acceptance still includes layout/backup verification, filesystem
+flashing a device. The [USB service procedure](../../common/docs/esp-usb.md)
+checks the physical flash and OEM image before installing or restoring an individual
+unit. Physical acceptance still includes layout/backup verification, filesystem
 mounting, sensor/calibration accuracy, button/LED operation, Wi-Fi reconnection,
 power interruption, heap/stack high-water measurements and sustained recording.

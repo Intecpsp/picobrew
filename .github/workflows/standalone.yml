@@ -34,6 +34,11 @@ jobs:
         run: python -m pip install -r requirements-usb.txt
       - name: Read-only protocol, receive-queue and offline-inspection simulations
         run: make usb-test PYTHON=python
+      - name: Test per-device ESP backup, setup and restoration
+        working-directory: .
+        run: |
+          python -m pip install -r firmware/common/requirements-usb.txt
+          python firmware/common/tests/test_esp_usb.py
 
   host-and-browser:
     name: Firmware simulations / ${{ matrix.os }}

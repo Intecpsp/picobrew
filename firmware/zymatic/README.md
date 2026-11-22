@@ -1,11 +1,14 @@
 # PicoBrew Zymatic
 
-The requested upstream `app/firmware` directory contains no Zymatic image.
-This OEM directory remains a placeholder for a separately acquired image.
+The Hub supports recipe sync with stock firmware and USB service of the
+original ATmega1284P application. The original 1.1.14 update is archived
+outside the upstream `app/firmware` tree. Its hash, download source and
+address range are documented in the [OEM archive notes](oem/README.md).
 
-`reverse-engineered/` is reserved for OEM reconstruction; `modified/` is
-reserved for the custom firmware. Both are currently unimplemented.
+Use the [USB service tools](modified/README.md) to back up readable AVR
+flash or restore 1.1.14 through the rear USB port. Original firmware
+reconstruction and a standalone Zymatic application are still pending.
 
 The reserved build/API identity is `zymatic` / **PicoBrew Zymatic**, in family
-`zymatic`. Future firmware will follow the shared [model identity contract](../../docs/machine-identity.md).
-The root build router rejects this model until its hardware implementation exists.
+`zymatic`. The [model identity contract](../../docs/machine-identity.md) and
+root build router reserve this identity for a future board implementation.
