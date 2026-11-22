@@ -214,6 +214,9 @@ describe('UI interactions against the real isolated Go simulator', () => {
     await user.type(screen.getByLabelText('Tags', { exact: true }), 'dom, porter')
     await user.click(screen.getByRole('button', { name: 'Add grain' }))
     await user.type(screen.getByLabelText('Ingredient 1 name'), 'Pale malt')
+    const use = screen.getByRole('combobox', { name: 'Use' }) as HTMLSelectElement
+    expect(use.value).toBe('mash')
+    await user.selectOptions(use, 'boil')
     await user.click(screen.getByRole('button', { name: 'Save recipe' }))
     await screen.findByRole('heading', { name: 'DOM test porter', level: 1 })
     const recipes = await (await originalFetch(origin + '/api/v1/recipes')).json()
@@ -222,6 +225,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
     expect(saved.ingredients[0]).toMatchObject({
       name: 'Pale malt',
       kind: 'fermentable',
+      use: 'boil',
       unit: 'kg',
     })
     await user.type(screen.getByLabelText('Recipe notes'), 'Actual backend persistence.')
