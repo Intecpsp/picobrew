@@ -32,7 +32,12 @@ export function AssistantRecipeSearch({
       try {
         const page = await api<CatalogPage>(
           '/catalog?' +
-            new URLSearchParams({ kind: 'recipe', q: term, limit: '8', offset: String(offset) }),
+            new URLSearchParams({
+              kind: 'all-brewers',
+              q: term,
+              limit: '8',
+              offset: String(offset),
+            }),
           { signal: controller.signal }
         )
         if (!controller.signal.aborted)

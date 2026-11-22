@@ -132,7 +132,7 @@ The checked-in GitHub Actions workflow runs Go tests/builds on Linux and macOS, 
 - Two independent machines receiving commands concurrently, stable command receipts, repeated-key payload conflicts and unknown delivery without automatic retry.
 - Physical REST protocol fixtures for exact payloads, authentication, Content-Length, serialized requests, bounded reads, redirects, cancellation, no mutation retries, recipe readback and history framing.
 - Simulator isolation, direct REST starts, stop latch, capacity limits and history lifecycle.
-- Recipe units, adaptation/efficiency scaling, hard native bounds, unknown routing, recipe revision conflicts, BeerXML/JSON exchange and deployment without starting.
+- Recipe units, proportional adaptation and capacity limits, hard native bounds, unknown routing, recipe revision conflicts, BeerXML/JSON exchange and deployment without starting.
 - History pagination, retained samples after interruptions, concurrent edits preserved across imports, partial data, terminal-session caching and simulation labeling.
 - Provider request/authentication contracts, no redirect credential forwarding, bounded errors/context, opt-in monitor cadence, saved advice and invalid AI drafts kept out of the recipe library.
 - Frontend framebuffer orientation, chart/sample calculations, request transport, binary/text/SSE explorer handling, forms, recipe/history persistence and equipment calibration.

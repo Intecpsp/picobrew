@@ -178,7 +178,7 @@ test('recipe detail presents readable quantities and credits without losing cata
   request,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 })
-  await page.goto('/#/catalog?kind=recipe&q=Alpine')
+  await page.goto('/#/catalog?kind=archive&q=Alpine')
   const card = page
     .locator('.catalog-card')
     .filter({ has: page.getByRole('button', { name: /Alpine Delight/ }) })
@@ -215,5 +215,5 @@ test('recipe detail presents readable quantities and credits without losing cata
   expect(source.recipe.batch_liters).toBe(9.46352946)
   await page.getByRole('button', { name: 'Back', exact: true }).click()
   await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Alpine')
-  await expect(page.getByLabel('Catalog type', { exact: true })).toHaveValue('recipe')
+  await expect(page.getByLabel('Archive record type')).toHaveValue('archive')
 })

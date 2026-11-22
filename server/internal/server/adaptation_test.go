@@ -30,10 +30,10 @@ func TestUnmappedRecipePreviewRetainsPlanButSingleAndBulkDeploymentCannotWrite(t
 	if status != 200 || json.Unmarshal(body, &preview) != nil {
 		t.Fatalf("planning preview: %d %s", status, body)
 	}
-	if preview.Recipe.BatchLiters != 5 || preview.CanDeploy || preview.MachineRecipe != nil || len(preview.DeploymentBlockers) == 0 || preview.ProfileFingerprint == "" {
+	if math.Abs(preview.Recipe.BatchLiters-source.BatchLiters*2/1.2) > 1e-10 || preview.CanDeploy || preview.MachineRecipe != nil || len(preview.DeploymentBlockers) == 0 || preview.ProfileFingerprint == "" {
 		t.Fatalf("incomplete or unexpectedly deployable planning preview: %+v", preview)
 	}
-	expected := source.Ingredients[0].Amount * (5 / source.BatchLiters) * (source.Efficiency / 50)
+	expected := source.Ingredients[0].Amount * (preview.Recipe.BatchLiters / source.BatchLiters)
 	if math.Abs(preview.Recipe.Ingredients[0].Amount-expected) > 1e-12 || preview.Recipe.Steps[0].Location != 0 || preview.Recipe.Steps[0].Minutes != source.Steps[0].Minutes {
 		t.Fatal("planning lost ingredients or invented schedule/routing")
 	}
@@ -83,7 +83,7 @@ func TestSingleDeploymentRejectsStaleRecipeOrCalibrationPreview(t *testing.T) {
 			deploy := func(plan domain.Adapted) int {
 				t.Helper()
 				status, _ := request(t, c, "POST", h.URL+"/api/v1/devices/bulk/deploy", csrf, map[string]any{
-					"recipe_id": source.ID, "profile_id": plan.Profile.ID, "batch_liters": plan.Recipe.BatchLiters,
+					"recipe_id": source.ID, "profile_id": plan.Profile.ID, "batch_liters": 0,
 					"source_revision": plan.SourceRevision, "profile_fingerprint": plan.ProfileFingerprint,
 				}, nil)
 				return status
@@ -148,8 +148,8 @@ func TestSaveTranslatesEveryBrewerAndRebuildsEditedVersions(t *testing.T) {
 		if version.HopSlotsByMinute[30] != 2 || steps[2].Location != loc || steps[4].Location != loc || steps[2].Minutes != 20 || steps[4].Minutes != 5 {
 			t.Fatal("changed explicit hop routing", p.ID)
 		}
-		if p.ID == "pico-s" && version.Recipe.BatchLiters != 4 {
-			t.Fatal("changed authored batch")
+		if p.ID == "pico-s" && (result.BatchLiters != 4 || math.Abs(version.Recipe.BatchLiters-4*2/1.2) > 1e-10) {
+			t.Fatal("automatic scaling lost the source or failed to fill the grain compartment")
 		}
 		if (stock || p.ID == "z") && steps[4].DrainMinutes != 10 {
 			t.Fatal("wrong target drain", p.ID)

@@ -40,7 +40,7 @@ func (s *Server) listCatalog(w http.ResponseWriter, r *http.Request) {
 	query := catalog.Query{Query: q.Get("q"), Source: q.Get("source"), Kind: q.Get("kind"), Model: q.Get("model"), Style: q.Get("style"), Limit: 24}
 	switch query.Kind {
 	case "":
-		query.Kind = "recipe"
+		query.Kind = "all-brewers"
 	case "archive":
 		query.Kind = ""
 	}

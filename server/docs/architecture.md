@@ -36,7 +36,7 @@ Recipe deployment performs a fresh idle-state check, records the reviewed source
 
 Canonical recipes contain ingredient quantities and units, arbitrary text labels, explicit program steps, water chemistry, fermentation, carbonation, tags and notes. They are versioned independently of a machine. Importing a recipe never determines its physical compartment routing.
 
-Adaptation produces a copy for the selected batch and profile. Grain quantities account for volume and the efficiency ratio; known extract/sugar additions scale by volume. Hop amounts use volume scaling and carry a utilization warning, rather than implying an equivalent bitterness calculation. Model calibration can replace the default batch size, assumed efficiency and grain limit. Firmware capabilities and hard protocol limits cannot be edited through calibration.
+Adaptation produces a copy for the selected batch and profile. Automatic versions fill the limiting grain compartment or combined timed hop addition, subject to a saved usable batch limit. Every measured ingredient uses one multiplier. The scaled source volume is an estimated yield. Model calibration can replace the default batch size, assumed efficiency and grain limit. Firmware capabilities and hard protocol limits cannot be edited through calibration.
 
 The adaptation dialog starts with the effective profile's default batch size,
 including saved calibration, rather than copying a potentially oversized source

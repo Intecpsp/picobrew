@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { ArrowRight, Check, RefreshCw, Send } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
+import { formatVolume } from '../lib/recipeDisplay'
 import { supports } from '../lib/capabilities'
 import { isNative, kindLabel } from '../lib/programs'
 import type { BulkDeployment, Recipe } from '../types'
@@ -53,7 +54,7 @@ export function TransferDialog({
       ''
   )
   const [selection, setSelection] = useState(initialSelection || [])
-  const [batches, setBatches] = useState<Record<string, number>>({})
+  const [batches, setBatches] = useState<Record<string, string>>({})
   const [overwrite, setOverwrite] = useState(false)
   const [plan, setPlan] = useState<BulkDeployment | null>(null)
   const [attempted, setAttempted] = useState(false)
@@ -91,7 +92,7 @@ export function TransferDialog({
           items: chosen.map((recipe) => ({
             recipe_id: recipe.id,
             source_revision: recipe.revision,
-            batch_liters: isNative(recipe) ? 0 : (batches[recipe.id] ?? recipe.batch_liters),
+            batch_liters: isNative(recipe) ? 0 : Number(batches[recipe.id] || 0),
           })),
         },
       })
@@ -211,7 +212,15 @@ export function TransferDialog({
               )}
             </>
           ) : (
-            <Button disabled={!ready || !chosen.length || !!busy} onClick={() => void preview()}>
+            <Button
+              disabled={
+                !ready ||
+                !chosen.length ||
+                !!busy ||
+                chosen.some((r) => batches[r.id] && !(Number(batches[r.id]) > 0))
+              }
+              onClick={() => void preview()}
+            >
               {busy === 'preview' ? 'Checking machine…' : 'Preview transfer'}
               <ArrowRight size={16} />
             </Button>
@@ -320,14 +329,15 @@ export function TransferDialog({
                     <Field label={`${recipe.name} batch (L)`}>
                       <input
                         type="number"
-                        min="0.1"
-                        step="0.1"
+                        min="0"
+                        step="any"
                         disabled={!!busy}
-                        value={batches[recipe.id] ?? recipe.batch_liters}
+                        placeholder="Automatic"
+                        value={batches[recipe.id] ?? ''}
                         onChange={(event) =>
                           setBatches((values) => ({
                             ...values,
-                            [recipe.id]: Number(event.target.value),
+                            [recipe.id]: event.target.value,
                           }))
                         }
                       />
@@ -416,6 +426,9 @@ export function TransferDialog({
                     <strong>{item.name || item.recipe_id}</strong>
                     <small>
                       {item.native?.id || item.recipe_id}
+                      {item.native && item.batch_liters > 0
+                        ? ' · Estimated yield ' + formatVolume(item.batch_liters)
+                        : ''}
                       {item.update ? ' · updates an existing slot' : ''}
                     </small>
                   </div>

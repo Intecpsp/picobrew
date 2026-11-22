@@ -236,6 +236,7 @@ function metadata(recipe: Recipe) {
     style,
     description,
     batch_liters,
+    estimated_yield,
     efficiency,
     ingredients,
     steps,
@@ -430,10 +431,10 @@ function RecipeEditor({ id }: { id: string }) {
             </Field>
             <div className="form-grid thirds">
               <QuantityField
-                label="Batch size"
+                label={recipe.estimated_yield ? 'Estimated yield' : 'Batch size'}
                 unit="L"
                 value={recipe.batch_liters}
-                change={(v) => update({ batch_liters: Number(v) })}
+                change={(v) => update({ batch_liters: Number(v), estimated_yield: false })}
               />
               <Field label="Brewhouse efficiency (%)">
                 <input

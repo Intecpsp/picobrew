@@ -8,20 +8,9 @@ import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '.
 import type { Adapted, Profile, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
 
-type BatchSelection = { value: string; explicit: boolean }
-
 function validBatch(value: string, profile?: Profile) {
   const amount = Number(value)
   return !!profile && Number.isFinite(amount) && amount > 0 && amount <= profile.batch_liters
-}
-
-function profileBatch(current: BatchSelection | undefined, profile?: Profile): BatchSelection {
-  if (current?.explicit && validBatch(current.value, profile)) return current
-  const limit = profile?.batch_liters || 0
-  // A readable default must never round above the profile's actual capacity.
-  const rounded = Number(limit.toFixed(3))
-  const amount = rounded > limit ? Math.floor(limit * 1000) / 1000 : rounded
-  return { value: limit > 0 ? String(amount || limit) : '', explicit: false }
 }
 
 export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () => void }) {
@@ -41,18 +30,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
     (source && source.id) || (first && modelProfile(first.model)) || hub.profiles[0]?.id || ''
   )
   const profile = hub.profiles.find((item) => item.id === profileID)
-  function fittingProfile(p?: Profile) {
-    const match = recipe.machine_versions?.find((v) => v.profile.id === p?.id)
-    return match?.recipe.batch_liters && p ? { ...p, batch_liters: match.recipe.batch_liters } : p
-  }
-  const [batch, setBatch] = useState<BatchSelection>(() =>
-    profileBatch(
-      source && !recipe.machine_versions
-        ? { value: String(recipe.batch_liters), explicit: true }
-        : undefined,
-      fittingProfile(profile)
-    )
-  )
+  const [batch, setBatch] = useState('')
   const [previewResult, setPreviewResult] = useState<{ key: string; value: Adapted } | null>(null)
   const [sent, setSent] = useState<{ machine: string; path: string; program: string } | null>(null)
   const [busy, setBusy] = useState('')
@@ -61,13 +39,13 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   const previewController = useRef<AbortController | null>(null)
   const target = hub.devices.find((device) => device.id === deviceID)
   const needsReady = target?.status?.busy || target?.status?.stopped || !target?.status?.ready
-  const batchLiters = native ? 0 : Number(batch.value)
-  const batchValid = native || validBatch(batch.value, profile)
+  const batchLiters = native ? 0 : Number(batch)
+  const batchValid = native || batch === '' || validBatch(batch, profile)
   const inputKey = JSON.stringify({
     recipe: [recipe.id, recipe.revision, recipe.kind],
     deviceID,
     profile,
-    batch: native ? 0 : batch.value,
+    batch: native ? 0 : batch,
   })
   const latestKey = useRef(inputKey)
   latestKey.current = inputKey
@@ -93,11 +71,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
   }
 
   useEffect(() => {
-    setBatch((current) =>
-      current.explicit && validBatch(current.value, profile)
-        ? current
-        : profileBatch(undefined, fittingProfile(profile))
-    )
+    setBatch((current) => (validBatch(current, profile) ? current : ''))
   }, [profileID, profile?.batch_liters])
 
   useEffect(() => {
@@ -149,7 +123,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
           body: {
             recipe_id: recipe.id,
             profile_id: adapted.profile.id,
-            batch_liters: native ? 0 : adapted.recipe.batch_liters,
+            batch_liters: batchLiters,
             source_revision: adapted.source_revision,
             profile_fingerprint: adapted.profile_fingerprint,
           },
@@ -250,15 +224,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
               invalidatePreview()
               const machine = hub.devices.find((device) => device.id === event.target.value)
               setDeviceID(event.target.value)
-              if (machine) {
-                setProfileID(modelProfile(machine.model))
-                setBatch((current) =>
-                  profileBatch(
-                    current,
-                    hub.profiles.find((p) => p.id === modelProfile(machine.model))
-                  )
-                )
-              }
+              if (machine) setProfileID(modelProfile(machine.model))
             }}
           >
             <option value="">Planning only</option>
@@ -279,12 +245,6 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
               invalidatePreview()
               const nextProfileID = event.target.value
               setProfileID(nextProfileID)
-              setBatch((current) =>
-                profileBatch(
-                  current,
-                  hub.profiles.find((p) => p.id === nextProfileID)
-                )
-              )
               if (target && modelProfile(target.model) !== nextProfileID) setDeviceID('')
             }}
           >
@@ -303,18 +263,19 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
         {!native && (
           <Field
             label="Target batch size (L)"
-            hint={`Source batch: ${formatVolume(recipe.batch_liters)}. Profile batch: ${formatVolume(profile?.batch_liters || 0)}.`}
+            hint={`Leave blank to fit the grain bill and hop slots. Source yield: ${formatVolume(recipe.batch_liters)}.`}
           >
             <input
               type="number"
               min="0"
               max={profile?.batch_liters}
               step="any"
-              value={batch.value}
+              value={batch}
+              placeholder="Automatic"
               disabled={busy === 'deploy'}
               onChange={(event) => {
                 invalidatePreview()
-                setBatch({ value: event.target.value, explicit: true })
+                setBatch(event.target.value)
               }}
             />
           </Field>
@@ -335,7 +296,7 @@ export function AdaptDialog({ recipe, onClose }: { recipe: Recipe; onClose: () =
             <strong>
               {native
                 ? 'Exact native schedule'
-                : `${formatVolume(adapted.recipe.batch_liters)} · ${formatNumber(adapted.recipe.efficiency)}% efficiency`}
+                : `Estimated yield ${formatVolume(adapted.recipe.batch_liters)} · ${formatNumber(adapted.recipe.efficiency)}% efficiency`}
             </strong>
           </div>
           {!!adapted.deployment_blockers?.length && (

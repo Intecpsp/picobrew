@@ -420,7 +420,7 @@ describe('community catalog and local recipe slots', () => {
       expect(document.querySelectorAll('.catalog-card').length).toBeGreaterThan(0)
     )
     expect(
-      (screen.getByLabelText('Catalog type', { exact: true }) as HTMLSelectElement).value
+      (screen.getByLabelText('Archive record type', { exact: true }) as HTMLSelectElement).value
     ).toBe('maintenance')
     expect(screen.getAllByText('Cleaning program', { exact: true }).length).toBeGreaterThan(0)
     await user.click(screen.getByRole('button', { name: 'Machine guides & artwork' }))

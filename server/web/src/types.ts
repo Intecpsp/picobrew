@@ -185,6 +185,7 @@ export interface Recipe {
   name: string
   style: string
   description: string
+  estimated_yield?: boolean
   batch_liters: number
   efficiency: number
   ingredients: Ingredient[]
