@@ -265,6 +265,7 @@ func buildSchemas() schemaMap {
 	r.properties("aiMonitorStatus")["state"] = schemaMap{"type": "string", "enum": []string{"off", "pending", "active", "finished"}}
 	r.properties("Config")["monitor_enabled"] = schemaMap{"type": "boolean", "deprecated": true, "description": "Retained for older saved configurations; this flag alone never enables monitoring. Consent is explicit for each verified brew."}
 	r.properties("Request")["brew_id"] = schemaMap{"type": "string", "description": "Required for live and analysis modes. Live mode also requires device_id and verifies that this exact native history session is currently recording."}
+	r.values["CatalogCopyInput"] = schemaObject(schemaMap{"stock_program": schemaMap{"type": "boolean", "default": false, "description": "Save the matched stock Zymatic program and its brew sheet."}})
 	r.values["AdaptInput"] = schemaObject(schemaMap{"profile_id": stringSchema(), "batch_liters": numberSchema()}, "profile_id")
 	r.values["DeployInput"] = schemaObject(schemaMap{"recipe_id": stringSchema(), "profile_id": stringSchema(), "batch_liters": numberSchema(), "source_revision": schemaMap{"type": "integer", "minimum": 1}, "profile_fingerprint": schemaMap{"type": "string", "description": "Copy from the reviewed adaptation. A changed profile returns 409 before any machine write. Optional for compatibility with existing direct API clients."}}, "recipe_id", "source_revision")
 	r.values["ProfileInput"] = schemaObject(schemaMap{"batch_liters": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "description": "Maximum is the model batch volume."}, "efficiency": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 100}, "max_grain_kg": schemaMap{"type": "number", "minimum": 0, "description": "Up to the model planning ceiling in kilograms. Zero restores the default."}, "max_hop_slot_g": schemaMap{"type": "number", "minimum": 0, "description": "Combined grams per hop slot. Zero restores the model default. Omit to preserve the current setting."}}, "batch_liters", "efficiency", "max_grain_kg")
@@ -425,6 +426,8 @@ func operationParameters(e endpoint) []any {
 func requestSchema(e endpoint) (schemaMap, bool) {
 	name := ""
 	switch e.path {
+	case "/catalog/{id}/copy":
+		name = "CatalogCopyInput"
 	case "/auth/setup":
 		name = "Setup"
 	case "/auth/login":
