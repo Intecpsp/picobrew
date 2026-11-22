@@ -1,7 +1,6 @@
 package server
 
 import (
-	"bytes"
 	"encoding/json"
 	"reflect"
 	"testing"
@@ -129,7 +128,8 @@ func TestPublishedProfileDefaultsPreserveExistingCalibrationAndRecipes(t *testin
 		t.Fatalf("reset response differs from persisted result: %+v", persisted)
 	}
 	status, recipeAfter := request(t, c, "GET", h.URL+"/api/v1/recipes/"+savedRecipe.ID, csrf, nil, nil)
-	if status != 200 || !bytes.Equal(recipeBefore, recipeAfter) {
+	var afterRecipe domain.Recipe
+	if status != 200 || json.Unmarshal(recipeAfter, &afterRecipe) != nil || !reflect.DeepEqual(savedRecipe, afterRecipe) {
 		t.Fatalf("profile defaults changed the stored recipe: %d %s", status, recipeAfter)
 	}
 }

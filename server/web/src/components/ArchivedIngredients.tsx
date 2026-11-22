@@ -25,6 +25,13 @@ export function ArchivedIngredients({ product }: { product?: CatalogDetail['mark
       ) : (
         <p>The archived brewing schedule has no verified ingredient bill.</p>
       )}
+      {product?.ingredient_recipe_id && (
+        <p>
+          <a href={'#/catalog/' + encodeURIComponent(product.ingredient_recipe_id)}>
+            View the measured Z/Zymatic recipe by {product.creator}
+          </a>
+        </p>
+      )}
       {product && (
         <a href={product.url} target="_blank" rel="noreferrer">
           {product.name} on PicoBrew Marketplace

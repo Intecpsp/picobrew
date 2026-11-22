@@ -14,7 +14,7 @@ recipe to a brewer or starts a program.
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-The main catalog opens with 68 reviewed stock Zymatic brew sheets. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+The main catalog opens with all 1,316 measured recipes and offers a filter for the 68 reviewed stock Zymatic brew sheets. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
 programs and three maintenance programs. Of these, 5,206 can be copied into the
 library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
@@ -55,8 +55,7 @@ original ZIP hash recorded in the review, without downloading source data.
 **Ingredient recipes** retain converted source measurements and declared plans.
 The original public recipes target Z/Zymatic, and their separately editable
 `MachineSteps` may disagree with those plans. They remain in original JSON.
-Imported chamber locations are explicitly unmapped (`0`), so a plan requires
-review and verified chamber assignments before a Pico deployment. Unknown yeast
+The Hub preserves the source flow paths and generates a separate version for each brewer from the declared mash rests and timed additions. Ingredients added together share a hop slot. Unsupported operations and incomplete measurements appear on the affected version. Unknown yeast
 doses, unsupported quantities, fractional/invalid timings and contradictory
 source notes are recorded as review items; quantities or timings are not guessed.
 
@@ -95,7 +94,7 @@ protection.
 
 | Method and path | Result |
 | --- | --- |
-| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). Use `kind=brew-ready` for reviewed recipes. An omitted kind includes the whole archive. Returns entries, total and source/style metadata. |
+| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). The default and `kind=recipe` return ingredient recipes. Use `kind=brew-ready` for reviewed stock Zymatic recipes or `kind=archive` for all source records. Returns entries, total and source/style metadata. |
 | `GET /api/v1/catalog/{id}` | Recipe/program detail, original record list, provenance and source parameters. |
 | `POST /api/v1/catalog/{id}/copy` | Send `{}` for the editable recipe or `{"stock_program":true}` for a qualified stock Zymatic program with its brew sheet. Returns a new library record and initial revision. |
 | `GET /api/v1/catalog/{id}/source` | Exact original JSON attachment; `record` selects another original listed on the entry. |

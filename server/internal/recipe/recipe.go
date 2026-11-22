@@ -247,6 +247,10 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 // A valid ingredient plan remains available when native compilation is blocked;
 // deployment always requires CanDeploy and a non-nil MachineRecipe.
 func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain.Adapted, error) {
+	return adapt(r, profile, batchLiters, false)
+}
+
+func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, planning bool) (domain.Adapted, error) {
 	if err := Validate(r); err != nil {
 		return domain.Adapted{}, err
 	}
@@ -305,10 +309,14 @@ func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain
 		}
 	}
 	if err := ValidateCapacity(plan.Recipe, profile); err != nil {
-		return domain.Adapted{}, err
+		if !planning {
+			return domain.Adapted{}, err
+		}
+		plan.DeploymentBlockers = append(plan.DeploymentBlockers, err.Error())
+		return plan, nil
 	}
 	if hops {
-		plan.Warnings = append(plan.Warnings, "Hops scale by batch volume only; utilization, gravity, boil-off and IBU changes are not modeled. Ingredient timings do not create machine steps or assign chambers.")
+		plan.Warnings = append(plan.Warnings, "Hops scale by batch volume only; utilization, gravity, boil-off and IBU changes are not modeled.")
 	}
 	if yeast {
 		plan.Warnings = append(plan.Warnings, "Yeast scales by volume only; verify cell count, viability and pitch rate separately.")
@@ -443,4 +451,34 @@ func NativeJSON(r domain.MachineRecipe) ([]byte, error) {
 		return nil, errors.New("native recipe exceeds the firmware 4095-byte request limit")
 	}
 	return data, nil
+}
+
+// fittingBatch computes a planning yield from calibrated efficiency, grain
+// capacity and the combined weight of hops added together. It never increases
+// the configured batch size or silently drops an ingredient.
+func fittingBatch(r domain.Recipe, p domain.Profile) float64 {
+	size := p.BatchLiters
+	grain := 0.0
+	hops := map[float64]float64{}
+	for _, in := range r.Ingredients {
+		if grainIngredient(in) {
+			grain += in.Amount
+		}
+		use := strings.ToLower(strings.TrimSpace(in.Use))
+		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
+			hops[in.Minutes] += in.Amount
+		}
+	}
+	if p.MaxGrainKG > 0 && grain > 0 {
+		size = math.Min(size, r.BatchLiters*p.MaxGrainKG*p.Efficiency/(grain*r.Efficiency))
+	}
+	for _, amount := range hops {
+		if p.MaxHopSlotG > 0 && amount > 0 {
+			size = math.Min(size, r.BatchLiters*p.MaxHopSlotG/amount)
+		}
+	}
+	if size < p.BatchLiters {
+		return math.Floor(size*100) / 100
+	}
+	return size
 }

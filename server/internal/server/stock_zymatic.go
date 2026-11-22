@@ -135,7 +135,21 @@ func (s *Server) stockMenu(w http.ResponseWriter, r *http.Request) {
 			}
 			saved.SourceModel = "zymatic"
 		}
-		p, err := recipe.StockZymaticProgram(saved, profile)
+		var p domain.MachineRecipe
+		var err error
+		if ref.Locations == nil && len(saved.Ingredients) > 0 && !recipe.IsNative(saved) {
+			var plan domain.Adapted
+			plan, err = recipe.Translate(saved, profile, 0)
+			if err == nil {
+				if plan.MachineRecipe == nil {
+					err = errors.New(strings.Join(plan.DeploymentBlockers, "; "))
+				} else {
+					p = *plan.MachineRecipe
+				}
+			}
+		} else {
+			p, err = recipe.StockZymaticProgram(saved, profile)
+		}
 		if err != nil {
 			s.fail(w, 422, "stock_program", saved.Name+": "+err.Error())
 			return

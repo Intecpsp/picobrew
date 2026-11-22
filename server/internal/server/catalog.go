@@ -14,6 +14,7 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/catalog"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 )
 
@@ -37,6 +38,12 @@ func (s *Server) catalogError(w http.ResponseWriter, err error) {
 func (s *Server) listCatalog(w http.ResponseWriter, r *http.Request) {
 	q := r.URL.Query()
 	query := catalog.Query{Query: q.Get("q"), Source: q.Get("source"), Kind: q.Get("kind"), Model: q.Get("model"), Style: q.Get("style"), Limit: 24}
+	switch query.Kind {
+	case "":
+		query.Kind = "recipe"
+	case "archive":
+		query.Kind = ""
+	}
 	if len(query.Query) > 512 || len(query.Source) > 128 || len(query.Kind) > 64 || len(query.Model) > 64 || len(query.Style) > 512 {
 		s.fail(w, 400, "catalog_query", "Catalog filters are too long")
 		return
@@ -68,7 +75,21 @@ func (s *Server) getCatalogEntry(w http.ResponseWriter, r *http.Request) {
 		s.catalogError(w, err)
 		return
 	}
-	s.json(w, 200, detail)
+	profiles, err := s.calibratedProfiles()
+	if err != nil {
+		s.internal(w, err)
+		return
+	}
+	var versions []domain.Adapted
+	if detail.Recipe != nil {
+		source := *detail.Recipe
+		source.ID = detail.ID
+		versions = recipeWithVersions(source, profiles).MachineVersions
+	}
+	s.json(w, 200, struct {
+		catalog.Detail
+		MachineVersions []domain.Adapted `json:"machine_versions,omitempty"`
+	}{detail, versions})
 }
 
 func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
@@ -105,6 +126,11 @@ func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
 		s.internal(w, err)
 		return
 	}
+	profiles, err := s.calibratedProfiles()
+	if err != nil {
+		s.internal(w, err)
+		return
+	}
 	s.recipeMu.Lock()
 	defer s.recipeMu.Unlock()
 	v.ID = randomID()
@@ -118,7 +144,7 @@ func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
 	if _, err := s.db.Put("recipe-revision", v.ID+":1", v, 0); err != nil {
 		s.cfg.Logger.Error("Catalog copy revision archive failed", "id", v.ID, "error", err)
 	}
-	s.json(w, 201, v)
+	s.json(w, 201, recipeWithVersions(v, profiles))
 }
 
 func (s *Server) catalogOriginal(w http.ResponseWriter, r *http.Request) {

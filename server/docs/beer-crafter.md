@@ -32,7 +32,9 @@ The 1,316 public ingredient recipes in the bundled catalog are archived PicoBrew
 
 ### Brew-ready catalog
 
-The initial **Browse all** view lists recipes with measured grain, hops, starting water and batch size, a cage-by-cage loading sheet, fermentation instructions, and a matching stock Zymatic program. Select **Catalog type → Archive · All source records** to browse the entire collection, including partially documented PicoPak recipes.
+**Browse all** shows the measured ingredient recipes. Open a recipe and select a brewer under **Machine versions** to see its ingredient bill and program. The **Verified for stock Zymatic** filter selects recipes with reviewed loading sheets and original programs. **Sources & credits → Browse source archive** opens the original schedules, including discontinued PicoPaks without measured ingredient bills.
+
+Saving in the wizard or advanced editor prepares versions for Pico C, Pico S, Pico Pro, generic Z-series and stock Zymatic. The Hub also translates imports and existing library recipes. Each version uses the current grain, hop and efficiency settings for that equipment. The original recipe is the editable source for all five. Single and bulk transfers and the stock menu preview generate the same target program with the selected batch and current calibration. A blocked version shows the ingredient bill and the reason its schedule needs editing.
 
 For qualified recipes, **Save Zymatic program** saves the original routing and brew sheet together for the stock menu. **Copy ingredient recipe** creates an editable planning copy. Its declared mash/boil plan can be adapted independently. Source gravity, color and other published targets are shown where available. Manufacturer pitching ranges are labeled and linked separately from the original ingredient quantities.
 

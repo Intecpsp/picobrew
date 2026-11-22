@@ -34,9 +34,11 @@ export function StockZymaticTransfer({
     )
   }
   const selected = recipes.filter((r) => chosen.includes(r.id))
-  const needsPaths = selected.filter(
+  const [manualPaths, setManualPaths] = useState(false)
+  const candidates = selected.filter(
     (r) => !r.native_program && (r.source_model !== 'zymatic' || r.steps.some((s) => !s.location))
   )
+  const needsPaths = candidates.filter((r) => manualPaths || !r.ingredients?.length)
   const ready = needsPaths.every((r) => paths(r).every(Boolean))
   const [preview, setPreview] = useState<StockItem[] | null>(null),
     [sent, setSent] = useState(false)
@@ -146,6 +148,20 @@ export function StockZymaticTransfer({
             </label>
           ))}
         </fieldset>
+      )}
+      {!sent && candidates.some((r) => r.ingredients?.length) && (
+        <label className="checkbox-row">
+          <input
+            type="checkbox"
+            checked={manualPaths}
+            disabled={busy}
+            onChange={(e) => {
+              setManualPaths(e.target.checked)
+              setPreview(null)
+            }}
+          />
+          Assign flow paths manually
+        </label>
       )}
       {!sent &&
         needsPaths.map((r) => (

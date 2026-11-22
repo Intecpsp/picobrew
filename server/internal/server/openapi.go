@@ -201,6 +201,9 @@ func buildSchemas() schemaMap {
 	// Preserve the previously published schema name while sharing this record
 	// with individual brew details and exports.
 	r.values["adviceRecord"] = schemaRef("AIAdvice")
+	for _, name := range []string{"Recipe", "Detail"} {
+		r.properties(name)["machine_versions"] = schemaMap{"type": "array", "items": schemaRef("Adapted"), "readOnly": true, "description": "Current model adaptations on ingredient recipe detail, save and import responses."}
+	}
 	r.properties("DeviceView")["key_reused"] = schemaMap{"type": "boolean", "readOnly": true, "description": "Advisory: another registered physical machine has the same recorded hexadecimal API key, including disabled machines. Derived in memory; no key or fingerprint is returned. Use a separately provisioned key for each brewer. Saving a connection does not change its firmware key."}
 	r.values["Error"] = schemaObject(schemaMap{"error": schemaObject(schemaMap{"code": stringSchema(), "message": stringSchema()}, "code", "message")}, "error")
 	r.values["AuthSession"] = schemaObject(schemaMap{"authenticated": boolSchema(), "setup_required": boolSchema(), "version": stringSchema(), "demo": boolSchema(), "csrf_token": stringSchema()}, "authenticated", "setup_required", "version", "demo")

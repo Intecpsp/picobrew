@@ -166,7 +166,9 @@
       "picopak-16",
       "picopak-17",
       "picopak-1954"
-    ]
+    ],
+    "creator": "Lucky Envelope Brewing",
+    "ingredient_recipe_id": "public-0f70396d9e26492e84f4cc365a6800c4"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E929E6D01AAB46F59D9A6D6C7030E3C8",
@@ -215,7 +217,9 @@
       "picopak-13",
       "picopak-4160",
       "picopak-70"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-1704720c78ac436b9ca46bbc8a2dfbe3"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A118285AB9094276A0227D20A10B9A8E",
@@ -226,7 +230,9 @@
     "pico_beer_id": 39,
     "catalog_ids": [
       "picopak-10"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-ef095d0ca1b34cf7a1f23da59dbd9217"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4A77D259FC2744DAB2104E9EB6C3E6B9",
@@ -260,7 +266,9 @@
     "catalog_ids": [
       "picopak-4161",
       "picopak-7"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-3a0822cd15374e8a8139b5593f42c0a4"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E420769EDDBA4DEAB387D9058D0BF452",
@@ -272,7 +280,9 @@
     "catalog_ids": [
       "picopak-4162",
       "picopak-8"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-ecc7c6bf2d99433c883b8157d3272623"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D10FD99C12A3491192C1B85DF2F5C16A",
@@ -307,7 +317,9 @@
     "catalog_ids": [
       "picopak-4156",
       "picopak-6"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-4d584296861b49169883af5c7c3cc6fa"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=71F77E1A25B1402F80ACF8FD30C7E0CD",
@@ -330,7 +342,9 @@
     "catalog_ids": [
       "picopak-4159",
       "picopak-9"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-8d1badab21534644bef7a975def0f0b8"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E2C74E90AE9E432FB0BBA53B3C05C1DF",
@@ -1434,7 +1448,9 @@
       "picopak-3172",
       "picopak-658",
       "picopak-977"
-    ]
+    ],
+    "creator": "Drew Beechum",
+    "ingredient_recipe_id": "public-17b5e1c3006e4e67bcab74f655d334aa"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3B1CE7587E8444D18D044EBE0C5CA2A6",
@@ -2189,7 +2205,9 @@
       "picopak-3490",
       "picopak-5458",
       "picopak-5613"
-    ]
+    ],
+    "creator": "Jason Nelms",
+    "ingredient_recipe_id": "public-15edfb18b2004124a1a871116897857b"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=FC57C65E03E34E5A8AD57C9294E5858F",
@@ -2411,7 +2429,9 @@
       "picopak-5455",
       "picopak-5619",
       "picopak-6028"
-    ]
+    ],
+    "creator": "Stefan Yauchzee",
+    "ingredient_recipe_id": "public-8db704bae71540fab2709a15a4b557e6"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2E3B787375664903BB4013FD3243E356",
@@ -2531,7 +2551,9 @@
     "catalog_ids": [
       "picopak-5862",
       "picopak-6353"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-b3e069849e574f409c1503356f0554b8"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C9482DB53FE84C06AB74E842D04E8FA3",
@@ -2554,7 +2576,9 @@
       "picopak-5945",
       "picopak-6895",
       "picopak-7049"
-    ]
+    ],
+    "creator": "PicoBrew",
+    "ingredient_recipe_id": "public-2baafe77567844a5a07d7215cdcd979b"
   },
   {
     "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=06264CE66D834E14B31E35F9C262625A",

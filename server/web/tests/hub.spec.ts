@@ -163,7 +163,7 @@ test('create, revise and import a recipe through the working editor', async ({ p
   await expect(
     page.getByRole('heading', { name: 'Browser test porter', exact: true, level: 1 })
   ).toBeVisible()
-  await expect(page.getByText('Recipe saved to your library.')).toBeVisible()
+  await expect(page.getByText('Recipe saved with versions for all five brewers.')).toBeVisible()
   await page.getByLabel('Recipe notes').fill('Integration note: retained after save.')
   await page.getByRole('button', { name: 'Save recipe', exact: true }).click()
   await page.reload()
@@ -331,6 +331,9 @@ test('community catalog preserves source schedules through copy, bulk transfer a
 
     await page.goto('/#/catalog')
     await expect(page.getByRole('heading', { name: 'Community recipes' })).toBeVisible()
+    await expect(page.getByRole('option', { name: 'Machine schedules' })).toHaveCount(0)
+    await page.getByRole('button', { name: 'Sources & credits' }).click()
+    await page.getByRole('button', { name: 'Browse source archive' }).click()
     await page.getByLabel('Catalog type', { exact: true }).selectOption('native-program')
     await page.getByLabel('Search community recipes').fill('Pico Pale')
     await expect(

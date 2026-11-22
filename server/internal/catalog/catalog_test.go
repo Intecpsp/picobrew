@@ -311,3 +311,100 @@ func TestBrewReadyRecipesHaveStockProgramAndMeasuredBrewSheet(t *testing.T) {
 		}
 	}
 }
+
+func TestAuthorPublishedKitEditions(t *testing.T) {
+	a, err := Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	hits := a.List(Query{Kind: "recipe", Query: "picopak", Limit: 100})
+	if len(a.kitEditions) != 12 {
+		t.Fatal("missing reviewed kit editions")
+	}
+	for id, product := range a.kitEditions {
+		d, err := a.Detail(id)
+		if err != nil || d.Marketplace == nil || d.Recipe == nil || len(d.Recipe.Ingredients) == 0 || d.Recipe.BatchLiters <= 0 {
+			t.Fatalf("missing measured edition for %s: %v", id, err)
+		}
+		author := map[string]string{"PicoBrew": "PicoBrew Inc", "Lucky Envelope Brewing": "Lucky Envelope"}[product.Creator]
+		if author == "" {
+			author = product.Creator
+		}
+		if author == "" || author != d.Author {
+			t.Fatalf("creator mismatch for %s", id)
+		}
+		found := false
+		for _, hit := range hits.Items {
+			if hit.ID == id {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Fatalf("recipe search missed %s", id)
+		}
+	}
+	for id, p := range a.marketplace {
+		if p.IngredientRecipeID == "" {
+			continue
+		}
+		d, err := a.Detail(id)
+		if err != nil || d.Recipe == nil || len(d.Recipe.Ingredients) != 0 || d.Recipe.BatchLiters != 0 {
+			t.Fatalf("kit bill changed %s", id)
+		}
+	}
+}
+
+func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
+	a, err := Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	profiles := recipe.Profiles()
+	counts := map[string]int{}
+	measured := 0
+	for _, entry := range a.entries {
+		if entry.Kind != "recipe" {
+			continue
+		}
+		d, err := a.Detail(entry.ID)
+		if err != nil {
+			t.Fatal(err)
+		}
+		source := *d.Recipe
+		source.ID = d.ID
+		if len(source.Ingredients) == 0 {
+			t.Fatalf("%s has no ingredients", d.ID)
+		}
+		snapshot, _ := json.Marshal(source)
+		measured++
+		for _, p := range profiles {
+			plan, err := recipe.Translate(source, p, 0)
+			if err != nil || plan.Recipe.BatchLiters <= 0 || plan.Recipe.BatchLiters > p.BatchLiters || plan.Recipe.SourceModel != p.ID || len(plan.Recipe.Ingredients) != len(source.Ingredients) {
+				t.Fatalf("%s/%s: invalid plan: %v", d.ID, p.ID, err)
+			}
+			if plan.MachineRecipe == nil {
+				if len(plan.DeploymentBlockers) == 0 || plan.CanDeploy {
+					t.Fatal("missing blocker", d.ID, p.ID)
+				}
+				continue
+			}
+			if p.ID == "zymatic" {
+				if len(recipe.StockZymaticRecord(*plan.MachineRecipe)) > 511 || plan.CanDeploy {
+					t.Fatal("invalid stock record", d.ID)
+				}
+			} else if _, err := recipe.NativeJSON(*plan.MachineRecipe); err != nil || !plan.CanDeploy {
+				t.Fatal(d.ID, p.ID, err)
+			}
+			counts[p.ID]++
+		}
+		after, _ := json.Marshal(source)
+		if string(after) != string(snapshot) {
+			t.Fatal("source mutated", d.ID)
+		}
+	}
+	if measured != 1316 || len(counts) != 5 {
+		t.Fatal(measured, counts)
+	}
+	t.Logf("%d measured recipes, compiled schedules per model: %v", measured, counts)
+}

@@ -13,6 +13,28 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 )
 
+// Model versions are derived from one saved revision and the current equipment
+// calibration. Persisting separate library copies would let them drift apart.
+type recipeView struct {
+	domain.Recipe
+	MachineVersions []domain.Adapted `json:"machine_versions,omitempty"`
+}
+
+func recipeWithVersions(v domain.Recipe, profiles []domain.Profile) recipeView {
+	view := recipeView{Recipe: v}
+	if recipe.IsNative(v) || len(v.Ingredients) == 0 {
+		return view
+	}
+	for _, p := range profiles {
+		plan, err := recipe.Translate(v, p, 0)
+		if err != nil {
+			plan = domain.Adapted{Profile: p, SourceRevision: v.Revision, DeploymentBlockers: []string{err.Error()}}
+		}
+		plan.ProfileFingerprint = profileFingerprint(p)
+		view.MachineVersions = append(view.MachineVersions, plan)
+	}
+	return view
+}
 func (s *Server) listRecipes(w http.ResponseWriter, r *http.Request) {
 	rows, e := s.db.List("recipe")
 	if e != nil {
@@ -27,7 +49,12 @@ func (s *Server) getRecipe(w http.ResponseWriter, r *http.Request) {
 		s.storeError(w, e)
 		return
 	}
-	s.json(w, 200, v)
+	profiles, err := s.calibratedProfiles()
+	if err != nil {
+		s.internal(w, err)
+		return
+	}
+	s.json(w, 200, recipeWithVersions(v, profiles))
 }
 func (s *Server) validateLibraryRecipe(v domain.Recipe) error {
 	if err := recipe.Validate(v); err != nil {
@@ -47,8 +74,18 @@ func (s *Server) validateLibraryRecipe(v domain.Recipe) error {
 	return nil
 }
 func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) {
-	var v domain.Recipe
-	if !s.decode(w, r, &v) {
+	var input struct {
+		domain.Recipe
+		// Clients can round-trip a GET response. Only the canonical recipe is writable.
+		MachineVersions json.RawMessage `json:"machine_versions"`
+	}
+	if !s.decode(w, r, &input) {
+		return
+	}
+	v := input.Recipe
+	profiles, err := s.calibratedProfiles()
+	if err != nil {
+		s.internal(w, err)
 		return
 	}
 	if e := s.validateLibraryRecipe(v); e != nil {
@@ -89,7 +126,7 @@ func (s *Server) saveRecipe(w http.ResponseWriter, r *http.Request) {
 	if _, e := s.db.Put("recipe-revision", id+":"+strconv.FormatInt(v.Revision, 10), v, 0); e != nil {
 		s.cfg.Logger.Error("Recipe revision archive failed", "id", id, "error", e)
 	}
-	s.json(w, code, v)
+	s.json(w, code, recipeWithVersions(v, profiles))
 }
 func (s *Server) deleteRecipe(w http.ResponseWriter, r *http.Request) {
 	if e := s.db.Delete("recipe", chi.URLParam(r, "id")); e != nil {
@@ -116,7 +153,7 @@ func (s *Server) adaptRecipe(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 400, "profile", "Unknown machine profile")
 		return
 	}
-	adapted, e := recipe.Adapt(v, p, in.BatchLiters)
+	adapted, e := recipe.Translate(v, p, in.BatchLiters)
 	if e != nil {
 		s.fail(w, 422, "adaptation", e.Error())
 		return
@@ -173,7 +210,7 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "profile_changed", "Equipment calibration changed; preview the adaptation again before sending it")
 		return
 	}
-	a, e := recipe.Adapt(v, p, in.BatchLiters)
+	a, e := recipe.Translate(v, p, in.BatchLiters)
 	if e != nil {
 		s.fail(w, 422, "adaptation", e.Error())
 		return
@@ -248,6 +285,12 @@ func (s *Server) importRecipes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	profiles, err := s.calibratedProfiles()
+	if err != nil {
+		s.internal(w, err)
+		return
+	}
+	views := make([]recipeView, 0, len(items))
 	now := time.Now().UTC()
 	for i := range items {
 		items[i].ID = randomID()
@@ -259,8 +302,9 @@ func (s *Server) importRecipes(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		_, _ = s.db.Put("recipe-revision", items[i].ID+":1", items[i], 0)
+		views = append(views, recipeWithVersions(items[i], profiles))
 	}
-	s.json(w, 201, items)
+	s.json(w, 201, views)
 }
 func (s *Server) exportRecipe(w http.ResponseWriter, r *http.Request) {
 	var v domain.Recipe

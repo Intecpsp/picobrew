@@ -27,6 +27,7 @@ import { api, download, errorMessage } from '../lib/api'
 import { dateLabel, modelLabel, newRecipe, slug } from '../lib/utils'
 import { isNative, kindLabel, programTiming } from '../lib/programs'
 import { formatQuantity, formatVolume } from '../lib/recipeDisplay'
+import { MachineVersions } from '../components/MachineVersions'
 import NativeRecipeEditor from './NativeRecipeEditor'
 import { TransferDialog } from '../components/TransferDialog'
 import { AdaptDialog } from '../components/AdaptDialog'
@@ -321,13 +322,17 @@ function RecipeEditor({ id }: { id: string }) {
       }
       const saved = await api<Recipe>(isNew ? '/recipes' : `/recipes/${id}`, {
         method: isNew ? 'POST' : 'PUT',
-        body: payload,
+        body: { ...payload, machine_versions: undefined },
       })
       setRecipe(saved)
       originalRevision.current = saved.revision
       setDirty(false)
       await hub.refresh()
-      hub.notify('Recipe saved to your library.')
+      hub.notify(
+        saved.machine_versions?.length
+          ? 'Recipe saved with versions for all five brewers.'
+          : 'Recipe saved to your library.'
+      )
       if (isNew) hub.navigate(guided ? '/recipes' : `/recipes/${saved.id}`)
     } catch (error) {
       setError(errorMessage(error))
@@ -598,6 +603,9 @@ function RecipeEditor({ id }: { id: string }) {
           )}
         </aside>
       </div>
+      {!isNew && !dirty && (
+        <MachineVersions versions={recipe.machine_versions} initialModel={recipe.source_model} />
+      )}
       {deploy && <AdaptDialog recipe={recipe} onClose={() => setDeploy(false)} />}{' '}
       {remove && (
         <Confirm
