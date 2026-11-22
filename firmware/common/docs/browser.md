@@ -6,7 +6,7 @@ settings decide which controls appear. Connecting performs reads only.
 
 | Device | Browser behavior |
 | --- | --- |
-| Generic Z-series | Local canonical recipes, native programs, encoder controls and the actual 128 × 64 grayscale display. The recipe editor labels locations as direct valves 1–6 and explains why archived Z/Zymatic routing needs explicit conversion. |
+| Generic Z-series | Local recipes, Z Program Maker programs, encoder controls and the actual 128 × 64 grayscale display. |
 | PicoStill | Every advertised temperature and pressure sensor, pump and both fan outputs, native start/essential-oils/clean/stop operations, manual pump and fan settings. |
 | PicoFerm | Temperature, native raw pressure and battery readings, fermentation start/stop, explicit depressurized calibration, immediate sampling and sampling interval. Pressure has no inferred kPa conversion. |
 
@@ -15,6 +15,13 @@ their endpoints. Missing readings remain unavailable. All command acknowledgment
 must match the command sent; an unknown write outcome is surfaced without retry.
 Calibration asks the user to remove PicoFerm from its keg or adapter, remove its
 GRAY seal and confirm depressurization before sending `confirm:true`.
+
+On a Z that advertises `z_program_maker`, the recipe editor can create, import,
+edit and export PicoBrew Z Program Maker JSON. It accepts a file from the picker
+or by drag and drop. Active steps show their destination, temperature, run time
+and drain time. Pause steps wait for the operator. The editor retains fractional
+Celsius temperatures, second-resolution times and the program's beer and PicoPak
+settings. Older v1 recipes open in their original editor.
 
 ## Display and history
 

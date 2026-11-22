@@ -46,14 +46,18 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 11
+INSTALL_REVISION = 12
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 166344
-CANDIDATE_SHA256 = "3828ec6a147f98bdf2b039ecd4c336bf238d04bf7cec41cdea07a97b9d170f39"
+CANDIDATE_SIZE = 166496
+CANDIDATE_SHA256 = "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"
+RELEASED_1_3_3 = {
+    "pico-pro": (166344, "3828ec6a147f98bdf2b039ecd4c336bf238d04bf7cec41cdea07a97b9d170f39"),
+    "pico-s": (166336, "3ed5d58c072cbb547f94fcc579730394c15c72e1126961491741fc846f91bfa4"),
+}
 RELEASED_1_3_2 = {
     "pico-pro": (166528, "b0cb331a7b9890c61ab7b66e0ef698da8fbedc026ad563082e24c2741a0b1f90"),
     "pico-s": (166520, "4b3bc5d6122f696b0866d7e73607bef574208cbcc031009f7a4ccf3df5c858a4"),
@@ -253,7 +257,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 166336, "3ed5d58c072cbb547f94fcc579730394c15c72e1126961491741fc846f91bfa4"
+        return 166488, "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94"
     raise InstallError("Unknown target model")
 
 
@@ -335,9 +339,9 @@ def _approved_current_applications(mode, model="pico-pro"):
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
                            (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
-                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], candidate_identity(model)))
+                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], candidate_identity(model)))
     if mode == "install-recovery":
-        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], candidate_identity(model)]
+        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
