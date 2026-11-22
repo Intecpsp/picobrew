@@ -14,7 +14,7 @@ import (
 func source() domain.Recipe {
 	return domain.Recipe{ID: "house-ale", Name: "House Ale", BatchLiters: 10, Efficiency: 75, Revision: 4,
 		Ingredients: []domain.Ingredient{{Name: "Pale malt", Kind: "fermentable", Amount: 2, Unit: "kg", Use: "mash"}, {Name: "Cascade", Kind: "hop", Amount: 20, Unit: "g", Use: "boil", Minutes: 30, Alpha: 5.5}},
-		Steps:       []domain.RecipeStep{{Name: "Mash", Kind: "mash", TargetC: 65, Minutes: 60, DrainMinutes: 2, Location: 1}, {Name: "Boil", Kind: "boil", TargetC: 100, Minutes: 30, Location: 3}}}
+		Steps:       []domain.RecipeStep{{Name: "Mash", Kind: "mash", TargetC: 65, Minutes: 60, DrainMinutes: 2, Location: 2}, {Name: "Boil", Kind: "boil", TargetC: 100, Minutes: 30, Location: 3}}}
 }
 
 func TestAdaptScalesWithExplicitMappingsWithoutMutatingSource(t *testing.T) {
@@ -327,5 +327,118 @@ func TestRecoveredAdjunctAndFirstWortLoads(t *testing.T) {
 	r.Ingredients[2].Unit = "mL"
 	if recipe.Validate(r) == nil {
 		t.Fatal("volume was treated as a slot weight")
+	}
+}
+
+func TestMashBasketCapacityUsesIngredientPlacement(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.BatchLiters = p.BatchLiters
+		r.Ingredients = []domain.Ingredient{
+			{Name: "Pale malt", Kind: "fermentable", Type: "Grain", Use: "mash", Amount: p.MaxGrainKG - 0.25, Unit: "kg"},
+			{Name: "Lactose", Kind: "fermentable", Type: "Sugar", Use: "mash", Amount: 0.25, Unit: "kg"},
+			{Name: "Mash hops", Kind: "hop", Use: "mash", Amount: 10, Unit: "g"},
+		}
+		if err := recipe.ValidateCapacity(r, p); err == nil {
+			t.Fatal(p.ID, "mash sugar and mash hops exceeded basket capacity")
+		}
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || math.Abs(plan.Recipe.Ingredients[1].Amount/0.25-p.MaxGrainKG/(p.MaxGrainKG+0.01)) > 1e-9 {
+			t.Fatal(p.ID, err, "automatic scaling omitted basket ingredients")
+		}
+		r.Ingredients[1].Use = "boil"
+		if err := recipe.ValidateCapacity(r, p); err != nil {
+			t.Fatal(p.ID, "a keg addition used basket capacity", err)
+		}
+	}
+}
+
+func TestHopWettingAcrossBrewers(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.SourceModel, r.BatchLiters = p.ID, p.BatchLiters
+		r.Ingredients[1].Minutes = 60
+		r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: "Finishing hops", Kind: "hop", Use: "boil", Amount: 10, Unit: "g", Minutes: 5})
+		r.Steps = []domain.RecipeStep{
+			{Name: "Mash", Kind: "mash", Location: 2, TargetC: 65, Minutes: 60},
+			{Name: "Hop slot 4", Kind: "hop", Location: 6, TargetC: 95, Minutes: 55},
+			{Name: "Hop slot 1", Kind: "hop", Location: 3, TargetC: 95, Minutes: 5},
+		}
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), "wets Finishing hops") {
+			t.Fatal(p.ID, "allowed early cascading exposure", err, plan.DeploymentBlockers)
+		}
+		if p.ID == "zymatic" {
+			if _, err := recipe.StockZymaticProgram(r, p); err == nil {
+				t.Fatal("stock program encoder accepted early exposure")
+			}
+		}
+		r.Steps[1].Location, r.Steps[2].Location = 3, 6
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil || plan.HopSlotsByMinute[60] != 1 || plan.HopSlotsByMinute[5] != 4 || len(plan.Recipe.Steps) != 4 || plan.Recipe.Steps[1].Kind != "heat" || plan.Recipe.Steps[1].Location != 1 {
+			t.Fatal(p.ID, "missing regular boil preheat or wrong slot", err, plan)
+		}
+		// The same heat routed into the ingredient is appropriate only for first wort.
+		r.Steps = append([]domain.RecipeStep(nil), plan.Recipe.Steps...)
+		r.Steps[1].Location = 3
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil || len(plan.DeploymentBlockers) == 0 {
+			t.Fatal(p.ID, "regular hops wetted during heat-up", err)
+		}
+		r.Ingredients[1].Use = "first-wort"
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil || len(plan.Recipe.Steps) != 4 {
+			t.Fatal(p.ID, "correct first-wort heat-up rejected", err, plan.DeploymentBlockers)
+		}
+	}
+}
+
+func TestMappedIngredientsReachBasketAndRespectBoilDuration(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		for _, check := range []struct {
+			name    string
+			edit    func(*domain.Recipe)
+			message string
+		}{
+			{"mash routes through keg", func(r *domain.Recipe) { r.Steps[0].Location = 1 }, "grain basket"},
+			{"mash after boil", func(r *domain.Recipe) { r.Steps[0], r.Steps[1] = r.Steps[1], r.Steps[0] }, "grain basket"},
+			{"mash omitted", func(r *domain.Recipe) { r.Steps = r.Steps[1:] }, "grain basket"},
+			{"boil durations disagree", func(r *domain.Recipe) { r.BoilMinutes = 60 }, "boil duration"},
+		} {
+			t.Run(p.ID+"/"+check.name, func(t *testing.T) {
+				r := source()
+				r.BatchLiters = p.BatchLiters
+				check.edit(&r)
+				plan, err := recipe.Translate(r, p, 0)
+				if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), check.message) {
+					t.Fatalf("unexpected plan %v, error %v", plan, err)
+				}
+				if p.ID == "zymatic" {
+					if _, err := recipe.StockZymaticProgram(r, p); err == nil {
+						t.Fatal("invalid routed program reached the stock encoder")
+					}
+				}
+			})
+		}
+	}
+}
+
+func TestCrossModelBoilPreheatUsesBrewerTemperature(t *testing.T) {
+	r := source()
+	r.SourceModel = "zymatic"
+	r.Steps[1].TargetC = (207.0 - 32) / 1.8
+	r.Steps = append(r.Steps[:1:1], domain.RecipeStep{Name: "Heat to boil", Kind: "heat", Location: 1, TargetC: r.Steps[1].TargetC}, r.Steps[1])
+	for _, p := range recipe.Profiles() {
+		if p.ID == "zymatic" {
+			continue
+		}
+		plan, err := recipe.Translate(r, p, 0)
+		want := 203
+		if p.ID == "z" {
+			want = 202
+		}
+		if err != nil || plan.MachineRecipe == nil || len(plan.MachineRecipe.Steps) != 3 || plan.MachineRecipe.Steps[1].TargetF != want {
+			t.Fatal(p.ID, err, plan)
+		}
 	}
 }

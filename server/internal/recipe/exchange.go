@@ -186,6 +186,7 @@ type xmlRecipe struct {
 	Carbonation        *float64        `xml:"CARBONATION,omitempty"`
 	CarbonationTemp    *float64        `xml:"CARBONATION_TEMP,omitempty"`
 	ForcedCarbonation  string          `xml:"FORCED_CARBONATION,omitempty"`
+	SourceYeast        string          `xml:"HUB_SOURCE_YEAST,omitempty"`
 	HubSteps           string          `xml:"HUB_STEPS,omitempty"`
 }
 type xmlStyle struct {
@@ -193,19 +194,21 @@ type xmlStyle struct {
 	Version int    `xml:"VERSION"`
 }
 type xmlIngredient struct {
-	SlotAddition   bool     `xml:"HUB_SLOT_ADDITION,omitempty"`
-	Name           string   `xml:"NAME"`
-	Version        int      `xml:"VERSION"`
-	Type           string   `xml:"TYPE,omitempty"`
-	Form           string   `xml:"FORM,omitempty"`
-	Amount         *float64 `xml:"AMOUNT"`
-	Use            string   `xml:"USE,omitempty"`
-	Time           *float64 `xml:"TIME,omitempty"`
-	Attenuation    *float64 `xml:"ATTENUATION,omitempty"`
-	Alpha          *float64 `xml:"ALPHA,omitempty"`
-	Yield          *float64 `xml:"YIELD,omitempty"`
-	Color          *float64 `xml:"COLOR,omitempty"`
-	AmountIsWeight string   `xml:"AMOUNT_IS_WEIGHT,omitempty"`
+	SlotAddition    bool     `xml:"HUB_SLOT_ADDITION,omitempty"`
+	FermentableUse  *string  `xml:"HUB_FERMENTABLE_USE,omitempty"`
+	AdditionMinutes *float64 `xml:"HUB_ADDITION_MINUTES,omitempty"`
+	Name            string   `xml:"NAME"`
+	Version         int      `xml:"VERSION"`
+	Type            string   `xml:"TYPE,omitempty"`
+	Form            string   `xml:"FORM,omitempty"`
+	Amount          *float64 `xml:"AMOUNT"`
+	Use             string   `xml:"USE,omitempty"`
+	Time            *float64 `xml:"TIME,omitempty"`
+	Attenuation     *float64 `xml:"ATTENUATION,omitempty"`
+	Alpha           *float64 `xml:"ALPHA,omitempty"`
+	Yield           *float64 `xml:"YIELD,omitempty"`
+	Color           *float64 `xml:"COLOR,omitempty"`
+	AmountIsWeight  string   `xml:"AMOUNT_IS_WEIGHT,omitempty"`
 }
 type xmlMash struct {
 	Name    string        `xml:"NAME"`
@@ -336,7 +339,7 @@ func importXML(data []byte) ([]domain.Recipe, error) {
 }
 
 func fromXML(x xmlRecipe) (domain.Recipe, error) {
-	r := domain.Recipe{Name: x.Name, Style: x.Style.Name, Notes: x.Notes, Ingredients: []domain.Ingredient{}, Steps: []domain.RecipeStep{}}
+	r := domain.Recipe{SourceYeast: x.SourceYeast, Name: x.Name, Style: x.Style.Name, Notes: x.Notes, Ingredients: []domain.Ingredient{}, Steps: []domain.RecipeStep{}}
 	if x.Version != 1 {
 		return r, errors.New("only BeerXML VERSION 1 is supported")
 	}
@@ -379,6 +382,12 @@ func fromXML(x xmlRecipe) (domain.Recipe, error) {
 				in.Use = "mash"
 				if in.Type == "Sugar" || in.Type == "Extract" || in.Type == "Dry Extract" {
 					in.Use = "boil"
+				}
+				if item.FermentableUse != nil {
+					in.Use = *item.FermentableUse
+				}
+				if item.AdditionMinutes != nil {
+					in.Minutes = *item.AdditionMinutes
 				}
 				if in.Yield, err = number(item.Yield, "YIELD"); err != nil {
 					return r, err
@@ -523,7 +532,7 @@ func fromXML(x xmlRecipe) (domain.Recipe, error) {
 		r.Carbonation.Volumes = *x.Carbonation
 	}
 	if x.CarbonationTemp != nil {
-		r.Carbonation.TemperatureC = *x.CarbonationTemp
+		r.Carbonation.TemperatureC = x.CarbonationTemp
 	}
 	if x.ForcedCarbonation != "" {
 		forced, err := enum(x.ForcedCarbonation, "TRUE", "FALSE")
@@ -549,7 +558,7 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 	if r.BoilLiters <= 0 || r.BoilMinutes <= 0 {
 		return nil, errors.New("BeerXML export requires explicit positive boil_liters and boil_minutes; they are not guessed from finished batch size")
 	}
-	x := xmlRecipe{Name: r.Name, Version: 1, Type: typeName, Brewer: "PicoBrew Hub", Batch: pointer(r.BatchLiters), BoilSize: pointer(r.BoilLiters), BoilTime: pointer(r.BoilMinutes), Efficiency: pointer(r.Efficiency), Notes: r.Notes, Style: xmlStyle{Name: r.Style, Version: 1}, Mash: xmlMash{Name: "Mash", Version: 1}}
+	x := xmlRecipe{SourceYeast: SourceYeast(r), Name: r.Name, Version: 1, Type: typeName, Brewer: "PicoBrew Hub", Batch: pointer(r.BatchLiters), BoilSize: pointer(r.BoilLiters), BoilTime: pointer(r.BoilMinutes), Efficiency: pointer(r.Efficiency), Notes: r.Notes, Style: xmlStyle{Name: r.Style, Version: 1}, Mash: xmlMash{Name: "Mash", Version: 1}}
 	for _, in := range r.Ingredients {
 		item := xmlIngredient{SlotAddition: in.SlotAddition, Name: in.Name, Version: 1, Type: in.Type, Form: in.Form}
 		switch in.Kind {
@@ -558,6 +567,8 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 				return nil, fmt.Errorf("fermentable %q type: %w", in.Name, err)
 			}
 			item.Amount = pointer(in.Amount)
+			item.FermentableUse = &in.Use
+			item.AdditionMinutes = pointer(in.Minutes)
 			item.Yield = pointer(in.Yield)
 			item.Color = pointer(in.Color)
 			x.Fermentables = append(x.Fermentables, item)
@@ -671,8 +682,8 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 	x.FermentationStages = len(r.Fermentation)
 	if r.Carbonation.Volumes > 0 {
 		x.Carbonation = pointer(r.Carbonation.Volumes)
-		x.CarbonationTemp = pointer(r.Carbonation.TemperatureC)
 	}
+	x.CarbonationTemp = r.Carbonation.TemperatureC
 	if r.Carbonation.Method != "" {
 		method, err := enum(r.Carbonation.Method, "forced", "natural")
 		if err != nil {

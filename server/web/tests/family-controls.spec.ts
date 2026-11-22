@@ -392,7 +392,25 @@ for (const width of [1280, 390]) {
             value: 900,
             confirm: true,
           })
+          Object.assign(status, { state: 'sensor-fault', ready: false })
+          await page.reload()
+          await expect(
+            page.getByRole('button', { name: 'Read sensors now', exact: true })
+          ).toBeEnabled()
+          await expect(
+            page.getByRole('button', { name: 'Start recording', exact: true })
+          ).toBeDisabled()
+          Object.assign(status, { state: 'recording', ready: true, busy: true })
+          await page.reload()
+          await expect(
+            page.getByRole('button', { name: 'Set sampling interval', exact: true })
+          ).toBeDisabled()
         } else {
+          await expect(page.getByRole('button', { name: 'Set pump', exact: true })).toBeDisabled()
+          Object.assign(status, { state: 'running', busy: true })
+          await page.reload()
+          await expect(page.getByLabel('Output level (%)', { exact: true })).toHaveValue('25')
+          await expect(page.getByLabel('Fan enabled', { exact: true })).toBeChecked()
           await page.getByRole('button', { name: 'Set pump', exact: true }).click()
           await page
             .getByRole('dialog')
@@ -401,8 +419,10 @@ for (const width of [1280, 390]) {
           await expect.poll(() => commands.length).toBe(1)
           expect(commands[0]).toEqual({ command: 'set-pump', enabled: false, confirm: true })
           await page.getByLabel('Fan', { exact: true }).selectOption('2')
+          await expect(page.getByLabel('Output level (%)', { exact: true })).toHaveValue('0')
+          await expect(page.getByLabel('Fan enabled', { exact: true })).not.toBeChecked()
           await page.getByLabel('Output level (%)', { exact: true }).fill('35')
-          await page.getByLabel('Fan enabled', { exact: true }).check()
+          await expect(page.getByLabel('Fan enabled', { exact: true })).toBeChecked()
           await page.getByRole('button', { name: 'Set fan', exact: true }).click()
           await page
             .getByRole('dialog')

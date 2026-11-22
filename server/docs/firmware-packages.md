@@ -4,9 +4,9 @@ Open a machine's **Firmware** view, choose a version, and click **Install**. The
 
 ## GitHub source and version checks
 
-**Workspace settings → Firmware** contains the GitHub repository and optional branch, tag, or commit. The default is `jeffreydwalter/picobrew-pico-pro-firmware` on its default branch. A compatible source publishes `firmware/releases.json`. The Hub pins that catalog and its archives to the same Git commit. Each entry also records the build's source revision. A manual **Check for Updates** in the machine view refreshes the metadata immediately.
+**Settings → Firmware** contains the GitHub repository and optional branch, tag, or commit. The default is `jeffreydwalter/picobrew-pico-pro-firmware` on its default branch. A compatible source publishes `firmware/releases.json`. The Hub pins that catalog and its archives to the same Git commit. Each entry also records the build's source revision. A manual **Check for Updates** in the machine view refreshes the metadata immediately.
 
-While physical devices are registered, the Hub checks daily. The admin Overview displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
+While physical devices are registered, the Hub checks daily. The Brewery page displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
 The catalog includes separately targeted S, Pro and C display builds, historical S/Pro family images, and reference packages for the generic Z, PicoFerm and PicoStill. Each catalog entry identifies the release type, model, version, and SHA-256 of the ZIP and application. Named historical versions and pre-release snapshots retain their original bytes. For a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 

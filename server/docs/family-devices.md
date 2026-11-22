@@ -10,8 +10,8 @@ An uncertain appliance write is never retried automatically.
 | --- | --- |
 | C/S/Pro | Existing monochrome front panel, dial, local recipes, advertised native programs, stop latch, preferences and retained history. C keeps its explicit display geometry and separate firmware package checks. |
 | Generic Z-series | Actual 128 × 64 grayscale panel, dial, local canonical recipes, native programs and advertised pause/resume. Named temperature, pressure and actuator readings remain available. The identity does not establish a Z1/Z2 mapping. |
-| PicoStill | Native start, essential-oils, cleaning and stop; explicit pump state and fan channel/level; every reported temperature, pressure and actuator reading. No recipe catalog, heater controls or front-panel view is invented. |
-| PicoFerm | Local fermentation start/stop, immediate sampling, sampling interval and pressure calibration. The page shows temperature, native pressure and battery, without brew or heater controls. |
+| PicoStill | Start, essential-oils, cleaning and stop commands. While a program runs, the pump and fan controls show the reported settings for the selected output. The page also displays reported temperatures and pressure. No recipe catalog, heater controls or front-panel view is invented. |
+| PicoFerm | Start or stop recording fermentation, take a reading, set the interval while idle, or calibrate pressure. A manual reading can retry a sensor fault. The page shows temperature, native pressure and battery, without brew or heater controls. |
 
 PicoFerm calibration requires an explicit confirmation after removing the unit
 from its keg or adapter, removing its GRAY seal and fully depressurizing it.

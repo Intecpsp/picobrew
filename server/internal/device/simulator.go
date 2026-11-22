@@ -233,7 +233,7 @@ func (s *simulator) Discover(ctx context.Context) (domain.Capabilities, error) {
 	if err := simulationContext(ctx); err != nil {
 		return domain.Capabilities{}, err
 	}
-	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", FrontPanel: true, Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true}, nil
+	return domain.Capabilities{APIVersion: 1, FirmwareVersion: "simulator", FrontPanel: true, Commands: append([]string(nil), commands...), RecipeCapacity: 16, StepCapacity: 15, HistoryPersistent: false, TelemetryForwarding: false, DedicatedPauseResume: false, ZeroMinuteSteps: true, RecipeCreateOnly: true}, nil
 }
 func (s *simulator) Status(ctx context.Context) (domain.Status, error) {
 	if err := simulationContext(ctx); err != nil {
@@ -257,7 +257,13 @@ func (s *simulator) Recipes(ctx context.Context) ([]domain.MachineRecipe, error)
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result, nil
 }
+func (s *simulator) CreateRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
+	return s.writeRecipe(ctx, recipe, true)
+}
 func (s *simulator) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
+	return s.writeRecipe(ctx, recipe, false)
+}
+func (s *simulator) writeRecipe(ctx context.Context, recipe domain.MachineRecipe, create bool) error {
 	if err := simulationContext(ctx); err != nil {
 		return err
 	}
@@ -270,7 +276,11 @@ func (s *simulator) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) 
 	if s.status.Busy {
 		return busyError()
 	}
-	if _, ok := s.recipes[recipe.ID]; !ok && len(s.recipes) >= 16 {
+	_, exists := s.recipes[recipe.ID]
+	if exists && create {
+		return existsError()
+	}
+	if !exists && len(s.recipes) >= 16 {
 		return &Error{StatusCode: 507, Code: "recipe_capacity", Message: "Simulator recipe capacity is full"}
 	}
 	s.recipes[recipe.ID] = cloneRecipe(recipe)

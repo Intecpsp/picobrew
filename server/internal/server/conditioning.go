@@ -28,9 +28,7 @@ func conditioningPlan(r domain.Recipe) *domain.Conditioning {
 			label = "Bottle or keg conditioning"
 		}
 		stage := domain.ConditioningStage{Name: label, Volumes: c.Volumes}
-		if c.TemperatureC != 0 {
-			stage.TargetC = &c.TemperatureC
-		}
+		stage.TargetC = c.TemperatureC
 		plan.Stages = append(plan.Stages, stage)
 	}
 	if len(plan.Stages) == 0 {

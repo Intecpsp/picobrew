@@ -22,6 +22,8 @@ func exchangeRecipe() domain.Recipe {
 	r.Notes = "Preserve notes\nand timing."
 	r.Ingredients[0].Type = "Grain"
 	r.Ingredients[0].Yield = 80
+	r.Ingredients[0].Use = "boil"
+	r.Ingredients[0].Minutes = 10
 	r.Ingredients[0].Color = 2.5
 	r.Ingredients[1].Minutes = 12.5
 	r.Ingredients[1].Amount = 22.75
@@ -33,7 +35,7 @@ func exchangeRecipe() domain.Recipe {
 		domain.Ingredient{Name: "Water", Kind: "water", Amount: 12, Unit: "L", Use: "mash"})
 	r.Water = map[string]float64{"calcium": 50, "chloride": 70, "sulfate": 100, "ph": 5.4}
 	r.Fermentation = []domain.FermentationStep{{Name: "Primary", TargetC: 18, Days: 7.5}, {Name: "Secondary", TargetC: 3, Days: 2}}
-	r.Carbonation = domain.Carbonation{Method: "forced", Volumes: 2.4, TemperatureC: 4}
+	r.Carbonation = domain.Carbonation{Method: "forced", Volumes: 2.4, TemperatureC: new(float64)}
 	r.Steps[0].Type = "Infusion"
 	r.Steps[0].InfuseLiters = 5.5
 	r.Steps[0].RampMinutes = 2.5
@@ -60,7 +62,7 @@ func TestBeerXMLRoundTripPreservesUnitsTimingAndPlanning(t *testing.T) {
 	if got.Name != want.Name || got.Notes != want.Notes || got.Type != want.Type || got.BatchLiters != want.BatchLiters || got.BoilLiters != want.BoilLiters || got.BoilMinutes != want.BoilMinutes {
 		t.Fatalf("metadata changed: %+v", got)
 	}
-	if !reflect.DeepEqual(got.Ingredients, want.Ingredients) || !reflect.DeepEqual(got.Steps, want.Steps) || !reflect.DeepEqual(got.Water, want.Water) || !reflect.DeepEqual(got.Fermentation, want.Fermentation) || got.Carbonation != want.Carbonation {
+	if !reflect.DeepEqual(got.Ingredients, want.Ingredients) || !reflect.DeepEqual(got.Steps, want.Steps) || !reflect.DeepEqual(got.Water, want.Water) || !reflect.DeepEqual(got.Fermentation, want.Fermentation) || !reflect.DeepEqual(got.Carbonation, want.Carbonation) {
 		t.Fatalf("planning values changed\ngot %+v\nwant %+v", got, want)
 	}
 	plan, err := recipe.Adapt(got, recipe.Profiles()[4], 5)
@@ -241,5 +243,32 @@ func TestTerminalChillWithoutHold(t *testing.T) {
 	r.Fermentation[0].Days = 0
 	if recipe.Validate(r) == nil {
 		t.Fatal("accepted a zero-day intermediate hold")
+	}
+}
+
+func TestSourceYeastSurvivesExchangeWithUnspecifiedPitch(t *testing.T) {
+	r := exchangeRecipe()
+	r.Ingredients = r.Ingredients[:2]
+	r.Water = nil
+	r.Provenance = &domain.RecipeProvenance{SourceID: "public-recipes", CatalogID: "public-example"}
+	r.Notes = "Original notes\nYeast: Fermentis / US-05 / SafAle; quantity unspecified. source attenuation range: 78–82%."
+	if got := recipe.SourceYeast(r); got != "Fermentis / US-05 / SafAle" {
+		t.Fatal(got)
+	}
+	data, err := recipe.Export(r, "beerxml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	recipes, err := recipe.Import(data, "beerxml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if recipes[0].SourceYeast != recipe.SourceYeast(r) || len(recipes[0].Ingredients) != 2 {
+		t.Fatalf("yeast name or measured bill changed: %+v", recipes[0])
+	}
+	r.Carbonation.TemperatureC = nil
+	data, err = recipe.Export(r, "beerxml")
+	if err != nil || bytes.Contains(data, []byte("<CARBONATION_TEMP>")) {
+		t.Fatalf("unspecified temperature exported: %v", err)
 	}
 }

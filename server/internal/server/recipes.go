@@ -2,13 +2,16 @@ package server
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
 	"time"
 
 	"github.com/go-chi/chi/v5"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 )
@@ -21,6 +24,7 @@ type recipeView struct {
 }
 
 func recipeWithVersions(v domain.Recipe, profiles []domain.Profile) recipeView {
+	v.SourceYeast = recipe.SourceYeast(v)
 	view := recipeView{Recipe: v}
 	if recipe.IsNative(v) || len(v.Ingredients) == 0 {
 		return view
@@ -167,11 +171,12 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	var in struct {
-		RecipeID           string  `json:"recipe_id"`
-		ProfileID          string  `json:"profile_id"`
-		BatchLiters        float64 `json:"batch_liters"`
-		SourceRevision     int64   `json:"source_revision"`
-		ProfileFingerprint string  `json:"profile_fingerprint"`
+		RecipeID           string                `json:"recipe_id"`
+		ReplaceExpected    *domain.MachineRecipe `json:"replace_expected,omitempty"`
+		ProfileID          string                `json:"profile_id"`
+		BatchLiters        float64               `json:"batch_liters"`
+		SourceRevision     int64                 `json:"source_revision"`
+		ProfileFingerprint string                `json:"profile_fingerprint"`
 	}
 	if !s.decode(w, r, &in) {
 		return
@@ -239,18 +244,40 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	deployment := map[string]any{"device_id": view.ID, "recipe_id": v.ID, "revision": v.Revision, "native": native, "at": time.Now().UTC(), "state": "prepared"}
+	write := d.adapter.CreateRecipe
+	var found bool
 	for _, previous := range existing {
-		if previous.ID == native.ID {
-			deployment["previous"] = previous
+		if previous.ID != native.ID {
+			continue
 		}
+		found = true
+		if in.ReplaceExpected == nil {
+			s.fail(w, 409, "recipe_exists", "This recipe ID is already on the machine. Preview again to review its replacement.")
+			return
+		}
+		if !reflect.DeepEqual(previous, *in.ReplaceExpected) {
+			s.fail(w, 409, "recipe_changed", "The installed recipe changed since the preview. Preview again before replacing it.")
+			return
+		}
+		deployment["previous"] = previous
+		write = d.adapter.PutRecipe
+		break
+	}
+	if !found && in.ReplaceExpected != nil {
+		s.fail(w, 409, "recipe_changed", "The installed recipe was removed since the preview. Preview again.")
+		return
 	}
 	recordID := randomID()
 	if _, e = s.db.Put("deployment", recordID, deployment, 0); e != nil {
 		s.internal(w, e)
 		return
 	}
-	if e = d.adapter.PutRecipe(r.Context(), native); e != nil {
+	if e = write(r.Context(), native); e != nil {
 		deployment["state"] = "unconfirmed"
+		var failure *device.Error
+		if errors.As(e, &failure) && !failure.UnknownOutcome {
+			deployment["state"] = "not_sent"
+		}
 		_, _ = s.db.Put("deployment", recordID, deployment, -1)
 		s.deviceError(w, e)
 		return
@@ -350,7 +377,15 @@ func (s *Server) recipeRevisions(w http.ResponseWriter, r *http.Request) {
 }
 func (s *Server) shoppingList(w http.ResponseWriter, r *http.Request) {
 	ids := strings.Split(r.URL.Query().Get("recipes"), ",")
-	out := map[string]domain.Ingredient{}
+	type shoppingItem struct {
+		domain.Ingredient
+		AmountUnspecified bool `json:"amount_unspecified,omitempty"`
+	}
+	type itemKey struct {
+		name, kind, unit string
+		unspecified      bool
+	}
+	out := map[itemKey]shoppingItem{}
 	for _, id := range ids {
 		if id == "" {
 			continue
@@ -360,18 +395,23 @@ func (s *Server) shoppingList(w http.ResponseWriter, r *http.Request) {
 			s.storeError(w, e)
 			return
 		}
+		measuredYeast := false
 		for _, x := range v.Ingredients {
-			k := strings.ToLower(x.Name) + ":" + x.Unit
+			measuredYeast = measuredYeast || x.Kind == "yeast"
+			k := itemKey{strings.ToLower(x.Name), x.Kind, x.Unit, false}
 			old := out[k]
 			if old.Name == "" {
-				old = x
+				old.Ingredient = x
 				old.Amount = 0
 			}
 			old.Amount += x.Amount
 			out[k] = old
 		}
+		if yeast := recipe.SourceYeast(v); !measuredYeast && yeast != "" {
+			out[itemKey{strings.ToLower(yeast), "yeast", "", true}] = shoppingItem{Ingredient: domain.Ingredient{Name: yeast, Kind: "yeast", Use: "fermentation"}, AmountUnspecified: true}
+		}
 	}
-	list := make([]domain.Ingredient, 0, len(out))
+	list := make([]shoppingItem, 0, len(out))
 	for _, v := range out {
 		list = append(list, v)
 	}

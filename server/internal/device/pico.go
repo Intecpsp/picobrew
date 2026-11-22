@@ -281,7 +281,13 @@ func (p *pico) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 	}
 	return result, nil
 }
+func (p *pico) CreateRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
+	return p.writeRecipe(ctx, recipe, true)
+}
 func (p *pico) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
+	return p.writeRecipe(ctx, recipe, false)
+}
+func (p *pico) writeRecipe(ctx context.Context, recipe domain.MachineRecipe, create bool) error {
 	if err := validateRecipe(recipe); err != nil {
 		return err
 	}
@@ -292,24 +298,50 @@ func (p *pico) PutRecipe(ctx context.Context, recipe domain.MachineRecipe) error
 	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
 		return unsupportedCapability("recipes")
 	}
+	path := "/api/v1/recipes/" + recipe.ID
+	var body any = recipe
+	accepted := []int{200, 201}
+	zeroMinute := false
 	for _, step := range recipe.Steps {
-		if step.Minutes != 0 {
-			continue
+		if step.Minutes == 0 {
+			zeroMinute = true
+			break
 		}
-		// A successful current discovery is required for a new wire feature.
-		// Never infer support from a firmware version or a previously cached
-		// capability after the appliance may have restarted/changed firmware.
+	}
+	if create || zeroMinute {
 		capabilities, err := p.discover(ctx)
 		if err != nil {
 			return err
 		}
-		if !capabilities.ZeroMinuteSteps {
+		if !capabilities.Supports("recipes") {
+			return unsupportedCapability("recipes")
+		}
+		if zeroMinute && !capabilities.ZeroMinuteSteps {
 			return &Error{StatusCode: 409, Code: "unsupported_zero_minute_steps", Message: "This firmware does not advertise zero-minute heating steps. Update the brewer firmware before sending the original program."}
 		}
-		break
+		if create {
+			if capabilities.RecipeCreateOnly {
+				accepted = []int{201}
+				body = struct {
+					domain.MachineRecipe
+					CreateOnly bool `json:"create_only"`
+				}{recipe, true}
+			} else {
+				// Older firmware has only an upsert. Recheck this specific slot under the
+				// adapter lock immediately before writing. Independent device clients can
+				// still race this fallback on firmware without atomic create support.
+				err := p.request(ctx, http.MethodGet, path, nil, nil, 200)
+				if err == nil {
+					return existsError()
+				}
+				var missing *Error
+				if !errors.As(err, &missing) || missing.StatusCode != 404 || (missing.Code != "not_found" && missing.Code != "recipe_not_found") {
+					return err
+				}
+			}
+		}
 	}
-	path := "/api/v1/recipes/" + recipe.ID
-	if err := p.request(ctx, http.MethodPut, path, recipe, nil, 200, 201); err != nil {
+	if err := p.request(ctx, http.MethodPut, path, body, nil, accepted...); err != nil {
 		return err
 	}
 	var observed domain.MachineRecipe

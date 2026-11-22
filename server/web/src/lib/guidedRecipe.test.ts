@@ -119,44 +119,20 @@ test('the standard PicoPak mash matches archived temperatures, active times and 
   })
 })
 
-test('PicoPak routing uses one direct inlet at each time and preserves nonnumeric slot order', () => {
+test('first flow to a higher slot cannot wet a later hop addition early', () => {
   const d = {
     ...draft(),
-    boil: '45',
     hops: [
-      [1, 45],
-      [3, 30],
-      [4, 25],
-      [2, 15],
-    ].map(([slot, minutes]) => ({
-      slot,
-      minutes: String(minutes),
-      varieties: [{ name: 'Hop', amount: '5' }],
-    })),
+      { slot: 4, minutes: '60', varieties: [{ name: 'Cascade', amount: '10' }] },
+      { slot: 1, minutes: '5', varieties: [{ name: 'Amarillo', amount: '8' }] },
+    ],
   }
-  for (const id of ['pico-s', 'pico-pro', 'pico-c']) {
-    const p = { ...profile, id }
-    expect(slotTimes(d.hops, 2, 45)).toContain(15)
-    expect(slotTimes(d.hops, 2, 45)).not.toContain(25)
-    expect(guideProblem(d, p, 3)).toBe('')
-    expect(
-      guidedRecipe(d, p)
-        .steps.filter((s) => s.kind === 'hop')
-        .map((s) => [s.location, s.minutes])
-    ).toEqual([
-      [3, 15],
-      [5, 5],
-      [6, 10],
-      [4, 15],
-    ])
-    expect(
-      guideProblem(
-        { ...d, hops: d.hops.map((h) => (h.slot === 2 ? { ...h, minutes: '25' } : h)) },
-        p,
-        3
-      )
-    ).toContain('separate available minute')
+  for (const id of ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']) {
+    expect(guideProblem(d, { ...profile, id }, 3)).toContain('ascending order')
   }
+  expect(slotTimes(d.hops, 1, 60)).not.toContain(5)
+  expect(slotTimes(d.hops, 4, 60)).not.toContain(60)
+  expect(slotTimes(d.hops, 4, 60)).toContain(4)
 })
 
 test('eight sequenced visits consume four ingredient loads and exactly one boil', () => {
@@ -198,6 +174,9 @@ test('first wort hopping adds a heat-up in the first loaded slot only for a full
   const guide = { ...draft(), firstWort: true }
   guide.hops[1].minutes = '60'
   for (const id of ['pico-s', 'pico-pro', 'pico-c', 'z', 'zymatic']) {
+    const normal = guidedRecipe({ ...guide, firstWort: false }, { ...profile, id })
+    const firstHold = normal.steps.findIndex((s) => s.kind === 'hop')
+    expect(normal.steps[firstHold - 1]).toMatchObject({ kind: 'heat', location: 1, minutes: 0 })
     const result = guidedRecipe(guide, { ...profile, id })
     const first = result.steps.find((s) => s.name === 'Heat through hop slot 2')
     expect(first).toMatchObject({ kind: 'heat', minutes: 0, location: 4 })

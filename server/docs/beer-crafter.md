@@ -22,6 +22,8 @@ The forecast starts at 55 °F and uses Crafter’s approximate 4.96 °C/min heat
 
 Pico S, Pro and C use their PicoPak routing. Generic Z uses its canonical direct-valve schedule. Zymatic supports planning, export and [stock recipe sync](stock-zymatic.md). PicoStill and PicoFerm retain their distillation and fermentation controls. Hosted account publishing and KegSmarts fermentation control are outside the local Hub’s supported integrations.
 
+The brewer ingredient view, printed brew sheet and shopping list show the catalog yeast strain even when the source only names the yeast. An unspecified pitch has no numerical quantity to scale. A measured yeast ingredient supplies the pitch for that library recipe. Hub BeerXML extensions retain fermentable placement, addition time and the published source strain across Hub imports.
+
 The wizard review follows the actual sequence of mash, boil and hop visits. Boil times count down. A return visit circulates through the existing slot load. The standalone S, Pro, C and generic Z transfer at most 15 steps. The stock Zymatic sync format allows 25, with a 255-minute limit per hold and a maximum target of 207 °F.
 
 The style picker includes all 200 guide-and-code entries in PicoBrew’s Beer Crafter, plus styles used in saved library recipes. Entering a custom style leaves its analytical targets unspecified.

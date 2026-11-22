@@ -30,6 +30,9 @@ export default function AccessoryMachine({ device }: { device: Device }) {
   const commands = device.capabilities?.commands || []
   const [pending, setPending] = useState(''),
     [error, setError] = useState('')
+  const [fanChannel, setFanChannel] = useState(1)
+  const selectedFan = status?.actuators?.find((a) => a.id === 'fan' + fanChannel)
+  const [accepted, setAccepted] = useState<Record<string, number>>({})
   const [editing, setEditing] = useState(false),
     [removing, setRemoving] = useState(false),
     [settings, setSettings] = useState(false)
@@ -45,10 +48,31 @@ export default function AccessoryMachine({ device }: { device: Device }) {
     history ? `/brews/${history.id}` : null,
     status?.busy ? 10000 : 0
   )
-  const allowed = (name: string) => device.online && !pending && commands.includes(name)
+  function allowed(name: string) {
+    if (!device.online || pending || !commands.includes(name) || !status) return false
+    switch (name) {
+      case 'stop':
+        return true
+      case 'sample':
+        return !['initializing', 'sampling', 'calibrating', 'storage-fault'].includes(
+          status.state || ''
+        )
+      case 'set-sampling-interval':
+        return !status.busy && status.state !== 'storage-fault'
+      case 'set-fan':
+      case 'set-pump':
+        return status.ready && status.busy && !status.stopped
+      default:
+        return (
+          status.ready &&
+          !status.busy &&
+          !(name === 'start' && status.state === 'calibration-required')
+        )
+    }
+  }
   const label = (name: string) =>
     name === 'start' && supports(device.capabilities, 'fermentation')
-      ? 'Start fermentation'
+      ? 'Start recording'
       : commandLabels[name] || name
   function request(command: string, values: Record<string, unknown> = {}) {
     setError('')
@@ -66,6 +90,7 @@ export default function AccessoryMachine({ device }: { device: Device }) {
       })
       hub.notify(`${label(command)} acknowledged by ${device.name}.`)
       setConfirm(null)
+      setAccepted((old) => ({ ...old, [command]: (old[command] || 0) + 1 }))
       await hub.refresh()
       trace.reload()
     } catch (error) {
@@ -197,11 +222,7 @@ export default function AccessoryMachine({ device }: { device: Device }) {
                 <Button
                   key={name}
                   variant={name === 'start' ? 'primary' : 'secondary'}
-                  disabled={
-                    !allowed(name) ||
-                    (!!status?.busy &&
-                      ['start', 'clean', 'essential-oils', 'calibrate'].includes(name))
-                  }
+                  disabled={!allowed(name)}
                   onClick={() => request(name)}
                 >
                   {label(name)}
@@ -242,6 +263,7 @@ export default function AccessoryMachine({ device }: { device: Device }) {
           />
           {commands.includes('set-pump') && (
             <ParameterControl
+              key={[id, accepted['set-pump']].join('-')}
               command="set-pump"
               enabled={allowed('set-pump')}
               initial={{
@@ -252,12 +274,14 @@ export default function AccessoryMachine({ device }: { device: Device }) {
           )}
           {commands.includes('set-fan') && (
             <ParameterControl
+              key={[id, fanChannel, accepted['set-fan']].join('-')}
               command="set-fan"
               enabled={allowed('set-fan')}
+              selectChannel={setFanChannel}
               initial={{
-                channel: 1,
-                level: status?.actuators?.find((item) => item.id === 'fan1')?.level ?? 0,
-                enabled: status?.actuators?.find((item) => item.id === 'fan1')?.enabled === true,
+                channel: fanChannel,
+                level: Math.round(selectedFan?.level ?? 0),
+                enabled: selectedFan?.enabled === true,
               }}
               submit={request}
             />
@@ -360,14 +384,17 @@ function ParameterControl({
   command,
   enabled,
   initial,
+  selectChannel,
   submit,
 }: {
   command: string
   enabled: boolean
   initial: Record<string, number | boolean>
+  selectChannel?: (channel: number) => void
   submit: (command: string, values: Record<string, unknown>) => void
 }) {
-  const [values, setValues] = useState(initial)
+  const [edited, setValues] = useState<typeof initial | null>(null)
+  const values = edited ?? initial
   return (
     <form
       className="accessory-parameter"
@@ -382,7 +409,7 @@ function ParameterControl({
             <select
               value={Number(values.channel)}
               disabled={!enabled}
-              onChange={(event) => setValues({ ...values, channel: Number(event.target.value) })}
+              onChange={(event) => selectChannel?.(Number(event.target.value))}
             >
               <option value={1}>Fan 1</option>
               <option value={2}>Fan 2</option>
@@ -397,7 +424,10 @@ function ParameterControl({
               required
               value={Number(values.level)}
               disabled={!enabled}
-              onChange={(event) => setValues({ ...values, level: Number(event.target.value) })}
+              onChange={(event) => {
+                const level = Number(event.target.value)
+                setValues({ ...values, level, enabled: level > 0 })
+              }}
             />
           </Field>
         </>

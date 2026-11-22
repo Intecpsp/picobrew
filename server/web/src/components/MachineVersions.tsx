@@ -1,3 +1,4 @@
+import { unmeasuredYeast } from '../lib/beerCrafter'
 import { OriginalRecipeLink } from './OriginalRecipe'
 import { useState } from 'react'
 import { useHub } from '../context'
@@ -73,6 +74,13 @@ export function BrewerPlan({ plan }: { plan: Adapted }) {
               </tr>
             </thead>
             <tbody>
+              {unmeasuredYeast(recipe) && (
+                <tr>
+                  <td>{unmeasuredYeast(recipe)}</td>
+                  <td>Pitch amount unspecified</td>
+                  <td>Fermentation</td>
+                </tr>
+              )}
               {recipe.ingredients.map((i, n) => (
                 <tr key={n}>
                   <td>{i.name}</td>

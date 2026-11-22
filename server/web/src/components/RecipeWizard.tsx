@@ -411,8 +411,8 @@ export function RecipeWizard({
                 <div className="guide-group">
                   <h3>Boil and hops</h3>
                   <p className="help-text">
-                    Load each slot once. Set when wort flows directly into it, including any return
-                    visits.
+                    Load each slot once. Start with the lowest loaded slot, since wort flows through
+                    the slots below it. You can return to any slot already in use.
                   </p>
                   <Field label="Boil time (min)">
                     <input

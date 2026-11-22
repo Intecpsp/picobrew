@@ -8,6 +8,7 @@ import {
 import { FermentationPlan, ConditioningFields } from '../components/FermentationPlan'
 import { BeerCrafter, ReferenceLists } from '../components/BeerCrafter'
 import { RecipeWizard } from '../components/RecipeWizard'
+import { unmeasuredYeast } from '../lib/beerCrafter'
 import { RecipeIngredients, RecipeSchedule } from '../components/RecipePlan'
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import {
@@ -247,6 +248,7 @@ function metadata(recipe: Recipe) {
     description,
     batch_liters,
     estimated_yield,
+    source_yeast,
     efficiency,
     ingredients,
     steps,
@@ -530,6 +532,7 @@ function RecipeEditor({ id }: { id: string }) {
             <>
               <RecipeIngredients
                 items={recipe.ingredients}
+                sourceYeast={unmeasuredYeast(recipe)}
                 change={(ingredients) => update({ ingredients })}
               />
               <RecipeSchedule
@@ -801,7 +804,7 @@ function ImportDialog({ onClose }: { onClose: () => void }) {
   )
 }
 function ShoppingList({ ids, onClose }: { ids: string[]; onClose: () => void }) {
-  const resource = useResource<Ingredient[]>(
+  const resource = useResource<(Ingredient & { amount_unspecified?: boolean })[]>(
     `/shopping-list?recipes=${encodeURIComponent(ids.join(','))}`
   )
   return (
@@ -827,7 +830,11 @@ function ShoppingList({ ids, onClose }: { ids: string[]; onClose: () => void }) 
               <tr key={index}>
                 <td>{item.name}</td>
                 <td>{item.kind}</td>
-                <td>{formatQuantity(item.amount, item.unit)}</td>
+                <td>
+                  {item.amount_unspecified
+                    ? 'Pitch amount unspecified'
+                    : formatQuantity(item.amount, item.unit)}
+                </td>
               </tr>
             ))}
           </tbody>

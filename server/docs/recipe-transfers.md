@@ -30,6 +30,16 @@ reports its advertised capacity, occupied and available slots, new entries,
 proposed updates, identical programs and skipped entries. It never deletes an
 installed recipe. Matching IDs are preserved unless the update option is enabled.
 
+For a single recipe, the preview names any installed program with the same ID.
+**Replace on machine** authorizes replacing that specific version. The Hub
+rejects a replacement if the installed contents changed after the preview.
+
+For a new slot, firmware advertising `recipe_create_only` checks the ID and
+writes in one operation. If another client claimed that ID first, the existing
+program stays in place. The simulator uses the same rule. On older firmware,
+the Hub rechecks the slot just before writing. An independent client can still
+write between those two requests.
+
 Pico C/S/Pro standalone firmware provides 16 recipe slots with up to 15 steps per
 program. The Hub reads the device's advertised limits rather than assuming other
 models use these values. Maintenance programs use the same source-model and
@@ -70,6 +80,7 @@ All actions use the existing owner session and CSRF rules.
 
 | Method and path | Purpose |
 | --- | --- |
+| `POST /api/v1/devices/{id}/deploy` | Send a single reviewed recipe. To replace an existing slot, include its complete previewed program as `replace_expected`. |
 | `POST /api/v1/devices/{id}/deployments` | Create a persisted preview from `profile_id`, `overwrite_existing`, and `items` containing library `recipe_id`, `source_revision`, and `batch_liters`. |
 | `GET /api/v1/devices/{id}/deployments/{deployment_id}` | Read the preview or current receipt. |
 | `POST /api/v1/devices/{id}/deployments/{deployment_id}/execute` | Execute the accepted preview once, using an empty JSON object. |

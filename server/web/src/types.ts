@@ -86,6 +86,7 @@ export interface Capabilities {
   history_persistent: boolean
   telemetry_forwarding: boolean
   dedicated_pause_resume: boolean
+  recipe_create_only?: boolean
   zero_minute_steps?: boolean
 }
 export interface Device {
@@ -181,6 +182,7 @@ export interface RecipeProvenance {
   warnings: string[]
 }
 export interface Recipe {
+  source_yeast?: string
   machine_versions?: Adapted[]
   id: string
   name: string

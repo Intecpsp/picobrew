@@ -1,3 +1,4 @@
+import { unmeasuredYeast } from '../lib/beerCrafter'
 import { useEffect, useId, useState } from 'react'
 import { createPortal, flushSync } from 'react-dom'
 import {
@@ -255,6 +256,9 @@ function PrintSheet({ recipe }: { recipe: Recipe }) {
         <>
           <h2>Ingredients</h2>
           <ul>
+            {unmeasuredYeast(recipe) && (
+              <li>{unmeasuredYeast(recipe)} · Yeast · Pitch amount unspecified</li>
+            )}
             {recipe.ingredients.map((i, k) => (
               <li key={k}>
                 {formatQuantity(i.amount, i.unit)} · {i.name} · {i.use}

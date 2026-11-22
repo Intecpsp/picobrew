@@ -133,11 +133,13 @@ func (s *Server) stockMenu(w http.ResponseWriter, r *http.Request) {
 				}
 				saved.Steps[i].Location = location
 			}
-			saved.SourceModel = "zymatic"
+			if len(saved.Ingredients) == 0 {
+				saved.SourceModel = "zymatic"
+			}
 		}
 		var p domain.MachineRecipe
 		var err error
-		if ref.Locations == nil && len(saved.Ingredients) > 0 && !recipe.IsNative(saved) {
+		if len(saved.Ingredients) > 0 && !recipe.IsNative(saved) {
 			var plan domain.Adapted
 			plan, err = recipe.Translate(saved, profile, 0)
 			if err == nil {

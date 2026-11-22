@@ -72,6 +72,7 @@ const devices = ['pico-pro', 'pico-s'].map(
     }) as Device
 )
 const fetchMock = vi.fn<typeof fetch>()
+let inventory: NonNullable<Adapted['machine_recipe']>[] = []
 const onClose = vi.fn()
 const dialogMethods = ['showModal', 'close'] as const
 const originalDialogMethods = dialogMethods.map((name) =>
@@ -140,8 +141,13 @@ function requests(suffix: string) {
 
 beforeEach(() => {
   fetchMock.mockReset()
+  inventory = []
   onClose.mockReset()
-  vi.stubGlobal('fetch', fetchMock)
+  vi.stubGlobal('fetch', (path: RequestInfo | URL, options?: RequestInit) =>
+    String(path).startsWith('/api/v1/devices/') && String(path).endsWith('/recipes')
+      ? Promise.resolve(json({ recipes: inventory }))
+      : fetchMock(path, options)
+  )
   setCSRF('test-csrf')
   for (const name of dialogMethods)
     Object.defineProperty(HTMLDialogElement.prototype, name, {
@@ -175,6 +181,26 @@ describe('recipe adaptation planning and deployment review', () => {
       ).disabled
     ).toBe(true)
   })
+  it('requires the reviewed installed program to replace a matching ID', async () => {
+    const result = plan(5, true)
+    inventory = [{ ...result.machine_recipe!, name: 'Old program' }]
+    fetchMock.mockImplementation(async (path) =>
+      String(path).endsWith('/adapt')
+        ? json(result)
+        : json({ device_id: 'pico-pro', recipe: result.machine_recipe })
+    )
+    const user = userEvent.setup()
+    render(element(state({ devices })))
+    await user.click(screen.getByRole('button', { name: 'Preview recipe' }))
+    await screen.findByText(/will replace “Old program”/)
+    expect(requests('/deploy')).toHaveLength(0)
+    await user.click(screen.getByRole('button', { name: 'Replace on machine' }))
+    await waitFor(() => expect(requests('/deploy')).toHaveLength(1))
+    expect(JSON.parse(String(requests('/deploy')[0][1]?.body)).replace_expected).toEqual(
+      inventory[0]
+    )
+  })
+
   it('defaults a 14 L imported recipe to the 5 L Pro profile and retains an unmapped planning schedule', async () => {
     fetchMock.mockResolvedValue(json(plan()))
     const user = userEvent.setup()
