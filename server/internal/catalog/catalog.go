@@ -29,6 +29,9 @@ var bundled []byte
 //go:embed data/brew-sheets.json
 var brewSheetData []byte
 
+//go:embed data/recovered-recipes.json
+var recoveryData []byte
+
 //go:embed data/marketplace.json
 var marketplaceData []byte
 
@@ -61,6 +64,7 @@ type indexed struct {
 // Details and raw files are decompressed only when requested; nothing is
 // fetched from upstream and no records are automatically added to a library.
 type Archive struct {
+	recovered   map[string]recipeRecovery
 	sheets      map[string]BrewSheet
 	marketplace map[string]MarketplaceIngredients
 	kitEditions map[string]MarketplaceIngredients
@@ -131,6 +135,9 @@ func openBytes(data []byte) (*Archive, error) {
 		for _, id := range product.CatalogIDs {
 			a.marketplace[id] = product.MarketplaceIngredients
 		}
+	}
+	if err := json.Unmarshal(recoveryData, &a.recovered); err != nil {
+		return nil, err
 	}
 	if err := json.Unmarshal(brewSheetData, &a.sheets); err != nil {
 		return nil, err
@@ -352,6 +359,11 @@ func (a *Archive) Detail(id string) (Detail, error) {
 	}
 	if result.ID != id || result.Provenance.CatalogID != id || result.Provenance.SourceID != result.SourceID || len(result.SourceRecords) == 0 || result.SourceRecordCount != len(result.SourceRecords) {
 		return Detail{}, fmt.Errorf("catalog: invalid detail %q", id)
+	}
+	if fix, ok := a.recovered[id]; ok {
+		if err := fix.apply(&result); err != nil {
+			return Detail{}, err
+		}
 	}
 	if sheet, ok := a.sheets[id]; ok {
 		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" || result.Recipe == nil {

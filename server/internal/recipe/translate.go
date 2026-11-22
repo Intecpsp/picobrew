@@ -47,7 +47,7 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	}
 	slots := firstHopRoutes(staged.Steps)
 	if issue == "" && routed > 0 {
-		issue = checkRoutedHops(staged.Ingredients, slots)
+		issue = checkRoutedHops(staged, slots)
 	}
 	plan, err := adapt(staged, p, liters, true)
 	if err != nil {
@@ -121,10 +121,28 @@ func firstHopRoutes(steps []domain.RecipeStep) map[int]int {
 	return first
 }
 
-func checkRoutedHops(ingredients []domain.Ingredient, first map[int]int) string {
-	for _, in := range ingredients {
+func checkRoutedHops(r domain.Recipe, first map[int]int) string {
+	boilMinutes, preheatedSlot := 0, 0
+	for i, step := range r.Steps {
+		if step.Kind != "boil" && step.Kind != "hop" {
+			continue
+		}
+		if boilMinutes == 0 && i > 0 {
+			heat := r.Steps[i-1]
+			if heat.Kind == "heat" && heat.Location >= 3 && heat.Location == step.Location {
+				preheatedSlot = heat.Location - 2
+			}
+		}
+		boilMinutes += step.Minutes
+	}
+	for _, in := range r.Ingredients {
 		use := strings.ToLower(strings.TrimSpace(in.Use))
-		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
+		if in.SlotAddition || in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
+			if use == "first-wort" || use == "first wort" {
+				if in.Minutes != float64(boilMinutes) || preheatedSlot == 0 || first[boilMinutes] != preheatedSlot {
+					return "First-wort hops must receive flow during heat-up and the full boil."
+				}
+			}
 			if in.Minutes != math.Trunc(in.Minutes) || first[int(in.Minutes)] == 0 {
 				return fmt.Sprintf("Assign %s a hop slot that first receives direct flow at %g minutes before boil ends.", in.Name, in.Minutes)
 			}
@@ -196,20 +214,27 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 	}
 	if r.Provenance != nil {
 		for _, warning := range r.Provenance.Warnings {
-			if strings.Contains(warning, "first-wort") || strings.Contains(warning, "non-default source BoilUse") || strings.Contains(warning, "original source contains errors") || strings.Contains(warning, "fractional") || strings.Contains(warning, "unsupported mash style") || strings.Contains(warning, "not ingredient totals") {
+			if strings.HasPrefix(warning, "Source program review:") || strings.Contains(warning, "first-wort") || strings.Contains(warning, "non-default source BoilUse") || strings.Contains(warning, "original source contains errors") || strings.Contains(warning, "fractional") || strings.Contains(warning, "unsupported mash style") || strings.Contains(warning, "not ingredient totals") {
 				return nil, warning
 			}
 		}
 	}
 	times := map[int]bool{}
+	firstWort := false
 	for _, in := range r.Ingredients {
-		if in.Kind == "misc" && in.Use == "boil" {
+		if in.Kind == "misc" && in.Use == "boil" && !in.SlotAddition {
 			return nil, fmt.Sprintf("Confirm the addition method for %s during the boil.", in.Name)
 		}
-		if in.Kind == "hop" && in.Use != "boil" && in.Use != "dry-hop" && in.Use != "dry hop" {
+		if in.Kind == "hop" && in.Use != "first-wort" && in.Use != "boil" && in.Use != "dry-hop" && in.Use != "dry hop" {
 			return nil, fmt.Sprintf("Confirm the %s addition method for %s.", in.Use, in.Name)
 		}
-		if in.Kind != "hop" || in.Use != "boil" {
+		if in.Kind == "hop" && in.Use == "first-wort" {
+			if in.Minutes != float64(boil.Minutes) {
+				return nil, "First-wort hops must receive flow during heat-up and the full boil."
+			}
+			firstWort = true
+		}
+		if !in.SlotAddition && (in.Kind != "hop" || in.Use != "boil" && in.Use != "first-wort") {
 			continue
 		}
 		if in.Minutes <= 0 || in.Minutes > float64(boil.Minutes) || in.Minutes != math.Trunc(in.Minutes) {
@@ -236,7 +261,16 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 		rests[len(rests)-1].DrainMinutes = mashDrain
 	}
 	steps = append(steps, rests...)
-	steps = append(steps, domain.RecipeStep{Name: "Heat to boil", Kind: "heat", Location: 1, TargetC: keg})
+	heat := domain.RecipeStep{Name: "Heat to boil", Kind: "heat", Location: 1, TargetC: keg}
+	if firstWort {
+		for _, in := range r.Ingredients {
+			if (in.SlotAddition || in.Kind == "hop" && in.Use == "boil") && in.Minutes == float64(boil.Minutes) {
+				return nil, "First-wort and boil-start additions require separate exposure times."
+			}
+		}
+		heat.Location, heat.TargetC = 3, target
+	}
+	steps = append(steps, heat)
 	starts = append(starts, 0)
 	if n := boil.Minutes - starts[0]; n > 0 {
 		steps = append(steps, domain.RecipeStep{Name: "Boil", Kind: "boil", Location: 1, TargetC: keg, Minutes: n})

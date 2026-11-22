@@ -193,6 +193,7 @@ type xmlStyle struct {
 	Version int    `xml:"VERSION"`
 }
 type xmlIngredient struct {
+	SlotAddition   bool     `xml:"HUB_SLOT_ADDITION,omitempty"`
 	Name           string   `xml:"NAME"`
 	Version        int      `xml:"VERSION"`
 	Type           string   `xml:"TYPE,omitempty"`
@@ -360,7 +361,7 @@ func fromXML(x xmlRecipe) (domain.Recipe, error) {
 		items []xmlIngredient
 	}{{"fermentable", x.Fermentables}, {"hop", x.Hops}, {"yeast", x.Yeasts}, {"misc", x.Miscs}} {
 		for _, item := range group.items {
-			in := domain.Ingredient{Name: item.Name, Kind: group.kind, Type: item.Type, Form: item.Form}
+			in := domain.Ingredient{SlotAddition: item.SlotAddition, Name: item.Name, Kind: group.kind, Type: item.Type, Form: item.Form}
 			if item.Version != 1 {
 				return r, fmt.Errorf("%s %q requires VERSION 1", group.kind, item.Name)
 			}
@@ -550,7 +551,7 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 	}
 	x := xmlRecipe{Name: r.Name, Version: 1, Type: typeName, Brewer: "PicoBrew Hub", Batch: pointer(r.BatchLiters), BoilSize: pointer(r.BoilLiters), BoilTime: pointer(r.BoilMinutes), Efficiency: pointer(r.Efficiency), Notes: r.Notes, Style: xmlStyle{Name: r.Style, Version: 1}, Mash: xmlMash{Name: "Mash", Version: 1}}
 	for _, in := range r.Ingredients {
-		item := xmlIngredient{Name: in.Name, Version: 1, Type: in.Type, Form: in.Form}
+		item := xmlIngredient{SlotAddition: in.SlotAddition, Name: in.Name, Version: 1, Type: in.Type, Form: in.Form}
 		switch in.Kind {
 		case "fermentable":
 			if item.Type, err = enum(in.Type, "Grain", "Sugar", "Extract", "Dry Extract", "Adjunct"); err != nil {

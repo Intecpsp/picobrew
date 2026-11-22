@@ -144,6 +144,7 @@ export interface MachineRecipe {
   steps: MachineStep[]
 }
 export interface Ingredient {
+  slot_addition?: boolean
   name: string
   kind: string
   amount: number

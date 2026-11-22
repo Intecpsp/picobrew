@@ -66,7 +66,8 @@ export function MachineVersions({
                   <td>{i.name}</td>
                   <td>{formatQuantity(i.amount, i.unit)}</td>
                   <td>
-                    {i.kind === 'hop' && (i.use === 'boil' || i.use === 'first-wort')
+                    {i.slot_addition ||
+                    (i.kind === 'hop' && (i.use === 'boil' || i.use === 'first-wort'))
                       ? [
                           plan.hop_slots_by_minute?.[i.minutes]
                             ? 'Hop slot ' + plan.hop_slots_by_minute[i.minutes]

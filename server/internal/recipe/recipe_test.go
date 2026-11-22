@@ -250,7 +250,7 @@ func TestFirstWortAndBoilAtSameTimeShareSlotCapacity(t *testing.T) {
 		r := source()
 		r.BatchLiters = p.BatchLiters
 		r.Ingredients = []domain.Ingredient{{Kind: "hop", Use: "boil", Amount: 25, Minutes: 60}, {Kind: "hop", Use: "first-wort", Amount: 20, Minutes: 60}}
-		if err := recipe.ValidateCapacity(r, p); err == nil || !strings.Contains(err.Error(), "combined hops") {
+		if err := recipe.ValidateCapacity(r, p); err == nil || !strings.Contains(err.Error(), "combined slot load") {
 			t.Fatalf("%s: %v", p.ID, err)
 		}
 	}
@@ -289,5 +289,43 @@ func TestAutomaticLoadPreservesRecipeProportions(t *testing.T) {
 				t.Fatal("incorrect estimated yield")
 			}
 		}
+	}
+}
+
+func TestRecoveredAdjunctAndFirstWortLoads(t *testing.T) {
+	r := source()
+	for i := range r.Steps {
+		r.Steps[i].Location = 0
+	}
+	r.Ingredients[1].Use = "first-wort"
+	r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: "Coriander", Kind: "misc", Use: "boil", SlotAddition: true, Unit: "g", Amount: 28, Minutes: 10}, domain.Ingredient{Name: "Late hops", Kind: "hop", Use: "boil", Unit: "g", Amount: 14, Minutes: 10})
+	for _, p := range recipe.Profiles() {
+		p.MaxHopSlotG = 21
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil || plan.Recipe.BatchLiters != 5 || plan.HopSlotsByMinute[10] != 2 {
+			t.Fatalf("%s %v %+v", p.ID, err, plan)
+		}
+		found := false
+		for _, step := range plan.Recipe.Steps {
+			if step.Kind == "heat" && step.Location == 3 && step.Minutes == 0 {
+				found = true
+			}
+		}
+		if !found {
+			t.Fatal("first-wort slot missed heat-up", p.ID)
+		}
+		edited := plan.Recipe
+		for i, step := range edited.Steps {
+			if step.Kind == "heat" && step.Location == 3 {
+				edited.Steps[i].Location = 1
+			}
+		}
+		if changed, err := recipe.Translate(edited, p, 0); err != nil || changed.MachineRecipe != nil {
+			t.Fatal("edited schedule lost first-wort exposure", p.ID, err)
+		}
+	}
+	r.Ingredients[2].Unit = "mL"
+	if recipe.Validate(r) == nil {
+		t.Fatal("volume was treated as a slot weight")
 	}
 }
