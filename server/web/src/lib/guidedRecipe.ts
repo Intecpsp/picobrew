@@ -95,7 +95,7 @@ export function guidedRecipe(draft: GuidedDraft, profile: Profile): Recipe {
       drain_minutes,
     })
   }
-  add('Heat water', 'heat', rests[0].celsius, 0, 1)
+  if (rests.length) add('Heat water', 'heat', rests[0].celsius, 0, 1)
   rests.forEach((rest, i) =>
     add(
       rest.name ?? (rests.length > 1 ? 'Mash rest ' + (i + 1) : 'Mash'),
@@ -260,14 +260,23 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
     )
       return 'Choose a separate available minute within the boil for each visit.'
   }
-  if (recipe.steps.length > Math.min(15, profile.max_steps || 15))
+  if (recipe.steps.length > (profile.max_steps || 15))
     return 'The schedule exceeds this brewer’s step limit. Remove a return visit or a mash rest.'
   if (
     (draft.yeast.trim() || draft.yeastGrams) &&
     !(draft.yeast.trim() && Number(draft.yeastGrams) > 0)
   )
     return 'Enter both the yeast name and pitch weight, or leave both blank.'
+  if (
+    recipe.steps.some(
+      (s) => (s.kind === 'hop' || s.kind === 'boil') && profile.id === 'zymatic' && s.minutes > 255
+    )
+  )
+    return 'Stock Zymatic allows at most 255 minutes in one boil or hop step.'
   if (stage === 1) return ''
+  if (!mashSchedule(draft, profile).length) return 'Add at least one mash rest.'
+  if (profile.id === 'zymatic' && mashSchedule(draft, profile).some((r) => Number(r.minutes) > 255))
+    return 'Stock Zymatic allows at most 255 minutes in one mash rest.'
   if (
     mashSchedule(draft, profile).some(
       (r) =>
@@ -280,6 +289,8 @@ export function guideProblem(draft: GuidedDraft, profile: Profile, stage: number
     )
   )
     return 'Check the mash temperature and use a hold between 1 and 599 whole minutes.'
+  if (profile.id === 'zymatic' && recipe.steps.some((s) => Math.round(s.target_c * 1.8 + 32) > 207))
+    return 'Stock Zymatic accepts temperatures up to 207 °F (about 97.2 °C).'
   if (recipe.steps.some((s) => s.target_c > profile.max_target_c))
     return 'This schedule exceeds the brewer’s temperature limit. Adjust the targets in the advanced editor.'
   return ''

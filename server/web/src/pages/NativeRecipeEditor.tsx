@@ -1,7 +1,9 @@
+import { ArchivedIngredients } from '../components/ArchivedIngredients'
+import { RecipeStyleField } from '../components/RecipeStyleField'
 import { BeerCrafter } from '../components/BeerCrafter'
 import { useEffect, useState } from 'react'
 import { Copy, Download, History, Save, Send, Trash2 } from 'lucide-react'
-import type { Recipe } from '../types'
+import type { CatalogDetail, Recipe } from '../types'
 import { useHub, useResource } from '../context'
 import { api, download, errorMessage } from '../lib/api'
 import { copyProgram, kindLabel, programTiming } from '../lib/programs'
@@ -41,6 +43,10 @@ export default function NativeRecipeEditor({
   const [transfer, setTransfer] = useState(false)
   const [revisions, setRevisions] = useState(false)
   const [remove, setRemove] = useState(false)
+  const catalogID = recipe.provenance?.catalog_id
+  const original = useResource<CatalogDetail>(
+    catalogID ? '/catalog/' + encodeURIComponent(catalogID) : null
+  )
   const program = recipe.native_program!
   useEffect(() => {
     const listener = (event: BeforeUnloadEvent) => {
@@ -130,7 +136,9 @@ export default function NativeRecipeEditor({
         <div className="editor-main">
           <BeerCrafter recipe={recipe} />
           <section className="panel">
-            <SectionHeading title="Program details" />
+            <SectionHeading
+              title={recipe.kind === 'maintenance' ? 'Program details' : 'Recipe details'}
+            />
             <div className="form-grid">
               <Field label="Program name">
                 <input
@@ -144,12 +152,7 @@ export default function NativeRecipeEditor({
                   }
                 />
               </Field>
-              <Field label="Style">
-                <input
-                  value={recipe.style}
-                  onChange={(event) => update({ style: event.target.value })}
-                />
-              </Field>
+              <RecipeStyleField value={recipe.style} change={(style) => update({ style })} />
             </div>
             <Field label="Description">
               <textarea
@@ -186,10 +189,9 @@ export default function NativeRecipeEditor({
                 }}
               />
             </Field>
-            <p className="notice">
-              This record contains a machine schedule. Ingredient quantities, batch volume and
-              efficiency are unspecified.
-            </p>
+            {recipe.kind !== 'maintenance' && !original.loading && !original.data?.brew_sheet && (
+              <ArchivedIngredients product={original.data?.marketplace} />
+            )}
           </section>
           <section className="panel">
             <ProgramFields

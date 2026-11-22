@@ -23,6 +23,12 @@ import (
 //go:embed data/catalog.zip
 var bundled []byte
 
+//go:embed data/brew-sheets.json
+var brewSheetData []byte
+
+//go:embed data/marketplace.json
+var marketplaceData []byte
+
 var (
 	ErrNotFound   = errors.New("catalog: not found")
 	ErrNotBundled = errors.New("catalog: asset is an optional reference")
@@ -51,12 +57,14 @@ type indexed struct {
 // Details and raw files are decompressed only when requested; nothing is
 // fetched from upstream and no records are automatically added to a library.
 type Archive struct {
-	files   map[string]*zip.File
-	entries []indexed
-	byID    map[string]Summary
-	assets  map[string]Asset
-	meta    manifest
-	styles  []string
+	sheets      map[string]BrewSheet
+	marketplace map[string]MarketplaceIngredients
+	files       map[string]*zip.File
+	entries     []indexed
+	byID        map[string]Summary
+	assets      map[string]Asset
+	meta        manifest
+	styles      []string
 }
 
 func Open() (*Archive, error) {
@@ -102,15 +110,42 @@ func openBytes(data []byte) (*Archive, error) {
 		}
 		sources[source.ID] = source
 	}
+	var products []struct {
+		MarketplaceIngredients
+		CatalogIDs []string `json:"catalog_ids"`
+	}
+	if err := json.Unmarshal(marketplaceData, &products); err != nil {
+		return nil, err
+	}
+	a.marketplace = make(map[string]MarketplaceIngredients)
+	for _, product := range products {
+		for _, id := range product.CatalogIDs {
+			a.marketplace[id] = product.MarketplaceIngredients
+		}
+	}
+	if err := json.Unmarshal(brewSheetData, &a.sheets); err != nil {
+		return nil, err
+	}
 	styles := map[string]bool{}
 	counts := map[string]int{}
-	for _, entry := range a.entries {
+	for i := range a.entries {
+		entry := &a.entries[i]
 		if !identifier.MatchString(entry.ID) || a.byID[entry.ID].ID != "" || sources[entry.SourceID].ID == "" || a.files["entries/"+entry.ID+".json"] == nil {
 			return nil, fmt.Errorf("catalog: invalid entry %q", entry.ID)
 		}
 		if entry.Kind != "recipe" && entry.Kind != "native-program" && entry.Kind != "maintenance" {
 			return nil, fmt.Errorf("catalog: invalid kind for %q", entry.ID)
 		}
+		if product, ok := a.marketplace[entry.ID]; ok {
+			if entry.SourceID != "picopak-library" || !strings.EqualFold(strings.Join(strings.Fields(entry.Name), " "), strings.Join(strings.Fields(product.Name), " ")) {
+				return nil, fmt.Errorf("catalog: unexpected marketplace product for %s", entry.ID)
+			}
+			if entry.Style == "" {
+				entry.Style = product.Style
+			}
+			entry.Search += " " + strings.ToLower(product.Style+" "+product.Grains+" "+product.Hops)
+		}
+		_, entry.BrewReady = a.sheets[entry.ID]
 		a.byID[entry.ID] = entry.Summary
 		counts[entry.SourceID]++
 		if entry.Style != "" {
@@ -232,7 +267,14 @@ func (a *Archive) List(q Query) Page {
 	result := Page{Items: []Summary{}, Offset: q.Offset, Limit: q.Limit, Sources: a.Sources(), Styles: slices.Clone(a.styles)}
 	terms := strings.Fields(strings.ToLower(q.Query))
 	for _, entry := range a.entries {
-		if q.Source != "" && q.Source != entry.SourceID || q.Kind != "" && q.Kind != entry.Kind || q.Model != "" && !slices.Contains(entry.Models, q.Model) || q.Style != "" && q.Style != entry.Style {
+		if q.Kind == "brew-ready" {
+			if !entry.BrewReady || q.Model != "" && q.Model != "zymatic" {
+				continue
+			}
+		} else if q.Kind == "brewing" && entry.Kind == "maintenance" || q.Kind != "" && q.Kind != "brewing" && q.Kind != entry.Kind {
+			continue
+		}
+		if q.Source != "" && q.Source != entry.SourceID || q.Model != "" && !slices.Contains(entry.Models, q.Model) || q.Style != "" && q.Style != entry.Style {
 			continue
 		}
 		match := true
@@ -263,6 +305,26 @@ func (a *Archive) Detail(id string) (Detail, error) {
 	}
 	if result.ID != id || result.Provenance.CatalogID != id || result.Provenance.SourceID != result.SourceID || len(result.SourceRecords) == 0 || result.SourceRecordCount != len(result.SourceRecords) {
 		return Detail{}, fmt.Errorf("catalog: invalid detail %q", id)
+	}
+	if sheet, ok := a.sheets[id]; ok {
+		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" || result.Recipe == nil {
+			return Detail{}, fmt.Errorf("catalog: brew sheet source mismatch for %s", id)
+		}
+		sheet.Instructions = slices.Clone(sheet.Instructions)
+		sheet.NoteIngredients = slices.Clone(sheet.NoteIngredients)
+		result.Recipe.Ingredients = append(result.Recipe.Ingredients, sheet.NoteIngredients...)
+		program, err := publicStockProgram(result)
+		if err != nil {
+			return Detail{}, err
+		}
+		result.BrewReady, result.BrewSheet, result.StockProgram = true, &sheet, program
+	}
+	if product, ok := a.marketplace[id]; ok {
+		result.Marketplace = &product
+		result.Style = a.byID[id].Style
+		if result.Recipe != nil && result.Recipe.Style == "" {
+			result.Recipe.Style = result.Style
+		}
 	}
 	return result, nil
 }

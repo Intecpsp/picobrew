@@ -330,9 +330,9 @@ test('community catalog preserves source schedules through copy, bulk transfer a
     const before = await (await request.get(`/api/v1/devices/${deviceID}/recipes`)).json()
 
     await page.goto('/#/catalog')
-    await expect(page.getByRole('heading', { name: 'A whole library to explore.' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Community recipes' })).toBeVisible()
     await page.getByLabel('Catalog type', { exact: true }).selectOption('native-program')
-    await page.getByLabel('Search community recipes and programs').fill('Pico Pale')
+    await page.getByLabel('Search community recipes').fill('Pico Pale')
     await expect(
       page
         .locator('.catalog-card')

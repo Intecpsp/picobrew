@@ -186,3 +186,27 @@ func TestOptionalReferenceRequiresManifestBytesAndContainedPath(t *testing.T) {
 		}
 	})
 }
+
+func TestCatalogStockProgramCopyPreviewsWithoutRoutingInput(t *testing.T) {
+	_, h, c := newTestServer(t)
+	token := signIn(t, c, h.URL)
+	base := h.URL + "/api/v1"
+	code, body := request(t, c, "GET", base+"/catalog?kind=brew-ready&limit=1", "", nil, nil)
+	var page catalog.Page
+	if code != 200 || json.Unmarshal(body, &page) != nil || len(page.Items) != 1 {
+		t.Fatal(code, string(body))
+	}
+	code, body = request(t, c, "POST", base+"/catalog/"+page.Items[0].ID+"/copy", token, map[string]bool{"stock_program": true}, nil)
+	var saved domain.Recipe
+	if code != 201 || json.Unmarshal(body, &saved) != nil || saved.NativeProgram == nil || saved.SourceModel != "zymatic" {
+		t.Fatal(code, string(body))
+	}
+	code, body = request(t, c, "POST", base+"/stock-zymatics/TEST123/recipes", token, stockSubmission{Recipes: []stockReference{{RecipeID: saved.ID, Revision: saved.Revision}}}, nil)
+	if code != 200 {
+		t.Fatal(code, string(body))
+	}
+	code, _ = request(t, c, "POST", base+"/catalog/picopak-64/copy", token, map[string]bool{"stock_program": true}, nil)
+	if code != 422 {
+		t.Fatal("unmatched stock program:", code)
+	}
+}

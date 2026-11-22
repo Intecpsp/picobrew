@@ -21,3 +21,21 @@ Gravity uses fermentable extract potential (46 gravity points per pound per US g
 The forecast starts at 55 °F and uses Crafter’s approximate 4.96 °C/min heating and 0.585 °C/min cooling rates unless the recipe specifies a ramp. Pauses have unknown wall-clock duration. Unheated stretches have unknown temperature. The live brew journal uses measured temperatures. Starting-water estimates use the brewer’s own measured losses.
 
 Pico S, Pro and C use their PicoPak routing. Generic Z uses its canonical direct-valve schedule. Zymatic supports planning, export and [stock recipe sync](stock-zymatic.md). PicoStill and PicoFerm retain their distillation and fermentation controls. Hosted account publishing and KegSmarts fermentation control are outside the local Hub’s supported integrations.
+
+The wizard review follows the actual sequence of mash, boil and hop visits. Boil times count down. A return visit circulates through the existing slot load. The standalone S, Pro, C and generic Z transfer at most 15 steps. The stock Zymatic sync format allows 25, with a 255-minute limit per hold and a maximum target of 207 °F.
+
+The style picker includes all 200 guide-and-code entries in PicoBrew’s Beer Crafter, plus styles used in saved library recipes. Entering a custom style leaves its analytical targets unspecified.
+
+## Ingredient sources
+
+The 1,316 public ingredient recipes in the bundled catalog are archived PicoBrew public recipes. Their detail pages link to the corresponding [PicoBrew Public Recipes](https://picobrew.com/publicrecipes/publicrecipes) record by GUID. Recipes originating in kits retain their original machine schedules. Published ingredient names and styles for matched kits are stored separately in [Marketplace facts](../internal/catalog/data/marketplace.json), with a link to each [PicoBrew Marketplace](https://picobrew.com/BrewMarketplace/Index.cshtml) product. Each match requires the kit name and the original PicoBeerID across every grouped source record. The generic ID 50 is excluded. Published names without weights are displayed as ingredient references and do not contribute invented quantities to shopping lists, brewing calculations or machine instructions.
+
+### Brew-ready catalog
+
+The initial **Browse all** view lists recipes with measured grain, hops, starting water and batch size, a cage-by-cage loading sheet, fermentation instructions, and a matching stock Zymatic program. Select **Catalog type → Archive · All source records** to browse the entire collection, including partially documented PicoPak recipes.
+
+For qualified recipes, **Save Zymatic program** saves the original routing and brew sheet together for the stock menu. **Copy ingredient recipe** creates an editable planning copy. Its declared mash/boil plan can be adapted independently. Source gravity, color and other published targets are shown where available. Manufacturer pitching ranges are labeled and linked separately from the original ingredient quantities.
+
+The offline index is reproducible with `python3 server/tools/catalog_brew_sheets.py --check`. It checks the measured grain and hop bill against the source's human loading sheet, the countdown at which each cage is wetted, mash temperatures and durations, and stock program and brewer capacities. The current coverage includes single-load all-grain Zymatic programs with an identified supported yeast and a documented pitch rate. Unresolved ingredients, multiple loads, and incompatible or independently edited schedules can still be found in the archive. A passing check describes the recipe data and stock wire format. Physical brews are unverified.
+
+Each qualifying source revision also has a review in `server/tools/catalog-brew-reviews.json`. The review checks the author's free-text notes for additions and changes to the structured recipe. Measured additions recovered from those notes appear in the editable ingredient bill and travel with the stock program's brew sheet. A changed source hash requires a fresh review.

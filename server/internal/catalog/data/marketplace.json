@@ -1,0 +1,3101 @@
+[
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1F7592C61BC441D1B2F0CB59A3529B55",
+    "name": "Kommuter Kolsch",
+    "style": "Kölsch",
+    "grains": "German Pilsner, Vienna, Carahell, Saurermalz",
+    "hops": "Sterling",
+    "pico_beer_id": 4,
+    "catalog_ids": [
+      "picopak-390",
+      "picopak-5706"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=F0FB7A899C944E769DC98D3537201EAA",
+    "name": "The Authoritah! Amber Ale",
+    "style": "American Amber Ale",
+    "grains": "Vienna, Munich",
+    "hops": "Summit, Eureka",
+    "pico_beer_id": 8,
+    "catalog_ids": [
+      "picopak-1447",
+      "picopak-4489",
+      "picopak-949"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=635CED0B712841B98F25B1365ECFA6B6",
+    "name": "Vanilla in 'Yo-Rye Vanilla Stout",
+    "style": "American Stout",
+    "grains": "2-Row, Rye, Barley Flaked Rye, C-77",
+    "hops": "Columbus, Willamette",
+    "pico_beer_id": 9,
+    "catalog_ids": [
+      "picopak-3088",
+      "picopak-35",
+      "picopak-4398"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B135BF50AE504516870E1AAB78513372",
+    "name": "Hop Session",
+    "style": "American IPA",
+    "grains": "2-Row, Biscuit",
+    "hops": "Summit, Eureka",
+    "pico_beer_id": 10,
+    "catalog_ids": [
+      "picopak-3090",
+      "picopak-4183"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6784EE9D66324D3394FE74928F183670",
+    "name": "Barbarian Red Ale",
+    "style": "Red Ale",
+    "grains": "2-Row, Melanoidin, CaraMunich",
+    "hops": "Columbus, Cascade",
+    "pico_beer_id": 11,
+    "catalog_ids": [
+      "picopak-36",
+      "picopak-4644"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8340920F770D49A282E1544A740FF796",
+    "name": "Smashbomb Atomic IPA",
+    "style": "IPA",
+    "grains": "Pale Malt, Munich Type II, Melanoidin, Crystal 60",
+    "hops": "Citra, Centennial, Cascade",
+    "pico_beer_id": 13,
+    "catalog_ids": [
+      "picopak-1830",
+      "picopak-2633",
+      "picopak-37",
+      "picopak-786"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=0338706CAF2046019274DC24B6E73F49",
+    "name": "Bit O'Beaver",
+    "style": "English Bitter",
+    "grains": "Maris Otter, Belgian Biscuit Malt, British Crystal 77",
+    "hops": "Fuggle, Willamette, East Kent Goldings",
+    "pico_beer_id": 14,
+    "catalog_ids": [
+      "picopak-1130",
+      "picopak-3372",
+      "picopak-5940",
+      "picopak-945"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=150D2BCAD6E04C7BA910268AFB1D8A23",
+    "name": "Diablo del Sol",
+    "style": "English Pale Ale",
+    "grains": "Maris Otter, British Crystal 120",
+    "hops": "Cascade",
+    "pico_beer_id": 15,
+    "catalog_ids": [
+      "picopak-2637",
+      "picopak-3371",
+      "picopak-388",
+      "picopak-4727",
+      "picopak-5939",
+      "picopak-6961"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=AA16D662A4C147A4888281709C5BDDB7",
+    "name": "Christmas Duck",
+    "style": "Porter",
+    "grains": "2-Row, British Crystal 120, British Crystal 45, Chocolate Malt, Roasted Barley, Flaked Wheat",
+    "hops": "Cascade, Fuggle, Willamette, East Kent Goldings",
+    "pico_beer_id": 16,
+    "catalog_ids": [
+      "picopak-3006",
+      "picopak-3507",
+      "picopak-3679"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7BD091327EA0494680AE8D403B454840",
+    "name": "Darkside",
+    "style": "Black IPA",
+    "grains": "2-Row, Carastan, Barlet",
+    "hops": "Cascade, East Kent Goldings",
+    "pico_beer_id": 17,
+    "catalog_ids": [
+      "picopak-3002",
+      "picopak-38",
+      "picopak-4402"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6167A9D2BDDE4851A40F913DC235CEFC",
+    "name": "Peculiar English Old Ale",
+    "style": "Old Ale",
+    "grains": "2-Row, Carastan, Barley",
+    "hops": "Fuggles",
+    "pico_beer_id": 18,
+    "catalog_ids": [
+      "picopak-447",
+      "picopak-989"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=F652A8D7DA8D4FF7A39478767FF95862",
+    "name": "Galactic Pale Ale",
+    "style": "American Pale Ale",
+    "grains": "2-Row, Crystal Malt",
+    "hops": "Cascade, Galaxy",
+    "pico_beer_id": 19,
+    "catalog_ids": [
+      "picopak-579",
+      "picopak-988"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=193ED726C79545CD97B03C9531CB937A",
+    "name": "ENIAC Mosaic IPA",
+    "style": "IPA",
+    "grains": "2-Row, Munich, Crystal 30, Wheat Malt",
+    "hops": "Mosaic, Cascade, Centennial, Magnum",
+    "pico_beer_id": 29,
+    "catalog_ids": [
+      "picopak-16",
+      "picopak-17",
+      "picopak-1954"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E929E6D01AAB46F59D9A6D6C7030E3C8",
+    "name": "Black Betty American Porter",
+    "style": "American Porter",
+    "grains": "Chocolate",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 34,
+    "catalog_ids": [
+      "picopak-299",
+      "picopak-583"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8015665F63644A418EF1BE9AAFBBB5B5",
+    "name": "O/R/B Light IPA",
+    "style": "Mild",
+    "hops": "Cascade, Simcoe, Citra",
+    "pico_beer_id": 35,
+    "catalog_ids": [
+      "picopak-2195",
+      "picopak-2938",
+      "picopak-3050",
+      "picopak-3086",
+      "picopak-3177"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C2E7DF119A88497FBFFA682FBEF55F1B",
+    "name": "O/R/B Session Red",
+    "style": "American Amber Ale",
+    "pico_beer_id": 37,
+    "catalog_ids": [
+      "picopak-2194",
+      "picopak-2939"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3B21EAE0D5AF42F7801D36B801A35652",
+    "name": "Atomic Amber",
+    "style": "American Amber Ale",
+    "grains": "2-Row, German Munich, Crystal 40L, Crystal 120L, Chocolate, Victory",
+    "hops": "Magnum, Cascade, Centennial",
+    "pico_beer_id": 38,
+    "catalog_ids": [
+      "picopak-13",
+      "picopak-4160",
+      "picopak-70"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A118285AB9094276A0227D20A10B9A8E",
+    "name": "Deaf Turtle",
+    "style": "American IPA",
+    "grains": "2-Row, Crystal 40L, Belgian Carapils, Flaked Wheat",
+    "hops": "Chinook, Cascade, Amarillo, Simcoe",
+    "pico_beer_id": 39,
+    "catalog_ids": [
+      "picopak-10"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4A77D259FC2744DAB2104E9EB6C3E6B9",
+    "name": "Pico Pale",
+    "style": "American Pale Ale",
+    "grains": "2-Row, Crystal 60L",
+    "hops": "Magnum, Perle, Cascade",
+    "pico_beer_id": 40,
+    "catalog_ids": [
+      "picopak-64"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D825FB78211E49CE90A7BB8EF5C0F2CF",
+    "name": "Tweaties American Wheat Ale",
+    "style": "American Wheat or Rye Beer",
+    "grains": "2-Row, Wheat Malt, Rye",
+    "hops": "Willamette",
+    "pico_beer_id": 41,
+    "catalog_ids": [
+      "picopak-4"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C5A9AA6B19E34542907539614CCA5BB4",
+    "name": "B-52 Blonde",
+    "style": "Blonde Ale",
+    "grains": "2-Row, CaraPils, German Munich",
+    "hops": "Centennial",
+    "pico_beer_id": 42,
+    "catalog_ids": [
+      "picopak-4161",
+      "picopak-7"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E420769EDDBA4DEAB387D9058D0BF452",
+    "name": "Annie's London Ale",
+    "style": "English Pale Ale",
+    "grains": "Maris Otter, Crystal 60L",
+    "hops": "Northdown, East Kent Goldings",
+    "pico_beer_id": 43,
+    "catalog_ids": [
+      "picopak-4162",
+      "picopak-8"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D10FD99C12A3491192C1B85DF2F5C16A",
+    "name": "Pico Pils",
+    "style": "German Pilsner",
+    "grains": "German Pilsener, CaraPils",
+    "hops": "Saaz",
+    "pico_beer_id": 44,
+    "catalog_ids": [
+      "picopak-11"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=723738B6391E4A2C83D75F5B98D58235",
+    "name": "Plinius Maximus DIPA",
+    "style": "Imperial IPA",
+    "grains": "2-Row, Crystal 20L, Belgian Carapils, Cane Sugar",
+    "hops": "Columbus, Simcoe, Centennial",
+    "pico_beer_id": 45,
+    "catalog_ids": [
+      "picopak-3",
+      "picopak-4632"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=0382FC18A75C41389A6A75411D39AC87",
+    "name": "Party Porter",
+    "style": "Porter",
+    "grains": "2-Row, Crystal 120L, Roasted Barley",
+    "hops": "Tettnanger",
+    "pico_beer_id": 46,
+    "catalog_ids": [
+      "picopak-4156",
+      "picopak-6"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=71F77E1A25B1402F80ACF8FD30C7E0CD",
+    "name": "Not Yet-ie Imperial Stout",
+    "style": "Russian Imperial Stout",
+    "grains": "2-Row, CaraMunich, Chocolate, Belgian Special B, Roasted Barley",
+    "hops": "Chinook",
+    "pico_beer_id": 47,
+    "catalog_ids": [
+      "picopak-1"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=F9500744B3A34C44805440E7B3C3F88A",
+    "name": "Belle of the Ball",
+    "style": "Saison",
+    "grains": "Belgian Pils, Belgian Wheat, German Vienna, German Carafa Special, Candy Sugar",
+    "hops": "Saaz",
+    "pico_beer_id": 48,
+    "catalog_ids": [
+      "picopak-4159",
+      "picopak-9"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E2C74E90AE9E432FB0BBA53B3C05C1DF",
+    "name": "Half-Squeezed",
+    "style": "Session IPA",
+    "grains": "2-Row, Crystal 80L, Belgian Carapils, Flaked Wheat",
+    "hops": "Perle, Mosaic, Citra",
+    "pico_beer_id": 49,
+    "catalog_ids": [
+      "picopak-2",
+      "picopak-4631"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=45ECEAC74D3C452683652E080EEF287E",
+    "name": "Cinderblock Cascadian Dark Ale",
+    "style": "Specialty IPA: Black IPA",
+    "grains": "2-Row, Rye, Midnight Wheat",
+    "hops": "Columbus, Citra, Amarillo",
+    "pico_beer_id": 51,
+    "catalog_ids": [
+      "picopak-39",
+      "picopak-4642"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=AA8AE35CFC854F4CA3C443332AFC7DB6",
+    "name": "The Hummer Amber Ale",
+    "style": "American Amber Ale",
+    "grains": "2-Row, Melanoidin, Barley",
+    "hops": "Palisade",
+    "pico_beer_id": 58,
+    "catalog_ids": [
+      "picopak-300",
+      "picopak-584"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7240E7E11E3644FAAE40630F1BF3415A",
+    "name": "High Heel Imperial IPA",
+    "style": "Imperial IPA",
+    "grains": "2-Row, Munich, Barley",
+    "hops": "Columbus, Centennial, Citra",
+    "pico_beer_id": 59,
+    "catalog_ids": [
+      "picopak-1660",
+      "picopak-325"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B0B1799FBBBE4391993C97086358B2E9",
+    "name": "A Little Dinghy Blonde",
+    "style": "Kolsch-style Ale",
+    "grains": "Maris Otter, Munich, Wheat",
+    "hops": "Cascade, Tettnanger",
+    "pico_beer_id": 60,
+    "catalog_ids": [
+      "picopak-2286",
+      "picopak-40",
+      "picopak-890"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A7FD32882FE84DF1B83EA8BD7B4DCFD6",
+    "name": "Buffalo Sweat",
+    "style": "Oatmeal Cream Stout",
+    "grains": "Brewer’s Malt, Goldpils, Vienna, Victory, Carapils, Roasted Barley, Black Malt",
+    "hops": "Glacier",
+    "pico_beer_id": 61,
+    "catalog_ids": [
+      "picopak-12",
+      "picopak-4633"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=084051E986AB444BACC10F0F5A325E1E",
+    "name": "Farmer's Tan Red Ale",
+    "style": "Irish Red Ale",
+    "grains": "2-Row, Vienna, Melanoidin",
+    "hops": "Mount Hood",
+    "pico_beer_id": 62,
+    "catalog_ids": [
+      "picopak-41",
+      "picopak-4648"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=58179A53172C46A59985AA41BF8956F1",
+    "name": "Milk Mustachio Milk Stout",
+    "style": "Sweet Stout",
+    "grains": "Pale, crystal, chocolate and Munich malts. Oats.",
+    "hops": "American and English hops.",
+    "pico_beer_id": 63,
+    "catalog_ids": [
+      "picopak-3468",
+      "picopak-3858"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=137899ACE57D420B976328BC6B3EC957",
+    "name": "P-51 Porter",
+    "style": "Robust Porter",
+    "pico_beer_id": 64,
+    "catalog_ids": [
+      "picopak-1369",
+      "picopak-3857",
+      "picopak-4048"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7F6E347CF82C4EDD9E0C3250CBC1945E",
+    "name": "Lafitte Wheat Ale",
+    "style": "American Wheat or Rye Beer",
+    "grains": "2-Row, Rye, Wheat",
+    "hops": "Willamette",
+    "pico_beer_id": 65,
+    "catalog_ids": [
+      "picopak-1846",
+      "picopak-2189",
+      "picopak-3350",
+      "picopak-3479",
+      "picopak-778"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DE6E8948F8B84657A2FE9CB89FF569B4",
+    "name": "Satchmo Oatmeal Stout",
+    "style": "Oatmeal Stout",
+    "grains": "Malted Oats, Pale Malt, Chocolate Malt, Black Malt",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 66,
+    "catalog_ids": [
+      "picopak-1702",
+      "picopak-3374",
+      "picopak-4399",
+      "picopak-4571",
+      "picopak-4700",
+      "picopak-5557",
+      "picopak-950"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=25EF8B0F3AAE43488C6BA4E765768986",
+    "name": "Netherworld",
+    "style": "CDA",
+    "grains": "Pale Malt, Crystal 240, Brown Malt, Chocolate Malt",
+    "hops": "Columbus, Cascade",
+    "pico_beer_id": 68,
+    "catalog_ids": [
+      "picopak-1831",
+      "picopak-2636",
+      "picopak-301",
+      "picopak-787"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DA7ECC77C2A44DBA9DB67680A0D0CE68",
+    "name": "Gold Bar Blonde",
+    "style": "Blonde Ale",
+    "grains": "2-Row, Caramel",
+    "hops": "Centennial, Cascade",
+    "pico_beer_id": 72,
+    "catalog_ids": [
+      "picopak-3606",
+      "picopak-664"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=563054B583B64FE1A126716901F3F37F",
+    "name": "Better Than Pants British Bitter",
+    "style": "Special/Best/Premium Bitter",
+    "grains": "Maris Otter, crystal malts",
+    "hops": "Styrian Goldings",
+    "pico_beer_id": 73,
+    "catalog_ids": [
+      "picopak-1964",
+      "picopak-4951",
+      "picopak-6172",
+      "picopak-7744"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=67C76A587E36466DB70BD4E16B8889D7",
+    "name": "The Great Porter",
+    "style": "Porter",
+    "grains": "Maris Otter, Munich, Roasted Barley, Flaked Barley",
+    "hops": "Chinook",
+    "pico_beer_id": 74,
+    "catalog_ids": [
+      "picopak-42",
+      "picopak-4638"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B8DE1FCE5BD345F28D7A6150509513CA",
+    "name": "Turbodog",
+    "style": "Northern English Brown",
+    "grains": "Pale, Caramel Malt, Chocolate Malt",
+    "hops": "Willamette",
+    "pico_beer_id": 81,
+    "catalog_ids": [
+      "picopak-1854",
+      "picopak-21",
+      "picopak-4570"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3CACB511EFE443DF90F8AF31A82834DD",
+    "name": "Andygator",
+    "style": "Helles Doppelbock",
+    "grains": "Pale",
+    "hops": "German Perle",
+    "pico_beer_id": 82,
+    "catalog_ids": [
+      "picopak-1855",
+      "picopak-4569",
+      "picopak-649"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=28706AA987744575BABE0CE0D4157A51",
+    "name": "Little Wolf IPA",
+    "style": "American IPA",
+    "pico_beer_id": 83,
+    "catalog_ids": [
+      "picopak-1812",
+      "picopak-2408",
+      "picopak-428",
+      "picopak-5056"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=CB0127E84649489CA4BB047CFF65D514",
+    "name": "Saison Blanc",
+    "style": "Saison",
+    "grains": "Vienna, German Pilsner",
+    "hops": "Nelson Sauvin",
+    "pico_beer_id": 84,
+    "catalog_ids": [
+      "picopak-43",
+      "picopak-4637"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1865694C08284F718F6DA9AF992CE6A6",
+    "name": "CO Brew Mosaic IPA",
+    "style": "American IPA",
+    "hops": "Mosaic",
+    "pico_beer_id": 92,
+    "catalog_ids": [
+      "picopak-2044",
+      "picopak-2929",
+      "picopak-947"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4368BC693AD04B33A35A629130842C00",
+    "name": "CO Brew Rye Strong Stout",
+    "style": "American Strong Stout",
+    "pico_beer_id": 93,
+    "catalog_ids": [
+      "picopak-2138",
+      "picopak-2936",
+      "picopak-3439",
+      "picopak-3480",
+      "picopak-979"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4A0F8768D3EE4733A1D41819A55CE8C3",
+    "name": "Pale Hoppy Thing",
+    "style": "American Pale Ale",
+    "grains": "American Pils, Flaked Oats, CaraRye",
+    "hops": "Centennial, Chinook, Simcoe",
+    "pico_beer_id": 94,
+    "catalog_ids": [
+      "picopak-44",
+      "picopak-4647"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=41662CB5DABC4C2EBA0617F45954B7C3",
+    "name": "Rye Stout",
+    "style": "American Stout",
+    "grains": "2-Row, Barley, Rye",
+    "hops": "Centennial",
+    "pico_beer_id": 95,
+    "catalog_ids": [
+      "picopak-2188",
+      "picopak-3199",
+      "picopak-780"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=CD434C40E5D84376A9895C3E3CDA6984",
+    "name": "Another IPA",
+    "style": "American IPA",
+    "grains": "2-Row, Rye",
+    "hops": "Chinook, Columbus, Summit",
+    "pico_beer_id": 96,
+    "catalog_ids": [
+      "picopak-1442",
+      "picopak-1791",
+      "picopak-3349",
+      "picopak-389",
+      "picopak-4184",
+      "picopak-45",
+      "picopak-577",
+      "picopak-814"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9CDCD5702C504B80A1CA514B3E8A63F4",
+    "name": "Stiff Arm IPA",
+    "style": "West Coast IPA",
+    "pico_beer_id": 98,
+    "catalog_ids": [
+      "picopak-6303",
+      "picopak-6960",
+      "picopak-8242"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=17E2AE27F9D1482BB31AAA0E2D74EA2B",
+    "name": "1862 Kolsch Style Ale",
+    "style": "American Style Kolsch",
+    "pico_beer_id": 99,
+    "catalog_ids": [
+      "picopak-6304"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=54D4B6ABF988405283E71DD7EEB36DFF",
+    "name": "Greenskeeper Session IPA",
+    "style": "Session IPA",
+    "grains": "2-Row, Victory",
+    "pico_beer_id": 100,
+    "catalog_ids": [
+      "picopak-6302",
+      "picopak-6959",
+      "picopak-7802"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5739D956238C4B749837B13D6B29E080",
+    "name": "Buffalo Craft Lager",
+    "style": "Helles",
+    "grains": "2-Row, Bohemian Pilsner, Munich",
+    "hops": "Crystal",
+    "pico_beer_id": 101,
+    "catalog_ids": [
+      "picopak-46",
+      "picopak-4640"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C185053907454B599AAA9F07D42845CE",
+    "name": "Dragonstooth Imperial Oatmeal Stout",
+    "style": "Oatmeal Stout",
+    "grains": "Crystal, Munich, Chocolate, Roasted Barley, Flaked Oats",
+    "hops": "Cascade, Centennial",
+    "pico_beer_id": 107,
+    "catalog_ids": [
+      "picopak-27",
+      "picopak-82"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=004442490939423A9E49E613641B6F72",
+    "name": "Imperial IPA",
+    "style": "Imperial IPA",
+    "grains": "2-Row, CaraPils, specialty malt",
+    "hops": "Ekuanot",
+    "pico_beer_id": 109,
+    "catalog_ids": [
+      "picopak-5942",
+      "picopak-6889",
+      "picopak-7309"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=96CE025AB4424A238A10FCAAEFA34568",
+    "name": "Cocoa Vanilla Porter",
+    "style": "American Porter",
+    "grains": "2-Row, Maris Otter",
+    "hops": "Cascade",
+    "pico_beer_id": 110,
+    "catalog_ids": [
+      "picopak-47",
+      "picopak-72"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D3319A4FC9DD4E3B891BD0DF9F3544CC",
+    "name": "Renaissance Wit",
+    "style": "Belgian Wheat Ale",
+    "grains": "2-Row, Victory, Wheat",
+    "hops": "Saaz",
+    "pico_beer_id": 113,
+    "catalog_ids": [
+      "picopak-3176",
+      "picopak-4705",
+      "picopak-48",
+      "picopak-6967"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=ED5F51726C254EEB88F9B59EE107F988",
+    "name": "Harlem 125 IPA",
+    "style": "American IPA",
+    "grains": "Pale, Crystal 60",
+    "hops": "Citra and Cascade",
+    "pico_beer_id": 114,
+    "catalog_ids": [
+      "picopak-2680",
+      "picopak-3337",
+      "picopak-4710"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A045166AEFE043C1B30378745F2FBF39",
+    "name": "Bolderiaan Belgian Pale Ale",
+    "style": "Belgian Pale Ale",
+    "grains": "Bohemian Pilsner, Munich, Vienna",
+    "hops": "Simcoe, Centennial",
+    "pico_beer_id": 115,
+    "catalog_ids": [
+      "picopak-4634",
+      "picopak-49"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=EF9740F6B32E4A4194F6976C4A1BA8E2",
+    "name": "Zonderik Grand Cru",
+    "style": "Belgian Specialty Ale",
+    "grains": "Barley Malt, Caramel Malt",
+    "hops": "Golding, Saaz",
+    "pico_beer_id": 117,
+    "catalog_ids": [
+      "picopak-2673",
+      "picopak-4842",
+      "picopak-991"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=23232688B7974743A0CB5EDB803A3CFC",
+    "name": "Helles Lager",
+    "style": "Munich Helles",
+    "grains": "Pilsner, Munich, Biscuit",
+    "hops": "Hallertauer, Magnum",
+    "pico_beer_id": 120,
+    "catalog_ids": [
+      "picopak-1430",
+      "picopak-1737",
+      "picopak-963",
+      "picopak-99"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=08561576A6FA45F8B0402F7E6806D4F9",
+    "name": "Saison",
+    "style": "Saison",
+    "grains": "Pilsner, Munich",
+    "hops": "Hallertaur",
+    "pico_beer_id": 121,
+    "catalog_ids": [
+      "picopak-1085",
+      "picopak-2038",
+      "picopak-776"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BA8EA7D1C8F14EE9AF8A77E7F8D44D4E",
+    "name": "Brew Your Own Irish Dry Stout",
+    "style": "Irish Dry Stout",
+    "grains": "Maris Otter, Roasted Barley, Flaked Barley",
+    "hops": "Kent Golding",
+    "pico_beer_id": 122,
+    "catalog_ids": [
+      "picopak-1086",
+      "picopak-1655",
+      "picopak-650"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=90C2FE2846534C7E8ED606AB7C15C9C4",
+    "name": "LA-31 Bière Pâle",
+    "style": "Pale Ale",
+    "grains": "Pilsner, Vienna, Biscuit",
+    "hops": "Liberty",
+    "pico_beer_id": 133,
+    "catalog_ids": [
+      "picopak-50"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DFC8271BD4FB4F6288F1616A3972935B",
+    "name": "Saison D’Ecrevisses",
+    "style": "Saison",
+    "grains": "Pilsner, Wheat, Rye",
+    "hops": "Aramis, Aurora, Bobek",
+    "pico_beer_id": 134,
+    "catalog_ids": [
+      "picopak-2987",
+      "picopak-3072",
+      "picopak-3200",
+      "picopak-3271"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B5BA0F08C233432AA2280F089847E0DF",
+    "name": "Cocodrie",
+    "style": "Specialty IPA: Belgian IPA",
+    "grains": "Pilsner",
+    "hops": "Aramis, Aurora, Bobek",
+    "pico_beer_id": 135,
+    "catalog_ids": [
+      "picopak-3071",
+      "picopak-978"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6E6F8BA411604668B28EE2FEFE3588EF",
+    "name": "Maple Red Ale",
+    "style": "Red Ale",
+    "pico_beer_id": 139,
+    "catalog_ids": [
+      "picopak-5460"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1488E3226A0047279A6E2A777CAE2A3B",
+    "name": "Pt. Bonita Bohemian Pils",
+    "style": "Bohemian Pilsener",
+    "grains": "2-Row, Pilsner, Munich, Rye",
+    "hops": "Liberty, Saaz, Crystal",
+    "pico_beer_id": 146,
+    "catalog_ids": [
+      "picopak-712",
+      "picopak-987"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D775A581225942E39B0C9472CE4266B7",
+    "name": "Groupe G",
+    "style": "Belgian RyePA",
+    "grains": "2-Row, Rye Malt, Munich, Crystal, Red Wheat",
+    "hops": "Mosiac, Glacier, Ahtanum",
+    "pico_beer_id": 147,
+    "catalog_ids": [
+      "picopak-2952",
+      "picopak-3070",
+      "picopak-667"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9212532DF17644F29E24222356333CB2",
+    "name": "Pan Toll Robust Porter",
+    "style": "Robust Porter",
+    "grains": "2-Row, Brown Malt, Munich",
+    "hops": "Warrior, Sterling",
+    "pico_beer_id": 148,
+    "catalog_ids": [
+      "picopak-2951",
+      "picopak-666"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2825AB1455D2434EA40FA82F9D9B804A",
+    "name": "Watershed IPA",
+    "style": "American IPA",
+    "grains": "2-Row, Munich, CaraRed",
+    "hops": "Amarillo, Centennial",
+    "pico_beer_id": 149,
+    "catalog_ids": [
+      "picopak-51"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2B9166480B084A6C81EB460FC46FDEBA",
+    "name": "Dead Guy Ale",
+    "style": "Maibock/Helles Bock",
+    "grains": "2-Row, Munich",
+    "pico_beer_id": 150,
+    "catalog_ids": [
+      "picopak-20"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2677A4C5AF8D41009685B7F677AF2163",
+    "name": "Gateway Dry Hopped Pale",
+    "style": "American Pale Ale",
+    "pico_beer_id": 151,
+    "catalog_ids": [
+      "picopak-3089",
+      "picopak-4029",
+      "picopak-4986"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=514F124BA2C649FFA439FDB872123EDE",
+    "name": "Stargazer IPA",
+    "style": "American IPA",
+    "grains": "2-Row, Victory, Carapils",
+    "hops": "Columbus, Cascade, Centennial",
+    "pico_beer_id": 152,
+    "catalog_ids": [
+      "picopak-332",
+      "picopak-52",
+      "picopak-557",
+      "picopak-558",
+      "picopak-932",
+      "picopak-982"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BA50422E1AA546ACACFAA7563AAB185D",
+    "name": "Makeda Coffee Porter",
+    "style": "Robust Porter",
+    "grains": "Two row, crystal, black patent and chocolate mals.",
+    "hops": "Centennial and Cascade.",
+    "pico_beer_id": 153,
+    "catalog_ids": [
+      "picopak-4784",
+      "picopak-7170"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6124869438D149768B331A0D83D630B8",
+    "name": "Kermode West Coast IPA",
+    "style": "IPA",
+    "grains": "2-Row, CaraRed",
+    "hops": "Citra, Simcoe",
+    "pico_beer_id": 154,
+    "catalog_ids": [
+      "picopak-4653",
+      "picopak-53"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4C02C2312F1345A98834E71C2D9C04FB",
+    "name": "Sunbath Munich Helles",
+    "style": "Helles",
+    "pico_beer_id": 157,
+    "catalog_ids": [
+      "picopak-578",
+      "picopak-60"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=76C77DD491744D16AF145633E06674B3",
+    "name": "Saison Nanok",
+    "style": "Saison",
+    "grains": "Pilsner",
+    "hops": "Belma",
+    "pico_beer_id": 158,
+    "catalog_ids": [
+      "picopak-5694",
+      "picopak-6044",
+      "picopak-662"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C969DBA9E4A14EF7ABD019581651211D",
+    "name": "Sphere Imperial Stout",
+    "style": "American Stout",
+    "pico_beer_id": 159,
+    "catalog_ids": [
+      "picopak-1012",
+      "picopak-4482"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7DF2DE9DBD8A43379DE73F3F038A626E",
+    "name": "Yellow Card Citra Blonde Ale",
+    "style": "Blonde Ale",
+    "pico_beer_id": 161,
+    "catalog_ids": [
+      "picopak-18",
+      "picopak-297",
+      "picopak-4655"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BBC786937D6C402D9D22BFE5A6611276",
+    "name": "Brew Your Own Double IPA",
+    "style": "Imperial IPA",
+    "grains": "2-Row, Crystal, Wheat",
+    "hops": "Simcoe, Chinook, Columbus, Centennial, Warrior",
+    "pico_beer_id": 162,
+    "catalog_ids": [
+      "picopak-1829",
+      "picopak-19",
+      "picopak-298",
+      "picopak-785",
+      "picopak-91"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9D43AB1AC5B845A39614FBB839967016",
+    "name": "Kayaker Cream Ale",
+    "style": "Cream Ale",
+    "pico_beer_id": 163,
+    "catalog_ids": [
+      "picopak-1958",
+      "picopak-303"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C72872AB84E44A748888C7132F15FB7A",
+    "name": "Brülosopher's Brown Ale",
+    "style": "American Brown Ale",
+    "grains": "Two row, chocolate and crystall malts.",
+    "hops": "Willamette",
+    "pico_beer_id": 165,
+    "catalog_ids": [
+      "picopak-323",
+      "picopak-986"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=610F1533090F484CB31A8E87AADE0B96",
+    "name": "Robust Porter",
+    "style": "Robust Porter",
+    "grains": "Chocolate malt, roasted barley, roasted wheat and roasted rye.",
+    "pico_beer_id": 166,
+    "catalog_ids": [
+      "picopak-2358",
+      "picopak-2927",
+      "picopak-331",
+      "picopak-353",
+      "picopak-580"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8E466BB88E9045289FCECDC4D8FD9042",
+    "name": "Central Valley Dark Mild",
+    "style": "English Dark Mild",
+    "grains": "2-Row, Caramel, Victory",
+    "hops": "Fuggle, East Kent Goldings",
+    "pico_beer_id": 169,
+    "catalog_ids": [
+      "picopak-25",
+      "picopak-4641"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E502158996DA4C52B66BF03CD5FC2BB0",
+    "name": "Central Valley Red Ale",
+    "style": "Red Ale",
+    "grains": "2-Row, Crystal, Munich",
+    "hops": "Northern Brewer, Cascade",
+    "pico_beer_id": 170,
+    "catalog_ids": [
+      "picopak-26",
+      "picopak-4652"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7408E490FB1D4424BBFDA2C329CA6D31",
+    "name": "Little RIPA Rye IPA",
+    "style": "Specialty IPA: Rye IPA",
+    "grains": "2-Row, Crystal, Rye",
+    "hops": "Copious amounts of Columbus",
+    "pico_beer_id": 171,
+    "catalog_ids": [
+      "picopak-28",
+      "picopak-4643"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=563D874EE4A648FF8428D2ECCCDBE4BB",
+    "name": "Angels Belgian Blonde",
+    "style": "Belgian Blonde Ale",
+    "grains": "2-Row, Caramunich",
+    "hops": "Saaz",
+    "pico_beer_id": 176,
+    "catalog_ids": [
+      "picopak-54"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=574376115CAA4643849E2A9F1019C2F4",
+    "name": "Brew Free! or Die IPA",
+    "style": "American IPA",
+    "grains": "2-Row, Crystal",
+    "hops": "Centennial, Cascade",
+    "pico_beer_id": 177,
+    "catalog_ids": [
+      "picopak-1327",
+      "picopak-55",
+      "picopak-760"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=70E52815B8724619B50A28DCF77E7F5F",
+    "name": "Fire in the Rye",
+    "style": "American IPA",
+    "grains": "2-Row, Maris Otter, Rye",
+    "hops": "Centennial",
+    "pico_beer_id": 178,
+    "catalog_ids": [
+      "picopak-56",
+      "picopak-636"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DDC6440C829B48608F2CD20F2BCCC300",
+    "name": "Poção da Lua Cheia",
+    "style": "Wheat Ale",
+    "grains": "2-Row, Wheat, Melanoidin",
+    "hops": "Columbus, Hallertau",
+    "pico_beer_id": 179,
+    "catalog_ids": [
+      "picopak-57",
+      "picopak-961"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5440BD674DE946628904A3088B3EA0E6",
+    "name": "Whetstoner Session IPA",
+    "style": "Session IPA",
+    "grains": "2-Row, Crystal",
+    "hops": "Amarillo, Simcoe",
+    "pico_beer_id": 180,
+    "catalog_ids": [
+      "picopak-4645",
+      "picopak-58"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A79FBCA301A64A0DB3030EA6753D51C9",
+    "name": "Talli the Timid British Dark Mild",
+    "style": "Mild",
+    "grains": "Maris Otter, Crystal, Naked Oats",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 191,
+    "catalog_ids": [
+      "picopak-588",
+      "picopak-90"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=25C0030697CB42709072D1DCA4DCE70E",
+    "name": "Brown Ale",
+    "style": "American Brown Ale",
+    "pico_beer_id": 192,
+    "catalog_ids": [
+      "picopak-92"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8647474BED244F968D3D11E025957499",
+    "name": "Max Nix English Porter",
+    "style": "Brown Porter",
+    "grains": "2-Row, Roasted Barley, Chocolate Malt",
+    "hops": "Fuggles",
+    "pico_beer_id": 193,
+    "catalog_ids": [
+      "picopak-4646",
+      "picopak-95"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A0F3C11C0B7B4AADA3D3B0EF0CC4FA8E",
+    "name": "Chin Curtain IPA",
+    "style": "American IPA",
+    "hops": "CTZ, Chinook, Simcoe",
+    "pico_beer_id": 194,
+    "catalog_ids": [
+      "picopak-1836",
+      "picopak-1905",
+      "picopak-93"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B3AA6D90BF9D40F3979B4262093AAD65",
+    "name": "Stingray IPA",
+    "style": "Imperial IPA",
+    "grains": "Two row",
+    "hops": "Citra, Mosaic, Simcoe, Southern Cross",
+    "pico_beer_id": 196,
+    "catalog_ids": [
+      "picopak-3952",
+      "picopak-96"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=980238CF9F9045A4821962EB288795F0",
+    "name": "El Marron Mexican Dark Cerveza",
+    "style": "Dark American Lager",
+    "grains": "Two row, specialty chocolate and roasted malts",
+    "hops": "Liberty",
+    "pico_beer_id": 197,
+    "catalog_ids": [
+      "picopak-4181",
+      "picopak-94"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=65415C364FDB4105968513F1D7004D45",
+    "name": "Jack's Ass English IPA",
+    "style": "English IPA",
+    "grains": "English pale and crystal malts",
+    "hops": "Northern Brewer",
+    "pico_beer_id": 201,
+    "catalog_ids": [
+      "picopak-104",
+      "picopak-7351",
+      "picopak-8226"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A4A8C2A442914150A0F5D4ACBF1841B8",
+    "name": "Autumnator Dopplebock",
+    "style": "Doppelbock",
+    "pico_beer_id": 202,
+    "catalog_ids": [
+      "picopak-105"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B50B12D8C7EB4F6AADC1EFACFF1DED63",
+    "name": "Monk's Phunk",
+    "style": "Belgian Dark Strong Ale",
+    "grains": "Munich, Caramunich, Caramel, Special B, Chocolate",
+    "pico_beer_id": 203,
+    "catalog_ids": [
+      "picopak-106",
+      "picopak-5609"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D6E4FBC0813E4DE59C3CECCA2DE172ED",
+    "name": "REDCON Irish Red Ale",
+    "style": "Irish Red Ale",
+    "grains": "Two row, crystal, honey and pale chocolate",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 214,
+    "catalog_ids": [
+      "picopak-296",
+      "picopak-2994",
+      "picopak-3451",
+      "picopak-5652"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=0B1E201FA44C4B5DBAF082F9F303A079",
+    "name": "JP's Oatmeal Stout",
+    "style": "Oatmeal Stout",
+    "grains": "2-Row, Flaked oats, Chocolate malt, specialty malts",
+    "hops": "Northern Brewer, East Kent Goldings",
+    "pico_beer_id": 226,
+    "catalog_ids": [
+      "picopak-8481"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A7EE4DB4916149D4B4294583D4DE24E4",
+    "name": "Laimas Kolsch",
+    "style": "Kölsch",
+    "grains": "German Pilsner",
+    "hops": "Magnum, Hallertau Mittelfruh",
+    "pico_beer_id": 227,
+    "catalog_ids": [
+      "picopak-449",
+      "picopak-980"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6D710A0C495C4765B2405FD1EAC930FF",
+    "name": "Ryedorado",
+    "style": "American Wheat or Rye Beer",
+    "grains": "2Row, rye, specialty malts",
+    "hops": "E Dorado",
+    "pico_beer_id": 231,
+    "catalog_ids": [
+      "picopak-450",
+      "picopak-985"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C8E5A5ABA68649EB8EAF122592C2BC72",
+    "name": "Moirai India Pale Ale",
+    "style": "American IPA",
+    "grains": "2 Row, Munich, Crystal",
+    "hops": "Chinook, Columbus, Summit, Cascade, El Dorado, Amarillo",
+    "pico_beer_id": 232,
+    "catalog_ids": [
+      "picopak-451",
+      "picopak-981"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=518DE14060A44FF190FB834681C6B2A0",
+    "name": "Saison Du Mont G II",
+    "style": "Saison",
+    "grains": "Pilsner, Vienna, flaked oats, wheat and cane sugar",
+    "hops": "Mt. Hood, Amarillo",
+    "pico_beer_id": 237,
+    "catalog_ids": [
+      "picopak-754",
+      "picopak-990"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A9514C80CA2546B48B3E82130A77482A",
+    "name": "Grand Master Mash Belgian Dark Strong",
+    "style": "Belgian Dark Strong Ale",
+    "grains": "Belgian pale, Munich, Special B, and Victory malts",
+    "hops": "Hallertau and Hersbrucker",
+    "pico_beer_id": 238,
+    "catalog_ids": [
+      "picopak-2978",
+      "picopak-717"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9F3FCCC3F81E4B528224202821C6A608",
+    "name": "Redoubt Red Ale",
+    "style": "American Amber Ale",
+    "grains": "2-Row and crystal",
+    "hops": "Cascade, CTZ, Nugget and Mt. Hood",
+    "pico_beer_id": 240,
+    "catalog_ids": [
+      "picopak-1021",
+      "picopak-3339"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=28DC35E709874E2F85F214F426DC1EBF",
+    "name": "Alexander's Folly Russian Imperial Stout",
+    "style": "Russian Imperial Stout",
+    "grains": "2Row, Specialty and roasted malts",
+    "hops": "Willamette, Nugget, Cascade",
+    "pico_beer_id": 241,
+    "catalog_ids": [
+      "picopak-1004",
+      "picopak-1141",
+      "picopak-4839",
+      "picopak-586",
+      "picopak-678"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1B8A70F47AC549908CB70F904C5ED6BB",
+    "name": "Piperales Smoked Amber Ale",
+    "style": "American Amber Ale",
+    "pico_beer_id": 244,
+    "catalog_ids": [
+      "picopak-4088",
+      "picopak-569"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=45DAC7F919EE4A7BB5E478A1CD71B5E0",
+    "name": "Libertas Pre-Prohibition Cream Ale",
+    "style": "Cream Ale",
+    "grains": "2-Row, German Pilsner, Flaked Corn, Flaked Rye",
+    "hops": "Liberty, Columbus",
+    "pico_beer_id": 245,
+    "catalog_ids": [
+      "picopak-1726",
+      "picopak-647",
+      "picopak-959"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A28C68F16E8B4EC3BAD7424F113D67CC",
+    "name": "Petal-Pusher Elderflower Lager",
+    "style": "Experimental Beer",
+    "grains": "2-Row, Maris Otter, Toasted Wheat",
+    "hops": "Pacifica, Galaxy and Elderflowers!",
+    "pico_beer_id": 247,
+    "catalog_ids": [
+      "picopak-4419",
+      "picopak-648"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9E386D9309D841CB807E426B829A8923",
+    "name": "Scott Lothamer's Brown Eyed Woman Brown Ale",
+    "style": "British Brown Ale",
+    "grains": "Pale malt, Crystal malt, Chocolate malt, specialty malts",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 249,
+    "catalog_ids": [
+      "picopak-5046",
+      "picopak-5560",
+      "picopak-656"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=AA40AFF1BEC64459AFD0158C727924AF",
+    "name": "Citra Saison",
+    "style": "Saison",
+    "grains": "Pilsner, Wheat, Munich malts and Cane Sugar",
+    "hops": "Magnum, Citra",
+    "pico_beer_id": 250,
+    "catalog_ids": [
+      "picopak-3172",
+      "picopak-658",
+      "picopak-977"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3B1CE7587E8444D18D044EBE0C5CA2A6",
+    "name": "Nesto's Weizen",
+    "style": "American Wheat or Rye Beer",
+    "grains": "Belgian Wheat, Belgian Pils, Acidulated Malt",
+    "hops": "Hallertau Mittelfruh",
+    "pico_beer_id": 251,
+    "catalog_ids": [
+      "picopak-1703",
+      "picopak-3973",
+      "picopak-4487",
+      "picopak-660",
+      "picopak-777"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9A9E85FAB95F424D991659AD678F13C5",
+    "name": "Fire In The Hole",
+    "style": "Irish Red Ale",
+    "grains": "Two Row Pale, Crystal, Roast",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 252,
+    "catalog_ids": [
+      "picopak-1057",
+      "picopak-663"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=490ED0C5E45B4D058D75984C1DE9B820",
+    "name": "Warren Billups' Kolsch",
+    "style": "Kölsch",
+    "grains": "Pilsener, Munich, Wheat",
+    "hops": "Hallertau",
+    "pico_beer_id": 254,
+    "catalog_ids": [
+      "picopak-1435",
+      "picopak-672",
+      "picopak-8877"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6E6868B937924D9087179EA860BFAF66",
+    "name": "Paladin Hoppy Pale",
+    "style": "American Pale Ale",
+    "grains": "2-Row, Crystal-45, Flaked Oats",
+    "hops": "Citra, Cascade",
+    "pico_beer_id": 256,
+    "catalog_ids": [
+      "picopak-3144",
+      "picopak-3145",
+      "picopak-6352",
+      "picopak-715"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2B324757D4074C268632E06AECD054D3",
+    "name": "1724 ESB",
+    "style": "Extra Special/Strong Bitter (English Pale Ale)",
+    "pico_beer_id": 258,
+    "catalog_ids": [
+      "picopak-2372",
+      "picopak-2473",
+      "picopak-741",
+      "picopak-976"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B46E3A485A054CE9B793B423DF90B5F7",
+    "name": "Habitus Double India Pale Ale",
+    "style": "Double IPA",
+    "grains": "2-Row, rye",
+    "hops": "Chinook, Sterling",
+    "pico_beer_id": 259,
+    "catalog_ids": [
+      "picopak-1095",
+      "picopak-1698",
+      "picopak-2268",
+      "picopak-3867",
+      "picopak-4083",
+      "picopak-4380",
+      "picopak-759"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8703FF9B097549E8A03A5B1C6E553482",
+    "name": "Still Hill IPA",
+    "style": "American IPA",
+    "pico_beer_id": 260,
+    "catalog_ids": [
+      "picopak-1676",
+      "picopak-4715",
+      "picopak-765"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=669B9C65CDB745F4B71C23DBF426CC47",
+    "name": "Red Storm Ryesing Amber",
+    "style": "American Amber Ale",
+    "grains": "Rye, Dark crystal, specialty, 2-Row",
+    "hops": "Mt. Hood",
+    "pico_beer_id": 261,
+    "catalog_ids": [
+      "picopak-3229",
+      "picopak-766"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DCA7A58D9C104F8CA058C3478066CEA7",
+    "name": "Sluggy Buggy Oatmeal Stout",
+    "style": "Oatmeal Stout",
+    "pico_beer_id": 262,
+    "catalog_ids": [
+      "picopak-3228",
+      "picopak-4486",
+      "picopak-951"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=08B26727375D45DDA2542A73F598E754",
+    "name": "Bourbon Vanilla Imperial Porter",
+    "style": "Robust Porter",
+    "grains": "Pale, Munich, Chocolate Malt, Brown Malt",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 268,
+    "catalog_ids": [
+      "picopak-3147",
+      "picopak-3148",
+      "picopak-3855"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=16C024786C7C47F5A804D5D39BEE74EA",
+    "name": "Prison Break Pilsner",
+    "style": "German Pilsner",
+    "pico_beer_id": 269,
+    "catalog_ids": [
+      "picopak-2373",
+      "picopak-948"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C68F76E20680433C956EB4A78B678754",
+    "name": "Zombie Saison",
+    "style": "Saison",
+    "grains": "Belgian pale, flaked oats and wheat.",
+    "hops": "Noble hops",
+    "pico_beer_id": 270,
+    "catalog_ids": [
+      "picopak-956"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=23A9E6AC7A45493A8CB7DCFEB98D2BAD",
+    "name": "Heroes Never Die",
+    "style": "American IPA",
+    "grains": "Two Row Pale, Biscuit and Crystal.",
+    "hops": "Falconer's Flight, Mosaic",
+    "pico_beer_id": 271,
+    "catalog_ids": [
+      "picopak-1008",
+      "picopak-1661"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=CC8264A638EA4CF2B25375740EF07C47",
+    "name": "Dale's Pale Ale",
+    "style": "American Pale Ale",
+    "pico_beer_id": 273,
+    "catalog_ids": [
+      "picopak-1431",
+      "picopak-1826",
+      "picopak-2983",
+      "picopak-6169",
+      "picopak-7304",
+      "picopak-8907"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=76BC874019404B9DA8156BB39FB53319",
+    "name": "Classic Lemon Kombucha",
+    "style": "Kombucha",
+    "adjuncts": "No hops, just lemon peel.",
+    "pico_beer_id": 274,
+    "catalog_ids": [
+      "picopak-1098",
+      "picopak-2458",
+      "picopak-3697"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E8992648D58B4D70AD45AB3265DFAEED",
+    "name": "Mowin' Time Backyard Pils",
+    "style": "German Pilsner",
+    "grains": "Pils, Munich",
+    "hops": "Saphir",
+    "pico_beer_id": 275,
+    "catalog_ids": [
+      "picopak-1016",
+      "picopak-2883"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=FCC67AB36B9847EEA34FAF19AB621939",
+    "name": "Kudzu Robust Porter",
+    "style": "Robust Porter",
+    "grains": "Pale, Munich, crystal, chocolate and roast malts",
+    "hops": "Centennial",
+    "pico_beer_id": 276,
+    "catalog_ids": [
+      "picopak-1010",
+      "picopak-2007",
+      "picopak-2120"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=CCF1B9CFF3DD4D7E92D95276BD94BCB9",
+    "name": "Nathan Smith's Loose Change Scottish Light Ale",
+    "style": "Scottish Light",
+    "grains": "Crystal, Maris Otter, Munich, specialty malts",
+    "hops": "East Kent Golding",
+    "pico_beer_id": 280,
+    "catalog_ids": [
+      "picopak-1025",
+      "picopak-1397",
+      "picopak-7770"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=407707337B334B86A13A157C698974BA",
+    "name": "Bang It Out",
+    "style": "Belgian Pale Ale",
+    "grains": "Belgian Pale and specialty malts",
+    "hops": "Noble variety",
+    "pico_beer_id": 281,
+    "catalog_ids": [
+      "picopak-1026",
+      "picopak-1979",
+      "picopak-2121"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=15BA40C0EAF14F68A96CAF1855E5AF0E",
+    "name": "Way Off Kilter Scottish Light 60",
+    "style": "Scottish Light 60/-",
+    "grains": "2 Row, peated and crystal malts",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 282,
+    "catalog_ids": [
+      "picopak-1803",
+      "picopak-2674",
+      "picopak-3455",
+      "picopak-4397"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A6ACC3A84A58419BB5AF85F46FD8FD0A",
+    "name": "North Pacific Ale",
+    "style": "Scottish Light 60/-",
+    "pico_beer_id": 284,
+    "catalog_ids": [
+      "picopak-1034",
+      "picopak-2886",
+      "picopak-4002",
+      "picopak-4383",
+      "picopak-5394"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=50FEB42E852740429FD6234A52A4AA10",
+    "name": "Kodiak Sunshine Steam Beer",
+    "style": "California Common Beer",
+    "grains": "2-row, Crystal 20L, Specialty Malts",
+    "hops": "Northern Brewer, East Kent Goldings",
+    "pico_beer_id": 285,
+    "catalog_ids": [
+      "picopak-1035",
+      "picopak-1744",
+      "picopak-1802",
+      "picopak-2932",
+      "picopak-4711"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=30863FD4DD4E47BA89BB4D684CCAFE5F",
+    "name": "Tipopils",
+    "style": "Bohemian Pilsener",
+    "grains": "Bohemian pils",
+    "hops": "Saphir",
+    "pico_beer_id": 291,
+    "catalog_ids": [
+      "picopak-2216",
+      "picopak-2953"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E198BB48A4804BDD896996FABAA9AC28",
+    "name": "Bibock",
+    "style": "Helles Bock",
+    "pico_beer_id": 292,
+    "catalog_ids": [
+      "picopak-2214",
+      "picopak-2482",
+      "picopak-2577"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5E275391CEE34203843CE4428F542ED3",
+    "name": "Nigredo Schwarzbier",
+    "style": "Schwarzbier (Black Beer)",
+    "pico_beer_id": 293,
+    "catalog_ids": [
+      "picopak-2213",
+      "picopak-3060",
+      "picopak-3174"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8A46F636D4744AA2A0B47C33A9AEA906",
+    "name": "El Conquistador IPA",
+    "style": "American IPA",
+    "pico_beer_id": 300,
+    "catalog_ids": [
+      "picopak-1336",
+      "picopak-3146",
+      "picopak-6531"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2D6487B63BAE40438569FB4ACBD2EE12",
+    "name": "Ubahdank IPA",
+    "style": "American IPA",
+    "grains": "American 2Row, Wheat malts",
+    "hops": "Mosaic,Cascade, Centennial, Amarillo",
+    "pico_beer_id": 301,
+    "catalog_ids": [
+      "picopak-1340",
+      "picopak-2072",
+      "picopak-5325",
+      "picopak-5330"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C6442DB924F1461E84B013475C3DD709",
+    "name": "Hotzenplotz",
+    "style": "American Amber Ale",
+    "grains": "Pils, specialty crystal and red malts.",
+    "hops": "Amarillo, Cascade and Hercules.",
+    "pico_beer_id": 310,
+    "catalog_ids": [
+      "picopak-1828",
+      "picopak-2227",
+      "picopak-2447"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5710BBA22C1A43DE9F5EF18146DA6031",
+    "name": "NB30 IPA",
+    "style": "American IPA",
+    "grains": "Pale 2 Row, wheat and carapils",
+    "hops": "Citra, Mosaic, Centennial, Amarillo and Nelson Sauvin",
+    "pico_beer_id": 312,
+    "catalog_ids": [
+      "picopak-1827",
+      "picopak-2218",
+      "picopak-2342"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D95AE4B5C2F044FCBE124B1B7F335B67",
+    "name": "Hoppy Face Amber Ale",
+    "style": "American Amber Ale",
+    "pico_beer_id": 313,
+    "catalog_ids": [
+      "picopak-1895",
+      "picopak-3245"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=AD432E6E2CD344F9BD2983F0753268D7",
+    "name": "Total Eclipse Black Ale",
+    "style": "Specialty IPA: Black IPA",
+    "pico_beer_id": 314,
+    "catalog_ids": [
+      "picopak-1894",
+      "picopak-5332"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=90EEAA2252734CDDAC0FCC17F3A8BAB6",
+    "name": "Hoppy Claus Holiday Ale",
+    "style": "Christmas/Winter Specialty Spiced Beer",
+    "grains": "Wheat",
+    "pico_beer_id": 315,
+    "catalog_ids": [
+      "picopak-1790",
+      "picopak-3719"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=F5AFF2FC323743CABD96779D90E1265F",
+    "name": "Anker Beard Amber",
+    "style": "American Amber Ale",
+    "pico_beer_id": 319,
+    "catalog_ids": [
+      "picopak-1570",
+      "picopak-2012",
+      "picopak-2118"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D3F441FDBC3040018F9FBF3FD2CD40C8",
+    "name": "Stubble Kolsch",
+    "style": "Kölsch",
+    "pico_beer_id": 320,
+    "catalog_ids": [
+      "picopak-1569",
+      "picopak-1571",
+      "picopak-2119"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=FF47347D978342B692F8DA7DF226C24F",
+    "name": "Anaheim Hefeweizen",
+    "style": "Weizen/Weissbier",
+    "pico_beer_id": 346,
+    "catalog_ids": [
+      "picopak-1900",
+      "picopak-5157",
+      "picopak-7843"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1376D6DC2F354B4FAC63D04DC34AA8CF",
+    "name": "La Mexicana Lager",
+    "style": "Vienna Lager",
+    "pico_beer_id": 347,
+    "catalog_ids": [
+      "picopak-1652",
+      "picopak-7771"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=91924DA214A14580A59E14B963319723",
+    "name": "Bad Habit",
+    "style": "Belgian Specialty Ale",
+    "pico_beer_id": 351,
+    "catalog_ids": [
+      "picopak-2217",
+      "picopak-4140"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E5629483FF8B41ECA64751F1D5AD0879",
+    "name": "Hop Bang Boom Imperial IPA",
+    "style": "Imperial IPA",
+    "hops": "Citra and Simcoe",
+    "pico_beer_id": 354,
+    "catalog_ids": [
+      "picopak-2292",
+      "picopak-2947",
+      "picopak-4716",
+      "picopak-4717",
+      "picopak-5814",
+      "picopak-6598",
+      "picopak-7320"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5E8D4AB268454C2F98E4D84C3F435043",
+    "name": "Van Damme",
+    "style": "Belgian Blond Ale",
+    "pico_beer_id": 355,
+    "catalog_ids": [
+      "picopak-2291",
+      "picopak-3175"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B370D498303A496E856078C21DF7384B",
+    "name": "Black Eye PA",
+    "style": "Specialty IPA: Black IPA",
+    "pico_beer_id": 356,
+    "catalog_ids": [
+      "picopak-2290",
+      "picopak-2976",
+      "picopak-3171"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2F090AD95FF24DBABAD2E10195A073D6",
+    "name": "Leadbetter Red Scottish Style Ale",
+    "style": "American Amber Ale",
+    "pico_beer_id": 357,
+    "catalog_ids": [
+      "picopak-1793",
+      "picopak-6532"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B5BFD2DBCE5244FCBD01E3E85DB19DD3",
+    "name": "Lake Michigan IPA",
+    "style": "American IPA",
+    "pico_beer_id": 361,
+    "catalog_ids": [
+      "picopak-1857",
+      "picopak-2341"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=11BE051DA5C741BEA498AB1DF4C346E7",
+    "name": "802 Brew Juicy Hazy Double IPA",
+    "style": "Double IPA",
+    "grains": "Two row, wheat, and crystal malts",
+    "hops": "Galaxy, Citra and El Dorado",
+    "pico_beer_id": 362,
+    "catalog_ids": [
+      "picopak-1904",
+      "picopak-2409",
+      "picopak-4450",
+      "picopak-4927"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3DFBA40058CF41FD94BCA7149D90F705",
+    "name": "Sorachi Ace Saison",
+    "style": "Saison",
+    "hops": "Sorachi Ace",
+    "pico_beer_id": 363,
+    "catalog_ids": [
+      "picopak-1928",
+      "picopak-2225",
+      "picopak-2448"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DFDD42C5DA764B72B5A6FD373EC1595B",
+    "name": "Tropical Pale Ale",
+    "style": "American Pale Ale",
+    "hops": "Azacca",
+    "pico_beer_id": 364,
+    "catalog_ids": [
+      "picopak-1927",
+      "picopak-2516"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DB765FC20F3B4EDAAF6509C0CA1786B2",
+    "name": "Berliner Blut",
+    "style": "American Amber Ale",
+    "hops": "Perle, Polaris",
+    "pico_beer_id": 365,
+    "catalog_ids": [
+      "picopak-2182",
+      "picopak-2650",
+      "picopak-2940",
+      "picopak-3052",
+      "picopak-3173"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D845642D0EEF45E28BD4F3EA9CECB89D",
+    "name": "Berliner Hell",
+    "style": "Munich Helles",
+    "hops": "Pearl, Hersbrucker Pure, Tettnanger",
+    "pico_beer_id": 366,
+    "catalog_ids": [
+      "picopak-1926",
+      "picopak-2361",
+      "picopak-2451"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=377A76F996BF459EBA7755C4984D128E",
+    "name": "Berlin IPA",
+    "style": "English IPA",
+    "hops": "Perle, Polaris, Tettnanger, Smaragd, Cascade",
+    "pico_beer_id": 367,
+    "catalog_ids": [
+      "picopak-2219",
+      "picopak-2362"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3DFD0757940F4BF09C0CACE29895067B",
+    "name": "Gourdgeous Harvest Ale",
+    "style": "Spice, Herb, or Vegetable Beer",
+    "grains": "2row, Munich, crystal and victory malts and fall spices",
+    "hops": "Willamette, Jamaican Allspice",
+    "pico_beer_id": 374,
+    "catalog_ids": [
+      "picopak-2274",
+      "picopak-2878"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DBDCD87E1B604EE6B8703FA280F3EF8B",
+    "name": "Beardless Brewer Red Ale",
+    "style": "Irish Red Ale",
+    "grains": "English pale, Vienna, Midnight wheat and crystal malts",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 377,
+    "catalog_ids": [
+      "picopak-2300",
+      "picopak-2982",
+      "picopak-3053",
+      "picopak-4929"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=F4B9F44A247C4F1995DA7FFB957CF3CD",
+    "name": "Pike Monk's Uncle Tripel",
+    "style": "Belgian Tripel",
+    "grains": "Pilsner",
+    "hops": "Nugget, Saaz",
+    "pico_beer_id": 382,
+    "catalog_ids": [
+      "picopak-2570",
+      "picopak-3149",
+      "picopak-3583",
+      "picopak-4314",
+      "picopak-4348",
+      "picopak-4481"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=001E7B4A424E4491AEEB8BD0D0F14C6E",
+    "name": "Amber Waves 100-Mile Beer",
+    "style": "American Pale Ale",
+    "grains": "Malted Skagit Valley Copeland 2-row barley, other Skagit malts",
+    "hops": "Cascade, Centennial",
+    "pico_beer_id": 390,
+    "catalog_ids": [
+      "picopak-2934",
+      "picopak-4012",
+      "picopak-5218",
+      "picopak-5974"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7E41AD44F8E74F01B8D020AF6170E59F",
+    "name": "Mermaid's Red",
+    "style": "American Amber Ale",
+    "grains": "Pale, crystal, and chocolate malts",
+    "hops": "Centennial and Cascade",
+    "pico_beer_id": 391,
+    "catalog_ids": [
+      "picopak-2941",
+      "picopak-3860",
+      "picopak-3861"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=50B570E162BE4AACAE9DA67D615BF283",
+    "name": "Son of a Mudder American Brown Ale",
+    "style": "American Brown Ale",
+    "grains": "2 row, Caramel, Victory, Honey malt, Chocolate malt, Flaked oats",
+    "hops": "Summit, Chinook, Zeus",
+    "pico_beer_id": 396,
+    "catalog_ids": [
+      "picopak-3003",
+      "picopak-6137"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B05AF786E6B6429DA650AA10FCF42B42",
+    "name": "Brian Cooper's Kick Your Own Ass Strong Ale",
+    "style": "American Strong Ale",
+    "grains": "2-Row, Crystal malt, Flaked oats",
+    "hops": "Chinook",
+    "pico_beer_id": 397,
+    "catalog_ids": [
+      "picopak-3005",
+      "picopak-7254",
+      "picopak-8840"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A26622D6B0E945B79ED5394913D438AD",
+    "name": "Saison Lorane",
+    "style": "Saison",
+    "grains": "Pilsner, wheat and rye",
+    "hops": "Mandarina Bavaria",
+    "pico_beer_id": 398,
+    "catalog_ids": [
+      "picopak-3007",
+      "picopak-4400",
+      "picopak-5351"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B4DC0C37D69047E39343E401AE677194",
+    "name": "Classic Ginger Kombucha",
+    "style": "Kombucha",
+    "pico_beer_id": 399,
+    "catalog_ids": [
+      "picopak-3059"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=FAC17B3DFEB541BC8E22F230CF1533F8",
+    "name": "Misery Whip Scotch Ale",
+    "style": "Scottish Heavy 70/-",
+    "grains": "Maris Otter, Munich, Chocolate malt, Roasted barley, various specialty malts",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 405,
+    "catalog_ids": [
+      "picopak-3377",
+      "picopak-3378",
+      "picopak-4618",
+      "picopak-4793",
+      "picopak-4840",
+      "picopak-5247",
+      "picopak-5352",
+      "picopak-6130"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5E12214394224919ACC8A4DC0E189D4A",
+    "name": "El Charro Oaked Agave Amber Ale",
+    "style": "American Amber Ale",
+    "grains": "2-Row, Crystal malts, Munich Dark, Special B",
+    "hops": "Willamette, East Kent Goldings",
+    "pico_beer_id": 407,
+    "catalog_ids": [
+      "picopak-3469",
+      "picopak-4620",
+      "picopak-8049"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=958F02DE453D411DAAAB1BE2A7A3D677",
+    "name": "Ipswich Stout",
+    "style": "Oatmeal Stout",
+    "grains": "Oats, specialty malts",
+    "pico_beer_id": 408,
+    "catalog_ids": [
+      "picopak-3470",
+      "picopak-5388",
+      "picopak-6545",
+      "picopak-7959"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=921E62A868664DA1A327C59BB7D7ADBE",
+    "name": "Brexit Stage Left",
+    "style": "Mild",
+    "grains": "Light, sweet and filled with complexity. Biscuit, chocolate coffee, and toffee notes.",
+    "hops": "Spice and light citrus notes.",
+    "pico_beer_id": 409,
+    "catalog_ids": [
+      "picopak-3490",
+      "picopak-5458",
+      "picopak-5613"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=FC57C65E03E34E5A8AD57C9294E5858F",
+    "name": "21.3 New England Hazy IPA",
+    "style": "American IPA",
+    "grains": "Munich, Flaked Oats, specialty malts",
+    "hops": "Citra, Mosaic, Cascade",
+    "pico_beer_id": 411,
+    "catalog_ids": [
+      "picopak-3727",
+      "picopak-6170"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=71B47E2A56B84C42BCDC1E0A691D664D",
+    "name": "Crushing Student Debt Belgian Dubbel",
+    "style": "Belgian Dubbel",
+    "grains": "Oats, Special B, Pilsner",
+    "hops": "Tettnang",
+    "pico_beer_id": 413,
+    "catalog_ids": [
+      "picopak-3953",
+      "picopak-5360"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3D9FC278438046E3BD677BAEAD0B5B9E",
+    "name": "Belgium Is A Country Belgian IPA",
+    "style": "Specialty IPA: Belgian IPA",
+    "grains": "Pilsner, Oats and Vienna",
+    "hops": "Azacca, Mosic, Citra",
+    "pico_beer_id": 414,
+    "catalog_ids": [
+      "picopak-3954",
+      "picopak-4150",
+      "picopak-6026"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C4AB02ACC4244180B0F47DC5E7641744",
+    "name": "Cousin Stoopid Grand Cru",
+    "style": "Belgian Specialty Ale",
+    "pico_beer_id": 415,
+    "catalog_ids": [
+      "picopak-3955",
+      "picopak-5361"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7C13E3466FE0466994CC0A8C573B8BFE",
+    "name": "Gregorius Van Nyssa",
+    "style": "Weizen/Weissbier",
+    "grains": "Pilsner malt, Wheat",
+    "hops": "Fuggles",
+    "pico_beer_id": 416,
+    "catalog_ids": [
+      "picopak-4138",
+      "picopak-6038"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5EA15F8AC2C441798897910EB566D4E6",
+    "name": "Mozes de Donkere",
+    "style": "Belgian Dubbel",
+    "grains": "Pilsner malt, Wheat, specialty malts",
+    "hops": "East Kent Golding",
+    "pico_beer_id": 417,
+    "catalog_ids": [
+      "picopak-4139",
+      "picopak-6037",
+      "picopak-6321"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BED8156421F74D7B8CC11AB89AFEEE85",
+    "name": "Fog Juice",
+    "style": "Specialty IPA",
+    "grains": "Plenty of Oats create a blanket of fog to meld with the tasty Maris Otter and other malts.",
+    "hops": "Teaming with fresh Amarillo, Mosaic, and Citra.",
+    "pico_beer_id": 420,
+    "catalog_ids": [
+      "picopak-4293"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BC0AF059C1B34BF08DA08D9C94F2A2AF",
+    "name": "Citra Kölsch",
+    "style": "Kölsch",
+    "grains": "Pilsner malt, Vienna malt, light crystal malt.",
+    "hops": "Hallertau, Citra.",
+    "pico_beer_id": 422,
+    "catalog_ids": [
+      "picopak-4515",
+      "picopak-5612"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=834C97479ECF46289A0BA9931207A863",
+    "name": "easyRyder English Mild",
+    "style": "Mild",
+    "grains": "Maris Otter, Munich, White Wheat, various specialty malts",
+    "hops": "Magnum, Cascade",
+    "pico_beer_id": 424,
+    "catalog_ids": [
+      "picopak-6176",
+      "picopak-6975"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6C7F2B97E43A4AD38971EC73ADA7619B",
+    "name": "Osiris Farmhouse Ale",
+    "style": "Saison",
+    "pico_beer_id": 426,
+    "catalog_ids": [
+      "picopak-4759",
+      "picopak-5800"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1CF2316CA2884FBDB545A81F3925A60D",
+    "name": "Wuldor UK Barley Wine",
+    "style": "English Barleywine",
+    "pico_beer_id": 427,
+    "catalog_ids": [
+      "picopak-4760",
+      "picopak-4761",
+      "picopak-5359",
+      "picopak-6031",
+      "picopak-6032",
+      "picopak-6636",
+      "picopak-7150",
+      "picopak-8118"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A485DA92F33048DC8C89A3564FB1EC3E",
+    "name": "Heimdall Imperial Rye Bock",
+    "style": "Doppelbock",
+    "pico_beer_id": 428,
+    "catalog_ids": [
+      "picopak-4762",
+      "picopak-5326"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=758FF780E5C94099928DC1F37A2EF175",
+    "name": "Yeast Wrangler Double IPA",
+    "style": "Double IPA",
+    "grains": "Pilsner, Crystal, specialty malts",
+    "hops": "Cascade, Centennial, Citra, Mosaic, Warrior",
+    "pico_beer_id": 432,
+    "catalog_ids": [
+      "picopak-4766",
+      "picopak-5246",
+      "picopak-6588",
+      "picopak-7056"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8DEDC24174224A929EE40C23FC4D71D7",
+    "name": "Washout Wheat",
+    "style": "American Wheat or Rye Beer",
+    "grains": "Wheat, Pale malt",
+    "hops": "Hallertau Mittelfruh",
+    "pico_beer_id": 433,
+    "catalog_ids": [
+      "picopak-4767",
+      "picopak-4783",
+      "picopak-6966"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=351B1A4CB766433FAD1279A33FEA4DAE",
+    "name": "Pluff Mud Porter",
+    "style": "American Porter",
+    "grains": "Pale malt, Munich, Crystal, various specialty malts",
+    "hops": "Northern Brewer",
+    "pico_beer_id": 434,
+    "catalog_ids": [
+      "picopak-4777",
+      "picopak-4782",
+      "picopak-5928"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2B10FDB3D9F940B19096AE67A23B006C",
+    "name": "The Red Queen",
+    "style": "Specialty IPA: Red IPA",
+    "grains": "Two-Row, Rye, CaraRed, Crystal 120L and other specialty malts",
+    "hops": "Cascade, Amarillo, Willamette",
+    "pico_beer_id": 435,
+    "catalog_ids": [
+      "picopak-4779",
+      "picopak-6893",
+      "picopak-8256"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=ABDF05F9BBFA4DB9974C31C5EADBBFBC",
+    "name": "Devil's Food Chocolate Porter",
+    "style": "American Porter",
+    "grains": "Maris Otter pale, Special Roast, Chocolate, brown and caramel malts",
+    "hops": "Magnum and Crystal",
+    "pico_beer_id": 439,
+    "catalog_ids": [
+      "picopak-5055",
+      "picopak-5302",
+      "picopak-5696"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=79865FF7F21A42A088A282C06050AB21",
+    "name": "Anotter Barleywine",
+    "style": "English Barleywine",
+    "grains": "Maris Otter, Crystal",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 451,
+    "catalog_ids": [
+      "picopak-5455",
+      "picopak-5619",
+      "picopak-6028"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2E3B787375664903BB4013FD3243E356",
+    "name": "Dark Nebula Porter",
+    "style": "American Porter",
+    "grains": "Maris Otter, Vienna, Chocolate Rye, Roasted Barley",
+    "hops": "Magnum, Cascade, Centennial",
+    "pico_beer_id": 452,
+    "catalog_ids": [
+      "picopak-5568",
+      "picopak-6029",
+      "picopak-6091"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5B9923D404E8447C880529A0FB44D3F8",
+    "name": "Anniversary Double IPA",
+    "style": "Imperial IPA",
+    "pico_beer_id": 455,
+    "catalog_ids": [
+      "picopak-5464",
+      "picopak-7319",
+      "picopak-7366"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E6B13B6519B94F4AB66CCB945D465EC9",
+    "name": "Rooby Red Ale",
+    "style": "Irish Red Ale",
+    "grains": "2-row, Victory, Crystal",
+    "hops": "Warrior, Saaz",
+    "pico_beer_id": 456,
+    "catalog_ids": [
+      "picopak-5594"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=45FFE2BB5E354D1DB333D2480D2EB065",
+    "name": "Ryantology Oktoberfest",
+    "style": "Oktoberfest/Marzen",
+    "grains": "Munich, Vienna, Pilsner, & various German specialty malts",
+    "hops": "Hallertau",
+    "pico_beer_id": 457,
+    "catalog_ids": [
+      "picopak-5587"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6D5BF5B188544F96913A643C8A6212AE",
+    "name": "Oceanfront Hefeweizen",
+    "style": "Dunkles Weissbier",
+    "grains": "Wheat, Pilsner, Special B, specialty malts",
+    "hops": "Hallertauer Mittelfruh, Citra",
+    "pico_beer_id": 465,
+    "catalog_ids": [
+      "picopak-6174",
+      "picopak-6204",
+      "picopak-7745"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E1E18F7C8F4649529DCFDF57ECED4A4B",
+    "name": "Vienna Pappa",
+    "style": "Vienna Lager",
+    "grains": "Vienna and pilsner malts",
+    "hops": "Tettnang, Magnum",
+    "pico_beer_id": 466,
+    "catalog_ids": [
+      "picopak-5695",
+      "picopak-6054"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=860C99E29C2D4DDFBB14355F841330DC",
+    "name": "Black Beauty Cream Stout",
+    "style": "Sweet Stout",
+    "grains": "Black Malt, Maris Otter, Chocolate Malt, Crystal 120",
+    "hops": "Magnum",
+    "pico_beer_id": 472,
+    "catalog_ids": [
+      "picopak-5968",
+      "picopak-7301"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1516EE4A6AD34892B7C22737A69D127F",
+    "name": "Nighthawk Rye Pale Ale",
+    "style": "American Pale Ale",
+    "grains": "2-Row, Rye, Vienna, specialty malts",
+    "hops": "Mosaic",
+    "pico_beer_id": 473,
+    "catalog_ids": [
+      "picopak-5958",
+      "picopak-6850"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=4E633061C68D45CA92B37366D8363496",
+    "name": "Riley's Irish Red Ale",
+    "style": "Irish Red Ale",
+    "grains": "2-Row, Crystal, Roasted Barley, specialty malts",
+    "hops": "Columbus",
+    "pico_beer_id": 474,
+    "catalog_ids": [
+      "picopak-5960",
+      "picopak-7302",
+      "picopak-8120"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=52B0B2900D154B658A30D0F950B4C50A",
+    "name": "Sandy Beaches",
+    "style": "American Lager",
+    "grains": "Pilsner, carapils",
+    "hops": "Simcoe, Citra, Mosaic",
+    "pico_beer_id": 479,
+    "catalog_ids": [
+      "picopak-5862",
+      "picopak-6353"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C9482DB53FE84C06AB74E842D04E8FA3",
+    "name": "Truck Stop Honey",
+    "style": "American Brown Ale",
+    "pico_beer_id": 480,
+    "catalog_ids": [
+      "picopak-5914",
+      "picopak-7316"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C8475CC7614A4A448D46AE44758F2372",
+    "name": "Shankill Stout",
+    "style": "Foreign Extra Stout",
+    "grains": "2-Row, Roasted Barley, Chocolate malt, Flaked Oats, Crystal malts",
+    "hops": "Fuggles",
+    "pico_beer_id": 484,
+    "catalog_ids": [
+      "picopak-5945",
+      "picopak-6895",
+      "picopak-7049"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=06264CE66D834E14B31E35F9C262625A",
+    "name": "Big Brew Rocky Raccoon Honey Lager",
+    "style": "Premium American Lager",
+    "grains": "Pilsner and honey malts",
+    "hops": "Cascade",
+    "pico_beer_id": 485,
+    "catalog_ids": [
+      "picopak-5947",
+      "picopak-6058",
+      "picopak-6190"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DFFD7EC4ED9D42C8A92DEAC3653305AB",
+    "name": "The Ferguson Oatmeal Chocolate Milk Stout",
+    "style": "Oatmeal Stout",
+    "grains": "Lactose, real chocolate, Chocolate malts, Roasted barley, Flaked oats, specialty malts",
+    "hops": "Willamette",
+    "pico_beer_id": 486,
+    "catalog_ids": [
+      "picopak-5950",
+      "picopak-6836"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=245969CEC5BD4766AD87EC818541EF2E",
+    "name": "Coconut Hiwa Porter",
+    "style": "American Porter",
+    "grains": "2-row, Chocolate malt, specialty malts",
+    "hops": "Cascade",
+    "pico_beer_id": 487,
+    "catalog_ids": [
+      "picopak-5957",
+      "picopak-6834",
+      "picopak-8473"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=805BEEE314FA4CE9856C4FDE2E15F563",
+    "name": "Bikini Blonde Lager",
+    "style": "Munich Helles",
+    "grains": "Pilsner, Munich and crystal malts",
+    "hops": "Saaz and Hersbrucker",
+    "pico_beer_id": 490,
+    "catalog_ids": [
+      "picopak-5967",
+      "picopak-9206"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=183E98E13E1F4E59B261FA99362B0E3E",
+    "name": "Hop of the Walk IPA",
+    "style": "American IPA",
+    "grains": "2-row, flaked oats, specialty malts",
+    "hops": "Citra, Simcoe, Mosaic",
+    "pico_beer_id": 493,
+    "catalog_ids": [
+      "picopak-5970",
+      "picopak-6976",
+      "picopak-8121"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6672F1C495074017A988259E74B86A01",
+    "name": "Parachute Pilsner",
+    "style": "German Pils",
+    "grains": "Pilsner malt",
+    "hops": "Tettnang, Saaz",
+    "pico_beer_id": 494,
+    "catalog_ids": [
+      "picopak-5971",
+      "picopak-6981",
+      "picopak-7850"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=046A3A9638BB4CE891C030C7D768CEE5",
+    "name": "Banjo Riff Kentucky Common Ale",
+    "style": "Historical Beer: Kentucky Common",
+    "grains": "Copeland malt, flaked corn, character malts",
+    "hops": "Cluster, American Hallertau",
+    "pico_beer_id": 498,
+    "catalog_ids": [
+      "picopak-6052",
+      "picopak-8119"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=63CD3EBA089F462593E160ABE4340900",
+    "name": "Peppercorn IPA",
+    "style": "American IPA",
+    "grains": "Two row, Munich, Crystal 20 malt",
+    "hops": "El Dorado, Centennial, Sazz and Peppercorns!",
+    "pico_beer_id": 504,
+    "catalog_ids": [
+      "picopak-6173",
+      "picopak-6685"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8E70A0E0D43F4FF4B21D02A4A0A7A58A",
+    "name": "Plague of Kali Rye IPA",
+    "style": "Specialty IPA: Rye IPA",
+    "grains": "2-Row, Crystal, Rye",
+    "hops": "Complex hop bill, with heavy dry-hopping for aroma.",
+    "pico_beer_id": 506,
+    "catalog_ids": [
+      "picopak-6359"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5F6F2CD7D0134DCE926F58C88D9BB5E1",
+    "name": "Limish Pescador",
+    "style": "American IPA",
+    "grains": "Pale malt, Crystal malt, specialty malts",
+    "hops": "Amarillo, Cascade, Chinook, Simcoe",
+    "pico_beer_id": 509,
+    "catalog_ids": [
+      "picopak-6175",
+      "picopak-6969"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=967373880DAE4B9181256C841D1BD744",
+    "name": "Big Buck Bunny Brown",
+    "style": "American Brown Ale",
+    "pico_beer_id": 515,
+    "catalog_ids": [
+      "picopak-6368"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=473059239FD24034BF1FA45B3AB1D75C",
+    "name": "Smooth Stout",
+    "style": "Sweet Stout",
+    "grains": "Flaked wheat, 2-row, Carafa, other specialty malts",
+    "hops": "Liberty",
+    "pico_beer_id": 530,
+    "catalog_ids": [
+      "picopak-6383",
+      "picopak-7851"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B6F1C0D73C514AEAB110F060CF7D1190",
+    "name": "Triple Hopped Exemption Belgian Tripel",
+    "style": "Belgian Tripel",
+    "pico_beer_id": 541,
+    "catalog_ids": [
+      "picopak-7407",
+      "picopak-7419"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C382DEC6CD9E466E9A1E259A7FDFD513",
+    "name": "Deduction Belgian Dubbel",
+    "style": "Belgian Dubbel",
+    "pico_beer_id": 542,
+    "catalog_ids": [
+      "picopak-7406"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=90ECDD85877D499295933B7103A014D4",
+    "name": "Smokey Lonesome Rauchbier",
+    "style": "Classic Rauchbier",
+    "grains": "Beechwood smoked, Carafa and Munich",
+    "hops": "Hallertau",
+    "pico_beer_id": 562,
+    "catalog_ids": [
+      "picopak-7223",
+      "picopak-7768"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=25110AB8A9074CFDB7E77478ADA6A058",
+    "name": "Maldita Vida",
+    "style": "American Barleywine",
+    "grains": "Pale malt, Munich, Carared, specialty malts",
+    "hops": "Chinook, Cascade",
+    "pico_beer_id": 563,
+    "catalog_ids": [
+      "picopak-7964",
+      "picopak-8441"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8A11D05A6E9041A392706BA64F2B805F",
+    "name": "Cenosillicafobia",
+    "style": "Double IPA",
+    "grains": "Pilsner malt, Wheat",
+    "hops": "Chinook, Eureka, Citra, Amarillo",
+    "pico_beer_id": 564,
+    "catalog_ids": [
+      "picopak-7963"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1BD061F7BF3541ED8A5D06586A1C978D",
+    "name": "La Pelona",
+    "style": "American IPA",
+    "grains": "Pale malt, Vienna, CaraPils",
+    "hops": "Hallertau Blanc, Citra, Eureka, CTZ",
+    "pico_beer_id": 565,
+    "catalog_ids": [
+      "picopak-7961",
+      "picopak-7962",
+      "picopak-8972"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=18626550230D426CA66322CD2094EE3E",
+    "name": "Otis Oatmeal Stout",
+    "style": "Oatmeal Stout",
+    "grains": "Roasted barley, Black Patent, Golden naked Oats, other specialty malts",
+    "hops": "East Kent Goldings",
+    "pico_beer_id": 591,
+    "catalog_ids": [
+      "picopak-7426",
+      "picopak-7428",
+      "picopak-7800"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9DF6134C1B674E76A4248B5B1579FC85",
+    "name": "Vessel of Shimmy Belgian Dark Strong Ale",
+    "style": "Belgian Dark Strong Ale",
+    "grains": "Pilsner, Wheat, Special B, specialty malts",
+    "hops": "Tettnanger",
+    "pico_beer_id": 592,
+    "catalog_ids": [
+      "picopak-7429",
+      "picopak-8255",
+      "picopak-8415"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=2892D789B0B1496DA96A675AE4D8ADB0",
+    "name": "Double Chocolate Porter",
+    "style": "Robust Porter",
+    "grains": "2-Row, Crystal 120, Chocolate malts, other specialty malts",
+    "hops": "Challenger, Cascade, Hallertau",
+    "pico_beer_id": 594,
+    "catalog_ids": [
+      "picopak-9844"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8698ACF3DDF542F59DBFAFB15FC9E2A8",
+    "name": "Vernal Equinox English IPA",
+    "style": "English IPA",
+    "grains": "English Pale, Crystal and Melanoidin",
+    "hops": "Galaxy and Equinox",
+    "pico_beer_id": 620,
+    "catalog_ids": [
+      "picopak-7742",
+      "picopak-9150"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1C04369BBCC649FE94DC3CBBFFB51F51",
+    "name": "Belma Single Hop Pale Ale",
+    "style": "American Pale Ale",
+    "grains": "2-row, Crystal 40, and Vienna malts",
+    "hops": "Belma",
+    "pico_beer_id": 625,
+    "catalog_ids": [
+      "picopak-7803"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=54DFBABA7A924C66A1D30FE4311D45D1",
+    "name": "KoKo Pocono Brown",
+    "style": "American Brown Ale",
+    "grains": "Chocolate, Cara Pills, Victory, Munich",
+    "hops": "Warrior, Nugget, Willamete  and Cascade",
+    "pico_beer_id": 630,
+    "catalog_ids": [
+      "picopak-7922"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=5FBDF3562364423B8040D49D123CE0B2",
+    "name": "The Citra Galaxy PCO",
+    "style": "American IPA",
+    "grains": "2 Row, flaked oats and wheat, and other specialty malts.",
+    "hops": "Citra, Galaxy",
+    "pico_beer_id": 633,
+    "catalog_ids": [
+      "picopak-8016",
+      "picopak-8402"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=D8EE5CF407904F0CB06E56A2663EB716",
+    "name": "Sons of Liberty PCO",
+    "style": "Premium American Lager",
+    "pico_beer_id": 634,
+    "catalog_ids": [
+      "picopak-8017"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=E38DDC8E1E36465396FED8487BEC5CC9",
+    "name": "6 Foot 5 IPA",
+    "style": "American IPA",
+    "grains": "American Two-Row, Carapils",
+    "hops": "Mosaic, Citra, Nelson Sauvin",
+    "pico_beer_id": 642,
+    "catalog_ids": [
+      "picopak-8174",
+      "picopak-8387"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3F691895B5B44CBF9B4B1A143CFF84A4",
+    "name": "Lid Ripper Hazy IPA",
+    "style": "American IPA",
+    "grains": "Oats flaked, Pale Malt, Wheat Malt",
+    "hops": "Citra, Lemondrop, Mosaic",
+    "pico_beer_id": 644,
+    "catalog_ids": [
+      "picopak-8177",
+      "picopak-8385"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=C6C38F29A6CC4CE89A908F1B778A7219",
+    "name": "'Murica American Pale Ale",
+    "style": "American Pale Ale",
+    "grains": "2-row, Crystal, Munich",
+    "hops": "Citra, Mosaic, Amarillo, Simcoe",
+    "pico_beer_id": 645,
+    "catalog_ids": [
+      "picopak-8176",
+      "picopak-8413"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8A78C5B4F4DF4280A637E7CDC87C03EA",
+    "name": "Leviathan Baltic Porter",
+    "style": "Baltic Porter",
+    "grains": "Pilsner, Munich Dark, Chocolate malt, specialty malts",
+    "hops": "Sterling",
+    "pico_beer_id": 661,
+    "catalog_ids": [
+      "picopak-8510"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A61B545B91584067A71114012A0425ED",
+    "name": "Bang Head Here Amber",
+    "style": "American Amber Ale",
+    "grains": "Two-Row, Crystal 80L",
+    "hops": "Citra, Cascade",
+    "pico_beer_id": 671,
+    "catalog_ids": [
+      "picopak-9006",
+      "picopak-9333"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=DB99CD54874E4FC4923EFFDD21972703",
+    "name": "Ring My Bell Blonde",
+    "style": "Blonde Ale",
+    "grains": "Two-Row, Crystal 20L, Vienna",
+    "hops": "Amarillo, Saaz",
+    "pico_beer_id": 672,
+    "catalog_ids": [
+      "picopak-9005",
+      "picopak-9334"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=38C3E5F8FF594AFFA63FA0EAC21A7698",
+    "name": "Big Brew 2019 TransAtlantic Blonde",
+    "style": "Blonde Ale",
+    "grains": "Pilsner, CaraPils",
+    "hops": "Willamette",
+    "pico_beer_id": 676,
+    "catalog_ids": [
+      "picopak-8967",
+      "picopak-9048"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7295E130BF5F4A9FBD19C53D32FEEF73",
+    "name": "Big Brew 2019 Galacticose NEIPA",
+    "style": "American IPA",
+    "grains": "2-Row, White Wheat, Flaked Oats, *Lactose",
+    "hops": "Citra, Mosaic, Columbus",
+    "pico_beer_id": 677,
+    "catalog_ids": [
+      "picopak-8968",
+      "picopak-9055"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=75C453D195B14E0BA070CDB2DA271C58",
+    "name": "Get to da Choppa",
+    "style": "Witbier",
+    "grains": "Pilsner, Munich Light, Oats, White Wheat",
+    "hops": "Belma",
+    "pico_beer_id": 679,
+    "catalog_ids": [
+      "picopak-9040",
+      "picopak-9337"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=6F29B79EE9F442AC90241B46C6ACA582",
+    "name": "Walk on Watermelon",
+    "style": "Belgian Blond Ale",
+    "grains": "Pilsner, Oats, Victory Malt",
+    "hops": "Motueka",
+    "pico_beer_id": 680,
+    "catalog_ids": [
+      "picopak-9041",
+      "picopak-9336"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B08351990CC14AB58D4B7B350790264B",
+    "name": "Tropical Inspired Double IPA",
+    "style": "American IPA",
+    "grains": "American 2row, Crystal 15L, Munich",
+    "hops": "Columbus, Citra, Cascade",
+    "pico_beer_id": 681,
+    "catalog_ids": [
+      "picopak-9042",
+      "picopak-9499"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=A7F893F1B7B44A288F683A6F899600BE",
+    "name": "Go Aw-Rye Whiskey Distiller's Pak",
+    "style": "Distillers Pak",
+    "pico_beer_id": 692,
+    "catalog_ids": [
+      "picopak-9449",
+      "picopak-9610"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BB4D78EB33934416A9F4B6E707E0B43E",
+    "name": "Blank Slate Distiller's Pak",
+    "style": "Distillers Pak",
+    "pico_beer_id": 696,
+    "catalog_ids": [
+      "picopak-9503",
+      "picopak-9504",
+      "picopak-9611"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=BEB2AD90C98E4D8A9C802B9F91AF6AE9",
+    "name": "Cascade Campfire Whiskey Distiller's Pak",
+    "style": "Distillers Pak",
+    "pico_beer_id": 701,
+    "catalog_ids": [
+      "picopak-9557",
+      "picopak-9558"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=9CE8FB7843AC478CB0077F1B0D63DB48",
+    "name": "PV Dunkleweiss",
+    "style": "Dunkles Weissbier",
+    "grains": "Mainly Red Wheat and Pilsner. Lesser amounts of Vienna, Roasted Barley, CaraPils and Crystal.",
+    "hops": "Tettnanger hops to complement the yeast.",
+    "pico_beer_id": 710,
+    "catalog_ids": [
+      "picopak-9685"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=1B1D641AD88A48C1924745E0B55B3BB3",
+    "name": "For The Culture 2.0 Brut Double IPA",
+    "style": "Double IPA",
+    "grains": "Two row, specialty malts",
+    "hops": "Nelson Sauvin, Hallertau Blanc, Azaaca and Galaxy",
+    "pico_beer_id": 711,
+    "catalog_ids": [
+      "picopak-9705"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=7DE7C6C5B8204AFB8CA1EEC8E9F0EA42",
+    "name": "Blood Orange Habanero IPA",
+    "style": "Fruit and Spice Beer",
+    "grains": "American 2-row, honey malt, Caramel Crystal 20",
+    "hops": "Magnum, Centennial, Citra",
+    "pico_beer_id": 719,
+    "catalog_ids": [
+      "picopak-9757"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=3E9AC8A18DB04C8C92AFA107AB4FF59E",
+    "name": "The Pale King",
+    "style": "American Pale Ale",
+    "grains": "American Two-Row, Vienna and Canadian Honey Malts",
+    "hops": "Classic Centennial hops used for bittering and aromatics to deliver refreshing citrus and floral notes.",
+    "pico_beer_id": 723,
+    "catalog_ids": [
+      "picopak-9841"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=36E93058D8E44D7DA25B58275F84BD51",
+    "name": "Stefanator Doppelbock",
+    "style": "Doppelbock",
+    "grains": "Light Munich malt, Pils malt, Caramunich",
+    "hops": "German Tettnanger, Liberty",
+    "pico_beer_id": 736,
+    "catalog_ids": [
+      "picopak-9847"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=8ADC5F996AC54712856E35FDAFE92DD6",
+    "name": "Otis Oatmeal Stout Z Kit (HK)",
+    "style": "Oatmeal Stout",
+    "grains": "Coming soon",
+    "hops": "Coming soon",
+    "pico_beer_id": 737,
+    "catalog_ids": [
+      "picopak-9860"
+    ]
+  },
+  {
+    "url": "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=B7DF9AB0CDB140578599B73A25411CC1",
+    "name": "Sins of the Father",
+    "style": "Trappist Single",
+    "grains": "Brewed with German and Belgian Pilsner malts, Carapils, and Belgian Biscuit malt",
+    "hops": "Galena, Goldings, and Saaz hops",
+    "pico_beer_id": 747,
+    "catalog_ids": [
+      "picopak-9875"
+    ]
+  }
+]

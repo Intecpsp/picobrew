@@ -1,0 +1,1205 @@
+{
+  "public-02f4c0dd9e58407e808ba4305c099446": {
+    "final_gravity": 1.011,
+    "instructions": [
+      "Fill the keg with 3.71 US gal of water.",
+      "Mill and load the mash compartment: 6 lb American Two-Row Pale, 0.35 lb American Chocolate, 0.5 lb American Roasted Barley, 0.25 lb American Crystal 80L, 0.25 lb Flaked Oats, 1 lb German Munich.",
+      "Slot 1: 0.45 oz Horizon (60 min before boil ends)",
+      "Slot 2: 0.95 oz Cascade (15 min before boil ends)",
+      "Slot 3: 0.95 oz Goldings (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "Cut one fresh vanilla bean into roughly 1-inch pieces and add it to the serving keg."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Fresh vanilla bean",
+        "unit": "count",
+        "use": "packaging"
+      }
+    ],
+    "original_gravity": 1.06,
+    "source_sha256": "2e393a7de364bf718d3f44ae5bdfa653211eb54e4c456281c3baa50001f4564d",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-04bd481db77e4feaa4ffaaa1506707af": {
+    "final_gravity": 1.004,
+    "instructions": [
+      "Fill the keg with 3.19 US gal of water.",
+      "Mill and load the mash compartment: 2.5 lb German Pale , 1.4 lb CaraPils, 0.07 lb German Acid Malt.",
+      "Slot 1: 0.5 oz Hallertau (15 min before boil ends)",
+      "Slot 2: 0.5 oz Hallertau (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0286,
+    "source_sha256": "e2682b49351982ab0a1c3d35366d6b3b6d031d1f0a89360c2b8626f7356378b7",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-08ed159bd8614c07a6cb86234f947b56": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.72 US gal of water.",
+      "Mill and load the mash compartment: 8 lb American Two-Row Pale, 0.2 lb American Crystal 40L, 0.35 lb Belgian Carapils, 0.2 lb Flaked Wheat.",
+      "Slot 1: 0.8 oz Chinook (90 min before boil ends)",
+      "Slot 2: 0.25 oz Centennial (30 min before boil ends)",
+      "Slot 3: 0.25 oz Centennial (15 min before boil ends)",
+      "Slot 4: 0.25 oz Columbus (5 min before boil ends)",
+      "Slot 4: 0.25 oz Simcoe (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "After fermentation, dry hop for 10 days using pellets: 0.5 oz each of Simcoe, Amarillo and Cascade, plus 1 oz Centennial."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.0645,
+    "source_sha256": "d4f5f568de76a422f62c78c6ebd11076412e8fa33dbce16641baf4d2ccb7bc25",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-09047782eaef4efc93797e4a4192310e": {
+    "final_gravity": 1.0118,
+    "instructions": [
+      "Fill the keg with 3.69 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 0.7 lb American Crystal 120L, 0.2 lb Roasted Barley, 0.2 lb American Chocolate, 0.5 lb Belgian Biscuit.",
+      "Slot 1: 1 oz Willamette (60 min before boil ends)",
+      "Slot 2: 0.5 oz Cascade (30 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0622,
+    "source_sha256": "13bad697ddac58128c23811e80a96797de12c246126ad1cecaa9e93a27139456",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-0b0d8c74a909402c8283622b6c56bdc8": {
+    "final_gravity": 1.011,
+    "instructions": [
+      "Fill the keg with 3.41 US gal of water.",
+      "Mill and load the mash compartment: 4 lb American Two-Row Pale, 3 lb Rye, 0.5 lb American Crystal 80L, 1 lb German Smoked, 0.25 lb CaraPils, 0.25 lb Flaked Wheat.",
+      "Slot 1: 1 oz Mount Hood (60 min before boil ends)",
+      "Slot 2: 0.5 oz Mount Hood (30 min before boil ends)",
+      "Slot 3: 0.5 oz Mount Hood (10 min before boil ends)",
+      "Slot 4: 1 oz Mount Hood (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.08,
+    "source_sha256": "60dc7e5bc5d5f96af89e97f4edca54fde01411d8e4afca5cad09b1a1117a9c54",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-0df6a291931d43198b2c1dbe9b2283f9": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.43 US gal of water.",
+      "Mill and load the mash compartment: 4.95 lb Rahr 2row Standard, 0.7 lb Roasted Barley, 0.33 lb American Crystal 120L.",
+      "Slot 1: 1.15 oz Cluster (60 min before boil ends)",
+      "Slot 2: 1.25 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.054,
+    "source_sha256": "24d1342c32345562f6c85e2a777fefb46eb9eb08f130977f8fbb61c7498bb2bb",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-0fdc2325be8d4d28afcb1f234353e2bc": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.54 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 0.25 lb American Crystal 10L, 0.25 lb Belgian Carapils.",
+      "Slot 1: 0.35 oz Perle (60 min before boil ends)",
+      "Slot 2: 0.35 oz Perle (30 min before boil ends)",
+      "Slot 3: 1 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 20.0 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.062,
+    "source_sha256": "242f11a772869e15dc0e113e865c54ba87de051fb3eb86aa9cd31fc264af8f62",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-1353d607268546a0bea74227f1ded356": {
+    "final_gravity": 1.013,
+    "instructions": [
+      "Fill the keg with 3.57 US gal of water.",
+      "Mill and load the mash compartment: 6.42 lb American Two-Row Pale, 0.76 lb American Crystal 60L.",
+      "Slot 1: 0.2 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.39 oz Perle (15 min before boil ends)",
+      "Slot 3: 0.34 oz Cascade (10 min before boil ends)",
+      "Slot 4: 1.08 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.053,
+    "source_sha256": "291c355cc0891968662d14dfce6073f552fb9ac4b823282e4d0f8faaf97a1d22",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-164685a71786447daddc1fd11d21aa98": {
+    "final_gravity": 1.0065,
+    "instructions": [
+      "Fill the keg with 3.48 US gal of water.",
+      "Mill and load the mash compartment: 6.5 lb German Pilsener.",
+      "Slot 1: 0.35 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.65 oz Saaz (15 min before boil ends)",
+      "Slot 3: 0.65 oz Saaz (10 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 12.2 °C for 14 days.",
+      "D Rest: 17.8 °C for 3 days.",
+      "Crash chill: 5.6 °C for 7 days."
+    ],
+    "original_gravity": 1.0499,
+    "source_sha256": "172828df59bf87f4ce7cf58621b04e4f73253373806c1331652389ec860817c3",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-1704720c78ac436b9ca46bbc8a2dfbe3": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.73 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 0.5 lb German Munich, 0.5 lb American Crystal 40L, 0.3 lb American Crystal 120L, 0.2 lb American Chocolate, 0.3 lb American Victory.",
+      "Slot 1: 0.35 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.35 oz Cascade (10 min before boil ends)",
+      "Slot 2: 0.35 oz Centennial (10 min before boil ends)",
+      "Slot 3: 0.35 oz Cascade (1 min before boil ends)",
+      "Slot 3: 0.35 oz Centennial (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.065,
+    "source_sha256": "cf2419679528c0d53d8ce1c95dfe389dc28efa272c7bdea50942d59fe65a3986",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-17e65891c78a4286a0a4b148ea3f5ff8": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.58 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 0.25 lb Belgian CaraMunich, 0.15 lb American Crystal 80L, 0.1 lb American Crystal 120L.",
+      "Slot 1: 0.51 oz Nugget (60 min before boil ends)",
+      "Slot 2: 0.51 oz Chinook (10 min before boil ends)",
+      "Slot 3: 0.51 oz Chinook (5 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 13.3 °C for 10 days."
+    ],
+    "original_gravity": 1.056,
+    "source_sha256": "8aa41a1261c1b386dab1fd1ea52f2ce8fb003d742f87b2b9e18ba2f93c7a0670",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-18ccac03bdba452aaf04f467b3243a9f": {
+    "final_gravity": 1.0068,
+    "instructions": [
+      "Fill the keg with 3.45 US gal of water.",
+      "Mill and load the mash compartment: 6 lb German Pilsener, 0.37 lb German Munich.",
+      "Slot 1: 0.5 oz Cascade (60 min before boil ends)",
+      "Slot 2: 0.7 oz Hallertau (2 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0488,
+    "source_sha256": "b9fde7f651d872d8bff5425802a88741ec8a2392a630c3e0e1607115f47af943",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-1940a099efed4af0b21254d0bfa46c3d": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.48 US gal of water.",
+      "Mill and load the mash compartment: 4 lb American Two-Row Pale, 2 lb American Crystal 20L, 0.25 lb Belgian Aromatic, 0.25 lb CaraPils, 0.25 lb American Crystal 40L.",
+      "Slot 1: 0.25 oz Warrior (60 min before boil ends)",
+      "Slot 2: 0.5 oz East Kent Goldings (30 min before boil ends)",
+      "Slot 3: 0.4 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.049,
+    "source_sha256": "44d3a940a66087aef67d8a8ab66569c3387a75c10ac44b252e41d37547c4f122",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-1ada30b14b54460f9b2a5e4a144edace": {
+    "final_gravity": 1.0077,
+    "instructions": [
+      "Fill the keg with 3.56 US gal of water.",
+      "Mill and load the mash compartment: 6.75 lb American Two-Row Pale, 0.38 lb Belgian Carapils, 0.38 lb American Crystal 20L.",
+      "Slot 1: 0.5 oz Cascade (60 min before boil ends)",
+      "Slot 2: 0.5 oz Cascade (30 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0553,
+    "source_sha256": "df0fb92eb191ac16451e950c76888e8f20fad3c16510739c3499497ca5935818",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-1bac7f1bc120415d8741d6a39b87e208": {
+    "final_gravity": 1.0091,
+    "instructions": [
+      "Fill the keg with 3.14 US gal of water.",
+      "Mill and load the mash compartment: 5 lb American Two-Row Pale, 0.35 lb American Crystal 20L, 0.25 lb Coffee Malt, 0.25 lb Belgian Special B, 0.25 lb American Special Roast, 0.25 lb American Chocolate.",
+      "Slot 1: 0.3 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.1 oz Centennial (20 min before boil ends)",
+      "Slot 2: 0.1 oz Crystal (20 min before boil ends)",
+      "Slot 3: 0.1 oz Centennial (7 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 19.4 °C for 14 days.",
+      "Crash Chill: 6.7 °C for 3 days."
+    ],
+    "original_gravity": 1.0652,
+    "source_sha256": "faf7104e16ccb3da2c87641633c02931834b9676bf6825df00a609ff4899ae6f",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-1de898587b1148feb171c81c4c836b0d": {
+    "final_gravity": 1.0088,
+    "instructions": [
+      "Fill the keg with 3.69 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 1.08 lb Munich Light, 0.31 lb American Crystal 60L, 0.16 lb American Chocolate.",
+      "Slot 1: 0.75 oz Willamette (45 min before boil ends)",
+      "Slot 2: 0.75 oz Willamette (20 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0627,
+    "source_sha256": "e9db5f477ca16c2fe1203a730a730b6ca5b1ca724e8616eb3632e56bc2658bca",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-21ef09b1f39f4edf921aeb4db9f571f0": {
+    "final_gravity": 1.0121,
+    "instructions": [
+      "Fill the keg with 3.37 US gal of water.",
+      "Mill and load the mash compartment: 9 lb American Two-Row Pale.",
+      "Slot 1: 0.7 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.7 oz Magnum (20 min before boil ends)",
+      "Slot 3: 0.7 oz Magnum (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0862,
+    "source_sha256": "6f8e1669f6e0b3367e4aa6eb693f84399d5c0296d20740112b954a9fa4121471",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-2276c4fb0c6f40a3b0e4130c9324412a": {
+    "final_gravity": 1.0079,
+    "instructions": [
+      "Fill the keg with 3.62 US gal of water.",
+      "Mill and load the mash compartment: 6 lb American Two-Row Pale, 1.7 lb American Crystal 20L.",
+      "Slot 1: 0.5 oz Magnum (30 min before boil ends)",
+      "Slot 2: 0.5 oz Perle (15 min before boil ends)",
+      "Slot 3: 0.5 oz Centennial (10 min before boil ends)",
+      "Slot 4: 0.5 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0567,
+    "source_sha256": "46f80f9153e911061360711cac52e835b2a52f9700509e764ae37d11b94e5e72",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-25655d26224a47e5b4254667235e7c94": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.76 US gal of water.",
+      "Mill and load the mash compartment: 8 lb American Two-Row Pale, 1 lb CaraPils.",
+      "Slot 1: 0.5 oz Citra (60 min before boil ends)",
+      "Slot 2: 0.47 oz Citra (45 min before boil ends)",
+      "Slot 3: 0.5 oz Citra (20 min before boil ends)",
+      "Slot 4: 0.5 oz Citra (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.066,
+    "source_sha256": "791fddab8e3359975e1549ecacb9a97af8a9a4d5c66954fcfc50f004e3076c7a",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-26846aefae9c40b09a4116785af4531a": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.75 US gal of water.",
+      "Mill and load the mash compartment: 7 lb American Two-Row Pale, 0.5 lb German Munich, 0.5 lb American Crystal 40L, 0.3 lb American Crystal 120L, 0.2 lb American Chocolate, 0.3 lb American Victory.",
+      "Slot 1: 0.4 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.4 oz Cascade (10 min before boil ends)",
+      "Slot 2: 0.4 oz Centennial (10 min before boil ends)",
+      "Slot 3: 0.5 oz Cascade (5 min before boil ends)",
+      "Slot 3: 0.5 oz Centennial (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.065,
+    "source_sha256": "8f0cf8c5c64e5a908f349a5d985d100f5fa38301e09d0b87e05c259dc465f1d7",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-2e86de5fd8c947c9a0f70d2224809406": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.62 US gal of water.",
+      "Mill and load the mash compartment: 7.2 lb American Two-Row Pale, 1 lb American Crystal 60L.",
+      "Slot 1: 0.3 oz Chinook (60 min before boil ends)",
+      "Slot 2: 0.2 oz Citra (10 min before boil ends)",
+      "Slot 3: 0.2 oz Citra (5 min before boil ends)",
+      "Slot 4: 0.2 oz Citra (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.06,
+    "source_sha256": "5da1072d0afef177e282b6c66360c843e150b9efee006aac8758f64527294924",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-331b88b845444112832471e5e99bf1f7": {
+    "final_gravity": 1.0098,
+    "instructions": [
+      "Fill the keg with 3.19 US gal of water.",
+      "Mill and load the mash compartment: 5 lb Rahr 2row Standard, 1.5 lb American Two-Row Pale, 0.25 lb Crystal 40L.",
+      "Slot 1: 0.6 oz Centennial (60 min before boil ends)",
+      "Slot 2: 0.6 oz Centennial (35 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "After fermentation, dry hop with 1.2 oz Centennial for 10 days."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 34.01942775,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.0702,
+    "source_sha256": "4bdf6142b36749eb3269fa4081c8e0833a0cde77d06080aa8945fc5d8cf6970d",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-33e1ad20d7cc4c3e834ed7d1c642c584": {
+    "final_gravity": 1.01,
+    "instructions": [
+      "Fill the keg with 3.2 US gal of water.",
+      "Mill and load the mash compartment: 5.6875 lb American Two-Row Pale, 0.6875 lb American Crystal 75L, 0.34375 lb British Chocolate, 0.34375 lb British Black Patent.",
+      "Slot 1: 1 oz Glacier (60 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "Add 8 oz coarsely crushed roasted pecans to the grain in the mash compartment."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 226.796185,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Roasted pecans",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "original_gravity": 1.0711,
+    "source_sha256": "2fc56b37a752e41c1ec3bea0119b0c1fc1be0bd62596e00030c83de27333514a",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-391ef17cc7234a6db1e4f7cc61d278b9": {
+    "final_gravity": 1.011,
+    "instructions": [
+      "Fill the keg with 3.71 US gal of water.",
+      "Mill and load the mash compartment: 6 lb American Two-Row Pale, 0.35 lb American Chocolate, 0.5 lb American Roasted Barley, 0.25 lb American Crystal 80L, 0.25 lb Flaked Oats, 1 lb German Munich.",
+      "Slot 1: 0.45 oz Horizon (60 min before boil ends)",
+      "Slot 2: 0.95 oz Cascade (17 min before boil ends)",
+      "Slot 3: 0.95 oz Goldings (8 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "Cut one fresh vanilla bean into roughly 1-inch pieces and add it to the serving keg."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Fresh vanilla bean",
+        "unit": "count",
+        "use": "packaging"
+      }
+    ],
+    "original_gravity": 1.0612,
+    "source_sha256": "f160a860d7d5bc1d9fa9fb77331476117f47b8a3be00c588efb3b7bad09293cb",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-3a0822cd15374e8a8139b5593f42c0a4": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.47 US gal of water.",
+      "Mill and load the mash compartment: 6.3 lb American Two-Row Pale, 0.29 lb CaraPils, 0.29 lb German Munich.",
+      "Slot 1: 0.26 oz Centennial (60 min before boil ends)",
+      "Slot 2: 0.26 oz Centennial (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.051,
+    "source_sha256": "0ab1c548b197019dc54b204168c5f8063de6e1f0e9a955f8aebf7473a405bc4d",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-4288104eaded4871b3bde67a3bf33953": {
+    "final_gravity": 1.0077,
+    "instructions": [
+      "Fill the keg with 3.57 US gal of water.",
+      "Mill and load the mash compartment: 3 lb German Vienna, 3 lb Maris Otter Ale Malt, 0.4 lb British Chocolate, 0.2 lb Victory Malt, 0.4 lb British Crystal 70-80L, 0.4 lb British Brown, 0.25 lb German Carafa Special.",
+      "Slot 1: 0.5 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.5 oz Fuggles (15 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 21.1 °C for 10 days."
+    ],
+    "original_gravity": 1.0547,
+    "source_sha256": "046a4f1f3c0235fb6046c26547bfd9dad111fc9e5a1d5304b496ea0f319ce2e0",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-45dd77cf36b140d697d6c3e14d0c5acb": {
+    "final_gravity": 1.0103,
+    "instructions": [
+      "Fill the keg with 3.52 US gal of water.",
+      "Mill and load the mash compartment: 5 lb British Mild, 0.5 lb American Special Roast, 0.375 lb American Crystal 60L, 0.25 lb British Pale Chocolate, 0.375 lb Canadian Honey Malt, 0.375 lb Golden Naked Oats, 0.25 lb Belgian Carapils.",
+      "Slot 1: 0.5 oz East Kent Goldings (60 min before boil ends)",
+      "Slot 2: 0.5 oz East Kent Goldings (10 min before boil ends)",
+      "Fermentis S-04: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 20.0 °C for 10 days."
+    ],
+    "original_gravity": 1.0514,
+    "source_sha256": "8ed245de682d46b0e1bc99caf4a461a525edf94e05adbb864355f35217a29b28",
+    "yeast_guide": "https://fermentis.com/en/product/safale-s-04/"
+  },
+  "public-47da31097a974a0fa0857fcc6f25ac61": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.66 US gal of water.",
+      "Mill and load the mash compartment: 7 lb German Pilsener, 0.25 lb American Crystal 40L, 0.5 lb German Munich.",
+      "Slot 1: 0.2 oz Horizon (60 min before boil ends)",
+      "Slot 2: 0.75 oz Columbus (10 min before boil ends)",
+      "Slot 3: 0.75 oz Centennial (7 min before boil ends)",
+      "Slot 4: 0.75 oz Centennial (5 min before boil ends)",
+      "Slot 4: 0.35 oz Cascade (5 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 13.3 °C for 10 days."
+    ],
+    "original_gravity": 1.059,
+    "source_sha256": "1f01cf19c5490f73506c87fffb9cb84480731fab652bc8069d37f07e1ad8675f",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-489561ef5295460082d7eabc62f38bd9": {
+    "final_gravity": 1.011,
+    "instructions": [
+      "Fill the keg with 3.27 US gal of water.",
+      "Mill and load the mash compartment: 6 lb British Two-row Pale, 0.625 lb Crystal 10L, 1 lb Crystal 40L.",
+      "Slot 1: 0.5 oz Cascade (70 min before boil ends)",
+      "Slot 2: 0.5 oz Cascade (55 min before boil ends)",
+      "Slot 3: 0.25 oz Magnum (1 min before boil ends)",
+      "Slot 3: 0.5 oz Columbus (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.076,
+    "source_sha256": "24b296c61cf37c21d1058be19a5ab13cdba8b434683bd9c28dc6f05f2c6699ad",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-4a67c4937bf943cebaa1693a22980b3b": {
+    "final_gravity": 1.0075,
+    "instructions": [
+      "Fill the keg with 3.53 US gal of water.",
+      "Mill and load the mash compartment: 6.42 lb American Two-Row Pale, 0.75 lb American Crystal 60L.",
+      "Slot 1: 0.28 oz Centennial (30 min before boil ends)",
+      "Slot 1: 0.28 oz Simcoe (30 min before boil ends)",
+      "Slot 2: 0.35 oz Centennial (5 min before boil ends)",
+      "Slot 2: 0.35 oz Simcoe (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0533,
+    "source_sha256": "cad75c908e913e59db5eb42278601d7271dc07754bf96d17c44b74f9df5e147b",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-4d584296861b49169883af5c7c3cc6fa": {
+    "final_gravity": 1.012,
+    "instructions": [
+      "Fill the keg with 3.7 US gal of water.",
+      "Mill and load the mash compartment: 8 lb American Two-Row Pale, 0.7 lb American Crystal 120L, 0.2 lb Roasted Barley.",
+      "Slot 1: 1 oz Tettnanger (60 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.065,
+    "source_sha256": "394cf0250eb9261229198a6ac0135f81a96e70e8862c380b30865684fe44f14f",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-50221b8e84b941148c141b0a9fc4ba25": {
+    "final_gravity": 1.0108,
+    "instructions": [
+      "Fill the keg with 3.29 US gal of water.",
+      "Mill and load the mash compartment: 6.5 lb American Two-Row Pale, 0.5 lb American Crystal 60L, 0.125 lb British Black Patent, 0.125 lb British Brown, 0.25 lb British Chocolate, 0.125 lb British Roasted Barley, 0.25 lb Flaked Barley.",
+      "Slot 1: 1 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.5 oz Cascade (10 min before boil ends)",
+      "Slot 3: 0.5 oz Perle (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0775,
+    "source_sha256": "2dacbed94403084f1e616cfaeacb7d475c44dcf9750b1b8f1618878c0fc2dacb",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-5286bcb4ef2c457ba7e0247ad57fe6bf": {
+    "final_gravity": 1.0069,
+    "instructions": [
+      "Fill the keg with 3.08 US gal of water.",
+      "Mill and load the mash compartment: 3.25 lb American Two-Row Pale, 0.5 lb Flaked Oats, 0.5 lb German Smoked, 0.15 lb American Black Patent, 0.25 lb British Chocolate.",
+      "Slot 1: 0.25 oz Centennial (60 min before boil ends)",
+      "Slot 1: 0.25 oz Millenium (60 min before boil ends)",
+      "Slot 2: 1 oz East Kent Goldings (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "Split and scrape one vanilla bean, cut up the pod, and soak both in 1 US fl oz vodka for about two days. Add after primary fermentation and leave about a week before kegging."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Vanilla bean",
+        "unit": "count",
+        "use": "secondary"
+      },
+      {
+        "amount": 29.5735295625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Vodka",
+        "unit": "mL",
+        "use": "secondary"
+      }
+    ],
+    "original_gravity": 1.0495,
+    "source_sha256": "08c61bfc7dab5fa4dc4ef49d2d69d8fcdca08c79fe52599e9ab5843ad70e87c2",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-53c492471573466884748ad76d233ecf": {
+    "final_gravity": 1.0082,
+    "instructions": [
+      "Fill the keg with 3.65 US gal of water.",
+      "Mill and load the mash compartment: 7.17 lb American Two-Row Pale, 0.71 lb German CaraMunich II.",
+      "Slot 1: 0.46 oz Warrior (60 min before boil ends)",
+      "Slot 2: 0.6 oz Cascade (15 min before boil ends)",
+      "Slot 3: 0.46 oz Centennial (5 min before boil ends)",
+      "Slot 4: 0.71 oz Citra (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "Dry hop with 25 g Citra for 7 days."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 25,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.0583,
+    "source_sha256": "3ab50f899ee179f04a6ee2307c0313580447d8692ce70fc29db740b1fa60bda7",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-5753b409b5f544d8bc54ffc464705513": {
+    "final_gravity": 1.0077,
+    "instructions": [
+      "Fill the keg with 3.62 US gal of water.",
+      "Mill and load the mash compartment: 7 lb Best Red X malt, 0.5 lb German Munich, 0.25 lb British Pale Chocolate.",
+      "Slot 1: 0.6 oz Centennial (60 min before boil ends)",
+      "Slot 2: 0.6 oz Citra (15 min before boil ends)",
+      "Slot 3: 0.6 oz Citra (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0548,
+    "source_sha256": "91ed4806c84d00a9e0dde63d2caa9c617f95d95875b3b7ebfcc09d750695cce4",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-58caea4cc7f642378c58ad6ff18b9361": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.42 US gal of water.",
+      "Mill and load the mash compartment: 1 lb American Two-Row Pale, 4 lb German Wheat, 0.15 lb American Crystal 20L, 1 lb German Pilsener.",
+      "Slot 1: 0.25 oz Motueka (60 min before boil ends)",
+      "Slot 2: 0.75 oz Motueka (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.048,
+    "source_sha256": "2a161d305a576f099686a2cc941e6a9e8e9132bb1e227e884af5df79da374393",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-5c0828069e5b406f933fda3d07f016df": {
+    "final_gravity": 1.0055,
+    "instructions": [
+      "Fill the keg with 3.3 US gal of water.",
+      "Mill and load the mash compartment: 2.25 lb American Two-Row Pale, 2 lb German Pilsener, 0.25 lb Flaked Rice, 0.25 lb Flaked Corn, 0.5 lb Flaked Oats.",
+      "Slot 1: 0.55 oz Hallertau Mittelfruh (60 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0395,
+    "source_sha256": "206df10a8756f86e87db74b6d4b8e3dda3239f7ac6edbf9dbe0707f3d0206a51",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-5d65d85189f644db8c493aa595600bba": {
+    "final_gravity": 1.0105,
+    "instructions": [
+      "Fill the keg with 3.15 US gal of water.",
+      "Mill and load the mash compartment: 6.81 lb Pils Two-row, 0.75 lb CaraPils.",
+      "Slot 1: 0.53 oz Belma (60 min before boil ends)",
+      "Slot 2: 0.71 oz Belma (15 min before boil ends)",
+      "Slot 3: 0.71 oz Belma (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.50–7.21 g for 9.01 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0749,
+    "source_sha256": "247672172654613b15f06b294f0a4f384dfa56ce34ef61f9a1599124c6ad7ee6",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-5d69477c789f415084ae3ec312679208": {
+    "final_gravity": 1.0061,
+    "instructions": [
+      "Fill the keg with 3.42 US gal of water.",
+      "Mill and load the mash compartment: 4.9 lb American Two-Row Pale, 0.5 lb American Crystal 80L, 0.5 lb Carared.",
+      "Slot 1: 0.88 oz Hallertau (60 min before boil ends)",
+      "Slot 2: 0.88 oz Hallertau (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0438,
+    "source_sha256": "ce0361af29e2c5438af766cc8be16caacb5715fa75cbe676bd0fb2b0e3e7c661",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-60a19e48674f4d0e85a63ec1db7c984a": {
+    "final_gravity": 1.0067,
+    "instructions": [
+      "Fill the keg with 3.48 US gal of water.",
+      "Mill and load the mash compartment: 3 lb German Pilsener, 3 lb German Munich, 0.5 lb American Crystal 80L, 0.187 lb Chocolate, 0.125 lb American Roasted Barley, 0.187 lb Flaked Oats.",
+      "Slot 1: 0.25 oz Nugget (60 min before boil ends)",
+      "Slot 2: 0.25 oz Hallertau Blanc (10 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Primary Fermentation: 12.8 °C for 21 days.",
+      "Lagering: 1.7 °C for 28 days."
+    ],
+    "original_gravity": 1.0518,
+    "source_sha256": "084f4c6662d1b8f0e98b21887d306fab97e4af8c48d0e3fb1afe4adf9a0c8455",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-642db6b4afd648d6972aa7f2b6aabb3d": {
+    "final_gravity": 1.0083,
+    "instructions": [
+      "Fill the keg with 3.68 US gal of water.",
+      "Mill and load the mash compartment: 7.3125 lb American Two-Row Pale, 0.2 lb American Crystal 90L, 0.15625 lb CaraPils, 0.15625 lb Belgian Pils, 0.1875 lb Flaked Wheat.",
+      "Slot 1: 0.7 oz Nugget (60 min before boil ends)",
+      "Slot 2: 0.25 oz Cascade (30 min before boil ends)",
+      "Slot 3: 0.5 oz Palisade (15 min before boil ends)",
+      "Slot 4: 0.25 oz Amarillo (5 min before boil ends)",
+      "Slot 4: 0.25 oz Simcoe (5 min before boil ends)",
+      "Slot 4: 0.5 oz Columbus (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "After fermentation, dry hop for 10 days with 1 oz Simcoe, 1 oz Amarillo and 0.5 oz Columbus."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.0596,
+    "source_sha256": "e2ea60fceb14e272f922c0625cefa93f47e62c4ef48aee6ee900ad9ee1ca0caf",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-6686c8d26bd0423cb911199e65a0fe19": {
+    "final_gravity": 1.0056,
+    "instructions": [
+      "Fill the keg with 3.42 US gal of water.",
+      "Mill and load the mash compartment: 5.5 lb Lager Two-row, 0.3 lb CaraPils, 0.3 lb Munich Light.",
+      "Slot 1: 0.4 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.4 oz Tettnanger (15 min before boil ends)",
+      "Slot 3: 0.5 oz Hallertau Hersbruck (1 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Primary Fermentation: 13.3 °C for 21 days.",
+      "Lagering: 1.7 °C for 28 days."
+    ],
+    "original_gravity": 1.0428,
+    "source_sha256": "8a7850cf5c4baf8fd88f4f4d4e554060bdd405d577743c2e73014b14a57a85cf",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-72d805d8c5b2480781c1de7d3ea73046": {
+    "final_gravity": 1.012,
+    "instructions": [
+      "Fill the keg with 3.71 US gal of water.",
+      "Mill and load the mash compartment: 8 lb Maris Otter Ale Malt, 0.7 lb British Black Patent, 0.2 lb British Roasted Barley.",
+      "Slot 1: 1.2 oz Tettnanger (60 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.064,
+    "source_sha256": "36eca76dd19986a65f26a2e69e821053727696728cc28c31e5a581894520d2ad",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-73ecc58a810b495cbd9f971eae1b0817": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.45 US gal of water.",
+      "Mill and load the mash compartment: 6.3 lb American Two-Row Pale, 0.29 lb CaraPils, 0.29 lb German Munich.",
+      "Slot 1: 0.52 oz Centennial (60 min before boil ends)",
+      "Slot 2: 0.26 oz Centennial (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.059,
+    "source_sha256": "5e65c09a67b3c10557f9880f88e630485f7091b0f2df4e47572a835815d090f4",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-7d45c5e639814533a5b5202275db4152": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.15 US gal of water.",
+      "Mill and load the mash compartment: 5 lb German Pilsener, 1 lb CaraPils.",
+      "Slot 1: 0.25 oz Perle (60 min before boil ends)",
+      "Slot 2: 0.5 oz Tettnanger (45 min before boil ends)",
+      "Slot 3: 0.25 oz Tettnanger (5 min before boil ends)",
+      "Slot 3: 0.25 oz Perle (5 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 13.3 °C for 10 days."
+    ],
+    "original_gravity": 1.065,
+    "source_sha256": "2d0967a888b0778be2dcdbd40597e77c84f3e5d059a9b6237901fde96fefc4af",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-84bb80127c914d959adee375206a83f6": {
+    "final_gravity": 1.0055,
+    "instructions": [
+      "Fill the keg with 3.39 US gal of water.",
+      "Mill and load the mash compartment: 5 lb German Pilsener, 0.25 lb Melanoidan , 0.5 lb German Munich.",
+      "Slot 1: 0.5 oz Hallertau (60 min before boil ends)",
+      "Slot 2: 0.75 oz Hallertau (50 min before boil ends)",
+      "Fermentis W-34/70: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Primary Fermentation: 13.3 °C for 21 days.",
+      "Lagering: 1.7 °C for 28 days."
+    ],
+    "original_gravity": 1.0462,
+    "source_sha256": "657c40be96d88a89a3c9176423b92ef1d3f535ea6e77cec25e5899959232afcc",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-w-34-70/"
+  },
+  "public-8eaf49ee4952402cb8a1ad8d9e64aeb5": {
+    "final_gravity": 1.0081,
+    "instructions": [
+      "Fill the keg with 3.68 US gal of water.",
+      "Mill and load the mash compartment: 7.5 lb Pils Two-row, 0.2 lb CaraPils, 0.35 lb Belgian Carapils, 0.2 lb Flaked Wheat.",
+      "Slot 1: 0.75 oz Chinook (90 min before boil ends)",
+      "Slot 2: 0.25 oz Cascade (30 min before boil ends)",
+      "Slot 3: 0.45 oz Cascade (15 min before boil ends)",
+      "Slot 4: 0.25 oz Amarillo (5 min before boil ends)",
+      "Slot 4: 0.25 oz Simcoe (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0578,
+    "source_sha256": "5da92acc5d30906f0556f687c981c4d8413fc788078e2737b6d48e9d7df23ea0",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-901241d1db5f42759c869636153344ec": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.53 US gal of water.",
+      "Mill and load the mash compartment: 6 lb American Two-Row Pale, 0.75 lb American Crystal 80L, 0.25 lb American Crystal 120L.",
+      "Slot 1: 0.25 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.75 oz Centennial (15 min before boil ends)",
+      "Slot 3: 0.5 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.9 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.051,
+    "source_sha256": "792587ad25bc8021cbcdbb7607d0ce4b7c3a91f5db8e271fe1e25f12cf12e280",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-96a7aa987f92468881122eee25b61b78": {
+    "final_gravity": 1.01,
+    "instructions": [
+      "Fill the keg with 3.25 US gal of water.",
+      "Mill and load the mash compartment: 3 lb British Pilsener, 4.5 lb German Munich, 0.25 lb Belgian Special B, 0.1 lb Carafa Special Type 1 (dehusked), 0.1 lb Belgian Chocolate.",
+      "Slot 1: 0.51 oz Sterling (60 min before boil ends)",
+      "Slot 2: 0.51 oz Sterling (30 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 13.3 °C for 10 days."
+    ],
+    "original_gravity": 1.078,
+    "source_sha256": "b547b0dfe5e6d5de9ec4a4e448ecfcba831c467ae392800c14849c1718bc0a18",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-9afa1bd043a940bc9ac80f7df18dfe4d": {
+    "final_gravity": 1.0086,
+    "instructions": [
+      "Fill the keg with 3.65 US gal of water.",
+      "Mill and load the mash compartment: 7.72 lb American Two-Row Pale, 0.33 lb German Carafa Chocolate Malt, 0.33 lb American Chocolate.",
+      "Slot 1: 0.56 oz Nugget (60 min before boil ends)",
+      "Slot 2: 0.28 oz Nugget (15 min before boil ends)",
+      "Slot 3: 0.32 oz Nugget (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0614,
+    "source_sha256": "4d27f206e85f30d2e27f72cd96dd60dd5bd4d986773e498f9960535b109f82af",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-9e5c5a64feae46f0a67221db6201cb6d": {
+    "final_gravity": 1.008,
+    "instructions": [
+      "Fill the keg with 3.56 US gal of water.",
+      "Mill and load the mash compartment: 6.42 lb American Two-Row Pale, 0.76 lb American Crystal 60L.",
+      "Slot 1: 0.2 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.39 oz Perle (15 min before boil ends)",
+      "Slot 3: 1.42 oz Cascade (10 min before boil ends)",
+      "Slot 4: 1.08 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.059,
+    "source_sha256": "12c2e7c303324146e34b21cf9fa37ed4a65acb0ef616b4972db77819f408af08",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-9e969ded5e2e44e1b4b451e755e57b9b": {
+    "final_gravity": 1.0104,
+    "instructions": [
+      "Fill the keg with 3.22 US gal of water.",
+      "Mill and load the mash compartment: 2 lb American Two-Row Pale, 5 lb German Pilsener.",
+      "Slot 1: 0.3 oz Summit (60 min before boil ends)",
+      "Slot 1: 0.3 oz Galaxy (60 min before boil ends)",
+      "Slot 2: 0.2 oz Galaxy (30 min before boil ends)",
+      "Slot 2: 0.2 oz Summit (30 min before boil ends)",
+      "Slot 3: 0.5 oz Belma (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0742,
+    "source_sha256": "e9d35c9e6a853ec204034435458fdfab1f54b43492e23fb4084b791ce185bfbf",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-a0320b910bd4412d84edd9bb29f3e6eb": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.63 US gal of water.",
+      "Mill and load the mash compartment: 5 lb American Two-Row Pale, 0.75 lb American Crystal 40L, 0.2 lb American Black Patent, 1 lb Flaked Oats, 0.8 lb American Chocolate, 0.5 lb American Munich Dark, 0.2 lb American Soft White Wheat.",
+      "Slot 1: 1 oz Cascade (60 min before boil ends)",
+      "Slot 2: 0.3 oz Cascade (40 min before boil ends)",
+      "Slot 3: 0.6 oz Cascade (15 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.064,
+    "source_sha256": "d6ff4229d4cf65fc6f91161c413571644aa38e67c77f76100f4947abc42133d7",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-a13bba9c562f495eb7337de9e8e1ec6a": {
+    "final_gravity": 1.0069,
+    "instructions": [
+      "Fill the keg with 3.54 US gal of water.",
+      "Mill and load the mash compartment: 6.42 lb American Two-Row Pale, 0.76 lb American Crystal 60L.",
+      "Slot 1: 0.2 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.39 oz Perle (15 min before boil ends)",
+      "Slot 3: 0.34 oz Cascade (10 min before boil ends)",
+      "Slot 4: 0.54 oz Cascade (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 12 days.",
+      "Crash Chill: 3.3 °C for 2 days.",
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "original_gravity": 1.053,
+    "source_sha256": "014f7f27e4214f62fb7c0f0b164fad2103199662e9fdc760a4e43c38583d794e",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-ac93fdb5b64f4a5195ba8390e0856c1d": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.45 US gal of water.",
+      "Mill and load the mash compartment: 4.5 lb American Two-Row Pale, 0.2 lb American Roasted Barley, 0.2 lb American Black Patent, 0.2 lb American Chocolate, 0.5 lb American Crystal 60L, 1 lb Flaked Oats.",
+      "Slot 1: 0.2 oz Nugget (60 min before boil ends)",
+      "Slot 2: 0.5 oz East Kent Goldings (30 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.047,
+    "source_sha256": "7f002d66cabfc784f1b2fef6c18654a6c8295f3d92731339e353ccb42c973ac0",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-c0e1708dc8594315b82355d877beda73": {
+    "final_gravity": 1.0073,
+    "instructions": [
+      "Fill the keg with 3.57 US gal of water.",
+      "Mill and load the mash compartment: 5.51 lb Maris Otter Ale Malt, 0.55 lb White Wheat Malt, 1.1 lb Flaked Oats.",
+      "Slot 1: 0.28 oz El Dorado (60 min before boil ends)",
+      "Slot 2: 0.18 oz Mosaic (10 min before boil ends)",
+      "Slot 2: 0.18 oz Galaxy (10 min before boil ends)",
+      "Slot 3: 0.35 oz Mosaic (5 min before boil ends)",
+      "Slot 3: 0.35 oz El Dorado (5 min before boil ends)",
+      "Slot 4: 0.35 oz Mosaic (1 min before boil ends)",
+      "Slot 4: 0.35 oz Galaxy (1 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0519,
+    "source_sha256": "120b71bdf90c51384d24a7c4fbb3a16f9fa2fb62293592a5d144484cca83e28c",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-c75649acd28441fa8e82ae57c67bf91c": {
+    "final_gravity": 1.006,
+    "instructions": [
+      "Fill the keg with 3.47 US gal of water.",
+      "Mill and load the mash compartment: 5.5 lb Belgian Pils, 0.75 lb German Munich, 0.25 lb CaraPils.",
+      "Slot 1: 0.35 oz Magnum (60 min before boil ends)",
+      "Slot 2: 0.25 oz Hallertau Tradition (25 min before boil ends)",
+      "Slot 3: 0.5 oz Hallertau Tradition (5 min before boil ends)",
+      "Slot 4: 0.2 oz Hallertau Tradition (1 min before boil ends)",
+      "Fermentis S-23: pitch 7.57–11.36 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 13.3 °C for 10 days."
+    ],
+    "original_gravity": 1.046,
+    "source_sha256": "7e0af1157d9c9363796b4433622ca97bf7cd5e67a1839e9e53dfe7b484bd0172",
+    "yeast_guide": "https://fermentis.com/en/product/saflager-s-23/"
+  },
+  "public-cd7ed5f8dc45485caf98af9bd6ce8ce6": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.7 US gal of water.",
+      "Mill and load the mash compartment: 6.2 lb American Two-Row Pale, 1.1 lb British Crystal 95-115L, 0.75 lb Belgian Munich, 0.25 lb British Chocolate, 0.44 lb Belgian Special B, 0.25 lb German Smoked.",
+      "Slot 1: 0.8 oz Nugget (90 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0645,
+    "source_sha256": "c37a71dc77f88adf22889bdbc43e8c923987a1b1e00d0131e004d1f6a0f1d651",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-cf754de6a71d4a2181ad4f260108ef9c": {
+    "final_gravity": 1.0074,
+    "instructions": [
+      "Fill the keg with 3.3 US gal of water.",
+      "Mill and load the mash compartment: 4 lb Maris Otter Ale Malt, 0.5 lb American Crystal 40L, 0.5 lb British Brown, 0.15 lb American Chocolate.",
+      "Slot 1: 0.405077 oz Willamette (60 min before boil ends)",
+      "Slot 2: 0.405077 oz Willamette (10 min before boil ends)",
+      "Fermentis S-04: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.9 °C for 10 days."
+    ],
+    "original_gravity": 1.0368,
+    "source_sha256": "4ff1dc102e810adc2307ffbd29b193fe89cb49b2b6f55483d26c39d866765296",
+    "yeast_guide": "https://fermentis.com/en/product/safale-s-04/"
+  },
+  "public-d206d02b7fac461ebba9242ef9007ae5": {
+    "final_gravity": 1.009,
+    "instructions": [
+      "Fill the keg with 3.55 US gal of water.",
+      "Mill and load the mash compartment: 5 lb American Two-Row Pale, 2 lb German Munich, 1 lb American Crystal 15L.",
+      "Slot 1: 0.5 oz Perle (90 min before boil ends)",
+      "Slot 2: 0.25 oz Saaz (10 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.065,
+    "source_sha256": "8387d88249ce77d0cacdfad7189db3fbe085093e72739e3d96204c7a06c95026",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-d6d18b374ae646fabdf9a08c24cad471": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.59 US gal of water.",
+      "Mill and load the mash compartment: 0.75 lb American Crystal 20L, 6 lb American Two-Row Pale, 0.5 lb Belgian Carapils.",
+      "Slot 1: 0.25 oz Magnum (60 min before boil ends)",
+      "Slot 2: 1 oz Cascade (10 min before boil ends)",
+      "Slot 3: 1 oz Centennial (3 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "In secondary fermentation, dry hop with 1 oz Mosaic for 4 days."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.053,
+    "source_sha256": "1d480c52cf72d0400763df0140d03ac69fd4ebbd713f94530787a49d7ee54c90",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-d9a8dc6c9f574a6abe1fb250a1c38486": {
+    "final_gravity": 1.0113,
+    "instructions": [
+      "Fill the keg with 3.34 US gal of water.",
+      "Mill and load the mash compartment: 3.75 lb Maris Otter Ale Malt, 3.75 lb American Two-Row Pale, 0.25 lb Carared, 0.25 lb Caramel Light , 0.25 lb CaraFoam.",
+      "Slot 1: 1 oz Simcoe (60 min before boil ends)",
+      "Slot 2: 0.5 oz Centennial (10 min before boil ends)",
+      "Slot 2: 0.5 oz Mosaic (10 min before boil ends)",
+      "Slot 3: 0.25 oz Citra (5 min before boil ends)",
+      "Slot 3: 0.25 oz Mosaic (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days.",
+      "After primary fermentation, dry hop with 1 oz Mosaic for 7 days."
+    ],
+    "note_ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "original_gravity": 1.0807,
+    "source_sha256": "39c8967c06955fc4b871af4bc6dde7d8358e5c6148e78a9711bacc4ee8305ced",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-dd48673fdad24335819bb5de02ba510b": {
+    "final_gravity": 1.013,
+    "instructions": [
+      "Fill the keg with 3.73 US gal of water.",
+      "Mill and load the mash compartment: 6.25 lb Maris Otter Ale Malt, 0.75 lb Chocolate, 0.75 lb CaraPils, 0.85 lb American Crystal 60L, 0.4 lb Weyermann Chocolate Wheat .",
+      "Slot 1: 0.4 oz Bravo (60 min before boil ends)",
+      "Slot 2: 0.5 oz East Kent Goldings (10 min before boil ends)",
+      "Slot 3: 0.5 oz Fuggles (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0649,
+    "source_sha256": "a6e8d1000ddc13b60c5f9a7b7e661ad977378d5e72e140165339a8b2b13c52d0",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-e075e32b785b41598ab006a0b9cdade6": {
+    "final_gravity": 1.0101,
+    "instructions": [
+      "Fill the keg with 3.61 US gal of water.",
+      "Mill and load the mash compartment: 7.14 lb British Lager Two-row, 0.22 lb British Crystal 95-115L.",
+      "Slot 1: 0.32 oz Ahtanum (60 min before boil ends)",
+      "Slot 1: 0.25 oz Chinook (60 min before boil ends)",
+      "Slot 2: 0.32 oz Crystal (30 min before boil ends)",
+      "Slot 2: 0.28 oz Chinook (30 min before boil ends)",
+      "Slot 3: 0.32 oz Ahtanum (5 min before boil ends)",
+      "Slot 3: 0.46 oz Chinook (5 min before boil ends)",
+      "Slot 3: 0.53 oz Crystal (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.0563,
+    "source_sha256": "b2067bef5afaeebf1594dec7472b8eba06c4ef21342358bc5b1e6762ff81872d",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-e45328dcf53e4043830280e1cf1483d4": {
+    "final_gravity": 1.0069,
+    "instructions": [
+      "Fill the keg with 3.57 US gal of water.",
+      "Mill and load the mash compartment: 6.42 lb American Two-Row Pale, 0.76 lb American Crystal 60L.",
+      "Slot 1: 0.5 oz Centennial (60 min before boil ends)",
+      "Slot 2: 0.5 oz Centennial (20 min before boil ends)",
+      "Slot 3: 0.5 oz Centennial (10 min before boil ends)",
+      "Slot 4: 0.5 oz Centennial (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.053,
+    "source_sha256": "86abe98d2b9570901d981a2308d397c9e13b7ab25f2b8055bc40ee239c978d95",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-f293ac2c58ea4519aed62701a218f812": {
+    "final_gravity": 1.007,
+    "instructions": [
+      "Fill the keg with 3.47 US gal of water.",
+      "Mill and load the mash compartment: 3.75 lb American Two-Row Pale, 2 lb Wheat Malt, 1 lb Rye.",
+      "Slot 1: 0.75 oz Willamette (60 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.05,
+    "source_sha256": "ac151c9bb99121d193e26cddbf766823737f649a760227cf0f2439752d0193ff",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-f38d9e67268646a49bd2b3481748100d": {
+    "final_gravity": 1.0088,
+    "instructions": [
+      "Fill the keg with 3.63 US gal of water.",
+      "Mill and load the mash compartment: 5.5 lb American Two-Row Pale, 0.8 lb German Vienna, 0.75 lb American Crystal 80L, 0.35 lb American Crystal 120L, 0.5 lb Melanoidan .",
+      "Slot 1: 0.6 oz Mount Hood (60 min before boil ends)",
+      "Slot 2: 0.6 oz Mount Hood (15 min before boil ends)",
+      "Slot 3: 0.6 oz Mount Hood (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 22.2 °C for 10 days.",
+      "Crash Chill: 6.7 °C for 2 days."
+    ],
+    "original_gravity": 1.0625,
+    "source_sha256": "308befb26f4ef88691076726bafb2a5db862a4b3e071c820505b7f36420f6a7c",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  },
+  "public-fdc61478ef514b9c998a8e04c09ddcd4": {
+    "final_gravity": 1.01,
+    "instructions": [
+      "Fill the keg with 3.21 US gal of water.",
+      "Mill and load the mash compartment: 4.5 lb American Two-Row Pale, 1 lb American Crystal 60L, 0.5 lb Belgian Biscuit, 0.25 lb American Chocolate, 1 lb Flaked Oats.",
+      "Slot 1: 0.25 oz Magnum (60 min before boil ends)",
+      "Slot 1: 0.25 oz Chinook (60 min before boil ends)",
+      "Slot 2: 0.25 oz Simcoe (30 min before boil ends)",
+      "Slot 3: 0.25 oz Willamette (5 min before boil ends)",
+      "Fermentis US-05: pitch 4.73–7.57 g for 9.46 L (manufacturer’s dosage).",
+      "Fermentation: 18.3 °C for 10 days."
+    ],
+    "original_gravity": 1.071,
+    "source_sha256": "f7ecd373641eb7ef28ef1198984149b20dfbddc21d1e9449a7c34158fcd7f582",
+    "yeast_guide": "https://fermentis.com/en/product/safale-us-05/"
+  }
+}

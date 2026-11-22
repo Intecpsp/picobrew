@@ -237,3 +237,77 @@ func TestSearchPaginationAndIndependentResults(t *testing.T) {
 		}
 	}
 }
+
+func TestMarketplaceFactsMatchOriginalProductAndPreserveRecipe(t *testing.T) {
+	a, err := Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	for id, product := range a.marketplace {
+		d, err := a.Detail(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if product.ProductID == 50 || d.Marketplace == nil || !strings.HasPrefix(product.URL, "https://picobrew.com/brewmarketplace/BeerDetails.cshtml?Beer=") {
+			t.Fatal(id, product)
+		}
+		for _, r := range d.SourceRecords {
+			b, _, err := a.Original(id, r.ID)
+			var raw struct{ PicoBeerID int }
+			if err != nil || json.Unmarshal(b, &raw) != nil || raw.PicoBeerID != product.ProductID {
+				t.Fatal(id, r.ID)
+			}
+		}
+	}
+	d, err := a.Detail("picopak-46")
+	if err != nil || d.Style != "Helles" || d.Recipe.Style != d.Style || d.Marketplace.Hops != "Crystal" || len(d.Recipe.Ingredients) != 0 || d.Recipe.NativeProgram == nil {
+		t.Fatalf("Buffalo Craft Lager: %v %+v", err, d.Marketplace)
+	}
+	p := a.List(Query{Query: "Buffalo Craft Lager Crystal", Kind: "brewing", Style: "Helles"})
+	if p.Total == 0 {
+		t.Fatal("product facts missing from search")
+	}
+}
+
+func TestBrewReadyRecipesHaveStockProgramAndMeasuredBrewSheet(t *testing.T) {
+	a, err := Open()
+	if err != nil {
+		t.Fatal(err)
+	}
+	ready := a.List(Query{Kind: "brew-ready"})
+	if ready.Total != len(a.sheets) || ready.Total == 0 || a.List(Query{Kind: "brew-ready", Model: "pico-s"}).Total != 0 {
+		t.Fatalf("invalid qualified catalog counts: %d", ready.Total)
+	}
+	var stock = recipe.Profiles()[0]
+	for _, profile := range recipe.Profiles() {
+		if profile.ID == "zymatic" {
+			stock = profile
+		}
+	}
+	for id := range a.sheets {
+		entry, err := a.Detail(id)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if !entry.BrewReady || entry.BrewSheet == nil || entry.StockProgram == nil || len(entry.BrewSheet.Instructions) < 5 {
+			t.Fatal(id)
+		}
+		if err := recipe.ValidateCapacity(*entry.Recipe, stock); err != nil {
+			t.Fatalf("%s: %v", id, err)
+		}
+		copy := entry.StockRecipe()
+		compiled, err := recipe.StockZymaticProgram(copy, stock)
+		if err != nil {
+			t.Fatalf("%s: %v", id, err)
+		}
+		if len(compiled.Steps) != len(entry.StockProgram.Steps) || !strings.Contains(copy.Notes, entry.BrewSheet.YeastGuide) {
+			t.Fatal(id)
+		}
+		for i, s := range compiled.Steps {
+			original := entry.StockProgram.Steps[i]
+			if s.Minutes != original.Minutes || s.Location != original.Location || s.TargetF != original.TargetF || s.DrainMinutes != original.DrainMinutes {
+				t.Fatalf("%s step %d changed", id, i+1)
+			}
+		}
+	}
+}

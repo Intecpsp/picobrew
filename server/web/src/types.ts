@@ -410,6 +410,7 @@ export interface CatalogSource {
   reference_count: number
 }
 export interface CatalogSummary {
+  brew_ready?: boolean
   id: string
   name: string
   kind: string
@@ -432,6 +433,21 @@ export interface CatalogSummary {
   official: boolean
 }
 export interface CatalogDetail extends CatalogSummary {
+  brew_sheet?: {
+    instructions: string[]
+    yeast_guide: string
+    original_gravity?: number
+    final_gravity?: number
+  }
+  stock_program?: MachineRecipe
+  marketplace?: {
+    pico_beer_id: number
+    name: string
+    url: string
+    style?: string
+    grains?: string
+    hops?: string
+  }
   recipe?: Recipe
   native_program?: MachineRecipe
   warnings: string[]

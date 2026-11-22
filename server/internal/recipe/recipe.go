@@ -62,7 +62,7 @@ func Profiles() []domain.Profile {
 			}},
 		},
 		{ID: "z", Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
-		{ID: "zymatic", Name: "Zymatic (stock menu sync)", BatchLiters: 9.46352946, Efficiency: 70, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. Use the stock Zymatic menu to publish a recipe for the machine to fetch."},
+		{ID: "zymatic", Name: "Zymatic (stock menu sync)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 25, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. Use the stock Zymatic menu to publish a recipe for the machine to fetch."},
 	}
 }
 
@@ -217,17 +217,14 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 		}
 	}
 	grain := 0.0
-	timings := map[string]float64{}
+	timings := map[float64]float64{}
 	for _, in := range r.Ingredients {
 		if grainIngredient(in) {
 			grain += in.Amount
 		}
 		use := strings.ToLower(strings.TrimSpace(in.Use))
 		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
-			if use == "first wort" {
-				use = "first-wort"
-			}
-			key := fmt.Sprintf("%s:%g", use, in.Minutes)
+			key := in.Minutes
 			timings[key] += in.Amount
 			if profile.MaxHopSlotG > 0 && timings[key] > profile.MaxHopSlotG+1e-9 {
 				return fmt.Errorf("combined hops at %g minutes exceed the %.3g g slot limit for %s", in.Minutes, profile.MaxHopSlotG, profile.Name)

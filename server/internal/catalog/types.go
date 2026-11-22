@@ -27,6 +27,7 @@ type Source struct {
 }
 
 type Summary struct {
+	BrewReady         bool     `json:"brew_ready,omitempty"`
 	ID                string   `json:"id"`
 	Name              string   `json:"name"`
 	Kind              string   `json:"kind"`
@@ -58,7 +59,29 @@ type SourceRecord struct {
 	Bytes  int64  `json:"bytes"`
 }
 
+// MarketplaceIngredients describes published kit ingredients without assuming weights or batch size.
+type MarketplaceIngredients struct {
+	ProductID int    `json:"pico_beer_id"`
+	Name      string `json:"name"`
+	URL       string `json:"url"`
+	Style     string `json:"style,omitempty"`
+	Grains    string `json:"grains,omitempty"`
+	Hops      string `json:"hops,omitempty"`
+}
+
+type BrewSheet struct {
+	NoteIngredients []domain.Ingredient `json:"note_ingredients,omitempty"`
+	Instructions    []string            `json:"instructions"`
+	YeastGuide      string              `json:"yeast_guide"`
+	OriginalGravity float64             `json:"original_gravity,omitempty"`
+	FinalGravity    float64             `json:"final_gravity,omitempty"`
+	SourceSHA256    string              `json:"source_sha256"`
+}
+
 type Detail struct {
+	BrewSheet    *BrewSheet              `json:"brew_sheet,omitempty"`
+	StockProgram *domain.MachineRecipe   `json:"stock_program,omitempty"`
+	Marketplace  *MarketplaceIngredients `json:"marketplace,omitempty"`
 	Summary
 	Recipe           *domain.Recipe        `json:"recipe,omitempty"`
 	NativeProgram    *domain.MachineRecipe `json:"native_program,omitempty"`
@@ -110,7 +133,7 @@ type References struct {
 
 type Query struct {
 	Query, Source, Kind, Model, Style string
-	Offset, Limit                    int
+	Offset, Limit                     int
 }
 
 type Page struct {

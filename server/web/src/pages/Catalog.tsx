@@ -1,3 +1,4 @@
+import { ArchivedIngredients } from '../components/ArchivedIngredients'
 import { modelLabel } from '../lib/utils'
 import { useEffect, useState } from 'react'
 import { ArrowDownToLine, ArrowLeft, ArrowRight, Copy, Library, Search, Wheat } from 'lucide-react'
@@ -6,7 +7,14 @@ import { api, download, errorMessage } from '../lib/api'
 import { catalogAssetURL, externalURL, kindLabel } from '../lib/programs'
 import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
 import { referenceDocument, referenceSourceURL } from '../lib/referenceLinks'
-import type { CatalogDetail, CatalogPage, CatalogReferences, CatalogSource, Recipe } from '../types'
+import type {
+  CatalogDetail,
+  CatalogSummary,
+  CatalogPage,
+  CatalogReferences,
+  CatalogSource,
+  Recipe,
+} from '../types'
 import {
   Badge,
   Button,
@@ -22,6 +30,13 @@ import {
 import { ProgramTable } from '../components/Program'
 import { ReferenceLibrary } from '../components/ReferenceViewer'
 import './Catalog.scss'
+
+function entryLabel(entry: CatalogSummary) {
+  if (entry.brew_ready) return 'Brew-ready · Stock Zymatic'
+  if (entry.kind === 'maintenance') return 'Cleaning program'
+  if (entry.source_id === 'picopak-library') return 'Recipe from a PicoPak'
+  return entry.kind === 'native-program' ? 'Archived brew program' : 'Archived recipe'
+}
 
 const catalogQuery = () => {
   const query = location.hash.split('?')[1]
@@ -50,7 +65,7 @@ function CatalogBrowse() {
   const filters = new URLSearchParams({
     q: debounced,
     source,
-    kind,
+    kind: kind === 'archive' ? '' : kind || 'brew-ready',
     model,
     style,
     offset: String(offset),
@@ -70,9 +85,8 @@ function CatalogBrowse() {
   return (
     <>
       <PageTitle
-        eyebrow="FROM THE COMMUNITY ARCHIVES"
-        title="A whole library to explore."
-        description="Browse recipes, original PicoPak programs and cleaning routines. Copy a favorite into your library to edit it and prepare a transfer."
+        title="Community recipes"
+        description="Brew-ready recipes include measured ingredients, loading instructions, fermentation guidance and a matching machine program."
       />
       <div className="catalog-intro panel">
         <div>
@@ -95,15 +109,16 @@ function CatalogBrowse() {
         <SearchBox
           value={query}
           onChange={(value) => change(setQuery, value)}
-          placeholder="Search community recipes and programs"
+          placeholder="Search community recipes"
         />
         <div className="form-grid quarters">
           <Field label="Catalog type">
             <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
-              <option value="">All recipes & programs</option>
-              <option value="recipe">Ingredient recipes</option>
-              <option value="native-program">PicoPaks and other brew programs</option>
-              <option value="maintenance">Cleaning programs</option>
+              <option value="">Brew-ready recipes</option>
+              <option value="archive">Archive · All source records</option>
+              <option value="recipe">Archive · Ingredient recipes</option>
+              <option value="native-program">Archive · Machine programs</option>
+              <option value="maintenance">Archive · Cleaning programs</option>
             </select>
           </Field>
           <Field label="Source archive">
@@ -146,9 +161,6 @@ function CatalogBrowse() {
               <span className="muted" role="status">
                 {page.total.toLocaleString()} matching entries
               </span>
-              <span className="help-text">
-                PicoPaks contain brewing steps. Ingredient recipes also include a grain bill.
-              </span>
             </div>
             {page.items.length ? (
               <div className="recipe-grid catalog-grid">
@@ -179,7 +191,7 @@ function CatalogBrowse() {
                               : 'copper'
                         }
                       >
-                        {kindLabel(entry.kind, entry.source_model)}
+                        {entryLabel(entry)}
                       </Badge>
                       <h3>
                         <button
@@ -207,7 +219,11 @@ function CatalogBrowse() {
                       </div>
                       <footer>
                         <small>
-                          {entry.can_deploy ? 'Review before transfer' : 'Reference & planning'}
+                          {entry.brew_ready
+                            ? 'Includes stock Zymatic program'
+                            : entry.can_deploy
+                              ? 'Review before transfer'
+                              : 'Reference & planning'}
                         </small>
                         <button
                           onClick={() =>
@@ -229,11 +245,19 @@ function CatalogBrowse() {
                 <Empty
                   icon={<Search size={26} />}
                   title="No entries match these filters."
-                  description="Try a different name, archive or machine."
+                  description={
+                    kind
+                      ? 'Try a different name, archive or machine.'
+                      : 'Search the archive for source recipes and programs that still need preparation details.'
+                  }
                   action={
                     <Button
                       variant="secondary"
                       onClick={() => {
+                        if (!kind) {
+                          change(setKind, 'archive')
+                          return
+                        }
                         setQuery('')
                         setSource('')
                         setKind('')
@@ -242,7 +266,7 @@ function CatalogBrowse() {
                         setOffset(0)
                       }}
                     >
-                      Clear filters
+                      {kind ? 'Clear filters' : 'Search all source records'}
                     </Button>
                   }
                 />
@@ -289,13 +313,13 @@ function CatalogEntry({ id }: { id: string }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const entry = resource.data
-  async function copy() {
+  async function copy(stockProgram = false) {
     setBusy(true)
     setError('')
     try {
       const recipe = await api<Recipe>(`/catalog/${encodeURIComponent(id)}/copy`, {
         method: 'POST',
-        body: {},
+        body: stockProgram ? { stock_program: true } : {},
       })
       await hub.refresh()
       hub.notify('Editable copy added to your library.')
@@ -313,17 +337,32 @@ function CatalogEntry({ id }: { id: string }) {
     <>
       <PageTitle
         back={() => hub.navigate(`/catalog${catalogQuery()}`)}
-        eyebrow={kindLabel(entry.kind, entry.source_model).toUpperCase()}
+        eyebrow={entryLabel(entry).toUpperCase()}
         title={entry.name}
         description={
           entry.description ||
           'An original community archive record. Your editable library copy keeps its source attribution.'
         }
         actions={
-          <Button disabled={busy || !entry.can_copy} onClick={() => void copy()}>
-            <Copy size={16} />
-            {busy ? 'Copying…' : 'Copy to my library'}
-          </Button>
+          <>
+            <Button
+              disabled={busy || !entry.can_copy}
+              variant={entry.brew_ready ? 'secondary' : 'primary'}
+              onClick={() => void copy()}
+            >
+              <Copy size={16} />
+              {busy
+                ? 'Copying…'
+                : entry.brew_ready
+                  ? 'Copy ingredient recipe'
+                  : 'Copy to my library'}
+            </Button>
+            {entry.brew_ready && (
+              <Button disabled={busy} onClick={() => void copy(true)}>
+                Save Zymatic program
+              </Button>
+            )}
+          </>
         }
       />
       <ErrorBanner message={error || resource.error} />
@@ -337,9 +376,23 @@ function CatalogEntry({ id }: { id: string }) {
                   ? 'Review this source recipe before adapting it to your equipment.'
                   : entry.kind === 'maintenance'
                     ? 'Follow this cleaning program’s preparation instructions for its source machine. Cleaning routines are kept separate from beer recipes.'
-                    : 'This program has no ingredient quantities or measured batch volume. Use its matching PicoPak or a separately reviewed ingredient plan.'
+                    : undefined
               }
             />
+            {entry.kind === 'native-program' && <ArchivedIngredients product={entry.marketplace} />}
+            {entry.source_id === 'public-recipes' && /^public-[0-9a-f]{32}$/.test(entry.id) && (
+              <p>
+                <a
+                  href={
+                    'https://picobrew.com/PublicRecipes/PublicRecipe.cshtml?id=' + entry.id.slice(7)
+                  }
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Original PicoBrew public recipe
+                </a>
+              </p>
+            )}
             {program ? (
               <ProgramTable program={program} model={entry.source_model} archived />
             ) : (
@@ -395,6 +448,23 @@ function CatalogEntry({ id }: { id: string }) {
               </p>
             )}
           </section>
+          {entry.brew_sheet && entry.stock_program && (
+            <section className="panel">
+              <SectionHeading
+                title="Brew on a stock Zymatic"
+                description="Save the Zymatic program to send this schedule from your library. The loading sheet goes with it."
+              />
+              <ol>
+                {entry.brew_sheet.instructions.map((line, i) => (
+                  <li key={i}>{line}</li>
+                ))}
+              </ol>
+              <a href={entry.brew_sheet.yeast_guide} target="_blank" rel="noreferrer">
+                Manufacturer’s pitching guide
+              </a>
+              <ProgramTable program={entry.stock_program} model="zymatic" archived />
+            </section>
+          )}
           {(entry.notes || entry.warnings?.length > 0) && (
             <section className="panel">
               <SectionHeading title="Source notes" />
@@ -421,7 +491,7 @@ function CatalogEntry({ id }: { id: string }) {
             ) : (
               <Wheat size={50} />
             )}
-            <Badge tone="copper">{kindLabel(entry.kind, entry.source_model)}</Badge>
+            <Badge tone="copper">{entryLabel(entry)}</Badge>
             <h3>{entry.style || entry.name}</h3>
             <dl>
               <div>
@@ -434,6 +504,24 @@ function CatalogEntry({ id }: { id: string }) {
                   <dd>{formatNumber(entry.abv, 1)}%</dd>
                 </div>
               )}
+              {entry.brew_sheet?.original_gravity && (
+                <div>
+                  <dt>Original gravity</dt>
+                  <dd>{entry.brew_sheet.original_gravity.toFixed(3)}</dd>
+                </div>
+              )}
+              {entry.brew_sheet?.final_gravity && (
+                <div>
+                  <dt>Final gravity</dt>
+                  <dd>{entry.brew_sheet.final_gravity.toFixed(3)}</dd>
+                </div>
+              )}
+              {entry.srm != null && (
+                <div>
+                  <dt>Color</dt>
+                  <dd>{formatNumber(entry.srm, 1)} SRM</dd>
+                </div>
+              )}
               {entry.ibu != null && (
                 <div>
                   <dt>IBU</dt>
@@ -442,9 +530,11 @@ function CatalogEntry({ id }: { id: string }) {
               )}
             </dl>
             <p>
-              {entry.can_deploy
-                ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
-                : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}
+              {entry.brew_ready
+                ? 'Matched to the original stock Zymatic schedule.'
+                : entry.can_deploy
+                  ? `Transfer support: ${entry.deploy_models.map(modelLabel).join(', ')}. The preview checks the connected machine and its available slots.`
+                  : 'Available for reference and planning. Transfer compatibility is checked when you prepare a preview.'}
             </p>
           </div>
         </aside>

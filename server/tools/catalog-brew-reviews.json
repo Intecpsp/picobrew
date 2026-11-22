@@ -1,0 +1,408 @@
+{
+  "public-02f4c0dd9e58407e808ba4305c099446": {
+    "ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Fresh vanilla bean",
+        "unit": "count",
+        "use": "packaging"
+      }
+    ],
+    "instructions": [
+      "Cut one fresh vanilla bean into roughly 1-inch pieces and add it to the serving keg."
+    ],
+    "source_sha256": "2e393a7de364bf718d3f44ae5bdfa653211eb54e4c456281c3baa50001f4564d"
+  },
+  "public-04bd481db77e4feaa4ffaaa1506707af": {
+    "source_sha256": "e2682b49351982ab0a1c3d35366d6b3b6d031d1f0a89360c2b8626f7356378b7"
+  },
+  "public-08ed159bd8614c07a6cb86234f947b56": {
+    "ingredients": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "After fermentation, dry hop for 10 days using pellets: 0.5 oz each of Simcoe, Amarillo and Cascade, plus 1 oz Centennial."
+    ],
+    "source_sha256": "d4f5f568de76a422f62c78c6ebd11076412e8fa33dbce16641baf4d2ccb7bc25"
+  },
+  "public-09047782eaef4efc93797e4a4192310e": {
+    "source_sha256": "13bad697ddac58128c23811e80a96797de12c246126ad1cecaa9e93a27139456"
+  },
+  "public-0b0d8c74a909402c8283622b6c56bdc8": {
+    "source_sha256": "60dc7e5bc5d5f96af89e97f4edca54fde01411d8e4afca5cad09b1a1117a9c54"
+  },
+  "public-0df6a291931d43198b2c1dbe9b2283f9": {
+    "source_sha256": "24d1342c32345562f6c85e2a777fefb46eb9eb08f130977f8fbb61c7498bb2bb"
+  },
+  "public-0fdc2325be8d4d28afcb1f234353e2bc": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "242f11a772869e15dc0e113e865c54ba87de051fb3eb86aa9cd31fc264af8f62"
+  },
+  "public-1353d607268546a0bea74227f1ded356": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "291c355cc0891968662d14dfce6073f552fb9ac4b823282e4d0f8faaf97a1d22"
+  },
+  "public-164685a71786447daddc1fd11d21aa98": {
+    "source_sha256": "172828df59bf87f4ce7cf58621b04e4f73253373806c1331652389ec860817c3"
+  },
+  "public-1704720c78ac436b9ca46bbc8a2dfbe3": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "cf2419679528c0d53d8ce1c95dfe389dc28efa272c7bdea50942d59fe65a3986"
+  },
+  "public-17e65891c78a4286a0a4b148ea3f5ff8": {
+    "source_sha256": "8aa41a1261c1b386dab1fd1ea52f2ce8fb003d742f87b2b9e18ba2f93c7a0670"
+  },
+  "public-18ccac03bdba452aaf04f467b3243a9f": {
+    "source_sha256": "b9fde7f651d872d8bff5425802a88741ec8a2392a630c3e0e1607115f47af943"
+  },
+  "public-1940a099efed4af0b21254d0bfa46c3d": {
+    "source_sha256": "44d3a940a66087aef67d8a8ab66569c3387a75c10ac44b252e41d37547c4f122"
+  },
+  "public-1ada30b14b54460f9b2a5e4a144edace": {
+    "source_sha256": "df0fb92eb191ac16451e950c76888e8f20fad3c16510739c3499497ca5935818"
+  },
+  "public-1bac7f1bc120415d8741d6a39b87e208": {
+    "source_sha256": "faf7104e16ccb3da2c87641633c02931834b9676bf6825df00a609ff4899ae6f"
+  },
+  "public-1de898587b1148feb171c81c4c836b0d": {
+    "source_sha256": "e9db5f477ca16c2fe1203a730a730b6ca5b1ca724e8616eb3632e56bc2658bca"
+  },
+  "public-21ef09b1f39f4edf921aeb4db9f571f0": {
+    "source_sha256": "6f8e1669f6e0b3367e4aa6eb693f84399d5c0296d20740112b954a9fa4121471"
+  },
+  "public-2276c4fb0c6f40a3b0e4130c9324412a": {
+    "source_sha256": "46f80f9153e911061360711cac52e835b2a52f9700509e764ae37d11b94e5e72"
+  },
+  "public-25655d26224a47e5b4254667235e7c94": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "791fddab8e3359975e1549ecacb9a97af8a9a4d5c66954fcfc50f004e3076c7a"
+  },
+  "public-26846aefae9c40b09a4116785af4531a": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "8f0cf8c5c64e5a908f349a5d985d100f5fa38301e09d0b87e05c259dc465f1d7"
+  },
+  "public-2e86de5fd8c947c9a0f70d2224809406": {
+    "source_sha256": "5da1072d0afef177e282b6c66360c843e150b9efee006aac8758f64527294924"
+  },
+  "public-331b88b845444112832471e5e99bf1f7": {
+    "ingredients": [
+      {
+        "amount": 34.01942775,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "After fermentation, dry hop with 1.2 oz Centennial for 10 days."
+    ],
+    "source_sha256": "4bdf6142b36749eb3269fa4081c8e0833a0cde77d06080aa8945fc5d8cf6970d"
+  },
+  "public-33e1ad20d7cc4c3e834ed7d1c642c584": {
+    "ingredients": [
+      {
+        "amount": 226.796185,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Roasted pecans",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "instructions": [
+      "Add 8 oz coarsely crushed roasted pecans to the grain in the mash compartment."
+    ],
+    "source_sha256": "2fc56b37a752e41c1ec3bea0119b0c1fc1be0bd62596e00030c83de27333514a"
+  },
+  "public-391ef17cc7234a6db1e4f7cc61d278b9": {
+    "ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Fresh vanilla bean",
+        "unit": "count",
+        "use": "packaging"
+      }
+    ],
+    "instructions": [
+      "Cut one fresh vanilla bean into roughly 1-inch pieces and add it to the serving keg."
+    ],
+    "source_sha256": "f160a860d7d5bc1d9fa9fb77331476117f47b8a3be00c588efb3b7bad09293cb"
+  },
+  "public-3a0822cd15374e8a8139b5593f42c0a4": {
+    "source_sha256": "0ab1c548b197019dc54b204168c5f8063de6e1f0e9a955f8aebf7473a405bc4d"
+  },
+  "public-4288104eaded4871b3bde67a3bf33953": {
+    "source_sha256": "046a4f1f3c0235fb6046c26547bfd9dad111fc9e5a1d5304b496ea0f319ce2e0"
+  },
+  "public-45dd77cf36b140d697d6c3e14d0c5acb": {
+    "source_sha256": "8ed245de682d46b0e1bc99caf4a461a525edf94e05adbb864355f35217a29b28"
+  },
+  "public-47da31097a974a0fa0857fcc6f25ac61": {
+    "source_sha256": "1f01cf19c5490f73506c87fffb9cb84480731fab652bc8069d37f07e1ad8675f"
+  },
+  "public-489561ef5295460082d7eabc62f38bd9": {
+    "source_sha256": "24b296c61cf37c21d1058be19a5ab13cdba8b434683bd9c28dc6f05f2c6699ad"
+  },
+  "public-4a67c4937bf943cebaa1693a22980b3b": {
+    "source_sha256": "cad75c908e913e59db5eb42278601d7271dc07754bf96d17c44b74f9df5e147b"
+  },
+  "public-4d584296861b49169883af5c7c3cc6fa": {
+    "source_sha256": "394cf0250eb9261229198a6ac0135f81a96e70e8862c380b30865684fe44f14f"
+  },
+  "public-50221b8e84b941148c141b0a9fc4ba25": {
+    "source_sha256": "2dacbed94403084f1e616cfaeacb7d475c44dcf9750b1b8f1618878c0fc2dacb"
+  },
+  "public-5286bcb4ef2c457ba7e0247ad57fe6bf": {
+    "ingredients": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Vanilla bean",
+        "unit": "count",
+        "use": "secondary"
+      },
+      {
+        "amount": 29.5735295625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Vodka",
+        "unit": "mL",
+        "use": "secondary"
+      }
+    ],
+    "instructions": [
+      "Split and scrape one vanilla bean, cut up the pod, and soak both in 1 US fl oz vodka for about two days. Add after primary fermentation and leave about a week before kegging."
+    ],
+    "source_sha256": "08c61bfc7dab5fa4dc4ef49d2d69d8fcdca08c79fe52599e9ab5843ad70e87c2"
+  },
+  "public-53c492471573466884748ad76d233ecf": {
+    "ingredients": [
+      {
+        "amount": 25,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "Dry hop with 25 g Citra for 7 days."
+    ],
+    "source_sha256": "3ab50f899ee179f04a6ee2307c0313580447d8692ce70fc29db740b1fa60bda7"
+  },
+  "public-5753b409b5f544d8bc54ffc464705513": {
+    "source_sha256": "91ed4806c84d00a9e0dde63d2caa9c617f95d95875b3b7ebfcc09d750695cce4"
+  },
+  "public-58caea4cc7f642378c58ad6ff18b9361": {
+    "source_sha256": "2a161d305a576f099686a2cc941e6a9e8e9132bb1e227e884af5df79da374393"
+  },
+  "public-5c0828069e5b406f933fda3d07f016df": {
+    "source_sha256": "206df10a8756f86e87db74b6d4b8e3dda3239f7ac6edbf9dbe0707f3d0206a51"
+  },
+  "public-5d65d85189f644db8c493aa595600bba": {
+    "source_sha256": "247672172654613b15f06b294f0a4f384dfa56ce34ef61f9a1599124c6ad7ee6"
+  },
+  "public-5d69477c789f415084ae3ec312679208": {
+    "source_sha256": "ce0361af29e2c5438af766cc8be16caacb5715fa75cbe676bd0fb2b0e3e7c661"
+  },
+  "public-60a19e48674f4d0e85a63ec1db7c984a": {
+    "source_sha256": "084f4c6662d1b8f0e98b21887d306fab97e4af8c48d0e3fb1afe4adf9a0c8455"
+  },
+  "public-642db6b4afd648d6972aa7f2b6aabb3d": {
+    "ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 14400,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "After fermentation, dry hop for 10 days with 1 oz Simcoe, 1 oz Amarillo and 0.5 oz Columbus."
+    ],
+    "source_sha256": "e2ea60fceb14e272f922c0625cefa93f47e62c4ef48aee6ee900ad9ee1ca0caf"
+  },
+  "public-6686c8d26bd0423cb911199e65a0fe19": {
+    "source_sha256": "8a7850cf5c4baf8fd88f4f4d4e554060bdd405d577743c2e73014b14a57a85cf"
+  },
+  "public-72d805d8c5b2480781c1de7d3ea73046": {
+    "source_sha256": "36eca76dd19986a65f26a2e69e821053727696728cc28c31e5a581894520d2ad"
+  },
+  "public-73ecc58a810b495cbd9f971eae1b0817": {
+    "source_sha256": "5e65c09a67b3c10557f9880f88e630485f7091b0f2df4e47572a835815d090f4"
+  },
+  "public-7d45c5e639814533a5b5202275db4152": {
+    "source_sha256": "2d0967a888b0778be2dcdbd40597e77c84f3e5d059a9b6237901fde96fefc4af"
+  },
+  "public-84bb80127c914d959adee375206a83f6": {
+    "source_sha256": "657c40be96d88a89a3c9176423b92ef1d3f535ea6e77cec25e5899959232afcc"
+  },
+  "public-8eaf49ee4952402cb8a1ad8d9e64aeb5": {
+    "source_sha256": "5da92acc5d30906f0556f687c981c4d8413fc788078e2737b6d48e9d7df23ea0"
+  },
+  "public-901241d1db5f42759c869636153344ec": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "792587ad25bc8021cbcdbb7607d0ce4b7c3a91f5db8e271fe1e25f12cf12e280"
+  },
+  "public-96a7aa987f92468881122eee25b61b78": {
+    "source_sha256": "b547b0dfe5e6d5de9ec4a4e448ecfcba831c467ae392800c14849c1718bc0a18"
+  },
+  "public-9afa1bd043a940bc9ac80f7df18dfe4d": {
+    "source_sha256": "4d27f206e85f30d2e27f72cd96dd60dd5bd4d986773e498f9960535b109f82af"
+  },
+  "public-9e5c5a64feae46f0a67221db6201cb6d": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "12c2e7c303324146e34b21cf9fa37ed4a65acb0ef616b4972db77819f408af08"
+  },
+  "public-9e969ded5e2e44e1b4b451e755e57b9b": {
+    "source_sha256": "e9d35c9e6a853ec204034435458fdfab1f54b43492e23fb4084b791ce185bfbf"
+  },
+  "public-a0320b910bd4412d84edd9bb29f3e6eb": {
+    "source_sha256": "d6ff4229d4cf65fc6f91161c413571644aa38e67c77f76100f4947abc42133d7"
+  },
+  "public-a13bba9c562f495eb7337de9e8e1ec6a": {
+    "instructions": [
+      "The author lists optional substitutions or additions in the original recipe notes."
+    ],
+    "source_sha256": "014f7f27e4214f62fb7c0f0b164fad2103199662e9fdc760a4e43c38583d794e"
+  },
+  "public-ac93fdb5b64f4a5195ba8390e0856c1d": {
+    "source_sha256": "7f002d66cabfc784f1b2fef6c18654a6c8295f3d92731339e353ccb42c973ac0"
+  },
+  "public-c0e1708dc8594315b82355d877beda73": {
+    "source_sha256": "120b71bdf90c51384d24a7c4fbb3a16f9fa2fb62293592a5d144484cca83e28c"
+  },
+  "public-c75649acd28441fa8e82ae57c67bf91c": {
+    "source_sha256": "7e0af1157d9c9363796b4433622ca97bf7cd5e67a1839e9e53dfe7b484bd0172"
+  },
+  "public-cd7ed5f8dc45485caf98af9bd6ce8ce6": {
+    "source_sha256": "c37a71dc77f88adf22889bdbc43e8c923987a1b1e00d0131e004d1f6a0f1d651"
+  },
+  "public-cf754de6a71d4a2181ad4f260108ef9c": {
+    "source_sha256": "4ff1dc102e810adc2307ffbd29b193fe89cb49b2b6f55483d26c39d866765296"
+  },
+  "public-d206d02b7fac461ebba9242ef9007ae5": {
+    "source_sha256": "8387d88249ce77d0cacdfad7189db3fbe085093e72739e3d96204c7a06c95026"
+  },
+  "public-d6d18b374ae646fabdf9a08c24cad471": {
+    "ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "In secondary fermentation, dry hop with 1 oz Mosaic for 4 days."
+    ],
+    "source_sha256": "1d480c52cf72d0400763df0140d03ac69fd4ebbd713f94530787a49d7ee54c90"
+  },
+  "public-d9a8dc6c9f574a6abe1fb250a1c38486": {
+    "ingredients": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "instructions": [
+      "After primary fermentation, dry hop with 1 oz Mosaic for 7 days."
+    ],
+    "source_sha256": "39c8967c06955fc4b871af4bc6dde7d8358e5c6148e78a9711bacc4ee8305ced"
+  },
+  "public-dd48673fdad24335819bb5de02ba510b": {
+    "source_sha256": "a6e8d1000ddc13b60c5f9a7b7e661ad977378d5e72e140165339a8b2b13c52d0"
+  },
+  "public-e075e32b785b41598ab006a0b9cdade6": {
+    "source_sha256": "b2067bef5afaeebf1594dec7472b8eba06c4ef21342358bc5b1e6762ff81872d"
+  },
+  "public-e45328dcf53e4043830280e1cf1483d4": {
+    "source_sha256": "86abe98d2b9570901d981a2308d397c9e13b7ab25f2b8055bc40ee239c978d95"
+  },
+  "public-f293ac2c58ea4519aed62701a218f812": {
+    "source_sha256": "ac151c9bb99121d193e26cddbf766823737f649a760227cf0f2439752d0193ff"
+  },
+  "public-f38d9e67268646a49bd2b3481748100d": {
+    "source_sha256": "308befb26f4ef88691076726bafb2a5db862a4b3e071c820505b7f36420f6a7c"
+  },
+  "public-fdc61478ef514b9c998a8e04c09ddcd4": {
+    "source_sha256": "f7ecd373641eb7ef28ef1198984149b20dfbddc21d1e9449a7c34158fcd7f582"
+  }
+}

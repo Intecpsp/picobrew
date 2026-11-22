@@ -415,7 +415,7 @@ describe('community catalog and local recipe slots', () => {
 
   it('browses cleaning records and reads local images, machine artwork and attributed source records', async () => {
     await open('/catalog?kind=maintenance')
-    await screen.findByRole('heading', { name: 'A whole library to explore.' })
+    await screen.findByRole('heading', { name: 'Community recipes' })
     await waitFor(() =>
       expect(document.querySelectorAll('.catalog-card').length).toBeGreaterThan(0)
     )

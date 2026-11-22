@@ -50,7 +50,7 @@ var endpoints = []endpoint{
 	{"GET", "/catalog/references", "List attributed support references and bundled artwork", nil},
 	{"GET", "/catalog/assets/{asset_path}", "Read a manifest-listed local image or support reference", nil},
 	{"GET", "/catalog/{id}", "Read an immutable source entry and conversion provenance", nil},
-	{"POST", "/catalog/{id}/copy", "Create an independent editable library copy", map[string]any{}},
+	{"POST", "/catalog/{id}/copy", "Copy the ingredient recipe or its matched stock Zymatic program", map[string]any{"stock_program": false}},
 	{"GET", "/catalog/{id}/source", "Download the exact original source JSON", nil},
 	{"GET", "/firmware/updates", "Read the daily version check and registered machine update notices", nil},
 	{"POST", "/firmware/updates", "Refresh firmware version metadata now", nil},
@@ -265,6 +265,7 @@ func buildSchemas() schemaMap {
 	r.properties("aiMonitorStatus")["state"] = schemaMap{"type": "string", "enum": []string{"off", "pending", "active", "finished"}}
 	r.properties("Config")["monitor_enabled"] = schemaMap{"type": "boolean", "deprecated": true, "description": "Retained for older saved configurations; this flag alone never enables monitoring. Consent is explicit for each verified brew."}
 	r.properties("Request")["brew_id"] = schemaMap{"type": "string", "description": "Required for live and analysis modes. Live mode also requires device_id and verifies that this exact native history session is currently recording."}
+	r.values["CatalogCopyInput"] = schemaObject(schemaMap{"stock_program": schemaMap{"type": "boolean", "default": false, "description": "Save the matched stock Zymatic program and its brew sheet."}})
 	r.values["AdaptInput"] = schemaObject(schemaMap{"profile_id": stringSchema(), "batch_liters": numberSchema()}, "profile_id")
 	r.values["DeployInput"] = schemaObject(schemaMap{"recipe_id": stringSchema(), "profile_id": stringSchema(), "batch_liters": numberSchema(), "source_revision": schemaMap{"type": "integer", "minimum": 1}, "profile_fingerprint": schemaMap{"type": "string", "description": "Copy from the reviewed adaptation. A changed profile returns 409 before any machine write. Optional for compatibility with existing direct API clients."}}, "recipe_id", "source_revision")
 	r.values["ProfileInput"] = schemaObject(schemaMap{"batch_liters": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "description": "Maximum is the model batch volume."}, "efficiency": schemaMap{"type": "number", "minimum": 0, "exclusiveMinimum": true, "maximum": 100}, "max_grain_kg": schemaMap{"type": "number", "minimum": 0, "description": "Up to the model planning ceiling in kilograms. Zero restores the default."}, "max_hop_slot_g": schemaMap{"type": "number", "minimum": 0, "description": "Combined grams per hop slot. Zero restores the model default. Omit to preserve the current setting."}}, "batch_liters", "efficiency", "max_grain_kg")
@@ -425,6 +426,8 @@ func operationParameters(e endpoint) []any {
 func requestSchema(e endpoint) (schemaMap, bool) {
 	name := ""
 	switch e.path {
+	case "/catalog/{id}/copy":
+		name = "CatalogCopyInput"
 	case "/auth/setup":
 		name = "Setup"
 	case "/auth/login":
@@ -705,7 +708,7 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 		statuses[400] = "Invalid catalog filters, pagination or request body."
 		statuses[404] = "Entry, original record or local asset is unavailable."
 		if e.path == "/catalog/{id}/copy" {
-			statuses[422] = "This entry has no verified editable conversion; its original source remains available."
+			statuses[422] = "This entry has no verified conversion for the requested copy type."
 		}
 	}
 	if e.path == "/ai/assist" {

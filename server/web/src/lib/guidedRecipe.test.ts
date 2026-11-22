@@ -211,3 +211,20 @@ test('first wort hopping adds a heat-up in the first loaded slot only for a full
     )
   ).toBe(false)
 })
+
+test('stock Zymatic reviews up to 25 steps and each transmitted hold must fit one byte', () => {
+  const stock = { ...profile, id: 'zymatic', max_steps: 25 }
+  const d = {
+    ...draft(),
+    customMash: true,
+    rests: Array.from({ length: 18 }, () => ({ celsius: 65, minutes: '15' })),
+  }
+  expect(guideProblem(d, stock, 3)).toBe('')
+  expect(guideProblem(d, profile, 3)).toContain('step limit')
+  expect(guideProblem({ ...d, rests: [{ celsius: 65, minutes: '256' }] }, stock, 3)).toContain(
+    '255'
+  )
+  expect(guideProblem({ ...d, rests: [{ celsius: 99, minutes: '10' }] }, stock, 3)).toContain('207')
+  expect(guideProblem({ ...d, hops: [], boil: '256' }, stock, 1)).toContain('255')
+  expect(guideProblem({ ...d, rests: [] }, stock, 3)).toContain('mash rest')
+})
