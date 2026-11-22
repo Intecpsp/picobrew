@@ -54,8 +54,9 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	case r.SourceModel != p.ID:
 		staged.Steps = translateRoutedSteps(r, p)
 	}
+	slots := firstHopRoutes(staged.Steps)
 	if issue == "" && routed > 0 {
-		issue = checkRoutedHops(staged)
+		issue = checkRoutedHops(staged.Ingredients, slots)
 	}
 	plan, err := adapt(staged, p, liters, true)
 	if err != nil {
@@ -77,6 +78,9 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 			plan.DeploymentBlockers = nil
 		}
 	}
+	if plan.MachineRecipe != nil {
+		plan.HopSlotsByMinute = slots
+	}
 	for i, in := range plan.Recipe.Ingredients {
 		if in.Name == "Source starting water" && in.Kind == "water" {
 			plan.Recipe.Ingredients[i].Name = "Estimated starting water"
@@ -97,34 +101,38 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	return plan, nil
 }
 
-// A return visit can wet a loaded slot again. A second load cannot start
-// later in a slot that has already seen wort.
-func checkRoutedHops(r domain.Recipe) string {
+// Use the first direct flow to a slot to assign its ingredient load. Later
+// visits to the same slot recirculate the existing load.
+func firstHopRoutes(steps []domain.RecipeStep) map[int]int {
 	remaining := 0
-	for _, step := range r.Steps {
+	for _, step := range steps {
 		if step.Kind == "boil" || step.Kind == "hop" {
 			remaining += step.Minutes
 		}
 	}
 	first := map[int]int{}
 	visited := map[int]bool{}
-	for _, step := range r.Steps {
+	for _, step := range steps {
 		if step.Kind != "boil" && step.Kind != "hop" && step.Kind != "heat" {
 			continue
 		}
 		if step.Location >= 3 && !visited[step.Location] {
 			visited[step.Location] = true
-			first[remaining] = step.Location
+			first[remaining] = step.Location - 2
 		}
 		if step.Kind != "heat" {
 			remaining -= step.Minutes
 		}
 	}
-	for _, in := range r.Ingredients {
+	return first
+}
+
+func checkRoutedHops(ingredients []domain.Ingredient, first map[int]int) string {
+	for _, in := range ingredients {
 		use := strings.ToLower(strings.TrimSpace(in.Use))
 		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
 			if in.Minutes != math.Trunc(in.Minutes) || first[int(in.Minutes)] == 0 {
-				return fmt.Sprintf("Assign %s a hop slot that first receives wort at %g minutes before boil ends.", in.Name, in.Minutes)
+				return fmt.Sprintf("Assign %s a hop slot that first receives direct flow at %g minutes before boil ends.", in.Name, in.Minutes)
 			}
 		}
 	}

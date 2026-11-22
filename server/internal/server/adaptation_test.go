@@ -145,7 +145,7 @@ func TestSaveTranslatesEveryBrewerAndRebuildsEditedVersions(t *testing.T) {
 			loc--
 		}
 		steps := version.MachineRecipe.Steps
-		if steps[2].Location != loc || steps[4].Location != loc || steps[2].Minutes != 20 || steps[4].Minutes != 5 {
+		if version.HopSlotsByMinute[30] != 2 || steps[2].Location != loc || steps[4].Location != loc || steps[2].Minutes != 20 || steps[4].Minutes != 5 {
 			t.Fatal("changed explicit hop routing", p.ID)
 		}
 		if p.ID == "pico-s" && version.Recipe.BatchLiters != 4 {

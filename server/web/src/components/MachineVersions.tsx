@@ -22,15 +22,6 @@ export function MachineVersions({
     versions?.[0]
   if (!plan) return null
   const { recipe, profile, machine_recipe: program } = plan
-  const slots = new Map<number, number>()
-  let remaining = (recipe.steps || []).reduce(
-    (sum, s) => sum + (s.kind === 'hop' || s.kind === 'boil' ? s.minutes : 0),
-    0
-  )
-  for (const s of recipe.steps || []) {
-    if (s.kind === 'hop' && s.location >= 3) slots.set(remaining, s.location - 2)
-    if (s.kind === 'hop' || s.kind === 'boil') remaining -= s.minutes
-  }
   return (
     <section className="panel" aria-label="Machine versions">
       <SectionHeading title="Machine versions" />
@@ -77,7 +68,9 @@ export function MachineVersions({
                   <td>
                     {i.kind === 'hop' && (i.use === 'boil' || i.use === 'first-wort')
                       ? [
-                          program && slots.has(i.minutes) ? 'Hop slot ' + slots.get(i.minutes) : '',
+                          plan.hop_slots_by_minute?.[i.minutes]
+                            ? 'Hop slot ' + plan.hop_slots_by_minute[i.minutes]
+                            : '',
                           i.use === 'first-wort'
                             ? 'First wort'
                             : i.minutes + ' min before boil ends',

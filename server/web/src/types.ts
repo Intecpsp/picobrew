@@ -221,6 +221,7 @@ export interface Profile {
   user_configured?: boolean
 }
 export interface Adapted {
+  hop_slots_by_minute?: Record<number, number>
   recipe: Recipe
   machine_recipe: MachineRecipe | null
   profile: Profile
