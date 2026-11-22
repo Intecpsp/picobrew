@@ -19,7 +19,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(page.getByRole('option', { name: 'Machine schedules' })).toHaveCount(0)
   await page.getByRole('button', { name: 'Sources & credits' }).click()
   await page.getByRole('button', { name: 'Browse source archive' }).click()
-  await page.getByLabel('Catalog type').selectOption('native-program')
+  await page.getByLabel('Archive record type').selectOption('native-program')
   await expect(page).toHaveURL(/q=Pico\+Pale/)
   await page.getByRole('button', { name: 'Pico Pale', exact: true }).first().click()
   await expect(
@@ -28,7 +28,7 @@ test('recipe browsing, filtered details and AI creation share one Recipes worksp
   await expect(page).toHaveURL(/catalog\/picopak-64\?.*q=Pico\+Pale/)
   await views.getByRole('link', { name: 'Browse all' }).click()
   await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Pico Pale')
-  await expect(page.getByLabel('Catalog type')).toHaveValue('native-program')
+  await expect(page.getByLabel('Archive record type')).toHaveValue('native-program')
   await expect(page.getByRole('link', { name: 'Create with AI', exact: true })).toHaveCount(0)
   await page.goto('/#/recipes/weekend-pale')
   await page.getByRole('button', { name: 'Ask the brew assistant', exact: true }).click()
@@ -210,7 +210,7 @@ test('guide saves a Z recipe with correctly timed hop bins and a deployable prev
   await expect(page.getByLabel('Equipment profile')).toHaveValue('z')
   await expect(
     page.getByRole('dialog').getByLabel('Target batch size (L)', { exact: true })
-  ).toHaveValue('8')
+  ).toHaveValue('')
   try {
     const saved = await (await request.get('/api/v1/recipes/' + id)).json()
     expect(saved).toMatchObject({ name, source_model: 'z', batch_liters: 8, boil_minutes: 60 })
@@ -473,7 +473,10 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
 test('catalog and library show five automatic versions from one measured recipe', async ({
   page,
 }) => {
-  await page.goto('/#/catalog?q=UB08&model=pico-s')
+  await page.goto('/#/catalog?kind=brew-ready&q=UB08&model=pico-s')
+  await expect(page.getByRole('heading', { name: 'Community recipes' })).toBeVisible()
+  await expect(page.getByLabel('Catalog type')).toHaveCount(0)
+  await expect(page.getByRole('option', { name: 'Verified for stock Zymatic' })).toHaveCount(0)
   await page.getByRole('button', { name: 'UB08 Summer IPA', exact: true }).click()
   const versions = page.getByRole('region', { name: 'Machine versions' })
   const target = versions.getByLabel('View brewer version')

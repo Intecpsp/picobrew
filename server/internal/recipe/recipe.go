@@ -205,9 +205,10 @@ func grainIngredient(in domain.Ingredient) bool {
 
 // ValidateCapacity checks the quantities for one batch, after scaling when adapting.
 func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
-	if r.BatchLiters > profile.BatchLiters+1e-9 {
+	if (!r.EstimatedYield || profile.UserConfigured) && r.BatchLiters > profile.BatchLiters+1e-9 {
 		return fmt.Errorf("batch exceeds the %.3g L limit for %s", profile.BatchLiters, profile.Name)
 	}
+
 	if profile.MaxSteps > 0 && len(r.Steps) > profile.MaxSteps {
 		return fmt.Errorf("recipe has %d steps; configured profile allows %d", len(r.Steps), profile.MaxSteps)
 	}
@@ -216,19 +217,10 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 			return fmt.Errorf("step %d exceeds configured maximum temperature", i+1)
 		}
 	}
-	grain := 0.0
-	timings := map[float64]float64{}
-	for _, in := range r.Ingredients {
-		if grainIngredient(in) {
-			grain += in.Amount
-		}
-		use := strings.ToLower(strings.TrimSpace(in.Use))
-		if in.Kind == "hop" && (use == "boil" || use == "first-wort" || use == "first wort") {
-			key := in.Minutes
-			timings[key] += in.Amount
-			if profile.MaxHopSlotG > 0 && timings[key] > profile.MaxHopSlotG+1e-9 {
-				return fmt.Errorf("combined hops at %g minutes exceed the %.3g g slot limit for %s", in.Minutes, profile.MaxHopSlotG, profile.Name)
-			}
+	grain, timings := ingredientLoads(r)
+	for minute, amount := range timings {
+		if profile.MaxHopSlotG > 0 && amount > profile.MaxHopSlotG+1e-9 {
+			return fmt.Errorf("combined hops at %g minutes exceed the %.3g g slot limit for %s", minute, profile.MaxHopSlotG, profile.Name)
 		}
 	}
 	if profile.MaxGrainKG > 0 && grain > profile.MaxGrainKG+1e-9 {
@@ -240,8 +232,7 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 	return nil
 }
 
-// Adapt scales grain/unspecified fermentables by volume and source/target
-// efficiency. Known extracts/sugars, hops and other ingredients scale by volume.
+// Adapt scales the whole ingredient bill by a common factor.
 // It preserves source data and returns a new plan.
 // It does not solve hop utilization, mash water, losses or yeast cell counts.
 // A valid ingredient plan remains available when native compilation is blocked;
@@ -264,10 +255,14 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 	if IsNative(r) {
 		return adaptNative(r, profile, builtIn, batchLiters)
 	}
-	if batchLiters == 0 {
+	automatic := planning && batchLiters == 0 && len(r.Ingredients) > 0
+	var limit string
+	if automatic {
+		batchLiters, limit = fittingBatch(r, profile)
+	} else if batchLiters == 0 {
 		batchLiters = profile.BatchLiters
 	}
-	if !finite(batchLiters) || batchLiters <= 0 || batchLiters > profile.BatchLiters+1e-9 {
+	if !finite(batchLiters) || batchLiters <= 0 || (!automatic && batchLiters > profile.BatchLiters+1e-9) {
 		return domain.Adapted{}, errors.New("requested batch exceeds the configured profile batch limit or is invalid")
 	}
 
@@ -283,6 +278,7 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 		}
 	}
 	plan.Recipe.BatchLiters = batchLiters
+	plan.Recipe.EstimatedYield = automatic
 	plan.Recipe.Efficiency = profile.Efficiency
 	ratio := batchLiters / r.BatchLiters
 	plan.Recipe.BoilLiters *= ratio
@@ -292,21 +288,20 @@ func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, plannin
 	hops, yeast := false, false
 	for i := range plan.Recipe.Ingredients {
 		in := &plan.Recipe.Ingredients[i]
-		factor := ratio
-		isGrain := grainIngredient(*in)
-		if isGrain {
-			factor *= r.Efficiency / profile.Efficiency
-		}
-		in.Amount *= factor
-		if !finite(in.Amount) || in.Amount <= 0 {
-			return domain.Adapted{}, errors.New("ingredient scaling overflow")
-		}
+		in.Amount *= ratio
+
 		if in.Kind == "hop" {
 			hops = true
 		}
 		if in.Kind == "yeast" {
 			yeast = true
 		}
+	}
+	if err := Validate(plan.Recipe); err != nil {
+		return domain.Adapted{}, fmt.Errorf("scaled recipe: %w", err)
+	}
+	if automatic {
+		plan.Warnings = append(plan.Warnings, limit)
 	}
 	if err := ValidateCapacity(plan.Recipe, profile); err != nil {
 		if !planning {
@@ -453,11 +448,8 @@ func NativeJSON(r domain.MachineRecipe) ([]byte, error) {
 	return data, nil
 }
 
-// fittingBatch computes a planning yield from calibrated efficiency, grain
-// capacity and the combined weight of hops added together. It never increases
-// the configured batch size or silently drops an ingredient.
-func fittingBatch(r domain.Recipe, p domain.Profile) float64 {
-	size := p.BatchLiters
+// Ingredients assigned to the same addition share one physical hop slot.
+func ingredientLoads(r domain.Recipe) (float64, map[float64]float64) {
 	grain := 0.0
 	hops := map[float64]float64{}
 	for _, in := range r.Ingredients {
@@ -469,16 +461,35 @@ func fittingBatch(r domain.Recipe, p domain.Profile) float64 {
 			hops[in.Minutes] += in.Amount
 		}
 	}
+	return grain, hops
+}
+
+// BatchLiters on an automatic plan is the yield implied by the source bill.
+// The manufacturer's nominal finished volume is not a grain or hop capacity.
+func fittingBatch(r domain.Recipe, p domain.Profile) (float64, string) {
+	grain, hops := ingredientLoads(r)
+	scale := math.Inf(1)
+	reason := ""
 	if p.MaxGrainKG > 0 && grain > 0 {
-		size = math.Min(size, r.BatchLiters*p.MaxGrainKG*p.Efficiency/(grain*r.Efficiency))
+		scale = p.MaxGrainKG / grain
+		reason = fmt.Sprintf("The grain bill fills the %.3g kg grain capacity.", p.MaxGrainKG)
 	}
-	for _, amount := range hops {
-		if p.MaxHopSlotG > 0 && amount > 0 {
-			size = math.Min(size, r.BatchLiters*p.MaxHopSlotG/amount)
+	var peak, minute float64
+	for t, grams := range hops {
+		if grams > peak || grams == peak && t > minute {
+			peak, minute = grams, t
 		}
 	}
-	if size < p.BatchLiters {
-		return math.Floor(size*100) / 100
+	if peak > 0 && p.MaxHopSlotG > 0 && p.MaxHopSlotG/peak < scale {
+		scale = p.MaxHopSlotG / peak
+		reason = fmt.Sprintf("The %g-minute hop addition fills its %.3g g slot.", minute, p.MaxHopSlotG)
 	}
-	return size
+	if math.IsInf(scale, 1) {
+		return p.BatchLiters, "Using the profile batch volume because the recipe has no measured grain or timed hops with a capacity limit."
+	}
+	yield := r.BatchLiters * scale
+	if p.UserConfigured && p.BatchLiters < yield {
+		return p.BatchLiters, "The saved usable batch volume limits this load."
+	}
+	return yield, reason
 }

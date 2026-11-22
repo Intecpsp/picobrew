@@ -20,15 +20,6 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	if err := Validate(r); err != nil {
 		return domain.Adapted{}, err
 	}
-	if liters == 0 {
-		liters = fittingBatch(r, p)
-		if r.SourceModel == p.ID {
-			liters = math.Min(liters, r.BatchLiters)
-		}
-		if liters <= 0 {
-			return domain.Adapted{}, fmt.Errorf("no batch fits the configured grain and hop capacities")
-		}
-	}
 	staged := r
 	staged.SourceModel = p.ID
 	routed := 0
@@ -83,11 +74,14 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	}
 	for i, in := range plan.Recipe.Ingredients {
 		if in.Name == "Source starting water" && in.Kind == "water" {
-			plan.Recipe.Ingredients[i].Name = "Estimated starting water"
+			plan.Recipe.Ingredients[i].Name = "Scaled source water (reference)"
 		}
 	}
-	if liters < p.BatchLiters {
+	if plan.Recipe.BatchLiters < p.BatchLiters {
 		plan.Warnings = append(plan.Warnings, "Check the working water volume for this smaller batch and your insert.")
+	}
+	if plan.Recipe.BatchLiters > p.BatchLiters+1e-9 {
+		plan.Warnings = append(plan.Warnings, "The source recipe implies a yield above this brewer’s nominal volume. Use the brewer’s working fill level. Actual yield depends on absorption and losses.")
 	}
 	if routed == 0 && plan.MachineRecipe != nil {
 		plan.Warnings = append(plan.Warnings, "This program follows the declared mash and hop times. Check the original instructions for manual additions, pauses and chilling.")

@@ -334,7 +334,7 @@ test('community catalog preserves source schedules through copy, bulk transfer a
     await expect(page.getByRole('option', { name: 'Machine schedules' })).toHaveCount(0)
     await page.getByRole('button', { name: 'Sources & credits' }).click()
     await page.getByRole('button', { name: 'Browse source archive' }).click()
-    await page.getByLabel('Catalog type', { exact: true }).selectOption('native-program')
+    await page.getByLabel('Archive record type', { exact: true }).selectOption('native-program')
     await page.getByLabel('Search community recipes').fill('Pico Pale')
     await expect(
       page

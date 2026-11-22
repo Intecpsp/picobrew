@@ -33,7 +33,6 @@ import { ReferenceLibrary } from '../components/ReferenceViewer'
 import './Catalog.scss'
 
 function entryLabel(entry: CatalogSummary) {
-  if (entry.brew_ready) return 'Brew-ready · Stock Zymatic'
   if (entry.kind === 'maintenance') return 'Cleaning program'
   if (entry.source_id === 'picopak-library') return 'Archived PicoPak schedule'
   return entry.kind === 'native-program' ? 'Archived brew program' : 'Ingredient recipe'
@@ -55,7 +54,7 @@ function CatalogBrowse() {
   const [source, setSource] = useState(params.get('source') || '')
   const [kind, setKind] = useState(() => {
     const requested = params.get('kind') || 'recipe'
-    return ['brew-ready', 'recipe', 'archive', 'native-program', 'maintenance'].includes(requested)
+    return ['recipe', 'archive', 'native-program', 'maintenance'].includes(requested)
       ? requested
       : 'recipe'
   })
@@ -72,7 +71,7 @@ function CatalogBrowse() {
   const filters = new URLSearchParams({
     q: debounced,
     source: archive ? source : '',
-    kind,
+    kind: archive ? kind : 'all-brewers',
     model: archive ? model : '',
     style,
     offset: String(offset),
@@ -96,9 +95,7 @@ function CatalogBrowse() {
         description={
           archive
             ? 'Original records, including PicoPak schedules and cleaning programs.'
-            : kind === 'recipe'
-              ? 'Measured recipes with versions for Pico C, S, Pro, Z-series and Zymatic.'
-              : 'Measured ingredients, loading instructions, fermentation guidance and a matching stock Zymatic program.'
+            : 'Recipes with measured ingredients and a brew program for Pico C, S, Pro, Z-series and Zymatic.'
         }
       />
       <div className="catalog-intro panel">
@@ -135,23 +132,16 @@ function CatalogBrowse() {
           onChange={(value) => change(setQuery, value)}
           placeholder="Search community recipes"
         />
-        <div className="form-grid quarters">
-          <Field label="Catalog type">
-            <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
-              {archive ? (
-                <>
-                  <option value="archive">All source records</option>
-                  <option value="native-program">Machine schedules</option>
-                  <option value="maintenance">Cleaning programs</option>
-                </>
-              ) : (
-                <>
-                  <option value="brew-ready">Verified for stock Zymatic</option>
-                  <option value="recipe">All ingredient recipes</option>
-                </>
-              )}
-            </select>
-          </Field>
+        <div className={archive ? 'form-grid quarters' : 'form-grid'}>
+          {archive && (
+            <Field label="Archive record type">
+              <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
+                <option value="archive">All source records</option>
+                <option value="native-program">Machine schedules</option>
+                <option value="maintenance">Cleaning programs</option>
+              </select>
+            </Field>
+          )}
           {archive && (
             <Field label="Source archive">
               <select value={source} onChange={(event) => change(setSource, event.target.value)}>
@@ -285,10 +275,6 @@ function CatalogBrowse() {
                     <Button
                       variant="secondary"
                       onClick={() => {
-                        if (kind === 'brew-ready') {
-                          change(setKind, 'recipe')
-                          return
-                        }
                         setQuery('')
                         setSource('')
                         setKind(archive ? 'archive' : kind)
@@ -297,7 +283,7 @@ function CatalogBrowse() {
                         setOffset(0)
                       }}
                     >
-                      {kind === 'brew-ready' ? 'Search all ingredient recipes' : 'Clear filters'}
+                      Clear filters
                     </Button>
                   }
                 />

@@ -3,6 +3,7 @@ package catalog
 import (
 	"encoding/json"
 	"errors"
+	"math"
 	"reflect"
 	"strings"
 	"testing"
@@ -378,12 +379,20 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 		}
 		snapshot, _ := json.Marshal(source)
 		measured++
+		allModels := true
 		for _, p := range profiles {
 			plan, err := recipe.Translate(source, p, 0)
-			if err != nil || plan.Recipe.BatchLiters <= 0 || plan.Recipe.BatchLiters > p.BatchLiters || plan.Recipe.SourceModel != p.ID || len(plan.Recipe.Ingredients) != len(source.Ingredients) {
+			if err != nil || plan.Recipe.BatchLiters <= 0 || plan.Recipe.SourceModel != p.ID || len(plan.Recipe.Ingredients) != len(source.Ingredients) {
 				t.Fatalf("%s/%s: invalid plan: %v", d.ID, p.ID, err)
 			}
+			ratio := plan.Recipe.BatchLiters / source.BatchLiters
+			for i, ingredient := range source.Ingredients {
+				if math.Abs(plan.Recipe.Ingredients[i].Amount/ingredient.Amount-ratio) > 1e-9*ratio {
+					t.Fatalf("%s/%s changed the proportion of %s", d.ID, p.ID, ingredient.Name)
+				}
+			}
 			if plan.MachineRecipe == nil {
+				allModels = false
 				if len(plan.DeploymentBlockers) == 0 || plan.CanDeploy {
 					t.Fatal("missing blocker", d.ID, p.ID)
 				}
@@ -398,9 +407,18 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 			}
 			counts[p.ID]++
 		}
+		if entry.allBrewers != allModels {
+			t.Fatal("incorrect catalog eligibility", entry.ID)
+		}
 		after, _ := json.Marshal(source)
 		if string(after) != string(snapshot) {
 			t.Fatal("source mutated", d.ID)
+		}
+	}
+	for _, profile := range profiles {
+		shared := a.List(Query{Kind: "all-brewers", Model: profile.ID})
+		if shared.Total != 787 || counts[profile.ID] != shared.Total {
+			t.Fatalf("%s: %d shared recipes, %d working programs", profile.ID, shared.Total, counts[profile.ID])
 		}
 	}
 	if measured != 1316 || len(counts) != 5 {

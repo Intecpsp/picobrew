@@ -18,6 +18,9 @@ import (
 	"sort"
 	"strings"
 	"sync"
+
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
 )
 
 //go:embed data/catalog.zip
@@ -50,7 +53,8 @@ type manifest struct {
 
 type indexed struct {
 	Summary
-	Search string `json:"search"`
+	Search     string `json:"search"`
+	allBrewers bool
 }
 
 // Archive is an immutable index over the embedded, pinned source snapshot.
@@ -161,6 +165,31 @@ func openBytes(data []byte) (*Archive, error) {
 		counts[entry.SourceID]++
 		if entry.Style != "" {
 			styles[entry.Style] = true
+		}
+	}
+	// Do the compatibility check once per bundled recipe, before pagination or search.
+	profiles := recipe.Profiles()
+	for i := range a.entries {
+		entry := &a.entries[i]
+		if entry.Kind != "recipe" {
+			continue
+		}
+		detail, err := a.Detail(entry.ID)
+		if err != nil {
+			return nil, err
+		}
+		if detail.Recipe == nil || len(detail.Recipe.Ingredients) == 0 {
+			continue
+		}
+		source := *detail.Recipe
+		source.ID = entry.ID
+		entry.allBrewers = true
+		for _, profile := range profiles {
+			plan, err := recipe.Translate(source, profile, 0)
+			if err != nil || plan.MachineRecipe == nil || len(plan.DeploymentBlockers) != 0 {
+				entry.allBrewers = false
+				break
+			}
 		}
 	}
 	for id, source := range sources {
@@ -276,16 +305,23 @@ func (a *Archive) List(q Query) Page {
 		q.Offset = 0
 	}
 	result := Page{Items: []Summary{}, Offset: q.Offset, Limit: q.Limit, Sources: a.Sources(), Styles: slices.Clone(a.styles)}
+	if q.Kind == "all-brewers" && q.Model != "" && !slices.ContainsFunc(recipe.Profiles(), func(p domain.Profile) bool { return p.ID == q.Model }) {
+		return result
+	}
 	terms := strings.Fields(strings.ToLower(q.Query))
 	for _, entry := range a.entries {
-		if q.Kind == "brew-ready" {
+		if q.Kind == "all-brewers" {
+			if !entry.allBrewers {
+				continue
+			}
+		} else if q.Kind == "brew-ready" {
 			if !entry.BrewReady || q.Model != "" && q.Model != "zymatic" {
 				continue
 			}
 		} else if q.Kind == "brewing" && entry.Kind == "maintenance" || q.Kind != "" && q.Kind != "brewing" && q.Kind != entry.Kind {
 			continue
 		}
-		if q.Source != "" && q.Source != entry.SourceID || q.Model != "" && !slices.Contains(entry.Models, q.Model) || q.Style != "" && q.Style != entry.Style {
+		if q.Source != "" && q.Source != entry.SourceID || q.Model != "" && q.Kind != "all-brewers" && !slices.Contains(entry.Models, q.Model) || q.Style != "" && q.Style != entry.Style {
 			continue
 		}
 		match := true

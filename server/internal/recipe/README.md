@@ -38,14 +38,7 @@ Saved calibrations override the defaults. See the [profile sources and migration
 notes](../../docs/equipment-profiles.md). The configured `BatchLiters` also bounds
 the requested batch in the preview.
 
-Grain and unspecified fermentable amounts scale by:
-
-`target batch / source batch × source efficiency / target efficiency`
-
-Known sugar/extract additions scale only by batch volume. Hops and other
-ingredients also scale by volume. The preview warns that hop utilization/IBU,
-grain absorption, dead space, boil-off, and yeast cell counts are not modeled.
-Ingredient addition timings do not automatically create machine steps.
+Automatic machine versions use the smaller of grain capacity divided by total grain weight and hop slot capacity divided by the heaviest combined timed addition. A saved usable batch limit also applies. Every measured ingredient uses the same multiplier, including water, extract, dry hops and yeast. The source batch volume times that multiplier gives a recipe-equivalent yield estimate. The actual working fill, absorption, boil-off and yeast pitch require equipment-specific judgment. For a bill with no bounded grain or timed hops, the profile batch volume is the fallback. An explicit batch request uses the requested volume divided by the source volume.
 
 Native generation requires explicit `location` values 1–6 for every step. Zero
 means **unmapped** and blocks deployment. Locations have no invented names such

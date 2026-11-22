@@ -93,8 +93,7 @@ function plan(batch = 5, ready = false, profile = pro): Adapted {
       efficiency: profile.efficiency,
       ingredients: source.ingredients.map((item) => ({
         ...item,
-        amount:
-          (((item.amount * batch) / source.batch_liters) * source.efficiency) / profile.efficiency,
+        amount: (item.amount * batch) / source.batch_liters,
       })),
     },
     profile,
@@ -185,13 +184,13 @@ describe('recipe adaptation planning and deployment review', () => {
     const user = userEvent.setup()
     const hub = state()
     render(element(hub))
-    expect(batchInput().value).toBe('5')
+    expect(batchInput().value).toBe('')
     expect((screen.getByLabelText('Target machine') as HTMLSelectElement).value).toBe('')
     await user.click(screen.getByRole('button', { name: 'Preview adaptation' }))
     await screen.findByRole('heading', { name: 'Recipe schedule' })
     expect(JSON.parse(String(requests('/adapt')[0][1]?.body))).toEqual({
       profile_id: 'pico-pro',
-      batch_liters: 5,
+      batch_liters: 0,
     })
     expect(screen.getByRole('heading', { name: 'Scaled ingredients' })).toBeTruthy()
     expect(screen.getByRole('region', { name: 'Deployment blockers' }).textContent).toContain(
@@ -215,12 +214,12 @@ describe('recipe adaptation planning and deployment review', () => {
     const user = userEvent.setup()
     render(element(state({ devices })))
     await user.selectOptions(screen.getByLabelText('Equipment profile'), 'z')
-    expect(batchInput().value).toBe('9.463')
+    expect(batchInput().value).toBe('')
     expect(Number(batchInput().value)).toBeLessThanOrEqual(z.batch_liters)
     await user.clear(batchInput())
     await user.type(batchInput(), '8')
     await user.selectOptions(screen.getByLabelText('Target machine'), 'pico-pro')
-    expect(batchInput().value).toBe('5')
+    expect(batchInput().value).toBe('')
     expect((screen.getByLabelText('Equipment profile') as HTMLSelectElement).value).toBe('pico-pro')
     await user.clear(batchInput())
     await user.type(batchInput(), '4.25')
@@ -250,7 +249,7 @@ describe('recipe adaptation planning and deployment review', () => {
     expect(batchInput().value).toBe('4.25')
     expect(screen.queryByRole('button', { name: 'Send to machine' })).toBeNull()
     view.rerender(element({ ...hub, profiles: [{ ...pro, batch_liters: 4 }, s, z] }))
-    await waitFor(() => expect(batchInput().value).toBe('4'))
+    await waitFor(() => expect(batchInput().value).toBe(''))
     expect(requests('/deploy')).toHaveLength(0)
   })
 
@@ -308,7 +307,7 @@ describe('recipe adaptation planning and deployment review', () => {
     await act(async () => {
       resolveOld(json(plan(5, true)))
     })
-    expect(batchInput().value).toBe('4.8')
+    expect(batchInput().value).toBe('')
     expect(screen.queryByRole('button', { name: 'Send to machine' })).toBeNull()
     fetchMock.mockResolvedValue(
       json({ error: { code: 'adaptation', message: 'Old capacity error' } }, 422)
@@ -320,7 +319,7 @@ describe('recipe adaptation planning and deployment review', () => {
     expect(requests('/deploy')).toHaveLength(0)
   })
 
-  it('requires a positive batch within capacity instead of treating an empty or zero input as a default', async () => {
+  it('clearing the override restores automatic loading and explicit batches must fit', async () => {
     const user = userEvent.setup()
     render(element(state()))
     for (const value of ['', '0', '6']) {
@@ -328,7 +327,7 @@ describe('recipe adaptation planning and deployment review', () => {
       if (value) await user.type(batchInput(), value)
       expect(
         (screen.getByRole('button', { name: 'Preview adaptation' }) as HTMLButtonElement).disabled
-      ).toBe(true)
+      ).toBe(value !== '')
     }
     expect(requests('/adapt')).toHaveLength(0)
     await user.clear(batchInput())

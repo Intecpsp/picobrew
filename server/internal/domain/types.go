@@ -245,29 +245,30 @@ type RecipeProvenance struct {
 	Warnings   []string `json:"warnings"`
 }
 type Recipe struct {
-	ID            string             `json:"id"`
-	Name          string             `json:"name"`
-	Style         string             `json:"style"`
-	Description   string             `json:"description"`
-	BatchLiters   float64            `json:"batch_liters"`
-	Efficiency    float64            `json:"efficiency"`
-	Ingredients   []Ingredient       `json:"ingredients"`
-	Steps         []RecipeStep       `json:"steps"`
-	Tags          []string           `json:"tags"`
-	Notes         string             `json:"notes"`
-	Revision      int64              `json:"revision"`
-	CreatedAt     time.Time          `json:"created_at"`
-	UpdatedAt     time.Time          `json:"updated_at"`
-	Type          string             `json:"type,omitempty"`
-	BoilLiters    float64            `json:"boil_liters,omitempty"`
-	BoilMinutes   float64            `json:"boil_minutes,omitempty"`
-	Water         map[string]float64 `json:"water,omitempty"`
-	Fermentation  []FermentationStep `json:"fermentation,omitempty"`
-	Carbonation   Carbonation        `json:"carbonation,omitempty"`
-	Kind          string             `json:"kind,omitempty"`
-	SourceModel   string             `json:"source_model,omitempty"`
-	NativeProgram *MachineRecipe     `json:"native_program,omitempty"`
-	Provenance    *RecipeProvenance  `json:"provenance,omitempty"`
+	ID             string             `json:"id"`
+	Name           string             `json:"name"`
+	Style          string             `json:"style"`
+	Description    string             `json:"description"`
+	EstimatedYield bool               `json:"estimated_yield,omitempty"`
+	BatchLiters    float64            `json:"batch_liters"`
+	Efficiency     float64            `json:"efficiency"`
+	Ingredients    []Ingredient       `json:"ingredients"`
+	Steps          []RecipeStep       `json:"steps"`
+	Tags           []string           `json:"tags"`
+	Notes          string             `json:"notes"`
+	Revision       int64              `json:"revision"`
+	CreatedAt      time.Time          `json:"created_at"`
+	UpdatedAt      time.Time          `json:"updated_at"`
+	Type           string             `json:"type,omitempty"`
+	BoilLiters     float64            `json:"boil_liters,omitempty"`
+	BoilMinutes    float64            `json:"boil_minutes,omitempty"`
+	Water          map[string]float64 `json:"water,omitempty"`
+	Fermentation   []FermentationStep `json:"fermentation,omitempty"`
+	Carbonation    Carbonation        `json:"carbonation,omitempty"`
+	Kind           string             `json:"kind,omitempty"`
+	SourceModel    string             `json:"source_model,omitempty"`
+	NativeProgram  *MachineRecipe     `json:"native_program,omitempty"`
+	Provenance     *RecipeProvenance  `json:"provenance,omitempty"`
 }
 type Profile struct {
 	ID               string          `json:"id"`

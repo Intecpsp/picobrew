@@ -29,7 +29,7 @@ func TestAdaptScalesWithExplicitMappingsWithoutMutatingSource(t *testing.T) {
 	if !plan.CanDeploy || plan.MachineRecipe == nil || plan.SourceRevision != 4 {
 		t.Fatalf("incomplete plan: %+v", plan)
 	}
-	if plan.Recipe.Ingredients[0].Amount != 1.25 || plan.Recipe.Ingredients[1].Amount != 10 {
+	if plan.Recipe.Ingredients[0].Amount != 1 || plan.Recipe.Ingredients[1].Amount != 10 {
 		t.Fatalf("wrong scaling: %+v", plan.Recipe.Ingredients)
 	}
 	if plan.Recipe.Steps[0].TargetC != 65 || plan.MachineRecipe.Steps[0].TargetF != 149 || plan.MachineRecipe.Steps[1].Location != 3 {
@@ -123,7 +123,7 @@ func TestUnmappedLargeRecipePlansAtProfileVolumeWithoutInventingRouting(t *testi
 		t.Fatalf("large imported recipe did not produce a usable 5 L plan: %+v %v", plan, err)
 	}
 	ratio := 5 / r.BatchLiters
-	if math.Abs(plan.Recipe.Ingredients[0].Amount-2*ratio*75/50) > 1e-12 || math.Abs(plan.Recipe.Ingredients[1].Amount-20*ratio) > 1e-12 || plan.Recipe.BoilLiters != 16*ratio || plan.Recipe.Steps[0].InfuseLiters != 6*ratio {
+	if math.Abs(plan.Recipe.Ingredients[0].Amount-2*ratio) > 1e-12 || math.Abs(plan.Recipe.Ingredients[1].Amount-20*ratio) > 1e-12 || plan.Recipe.BoilLiters != 16*ratio || plan.Recipe.Steps[0].InfuseLiters != 6*ratio {
 		t.Fatalf("ingredient or infusion scaling changed: %+v", plan.Recipe)
 	}
 	for i, step := range plan.Recipe.Steps {
@@ -252,6 +252,42 @@ func TestFirstWortAndBoilAtSameTimeShareSlotCapacity(t *testing.T) {
 		r.Ingredients = []domain.Ingredient{{Kind: "hop", Use: "boil", Amount: 25, Minutes: 60}, {Kind: "hop", Use: "first-wort", Amount: 20, Minutes: 60}}
 		if err := recipe.ValidateCapacity(r, p); err == nil || !strings.Contains(err.Error(), "combined hops") {
 			t.Fatalf("%s: %v", p.ID, err)
+		}
+	}
+}
+
+func TestAutomaticLoadPreservesRecipeProportions(t *testing.T) {
+	for _, profile := range recipe.Profiles() {
+		r := source()
+		r.SourceModel = profile.ID
+		r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: "Dry hops", Kind: "hop", Use: "dry-hop", Amount: 50, Unit: "g"}, domain.Ingredient{Name: "Boil addition", Kind: "hop", Use: "boil", Minutes: 30, Amount: 10, Unit: "g"})
+		for _, limit := range []string{"grain", "hop slot", "saved volume"} {
+			p := profile
+			want := p.MaxGrainKG / 2
+			switch limit {
+			case "grain":
+				p.MaxHopSlotG = 100
+			case "hop slot":
+				p.MaxHopSlotG = 17
+				want = 17.0 / 30
+			case "saved volume":
+				p.UserConfigured = true
+				p.BatchLiters = 3.8
+				want = 0.38
+			}
+			p.Efficiency = 32
+			plan, err := recipe.Translate(r, p, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for i, in := range r.Ingredients {
+				if math.Abs(plan.Recipe.Ingredients[i].Amount/in.Amount-want) > 1e-10 {
+					t.Fatalf("%s/%s wrong load for %s", p.ID, limit, in.Name)
+				}
+			}
+			if math.Abs(plan.Recipe.BatchLiters-r.BatchLiters*want) > 1e-9 {
+				t.Fatal("incorrect estimated yield")
+			}
 		}
 	}
 }

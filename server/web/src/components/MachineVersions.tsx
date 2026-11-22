@@ -36,8 +36,8 @@ export function MachineVersions({
       </Field>
       {recipe.batch_liters > 0 && (
         <p>
-          <strong>{formatVolume(recipe.batch_liters)}</strong> · {formatNumber(recipe.efficiency)}%
-          efficiency ·{' '}
+          Estimated yield <strong>{formatVolume(recipe.batch_liters)}</strong> ·{' '}
+          {formatNumber(recipe.efficiency)}% efficiency ·{' '}
           {program
             ? profile.id === 'zymatic'
               ? 'Stock Zymatic menu program'

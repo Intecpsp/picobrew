@@ -218,6 +218,7 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				}
 				item.Warnings = adapted.Warnings
 			} else {
+				item.BatchLiters = adapted.Recipe.BatchLiters
 				native := *adapted.MachineRecipe
 				item.Native, item.Warnings = &native, adapted.Warnings
 				previous, exists := byID[native.ID]
