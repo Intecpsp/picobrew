@@ -37,14 +37,13 @@ class FirmwareModelRoutingTests(unittest.TestCase):
             with self.subTest(model=model, machine=machine), self.assertRaises(ValueError):
                 models.resolve_model(model, machine)
 
-    def test_planned_models_never_dispatch_a_relabelled_s_pro_image(self):
-        for action in ("build", "package"):
-            for model in ("zymatic",):
-                with self.subTest(action=action, model=model), patch.object(models.subprocess, "run") as run, \
-                        contextlib.redirect_stderr(io.StringIO()) as errors:
-                    self.assertEqual(models.main([action, "--model", model]), 2)
-                    self.assertIn("no implemented custom firmware", errors.getvalue())
-                    run.assert_not_called()
+    def test_zymatic_routes_to_its_own_avr_component(self):
+        selected = models.resolve_model("zymatic")
+        for action in ("build", "package", "test", "usb-test"):
+            with self.subTest(action=action):
+                command = models.make_command(action, selected)
+                self.assertIn(str(models.ROOT / "firmware/zymatic/modified"), command)
+                self.assertIn("MODEL=zymatic", command)
 
     def test_reference_targets_use_their_own_source_and_never_infer_z_variant(self):
         for model in ('z-series','picostill','picoferm'):

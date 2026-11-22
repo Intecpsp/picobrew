@@ -54,7 +54,7 @@ class Controller:
         if usb_identity(self.port) != self.identity:
             raise ValueError("Zymatic USB identity changed; select the connected brewer again")
         if not read_only and not any(self.identity[1:]):
-            raise ValueError("USB location or serial number is required for a native restore; use PicoFlash")
+            raise ValueError("A USB location or serial number is required before writing to the Zymatic")
         command = [self.executable, "-N", "-c", "arduino", "-p", "m1284p",
                    "-P", self.port, "-b", "115200", "-D", "-A"]
         if read_only:
@@ -123,7 +123,9 @@ def service_lock(directory):
         yield
 
 
-def service(data, port, action, source=None, *, confirm=None):
+def service(data, port, action, source=None, *, confirm=None, key_file=None, hub_host=None, offline_program=None):
+    if action not in ("backup", "install", "restore"):
+        raise ValueError("Unknown Zymatic USB service action")
     directory = Path(data).absolute() / "usb-stock" / "zymatic"
     stock.private_files.ensure_private_directory(directory, parents=True, exist_ok=True)
     stock.private_files.assert_private(directory, directory=True)
@@ -142,16 +144,24 @@ def service(data, port, action, source=None, *, confirm=None):
         capture = stock.save_private(directory / f"avr-flash-{digest}.bin", before)
         print(f"Saved two matching 128 KiB AVR flash reads to {capture}")
         prefix = before[:stock.APP_SIZE]
-        if stock.is_original_app(prefix):
-            stock.save_private(directory / OEM_PREFIX, prefix)
-            print("The installed application matches the original Zymatic 1.1.14.")
-            if action == "restore":
-                print("No write needed. Disconnect USB before operating the Zymatic.")
-            return
         if action == "backup":
-            print("The capture is retained. Its application is unrecognized.")
+            if stock.is_original_app(prefix):
+                stock.save_private(directory / OEM_PREFIX, prefix)
+                print("The installed application matches the original Zymatic 1.1.14.")
+            else:
+                print("The capture is retained. Its application is unrecognized as stock 1.1.14.")
             return
 
+        import usb_application
+        installed = usb_application.build.recognize_private_application(before)
+        identity = getattr(controller, "identity", None)
+        previous = usb_application.latest_transaction(directory, usb_application.transaction_prefix(identity))
+        pending = previous and not usb_application.verified_transaction(previous)
+        stock_prefix = stock.is_original_app(prefix)
+        if action == "install" and not installed and not stock_prefix and not previous:
+            raise ValueError("Initial conversion requires verified Zymatic stock 1.1.14")
+        if stock.is_original_app(prefix):
+            stock.save_private(directory / OEM_PREFIX, prefix)
         application = supplied
         if application is None:
             try:
@@ -160,21 +170,54 @@ def service(data, port, action, source=None, *, confirm=None):
             except FileNotFoundError:
                 application = stock.decode_application(stock.private_files.read_regular(
                     stock.prepare(data), stock.MAX_HEX, private=True))
-        pages = plan(before, application)
+        if not stock.is_original_app(application):
+            raise ValueError("Restoration requires the verified stock application")
+        # Recover the paired identity even if a previous attempt stopped in
+        # its configuration/recipe page. Model the next write from the actual
+        # double-read, never by replaying a saved full-flash dump.
+        standalone = before if installed else None
+        unknown = not installed and (not stock_prefix or before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff"))
+        if previous and (pending or unknown):
+            interrupted = usb_application.interrupted_standalone(previous, before, application, pending=bool(pending))
+            if interrupted:
+                standalone, installed = interrupted
+        if action == "install":
+            pages, metadata = usb_application.install_pages(standalone or before, application, installed,
+                                                           key_file, hub_host, offline_program)
+            version = metadata["firmware_version"]
+            confirmations = ("INSTALL ZYMATIC", "WRITE " + version)
+        else:
+            pages = plan(before, application)
+            if installed:
+                pages = application.ljust(usb_application.end_page(installed["application_bytes"]), b"\xff")
+            version = "1.1.14"
+            confirmations = ("RESTORE ZYMATIC", "WRITE 1.1.14")
+        if action == "restore" and not installed and before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff"):
+            print("Unidentified bytes follow the stock application. This restore preserves that data.")
+        if pages == before[:len(pages)]:
+            if pending:
+                usb_application.finish_transaction(previous, before)
+            print(f"The installed application already matches {version}. No write needed.")
+            return
         write_input(work / "app-pages.bin", pages)
-        print(f"Restore Zymatic 1.1.14 on {port}. This writes the first {len(pages) // PAGE} "
-              "application pages and preserves the bytes following the original application.")
+        expected = pages + before[len(pages):]
+        print(f"Write Zymatic {version} via {port}. This updates the first {len(pages) // PAGE} "
+              "application pages. Keep power and USB connected until readback finishes.")
         if confirm is None:
             if not sys.stdin.isatty():
-                raise ValueError("Use a local interactive terminal to confirm the Zymatic restore")
+                raise ValueError("Use a local interactive terminal to confirm the operation")
             confirm = input
-        if confirm("Type RESTORE ZYMATIC: ") != "RESTORE ZYMATIC":
-            raise ValueError("Restore canceled")
-        if confirm("Type WRITE 1.1.14 to begin: ") != "WRITE 1.1.14":
-            raise ValueError("Restore canceled")
+        for phrase in confirmations:
+            if confirm("Type " + phrase + ": ") != phrase:
+                raise ValueError("USB operation canceled")
+        transaction = None
+        if action == "install" or installed:
+            transaction = usb_application.remember_transaction(
+                directory, identity, before, expected, expected if action == "install" else standalone, len(pages))
         controller.run(work, ["flash:v:read-1.bin:r", "flash:w:app-pages.bin:r"], read_only=False)
-        expected = pages + before[len(pages):]
         if read_flash(controller, work, 3) != expected:
             raise ValueError("Final flash readback differs; installation is unverified")
-        print("Verified all 128 KiB after writing Zymatic 1.1.14. Disconnect USB, "
-              "restart the machine and check About Zymatic.")
+        if transaction:
+            usb_application.finish_transaction(transaction, expected)
+        print(f"Verified the entire readable program flash for Zymatic {version}. Disconnect USB "
+              "and restart the brewer.")

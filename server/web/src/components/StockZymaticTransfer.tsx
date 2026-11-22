@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { api, errorMessage } from '../lib/api'
+import { api, errorMessage, saveBlob } from '../lib/api'
 import { useResource } from '../context'
 import type { Recipe, MachineRecipe } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
@@ -13,19 +13,28 @@ type StockItem = {
 }
 type Menu = { machine: string; items: StockItem[]; last_requested: string }
 export const stockTarget = 'stock-zymatic-menu'
+export const offlineTarget = 'offline-zymatic-program'
 
 export function StockZymaticTransfer({
   recipes,
   initialSelection,
   back,
   close,
+  paired,
+  offline = false,
 }: {
   recipes: Recipe[]
   initialSelection: string[]
   back: () => void
   close: () => void
+  paired?: { name: string; serial?: string }
+  offline?: boolean
 }) {
-  const [machine, setMachine] = useState(() => localStorage.getItem('stock-zymatic-serial') || '')
+  const reported =
+    paired?.serial && /^[a-f0-9]{12}$/i.test(paired.serial) ? paired.serial.toUpperCase() : ''
+  const [machine, setMachine] = useState(() =>
+    offline ? '' : paired ? reported : localStorage.getItem('stock-zymatic-serial') || ''
+  )
   const [chosen, setChosen] = useState(initialSelection)
   const [routing, setRouting] = useState<Record<string, number[]>>({})
   function paths(r: Recipe) {
@@ -47,8 +56,9 @@ export function StockZymaticTransfer({
   const id = machine.trim().toUpperCase(),
     valid = /^[A-Z0-9]{1,32}$/.test(id)
   const path = '/stock-zymatics/' + encodeURIComponent(id) + '/recipes'
-  const menu = useResource<Menu>(valid ? path : null)
+  const menu = useResource<Menu>(!offline && valid ? path : null)
   async function submit(publish: boolean) {
+    if (busy || (publish && (offline || !valid))) return
     setBusy(true)
     setError('')
     try {
@@ -57,14 +67,17 @@ export function StockZymaticTransfer({
         revision: r.revision,
         ...(needsPaths.includes(r) ? { locations: paths(r) } : {}),
       }))
-      const response = await api<{ items: StockItem[] }>(path, {
-        method: 'POST',
-        body: { recipes: references, publish },
-      })
+      const response = await api<{ items: StockItem[] }>(
+        offline ? '/stock-zymatics/preview' : path,
+        {
+          method: 'POST',
+          body: offline ? { recipes: references } : { recipes: references, publish },
+        }
+      )
       setPreview(response.items)
       if (publish) {
         setSent(true)
-        localStorage.setItem('stock-zymatic-serial', id)
+        if (!paired) localStorage.setItem('stock-zymatic-serial', id)
         menu.reload()
       }
     } catch (e) {
@@ -90,7 +103,13 @@ export function StockZymaticTransfer({
   }
   return (
     <Modal
-      title="Send to stock Zymatic"
+      title={
+        offline
+          ? 'Offline Zymatic program'
+          : paired
+            ? 'Send to ' + paired.name
+            : 'Send to stock Zymatic'
+      }
       wide
       onClose={close}
       actions={
@@ -98,36 +117,47 @@ export function StockZymaticTransfer({
           <Button variant="secondary" disabled={busy} onClick={back}>
             Change target
           </Button>
-          {sent ? (
+          {sent || (offline && preview) ? (
             <Button onClick={close}>Done</Button>
           ) : (
             <Button
-              disabled={!valid || !chosen.length || !ready || busy}
+              disabled={(!valid && !offline) || !chosen.length || !ready || busy}
               onClick={() => void submit(!!preview)}
             >
-              {busy ? 'Working…' : preview ? 'Publish to brewer menu' : 'Preview stock menu'}
+              {busy
+                ? 'Working…'
+                : preview
+                  ? 'Publish to brewer menu'
+                  : offline
+                    ? 'Preview offline programs'
+                    : 'Preview stock menu'}
             </Button>
           )}
         </>
       }
     >
       <p>
-        The stock brewer fetches its menu over HTTP. Point its PicoBrew hostname to this Hub on LAN
-        port 80, then open the recipe menu on the machine.
+        {offline
+          ? 'Download a program for USB setup. Each installation can include one offline program.'
+          : paired
+            ? 'Open the recipe menu on the brewer to fetch the published recipes from its configured Hub.'
+            : 'The stock brewer fetches its menu over HTTP. Point its PicoBrew hostname to this Hub on LAN port 80, then open the recipe menu on the machine.'}
       </p>
-      <Field label="Zymatic serial number" hint="Shown under About Zymatic">
-        <input
-          maxLength={32}
-          value={machine}
-          disabled={busy}
-          onChange={(e) => {
-            setMachine(e.target.value)
-            setPreview(null)
-            setSent(false)
-            setError('')
-          }}
-        />
-      </Field>
+      {!offline && (
+        <Field label="Zymatic serial number" hint="Shown under About Zymatic">
+          <input
+            maxLength={32}
+            value={machine}
+            disabled={busy || !!reported}
+            onChange={(e) => {
+              setMachine(e.target.value)
+              setPreview(null)
+              setSent(false)
+              setError('')
+            }}
+          />
+        </Field>
+      )}
       <ErrorBanner message={error || (valid ? menu.error : '')} />
       {!sent && (
         <fieldset disabled={busy}>
@@ -200,13 +230,31 @@ export function StockZymaticTransfer({
       {sent && (
         <p role="status">Published for {id}. The brewer can now fetch the selected programs.</p>
       )}
+      {offline && preview && (
+        <p>
+          Choose a program below. Use the downloaded JSON file with <code>--offline-program</code>{' '}
+          during Zymatic USB setup.
+        </p>
+      )}
       {preview?.map((item) => (
         <section key={item.recipe_id}>
           <h4>{item.program.name}</h4>
           <ProgramTable program={item.program} model="zymatic" archived />
+          <Button
+            variant="secondary"
+            onClick={() => {
+              const json = JSON.stringify({ model: 'zymatic', ...item.program }, null, 2)
+              saveBlob(
+                new Blob([json + '\n'], { type: 'application/json' }),
+                'zymatic-' + item.program.id + '.json'
+              )
+            }}
+          >
+            Download offline program
+          </Button>
         </section>
       ))}
-      {valid && menu.data?.machine === id && menu.data.items.length > 0 && (
+      {!offline && valid && menu.data?.machine === id && menu.data.items.length > 0 && (
         <section>
           <h4>Published on this Hub</h4>
           {menu.data.items.map((item) => (

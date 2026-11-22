@@ -268,6 +268,7 @@ func (s *Server) routes() http.Handler {
 			r.Post("/devices/{id}/deployments", s.planDeployment)
 			r.Get("/devices/{id}/deployments/{deployment_id}", s.getDeployment)
 			r.Post("/devices/{id}/deployments/{deployment_id}/execute", s.executeDeployment)
+			r.Post("/stock-zymatics/preview", s.stockOfflinePreview)
 			r.Get("/stock-zymatics/{machine}/recipes", s.stockMenu)
 			r.Post("/stock-zymatics/{machine}/recipes", s.stockMenu)
 			r.Delete("/stock-zymatics/{machine}/recipes/{recipe_id}", s.stockMenu)
@@ -386,6 +387,11 @@ func (s *Server) deviceError(w http.ResponseWriter, e error) {
 		return
 	}
 	if errors.As(e, &remote) && !remote.UnknownOutcome {
+		if remote.StatusCode == http.StatusServiceUnavailable && remote.Code == "display_busy" {
+			w.Header().Set("Retry-After", "2")
+			s.fail(w, remote.StatusCode, "device_display_busy", safeMessage(remote.Message))
+			return
+		}
 		switch remote.StatusCode {
 		case 400, 404, 409, 413, 422:
 			s.fail(w, remote.StatusCode, "device_"+remote.Code, safeMessage(remote.Message))

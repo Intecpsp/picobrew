@@ -21,6 +21,7 @@ help:
 	@echo make firmware-package MODEL=pico-s - build and package a Hub upload ZIP
 	@echo make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325 or DISPLAY_VARIANT=ssd1309
 	@echo make firmware-bootstrap / firmware-package MODEL=z-series, picostill or picoferm
+	@echo make firmware MODEL=zymatic HUB_HOST=brewery.lan:8080 - build a private Zymatic application
 	@echo make firmware-models / oem / recovery MACHINE=pico-s-pro
 	@echo make server / server-test / server-run / server-demo
 	@echo make verify-imports

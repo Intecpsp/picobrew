@@ -42,3 +42,27 @@ func TestStockWireBoundsAndNativeEncoding(t *testing.T) {
 		t.Fatal("unmapped route compiled")
 	}
 }
+
+func TestStockZymaticPauseRequiresNextStep(t *testing.T) {
+	var profile domain.Profile
+	for _, p := range recipe.Profiles() {
+		if p.ID == "zymatic" {
+			profile = p
+		}
+	}
+	r := archivedProgram()
+	r.SourceModel = "zymatic"
+	r.NativeProgram.Steps = []domain.MachineStep{{Name: "Connect chiller", Location: 6}, {Name: "Chill", Location: 0, Minutes: 10, TargetF: 65}}
+	if _, err := recipe.StockZymaticProgram(r, profile); err != nil {
+		t.Fatal("valid operator pause rejected", err)
+	}
+	r.NativeProgram.Steps[0].Minutes = 1
+	if p, err := recipe.StockZymaticProgram(r, profile); err != nil || p.Steps[0].Minutes != 1 {
+		t.Fatal("original schedules can carry unused values at a manual pause", err)
+	}
+	r.NativeProgram.Steps = r.NativeProgram.Steps[:1]
+	r.NativeProgram.Steps[0].Minutes = 0
+	if _, err := recipe.StockZymaticProgram(r, profile); err == nil || !strings.Contains(err.Error(), "following step") {
+		t.Fatal("missing pause confirmation target", err)
+	}
+}

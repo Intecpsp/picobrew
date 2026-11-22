@@ -134,17 +134,27 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--data", required=True, type=Path, help="Hub data directory")
     parser.add_argument("--oem-file", type=Path, help="original vendor ZIP or unmodified HEX")
-    parser.add_argument("--action", choices=("prepare", "backup", "restore"), default="prepare")
+    parser.add_argument("--action", choices=("prepare", "backup", "restore", "install"), default="prepare")
     parser.add_argument("--port", help="local Zymatic USB serial port")
+    parser.add_argument("--key-file", type=Path, help="Private per-brewer API key for standalone setup")
+    parser.add_argument("--hub-host", help="Recipe server hostname or IPv4 address with optional port")
+    parser.add_argument("--offline-program", type=Path, help="Compiled Zymatic recipe JSON for offline brewing")
     args = parser.parse_args()
     if bool(args.port) != (args.action != "prepare"):
-        parser.error("--port is required only for USB backup or restore")
+        parser.error("--port is required for USB backup, restore or install")
     if args.oem_file and args.action == "backup":
         parser.error("backup reads the Zymatic directly and takes no --oem-file")
+    if args.action == "install" and (not args.key_file or not args.key_file.is_absolute()):
+        parser.error("Standalone setup requires an absolute --key-file")
+    if args.action != "install" and (args.key_file or args.hub_host or args.offline_program):
+        parser.error("--key-file, --hub-host and --offline-program apply to standalone installation")
     try:
         if args.action != "prepare":
+            import offline_program
             import usb_avr
-            usb_avr.service(args.data, args.port, args.action, args.oem_file)
+            usb_avr.service(args.data, args.port, args.action, args.oem_file,
+                            key_file=args.key_file, hub_host=args.hub_host,
+                            offline_program=offline_program.read_program(args.offline_program))
             return
         destination = prepare(args.data, args.oem_file)
     except (ValueError, OSError, zipfile.BadZipFile, EOFError, zlib.error) as error:

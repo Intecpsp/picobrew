@@ -32,8 +32,7 @@ The complete **27-file** `app/firmware` directory from Chiefwigms is copied at
 commit `36acae3003845b72568ef5f7d6cf168acb6f9b69`, including Pico S/Pro, Pico C,
 PicoFerm, PicoStill and Z-series images. Original filenames and bytes are
 preserved. Z1 and Z2 have separate source locations; shared upstream Z-series
-images remain grouped until compatibility is verified. The upstream directory
-contains no Zymatic image, so that OEM location is a placeholder.
+images remain grouped until compatibility is verified. The Zymatic build uses the separately archived [original 1.1.14 release](firmware/zymatic/oem/README.md).
 
 ## Run the server
 
@@ -112,7 +111,7 @@ make firmware-test MODEL=z-series
 Select `MODEL=picostill` or `MODEL=picoferm` for those models. Bootstrap downloads
 and verifies their pinned dependencies. Packages include explicit reference
 layouts and prepared filesystems; no target connects to or flashes hardware.
-Z1/Z2 compatibility is still unassigned, and Zymatic lacks an original image.
+Z1/Z2 compatibility is still unassigned. For the Zymatic, run `make firmware MODEL=zymatic HUB_HOST=brewery.lan:8080` to compose a private 1.2.0 application from verified 1.1.14 and the source-built extension.
 The [model registry and identity contract](docs/machine-identity.md) describes
 those boundaries. Start with the
 [S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
@@ -172,8 +171,7 @@ the Hub is optional. S/Pro, C, generic Z, PicoStill and PicoFerm have implemente
 standalone source builds and Hub adapters. Hardware-specific capabilities
 prevent the accessory profiles from offering brewer-only controls. The latest
 model builds still need physical installation and operating qualification;
-generic Z source does not establish a Z1/Z2 mapping. Zymatic remains blocked
-on an original firmware image and its hardware evidence.
+generic Z source does not establish a Z1/Z2 mapping. Zymatic 1.2.0 retains the original brew controller and adds an offline recipe, Hub menu sync, and Ethernet status and OLED monitoring. Physical qualification is pending. [Zymatic firmware and USB guide](firmware/zymatic/modified/README.md)
 
 The Hub includes the previously requested offline recipe catalogue and assets.
 No historical Python Zymatic server or unrelated community application is

@@ -31,7 +31,7 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
           value={model}
           onChange={(e) => {
             setModel(e.target.value)
-            setAction(e.target.value === 'zymatic' ? 'restore' : 'install')
+            setAction('install')
           }}
         >
           <option value="">Choose your machine</option>
@@ -46,8 +46,7 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
         <>
           {model === 'zymatic' && (
             <p>
-              Zymatic can connect to the Hub with its original firmware. A standalone image is
-              unavailable.{' '}
+              The original firmware can also sync recipes with the Hub.{' '}
               <a
                 href="https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/blob/master/server/docs/stock-zymatic.md"
                 target="_blank"
@@ -59,7 +58,7 @@ export function StockSetupGuide({ onClose }: { onClose: () => void }) {
           )}
           <Field label="USB operation">
             <select value={action} onChange={(e) => setAction(e.target.value as USBAction)}>
-              {model !== 'zymatic' && <option value="install">Install standalone firmware</option>}
+              <option value="install">Install standalone firmware</option>
               <option value="backup">
                 {model === 'zymatic' ? 'Back up readable program flash' : 'Back up stock firmware'}
               </option>

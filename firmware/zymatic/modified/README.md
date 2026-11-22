@@ -1,6 +1,6 @@
-# Zymatic USB service
+# Zymatic firmware and USB setup
 
-The Hub can read the application controller’s flash and restore PicoBrew’s original 1.1.14 application through the Zymatic’s built-in rear USB port. The stock brewer also supports Hub recipe sync. Conversion to standalone firmware requires a custom Zymatic image, which is still unavailable.
+Zymatic **1.2.0** pairs with the Hub over Ethernet for authenticated monitoring. Recipe and session sync work through the original outbound protocol on Ethernet or Wi-Fi. One recipe is available offline after commissioning. The physical dial and original interlocks control brewing. USB installation, restoration and runtime behavior have been exercised in simulation. Physical qualification is pending. [Application and verification](application.md) · [Offline recipe selection](offline-recipe.md)
 
 ## Back up or restore from the Hub computer
 
@@ -17,7 +17,20 @@ Native restore also requires an identifiable USB serial number or USB bus locati
 
 Restore prefers the verified saved stock application. You may also supply an exact original ZIP or HEX with `--oem-file FILE`. If neither a stock prefix nor the HEX is available locally, the helper retrieves the [pinned public archive](../oem/README.md) and verifies both the archive and the HEX. A mismatching local copy stops restoration. The original setup archive can also be prepared on another computer and copied over for offline use.
 
-If stock 1.1.14 is already present the command finishes after verifying it. Otherwise it asks for two confirmations on the local terminal. Keep power and USB connected while it rechecks the full baseline on the same connection used for writing, writes the application pages and reads all 128 KiB back through a new connection. AVRDUDE’s `-D` disables a chip erase. The page-aligned write preserves the 54 bytes just after the application and stays below all possible bootloader addresses. The tool compares the full readback to the original application plus the captured surrounding bytes. Disconnect USB afterward, restart the machine and check **About Zymatic** for **1.1.14**. [AVRDUDE command options](https://avrdudes.github.io/avrdude/8.1/avrdude_4.html)
+If stock 1.1.14 is already present the command finishes after verifying it. Otherwise it asks for two confirmations on the local terminal. Keep power and USB connected while it rechecks the full baseline on the same connection used for writing, writes the application pages and reads all 128 KiB back through a new connection. AVRDUDE’s `-D` disables a chip erase. On a stock-only restoration the page-aligned write preserves the 54 adjacent bytes after the application. Removing a recognized custom extension clears its owned pages through the verified application boundary. Both operations preserve boot flash. The tool compares the full readback to the original application plus the captured surrounding bytes. Disconnect USB afterward, restart the machine and check **About Zymatic** for **1.1.14**. [AVRDUDE command options](https://avrdudes.github.io/avrdude/8.1/avrdude_4.html)
+
+## Install the custom application
+
+From the checkout’s `server/` directory, use a brewer running the verified stock 1.1.14 release. Substitute its USB port, the Hub’s LAN address and port, and a private key path in a directory you own.
+
+```sh
+./picobrew-hub usb-install --model zymatic --port SERIAL_PORT --checkout .. \
+  --data ./data --key-file "/absolute/private/zymatic.key" --hub-host brewery.lan:8080
+```
+
+Setup captures two matching flash reads, checks the original application and available flash, then asks for two confirmations before it writes. It generates a unique UID and key for that brewer. Keep the key and the private Hub data directory for later updates and restoration. To set the recipe offered offline, add `--offline-program /absolute/path/zymatic-program.json`. The default is American Brown Ale. On an already converted brewer, omitting the recipe or host retains the installed value.
+
+Disconnect USB after verification and check **About Zymatic** for **1.2.0**. On Ethernet, pair the brewer's IP address and key in the Hub. Use the recipe menu on the brewer for both Wi-Fi and Ethernet sync. To return to stock, run the restore command above against the same Hub data directory. Restoration clears the recognized extension and its private key from program flash and checks the complete readable result.
 
 ## Use the original Windows updater
 

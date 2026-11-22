@@ -38,7 +38,7 @@ type HistorySchemaReader interface {
 // physical hardware compatibility. An empty identity denotes older firmware
 // and must never be interpreted as a particular S/Pro model.
 func SupportedModel(model string) bool {
-	return model == "pico-s" || model == "pico-pro" || model == "pico-c" || model == "z-series" || model == "picoferm" || model == "picostill"
+	return model == "pico-s" || model == "pico-pro" || model == "pico-c" || model == "z-series" || model == "picoferm" || model == "picostill" || model == "zymatic"
 }
 
 func ReportedModel(c domain.Capabilities) (string, error) {
@@ -55,7 +55,7 @@ func ReportedModel(c domain.Capabilities) (string, error) {
 		if c.ModelFamily != "pico-c" || (c.DisplayVariant != "ssd1325" && c.DisplayVariant != "ssd1309") {
 			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "Pico C firmware must report its C family and an explicit supported display variant"}
 		}
-	} else if c.Model == "z-series" || c.Model == "picoferm" || c.Model == "picostill" {
+	} else if c.Model == "z-series" || c.Model == "picoferm" || c.Model == "picostill" || c.Model == "zymatic" {
 		if c.ModelFamily != c.Model || (c.Model != "z-series" && c.DisplayVariant != "") ||
 			(c.Model == "z-series" && c.DisplayVariant != "" && c.DisplayVariant != "ssd1325") {
 			return "", &Error{StatusCode: 409, Code: "invalid_model", Message: "The firmware must report a consistent explicit machine family and display identity"}
