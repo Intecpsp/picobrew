@@ -150,7 +150,7 @@ command needs a fresh programming session using the procedure above.
 ## Stage 2: install the pinned standalone candidate
 
 The commands below install the **1.3.4 Pico Pro update**. Approved earlier
-standalone releases, including 1.0.0, 1.1.0, 1.2.0, 1.3.0, 1.3.1, 1.3.2, 1.3.3 and 1.3.4, are separately pinned as upgrade
+standalone releases, including 1.0.0, 1.1.0, 1.2.0, 1.3.0, 1.3.1, 1.3.2 and 1.3.3, are separately pinned as upgrade
 sources. Their bytes must match an allowed source exactly.
 
 Proceed with the existing provisioned key. Do not rerun key provisioning after

@@ -60,10 +60,6 @@ ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
 CANDIDATE_SIZE = 166496
 CANDIDATE_SHA256 = "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"
-RELEASED_1_3_4 = {
-    "pico-pro": (166496, "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"),
-    "pico-s": (166488, "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94"),
-}
 RELEASED_1_3_3 = {
     "pico-pro": (166344, "3828ec6a147f98bdf2b039ecd4c336bf238d04bf7cec41cdea07a97b9d170f39"),
     "pico-s": (166336, "3ed5d58c072cbb547f94fcc579730394c15c72e1126961491741fc846f91bfa4"),
@@ -111,7 +107,7 @@ APPLICATION_ALLOCATION_BLOCKS = 48
 APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-# Shared by the Pico S and Pico Pro 1.3.5 packages.
+# Shared by the Pico S and Pico Pro 1.3.4 packages.
 WEB_MANIFEST_SHA256 = "f678effd8eef08fcad796b9b25af166bb5502f00ac6a326d4518227f8e87a9aa"
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 WEB_FILES = (("index.html", "/local/web/i.gz"), ("app.js", "/local/web/a.gz"),
@@ -391,12 +387,10 @@ def _approved_current_applications(mode, model="pico-pro"):
                            (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
-                           (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256)))
+                           (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
+                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], candidate_identity(model)))
     if mode == "install-recovery":
-        identities = []
-    if mode in ("install", "install-recovery"):
-        identities.extend((RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
-                           RELEASED_1_3_3[model], RELEASED_1_3_4[model], candidate_identity(model)))
+        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 

@@ -450,7 +450,7 @@ class InstallWireTests(unittest.TestCase):
 
     def test_previous_ota_release_is_approved_only_for_its_model(self):
         for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4"):
+            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3"):
                 archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
                 with zipfile.ZipFile(archive) as bundle:
                     old = bundle.read(model + "-standalone.bin")
