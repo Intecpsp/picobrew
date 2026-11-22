@@ -1,12 +1,12 @@
 # Beer Crafter in the Hub
 
-The shared recipe wizard follows PicoBrew’s grain, mash, boil, hop-bin and yeast workflow. Open **Recipes → Create recipe**. Review the grain and hop bills, predicted beer statistics and wort-temperature curve before saving. **Advanced editor** offers OG and IBU scaling and detailed hot- and cold-side planning. Existing ingredient recipes open directly in that editor.
+The shared recipe wizard follows PicoBrew’s grain, mash, boil, hop-bin and yeast workflow. Open **Recipes → Create recipe**. Review the grain and hop bills, predicted beer statistics and wort-temperature curve before saving. **Advanced editor** lets you edit ingredients and plan the brew, fermentation and carbonation. Existing ingredient recipes open directly in that editor.
 
 | Original Crafter task | Where to do it |
 | --- | --- |
 | Pick a style, build a grain and hop bill, choose yeast | Start typing an ingredient or style in the wizard or editor. Choosing a reference fills its known properties. Custom names and measured ingredient properties are supported. Set recipe measurements to metric or US customary. |
 | Compare the grain and hop bills | Each pie represents the bill by weight. Point at a slice or focus a legend item for the ingredient weight and see its percentage in the legend. |
-| Fit a style or scale toward a target | Recipe analysis compares OG, FG, ABV, IBU and color with the selected historical style. Scaling preserves ratios. Raising OG can change predicted IBU. Transfer preview checks the destination profile. |
+| Compare a recipe with a beer style | Recipe analysis compares OG, FG, ABV, IBU and color with the selected historical style. When sending a recipe, the Hub scales all measured ingredients together to fit the selected brewer. |
 | Program mash rests, boil and hops | The wizard offers the model default, infusion, mash-out, high efficiency and custom rests. Each loaded hop slot can hold multiple varieties and receive successive timed visits. For first wort hopping, schedule an addition at the beginning of the boil and select the option to route heat-up through that slot. In the advanced schedule, edit individual targets (including boil temperature), holds, drains and routes. |
 | Plan whirlpool, late additions and fermentation | Add a whirlpool hop stand from the advanced step menu. Record aroma or dry hops in the ingredient bill. Choose a yeast and edit attenuation, fermentation temperatures and durations. Plan chilling and carbonation separately. Cooling steps require a compatible controller or manual execution. |
 | Estimate starting water and track amendments | Enter the pre-boil volume, measured absorption and equipment loss. Apply the estimate to the water ingredient. Multiple existing water sources can be edited individually. Record amendment quantities and water chemistry. |

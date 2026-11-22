@@ -457,7 +457,7 @@ function RecipeEditor({ id }: { id: string }) {
               </Field>
             </div>
           </section>
-          <BeerCrafter recipe={recipe} change={(ingredients) => update({ ingredients })} />
+          <BeerCrafter recipe={recipe} />
           <RecipeIngredients
             items={recipe.ingredients}
             change={(ingredients) => update({ ingredients })}

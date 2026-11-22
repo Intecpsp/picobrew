@@ -108,18 +108,6 @@ export function beerStats(r: Recipe) {
   }
   return { og, fg, abv, ibu, srm }
 }
-export function scaleBill(r: Recipe, metric: 'og' | 'ibu', target: number) {
-  const current = beerStats(r)[metric]
-  if (!current || !Number.isFinite(target)) return null
-  const factor = metric === 'og' ? (target - 1) / (current - 1) : target / current
-  if (!(factor > 0) || !Number.isFinite(factor)) return null
-  return r.ingredients.map((i) =>
-    (metric === 'og' ? i.kind === 'fermentable' : kettleHop(i) && i.minutes > 0)
-      ? { ...i, amount: i.amount * factor }
-      : i
-  )
-}
-
 export function wortCurve(r: Recipe) {
   const program = r.native_program
   const steps = program
