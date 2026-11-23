@@ -152,7 +152,11 @@ static void finish(void)
     assert(wire.socket_closes == 1);
     assert(wire.file_closes == wire.file_opens);
     assert(server.client == -1 && server.asset_handle == -1);
+#ifdef PICO_TEST_HEAP_ARENA
     assert(server.arena == NULL);
+#else
+    assert(server.arena[0] == '\0');
+#endif
     wire.output[wire.produced] = 0;
 }
 
