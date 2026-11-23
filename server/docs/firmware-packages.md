@@ -89,7 +89,7 @@ Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The 
 
 The Hub asks you to acknowledge the loss of standalone controls and wireless updates, then confirm the restore. It prefers this brewer’s saved original. If needed, it obtains and verifies the two pinned OEM images from GitHub. A temporary installer runs in a third flash slot, so it can independently write and read back both the original **0.1.34 application** and **0.0.3 recovery**. It preserves the loader, network settings and brewer identity.
 
-After the verified stock boot selection and restart, check the brewer’s display. Choose **I see the original PicoBrew startup screen** to record your observation when prompted. The original application cannot confirm startup to the Hub. Returning to custom firmware requires USB. Other brewers can use the USB procedure below. The wireless path has been exercised against simulated storage, the original loader and compiled ARM code. Physical restore and power-interruption trials are still pending.
+After restart, check the brewer’s display. Choose **I see the original PicoBrew startup screen** to record your observation when prompted. If the final acknowledgement was interrupted, the receipt distinguishes what you saw from the last step the Hub verified. If power or Wi-Fi dropped during boot selection after both images were verified, the receipt records that you saw stock startup and that the Hub could not verify the boot selection. An acknowledged boot selection is recorded separately. The original application cannot confirm startup to the Hub. Returning to custom firmware requires USB. Other brewers can use the USB procedure below. The wireless path has been exercised against simulated storage, the original loader and compiled ARM code. Physical restore and power-interruption trials are still pending.
 
 ### USB setup, backup and stock restoration
 
@@ -181,7 +181,7 @@ executes code from a package.
 | GET | `/api/v1/devices/{id}/firmware` | Read compatible OTA packages, USB and wireless stock restore availability, and the last restoration receipt |
 | POST | `/api/v1/devices/{id}/firmware/install` | Confirm the package and brewer with `package_id`, `device_uid` and `confirm: true`. HTTP 202 starts a tracked update. |
 | POST | `/api/v1/devices/{id}/firmware/restore-stock` | Start or resume the wireless stock restore with `device_uid`, `acknowledge_loss_of_hub: true` and `confirm_restore: true`. Returns HTTP 202. |
-| POST | `/api/v1/devices/{id}/firmware/stock-started` | Record the owner's observation of the stock startup screen with `device_uid` and the restoration receipt’s `started` timestamp, after the Hub verified the switch to stock. |
+| POST | `/api/v1/devices/{id}/firmware/stock-started` | Record the owner's observation of the stock startup screen with `device_uid` and the restoration receipt’s `started` timestamp. Requires verified application and recovery images and a boot selection attempt. A lost selection acknowledgment produces `owner_reported`. A verified selection produces `owner_confirmed`. |
 
 New imports return HTTP 201; an identical saved archive returns HTTP 200.
 Changing the repository after browsing invalidates an import request for the
