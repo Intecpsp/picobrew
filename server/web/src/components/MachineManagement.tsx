@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Settings2, RefreshCw, Pencil, Trash2, SlidersHorizontal } from 'lucide-react'
-import { isAccessory } from '../lib/capabilities'
+import { isAccessory, supports } from '../lib/capabilities'
+import { api, copyText, errorMessage } from '../lib/api'
 import type { Device } from '../types'
 import { Button, Modal } from './ui'
 
@@ -22,6 +23,30 @@ export function MachineManagement({
   remove: () => void
 }) {
   const [open, setOpen] = useState(false)
+  const [working, setWorking] = useState(false)
+  const [notice, setNotice] = useState('')
+  async function accessMachine(action: 'copy' | 'open') {
+    setWorking(true)
+    setNotice('')
+    try {
+      if (action === 'copy') {
+        const { api_key } = await api<{ api_key: string }>(`/devices/${device.id}/key`, {
+          method: 'POST',
+        })
+        await copyText(api_key)
+        setNotice('Device API key copied.')
+      } else {
+        const { url } = await api<{ url: string }>(`/devices/${device.id}/website`, {
+          method: 'POST',
+        })
+        window.location.assign(url)
+      }
+    } catch (e) {
+      setNotice(errorMessage(e))
+    } finally {
+      setWorking(false)
+    }
+  }
   function choose(action: () => void) {
     setOpen(false)
     action()
@@ -62,6 +87,28 @@ export function MachineManagement({
               Remove machine
             </Button>
           </div>
+          {device.adapter === 'pico-standalone' && device.key_configured && (
+            <section>
+              <h4>Device API key</h4>
+              <p>
+                The Hub keeps this key for machine controls. You can also use it on the brewer’s
+                local website.
+              </p>
+              {supports(device.capabilities, 'pairing_v1') && (
+                <Button
+                  variant="secondary"
+                  disabled={working || !device.online}
+                  onClick={() => void accessMachine('open')}
+                >
+                  Open machine website
+                </Button>
+              )}
+              <Button variant="ghost" disabled={working} onClick={() => void accessMachine('copy')}>
+                Copy device API key
+              </Button>
+              {notice && <p role="status">{notice}</p>}
+            </section>
+          )}
         </Modal>
       )}
     </>
