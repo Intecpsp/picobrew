@@ -58,7 +58,10 @@ function TemperatureInput({
   const [text, setText] = useState<string | null>(null)
   const display = celsius === null ? NaN : unit === 'C' ? celsius : celsius * 1.8 + 32
   return (
-    <Field label={`Target (°${unit})`}>
+    <Field
+      label={`Target (°${unit})`}
+      hint={celsius !== null && celsius <= 0 ? 'Heating is off for this step.' : undefined}
+    >
       <input
         placeholder="Unheated"
         type="number"
@@ -88,7 +91,8 @@ export function ZProgramFields({
   confirmSample: boolean
 }) {
   const hub = useHub()
-  const unit = program.IsMetric === undefined ? hub.unit : program.IsMetric ? 'C' : 'F'
+  const savedUnit = program.IsMetric === undefined ? '' : program.IsMetric ? 'C' : 'F'
+  const unit = savedUnit || hub.unit
   const stepKeys = useRef(program.Steps.map((_, i) => i))
   const nextKey = useRef(stepKeys.current.length)
   function changeStep(i: number, step: ZProgramStep) {
@@ -138,9 +142,15 @@ export function ZProgramFields({
           </Field>
           <Field label="Temperature units">
             <select
-              value={unit}
-              onChange={(e) => update({ ...program, IsMetric: e.target.value === 'C' })}
+              value={savedUnit}
+              onChange={(e) => {
+                const next = { ...program }
+                if (e.target.value) next.IsMetric = e.target.value === 'C'
+                else delete next.IsMetric
+                update(next)
+              }}
             >
+              <option value="">Use Hub preference (°{hub.unit})</option>
               <option value="C">Celsius (°C)</option>
               <option value="F">Fahrenheit (°F)</option>
             </select>
