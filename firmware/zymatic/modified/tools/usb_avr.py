@@ -198,7 +198,7 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             if pending:
                 usb_application.finish_transaction(previous, before)
             print(f"The installed application already matches {version}. No write needed.")
-            return
+            return metadata["uid"] if action == "install" else None
         write_input(work / "app-pages.bin", pages)
         expected = pages + before[len(pages):]
         print(f"Write Zymatic {version} via {port}. This updates the first {len(pages) // PAGE} "
@@ -221,3 +221,4 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             usb_application.finish_transaction(transaction, expected)
         print(f"Verified the entire readable program flash for Zymatic {version}. Disconnect USB "
               "and restart the brewer.")
+        return metadata["uid"] if action == "install" else None

@@ -1,0 +1,5 @@
+Download the single `picobrew-hub` executable for your computer. It includes the Hub website, USB programmer and firmware resources. The separate `picobrew-usb` executables are build inputs for users building the Hub from source. `releases.json` records the size and SHA-256 of each worker.
+
+Use Linux ARM64 for a 64-bit Raspberry Pi OS installation and Linux ARM for 32-bit Raspberry Pi OS on ARMv7 or newer. Linux binaries use glibc. USB access requires the Hub account to have access to the physical port or USB adapter. Follow the device and power prompts in the Hub. Backup and setup preserve the existing model and flash-layout checks. Firmware changes for a named Z stack require independently qualifying its individual module.
+
+Build sources and the checked-in firmware manifests are available at this release tag. The USB worker includes the project’s MCU-specific tools, the CPython runtime and third-party libraries. The accompanying source archive contains the programmer source and license notices.
