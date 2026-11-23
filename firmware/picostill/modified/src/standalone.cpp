@@ -194,7 +194,7 @@ api::Result Device::snapshot(api::Snapshot& result) {
 api::DeviceServices Device::services() noexcept {
     api::DeviceServices ports; ports.context = this;
     ports.identity = [](void* p) { api::Identity id; Device& device = *static_cast<Device*>(p);
-        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = "1.2.3"; id.device_uid = device.uid_; return id; };
+        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = "1.2.4"; id.device_uid = device.uid_; return id; };
     ports.capabilities = [](void*) { api::Capabilities c; c.flags = api::Pump | api::Fans | api::Temperature | api::Pressure;
         c.settings = api::TemperatureUnit; c.commands = commands; c.command_count = sizeof(commands) / sizeof(commands[0]); return c; };
     ports.snapshot = [](void* p, api::Snapshot& result) { return static_cast<Device*>(p)->snapshot(result); };

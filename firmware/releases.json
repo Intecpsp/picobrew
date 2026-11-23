@@ -2,6 +2,36 @@
   "schema_version": 1,
   "releases": [
     {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.6",
+      "kind": "reference",
+      "source_commit": "12b6b16d9a24bc0cafb6dd37f5fc0f36821a6c32",
+      "archive_sha256": "ef453b26ce06be6a1fc96c062fd2680a3e815d98bcb1893aaed70dd12e721eeb",
+      "binary_sha256": "6bccdfc9606eb7fed8a1eed88f94fc6143822bbe517309361f298aa4d502ba76",
+      "binary_bytes": 1649248
+    },
+    {
+      "model": "picostill",
+      "model_family": "picostill",
+      "firmware_version": "1.2.4",
+      "kind": "reference",
+      "source_commit": "12b6b16d9a24bc0cafb6dd37f5fc0f36821a6c32",
+      "archive_sha256": "a486ebb92c63d2625295991d4e530f338e562f901bbe967b4a8c8eaf483352f4",
+      "binary_sha256": "4529c88f4f3df41e7dca36e3c1d14e4f267442d948ab9839eaef7c08f54b179d",
+      "binary_bytes": 807936
+    },
+    {
+      "model": "picoferm",
+      "model_family": "picoferm",
+      "firmware_version": "1.2.4",
+      "kind": "reference",
+      "source_commit": "12b6b16d9a24bc0cafb6dd37f5fc0f36821a6c32",
+      "archive_sha256": "f9d155714cf427958aea30d895ec967144bb1a2edcf52069b83b418f8acdc793",
+      "binary_sha256": "f6d98989b729cf86062d698ad975db886ba5effb2f618c662a3ef49ad84dbb6d",
+      "binary_bytes": 394384
+    },
+    {
       "model": "pico-s-pro",
       "model_family": "pico-s-pro",
       "firmware_version": "preview-15739da",

@@ -253,9 +253,14 @@ void settings_and_display(){World w;
 }
 void status_fields(){World w;api::Snapshot s;assert(w.adapter.snapshot(s).ok());assert(s.ready&&!s.busy&&s.sensor_count==5&&s.actuator_count==4);
     assert(std::fabs(s.temperature_f.value-68)<1e-9&&std::fabs(s.pressure_kpa.value-101.325)<1e-9);
+    assert(s.target_f.valid&&s.target_f.value==0);
+    w.core.heater.state.target_celsius=65;w.core.heater.state.started=true;
+    assert(w.adapter.snapshot(s).ok()&&s.target_f.valid&&s.target_f.value==149);
+    w.core.heater.state.started=false;
+    assert(w.adapter.snapshot(s).ok()&&s.target_f.valid&&s.target_f.value==0);
     auto status=w.request(PICO_HTTP_GET,"/api/v1/status",nullptr,200);assert(status.find("z-series")!=std::string::npos&&status.find("ambient-pressure")!=std::string::npos);
     w.now+=6000;assert(w.adapter.snapshot(s).ok()&&!s.temperature_f.valid&&!s.pressure_kpa.valid);
-    w.core.system_error=true;assert(w.adapter.snapshot(s).ok()&&!s.ready);
+    w.core.system_error=true;assert(w.adapter.snapshot(s).ok()&&!s.ready&&!s.target_f.valid);
 }
 void running_hold(World& w,bool heated=true){
     const auto r=recipe();assert(w.adapter.load_recipe(r,true).ok());assert(w.dispatch());

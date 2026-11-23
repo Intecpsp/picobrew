@@ -28,3 +28,5 @@
 #zProgramOptions label:has(input[type=checkbox]) {display:flex;align-items:center;gap:.5rem;margin-top:.5rem}
 #zProgramOptions input[type=checkbox] {width:auto;min-height:auto}
 #zProgramOptions button {align-self:end;justify-self:start}
+.care-guide { margin-top:20px; }
+.care-guide a { color:var(--green); }

@@ -10,6 +10,11 @@ settings decide which controls appear. Connecting performs reads only.
 | PicoStill | Every advertised temperature and pressure sensor, pump and both fan outputs, native start/essential-oils/clean/stop operations, manual pump and fan settings. |
 | PicoFerm | Temperature, native raw pressure and battery readings, fermentation start/stop, explicit depressurized calibration, immediate sampling and sampling interval. Pressure has no inferred kPa conversion. |
 
+The overview includes PicoBrew's care recommendations for the connected model.
+PicoStill's fan control uses the live pump reading to enforce the 61% minimum
+on fan 2 while pumping. PicoFerm initializes its sampling control from the
+interval reported by the device.
+
 Devices without recipes or a front panel neither show those controls nor request
 their endpoints. Missing readings remain unavailable. All command acknowledgments
 must match the command sent; an unknown write outcome is surfaced without retry.
