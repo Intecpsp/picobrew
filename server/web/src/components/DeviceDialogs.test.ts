@@ -167,6 +167,8 @@ describe('automatic physical-machine connections', () => {
     await user.type(screen.getByLabelText('Machine URL'), 'http://192.168.1.42')
     await user.click(screen.getByRole('button', { name: 'Add machine' }))
     await screen.findByText('b65d8001')
+    expect(screen.getByText('About Zymatic')).toBeTruthy()
+    expect(screen.getByText('Settings → About → Pair with Hub')).toBeTruthy()
     expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/devices/pair')
     expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toMatchObject({
       pairing_id: 'test-handle',

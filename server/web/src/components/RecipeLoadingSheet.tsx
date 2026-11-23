@@ -13,7 +13,7 @@ export function EditionInstructions({ notes }: { notes?: string }) {
   return (
     <section>
       <h4>Hub adaptation · {match[1]}</h4>
-      <SourceEvidence text={instructions} />
+      <SourceEvidence text={instructions} scaledBill />
     </section>
   )
 }
@@ -21,6 +21,14 @@ export function EditionInstructions({ notes }: { notes?: string }) {
 function placement(item: Ingredient, slots?: Adapted['hop_slots_by_minute']) {
   const use = item.use.trim().toLowerCase()
   const time = item.minutes
+  if (
+    item.kind === 'water' &&
+    use === 'mash' &&
+    ['source starting water', 'scaled source water (reference)', 'starting keg water'].includes(
+      item.name.trim().toLowerCase()
+    )
+  )
+    return 'Starting keg water'
   const slot = (item.slot_addition || item.kind === 'hop') && slots?.[time]
   if (use === 'boil' || use === 'first-wort' || use === 'first wort') {
     const when =
@@ -120,17 +128,11 @@ export function TransferLoadingSheet({
   batchLiters?: number
   slots?: Adapted['hop_slots_by_minute']
 }) {
-  if (!source) return null
+  if (!source?.ingredients?.length || !batchLiters || source.batch_liters <= 0) return null
   return (
     <>
       <EditionInstructions notes={source.notes} />
-      {source.ingredients?.length && batchLiters && source.batch_liters > 0 ? (
-        <RecipeLoadingSheet
-          recipe={source}
-          scale={batchLiters / source.batch_liters}
-          slots={slots}
-        />
-      ) : null}
+      <RecipeLoadingSheet recipe={source} scale={batchLiters / source.batch_liters} slots={slots} />
     </>
   )
 }

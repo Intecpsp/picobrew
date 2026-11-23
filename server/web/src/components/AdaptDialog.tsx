@@ -331,7 +331,9 @@ export function AdaptDialog({
           )}
           {!native && (
             <>
-              <EditionInstructions notes={adapted.recipe.notes} />
+              {!!adapted.recipe.ingredients?.length && (
+                <EditionInstructions notes={adapted.recipe.notes} />
+              )}
               <h3>Scaled ingredients</h3>
               <RecipeLoadingSheet
                 recipe={adapted.recipe}
