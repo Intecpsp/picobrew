@@ -7,6 +7,7 @@ import secrets
 
 import build
 import offline_program
+import usb_layout
 from usb_application import read_key
 import usb_stock as stock
 
@@ -19,6 +20,8 @@ def main():
     parser.add_argument("--uid")
     parser.add_argument("--hub-host", default="picobrew.com")
     parser.add_argument("--offline-program", type=Path)
+    parser.add_argument("--firmware-version", choices=(usb_layout.release_1_2.VERSION, build.VERSION),
+                        default=usb_layout.release_1_2.VERSION, help="1.3 requires a verified boot window on the target unit")
     args = parser.parse_args()
     recipe = offline_program.read_program(args.offline_program)
     if bool(args.key_file) != bool(args.uid):
@@ -37,14 +40,15 @@ def main():
         except FileNotFoundError:
             uid = secrets.token_hex(16)
             stock.save_private(uid_file, uid.encode())
-    image, report = build.build_application(application, key, uid, args.hub_host, recipe)
+    release = usb_layout.for_version(args.firmware_version)
+    image, report = release.build_application(application, key, uid, args.hub_host, recipe)
     target = directory / report["binary_sha256"]
     stock.private_files.ensure_private_directory(target, exist_ok=True)
-    for name, contents in [(f"zymatic-{build.VERSION}.bin", image),
-                           (f"zymatic-{build.VERSION}.hex", build.intel_hex(image)),
+    for name, contents in [(f"zymatic-{release.VERSION}.bin", image),
+                           (f"zymatic-{release.VERSION}.hex", build.intel_hex(image)),
                            ("manifest.json", (json.dumps(report, indent=2) + "\n").encode())]:
         stock.save_private(target / name, contents)
-    print(f"Built private Zymatic {build.VERSION} application ({len(image)} bytes) in {target}")
+    print(f"Built private Zymatic {release.VERSION} application ({len(image)} bytes) in {target}")
 
 
 if __name__ == "__main__":

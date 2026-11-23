@@ -122,6 +122,7 @@ export interface Device {
   }
 }
 export interface Display {
+  dial?: 'menu' | 'press' | 'off'
   offset?: number
   total_bytes?: number
   next_offset?: number | null
@@ -257,6 +258,7 @@ export interface Adapted {
   profile_fingerprint?: string
 }
 export interface Sample {
+  zymatic_history?: boolean
   temperature_f?: number | null
   pressure_kpa?: number | null
   battery_v?: number | null
@@ -266,13 +268,13 @@ export interface Sample {
   wort_f: number | null
   thermoblock_f: number | null
   target_f: number | null
-  step_seconds: number
-  phase: number
-  controller_status: number
-  compartment: number
-  current_step: number
-  flags: number
-  device_state: number
+  step_seconds?: number
+  phase?: number
+  controller_status?: number
+  compartment: number | null
+  current_step: number | null
+  flags?: number
+  device_state?: number
   source: string
 }
 export interface Conditioning {

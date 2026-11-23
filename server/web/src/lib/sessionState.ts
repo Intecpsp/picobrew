@@ -78,11 +78,11 @@ const hex = (value: number) => '0x' + value.toString(16).padStart(2, '0')
 export function sessionState(
   brew: Pick<Brew, 'id' | 'model' | 'source' | 'step_names'>,
   field: string,
-  raw: number | null,
+  raw: number | null | undefined,
   source: string,
   detail = false
 ) {
-  if (raw === null) return 'Not recorded'
+  if (raw == null) return 'Not recorded'
   const sim = source === 'simulation' || brew.source === 'simulation'
   const smallPico = ['pico-s', 'pico-pro', 'pico-c'].includes(brew.model)
   const isZ = ['z', 'z-series'].includes(brew.model)
@@ -105,6 +105,18 @@ export function sessionState(
     return [String(raw + 1), brew.step_names?.[raw]].filter(Boolean).join(' · ')
   }
   if (field === 'compartment') {
+    if (!sim && brew.model === 'zymatic') {
+      const name = [
+        'Keg',
+        'Mash',
+        'Hop addition 1',
+        'Hop addition 2',
+        'Hop addition 3',
+        'Hop addition 4',
+        'Operator pause',
+      ][raw]
+      if (name) return detail ? name + ' (' + raw + ')' : name
+    }
     // The S/Pro history sample records the controller compartment. These are
     // its front-panel labels, a different namespace from PicoPak recipe steps.
     if (!sim && ['pico-s', 'pico-pro'].includes(brew.model)) {

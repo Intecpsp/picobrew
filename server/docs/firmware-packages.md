@@ -90,6 +90,9 @@ Connect the idle machine or its USB service adapter to the computer running the 
 On a successful installation, choose **Add machine** and enter the brewer’s network address. The Hub pairs its saved key with the identity verified over USB. Machine-specific Wi-Fi setup may still be needed. Keep power and the cable connected until readback completes. The Hub stores the original and the private pairing files under its persistent data directory. Keep a private backup of that directory. USB setup is available on a normal Hub with access to the port. In a Linux container, map the selected serial device into the container and allow the Hub user to access it.
 
 
+
+USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.0** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
+
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
 | Pico S and Pico Pro | The CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |

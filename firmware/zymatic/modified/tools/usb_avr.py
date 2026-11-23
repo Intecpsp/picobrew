@@ -9,6 +9,7 @@ import subprocess
 import sys
 import tempfile
 
+import boot_evidence
 import usb_stock as stock
 
 FLASH = 128 * 1024
@@ -151,6 +152,8 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
         print(f"Saved two matching 128 KiB AVR flash reads to {capture}")
         prefix = before[:stock.APP_SIZE]
         if action == "backup":
+            report = stock.save_private(directory / f"boot-evidence-v1-{digest}.json", boot_evidence.as_json(before))
+            print(f"Saved boot-region fingerprints to {report}")
             if stock.is_original_app(prefix):
                 stock.save_private(directory / OEM_PREFIX, prefix)
                 print("The installed application matches the original Zymatic 1.1.14.")
@@ -159,7 +162,8 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             return
 
         import usb_application
-        installed = usb_application.build.recognize_private_application(before)
+        import usb_layout
+        installed = usb_layout.identify(before)
         identity = getattr(controller, "identity", None)
         previous = usb_application.latest_transaction(directory, usb_application.transaction_prefix(identity))
         pending = previous and not usb_application.verified_transaction(previous)
@@ -189,15 +193,16 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
                 standalone, installed = interrupted
         if expected_uid and (not installed or installed["uid"] != expected_uid):
             raise ValueError("The USB Zymatic differs from the registered brewer; no write was attempted")
+        limit = usb_layout.qualified_limit(directory, before, installed)
         if action == "install":
             pages, metadata = usb_application.install_pages(standalone or before, application, installed,
-                                                           key_file, hub_host, offline_program)
+                                                           key_file, hub_host, offline_program, limit=limit)
             version = metadata["firmware_version"]
             confirmations = ("INSTALL ZYMATIC", "WRITE " + version)
         else:
             pages = plan(before, application)
             if installed:
-                pages = application.ljust(usb_application.end_page(installed["application_bytes"]), b"\xff")
+                pages = application.ljust(usb_application.end_page(installed["application_bytes"], limit), b"\xff")
             version = "1.1.14"
             confirmations = ("RESTORE ZYMATIC", "WRITE 1.1.14")
         if action == "restore" and not installed and before[stock.APP_SIZE:BOOT_MIN].strip(b"\xff"):

@@ -1,5 +1,6 @@
 /* Model W5100 opening, rings, SEND_OK and peer disconnects. */
 #include "zymatic_api.h"
+#include "zymatic_pairing.h"
 #include <assert.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,6 +8,9 @@
 
 static uint8_t regs[0x8000], selected, drop_write, program_active;
 static unsigned ops, writes, sends;
+static uint32_t clock_offset;
+_Alignas(int16_t) uint8_t zymatic_test_encoder[24];
+uint8_t zymatic_test_fault;
 uint8_t zymatic_test_frame[1024];
 static float temps[2];
 uint32_t zymatic_test_temperature_bits(uint8_t heat)
@@ -26,7 +30,8 @@ uint8_t zymatic_test_read_oem_serial(char *s)
 static uint8_t key[32];
 static const char uid[] = "zy-unit-01";
 static const char auth[] = "Authorization: Bearer 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\r\n";
-static char sent[2100];
+static char sent[4096];
+extern void zh_test_history_suite(void), zh_test_seed(void);
 
 static void put16(unsigned addr, unsigned v) { regs[addr]=(uint8_t)(v>>8); regs[addr+1]=(uint8_t)v; }
 static unsigned get16(unsigned addr) { return regs[addr]*256u + regs[addr+1]; }
@@ -49,9 +54,10 @@ uint8_t zymatic_test_register(uint8_t write, uint16_t addr, uint8_t *v)
     case 32: {
         unsigned p=get16(0x722), end=get16(0x724);
         unsigned length=(uint16_t)(end-p);
-        assert(length < sizeof(sent));
-        for (unsigned i=0; i<length; ++i) sent[i]=(char)regs[0x5800+((p+i)&2047)];
-        sent[length]=0;
+        unsigned base = (unsigned)strlen(sent);
+        assert(base + length < sizeof(sent));
+        for (unsigned i=0; i<length; ++i) sent[base+i]=(char)regs[0x5800+((p+i)&2047)];
+        sent[base+length]=0;
         put16(0x722,end);
         regs[0x702] |= 16;
         ++sends;
@@ -81,7 +87,7 @@ static void setup(ZymaticNetwork *n)
 static void poll(ZymaticNetwork *n, uint32_t ms)
 {
     unsigned before=ops;
-    zymatic_network_poll(n,key,uid,ms,program_active);
+    zymatic_network_poll(n,key,uid,clock_offset + ms,program_active);
     assert(ops-before < 44);
 }
 
@@ -94,11 +100,11 @@ static void req(ZymaticNetwork *n, const char *input)
     put16(0x72a,0xfffb+(unsigned)strlen(input));
     put16(0x726,(unsigned)strlen(input));
     regs[0x703]=0x17;
-    for (unsigned i=1; i<360 && sends==0; i++) poll(n,i*10);
-    assert(sends==1);
-    poll(n,3610);
+    for (unsigned i=1; i<360 && regs[0x703]; i++) poll(n,i*10);
+    assert(sends>=1);
     assert(regs[0x703]==0);
-    assert(!strstr(sent,"0123456789abcdef"));
+    if (!strstr(input, "POST /api/v1/pairing/claim ") || !strstr(sent, "200 OK"))
+        assert(!strstr(sent,"0123456789abcdef"));
 }
 
 static void http_matrix(void)
@@ -106,12 +112,20 @@ static void http_matrix(void)
     ZymaticNetwork n;
     char input[1700];
     struct case_t { const char *line, *auth, *extra, *expected; } cases[] = {
-        {"GET / HTTP/1.1", "", "", "<h1>PicoBrew Zymatic</h1>"},
+        {"GET / HTTP/1.1", "", "", "Content-Encoding: gzip"},
+        {"GET /pair.js HTTP/1.1", "", "", "Content-Type: application/javascript"},
+        {"GET /api/v1/overview HTTP/1.1", "", "", "\"pairing_v1\":true"},
         {"GET /api/v1/health HTTP/1.1","","","{\"ok\":true}"},
         {"GET /api/v1/status HTTP/1.1",auth,"","\"device_uid\":\"zy-unit-01\""},
         {"GET /api/v1 HTTP/1.1",auth,"","\"api_version\":1"},
         {"GET /api/v1/status HTTP/1.1","","","401 Unauthorized"},
         {"GET /api/v1/status HTTP/1.1",auth,auth,"400 Bad Request"},
+        {"GET /api/v1/history HTTP/1.1", "", "", "401 Unauthorized"},
+        {"GET /api/v1/history HTTP/1.1", auth, "", "\"state\":\"completed\""},
+        {"GET /api/v1/history/samples/0?id=1 HTTP/1.1", auth, "", "[0,152.4,170.5,153,1,0]"},
+        {"GET /api/v1/history/samples/3?id=1 HTTP/1.1", auth, "", "[121000,152.4,170.5,204,2,1]"},
+        {"GET /api/v1/history/samples/0?id=2 HTTP/1.1", auth, "", "404 Not Found"},
+        {"GET /api/v1/history/samples/8?id=1 HTTP/1.1", auth, "", "400 Bad Request"},
         {"GET /missing HTTP/1.1",auth,"","404 Not Found"},
         {"GET /api/v1 HTTP/1.1",auth,"Content-Length: 2\r\n","400 Bad Request"},
         {"GET /api/v1 HTTP/1.1",auth,"Transfer-Encoding: chunked\r\n","400 Bad Request"},
@@ -186,8 +200,7 @@ static void mirror_and_sensors(void)
         assert(!strcmp(data+256,"\"}"));
     }
     setup(&n); program_active=1; req(&n,input);
-    assert(strstr(sent,"503 Service Unavailable") && strstr(sent,"Retry-After: 2"));
-    assert(strstr(sent,"\"error\":\"display_busy\"") && !strstr(sent,"\"data\":"));
+    assert(strstr(sent, "409 Conflict")); /* menu-frame token crosses a polling site */
     zymatic_test_frame[42]^=1;
     setup(&n); req(&n,input);
     assert(strstr(sent, "409 Conflict") && strstr(sent,"\"error\":\"display_changed\""));
@@ -210,6 +223,88 @@ static void mirror_and_sensors(void)
     assert(strstr(sent,"\"wort_f\":72.3") && strstr(sent,"\"thermoblock_f\":181.5"));
     temps[0]=0; temps[1]=500;
     setup(&n); req(&n,input); assert(!strstr(sent,"wort_f") && !strstr(sent,"thermoblock_f"));
+}
+
+static unsigned long display_token(uint8_t mode)
+{
+    ZymaticNetwork n;
+    char input[230];
+    setup(&n); program_active = mode;
+    snprintf(input, sizeof(input), "GET /api/v1/display HTTP/1.0\r\n%s\r\n", auth);
+    req(&n, input);
+    const char *digit = strstr(sent, "\"revision\":");
+    assert(digit);
+    unsigned long revision = strtoul(digit+11, NULL, 10);
+    setup(&n); program_active = mode;
+    snprintf(input, sizeof(input), "GET /api/v1/display/896?revision=%lu HTTP/1.0\r\n%s\r\n", revision, auth);
+    req(&n, input);
+    assert(strstr(sent,"200 OK"));
+    return revision;
+}
+
+static void command_request(const char *body, uint8_t mode, uint8_t authenticated, const char *status)
+{
+    ZymaticNetwork n;
+    char input[512];
+    setup(&n); program_active = mode;
+    snprintf(input,sizeof(input),"POST /api/v1/commands HTTP/1.1\r\nHost: brewer\r\n%s"
+             "Content-Type: application/json\r\nContent-Length: %u\r\n\r\n%s",
+             authenticated ? auth : "", (unsigned)strlen(body),body);
+    req(&n,input);
+    assert(strstr(sent,status));
+}
+
+static void panel_controls(void)
+{
+    char body[160];
+    uint8_t *dial = zymatic_test_encoder;
+    dial[11] = 1;
+    dial[12] = 1; dial[14] = 4; dial[18] = 2; zymatic_drawn_row = 2;
+    unsigned long revision = display_token(ZYMATIC_MENU);
+    snprintf(body,sizeof(body), " { \"display_revision\":%lu, \"command\":\"encoder\", \"delta\":100 } ",revision);
+    command_request(body,ZYMATIC_MENU,0,"401 Unauthorized");
+    command_request(body,ZYMATIC_OUTER,1,"409 Conflict");
+    command_request(body,ZYMATIC_PROGRAM,1,"409 Conflict");
+    zymatic_test_fault = 1;
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    zymatic_test_fault = 0;
+    dial[11] = 0; /* physical button took priority before dispatch */
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    dial[11] = 1;
+    zymatic_drawn_row = 3;
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    zymatic_drawn_row = 2;
+    clock_offset += 10001;
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    clock_offset -= 10001;
+    dial[18] = 3;
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    dial[18] = 2;
+    zymatic_test_frame[19] ^= 16;
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    zymatic_test_frame[19] ^= 16;
+    assert(dial[18]==2 && !zymatic_panel_take_press());
+    command_request(body,ZYMATIC_MENU,1,"202 Accepted");
+    assert(strstr(sent,"\"accepted\":true") && dial[18]==4);
+    command_request(body,ZYMATIC_MENU,1,"409 Conflict");
+    revision = display_token(ZYMATIC_PROGRAM);
+    snprintf(body,sizeof(body),"{\"command\":\"encoder\",\"delta\":-1,\"display_revision\":%lu}",revision);
+    command_request(body,ZYMATIC_PROGRAM,1,"409 Conflict");
+    snprintf(body,sizeof(body),"{\"command\":\"encoder\",\"click\":true,\"display_revision\":%lu}",revision);
+    command_request(body,ZYMATIC_PROGRAM,1,"202 Accepted");
+    assert(zymatic_panel_take_press()==0xff && !zymatic_panel_take_press());
+    command_request(body,ZYMATIC_PROGRAM,1,"409 Conflict");
+    const char *invalid[] = {
+       "{\"command\":\"encoder\",\"click\":true}", "{\"command\":\"encoder\",\"delta\":101,\"display_revision\":1}",
+       "{\"command\":\"encoder\",\"delta\":-101,\"display_revision\":1}", "{\"command\":\"encoder\",\"delta\":01,\"display_revision\":1}",
+       "{\"command\":\"encoder\",\"click\":true,\"display_revision\":1,\"click\":true}",
+       "{\"command\":\"encoder\",\"delta\":1,\"click\":true,\"display_revision\":1}",
+       "{\"command\":\"heat\",\"click\":true,\"display_revision\":1}",
+       "{\"command\":\"encoder\",\"click\":true,\"display_revision\":4294967296}",
+       "{\"command\":\"encoder\",\"click\":true,\"display_revision\":1}again",
+    };
+    for (unsigned i=0;i<sizeof(invalid)/sizeof(*invalid);++i) command_request(invalid[i],ZYMATIC_MENU,1,"400 Bad Request");
+    assert(!zymatic_panel_take_press());
 }
 
 static void network_ownership(void)
@@ -235,12 +330,62 @@ static void network_ownership(void)
     selected=1; put16(0x704,888); poll(&n,60); assert(writes==saved);
 }
 
+static void pair_request(const char *endpoint,const char *token,const char *header,const char *status,const char *body)
+{
+    ZymaticNetwork n;
+    char request[512],json[180];
+    snprintf(json,sizeof(json),"{\"nonce\":\"%s\"}",token);
+    snprintf(request,sizeof(request),"POST /api/v1/pairing/%s HTTP/1.0\r\n%sContent-Length: %zu\r\n\r\n%s",endpoint,header,strlen(json),json);
+    setup(&n);req(&n,request);
+    assert(strstr(sent,status)&&strstr(sent,body));
+    clock_offset += 2000;
+}
+static void pairing_suite(void)
+{
+    const char *a="1111111122222222333333334444444455555555666666667777777788888888";
+    const char *b="1111111122222222333333334444444455555555666666667777777788888889";
+    const char *key_json="\"api_key\":\"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\"";
+    char code[9];uint32_t ticket,old;
+    clock_offset=UINT32_MAX-3000;zymatic_pair_reset();
+    pair_request("grant",a,"","401 ","request_rejected");
+    pair_request("claim",a,"","404 ","request_rejected");
+    pair_request("request","not-a-nonce","","400 ","request_rejected");
+    pair_request("request",a,"","202 ","\"code\":\"11111111\"");
+    assert(zymatic_pair_prompt(clock_offset,code,&old)&&!strcmp(code,"11111111"));
+    pair_request("request",b,"","409 ","pairing_busy");
+    pair_request("claim",b,"","404 ","request_rejected");
+    pair_request("claim",a,"","202 ","pending");
+    assert(zymatic_pair_decide(clock_offset,old,0));
+    pair_request("claim",a,"","404 ","request_rejected");
+    pair_request("request",b,"","202 ","pending");
+    assert(!zymatic_pair_decide(clock_offset,old,1));
+    assert(zymatic_pair_prompt(clock_offset,code,&ticket));
+    assert(zymatic_pair_decide(clock_offset,ticket,1));
+    pair_request("claim",b,"","200 ",key_json);
+    pair_request("claim",b,"","404 ","request_rejected");
+    pair_request("grant",a,auth,"202 ","approved");
+    clock_offset+=30000;
+    pair_request("claim",a,"","404 ","request_rejected");
+    pair_request("grant",a,auth,"202 ","approved");
+    zymatic_pair_reset();
+    pair_request("claim",a,"","404 ","request_rejected");
+    pair_request("request",a,"","202 ","pending");
+    assert(zymatic_pair_prompt(clock_offset,code,&ticket));
+    clock_offset+=90000;
+    assert(!zymatic_pair_decide(clock_offset,ticket,1));
+    pair_request("claim",a,"","404 ","request_rejected");
+    clock_offset=0;
+}
+
 int main(void)
 {
     const uint8_t pattern[] = {1,0x23,0x45,0x67,0x89,0xab,0xcd,0xef};
     for (unsigned i=0; i<sizeof(key); i++) key[i]=pattern[i%sizeof(pattern)];
+    zh_test_history_suite(); zh_test_seed();
     http_matrix();
+    pairing_suite();
     network_ownership();
     mirror_and_sensors();
+    panel_controls();
     return 0;
 }

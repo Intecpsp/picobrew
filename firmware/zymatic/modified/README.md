@@ -13,7 +13,7 @@ python3 firmware/zymatic/modified/tools/usb_stock.py --data /path/to/hub/data --
 python3 firmware/zymatic/modified/tools/usb_stock.py --data /path/to/hub/data --action restore --port SERIAL
 ```
 
-Native restore also requires an identifiable USB serial number or USB bus location. Both commands check the USB identity and AVR signature, then read the complete 128 KiB flash twice. A matching read pair is saved under `usb-stock/zymatic/avr-flash-<sha256>.bin` in private Hub data. A matching known stock application is cached separately for reuse. Read protection can limit what the bootloader reports. The capture covers the AVR flash visible over USB. The separate EEPROM, fuses, lock bits and CC3000 Wi-Fi controller are outside its scope.
+Native restore also requires an identifiable USB serial number or USB bus location. Both commands check the USB identity and AVR signature, then read the complete 128 KiB flash twice. A matching read pair is saved under `usb-stock/zymatic/avr-flash-<sha256>.bin` in private Hub data. A matching known stock application is cached separately for reuse. Read protection can limit what the bootloader reports. The capture covers the AVR flash visible over USB. The separate EEPROM, fuses, lock bits and CC3000 Wi-Fi controller are outside its scope. The read-only backup also saves a private report fingerprinting the four possible AVR boot windows. [Bootloader identification and network recovery requirements](recovery.md)
 
 Restore prefers the verified saved stock application. You may also supply an exact original ZIP or HEX with `--oem-file FILE`. If neither a stock prefix nor the HEX is available locally, the helper retrieves the [pinned public archive](../oem/README.md) and verifies both the archive and the HEX. A mismatching local copy stops restoration. The original setup archive can also be prepared on another computer and copied over for offline use.
 
@@ -30,7 +30,7 @@ From the checkout’s `server/` directory, use a brewer running the verified sto
 
 Setup captures two matching flash reads, checks the original application and available flash, then asks for two confirmations before it writes. It generates a unique UID and key for that brewer. Keep the key and the private Hub data directory for later updates and restoration. To set the recipe offered offline, add `--offline-program /absolute/path/zymatic-program.json`. The default is American Brown Ale. On an already converted brewer, omitting the recipe or host retains the installed value.
 
-Disconnect USB after verification and check **About Zymatic** for **1.2.0**. On Ethernet, pair the brewer's IP address and key in the Hub. Use the recipe menu on the brewer for both Wi-Fi and Ethernet sync. To return to stock, run the restore command above against the same Hub data directory. Restoration clears the recognized extension and its private key from program flash and checks the complete readable result.
+Disconnect USB after verification and check **About Zymatic** for the version reported by the installer. Initial setup uses **1.2.0**. A qualifying boot configuration permits **1.3.0** on a subsequent USB update. On Ethernet, pair the brewer's IP address and key in the Hub. Use the recipe menu on the brewer for both Wi-Fi and Ethernet sync. To return to stock, run the restore command above against the same Hub data directory. Restoration clears the recognized extension and its private key from program flash and checks the complete readable result.
 
 ## Use the original Windows updater
 
