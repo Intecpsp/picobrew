@@ -467,7 +467,7 @@ test('brew-ready catalog carries the author’s dry hop and original program to 
   await page.getByRole('button', { name: 'UB08 Summer IPA' }).click()
   await expect(page.getByText('Dry hop with 25 g Citra for 7 days.', { exact: true })).toBeVisible()
   const ingredients = page.getByRole('table', { name: 'Scaled ingredient bill' })
-  await expect(ingredients.getByRole('row').filter({ hasText: 'dry-hop' })).toContainText('Citra')
+  await expect(ingredients.getByRole('row').filter({ hasText: 'Dry hop · 7 days' })).toContainText('Citra')
   await page.getByRole('button', { name: 'Save Zymatic program' }).click()
   await expect(page.getByLabel('Program notes')).toContainText('Dry hop with 25 g Citra')
   await page.getByRole('button', { name: 'Send' }).click()

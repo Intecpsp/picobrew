@@ -186,7 +186,7 @@ const labels = {
   fg: 'Final gravity',
   abv: 'Alcohol',
   ibu: 'Bitterness',
-  srm: 'Color',
+  srm: 'Kettle wort color',
 }
 function metricValue(k: keyof typeof labels, n: number) {
   return k === 'og' || k === 'fg'
@@ -213,8 +213,9 @@ function Statistics({ recipe }: { recipe: Recipe }) {
         ))}
       </dl>
       <small>
-        Gravity uses fermentable yields and efficiency. Final gravity and alcohol use yeast
-        attenuation. Bitterness estimates use Tinseth for timed kettle hops. Color uses Morey.
+        Original gravity is estimated at yeast pitching. Tinseth bitterness and Morey color use the
+        kettle wort. Final gravity and alcohol use yeast attenuation when the ingredient bill
+        supports that estimate.
       </small>
     </section>
   )

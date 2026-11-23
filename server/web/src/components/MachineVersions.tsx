@@ -1,4 +1,4 @@
-import { unmeasuredYeast } from '../lib/beerCrafter'
+import { RecipeLoadingSheet } from './RecipeLoadingSheet'
 import { OriginalRecipeLink } from './OriginalRecipe'
 import { useState } from 'react'
 import { useHub } from '../context'
@@ -64,47 +64,7 @@ export function BrewerPlan({ plan }: { plan: Adapted }) {
         </p>
       ))}
       {!!recipe.ingredients?.length && (
-        <div className="table-scroll">
-          <table className="data-table" aria-label="Scaled ingredient bill">
-            <thead>
-              <tr>
-                <th>Ingredient</th>
-                <th>Amount</th>
-                <th>When to add</th>
-              </tr>
-            </thead>
-            <tbody>
-              {unmeasuredYeast(recipe) && (
-                <tr>
-                  <td>{unmeasuredYeast(recipe)}</td>
-                  <td>Pitch amount unspecified</td>
-                  <td>Fermentation</td>
-                </tr>
-              )}
-              {recipe.ingredients.map((i, n) => (
-                <tr key={n}>
-                  <td>{i.name}</td>
-                  <td>{formatQuantity(i.amount, i.unit)}</td>
-                  <td>
-                    {i.slot_addition ||
-                    (i.kind === 'hop' && (i.use === 'boil' || i.use === 'first-wort'))
-                      ? [
-                          plan.hop_slots_by_minute?.[i.minutes]
-                            ? 'Hop slot ' + plan.hop_slots_by_minute[i.minutes]
-                            : '',
-                          i.use === 'first-wort'
-                            ? 'First wort'
-                            : i.minutes + ' min before boil ends',
-                        ]
-                          .filter(Boolean)
-                          .join(' · ')
-                      : i.use}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <RecipeLoadingSheet recipe={recipe} slots={plan.hop_slots_by_minute} />
       )}
       {program && (
         <ProgramTable program={program} model={profile.id} archived={profile.id === 'zymatic'} />

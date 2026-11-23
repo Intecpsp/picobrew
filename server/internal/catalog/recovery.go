@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"fmt"
+	"maps"
 	"slices"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
@@ -9,6 +10,8 @@ import (
 
 // The generated corrections apply only to the specific archived source revision.
 type recipeRecovery struct {
+	Water        map[string]float64        `json:"water,omitempty"`
+	Edition      string                    `json:"edition,omitempty"`
 	SourceSHA256 string                    `json:"source_sha256"`
 	Resolved     []string                  `json:"resolved"`
 	Ingredients  []domain.Ingredient       `json:"ingredients"`
@@ -51,6 +54,9 @@ func (fix recipeRecovery) apply(d *Detail) error {
 	if fix.Fermentation != nil {
 		r.Fermentation = slices.Clone(fix.Fermentation)
 	}
+	if fix.Water != nil {
+		r.Water = maps.Clone(fix.Water)
+	}
 	if fix.Carbonation != nil {
 		r.Carbonation = *fix.Carbonation
 	}
@@ -61,7 +67,12 @@ func (fix recipeRecovery) apply(d *Detail) error {
 	} else {
 		r.Provenance.Warnings = append(r.Provenance.Warnings, evidence)
 	}
-	r.Notes += "\n\n" + evidence
+	if fix.Edition != "" {
+		d.Edition = fix.Edition
+		r.Notes = "Hub adaptation (" + fix.Edition + "). " + evidence + "\n\n" + r.Notes
+	} else {
+		r.Notes += "\n\n" + evidence
+	}
 	r.Provenance.Warnings = append(r.Provenance.Warnings, fix.Warnings...)
 	if fix.Review != "" {
 		r.Provenance.Warnings = append(r.Provenance.Warnings, "Source program review: "+fix.Review)

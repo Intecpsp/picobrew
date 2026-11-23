@@ -29,6 +29,7 @@ import {
   SearchBox,
   SectionHeading,
 } from '../components/ui'
+import { SourceEvidence } from '../components/SourceEvidence'
 import { ProgramTable } from '../components/Program'
 import { ReferenceLibrary } from '../components/ReferenceViewer'
 import './Catalog.scss'
@@ -230,6 +231,7 @@ function CatalogBrowse() {
                           {entry.name}
                         </button>
                       </h3>
+                      {entry.edition && <p>Hub adaptation · {entry.edition}</p>}
                       <p>
                         {entry.description ||
                           (entry.kind === 'native-program'
@@ -401,8 +403,10 @@ function CatalogEntry({ id }: { id: string }) {
         <div className="editor-main">
           {review && (
             <section className="panel" aria-label="Source review">
-              <SectionHeading title="Source review" />
-              <p>{review.evidence}</p>
+              <SectionHeading
+                title={entry.edition ? `Hub adaptation · ${entry.edition}` : 'Source review'}
+              />
+              <SourceEvidence text={review.evidence} />
               {review.blocker && (
                 <p className="warning-note">
                   <strong>Still unresolved.</strong> {review.blocker}

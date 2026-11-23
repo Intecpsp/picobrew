@@ -1,6 +1,6 @@
 import { QuantityField } from './RecipeMeasures'
 import { routeLabel } from '../lib/programs'
-import { renameIngredient, ingredientDefaults, yeastInfo } from '../lib/beerCrafter'
+import { goesInKeg, renameIngredient, ingredientDefaults, yeastInfo } from '../lib/beerCrafter'
 import { useState } from 'react'
 import { ArrowDown, ArrowUp, Plus, Trash2 } from 'lucide-react'
 import type { Ingredient, RecipeStep, Unit } from '../types'
@@ -14,6 +14,14 @@ const groups = [
   { title: 'Yeast, water & other additions', kind: 'misc', add: 'Add other ingredient' },
 ]
 const grainUses = { mash: 'Mash', boil: 'Boil' }
+const solubleUses = {
+  ...grainUses,
+  'before pitching': 'Before pitching yeast',
+  fermentation: 'During fermentation',
+  secondary: 'Secondary fermentation',
+  conditioning: 'Conditioning',
+  priming: 'Priming',
+}
 const hopUses = {
   boil: 'Boil',
   'first-wort': 'First wort',
@@ -105,7 +113,13 @@ export function RecipeIngredients({
             {members.map(({ item, index }) => {
               const hop = item.kind === 'hop',
                 units = ingredientUnits(item.kind)
-              const uses = hop ? hopUses : item.kind === 'fermentable' ? grainUses : null
+              const uses = hop
+                ? hopUses
+                : item.kind === 'fermentable'
+                  ? goesInKeg(item.type)
+                    ? solubleUses
+                    : grainUses
+                  : null
               return (
                 <div className="plan-row" key={index}>
                   <div className="ingredient-fields">

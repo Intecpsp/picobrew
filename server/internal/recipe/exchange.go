@@ -240,6 +240,7 @@ type xmlMashStep struct {
 	Ramp    *float64 `xml:"RAMP_TIME,omitempty"`
 }
 type xmlWater struct {
+	Use         string   `xml:"HUB_WATER_USE,omitempty"`
 	Name        string   `xml:"NAME"`
 	Version     int      `xml:"VERSION"`
 	Amount      *float64 `xml:"AMOUNT"`
@@ -471,7 +472,11 @@ func fromXML(x xmlRecipe) (domain.Recipe, error) {
 		if err != nil {
 			return r, err
 		}
-		r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: water.Name, Kind: "water", Amount: amount, Unit: "L", Use: "mash"})
+		use := water.Use
+		if use == "" {
+			use = "mash" // Conventional default for external BeerXML water profiles.
+		}
+		r.Ingredients = append(r.Ingredients, domain.Ingredient{Name: water.Name, Kind: "water", Amount: amount, Unit: "L", Use: use})
 		chemistry := map[string]float64{}
 		for key, value := range map[string]*float64{"calcium": water.Calcium, "bicarbonate": water.Bicarbonate, "sulfate": water.Sulfate, "chloride": water.Chloride, "sodium": water.Sodium, "magnesium": water.Magnesium, "ph": water.PH} {
 			if value != nil {
@@ -627,6 +632,9 @@ func exportXML(r domain.Recipe) ([]byte, error) {
 			}
 		case "water":
 			w := xmlWater{Name: in.Name, Version: 1, Amount: pointer(in.Amount)}
+			if in.Use != "mash" {
+				w.Use = in.Use
+			}
 			for key, value := range r.Water {
 				switch key {
 				case "calcium":

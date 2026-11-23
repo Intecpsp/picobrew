@@ -248,3 +248,21 @@ test('reviewed source recipes show the evidence and keep filters on return', asy
   await expect(page.getByLabel('Source archive', { exact: true })).toHaveValue('public-recipes')
   await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Chill Cycle')
 })
+
+test('a Hub adaptation shows its assumptions and keeps the original recipe accessible', async ({
+  page,
+}) => {
+  await page.goto('/#/catalog?q=Heinielicious')
+  const card = page
+    .locator('.catalog-card')
+    .filter({ has: page.getByRole('button', { name: 'Heinielicious', exact: true }) })
+  await expect(card.getByText('Hub adaptation · Unfined')).toBeVisible()
+  await card.getByRole('button', { name: 'Heinielicious', exact: true }).click()
+  const review = page.getByRole('region', { name: 'Source review' })
+  await expect(review.getByRole('heading', { name: 'Hub adaptation · Unfined' })).toBeVisible()
+  await expect(review.getByText(/did not specify a unit/)).toBeVisible()
+  await page.getByRole('button', { name: 'View original recipe' }).first().click()
+  await expect(
+    page.getByRole('dialog', { name: 'Original recipe' }).getByText('Irish Moss', { exact: true })
+  ).toBeVisible()
+})

@@ -14,7 +14,7 @@ recipe to a brewer or starts a program.
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-The main catalog lists 846 measured recipes whose schedules compile for all five brewing profiles. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+The main catalog lists 975 recipes whose schedules compile for Pico S, Pico Pro, Pico C, Z and Zymatic. These include 127 named Hub adaptations. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
 programs and three maintenance programs. Of these, 5,206 can be copied into the
 library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
@@ -37,11 +37,13 @@ The Hub checks archived loading sheets against the ingredient list and the first
 
 All 440 ingredient recipes previously outside the main catalog have an individual review pinned to the original record's SHA-256. The author's explicit corrections take precedence. The reviewer also compared ingredient amounts, original cage loads, and the machine's actual time at each temperature and flow path. In *Down with the Brown*, a zero boil-temperature field conflicts with three timed segments at 207°F. Those segments account for the entire 90-minute boil and all three hop additions.
 
-Of the 440, **23 now compile for all five brewing profiles**. The other **417** retain their recoverable quantities and instructions, with an explanation of the missing measurement, contradictory timing, or manual operation. For example, the author of *La Mort Chocolat v1* specifies half a teaspoon of Irish moss. The volume is known, but it does not establish the mass in the machine's loading cage.
+Of those 440, the first review recovered 23 recipes. Further review of saved programs recovered two more from the source. Another 127 now have a **Hub adaptation** that names the brewing choices needed to make the recipe usable. The other 288 have individual notes describing what remains unresolved. Some records contain conflicting hop timings or an operator-dependent action that the machine program cannot represent. Others are cleaning routines or lack enough information to reconstruct the beer.
 
-The original Beer Crafter also printed ounces on US loading sheets when an adjunct had no unit. A printed default cannot confirm a dose. This correction returned 53 previously listed recipes to the archive. Across all 1,316 ingredient recipes, 846 qualify for the main catalog and 470 remain available for planning. A compiled recipe has passed profile and program checks. Physical brew trials are separate.
+Open a recipe to see the assumptions before copying it. For *Heinielicious*, the original calls for Irish moss without giving a unit. The **Unfined** edition omits it and explains the possible effect on clarity. For a weighed Irish moss edition, the review identifies the product and the volume-to-weight estimate. Where a published reference supplies brewing-water targets or hop contact time, the review links to that reference. **View original recipe** opens the unmodified local record. A library copy keeps the edition in its name and the assumptions in its notes.
 
-Open **Recipes → Browse all → Sources & credits → Browse source archive** and select **Reviewed recipes** to read the evidence for the 440. The 53 other recipes and their warnings are also available under **All source records**, filtered to public recipes. The 68 original stock Zymatic brew sheets have separate verification criteria. Existing library copies retain the owner's edits. Copy the catalog entry again to obtain its reviewed version.
+Beer Crafter printed ounces on US loading sheets for some adjuncts that had no recorded unit. Correcting that interpretation returned 53 previously listed recipes to the archive. Across all 1,316 source ingredient recipes, 975 qualify for the main catalog and 341 are available in the archive. Software validation covers ingredient units, brewer capacity and program encoding. Physical brewing and flavor have not been verified for these editions.
+
+Open **Recipes → Browse all → Sources & credits → Browse source archive** and select **Reviewed recipes** for the original group of 440. The 53 other records and their warnings are also available under **All source records**, filtered to public recipes. The 68 original stock Zymatic brew sheets have separate verification criteria. Existing library copies retain the owner's edits. Copy the catalog entry again to obtain its reviewed version.
 
 Run `python3 server/tools/catalog_recovery.py --check` to reproduce the index from the bundled originals and checksum-pinned reviews.
 
@@ -71,7 +73,7 @@ The original public recipes target Z/Zymatic, and their separately editable
 `MachineSteps` may disagree with those plans. They remain in original JSON.
 The Hub preserves the source flow paths and generates a separate version for each brewer from the declared mash rests and timed additions. Ingredients added together share a hop slot. Unsupported operations and incomplete measurements appear on the affected version. Unknown yeast
 doses, unsupported quantities, fractional/invalid timings and contradictory
-source notes are recorded as review items; quantities or timings are not guessed.
+source notes are recorded as review items. Named Hub adaptations state how any missing quantities or timings were chosen.
 
 **Native programs** retain their exact temperatures, timings, drain durations and
 model-specific compartment routing. They do not acquire an inferred ingredient

@@ -4,11 +4,14 @@ import { useResource } from '../context'
 import type { Recipe, MachineRecipe } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
 import { ProgramTable } from './Program'
+import { TransferLoadingSheet } from './RecipeLoadingSheet'
 
 type StockItem = {
   recipe_id: string
   revision: number
   program: MachineRecipe
+  batch_liters?: number
+  hop_slots_by_minute?: Record<number, number>
   maintenance: boolean
 }
 type Menu = { machine: string; items: StockItem[]; last_requested: string }
@@ -239,6 +242,11 @@ export function StockZymaticTransfer({
       {preview?.map((item) => (
         <section key={item.recipe_id}>
           <h4>{item.program.name}</h4>
+          <TransferLoadingSheet
+            source={selected.find((r) => r.id === item.recipe_id && r.revision === item.revision)}
+            batchLiters={item.batch_liters}
+            slots={item.hop_slots_by_minute}
+          />
           <ProgramTable program={item.program} model="zymatic" archived />
           <Button
             variant="secondary"
