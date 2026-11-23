@@ -250,6 +250,29 @@ class BrowserWorkflow(unittest.TestCase):
             self.assertFalse(self.page.evaluate('document.documentElement.scrollWidth > innerWidth'))
         self.page.screenshot(path=str(self.output / 'ssd1309-mobile.png'),full_page=True)
 
+    def test_import_rejects_unrepresentable_steps_before_touching_the_editor(self):
+        self.connect()
+        self.page.locator('[data-tab="recipes"]').click()
+        self.page.locator('#newRecipe').click()
+        title = self.page.locator('#recipeName')
+        title.fill("Keep these edits")
+        recipe = dict(id="imported", **backend.recipe("Valid recipe"))
+        step = recipe['steps'][0]
+        for steps in ([{**step, 'minutes': "10"}], [{**step, 'name': 'x' * 22}],
+                      [{**step, 'target_f': 45}], [{**step, 'location': 7}],
+                      [{**step, 'drain_minutes': None}], [{**step, 'pause': True}]):
+            body = dict(recipe, steps=steps)
+            self.page.locator('#importFile').set_input_files({
+                "name": "invalid.json", "mimeType": "application/json", "buffer": json.dumps(body).encode()})
+            expect(self.page.locator('#notice')).to_contain_text('Step 1')
+            expect(title).to_have_value('Keep these edits')
+        self.page.once('dialog', lambda dialog: dialog.accept())
+        body = dict(recipe, steps=[{k:v for k,v in step.items() if k != 'drain_minutes'}])
+        self.page.locator('#importFile').set_input_files({
+            "name": "valid.json", "mimeType": "application/json", "buffer": json.dumps(body).encode()})
+        expect(title).to_have_value('Valid recipe')
+        expect(self.page.locator('input[data-field="drain_minutes"]').first).to_have_value('0')
+
     def test_recipe_text_fields_enforce_the_device_character_set(self):
         self.connect()
         self.page.locator('[data-tab="recipes"]').click()

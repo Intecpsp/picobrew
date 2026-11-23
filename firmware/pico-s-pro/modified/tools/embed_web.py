@@ -33,10 +33,16 @@ def generate():
                 raise ValueError('Expected one local favicon link in the website index')
             icon = base64.b64encode((ROOT / 'web/favicon.ico').read_bytes())
             raw = raw.replace(icon_link, b'href="data:image/x-icon;base64,' + icon + b'"')
-            # Serve controls in an existing JS slot on installed brewers.
-            raw = raw.replace(b'  <script src="/controls.js" defer></script>\n', b'')
+            # The installed site uses five fixed slots. Bundle the extra modules
+            # into the script slot with space and omit their standalone tags.
+            for module in ('controls.js', 'recipes.js'):
+                tag = f'  <script src="/{module}" defer></script>\n'.encode()
+                if raw.count(tag) != 1:
+                    raise ValueError(f'Expected one script tag for {module}')
+                raw = raw.replace(tag, b'')
         elif name == 'history.js':
-            raw += b'\n' + (ROOT / 'web/controls.js').read_bytes()
+            for module in ('controls.js', 'recipes.js'):
+                raw += b'\n' + (ROOT / 'web' / module).read_bytes()
         packed = bytearray(gzip.compress(raw, compresslevel=9, mtime=0))
         # gzip.compress varies the OS header byte across supported Python versions.
         packed[9] = 255

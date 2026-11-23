@@ -153,48 +153,6 @@ async function refreshRecipes() {
   updateControls();
 }
 
-const flowPaths = ['Keg circulation', 'Mash', 'Hop addition 1', 'Hop addition 2', 'Hop addition 3', 'Hop addition 4'];
-
-function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
-  if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
-  const row=document.createElement('tr');
-  const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',0,599],['drain_minutes','number',0,120]];
-  for (const [field,type,min,max] of definitions) {
-    const cell=document.createElement('td');let input;
-    if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
-    else {input=document.createElement('input');input.type=type;if(type==='text'){input.maxLength=21;input.pattern='[ -~]+';input.title='Use printable ASCII characters';}else{input.min=min;input.max=max;input.step=1;}}
-    input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
-    input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
-  }
-  const cell=document.createElement('td');const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.textContent='×';remove.setAttribute('aria-label','Remove step');
-  remove.addEventListener('click',()=>{row.remove();state.dirty=true;});cell.append(remove);row.append(cell);$('steps').append(row);
-}
-
-function editRecipe(recipe, existing=false) {
-  state.editorId=existing ? recipe.id : null;state.dirty=false;
-  $('recipeName').value=recipe.name || '';$('recipeId').value=recipe.id || '';$('recipeId').readOnly=existing;
-  $('recipeId').dataset.auto=existing ? 'false' : 'true';
-  $('editorHeading').textContent=existing ? 'Edit recipe' : 'New recipe';$('steps').replaceChildren();
-  for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
-  updateControls();
-}
-
-async function loadRecipe(id) {
-  if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
-  try {const recipe=await api('/recipes/'+encodeURIComponent(id));editRecipe({...recipe,id},true);notify('');}
-  catch(error){notify(error.message,true);}
-}
-
-function recipeFromForm() {
-  if(!$('recipeForm').reportValidity())return null;
-  const steps=Array.from($('steps').children).map(row=>{
-    const step={};row.querySelectorAll('[data-field]').forEach(input=>step[input.dataset.field]=input.dataset.field==='name'?input.value:Number(input.value));return step;
-  });
-  if(!steps.length){notify('Add at least one brewing step.',true);return null;}
-  if(steps.some(step=>step.target_f!==0 && step.target_f<60)){notify('Targets must be 0 for unheated circulation, or between 60 and 212 °F.',true);return null;}
-  return {id:$('recipeId').value,name:$('recipeName').value,steps};
-}
-
 function download(name,data) {
   const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
   const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -315,7 +273,8 @@ $('importFile').addEventListener('change',async event=>{
   try{
     if(file.size>16384)throw new Error('Recipe file is too large.');
     const recipe=JSON.parse(await file.text());
-    if(!recipe || !Array.isArray(recipe.steps) || recipe.steps.length<1 || recipe.steps.length>15 || typeof recipe.name!=='string' || typeof recipe.id!=='string' || !/^[A-Za-z0-9_-]{1,20}$/.test(recipe.id) || recipe.steps.some(step=>!step || typeof step!=='object'))throw new Error('Choose a recipe JSON file exported by Pico Local.');
+    const issue=recipeIssue(recipe);
+    if(issue)throw new Error(issue);
     if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
     editRecipe(recipe,false);state.dirty=true;notify('Recipe imported into the editor. Review it, then save to the Pico.');
   }catch(error){notify(error instanceof SyntaxError?'The file is not valid JSON.':error.message,true);}
