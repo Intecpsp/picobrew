@@ -105,6 +105,31 @@ class USBTest(unittest.TestCase):
                 usb.private_files.assert_private(path)
                 self.assertEqual(usb.load_original(path, chip.identity, model), before)
 
+    def test_usb_pairing_key_uses_verified_filesystem_and_retry_preserves_machine(self):
+        import secrets
+        import spiffs_format
+        for model in ("picoferm", "picostill", "z-series"):
+            with self.subTest(model=model):
+                chip = device(model)
+                data = self.data / model
+                key = secrets.token_hex(32)
+                usb.operation("install", model, chip, data, ask=lambda _: chip.identity.mac, api_key=key)
+                layout = usb.FERM_LAYOUT if model == "picoferm" else usb.ESP32_LAYOUT
+                start, size = layout["spiffs.bin"]
+                profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
+                image = bytes(chip.contents[start:start+size])
+                self.assertTrue(spiffs_format.inspect_image(image, profile, {"/pb/api.key": key.encode()})["exact_contents"])
+                writes = len(chip.writes)
+                usb.operation("install", model, chip, data, ask=lambda _: self.fail("retry wrote"), api_key=key)
+                for bad_key in (secrets.token_hex(32), "0"*64):
+                    with self.assertRaises(ValueError):
+                        usb.operation("install", model, chip, data, api_key=bad_key)
+                self.assertEqual(len(chip.writes), writes)
+                damaged = bytearray(usb.reference(model)[1]["spiffs.bin"])
+                damaged[-1] ^= 1
+                with self.assertRaisesRegex(ValueError,"verified empty"):
+                    usb.esp_provisioning.stage(damaged,profile,key)
+
     def test_refuse_wrong_model_and_unknown_active_flash_before_any_write(self):
         for model, selection in (("picostill", "picoferm"), ("picostill", "z-series"), ("picoferm", "picoferm")):
             chip = device(model)
