@@ -590,7 +590,7 @@ test('journal readings and state lanes share one time cursor and note timestamp'
   await expect(cursor).toHaveAttribute('aria-valuenow', '2')
   await expect(cursor).toHaveAttribute(
     'aria-valuetext',
-    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags Controller ready .+Machine busy .+Step filter inserted .+Compartment .+Device state/
+    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags Controller ready .+Machine busy .+Step filter inserted, Compartment .+Device state/
   )
   await page.getByRole('button', { name: 'Note at 0:15', exact: true }).click()
   await expect(page.getByLabel('Brew notes', { exact: true })).toHaveValue(/\[0:15\] $/)
