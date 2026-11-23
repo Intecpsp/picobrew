@@ -396,7 +396,7 @@ main-menu boundary.
 | --- | --- |
 | `brew` | Run a local recipe; requires a valid existing `recipe_id` |
 | `sous-vide`, `cold-brew`, `manual` | Open the existing cooking/brewing program flow |
-| `rinse`, `first-rinse`, `descale`, `circulate` | Run the corresponding existing maintenance flow |
+| `rinse`, `first-rinse`, `deep-clean`, `descale`, `circulate` | Run the corresponding existing maintenance flow |
 | `drain-reservoir`, `drain-filter`, `rack-beer` | Run the corresponding existing utility flow |
 | `utilities`, `settings` | Open the existing front-panel menu |
 | `encoder` | Rotate and/or click the existing UI encoder |

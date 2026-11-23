@@ -336,6 +336,12 @@ static void test_guards_and_queue(void)
 {
     initialize(); assert(pico_local_control_command("stop",NULL)==PICO_LOCAL_CONTROL_NOT_READY);
     ready();
+    assert(pico_local_control_command("deep-clean",NULL)==PICO_LOCAL_CONTROL_OK);
+    assert(outputs_off() && pico_local_control_command("deep-clean",NULL)==PICO_LOCAL_CONTROL_BUSY);
+    assert(pico_local_control_command("stop",NULL)==PICO_LOCAL_CONTROL_OK);
+    assert(!pico_local_control_run_pending() && outputs_off());
+    assert(pico_local_control_command("deep-clean",NULL)==PICO_LOCAL_CONTROL_STOPPED);
+    assert(pico_local_control_command("clear-stop",NULL)==PICO_LOCAL_CONTROL_OK);
     assert(pico_local_control_command("unknown",NULL)==PICO_LOCAL_CONTROL_INVALID);
     assert(pico_local_control_command("brew","../../bad")==PICO_LOCAL_CONTROL_INVALID);
     assert(pico_local_control_command("circulate",NULL)==PICO_LOCAL_CONTROL_OK);
@@ -376,6 +382,12 @@ static void test_stop_unwinds_workflows(void)
     pico_local_control_enter_menu();
     assert(pico_local_control_command("clear-stop",NULL)==PICO_LOCAL_CONTROL_OK);
     assert(outputs_off());
+    sim.stopping=false; sim.stop_on_poll=true;
+    assert(pico_local_control_command("deep-clean",NULL)==PICO_LOCAL_CONTROL_OK);
+    assert(pico_local_control_run_pending()); /* Cancel from the native preparation flow. */
+    assert(sim.stopping && outputs_off() && !sim.energized_after_stop);
+    pico_local_control_enter_menu();
+    assert(pico_local_control_command("clear-stop",NULL)==PICO_LOCAL_CONTROL_OK);
     sim.stopping=false; sim.stop_on_power=true;
     assert(pico_local_control_command("drain-filter",NULL)==PICO_LOCAL_CONTROL_OK);
     assert(pico_local_control_run_pending());

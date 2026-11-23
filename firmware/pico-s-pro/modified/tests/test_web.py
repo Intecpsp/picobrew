@@ -224,6 +224,81 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#notice")).to_have_text("Recipe deleted.")
         expect(self.page.locator("#recipeCapacity")).to_have_text("1 / 16")
 
+    def test_import_rejects_unrepresentable_steps_before_touching_the_editor(self):
+        self.connect()
+        self.page.locator('[data-tab="recipes"]').click()
+        self.page.locator('#newRecipe').click()
+        title = self.page.locator('#recipeName')
+        title.fill("Keep these edits")
+        recipe = dict(id="imported", **backend.recipe("Valid recipe"))
+        step = recipe['steps'][0]
+        for steps in ([{**step, 'minutes': "10"}], [{**step, 'name': 'x' * 22}],
+                      [{**step, 'target_f': 45}], [{**step, 'location': 7}],
+                      [{**step, 'drain_minutes': None}], [{**step, 'pause': True}]):
+            body = dict(recipe, steps=steps)
+            self.page.locator('#importFile').set_input_files({
+                "name": "invalid.json", "mimeType": "application/json", "buffer": json.dumps(body).encode()})
+            expect(self.page.locator('#notice')).to_contain_text('Step 1')
+            expect(title).to_have_value('Keep these edits')
+        self.page.once('dialog', lambda dialog: dialog.accept())
+        body = dict(recipe, steps=[{k:v for k,v in step.items() if k != 'drain_minutes'}])
+        self.page.locator('#importFile').set_input_files({
+            "name": "valid.json", "mimeType": "application/json", "buffer": json.dumps(body).encode()})
+        expect(title).to_have_value('Valid recipe')
+        expect(self.page.locator('input[data-field="drain_minutes"]').first).to_have_value('0')
+
+    def test_recipe_text_fields_enforce_the_device_character_set(self):
+        self.connect()
+        self.page.locator('[data-tab="recipes"]').click()
+        self.page.locator('#newRecipe').click()
+        new_id = self.page.locator('#recipeId')
+        new_id.fill('my-recipe_1')
+        self.assertTrue(new_id.evaluate('e => e.checkValidity()'))
+        new_id.fill('my recipe')
+        self.assertFalse(new_id.evaluate('e => e.checkValidity()'))
+        for selector in ('#recipeName', '#steps input[data-field="name"]'):
+            field = self.page.locator(selector).first
+            field.fill('Märzen')
+            self.assertFalse(field.evaluate('e => e.checkValidity()'))
+            field.fill('Marzen (dark)')
+            self.assertTrue(field.evaluate('e => e.checkValidity()'))
+
+    def test_control_state_and_restart_follow_firmware(self):
+        with LOCK:
+            backend.LIB.test_ready(0)
+        self.connect()
+        expect(self.page.locator("#modeBadge")).to_have_text("NOT READY")
+        expect(self.page.locator("#encoderClick")).to_be_disabled()
+        with LOCK:
+            backend.LIB.test_ready(1)
+            backend.LIB.test_restart_state(4, False, -1)
+        expect(self.page.locator("#encoderClick")).to_be_enabled()
+        with self.page.expect_response("**/api/v1/commands"):
+            self.page.evaluate("""() => {
+                const button = document.getElementById('encoderClick');
+                button.click(); button.click();
+                if (!button.disabled || document.getElementById('stopButton').disabled)
+                    throw Error('Dial must wait for its command; stop must stay available');
+            }""")
+        self.page.locator('[data-tab="settings"]').click()
+        restart = self.page.locator('#restartBrewer')
+        expect(restart).to_be_enabled()
+        self.page.once("dialog", lambda dialog: dialog.dismiss())
+        restart.click()
+        with LOCK:
+            self.assertFalse(backend.LIB.test_restart_pending())
+            backend.LIB.test_busy(1)
+        expect(restart).to_be_disabled()
+        with LOCK:
+            backend.LIB.test_busy(0)
+        expect(restart).to_be_enabled()
+        self.page.once("dialog", lambda dialog: dialog.accept())
+        with self.page.expect_response("**/api/v1/system/restart") as response:
+            restart.click()
+        self.assertEqual(response.value.status, 202)
+        with LOCK:
+            self.assertTrue(backend.LIB.test_restart_pending())
+
     def test_program_encoder_stop_and_idle_only_clear(self):
         self.connect()
         for name, arrow, delta in [("Move up", "↑", -1), ("Move down", "↓", 1)]:
@@ -231,7 +306,7 @@ class BrowserWorkflow(unittest.TestCase):
             expect(button).to_have_text(arrow)
             with self.page.expect_response(lambda response: response.url.endswith("/api/v1/commands")):
                 button.click()
-            expect(self.page.locator("#notice")).to_have_text("Command accepted.")
+            expect(self.page.locator("#notice")).to_be_hidden()
             with LOCK:
                 self.assertEqual(backend.LIB.test_last_delta(), delta)
         self.page.locator("#startRecipe").click()
@@ -241,10 +316,11 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#clearStop")).to_be_disabled()
         with LOCK:
             backend.LIB.test_busy(0)  # Simulated workflow has unwound.
+            backend.LIB.test_restart_state(4, False, -1)  # Idle phase, outputs off.
         expect(self.page.locator("#clearStop")).to_be_enabled(timeout=8000)
         self.page.locator("#clearStop").click()
         expect(self.page.locator("#modeBadge")).to_have_text("READY")
-        self.page.locator("#program").select_option("rinse")
+        self.page.locator("#program").select_option(label="Deep Clean")
         self.page.locator("#runProgram").click()
         expect(self.page.locator("#modeBadge")).to_have_text("IN PROGRESS")
 

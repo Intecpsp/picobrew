@@ -2,6 +2,7 @@
 
 const $ = id => document.getElementById(id);
 const state = {key:'', connected:false, generation:0, status:null, recipes:[],
+  pendingCommands:0, stopPending:false, restartSupported:false,
   settings:{temperature_unit:'F', language:'en', detailed_status:false}, capabilities:[],
   editorId:null, dirty:false, tab:'overview', polling:false, restoreDefaults:false,
   telemetry:null, telemetryAt:0};
@@ -10,7 +11,7 @@ let pollTimer;
 let apiExplorer;
 let brewHistory;
 const programLabels = {'sous-vide':'Sous vide', 'cold-brew':'Cold brew', manual:'Manual brewing',
-  rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
+  'deep-clean':'Deep Clean', rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
   'drain-reservoir':'Drain reservoir', 'drain-filter':'Drain step filter', 'rack-beer':'Rack beer',
   utilities:'Utilities menu', settings:'Settings menu'};
 
@@ -69,30 +70,6 @@ function connected(value) {
   updateControls();
 }
 
-function updateControls() {
-  const ready = state.connected && state.status?.ready === true;
-  const busy = !!state.status?.busy;
-  const stopped = !!state.status?.stopped;
-  document.querySelectorAll('[data-encoder]').forEach(button => button.disabled = !ready);
-  $('encoderClick').disabled = !ready;
-  $('brewRecipe').disabled = !ready || busy || stopped;
-  $('startRecipe').disabled = !ready || busy || stopped || !$('brewRecipe').value;
-  $('program').disabled = !ready || busy || stopped;
-  $('runProgram').disabled = !ready || busy || stopped || !$('program').value;
-  $('stopButton').disabled = !ready || stopped;
-  $('clearStop').hidden = !stopped;
-  $('clearStop').disabled = !ready || busy;
-  $('newRecipe').disabled = !ready || busy;
-  $('restoreRecipes').disabled = !ready || busy || !state.restoreDefaults;
-  $('saveRecipe').disabled = !ready || busy;
-  $('deleteRecipe').disabled = !ready || busy || !state.editorId;
-  $('saveSettings').disabled = !ready || busy;
-  apiExplorer?.update();
-  brewHistory?.update();
-}
-
-
-
 function renderIdentity(info) {
   const name={'pico-c':'Pico C'}[info.model] || 'Pico C';
   $('modelName').textContent=name+' brewing console';
@@ -111,6 +88,11 @@ function renderStatus(status) {
   $('operationTitle').textContent = status.stopped ? 'Outputs stopped.' : status.busy ? (status.recipe_name || 'Operation in progress.') : 'Ready for your next brew.';
   $('operationDetail').textContent = status.stopped ? (status.stop_reason === 'filter-removed' ? 'The step filter was removed during pumping. This operation is cancelled. Refit the filter and wait for idle before clearing the stop.' : 'The stop latch is active. Wait for the operation to end before clearing it.') : status.busy ? (status.step_name || 'Follow the brewer’s prompts on the remote front panel.') : 'Choose a saved recipe, open a program, or use the front panel.';
   $('modeBadge').textContent = status.stopped ? 'STOPPED' : status.busy ? 'IN PROGRESS' : 'READY';
+  if (!status.ready && !status.stopped) {
+    $('modeBadge').textContent = 'NOT READY';
+    $('operationTitle').textContent = 'Waiting for the brewer.';
+    $('operationDetail').textContent = 'Check the front panel for instructions.';
+  }
   $('modeBadge').classList.toggle('stopped', !!status.stopped);
   $('filterBadge').textContent = status.filter_inserted === null ? 'FILTER UNKNOWN' : status.filter_inserted ? 'FILTER INSERTED' : 'FILTER REMOVED';
   $('filterBadge').classList.toggle('warning', status.filter_inserted === false);
@@ -127,7 +109,7 @@ function renderDisplay(frame) {
       frame.format !== 'page-lsb-hex' || typeof frame.data !== 'string' ||
       !/^[0-9a-fA-F]+$/.test(frame.data) || frame.data.length !== storage*2) return;
   const canvas=$('display');
-  canvas.width=width; canvas.height=height;
+  if(canvas.width!==width || canvas.height!==height) {canvas.width=width; canvas.height=height;}
   const context = canvas.getContext('2d');
   const image = context.createImageData(width,height);
   for (let y=0;y<height;y++) for (let x=0;x<width;x++) {
@@ -173,53 +155,6 @@ async function refreshRecipes() {
   $('recipeCount').textContent=state.recipes.length;
   $('recipeCapacity').textContent=state.recipes.length+' / '+data.capacity;
   updateControls();
-}
-
-const flowPaths = ['Keg circulation', 'Mash', 'Hop addition 1', 'Hop addition 2', 'Hop addition 3', 'Hop addition 4'];
-
-function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_minutes:0}) {
-  if ($('steps').children.length>=15) {notify('A recipe can contain up to 15 steps.',true);return;}
-  const row=document.createElement('tr');
-  const definitions=[['name','text',null,null],['location','select',1,6],['target_f','number',0,212],['minutes','number',0,599],['drain_minutes','number',0,120]];
-  for (const [field,type,min,max] of definitions) {
-    const cell=document.createElement('td');let input;
-    if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
-    else {input=document.createElement('input');input.type=type;if(type==='text')input.maxLength=21;else{input.min=min;input.max=max;input.step=1;}}
-    input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
-    input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
-  }
-  const cell=document.createElement('td');const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.textContent='×';remove.setAttribute('aria-label','Remove step');
-  remove.addEventListener('click',()=>{row.remove();state.dirty=true;});cell.append(remove);row.append(cell);$('steps').append(row);
-}
-
-function editRecipe(recipe, existing=false) {
-  state.editorId=existing ? recipe.id : null;state.dirty=false;
-  $('recipeName').value=recipe.name || '';$('recipeId').value=recipe.id || '';$('recipeId').readOnly=existing;
-  $('recipeId').dataset.auto=existing ? 'false' : 'true';
-  $('editorHeading').textContent=existing ? 'Edit recipe' : 'New recipe';$('steps').replaceChildren();
-  for(const step of recipe.steps || [{name:'Mash',location:2,target_f:152,minutes:60,drain_minutes:0}])addStep(step);
-  updateControls();
-}
-
-async function loadRecipe(id) {
-  if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
-  try {const recipe=await api('/recipes/'+encodeURIComponent(id));editRecipe({...recipe,id},true);notify('');}
-  catch(error){notify(error.message,true);}
-}
-
-function recipeFromForm() {
-  if(!$('recipeForm').reportValidity())return null;
-  const steps=Array.from($('steps').children).map(row=>{
-    const step={};row.querySelectorAll('[data-field]').forEach(input=>step[input.dataset.field]=input.dataset.field==='name'?input.value:Number(input.value));return step;
-  });
-  if(!steps.length){notify('Add at least one brewing step.',true);return null;}
-  if(steps.some(step=>step.target_f!==0 && step.target_f<60)){notify('Targets must be 0 for unheated circulation, or between 60 and 212 °F.',true);return null;}
-  return {id:$('recipeId').value,name:$('recipeName').value,steps};
-}
-
-async function sendCommand(body) {
-  try {await api('/commands','POST',body);notify(body.command==='stop'?'Stop requested.':'Command accepted.');renderStatus(await api('/status'));}
-  catch(error){notify(error.message,true);}
 }
 
 function download(name,data) {
@@ -278,9 +213,9 @@ function selectTab(tab) {
 }
 
 async function connect(key) {
-  state.key=key;state.generation++;clearTimeout(pollTimer);
+  state.key=key;state.generation++;state.pendingCommands=0;state.stopPending=false;clearTimeout(pollTimer);
   state.telemetry=null;state.telemetryAt=0;
-  const info=await api('');state.capabilities=info.commands || [];renderPrograms();
+  const info=await api('');state.capabilities=info.commands || [];state.restartSupported=info.system_restart===true;renderPrograms();
   renderIdentity(info);
   state.restoreDefaults=info.restore_default_recipes === true;
   $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
@@ -290,7 +225,7 @@ async function connect(key) {
 }
 
 function disconnect() {
-  state.generation++;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
+  state.generation++;state.pendingCommands=0;state.stopPending=false;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
   state.telemetry=null;$('telemetryStatus').textContent='Connect to see Hub connection status.';
   $('hubDestination').textContent='No Hub connection loaded.';
   try{sessionStorage.removeItem('pico-api-key');}catch(_){}
@@ -307,6 +242,7 @@ $('startRecipe').addEventListener('click',()=>sendCommand({command:'brew',recipe
 $('runProgram').addEventListener('click',()=>sendCommand({command:$('program').value}));
 $('stopButton').addEventListener('click',()=>sendCommand({command:'stop'}));
 $('clearStop').addEventListener('click',()=>sendCommand({command:'clear-stop'}));
+$('restartBrewer').addEventListener('click',restartBrewer);
 $('connectButton').addEventListener('click',()=>{$('connectError').textContent='';$('connectDialog').showModal();});
 $('cancelConnect').addEventListener('click',()=>$('connectDialog').close());
 $('disconnectButton').addEventListener('click',disconnect);
@@ -341,7 +277,8 @@ $('importFile').addEventListener('change',async event=>{
   try{
     if(file.size>16384)throw new Error('Recipe file is too large.');
     const recipe=JSON.parse(await file.text());
-    if(!recipe || !Array.isArray(recipe.steps) || recipe.steps.length<1 || recipe.steps.length>15 || typeof recipe.name!=='string' || typeof recipe.id!=='string' || !/^[A-Za-z0-9_-]{1,20}$/.test(recipe.id) || recipe.steps.some(step=>!step || typeof step!=='object'))throw new Error('Choose a recipe JSON file exported by Pico Local.');
+    const issue=recipeIssue(recipe);
+    if(issue)throw new Error(issue);
     if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
     editRecipe(recipe,false);state.dirty=true;notify('Recipe imported into the editor. Review it, then save to the Pico.');
   }catch(error){notify(error instanceof SyntaxError?'The file is not valid JSON.':error.message,true);}
@@ -366,7 +303,7 @@ async function publicOverview() {
     if (state.connected || generation !== state.generation) return;
     $('pairButton').hidden = view.pairing_v1 !== true;
     $('publicModel').textContent = view.model_name || 'Machine overview';
-    $('publicState').textContent = view.busy ? 'Operation in progress' : view.ready ? 'Idle' : 'Starting up';
+    $('publicState').textContent = !view.ready ? 'Starting up' : view.busy ? 'Operation in progress' : 'Idle';
     $('publicTemperatures').textContent = [
       ['Wort', view.wort_f], ['Thermoblock', view.thermoblock_f], ['Temperature', view.temperature_f],
     ].filter(([, value]) => Number.isFinite(value)).map(([name, value]) => name+' '+temperature(value)).join(' · ');

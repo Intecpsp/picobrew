@@ -540,6 +540,50 @@
       "archive_sha256": "cc0f1c77a6d9b6e58f87c738c48e7b44d16c1a05d0b69ce0923ff2b39c849543",
       "binary_sha256": "a21bab7e79dcc8d90a7dafc4868a96a0e73e15c03000053e653a7a3936ba90ec",
       "binary_bytes": 393488
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.8",
+      "kind": "standalone",
+      "source_commit": "e697b7d99de38881ca19ceff3a08b1687f719c86",
+      "archive_sha256": "cb1bfbdf405952709b517fb1196e6896bdc1f6f8603437d594c58b5e64b90c9c",
+      "binary_sha256": "611e39b7e666a3e3df4dc4062bd179b05b778930296a65c312a30a3824dfdfbd",
+      "binary_bytes": 169536,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.8",
+      "kind": "standalone",
+      "source_commit": "e697b7d99de38881ca19ceff3a08b1687f719c86",
+      "archive_sha256": "838098ba4bbec4a55cf26b2afee0127887ef21a8ae7ef802340f051ebf19ac61",
+      "binary_sha256": "c0a96fb35b1927fdafd68557e637cd444fe37b67ef4aac95c532ded0ed73e185",
+      "binary_bytes": 169528,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.7",
+      "kind": "standalone",
+      "source_commit": "e697b7d99de38881ca19ceff3a08b1687f719c86",
+      "display_variant": "ssd1309",
+      "archive_sha256": "80d290e4efbe0cf36c5f103bee567a21e6da10eae26e6d82ec9aa3fd309147b0",
+      "binary_sha256": "0bbd93aa290347c436cc50b801df06a3d58111dcfc850f2b0d817eb82999424e",
+      "binary_bytes": 164056
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.7",
+      "kind": "standalone",
+      "source_commit": "e697b7d99de38881ca19ceff3a08b1687f719c86",
+      "display_variant": "ssd1325",
+      "archive_sha256": "546b642238c4b9820fac7cb91a745e4f20a13a33a3eb8cc7cd32dcd5e407b15b",
+      "binary_sha256": "d7c8ad7efe11eda6a009a605f1914132eb59436e56fdf9f97e138e74c439bb9f",
+      "binary_bytes": 164136
     }
   ]
 }
