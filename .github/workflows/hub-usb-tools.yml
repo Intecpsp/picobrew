@@ -80,6 +80,9 @@ jobs:
         run: |
           GOOS=linux GOARCH=arm GOARM=7 go build -o /tmp/picobrew-stage ./tools/usb-prepare
           /tmp/picobrew-stage -local ../artifacts
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go test -c -o /tmp/picobrew-usb-test ./internal/usbservice/helper
+          docker run --rm --platform linux/arm/v7 -e PICOBREW_REQUIRE_USB_WORKER=1 \
+            -v /tmp/picobrew-usb-test:/usb-test:ro debian:bookworm-slim /usb-test -test.run TestEmbedded -test.v
           GOOS=linux GOARCH=arm GOARM=7 go build -trimpath -o ../artifacts/picobrew-hub-linux-arm ./cmd/picobrew-hub
       - uses: actions/upload-artifact@v4
         with:
