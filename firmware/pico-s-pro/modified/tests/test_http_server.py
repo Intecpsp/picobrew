@@ -26,7 +26,7 @@ def main():
     root = Path(__file__).resolve().parents[1]
     with tempfile.TemporaryDirectory(prefix='pico-http-test-') as directory:
         command = [args.cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-g', '-O1',
-                   '-I' + str(root / 'include')]
+                   '-DPICO_TEST_HEAP_ARENA', '-DPICO_TEST_PAIRING', '-I' + str(root / 'include')]
         command += sanitizer_flags(not args.no_sanitize)
         # Replace only the transport's malloc for the allocation-failure fixture.
         transport = Path(directory) / 'http-server.o'
