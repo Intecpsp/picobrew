@@ -224,6 +224,42 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#notice")).to_have_text("Recipe deleted.")
         expect(self.page.locator("#recipeCapacity")).to_have_text("1 / 16")
 
+    def test_control_state_and_restart_follow_firmware(self):
+        with LOCK:
+            backend.LIB.test_ready(0)
+        self.connect()
+        expect(self.page.locator("#modeBadge")).to_have_text("NOT READY")
+        expect(self.page.locator("#encoderClick")).to_be_disabled()
+        with LOCK:
+            backend.LIB.test_ready(1)
+            backend.LIB.test_restart_state(4, False, -1)
+        expect(self.page.locator("#encoderClick")).to_be_enabled()
+        with self.page.expect_response("**/api/v1/commands"):
+            self.page.evaluate("""() => {
+                const button = document.getElementById('encoderClick');
+                button.click(); button.click();
+                if (!button.disabled || document.getElementById('stopButton').disabled)
+                    throw Error('Dial must wait for its command; stop must stay available');
+            }""")
+        self.page.locator('[data-tab="settings"]').click()
+        restart = self.page.locator('#restartBrewer')
+        expect(restart).to_be_enabled()
+        self.page.once("dialog", lambda dialog: dialog.dismiss())
+        restart.click()
+        with LOCK:
+            self.assertFalse(backend.LIB.test_restart_pending())
+            backend.LIB.test_busy(1)
+        expect(restart).to_be_disabled()
+        with LOCK:
+            backend.LIB.test_busy(0)
+        expect(restart).to_be_enabled()
+        self.page.once("dialog", lambda dialog: dialog.accept())
+        with self.page.expect_response("**/api/v1/system/restart") as response:
+            restart.click()
+        self.assertEqual(response.value.status, 202)
+        with LOCK:
+            self.assertTrue(backend.LIB.test_restart_pending())
+
     def test_program_encoder_stop_and_idle_only_clear(self):
         self.connect()
         for name, arrow, delta in [("Move up", "↑", -1), ("Move down", "↓", 1)]:
@@ -231,7 +267,7 @@ class BrowserWorkflow(unittest.TestCase):
             expect(button).to_have_text(arrow)
             with self.page.expect_response(lambda response: response.url.endswith("/api/v1/commands")):
                 button.click()
-            expect(self.page.locator("#notice")).to_have_text("Command accepted.")
+            expect(self.page.locator("#notice")).to_be_hidden()
             with LOCK:
                 self.assertEqual(backend.LIB.test_last_delta(), delta)
         self.page.locator("#startRecipe").click()
@@ -241,6 +277,7 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#clearStop")).to_be_disabled()
         with LOCK:
             backend.LIB.test_busy(0)  # Simulated workflow has unwound.
+            backend.LIB.test_restart_state(4, False, -1)  # Idle phase, outputs off.
         expect(self.page.locator("#clearStop")).to_be_enabled(timeout=8000)
         self.page.locator("#clearStop").click()
         expect(self.page.locator("#modeBadge")).to_have_text("READY")

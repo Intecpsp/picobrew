@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Pico S/Pro Standalone API",
-    "version": "1.3.7",
+    "version": "1.3.8",
     "description": "Local appliance API implemented by src/local_api.c. Experimental reconstructed firmware; hardware behavior and timing still require bench validation. The appliance serves HTTP on its LAN address with a separately provisioned bearer key. API calls are bounded to 4095 body bytes, one connection at a time; Content-Length and application/json are required for POST, PUT and PATCH. Chunked transfer, CORS, cookies and query parameters other than the documented history id are unsupported. Recipes/settings and the local session counter use CRC-checked, readback-verified two-bank SLFS records. Recent events are an eight-entry RAM ring. Brew history is stored on the Pico in a bounded shared flash pool and survives normal restarts; the oldest completed histories are retired as space is needed. 503 on a write can mean commit verification failed after data was written: read the resource before retrying. Calls that start workflows return acceptance, not completion."
   },
   "servers": [

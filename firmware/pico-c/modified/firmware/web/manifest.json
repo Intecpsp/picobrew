@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6151,
+      "length": 6397,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "cb34be8aace2567cd196bea9269f3ee0325d284496b5a268406a8c1e5dcf6312",
-      "source_length": 59774,
-      "source_sha256": "65becb1774f29de14002cf4c4e415aea80636157ebd5d1e4d92d1c59f873596d"
+      "sha256": "e1c0de1d455b4a8cc30bc2b875968dd8aa85506603409752b6f16484a5d50f87",
+      "source_length": 60278,
+      "source_sha256": "53a5001b6088ce9c0530893eccb1bf51c39e90a70cf172e2223e0a0ae3babd1f"
     },
     {
       "source": "app.js",
@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 7635,
+      "length": 7539,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "0dae4a602c2cc73ef4fb85fc37205d6b1b20ab393018d4d020cf5e61f9168e8b",
-      "source_length": 24082,
-      "source_sha256": "5166832116e964d6b0c88d13447a1cbd749ab1f67fbab8ffaaaeaffff2fad80d"
+      "sha256": "7f2ca5c5f736f6fc1fdfdcb03e4589007b344f8a12224e0027563744243bb4a6",
+      "source_length": 23382,
+      "source_sha256": "d414374bb113c8ed936db63a6cdd03b5864648fa311c876b0d04515e468aafd5"
     },
     {
       "source": "api-explorer.js",
@@ -49,12 +49,12 @@
       "payload": "history.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 4709,
+      "length": 5472,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "1c9fa25ba59808aedefc38c1c1928ff10fd79e7576b84c28bed7395f67c7cfbd",
-      "source_length": 13594,
-      "source_sha256": "088b032b5c52e6fca5331d8ddd72140324962fe3ecf951c86c58c58c80ef045d"
+      "sha256": "bfb274c607f4ba9174c2e3cb621c05677a1c1069330adabf1786ac64cd0f59a6",
+      "source_length": 16809,
+      "source_sha256": "afa846e5e3bdac55d545d28430889eeb19c0edc84cc14b711083d80c1885b30e"
     },
     {
       "source": "style.css",

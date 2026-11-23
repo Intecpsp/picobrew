@@ -2,6 +2,7 @@
 
 const $ = id => document.getElementById(id);
 const state = {key:'', connected:false, generation:0, status:null, recipes:[],
+  pendingCommands:0, stopPending:false, restartSupported:false,
   settings:{temperature_unit:'F', language:'en', detailed_status:false}, capabilities:[],
   editorId:null, dirty:false, tab:'overview', polling:false, restoreDefaults:false,
   telemetry:null, telemetryAt:0};
@@ -69,33 +70,12 @@ function connected(value) {
   updateControls();
 }
 
-function updateControls() {
-  const ready = state.connected && state.status?.ready === true;
-  const busy = !!state.status?.busy;
-  const stopped = !!state.status?.stopped;
-  document.querySelectorAll('[data-encoder]').forEach(button => button.disabled = !ready);
-  $('encoderClick').disabled = !ready;
-  $('brewRecipe').disabled = !ready || busy || stopped;
-  $('startRecipe').disabled = !ready || busy || stopped || !$('brewRecipe').value;
-  $('program').disabled = !ready || busy || stopped;
-  $('runProgram').disabled = !ready || busy || stopped || !$('program').value;
-  $('stopButton').disabled = !ready || stopped;
-  $('clearStop').hidden = !stopped;
-  $('clearStop').disabled = !ready || busy;
-  $('newRecipe').disabled = !ready || busy;
-  $('restoreRecipes').disabled = !ready || busy || !state.restoreDefaults;
-  $('saveRecipe').disabled = !ready || busy;
-  $('deleteRecipe').disabled = !ready || busy || !state.editorId;
-  $('saveSettings').disabled = !ready || busy;
-  apiExplorer?.update();
-  brewHistory?.update();
-}
-
-
-
 function renderIdentity(info) {
   const name={'pico-pro':'Pico Pro','pico-s':'Pico S'}[info.model] || 'Pico S / Pro';
   $('modelName').textContent=name+' brewing console';
+  $('careManual').href=info.model==='pico-s'
+    ? 'https://picobrewcontent.blob.core.windows.net/content/pico/Pico_Manual.pdf#page=127'
+    : 'https://picobrewcontent.blob.core.windows.net/content/picopro/PicoPro_Manual.pdf#page=129';
   document.title=name+' · Pico Local';
 }
 
@@ -111,6 +91,11 @@ function renderStatus(status) {
   $('operationTitle').textContent = status.stopped ? 'Outputs stopped.' : status.busy ? (status.recipe_name || 'Operation in progress.') : 'Ready for your next brew.';
   $('operationDetail').textContent = status.stopped ? (status.stop_reason === 'filter-removed' ? 'The step filter was removed during pumping. This operation is cancelled. Refit the filter and wait for idle before clearing the stop.' : 'The stop latch is active. Wait for the operation to end before clearing it.') : status.busy ? (status.step_name || 'Follow the brewer’s prompts on the remote front panel.') : 'Choose a saved recipe, open a program, or use the front panel.';
   $('modeBadge').textContent = status.stopped ? 'STOPPED' : status.busy ? 'IN PROGRESS' : 'READY';
+  if (!status.ready && !status.stopped) {
+    $('modeBadge').textContent = 'NOT READY';
+    $('operationTitle').textContent = 'Waiting for the brewer.';
+    $('operationDetail').textContent = 'Check the front panel for instructions.';
+  }
   $('modeBadge').classList.toggle('stopped', !!status.stopped);
   $('filterBadge').textContent = status.filter_inserted === null ? 'FILTER UNKNOWN' : status.filter_inserted ? 'FILTER INSERTED' : 'FILTER REMOVED';
   $('filterBadge').classList.toggle('warning', status.filter_inserted === false);
@@ -210,11 +195,6 @@ function recipeFromForm() {
   return {id:$('recipeId').value,name:$('recipeName').value,steps};
 }
 
-async function sendCommand(body) {
-  try {await api('/commands','POST',body);notify(body.command==='stop'?'Stop requested.':'Command accepted.');renderStatus(await api('/status'));}
-  catch(error){notify(error.message,true);}
-}
-
 function download(name,data) {
   const blob=new Blob([JSON.stringify(data,null,2)+'\n'],{type:'application/json'});
   const url=URL.createObjectURL(blob);const link=document.createElement('a');link.href=url;link.download=name;link.click();setTimeout(()=>URL.revokeObjectURL(url),1000);
@@ -271,9 +251,9 @@ function selectTab(tab) {
 }
 
 async function connect(key) {
-  state.key=key;state.generation++;clearTimeout(pollTimer);
+  state.key=key;state.generation++;state.pendingCommands=0;state.stopPending=false;clearTimeout(pollTimer);
   state.telemetry=null;state.telemetryAt=0;
-  const info=await api('');state.capabilities=info.commands || [];renderPrograms();
+  const info=await api('');state.capabilities=info.commands || [];state.restartSupported=info.system_restart===true;renderPrograms();
   renderIdentity(info);
   state.restoreDefaults=info.restore_default_recipes === true;
   $('firmwareVersion').textContent=info.firmware_version ? 'Firmware '+info.firmware_version : 'Standalone firmware';
@@ -283,7 +263,7 @@ async function connect(key) {
 }
 
 function disconnect() {
-  state.generation++;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
+  state.generation++;state.pendingCommands=0;state.stopPending=false;state.key='';state.status=null;clearTimeout(pollTimer);connected(false);
   state.telemetry=null;$('telemetryStatus').textContent='Connect to see Hub connection status.';
   $('hubDestination').textContent='No Hub connection loaded.';
   try{sessionStorage.removeItem('pico-api-key');}catch(_){}
@@ -300,6 +280,7 @@ $('startRecipe').addEventListener('click',()=>sendCommand({command:'brew',recipe
 $('runProgram').addEventListener('click',()=>sendCommand({command:$('program').value}));
 $('stopButton').addEventListener('click',()=>sendCommand({command:'stop'}));
 $('clearStop').addEventListener('click',()=>sendCommand({command:'clear-stop'}));
+$('restartBrewer').addEventListener('click',restartBrewer);
 $('connectButton').addEventListener('click',()=>{$('connectError').textContent='';$('connectDialog').showModal();});
 $('cancelConnect').addEventListener('click',()=>$('connectDialog').close());
 $('disconnectButton').addEventListener('click',disconnect);
@@ -359,7 +340,7 @@ async function publicOverview() {
     if (state.connected || generation !== state.generation) return;
     $('pairButton').hidden = view.pairing_v1 !== true;
     $('publicModel').textContent = view.model_name || 'Machine overview';
-    $('publicState').textContent = view.busy ? 'Operation in progress' : view.ready ? 'Idle' : 'Starting up';
+    $('publicState').textContent = !view.ready ? 'Starting up' : view.busy ? 'Operation in progress' : 'Idle';
     $('publicTemperatures').textContent = [
       ['Wort', view.wort_f], ['Thermoblock', view.thermoblock_f], ['Temperature', view.temperature_f],
     ].filter(([, value]) => Number.isFinite(value)).map(([name, value]) => name+' '+temperature(value)).join(' · ');
