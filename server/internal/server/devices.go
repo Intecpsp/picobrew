@@ -305,13 +305,15 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	s.deviceMu.Lock()
 	defer s.deviceMu.Unlock()
 	var in struct {
-		Name     string `json:"name"`
-		Model    string `json:"model"`
-		Adapter  string `json:"adapter"`
-		BaseURL  string `json:"base_url"`
-		APIKey   string `json:"api_key"`
-		Location string `json:"location"`
-		Enabled  *bool  `json:"enabled"`
+		Name      string `json:"name"`
+		Model     string `json:"model"`
+		Adapter   string `json:"adapter"`
+		BaseURL   string `json:"base_url"`
+		APIKey    string `json:"api_key"`
+		PairingID string `json:"pairing_id"`
+		USBJobID  string `json:"usb_job_id"`
+		Location  string `json:"location"`
+		Enabled   *bool  `json:"enabled"`
 	}
 	if !s.decode(w, r, &in) {
 		return
@@ -401,6 +403,60 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		d.CreatedAt = time.Now().UTC()
 	}
 	key := in.APIKey
+	var pairing *machinePairing
+	var expectedUID string
+	if in.PairingID != "" || in.USBJobID != "" {
+		if status != http.StatusCreated || in.Adapter != "pico-standalone" || key != "" || in.PairingID != "" && in.USBJobID != "" {
+			s.fail(w, 400, "pairing_input", "Choose one pairing method for this new machine")
+			return
+		}
+		if in.PairingID != "" {
+			pairing = s.pairings[in.PairingID]
+			if pairing == nil || !time.Now().Before(pairing.expires) || pairing.base != in.BaseURL {
+				s.fail(w, 409, "pairing_expired", "Start pairing again for this machine")
+				return
+			}
+			if pairing.savedID != "" {
+				s.mu.RLock()
+				rt := s.devices[pairing.savedID]
+				s.mu.RUnlock()
+				if rt == nil {
+					s.fail(w, 409, "pairing_expired", "Start pairing again for this machine")
+					return
+				}
+				rt.mu.RLock()
+				view := rt.view
+				rt.mu.RUnlock()
+				s.json(w, 200, view)
+				return
+			}
+			if pairing.claimedKey == "" {
+				p, err := s.pairClient(in.BaseURL)
+				if err != nil {
+					s.fail(w, 400, "connection", "Enter the machine’s address")
+					return
+				}
+				key, err = p.Claim(r.Context(), pairing.nonce)
+				if err != nil {
+					s.deviceError(w, err)
+					return
+				}
+				if key == "" {
+					s.json(w, 202, map[string]string{"pairing": "pending"})
+					return
+				}
+				pairing.claimedKey = key
+			}
+			key = pairing.claimedKey
+		} else {
+			var err error
+			key, expectedUID, err = s.installedCredential(in.USBJobID)
+			if err != nil {
+				s.fail(w, 409, "usb_key_unavailable", "USB setup has no verified pairing result for this machine")
+				return
+			}
+		}
+	}
 	if in.Adapter == "simulator" {
 		in.BaseURL = ""
 		key = ""
@@ -410,9 +466,17 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		key, _ = s.readSecret("device:" + id)
 	}
 	if in.Adapter == "pico-standalone" {
-		if _, e := device.NewPico(in.BaseURL, key); e != nil {
+		adapter, e := device.NewPico(in.BaseURL, key)
+		if e != nil {
 			s.fail(w, 400, "connection", safeMessage(e.Error()))
 			return
+		}
+		if expectedUID != "" {
+			machine, e := adapter.Status(r.Context())
+			if e != nil || machine.DeviceUID != expectedUID {
+				s.fail(w, 409, "usb_identity", "Check that this is the address of the machine you set up over USB")
+				return
+			}
 		}
 	}
 	d.ID = id
@@ -447,6 +511,11 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 	}
 	if in.Adapter == "simulator" {
 		_ = s.db.DeleteSecret("device:" + id)
+	}
+	if pairing != nil {
+		pairing.savedID = id
+		pairing.claimedKey = ""
+		pairing.nonce = ""
 	}
 	rt := s.attach(d)
 	if disabledTelemetry != nil {

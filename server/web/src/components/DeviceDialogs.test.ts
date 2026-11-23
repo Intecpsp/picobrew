@@ -140,6 +140,31 @@ describe('automatic physical-machine connections', () => {
     expect(screen.queryByRole('button', { name: 'USB setup and recovery' })).toBeNull()
     expect(fetchMock).not.toHaveBeenCalled()
   })
+  it('registers a brewer after dial approval without typing or receiving its key', async () => {
+    let approve: (response: Response) => void = () => {}
+    fetchMock.mockResolvedValueOnce(json({ pairing_id: 'test-handle', code: 'b65d8001' }))
+    fetchMock.mockImplementationOnce(
+      () =>
+        new Promise<Response>((resolve) => {
+          approve = resolve
+        })
+    )
+    const user = userEvent.setup()
+    show()
+    expect(screen.queryByLabelText('Machine API key')).toBeNull()
+    await user.type(screen.getByLabelText('Machine name'), 'Garage Pico')
+    await user.type(screen.getByLabelText('Machine URL'), 'http://192.168.1.42')
+    await user.click(screen.getByRole('button', { name: 'Add machine' }))
+    await screen.findByText('b65d8001')
+    expect(fetchMock.mock.calls[0][0]).toBe('/api/v1/devices/pair')
+    expect(JSON.parse(String(fetchMock.mock.calls[1][1]?.body))).toMatchObject({
+      pairing_id: 'test-handle',
+      api_key: '',
+    })
+    approve(json(machine()))
+    await waitFor(() => expect(onClose).toHaveBeenCalledOnce())
+  })
+
   it('registers a physical brewer without making the user choose or assume a model', async () => {
     fetchMock.mockResolvedValue(json(machine({ model: '', model_source: 'pending' })))
     const user = userEvent.setup()
@@ -150,6 +175,7 @@ describe('automatic physical-machine connections', () => {
     expect(screen.queryByRole('combobox', { name: 'Machine model' })).toBeNull()
     await user.type(screen.getByLabelText('Machine name'), 'My Pico S')
     await user.type(screen.getByLabelText('Machine URL'), 'http://192.168.1.42')
+    await user.click(screen.getByRole('button', { name: 'Use an existing key instead' }))
     await user.type(screen.getByLabelText('Machine API key'), 'local-test-key')
     await user.click(screen.getByRole('button', { name: 'Add machine' }))
     await waitFor(() => expect(onClose).toHaveBeenCalledOnce())
