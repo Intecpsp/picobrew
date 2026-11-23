@@ -734,7 +734,10 @@ api::Result Adapter::snapshot(api::Snapshot& out){
     {ControlGuard guard(core_.ports.control);sensors=core_.temperatures;heater=core_.heater.state;safety=core_.safeties;}
     auto temperature=[&](unsigned i){api::Reading reading;reading.value=sensors.temperatures[i].celsius*1.8+32;reading.valid=out.ready&&sensors.temperatures[i].updated_ms!=0&&std::isfinite(reading.value)&&out.uptime_ms-sensors.temperatures[i].updated_ms<=5000;return reading;};
     out.wort_f=temperature(1);out.thermoblock_f=temperature(0);out.temperature_f=out.wort_f;
-    out.target_f.value=heater.target_celsius*1.8+32;out.target_f.valid=out.ready&&std::isfinite(out.target_f.value);
+    // The native PID retains its last setpoint after stopping. The v1 API
+    // uses zero for an unheated phase, including before the first brew.
+    out.target_f.value=heater.started ? heater.target_celsius*1.8+32 : 0;
+    out.target_f.valid=out.ready&&std::isfinite(out.target_f.value);
     out.pressure_kpa.value=core_.auxiliary.pressure_pa/1000;out.pressure_kpa.valid=out.ready&&std::isfinite(out.pressure_kpa.value)&&core_.auxiliary.pressure_pa>0&&core_.auxiliary.pressure_ms!=0&&out.uptime_ms-core_.auxiliary.pressure_ms<=5000;
     static const char* const ids[]={"thermoblock","wort","drain","ambient"};
     static const char* const labels[]={"Thermoblock","Wort","Drain","Ambient"};
