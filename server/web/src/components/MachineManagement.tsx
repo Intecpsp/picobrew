@@ -3,6 +3,7 @@ import { Settings2, RefreshCw, Pencil, Trash2, SlidersHorizontal } from 'lucide-
 import { brewerOutputsIdle, isAccessory, supports } from '../lib/capabilities'
 import { api, copyText, errorMessage } from '../lib/api'
 import type { Device } from '../types'
+import { MachineEvents } from './MachineEvents'
 import { Button, Confirm, Modal } from './ui'
 
 export function MachineManagement({
@@ -122,6 +123,7 @@ export function MachineManagement({
               Remove machine
             </Button>
           </div>
+          <MachineEvents device={device} />
           {device.adapter === 'pico-standalone' && device.key_configured && (
             <section>
               <h4>Device API key</h4>
