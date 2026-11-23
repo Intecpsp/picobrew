@@ -30,7 +30,8 @@ function api(path, method='GET', body) {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 6000);
     try {
-      const headers = {Accept:'application/json', Authorization:'Bearer '+key};
+      const headers = {Accept:'application/json'};
+      if (key && path !== '/overview' && !path.startsWith('/pairing/')) headers.Authorization = 'Bearer '+key;
       if (body !== undefined || ['POST','PUT','PATCH'].includes(method)) headers['Content-Type'] = 'application/json';
       const response = await fetch('/api/v1'+path, {method, headers,
         body:body === undefined ? undefined : JSON.stringify(body),
@@ -59,6 +60,12 @@ function api(path, method='GET', body) {
 
 function connected(value) {
   state.connected = value;
+  $('publicOverview').hidden = value;
+  document.querySelector('nav').hidden = !value;
+  if (!value) document.querySelectorAll('.tab-panel').forEach(panel=>panel.hidden=true);
+  else if (!$('overview').parentElement.querySelector('.tab-panel:not([hidden])')) selectTab(state.tab);
+  $('copyDeviceKey').hidden = !value;
+  if(value)$('pairButton').hidden = true;
   $('connectionText').textContent = value ? 'Connected' : 'Disconnected';
   $('connectionDot').classList.toggle('online', value);
   $('connectButton').textContent = value ? 'Device key' : 'Connect';
@@ -101,19 +108,7 @@ function updateControls() {
   brewHistory?.update();
 }
 
-function temperature(value) {
-  const number = Number(value);
-  if (value === null || value === undefined || !Number.isFinite(number)) return '—';
-  const unit = state.settings.temperature_unit;
-  return (unit === 'C' ? (number-32)*5/9 : number).toFixed(1)+'°'+unit;
-}
 
-function duration(seconds) {
-  if (!Number.isFinite(Number(seconds))) return '—';
-  const value = Math.max(0, Math.floor(Number(seconds)));
-  const minutes = Math.floor(value/60);
-  return minutes+':'+String(value%60).padStart(2,'0');
-}
 
 function renderIdentity(info) {
   $('modelName').textContent=PicoDevice.label(info)+' console';
@@ -546,6 +541,7 @@ function disconnect() {
   try{sessionStorage.removeItem('pico-api-key');}catch(_){}
   $('operationTitle').textContent='Disconnected from your device.';$('operationDetail').textContent='A running session continues on the device. Reconnect to see its status.';
   $('apiKey').value='';notify('Device key removed from this tab.');
+  publicOverview();
 }
 
 document.querySelectorAll('[data-tab]').forEach(button=>button.addEventListener('click',()=>selectTab(button.dataset.tab)));
@@ -638,6 +634,49 @@ brewHistory=setupHistory({session:()=>({key:state.key,connected:state.connected,
   const result=requestQueue.catch(()=>{}).then(task);requestQueue=result;return result;
 }});
 editRecipe({});
+async function publicOverview() {
+  if (state.connected) return;
+  const generation = state.generation;
+  try {
+    const view = await api('/overview');
+    if (state.connected || generation !== state.generation) return;
+    $('pairButton').hidden = view.pairing_v1 !== true;
+    $('publicModel').textContent = view.model_name || 'Machine overview';
+    $('publicState').textContent = view.busy ? 'Operation in progress' : view.ready ? 'Idle' : 'Starting up';
+    $('publicTemperatures').textContent = [
+      ['Wort', view.wort_f], ['Thermoblock', view.thermoblock_f], ['Temperature', view.temperature_f],
+    ].filter(([, value]) => Number.isFinite(value)).map(([name, value]) => name+' '+temperature(value)).join(' · ');
+  } catch (_) {
+    if (generation === state.generation && !state.connected) {
+      $('publicState').textContent='Machine status unavailable.';
+      $('publicTemperatures').textContent='';
+    }
+  }
+}
+$('copyDeviceKey').addEventListener('click',async()=>{
+  if (!state.connected) return;
+  try {
+    await navigator.clipboard.writeText(state.key);
+    $('connectError').textContent='Device key copied.';
+  } catch (_) {
+    const input=$('apiKey');
+    input.type='text';input.value=state.key;input.focus();input.select();
+    $('connectError').textContent='Press Ctrl+C or Command+C to copy the selected key.';
+  }
+});
+$('pairButton').addEventListener('click',()=>pairOnDevice(''));
+$('connectDialog').addEventListener('close',()=>{++pairAttempt;$('pairButton').disabled=false;$('apiKey').value='';$('apiKey').type='password';});
+setInterval(()=>{if(!state.connected && !document.hidden)publicOverview();},15000);
 try{state.key=sessionStorage.getItem('pico-api-key') || '';}catch(_){}
-if(/^[0-9a-f]{64}$/.test(state.key))connect(state.key).catch(error=>{connected(false);notify(error.message,true);$('connectDialog').showModal();});
-else $('connectDialog').showModal();
+if (hubTicket) {
+  publicOverview();pairOnDevice(hubTicket,true);
+} else if (/^[0-9a-f]{64}$/.test(state.key)) {
+  connect(state.key).catch(error=>{
+    disconnect();
+    notify(error.message,true);
+    publicOverview();
+  });
+} else {
+  connected(false);
+  publicOverview();
+}

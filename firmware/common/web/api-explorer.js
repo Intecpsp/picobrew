@@ -123,3 +123,43 @@ function setupApiExplorer({session, enqueue}) {
   };
   return {update,configure};
 }
+
+// Hub pairing uses the installed API client asset. Its five flash slots also serve older recovery images.
+const ticketPattern=/^[0-9a-f]{64}$/;
+function launchTicket() {
+  if (!location.hash.startsWith('#pair=')) return '';
+  const ticket=location.hash.slice(6);
+  history.replaceState(null,'',location.pathname+location.search);
+  return ticketPattern.test(ticket) ? ticket : '';
+}
+const hubTicket=launchTicket();
+let pairAttempt=0;
+async function pairOnDevice(ticket,fromHub=false){
+  const attempt=++pairAttempt;
+  const deadline=Date.now()+(fromHub?30000:90000);
+  const button=$('pairButton'), message=$('connectError');
+  button.disabled=true;
+  try{
+    if (!fromHub) {
+      const random=crypto.getRandomValues(new Uint8Array(32));
+      ticket=Array.from(random,b=>b.toString(16).padStart(2,'0')).join('');
+      const request=await api('/pairing/request','POST',{nonce:ticket});
+      if(attempt!==pairAttempt)return;
+      if(request.state!=='pending'||request.code!==ticket.slice(0,8))throw new Error('Unexpected pairing response.');
+      message.textContent='On the brewer, open Settings → About → Pair with Hub. Confirm code '+request.code+'.';
+    }
+    while(Date.now()<deadline && attempt===pairAttempt){
+      const result=await api('/pairing/claim','POST',{nonce:ticket});
+      if(attempt!==pairAttempt)return;
+      if(ticketPattern.test(result.api_key||'')){await connect(result.api_key);return}
+      if(result.state!=='pending')throw new Error('Pairing request unavailable.');
+      await new Promise(resolve=>setTimeout(resolve,1000));
+    }
+    if(attempt===pairAttempt)throw new Error('Pairing expired. Start again.');
+  }catch(error){
+    if(attempt===pairAttempt){
+      message.textContent=error.status===409?'Another pairing request is in progress.':error.message;
+      if(fromHub)notify('Pairing link unavailable. Use Connect to pair on the brewer.',true);
+    }
+  }finally{if(attempt===pairAttempt)button.disabled=false}
+}

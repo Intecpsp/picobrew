@@ -18,7 +18,9 @@ private:
 constexpr std::uint32_t LocalRecipes = 0x10000, SelectLocalRecipe = 0x10001,
                         LocalHome = 0x10002, LocalClearStop = 0x10003,
                         LocalRecovery = 0x10004, LocalResume = 0x10005,
-                        LocalDiscard = 0x10006, LocalDiscardConfirmed = 0x10007;
+                        LocalDiscard = 0x10006, LocalDiscardConfirmed = 0x10007,
+                        LocalAbout = 0x10008, LocalPairing = 0x10009,
+                        LocalPairCancel = 0x1000a, LocalPairApprove = 0x1000b;
 const api::CommandDescriptor commands[] = {
     {"brew",api::RecipeId,api::RecipeId},{"manual",0,0},{"sous-vide",0,0},
     {"cold-brew",0,0},{"rinse",0,0},{"clean",0,0},{"circulate",0,0},
@@ -80,7 +82,7 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.3";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.4";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.z_program_maker=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
@@ -258,6 +260,7 @@ api::Result Adapter::execute(const api::Command& input){
     if(!std::strcmp(input.name,"resume-interrupted"))return resume_interrupted(input.confirm);
     if(!std::strcmp(input.name,"encoder")){
         if(input.delta<-100||input.delta>100||(!input.delta&&!input.click))return {400,"invalid_command","Provide encoder movement or a click"};
+        if(page_==Page::Pairing)return {409,"physical_confirmation","Use the physical dial to confirm pairing"};
         if(encoder_click_||head_.encoder_events.pending||head_.button_events.pending)return busy();
         if(core_.core.state.id==CoreStateId::StandBy){
             if(!wake_standby())return unavailable();
@@ -288,6 +291,18 @@ api::Result Adapter::execute(const api::Command& input){
 }
 void Adapter::poll(){
     if(begun_)poll_recovery();
+    if(page_==Page::Pairing){
+        auto& menu=head_.screens.menu_data;
+        if(!menu.count||static_cast<std::uint32_t>(menu.items[0].event.command)!=LocalPairCancel||
+           std::strcmp(head_.screens.state.title.data(),text("Pair with Hub","Enlazar con Hub","Jumeler au Hub"))){
+            // A stock alarm or instruction took over the display.
+            page_=Page::Original;pairing_ticket_=0;
+        }else{
+            char code[9];
+            if(ports_.pair_prompt(ports_.context,ports_.millis(ports_.context),code)!=pairing_ticket_)
+                show_pairing();
+        }
+    }
     if(native_prepared_&&core_.core.state.id!=CoreStateId::Starting&&core_.core.state.id!=CoreStateId::Running&&core_.core.state.id!=CoreStateId::Stopping){
         engine_->cancel_prepared_session();native_prepared_=false;
     }
@@ -488,9 +503,53 @@ bool Adapter::show_home(){
 }
 bool Adapter::show_settings(){
     auto& screen=head_.screens;screen.clear_data();
-    for(auto command:{UiCommand::ConfigureNetwork,UiCommand::ConfigureUnits,UiCommand::ConfigureLanguage,UiCommand::ConfigureSlideshowDetail,UiCommand::Exit})
+    for(auto command:{UiCommand::ConfigureNetwork,UiCommand::ConfigureUnits,UiCommand::ConfigureLanguage,UiCommand::ConfigureSlideshowDetail})
         if(!screen.menu_data.append(command))return false;
+    HeadUiEvent about;
+    about.command=static_cast<UiCommand>(LocalAbout);
+    if(!screen.menu_data.append(about,text("About","Acerca de","A propos"))||
+       !screen.menu_data.append(UiCommand::Exit))return false;
     page_=Page::Original;return screen.menu_screen(text("Settings","Ajustes","Parametres"))==HeadScreenResult::Ok;
+}
+bool Adapter::show_about(){
+    auto& screen=head_.screens;
+    screen.clear_data();
+    HeadUiEvent details, pairing, back;
+    details.command=UiCommand::About;
+    pairing.command=static_cast<UiCommand>(LocalPairing);
+    back.command=UiCommand::Settings;
+    if(!screen.menu_data.append(details,text("Machine details","Datos de maquina","Infos machine"))||
+       (ports_.pair_prompt&&ports_.pair_decide&&!screen.menu_data.append(pairing,text("Pair with Hub","Enlazar con Hub","Jumeler au Hub")))||
+       !screen.menu_data.append(back,text("Back","Atras","Retour")))return false;
+    page_=Page::Original;
+    return screen.menu_screen(text("About","Acerca de","A propos"))==HeadScreenResult::Ok;
+}
+bool Adapter::show_pairing(){
+    if(!ports_.pair_prompt||!ports_.pair_decide)return show_about();
+    auto& screen=head_.screens;
+    screen.clear_data();
+    char code[9]={};
+    pairing_ticket_=ports_.pair_prompt(ports_.context,ports_.millis(ports_.context),code);
+    HeadUiEvent cancel, approve;
+    cancel.command=static_cast<UiCommand>(LocalPairCancel);
+    approve.command=static_cast<UiCommand>(LocalPairApprove);
+    cancel.index=approve.index=pairing_ticket_;
+    if(!screen.menu_data.append(cancel,pairing_ticket_?text("Cancel","Cancelar","Annuler"):text("Back","Atras","Retour"))||
+       (pairing_ticket_&&!screen.menu_data.append(approve,text("Approve","Aprobar","Autoriser"))))return false;
+    // Discard both portions of an earlier queued REST turn-and-click before
+    // showing the code. Only new physical events can operate this screen.
+    encoder_click_=false;
+    head_.button_events.pending=false;
+    head_.encoder_events.pending=false;
+    page_=Page::Pairing;
+    const char* lines[]={pairing_ticket_?text("Compare Hub code","Compare codigo","Comparer le code"):
+        text("Request from Hub","Iniciar en el Hub","Demander du Hub"),code};
+    HeadScreenRequest request;
+    request.title=text("Pair with Hub","Enlazar con Hub","Jumeler au Hub");
+    request.screen.layout=17;request.has_body=true;
+    request.body.lines=lines;request.body.count=pairing_ticket_?2:1;
+    request.menu_rows=screen.menu_data.count;request.menu_vertical=2;
+    return screen.show(request)==HeadScreenResult::Ok;
 }
 bool Adapter::show_network(){
     auto& screen=head_.screens;screen.clear_data();
@@ -631,10 +690,19 @@ bool Adapter::handle_head(HeadEventKind kind){
         CoreWifiEvent event;head_.wifi_events.take(event);return true;
     }
     if(kind==HeadEventKind::UiCommand&&head_.ui_events.pending){const auto event=head_.ui_events.value;const auto id=static_cast<std::uint32_t>(event.command);
-        if(id>=LocalRecipes&&id<=LocalDiscardConfirmed){HeadUiEvent consumed;head_.ui_events.take(consumed);
+        if(id>=LocalRecipes&&id<=LocalPairApprove){HeadUiEvent consumed;head_.ui_events.take(consumed);
             // Match HeadUiCommands::handle's shared menu-command prologue.
             if(!head_.services.alarm||!head_.services.alarm(head_.services.context,false))return false;
             head_.ui.transient.active=false;head_.ui.transient.deadline=0;
+            if(id==LocalAbout)return show_about();
+            if(id==LocalPairing)return show_pairing();
+            if(id==LocalPairApprove||id==LocalPairCancel){
+                if(page_!=Page::Pairing||event.index!=pairing_ticket_)return true;
+                if(pairing_ticket_&&ports_.pair_decide)
+                    ports_.pair_decide(ports_.context,ports_.millis(ports_.context),pairing_ticket_,id==LocalPairApprove);
+                pairing_ticket_=0;
+                return show_about();
+            }
             if(id==LocalRecipes)return show_recipes();
             if(id==LocalHome)return show_home();
             if(id==LocalClearStop){page_=Page::Home;clear_stop();return show_home();}

@@ -89,6 +89,8 @@ struct Application {
             a.provisioning.take_network_changed();a.sync_network();return true;};
         ports.reconnect_network=[](void* p){auto& a=*static_cast<Application*>(p);a.apply_network();return true;};
         ports.save_configuration=[](void* p){return static_cast<Application*>(p)->firmware.save_configuration();};
+        ports.pair_prompt=[](void*,std::uint32_t now,char code[9]){return pico_http_pairing_prompt(now,code);};
+        ports.pair_decide=[](void*,std::uint32_t now,std::uint32_t serial,bool allow){return pico_http_pairing_decide(now,serial,allow);};
         if(!adapter.bind(ports,engine))return false;
         // Establish the known inactive outputs even if a later setup stage
         // fails before the original heater initializer is reached.
@@ -101,6 +103,7 @@ struct Application {
         http_io=listener.io();
         pico_http_server_initialize(&http,&http_io,&listener,api::Engine::http_handler,&engine,
             pico_common_web_assets,pico_common_web_assets_count);
+        pico_http_server_enable_pairing(&http, true);
         pico_http_server_set_asset_io(&http,&pico_common_web_asset_io,nullptr);
         pico_http_server_set_key(&http,provisioning.key(),std::strlen(provisioning.key()));
         engine.set_telemetry_io(telemetry.services());

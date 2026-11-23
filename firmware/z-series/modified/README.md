@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.3
+# Pico Z standalone firmware 1.2.4
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -94,7 +94,13 @@ Use the physical UART provisioning interface described in
 It accepts `wifi <SSID><TAB><password>`, `key <64 lowercase hex>` and `status`.
 There is no default API key. Input is not echoed or sent through the OEM serial
 command logger. Protected API routes remain unavailable until a valid key is
-provisioned; health and static browser files remain public.
+provisioned. Health, the static website and the small machine overview are public.
+
+Open **Settings → About → Pair with Hub** to authorize the Hub or the device
+website. Compare the eight characters on both screens, turn the physical
+dial to **Approve**, then press it. The first action is **Cancel**. A request
+expires after 90 seconds and a successful approval can be claimed once.
+**Machine details** in the same menu opens the original About screen.
 
 The modified network record supports a full 32-byte SSID and 64-hex key, uses
 verified storage, and configures station credentials in RAM. Existing OEM

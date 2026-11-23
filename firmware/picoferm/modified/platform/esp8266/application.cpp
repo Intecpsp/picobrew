@@ -80,7 +80,7 @@ public:
         provision_(storage_.binding(),this,[](void* p){auto& self=*static_cast<Application*>(p);return !self.setup_complete_||self.controller_.idle();}),
         controls_(diagnostics_,hardware_,*this,*this),http_(){controller_.bind(engine_);}
     void begin(){
-        Serial.begin(115200);Serial.println("PicoFerm standalone 1.2.1");
+        Serial.begin(115200);Serial.println("PicoFerm standalone 1.2.2");
         // Read the packed OEM record without sanitize(), put(), commit() or
         // boot-time migration. Modified records live only in /pb/ SPIFFS.
         oem::PersistentData original;original.bytes.fill(0xff);EEPROM.begin(oem::PersistentData::size);
@@ -96,6 +96,7 @@ public:
         controller_.identity(uid);report(controller_.begin(original.bytes.data(),original.bytes.size()));
         engine_.set_telemetry_io(telemetry_.binding());report(engine_.begin());
         pico_http_server_initialize(&http_,&sdk::HttpListener::io,&listener_,api::Engine::http_handler,&engine_,pico_common_web_assets,pico_common_web_assets_count);
+        pico_http_server_enable_pairing(&http_, false);
         pico_http_server_set_asset_io(&http_,&pico_common_web_asset_io,nullptr);
         apply_key();WiFi.persistent(false);WiFi.mode(WIFI_STA);WiFi.setAutoConnect(false);WiFi.setAutoReconnect(true);
         WiFi.hostname("picoferm");apply_network();

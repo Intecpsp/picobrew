@@ -7,6 +7,7 @@ import functools
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 import json
 import os
+import re
 from pathlib import Path
 import threading
 from playwright.sync_api import sync_playwright, expect
@@ -50,11 +51,29 @@ def main():
                     history.update(id=2,sample_interval_ms=300000,sessions=[newer,older])
                     status['recovery']={'available':True,'valid':True,'recipe_name':'Saved pale ale','step_name':'','current_step':-1,'step_seconds':0,'elapsed_seconds':125} if brewing else None
                     rows=[[i*15000,None,None,None,0,0,0,0,255,3,2,68.5+i,None,3.8,532.125+i] for i in range(3)]
+                    hub_launch=width==390
+                    ticket="43"*32 if hub_launch else None
+                    claims=0
                     def route_api(route):
+                        nonlocal ticket,claims
                         request=route.request;path=request.url.split('/api/v1',1)[1];requests.append((request.method,path))
-                        assert request.headers.get('authorization')=='Bearer '+KEY
+                        public=path in ('/overview','/pairing/request','/pairing/claim')
+                        assert request.headers.get('authorization')==(None if public else 'Bearer '+KEY)
                         code=200
-                        if path=='': result=info
+                        if path=='/overview':
+                            result={'model':model,'model_name':info['model_name'],'ready':True,'busy':False}
+                            if brewing:result['pairing_v1']=True
+                        elif path=='/pairing/request':
+                            assert brewing and not hub_launch and request.method=='POST'
+                            ticket=request.post_data_json['nonce']
+                            assert re.fullmatch('[a-f0-9]{64}',ticket)
+                            result={'state':'pending','code':ticket[:8]};code=202
+                        elif path=='/pairing/claim':
+                            assert ticket and request.post_data_json=={'nonce':ticket}
+                            claims+=1
+                            if brewing and not hub_launch and claims==1:result={'state':'pending'};code=202
+                            else:result={'api_key':KEY};ticket=None
+                        elif path=='': result=info
                         elif path=='/status':result=status
                         elif path=='/settings':result={'temperature_unit':'F','language':'en','detailed_status':False} if brewing else {'temperature_unit':'F'}
                         elif path=='/recipes':
@@ -81,9 +100,21 @@ def main():
                         else:raise AssertionError('Unexpected API request '+path)
                         route.fulfill(status=code,content_type='application/json',body=json.dumps(result))
                     page.route('**/api/v1**',route_api)
-                    page.goto(f'http://127.0.0.1:{server.server_port}/')
-                    page.get_by_label('Device API key',exact=True).fill(KEY)
-                    page.locator('#submitConnect').click()
+                    url=f'http://127.0.0.1:{server.server_port}/'
+                    page.goto(url+('#pair='+ticket if hub_launch else ''))
+                    if hub_launch:
+                        expect(page).to_have_url(url)
+                    else:
+                        expect(page.locator('#publicState')).to_have_text('Idle')
+                        expect(page.get_by_label('Device API key',exact=True)).to_be_hidden()
+                        page.locator('#connectButton').click()
+                        if brewing:
+                            page.locator('#pairButton').click()
+                            expect(page.locator('#connectError')).to_contain_text('Settings → About')
+                        else:
+                            expect(page.locator('#pairButton')).to_be_hidden()
+                            page.get_by_label('Device API key',exact=True).fill(KEY)
+                            page.locator('#submitConnect').click()
                     expect(page.locator('#connectionText')).to_have_text('Connected')
                     assert commands==[], 'Connecting caused a mutation'
                     if brewing:
