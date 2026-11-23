@@ -199,6 +199,9 @@ func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
 				return fmt.Sprintf("The timed boil step %q needs a target of at least %d °C.", step.Name, minBoilTargetC)
 			}
 			remaining -= step.Minutes
+			if step.DrainMinutes > 0 && remaining > 0 && float64(remaining) < firstAddition {
+				return fmt.Sprintf("The drain after %q interrupts hop circulation before the timed boil ends. Move the drain to the final boil step.", step.Name)
+			}
 		}
 	}
 	for _, in := range r.Ingredients {
@@ -218,7 +221,7 @@ func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
 		step := r.Steps[touch.index]
 		if firstWort {
 			next := touch.index + 1
-			if in.Minutes != float64(duration) || step.Kind != "heat" || step.Location != slot+2 ||
+			if in.Minutes != float64(duration) || step.Kind != "heat" || step.Location != slot+2 || step.DrainMinutes != 0 ||
 				next >= len(r.Steps) || (r.Steps[next].Kind != "boil" && r.Steps[next].Kind != "hop") || r.Steps[next].Location != slot+2 {
 				return "First-wort hops must receive flow during heat-up and the full boil."
 			}
