@@ -71,6 +71,7 @@ export interface FieldMetadata {
   kind: string
 }
 export interface Capabilities {
+  events_persistent?: boolean
   pairing_v1?: boolean
   capabilities?: Record<string, boolean>
   settings_fields?: string[] | null

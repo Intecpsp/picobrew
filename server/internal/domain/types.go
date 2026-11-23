@@ -91,6 +91,7 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	EventsPersistent      *bool                    `json:"events_persistent,omitempty"`
 	StockRestoreOTAV1     bool                     `json:"stock_restore_ota_v1,omitempty"`
 	PairingV1             bool                     `json:"pairing_v1,omitempty"`
 	ZProgramMaker         bool                     `json:"z_program_maker,omitempty"`
