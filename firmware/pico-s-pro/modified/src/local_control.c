@@ -10,7 +10,8 @@ static struct {
     PicoApplication *application;
     void (*poll)(void *);
     void *context;
-    uint32_t last_poll;
+    uint32_t last_poll, update_notice_ms;
+    bool update_notice_visible;
     bool ready, serving, at_menu, running;
     volatile bool stopped;
     volatile bool filter_trip;
@@ -87,10 +88,33 @@ void pico_local_control_enter_menu(void)
     local.running = false;
     local.active_command = "idle";
 }
+/* Row 3 is reserved between the main menu heading and the first choice.
+ * Limit notices to this screen so expiry can't erase a subsequent prompt. */
+static void clear_update_notice(void)
+{
+    if (!local.update_notice_visible)
+        return;
+    local.update_notice_visible = false;
+    pico_display_clear_row(3);
+    pico_display_flush();
+}
+
+void pico_local_control_show_update_notice(const char *message)
+{
+    if (!local.at_menu)
+        return;
+    pico_display_clear_row(3);
+    pico_display_center_text(3, message);
+    local.update_notice_ms = local.application->hardware->millis(local.application->hardware_context);
+    local.update_notice_visible = true;
+    pico_display_flush();
+}
+
 void pico_local_control_leave_menu(void)
 {
     local.at_menu = false;
     local.active_command = "front-panel";
+    clear_update_notice();
 }
 
 void pico_local_service(void)
@@ -103,6 +127,8 @@ void pico_local_service(void)
         return;
     local.last_poll = now;
     local.serving = true;
+    if (local.update_notice_visible && (uint32_t)(now - local.update_notice_ms) >= 3000u)
+        clear_update_notice();
     pico_history_poll();
     local.poll(local.context);
     pico_telemetry_poll();
@@ -242,7 +268,7 @@ bool pico_local_control_run_pending(void)
     unsigned command = local.pending;
     local.pending = 0;
     local.running = true;
-    local.at_menu = false;
+    pico_local_control_leave_menu();
     local.active_command = commands[command];
     PicoApplication *a = local.application;
     switch (command) {

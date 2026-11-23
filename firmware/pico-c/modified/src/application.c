@@ -1144,7 +1144,11 @@ void pico_application_loop(PicoApplication *a)
 {
     static const uint32_t actions[] = {12, 13, 14, 15, 16, 17};
     pico_display_clear_scrolling();
+#if PICO_STANDALONE
+    pico_display_center_text(0, PICO_MODEL_HEADING);
+#else
     pico_display_logo();
+#endif
     pico_menu_populate_action_labels(actions, 6, a->settings.language, a->settings.detailed_status);
 #if PICO_STANDALONE
     if (pico_local_control_stopped()) {

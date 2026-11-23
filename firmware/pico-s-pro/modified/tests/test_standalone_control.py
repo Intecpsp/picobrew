@@ -24,7 +24,8 @@ def main():
         sources = sort_sources((root / 'src').rglob('*.c'))
         environment = runtime_environment(compiler_paths=[args.cc])
         environment.setdefault('ASAN_OPTIONS', 'detect_leaks=0')
-        cases = [('control-tests', 'standalone_control_host.c', 1),
+        cases = [('control-tests-pro', 'standalone_control_host.c', 1),
+                 ('control-tests-s', 'standalone_control_host.c', 1),
                  ('factory-reset-standalone', 'factory_reset_host.c', 1),
                  ('factory-reset-legacy', 'factory_reset_host.c', 0)]
         for name, harness, standalone in cases:
@@ -32,6 +33,8 @@ def main():
             command = [args.cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-g', '-O1',
                        f'-DPICO_STANDALONE={standalone}', '-ffunction-sections', '-fdata-sections',
                        '-I' + str(root / 'include')]
+            if name == 'control-tests-s':
+                command.append('-DPICO_MODEL=PICO_MODEL_PICO_S')
             command += sanitizer_flags(not args.no_sanitize)
             inputs = list(sources)
             if not standalone:

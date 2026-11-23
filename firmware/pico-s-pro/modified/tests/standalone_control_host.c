@@ -435,9 +435,78 @@ static void test_network_status_failure(void)
     assert(!sim.begins && !sim.disconnects && sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
     puts("PASS: network status distinguishes association and DHCP without starting a connection");
 }
+static void test_model_menu_heading(void)
+{
+    uint8_t menu[PICO_FRAMEBUFFER_SIZE];
+    initialize();
+    pico_display_construct();
+    pico_display_initialize();
+    ready();
+    /* Return from the actual main menu with its first choice displayed. */
+    assert(pico_local_control_command("stop", NULL) == PICO_LOCAL_CONTROL_OK);
+    sim.click_on_clock = true;
+    pico_application_loop(&app);
+    memcpy(menu, app.ui.display.framebuffer, sizeof menu);
+
+    pico_display_clear_row(1);
+    pico_display_clear_row(2);
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) != 0);
+    pico_graphics_text_scale(&app.ui.display, 2);
+#if PICO_MODEL == PICO_MODEL_PICO_S
+    pico_display_center_text(1, "PICO S");
+#else
+    pico_display_center_text(1, "PICO PRO");
+#endif
+    pico_graphics_text_scale(&app.ui.display, 1);
+    pico_graphics_line(&app.ui.display, 24, 23, 103, 23, 1);
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) == 0);
+    puts("PASS: main menu displays this brewer's model");
+}
+
+static void test_update_notice_expires_on_idle_menu(void)
+{
+    uint8_t menu[PICO_FRAMEBUFFER_SIZE], expected[PICO_FRAMEBUFFER_SIZE];
+    initialize();
+    pico_display_construct();
+    pico_display_initialize();
+    pico_display_clear();
+    pico_display_logo();
+    pico_display_center_text(4, "Brew PicoPak");
+    memcpy(menu, app.ui.display.framebuffer, sizeof menu);
+    /* Trial inspection during startup can precede entry into the menu. */
+    pico_local_control_show_update_notice("Verifying firmware");
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) == 0);
+    pico_display_center_text(3, "Update confirmed");
+    memcpy(expected, app.ui.display.framebuffer, sizeof expected);
+    assert(memcmp(menu, expected, sizeof menu) != 0);
+    memcpy(app.ui.display.framebuffer, menu, sizeof menu);
+    ready();
+    sim.now = UINT32_MAX - 2000u;
+    pico_local_control_show_update_notice("Verifying firmware");
+    pico_local_control_show_update_notice("Update confirmed");
+    assert(memcmp(expected, app.ui.display.framebuffer, sizeof expected) == 0);
+    sim.now += 1000u;
+    pico_local_service();
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) != 0);
+    sim.now += 2100u;
+    pico_local_service();
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) == 0);
+
+    pico_local_control_show_update_notice("Update confirmed");
+    pico_local_control_leave_menu();
+    pico_display_center_text(3, "Pair with Hub");
+    memcpy(expected, app.ui.display.framebuffer, sizeof expected);
+    sim.now += 4000u;
+    pico_local_service();
+    assert(memcmp(expected, app.ui.display.framebuffer, sizeof expected) == 0);
+    puts("PASS: OTA notice expires without input and preserves menu and subsequent screen");
+}
+
 int main(void)
 {
     setvbuf(stdout,NULL,_IOLBF,0);
+    test_model_menu_heading();
+    test_update_notice_expires_on_idle_menu();
     test_boot_and_offline_adapters(); test_guards_and_queue();
     test_checkpoint_restore_is_explicit_and_recipe_bound();
     test_stop_unwinds_workflows(); test_bounded_wifi(); test_network_picker_back(); test_network_status_failure();
