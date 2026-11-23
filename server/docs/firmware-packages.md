@@ -178,8 +178,10 @@ executes code from a package.
 | POST | `/api/v1/firmware/packages` | Upload a ZIP as multipart field `file` |
 | GET / DELETE | `/api/v1/firmware/packages/{packageID}` | Read metadata or remove a package |
 | GET | `/api/v1/firmware/packages/{packageID}/download` | Download the cached ZIP after checking its hash |
-| GET | `/api/v1/devices/{id}/firmware` | Read OTA packages for the identified model, installation availability, and stock restore guide eligibility |
+| GET | `/api/v1/devices/{id}/firmware` | Read compatible OTA packages, USB and wireless stock restore availability, and the last restoration receipt |
 | POST | `/api/v1/devices/{id}/firmware/install` | Confirm the package and brewer with `package_id`, `device_uid` and `confirm: true`. HTTP 202 starts a tracked update. |
+| POST | `/api/v1/devices/{id}/firmware/restore-stock` | Start or resume the wireless stock restore with `device_uid`, `acknowledge_loss_of_hub: true` and `confirm_restore: true`. Returns HTTP 202. |
+| POST | `/api/v1/devices/{id}/firmware/stock-started` | Record the owner's observation of the stock startup screen with `device_uid` and the restoration receipt’s `started` timestamp, after the Hub verified the switch to stock. |
 
 New imports return HTTP 201; an identical saved archive returns HTTP 200.
 Changing the repository after browsing invalidates an import request for the
