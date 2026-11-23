@@ -14,7 +14,7 @@ recipe to a brewer or starts a program.
 | PicoPak/ZPak library | 10,161 | 3,863 | Native machine programs. Exact duplicates are grouped; 62 reviewed junk entries are hidden and all originals remain archived. |
 | Chiefwigms server | 37 | 37 | Base programs and three Zymatic maintenance programs, with original notes. |
 
-The main catalog lists 876 measured recipes whose schedules compile for all five brewing profiles. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
+The main catalog lists 846 measured recipes whose schedules compile for all five brewing profiles. The source archive also includes recipes that need manual review. The 68 reviewed stock Zymatic brew sheets stay attached to their source recipes. The complete source archive contains **5,216 browsable entries**: 1,316 ingredient recipes, 3,897 native
 programs and three maintenance programs. Of these, 5,206 can be copied into the
 library. There are 3,694 programs within Pico S/Pro wire limits; deployment also
 requires compatible firmware, verified device identity and sufficient storage.
@@ -35,9 +35,15 @@ which files are actually available.
 
 The Hub checks archived loading sheets against the ingredient list and the first flow to each occupied slot in the original machine program. Ingredients loaded together share the slot’s weight limit. A confirmed first-wort addition receives flow during heat-up. Capacity errors in the original batch can be resolved by scaling all measured ingredients together.
 
-The recovery index covers 138 records. Of these, 89 now have programs for all five profiles. The remaining 49 have corrected ingredient or source information and still require review. Recipes with conflicting instructions, unmeasured additions or unsupported manual operations remain in the source archive. The 68 reviewed original stock brew sheets use their own verification criteria. Existing library copies retain the user’s edits. Open the catalog entry to copy its recovered version.
+All 440 ingredient recipes previously outside the main catalog have an individual review pinned to the original record's SHA-256. The author's explicit corrections take precedence. The reviewer also compared ingredient amounts, original cage loads, and the machine's actual time at each temperature and flow path. In *Down with the Brown*, a zero boil-temperature field conflicts with three timed segments at 207°F. Those segments account for the entire 90-minute boil and all three hop additions.
 
-Run `python3 server/tools/catalog_recovery.py --check` to reproduce the index from the bundled records and checksum-pinned author-note reviews.
+Of the 440, **23 now compile for all five brewing profiles**. The other **417** retain their recoverable quantities and instructions, with an explanation of the missing measurement, contradictory timing, or manual operation. For example, the author of *La Mort Chocolat v1* specifies half a teaspoon of Irish moss. The volume is known, but it does not establish the mass in the machine's loading cage.
+
+The original Beer Crafter also printed ounces on US loading sheets when an adjunct had no unit. A printed default cannot confirm a dose. This correction returned 53 previously listed recipes to the archive. Across all 1,316 ingredient recipes, 846 qualify for the main catalog and 470 remain available for planning. A compiled recipe has passed profile and program checks. Physical brew trials are separate.
+
+Open **Recipes → Browse all → Sources & credits → Browse source archive** and select **Reviewed recipes** to read the evidence for the 440. The 53 other recipes and their warnings are also available under **All source records**, filtered to public recipes. The 68 original stock Zymatic brew sheets have separate verification criteria. Existing library copies retain the owner's edits. Copy the catalog entry again to obtain its reviewed version.
+
+Run `python3 server/tools/catalog_recovery.py --check` to reproduce the index from the bundled originals and checksum-pinned reviews.
 
 ## Catalog curation
 
@@ -102,7 +108,7 @@ protection.
 
 | Method and path | Result |
 | --- | --- |
-| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). The default and `kind=all-brewers` return recipes with a program for every brewing profile. Use `kind=recipe` for every source ingredient recipe. Use `kind=brew-ready` for reviewed stock Zymatic recipes or `kind=archive` for all source records. Returns entries, total and source/style metadata. |
+| `GET /api/v1/catalog` | Search with `q`, `source`, `kind`, `model`, `style`, `offset` and `limit` (default 24, maximum 100). The default and `kind=all-brewers` return recipes with a program for every brewing profile. Use `kind=recipe` for every source ingredient recipe. Use `kind=reviewed` for recipes individually reviewed against the archived author records, including those with unresolved instructions. Use `kind=brew-ready` for verified stock Zymatic programs or `kind=archive` for all source records. Returns entries, total and source/style metadata. |
 | `GET /api/v1/catalog/{id}` | Recipe/program detail, original record list, provenance and source parameters. |
 | `POST /api/v1/catalog/{id}/copy` | Send `{}` for the editable recipe or `{"stock_program":true}` for a qualified stock Zymatic program with its brew sheet. Returns a new library record and initial revision. |
 | `GET /api/v1/catalog/{id}/source` | Exact original JSON attachment; `record` selects another original listed on the entry. |

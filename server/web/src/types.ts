@@ -492,6 +492,7 @@ export interface CatalogSummary {
   official: boolean
 }
 export interface CatalogDetail extends CatalogSummary {
+  source_review?: { evidence: string; blocker?: string }
   machine_versions?: Adapted[]
   brew_sheet?: {
     instructions: string[]

@@ -21,6 +21,15 @@ func githubResponse(status int, data []byte) *http.Response {
 	return &http.Response{StatusCode: status, Header: make(http.Header), Body: io.NopCloser(bytes.NewReader(data)), ContentLength: int64(len(data))}
 }
 
+func TestRenamedFirmwareRepository(t *testing.T) {
+	for _, input := range []string{"jeffreydwalter/picobrew-pico-pro-firmware", "https://github.com/JeffreyDWalter/picobrew-pico-pro-firmware/"} {
+		settings, err := NormalizeSettings(Settings{Repository: input, Ref: "master"})
+		if err != nil || settings.Repository != "jeffreydwalter/picobrew" || settings.Ref != "master" {
+			t.Fatalf("old source %q: %+v, %v", input, settings, err)
+		}
+	}
+}
+
 func TestRepositoryAndRefValidation(t *testing.T) {
 	for _, input := range []string{"owner/repo", "Owner/Repo", "https://github.com/Owner/Repo", " https://github.com/owner/repo/ "} {
 		got, err := NormalizeRepository(input)

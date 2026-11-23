@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"math"
 	"reflect"
+	"slices"
 	"strings"
 	"testing"
 
@@ -537,5 +538,74 @@ func TestFinalBoilDrainCannotRunBetweenTimedHopSteps(t *testing.T) {
 		if err != nil || plan.MachineRecipe == nil {
 			t.Fatalf("%s rejected a final drain: %+v %v", p.ID, plan.DeploymentBlockers, err)
 		}
+	}
+}
+
+func TestMashHopsUseTheHeatedGrainBasket(t *testing.T) {
+	for _, profile := range recipe.Profiles() {
+		t.Run(profile.ID, func(t *testing.T) {
+			r := source()
+			r.Steps[0].Location, r.Steps[1].Location = 0, 0
+			r.Ingredients[1].Use, r.Ingredients[1].Minutes = "mash", 0
+			r.Ingredients[1].Amount = profile.MaxHopSlotG * 2
+			plan, err := recipe.Translate(r, profile, 0)
+			if err != nil || plan.MachineRecipe == nil || len(plan.HopSlotsByMinute) != 0 {
+				t.Fatal("mash hops occupied a boil slot or blocked the brew", err, plan.DeploymentBlockers)
+			}
+			var found bool
+			for i, step := range plan.Recipe.Steps {
+				if step.Kind == "mash" && step.Location == 2 && step.TargetC > 0 && step.Minutes > 0 {
+					found = true
+					plan.Recipe.Steps[i].Location = 1
+				}
+			}
+			if !found {
+				t.Fatal("no timed mash through the grain basket")
+			}
+			// The hops alone still require the mash basket even without a grain ingredient.
+			plan.Recipe.Ingredients = plan.Recipe.Ingredients[1:]
+			invalid, err := recipe.Translate(plan.Recipe, profile, 0)
+			if err != nil || invalid.MachineRecipe != nil || !strings.Contains(strings.Join(invalid.DeploymentBlockers, " "), "grain basket") {
+				t.Fatal("no mash-basket flow for the hops", err, invalid.DeploymentBlockers)
+			}
+		})
+	}
+}
+
+func TestUnresolvedSourceReviewBlocksEveryProgramEncoding(t *testing.T) {
+	const reason = "Source program review: the author and native program disagree about when the second hop charge is loaded."
+	for _, profile := range recipe.Profiles() {
+		t.Run(profile.ID, func(t *testing.T) {
+			r := source()
+			r.Steps[1].TargetC = 95
+			r.Provenance = &domain.RecipeProvenance{Warnings: []string{reason}}
+			r.SourceModel = profile.ID
+			for _, routed := range []bool{true, false} {
+				if !routed {
+					r.Steps[0].Location, r.Steps[1].Location = 0, 0
+				}
+				for _, compile := range []func(domain.Recipe, domain.Profile, float64) (domain.Adapted, error){recipe.Adapt, recipe.Translate} {
+					plan, err := compile(r, profile, 5)
+					if err != nil || plan.CanDeploy || plan.MachineRecipe != nil || !slices.Contains(plan.DeploymentBlockers, reason) || len(plan.Recipe.Ingredients) != 2 {
+						t.Fatalf("routed=%v: lost review or ingredients: %v %+v", routed, err, plan)
+					}
+				}
+			}
+			native := archivedProgram()
+			native.SourceModel = profile.ID
+			native.Provenance.Warnings = []string{reason}
+			plan, err := recipe.Translate(native, profile, 0)
+			if err != nil || plan.MachineRecipe != nil || !slices.Contains(plan.DeploymentBlockers, reason) || plan.Recipe.NativeProgram == nil {
+				t.Fatal("native source review was lost", err, plan.DeploymentBlockers)
+			}
+			if profile.ID == "zymatic" {
+				for _, candidate := range []domain.Recipe{r, native} {
+					program, err := recipe.StockZymaticProgram(candidate, profile)
+					if err == nil || err.Error() != reason || len(program.Steps) != 0 {
+						t.Fatal("blocked stock program was compiled", err)
+					}
+				}
+			}
+		})
 	}
 }

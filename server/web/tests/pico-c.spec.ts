@@ -12,7 +12,7 @@ for (const viewport of [
       await page.setViewportSize(viewport)
       const errors: string[] = []
       page.on('pageerror', (error) => errors.push(error.message))
-      const repository = 'jeffreydwalter/picobrew-pico-pro-firmware'
+      const repository = 'jeffreydwalter/picobrew'
       const commit = 'a'.repeat(40)
       const uid = 'b'.repeat(32)
       const other = controller === 'ssd1325' ? 'ssd1309' : 'ssd1325'

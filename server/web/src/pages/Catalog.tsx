@@ -55,7 +55,7 @@ function CatalogBrowse() {
   const [source, setSource] = useState(params.get('source') || '')
   const [kind, setKind] = useState(() => {
     const requested = params.get('kind') || 'recipe'
-    return ['recipe', 'archive', 'native-program', 'maintenance'].includes(requested)
+    return ['recipe', 'archive', 'reviewed', 'native-program', 'maintenance'].includes(requested)
       ? requested
       : 'recipe'
   })
@@ -68,7 +68,7 @@ function CatalogBrowse() {
     const timer = setTimeout(() => setDebounced(query), 200)
     return () => clearTimeout(timer)
   }, [query])
-  const archive = ['archive', 'native-program', 'maintenance'].includes(kind)
+  const archive = ['archive', 'reviewed', 'native-program', 'maintenance'].includes(kind)
   const filters = new URLSearchParams({
     q: debounced,
     source: archive ? source : '',
@@ -84,19 +84,23 @@ function CatalogBrowse() {
     update(value)
   }
   useEffect(() => {
-    const current = new URLSearchParams({ q: debounced, source, kind, model, style })
+    // A pending browse effect can run after the user opens a recipe.
+    if (location.hash.split('?')[0] !== '#/catalog') return
+    const current = new URLSearchParams({ q: query, source, kind, model, style })
     for (const key of [...current.keys()]) if (!current.get(key)) current.delete(key)
     history.replaceState(null, '', `#/catalog${current.size ? '?' + current : ''}`)
-  }, [debounced, source, kind, model, style])
+  }, [query, source, kind, model, style])
   const page = resource.data
   return (
     <>
       <PageTitle
         title={archive ? 'Source archive' : 'Community recipes'}
         description={
-          archive
-            ? 'Original records, including PicoPak schedules and cleaning programs.'
-            : 'Recipes with measured ingredients and a brew program for Pico C, S, Pro, Z-series and Zymatic.'
+          kind === 'reviewed'
+            ? 'Recipes checked against their original records. Open a recipe to see what was recovered and any remaining questions.'
+            : archive
+              ? 'Original records, including PicoPak schedules and cleaning programs.'
+              : 'Recipes with measured ingredients and a brew program for Pico C, S, Pro, Z-series and Zymatic.'
         }
       />
       <div className="catalog-intro panel">
@@ -138,6 +142,7 @@ function CatalogBrowse() {
             <Field label="Archive record type">
               <select value={kind} onChange={(event) => change(setKind, event.target.value)}>
                 <option value="archive">All source records</option>
+                <option value="reviewed">Reviewed recipes</option>
                 <option value="native-program">Machine schedules</option>
                 <option value="maintenance">Cleaning programs</option>
               </select>
@@ -354,6 +359,10 @@ function CatalogEntry({ id }: { id: string }) {
     entry.source_id === 'public-recipes' && /^public-[0-9a-f]{32}$/.test(entry.id)
       ? entry.id
       : undefined
+  const review = entry.source_review
+  const warnings = (entry.warnings || []).filter(
+    (warning) => warning !== review?.evidence && warning !== review?.blocker
+  )
   const program = entry.native_program || entry.recipe?.native_program
   return (
     <>
@@ -390,6 +399,17 @@ function CatalogEntry({ id }: { id: string }) {
       <ErrorBanner message={error || resource.error} />
       <div className="editor-layout catalog-detail">
         <div className="editor-main">
+          {review && (
+            <section className="panel" aria-label="Source review">
+              <SectionHeading title="Source review" />
+              <p>{review.evidence}</p>
+              {review.blocker && (
+                <p className="warning-note">
+                  <strong>Still unresolved.</strong> {review.blocker}
+                </p>
+              )}
+            </section>
+          )}
           {entry.machine_versions?.length ? (
             <MachineVersions
               versions={entry.machine_versions}
@@ -495,13 +515,13 @@ function CatalogEntry({ id }: { id: string }) {
               <ProgramTable program={entry.stock_program} model="zymatic" archived />
             </section>
           )}
-          {(entry.notes || entry.warnings?.length > 0) && (
+          {(entry.notes || warnings.length > 0) && (
             <section className="panel">
               <SectionHeading title="Source notes" />
               {entry.notes && <p className="preserve-lines">{entry.notes}</p>}
-              {entry.warnings?.length > 0 && (
+              {warnings.length > 0 && (
                 <ul className="warning-list">
-                  {entry.warnings.map((warning, index) => (
+                  {warnings.map((warning, index) => (
                     <li key={index}>{warning}</li>
                   ))}
                 </ul>

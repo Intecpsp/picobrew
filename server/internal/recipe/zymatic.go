@@ -20,6 +20,9 @@ func StockZymaticProgram(r domain.Recipe, profile domain.Profile) (domain.Machin
 	if err := Validate(r); err != nil {
 		return p, err
 	}
+	if reason := sourceProgramBlocker(r); reason != "" {
+		return p, errors.New(reason)
+	}
 	if profile.ID != "zymatic" {
 		return p, errors.New("choose the Zymatic profile")
 	}

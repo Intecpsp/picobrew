@@ -33,7 +33,11 @@ func NormalizeRepository(value string) (string, error) {
 		!repoPattern.MatchString(parts[1]) || parts[1] == "." || parts[1] == ".." {
 		return "", &Error{Code: "firmware_repository", Message: "Use a public GitHub owner/repository"}
 	}
-	return strings.ToLower(value), nil
+	value = strings.ToLower(value)
+	if value == "jeffreydwalter/picobrew-pico-pro-firmware" {
+		return DefaultRepository, nil
+	}
+	return value, nil
 }
 
 func NormalizeSettings(in Settings) (Settings, error) {

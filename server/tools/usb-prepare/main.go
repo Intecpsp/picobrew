@@ -111,7 +111,7 @@ func stage(local, destination string) error {
 		if !regexp.MustCompile("^usb-tools-v[0-9]+\\.[0-9]+\\.[0-9]+$").MatchString(index.Tag) {
 			return errors.New("invalid public USB release tag")
 		}
-		url := "https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/releases/download/" + index.Tag + "/" + name
+		url := "https://github.com/jeffreydwalter/picobrew/releases/download/" + index.Tag + "/" + name
 		client := http.Client{Timeout: 3 * time.Minute, CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			host := req.URL.Hostname()
 			if len(via) > 4 || req.URL.Scheme != "https" || !(host == "github.com" || strings.HasSuffix(host, ".githubusercontent.com")) {

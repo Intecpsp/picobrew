@@ -12,6 +12,32 @@ import (
 
 const minBoilTargetC = 85
 
+// An unresolved archived instruction applies to every encoding of the recipe,
+// including an explicit set of flow paths or an exact native copy.
+func sourceProgramBlocker(r domain.Recipe) string {
+	if r.Provenance != nil {
+		for _, warning := range r.Provenance.Warnings {
+			if strings.HasPrefix(warning, "Source program review:") {
+				return warning
+			}
+		}
+	}
+	return ""
+}
+
+func blockReviewedProgram(plan *domain.Adapted) {
+	reason := sourceProgramBlocker(plan.Recipe)
+	if reason == "" {
+		return
+	}
+	plan.CanDeploy = false
+	plan.MachineRecipe = nil
+	plan.HopSlotsByMinute = nil
+	if !slices.Contains(plan.DeploymentBlockers, reason) {
+		plan.DeploymentBlockers = append([]string{reason}, plan.DeploymentBlockers...)
+	}
+}
+
 // Translate derives a model version from the canonical recipe. Native programs
 // keep their original encoding and follow the existing compatibility rules.
 func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapted, error) {
@@ -97,6 +123,7 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	if r.Provenance != nil {
 		plan.Warnings = append(plan.Warnings, "Review the source notes for yeast pitch, manual additions and water losses on your equipment.")
 	}
+	blockReviewedProgram(&plan)
 	return plan, nil
 }
 
@@ -303,7 +330,7 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 	}
 	if r.Provenance != nil {
 		for _, warning := range r.Provenance.Warnings {
-			if strings.HasPrefix(warning, "Source program review:") || strings.Contains(warning, "first-wort") || strings.Contains(warning, "non-default source BoilUse") || strings.Contains(warning, "original source contains errors") || strings.Contains(warning, "fractional") || strings.Contains(warning, "unsupported mash style") || strings.Contains(warning, "not ingredient totals") {
+			if strings.Contains(warning, "first-wort") || strings.Contains(warning, "non-default source BoilUse") || strings.Contains(warning, "original source contains errors") || strings.Contains(warning, "fractional") || strings.Contains(warning, "unsupported mash style") || strings.Contains(warning, "not ingredient totals") {
 				return nil, warning
 			}
 		}
@@ -314,7 +341,7 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 		if in.Kind == "misc" && in.Use == "boil" && !in.SlotAddition {
 			return nil, fmt.Sprintf("Confirm the addition method for %s during the boil.", in.Name)
 		}
-		if in.Kind == "hop" && in.Use != "first-wort" && in.Use != "boil" && in.Use != "dry-hop" && in.Use != "dry hop" {
+		if in.Kind == "hop" && in.Use != "first-wort" && in.Use != "boil" && in.Use != "mash" && in.Use != "dry-hop" && in.Use != "dry hop" {
 			return nil, fmt.Sprintf("Confirm the %s addition method for %s.", in.Use, in.Name)
 		}
 		if in.Kind == "hop" && in.Use == "first-wort" {

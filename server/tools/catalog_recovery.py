@@ -9,6 +9,7 @@ import re
 from zipfile import ZipFile
 
 from catalog_public import convert_public, _misc_amount
+from catalog_author_review import load_reviews, reviewed_recovery
 
 DATA = Path(__file__).resolve().parents[1] / "internal/catalog/data"
 
@@ -16,7 +17,7 @@ HOP_ERROR = re.compile(r"Boil hops with time of ([\d.]+) \( .+ \) exceeds limit 
 
 
 def recover_units(source):
-    """Match each missing unit to its printed amount in the same round and cage."""
+    """Recover a missing unit only when the sheet supplies a non-default measure."""
     loading = source["HumanBrewingSteps"]
     if loading["IsMetric"] is not False:
         return False
@@ -37,7 +38,9 @@ def recover_units(source):
                      if (i["Name"], i["Amount"]) == (item["Name"], item["Amount"])}
             if len(units) == 1:
                 unit = units.pop()
-                if _misc_amount(item["Amount"], unit):
+                # Beer Crafter prints oz for a blank US adjunct unit, including
+                # tablets and spoon measures. That label is not independent evidence.
+                if isinstance(unit, str) and unit.strip().lower() != "oz" and _misc_amount(item["Amount"], unit):
                     item["Units"] = unit
                     recovered = True
     return recovered
@@ -120,8 +123,7 @@ def recovery(entry, raw):
 
     if not matching_boil(r, items):
         return quantities_only()
-    # The loading sheet explicitly specifies each matching unit. Never infer a
-    # missing unit from an ingredient's name or treat a volume as a slot weight.
+    # Cage capacity needs a measured mass for each timed adjunct.
     for adjunct in r["Adjuncts"]:
         converted = _misc_amount(adjunct["Amount"], adjunct["Units"])
         if not converted or converted[1] != "g":
@@ -186,7 +188,9 @@ def recovery(entry, raw):
 
 def generate():
     reviews = json.loads(Path(__file__).with_name("catalog-recovery-reviews.json").read_bytes())
+    author_reviews = load_reviews()
     matched = set()
+    author_matched = set()
     records = {}
     with ZipFile(DATA / "catalog.zip") as archive:
         for path in sorted(archive.namelist()):
@@ -199,6 +203,17 @@ def generate():
                 raise ValueError("Archive checksum mismatch: " + path)
             raw = json.loads(data)
             source = raw["VM"]["Recipe"]
+            if entry["id"] in author_reviews:
+                try:
+                    records[entry["id"]] = reviewed_recovery(
+                        entry, raw, author_reviews[entry["id"]], reviews.get(entry["id"]),
+                        recovery, recover_units)
+                except (ValueError, KeyError, IndexError) as error:
+                    raise ValueError(f"{entry['name']} ({entry['id']}): {error}") from error
+                author_matched.add(entry["id"])
+                if entry["id"] in reviews:
+                    matched.add(entry["id"])
+                continue
             result = recovery(entry, raw)
             review = reviews.get(entry["id"])
             if review:
@@ -221,7 +236,7 @@ def generate():
                 continue
             if result:
                 records[entry["id"]] = result
-    if matched != reviews.keys():
+    if matched != reviews.keys() or author_matched != author_reviews.keys():
         raise ValueError("Missing source for an author-note review")
     return records
 

@@ -6,7 +6,7 @@ package firmware
 import "time"
 
 const (
-	DefaultRepository = "jeffreydwalter/picobrew-pico-pro-firmware"
+	DefaultRepository = "jeffreydwalter/picobrew"
 	MaxArchiveBytes   = 2 << 20
 	MaxExpandedBytes  = 2 << 20
 	MaxReportBytes    = 512 << 10

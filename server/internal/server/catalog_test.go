@@ -10,6 +10,8 @@ import (
 	"path/filepath"
 	"reflect"
 	"runtime"
+	"slices"
+	"strings"
 	"syscall"
 	"testing"
 
@@ -79,6 +81,36 @@ func TestCatalogBrowseCopyAndOriginal(t *testing.T) {
 		if status != 400 {
 			t.Fatalf("bad filter %s: %d", url, status)
 		}
+	}
+}
+
+func TestCatalogReviewedFilter(t *testing.T) {
+	_, h, c := newTestServer(t)
+	signIn(t, c, h.URL)
+	base := h.URL + "/api/v1/catalog"
+	for _, tc := range []struct {
+		search  string
+		id      string
+		blocked bool
+	}{
+		{"Mow+the+Damn+Lawn", "public-cb4320ef48424f71a65bb720b139c0c6", false},
+		{"Chill+Cycle", "public-02a538894b06404da7793ff10fe99788", true},
+	} {
+		status, body := request(t, c, "GET", base+"?kind=reviewed&model=zymatic&source=public-recipes&q="+tc.search, "", nil, nil)
+		var page catalog.Page
+		if status != 200 || json.Unmarshal(body, &page) != nil || !slices.ContainsFunc(page.Items, func(item catalog.Summary) bool { return item.ID == tc.id }) {
+			t.Fatalf("reviewed search missing %s: %s", tc.id, body)
+		}
+		status, body = request(t, c, "GET", base+"/"+tc.id, "", nil, nil)
+		var detail catalog.Detail
+		if status != 200 || json.Unmarshal(body, &detail) != nil || detail.SourceReview == nil || detail.SourceReview.Evidence == "" || (detail.SourceReview.Blocker != "") != tc.blocked {
+			t.Fatalf("incorrect review for %s", tc.id)
+		}
+	}
+	status, body := request(t, c, "GET", base+"?kind=reviewed&source=picopak-library", "", nil, nil)
+	var page catalog.Page
+	if status != 200 || json.Unmarshal(body, &page) != nil || page.Total != 0 {
+		t.Fatal("unreviewed source returned in reviewed archive")
 	}
 }
 
@@ -208,5 +240,32 @@ func TestCatalogStockProgramCopyPreviewsWithoutRoutingInput(t *testing.T) {
 	code, _ = request(t, c, "POST", base+"/catalog/picopak-64/copy", token, map[string]bool{"stock_program": true}, nil)
 	if code != 422 {
 		t.Fatal("unmatched stock program:", code)
+	}
+}
+
+func TestUnresolvedCatalogCopyCannotPublishToStockMenu(t *testing.T) {
+	_, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	base := h.URL + "/api/v1"
+	code, body := request(t, c, "POST", base+"/catalog/public-02a538894b06404da7793ff10fe99788/copy", csrf, map[string]any{}, nil)
+	var saved domain.Recipe
+	if code != 201 || json.Unmarshal(body, &saved) != nil || saved.Provenance == nil {
+		t.Fatalf("copy unresolved Chill Cycle for editing: %d %s", code, body)
+	}
+	ref := stockReference{RecipeID: saved.ID, Revision: saved.Revision}
+	for _, manual := range []bool{false, true} {
+		if manual {
+			ref.Locations = make([]int, len(saved.Steps))
+			for i := range ref.Locations {
+				ref.Locations[i] = 1
+			}
+		}
+		for _, publish := range []bool{false, true} {
+			requested := stockSubmission{Recipes: []stockReference{ref}, Publish: publish}
+			code, body := request(t, c, "POST", base+"/stock-zymatics/TEST/recipes", csrf, requested, nil)
+			if code != 422 || !strings.Contains(string(body), "chiller utility with placeholder beer ingredients") {
+				t.Fatalf("stock menu manual=%v publish=%v: %d %s", manual, publish, code, body)
+			}
+		}
 	}
 }

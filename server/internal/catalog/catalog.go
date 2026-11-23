@@ -167,7 +167,8 @@ func openBytes(data []byte) (*Archive, error) {
 			}
 			entry.Search += " picopak " + strings.ToLower(product.Creator)
 		}
-		_, entry.BrewReady = a.sheets[entry.ID]
+		_, hasStockSheet := a.sheets[entry.ID]
+		entry.BrewReady = hasStockSheet && a.recovered[entry.ID].Review == ""
 		a.byID[entry.ID] = entry.Summary
 		counts[entry.SourceID]++
 		if entry.Style != "" {
@@ -321,6 +322,10 @@ func (a *Archive) List(q Query) Page {
 			if !entry.allBrewers {
 				continue
 			}
+		} else if q.Kind == "reviewed" {
+			if a.recovered[entry.ID].Evidence == "" {
+				continue
+			}
 		} else if q.Kind == "brew-ready" {
 			if !entry.BrewReady || q.Model != "" && q.Model != "zymatic" {
 				continue
@@ -367,6 +372,9 @@ func (a *Archive) Detail(id string) (Detail, error) {
 		if err := fix.apply(&result); err != nil {
 			return Detail{}, err
 		}
+		if fix.Evidence != "" {
+			result.SourceReview = &SourceReview{Evidence: fix.Evidence, Blocker: fix.Review}
+		}
 	}
 	if sheet, ok := a.sheets[id]; ok {
 		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" || result.Recipe == nil {
@@ -379,7 +387,11 @@ func (a *Archive) Detail(id string) (Detail, error) {
 		if err != nil {
 			return Detail{}, err
 		}
-		result.BrewReady, result.BrewSheet, result.StockProgram = true, &sheet, program
+		result.BrewSheet = &sheet
+		result.BrewReady = a.byID[id].BrewReady
+		if result.BrewReady {
+			result.StockProgram = program
+		}
 	}
 	if product, ok := a.marketplace[id]; ok {
 		result.Marketplace = &product
