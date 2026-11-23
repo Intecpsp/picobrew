@@ -1,5 +1,6 @@
 #include "pico_c/http_server.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 
 enum { IDLE, REQUEST_LINE, HEADERS, BODY, COMPLETE, OPENING_ASSET, SENDING };
@@ -52,10 +53,55 @@ static const char *reason(unsigned status)
     }
 }
 
+/* One brewer has one local panel. Only an explicitly enrolled transport can
+ * offer pairing. Keep the requesting client's random ticket out of all replies. */
+static struct {
+    PicoHttpServer *owner;
+    uint32_t until, serial;
+    uint8_t nonce[32];
+    uint8_t phase; /* 0 inactive, 1 requires local approval, 2 claimable */
+} pairing;
+
+static void forget_pairing(void)
+{
+    memset(pairing.nonce, 0, sizeof pairing.nonce);
+    pairing.phase = 0;
+}
+void pico_http_server_enable_pairing(PicoHttpServer *s)
+{
+    forget_pairing();
+    pairing.owner = s;
+}
+static void expire_pairing(uint32_t now)
+{
+    if (pairing.phase && (int32_t)(now - pairing.until) >= 0) forget_pairing();
+}
+uint32_t pico_http_pairing_prompt(uint32_t now, char code[9])
+{
+    static const char hex[] = "0123456789abcdef";
+    expire_pairing(now);
+    if (pairing.phase != 1) return 0;
+    for (unsigned i=0; i<4; ++i) {
+        code[2*i] = hex[pairing.nonce[i] >> 4];
+        code[2*i+1] = hex[pairing.nonce[i] & 15];
+    }
+    code[8]=0;
+    return pairing.serial;
+}
+bool pico_http_pairing_decide(uint32_t now, uint32_t serial, bool allow)
+{
+    expire_pairing(now);
+    if (pairing.phase != 1 || pairing.serial != serial) return false;
+    if (allow) { pairing.phase=2; pairing.until=now+30000u; }
+    else forget_pairing();
+    return true;
+}
+
 void pico_http_server_initialize(PicoHttpServer *s, const PicoHttpIo *io, void *io_context,
                                   PicoHttpHandler handler, void *handler_context,
                                   const PicoHttpAsset *assets, size_t asset_count)
 {
+    if (pairing.owner == s) { forget_pairing(); pairing.owner = NULL; }
     memset(s, 0, sizeof(*s));
     s->io = io;
     s->io_context = io_context;
@@ -75,6 +121,7 @@ void pico_http_server_set_asset_io(PicoHttpServer *s, const PicoHttpAssetIo *io,
 
 bool pico_http_server_set_key(PicoHttpServer *s, const char *key, size_t length)
 {
+    if (pairing.owner == s) forget_pairing();
     memset(s->key, 0, sizeof(s->key));
     if (!key)
         return false;
@@ -110,7 +157,13 @@ void pico_http_server_disconnect(PicoHttpServer *s)
     /* Erase authorization/body material left by the previous client. */
     memset(&s->request, 0, sizeof(s->request));
     memset(&s->response, 0, sizeof(s->response));
-    memset(s->arena, 0, sizeof(s->arena));
+    if (s->arena) {
+        /* Keep the private response and bearer out of reused heap storage. */
+        volatile char *byte = s->arena;
+        for (size_t i=0; i<PICO_HTTP_ARENA_CAPACITY; ++i) byte[i]=0;
+        free(s->arena);
+        s->arena = NULL;
+    }
     memset(s->line, 0, sizeof(s->line));
 }
 
@@ -175,7 +228,7 @@ static void prepare_response(PicoHttpServer *s, uint32_t now)
 
 static void error_response(PicoHttpServer *s, unsigned status, const char *error, uint32_t now)
 {
-    int size = snprintf(s->arena, sizeof(s->arena), "{\"error\":\"%s\"}", error);
+    int size = snprintf(s->arena, PICO_HTTP_ARENA_CAPACITY, "{\"error\":\"%s\"}", error);
     s->response = (PicoHttpResponse){status, "application/json", (const uint8_t *)s->arena,
                                     size > 0 ? (size_t)size : 0, NULL};
     prepare_response(s, now);
@@ -323,6 +376,85 @@ static bool api_path(const char *path)
     return strncmp(path, "/api/", 5) == 0 || strcmp(path, "/api") == 0;
 }
 
+static bool pair_path(const char *path, const char *suffix)
+{
+    return !strncmp(path, "/api/v1/pairing/", 16) && !strcmp(path+16,suffix);
+}
+
+static bool nonce_from_json(const char *p, size_t size, uint8_t out[32])
+{
+    /* A pairing request has a single field. Ignore JSON whitespace between
+     * tokens, preserve field/value boundaries, validate the complete body. */
+    static const char *const tokens[] = {"{", "\"nonce\"", ":", "\""};
+    const char *end = p + size;
+    for (unsigned i=0; i<4; ++i) {
+        while (p < end && (*p==' ' || *p=='\n' || *p=='\r' || *p=='\t')) ++p;
+        size_t n = strlen(tokens[i]);
+        if ((size_t)(end-p)<n || memcmp(p,tokens[i],n)) return false;
+        p+=n;
+    }
+    if (end-p<66) return false;
+    for (unsigned i=0; i<64; ++i) {
+        unsigned ch=(unsigned char)*p++;
+        if (ch>='0' && ch<='9') ch-='0';
+        else if (ch>='a' && ch<='f') ch=ch-'a'+10;
+        else return false;
+        if (i&1) out[i/2]|=(uint8_t)ch;
+        else out[i/2]=(uint8_t)(ch<<4);
+    }
+    if (*p++!='"') return false;
+    bool closed=false;
+    while(p<end) {
+        char ch=*p++;
+        if(ch==' ' || ch=='\t' || ch=='\r' || ch=='\n') continue;
+        if(ch!='}' || closed) return false;
+        closed=true;
+    }
+    return closed;
+}
+
+static void pairing_request(PicoHttpServer *s, uint32_t now)
+{
+    uint8_t nonce[32], different=0, nonzero=0;
+    expire_pairing(now);
+    if (s!=pairing.owner) { error_response(s,404,"not_found",now); return; }
+    if (!s->request.auth_configured) { error_response(s,503,"api_key_not_provisioned",now); return; }
+    if (s->request.method!=PICO_HTTP_POST) { error_response(s,405,"method_not_allowed",now); return; }
+    if (!nonce_from_json(s->request.body,s->request.body_length,nonce)) {
+        error_response(s,400,"invalid_ticket",now); return;
+    }
+    for (unsigned i=0;i<sizeof nonce;++i) { different |= nonce[i]^pairing.nonce[i]; nonzero |= nonce[i]; }
+    if (!nonzero) { error_response(s,400,"invalid_ticket",now); return; }
+    unsigned status=202;
+    if (pair_path(s->request.path,"claim")) {
+        if (!pairing.phase || different) { error_response(s,404,"pairing_unavailable",now); return; }
+        strcpy(s->arena,"{\"state\":\"pending\"}");
+        if (pairing.phase==2) {
+            forget_pairing();
+            status=200;
+            snprintf(s->arena,PICO_HTTP_ARENA_CAPACITY,"{\"api_key\":\"%s\"}",s->key);
+        }
+    } else {
+        bool grant=pair_path(s->request.path,"grant");
+        if (grant && !s->request.authenticated) { error_response(s,401,"unauthorized",now); return; }
+        if (!grant && !pair_path(s->request.path,"request")) { error_response(s,404,"not_found",now); return; }
+        if (pairing.phase && different) { error_response(s,409,"pairing_busy",now); return; }
+        if (!pairing.phase) {
+            memcpy(pairing.nonce,nonce,sizeof nonce);
+            if (!++pairing.serial) ++pairing.serial;
+            pairing.phase=1; pairing.until=now+90000u;
+        }
+        if (grant) { pairing.phase=2; pairing.until=now+30000u; }
+        if (pairing.phase==1) {
+            char code[9];
+            pico_http_pairing_prompt(now,code);
+            snprintf(s->arena,PICO_HTTP_ARENA_CAPACITY,"{\"state\":\"pending\",\"code\":\"%s\"}",code);
+        } else strcpy(s->arena,"{\"state\":\"approved\"}");
+    }
+    s->response=(PicoHttpResponse){status,"application/json",(const uint8_t *)s->arena,strlen(s->arena),NULL};
+    prepare_response(s,now);
+}
+
 static unsigned finish_headers(PicoHttpServer *s)
 {
     if (s->http_11 && !s->has_host)
@@ -336,9 +468,12 @@ static unsigned finish_headers(PicoHttpServer *s)
     if ((s->request.method == PICO_HTTP_GET || s->request.method == PICO_HTTP_HEAD ||
          s->request.method == PICO_HTTP_OPTIONS) && s->content_length)
         return 400;
-    bool public_health = s->request.method == PICO_HTTP_GET &&
-                         strcmp(s->request.path, "/api/v1/health") == 0;
-    if (api_path(s->request.path) && !public_health) {
+    bool public_read = s->request.method == PICO_HTTP_GET &&
+                       (!strcmp(s->request.path, "/api/v1/health") ||
+                        !strcmp(s->request.path, "/api/v1/overview"));
+    bool pairing_post = pairing.owner == s && s->request.method == PICO_HTTP_POST &&
+                        (pair_path(s->request.path, "request") || pair_path(s->request.path, "claim"));
+    if (api_path(s->request.path) && !public_read && !pairing_post) {
         if (!s->request.auth_configured)
             return 503;
         if (!s->request.authenticated)
@@ -404,21 +539,25 @@ static void dispatch(PicoHttpServer *s, uint32_t now)
 {
     s->request.body_length = s->body_received;
     if (api_path(s->request.path)) {
+        if (pairing.owner == s && !strncmp(s->request.path, "/api/v1/pairing/", 16)) {
+            pairing_request(s, now);
+            return;
+        }
         if (s->request.method == PICO_HTTP_HEAD || s->request.method == PICO_HTTP_OPTIONS) {
             error_response(s, 405, "method_not_allowed", now);
             return;
         }
         s->response = (PicoHttpResponse){200, "application/json", (const uint8_t *)s->arena, 0, NULL};
         if (!s->handler || !s->handler(&s->request, &s->response, s->arena,
-                                       sizeof(s->arena), s->handler_context)) {
+                                       PICO_HTTP_ARENA_CAPACITY, s->handler_context)) {
             error_response(s, 500, "handler_failed", now);
             return;
         }
         /* The response may use all of arena, but may never escape its end. */
         uintptr_t body = (uintptr_t)s->response.body;
         uintptr_t start = (uintptr_t)s->arena;
-        if (body >= start && body < start + sizeof(s->arena) &&
-            s->response.body_length > start + sizeof(s->arena) - body) {
+        if (body >= start && body < start + PICO_HTTP_ARENA_CAPACITY &&
+            s->response.body_length > start + PICO_HTTP_ARENA_CAPACITY - body) {
             error_response(s, 500, "response_too_large", now);
             return;
         }
@@ -463,7 +602,13 @@ void pico_http_server_poll(PicoHttpServer *s, uint32_t now)
         int client = s->io->accept(s->io_context);
         if (client < 0)
             goto done;
+        s->arena = (char *)malloc(PICO_HTTP_ARENA_CAPACITY);
         begin_request(s, client, now);
+        if (!s->arena) {
+            static const uint8_t unavailable[] = "{\"error\":\"out_of_memory\"}";
+            s->response = (PicoHttpResponse){503, "application/json", unavailable, sizeof unavailable-1, NULL};
+            prepare_response(s, now);
+        }
     }
     if ((uint32_t)(now - s->started_ms) >
         (s->stage >= OPENING_ASSET ? RESPONSE_TIMEOUT_MS : REQUEST_TIMEOUT_MS)) {

@@ -99,7 +99,7 @@ typedef struct PicoHttpServer {
     const PicoHttpAsset *pending_asset;
     PicoHttpRequest request;
     PicoHttpResponse response;
-    char arena[PICO_HTTP_ARENA_CAPACITY];
+    char *arena; /* One 4 KiB request/response allocation while a client is open. */
     char line[PICO_HTTP_LINE_CAPACITY];
     char key[PICO_HTTP_KEY_LENGTH + 1];
     size_t line_length;
@@ -130,6 +130,9 @@ void pico_http_server_initialize(PicoHttpServer *server, const PicoHttpIo *io, v
                                   PicoHttpHandler handler, void *handler_context,
                                   const PicoHttpAsset *assets, size_t asset_count);
 /* Configure immediately after initialize, before polling/accepting clients. */
+void pico_http_server_enable_pairing(PicoHttpServer *server);
+uint32_t pico_http_pairing_prompt(uint32_t now_ms, char code[9]);
+bool pico_http_pairing_decide(uint32_t now_ms, uint32_t serial, bool allow);
 void pico_http_server_set_asset_io(PicoHttpServer *server, const PicoHttpAssetIo *io,
                                     void *context);
 /* Accept exactly 64 lowercase hex characters, optionally followed by LF/CRLF.

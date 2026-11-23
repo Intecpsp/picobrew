@@ -28,10 +28,12 @@ def main():
         command = [args.cc, '-std=c11', '-Wall', '-Wextra', '-Werror', '-g', '-O1',
                    '-I' + str(root / 'include')]
         command += sanitizer_flags(not args.no_sanitize)
-        command += [str(root / 'src/http_server.c')]
-        # The firmware transport performs no heap allocation. LeakSanitizer is
-        # unnecessary here and cannot run in ptrace-based build sandboxes;
-        # address and undefined-behavior instrumentation remain enabled.
+        # Replace only the transport's malloc for the allocation-failure fixture.
+        transport = Path(directory) / 'http-server.o'
+        subprocess.run([*command, '-Dmalloc=pico_test_malloc', '-c', str(root / 'src/http_server.c'),
+                        '-o', str(transport)], check=True)
+        command.append(str(transport))
+        # Address and undefined-behavior checks also run in ptrace-based CI.
         environment = runtime_environment(compiler_paths=[args.cc])
         environment.setdefault('ASAN_OPTIONS', 'detect_leaks=0')
         for fixture in ['http_server_fixture', 'http_asset_fixture']:
