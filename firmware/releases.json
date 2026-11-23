@@ -466,6 +466,50 @@
       "binary_sha256": "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540",
       "binary_bytes": 169568,
       "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.7",
+      "kind": "standalone",
+      "source_commit": "31fc15036c0a1dc7cc1390ec87f0dd8981c8ea33",
+      "archive_sha256": "3b1f31f375ccbe4a08016ef627883ef046c3955261fbf517baddbe7ef76aab6c",
+      "binary_sha256": "7919ff13dfe9fa7dde3100d673a2292241dce0188611ea7afdedfb44e7392b45",
+      "binary_bytes": 169584,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.7",
+      "kind": "standalone",
+      "source_commit": "31fc15036c0a1dc7cc1390ec87f0dd8981c8ea33",
+      "archive_sha256": "114f9017a756115e7531fb5d256c1279760c1c31d2d5cc21e3119017d58e9661",
+      "binary_sha256": "95e8b9ff91f3b4bd101f8569c36c5372c062f7be9b9b03cc26664f531e08b1c6",
+      "binary_bytes": 169576,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.6",
+      "kind": "standalone",
+      "source_commit": "31fc15036c0a1dc7cc1390ec87f0dd8981c8ea33",
+      "display_variant": "ssd1309",
+      "archive_sha256": "719b7b65680be7908acb7775dbcbac7f13a5c039039bb4d02f958f31577933ed",
+      "binary_sha256": "ee826e15c1146077c78ef76f146174f7f669ae2e82ae8e7cbd0ab98fee22dc2e",
+      "binary_bytes": 164120
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.6",
+      "kind": "standalone",
+      "source_commit": "31fc15036c0a1dc7cc1390ec87f0dd8981c8ea33",
+      "display_variant": "ssd1325",
+      "archive_sha256": "e02748dedf68abf59c204e93cf2e3e7bbf941a55867d7dbf90b0ccb7fbc02fbe",
+      "binary_sha256": "7d474e8f7f0803850d654acdf42b2e38fdba7cc5463b6d9c9af5054fe8a57fa6",
+      "binary_bytes": 164200
     }
   ]
 }
