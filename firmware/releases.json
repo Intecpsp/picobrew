@@ -422,6 +422,28 @@
       "archive_sha256": "6e3ff6508f137497e2fd5dc969aee7612039f33d710d087a351f42078fa6ebac",
       "binary_sha256": "12b3a2f197a9f54b07a3d9dc4980e77e7017a663d4f5bed3683b12f16250af0f",
       "binary_bytes": 392224
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.5",
+      "kind": "standalone",
+      "source_commit": "9bbdfd768d75a0579a5b84c34be75d7e6a199b35",
+      "display_variant": "ssd1309",
+      "archive_sha256": "6dd74da097d37259a0b62745bd2f4f351a41adab79889c31256ec67367ea5fe0",
+      "binary_sha256": "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7",
+      "binary_bytes": 164112
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.5",
+      "kind": "standalone",
+      "source_commit": "9bbdfd768d75a0579a5b84c34be75d7e6a199b35",
+      "display_variant": "ssd1325",
+      "archive_sha256": "af194a7d800cb862464374aa78953703d9e35e4d136bcdcf4ab35eb37ddf55a1",
+      "binary_sha256": "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b",
+      "binary_bytes": 164200
     }
   ]
 }

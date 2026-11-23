@@ -50,7 +50,7 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 16
+INSTALL_REVISION = 17
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
@@ -125,9 +125,13 @@ C_RELEASED_1_2_3 = {
     "pico-c-ssd1325": (162304, "ffe1fe5ba2e28504de897d2829343a003e684e8c4f92b14eda6c2d0fb711b174"),
     "pico-c-ssd1309": (162224, "32bd24c118c18cabd29720894ad10647f465050f6786cd548dce874064a7f1df"),
 }
-C_STANDALONE = {
+C_RELEASED_1_2_4 = {
     "pico-c-ssd1325": (164192, "b5b14f098652d1bd42396b22410028af86b8c5cd0d5bf8ac0a50533b40422f9f"),
     "pico-c-ssd1309": (164088, "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424"),
+}
+C_STANDALONE = {
+    "pico-c-ssd1325": (164200, "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b"),
+    "pico-c-ssd1309": (164112, "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7"),
 }
 C_WEB_MANIFEST_SHA256 = "4e355164a463306616a5ec1cb4c0391536c22d41123497d79dcfed7d1fd12b69"
 UID_NAME = "/sys/uid.txt"
@@ -418,7 +422,7 @@ def _approved_current_applications(mode, model="pico-pro"):
     if model in C_STOCK:
         identities = [C_STOCK[model]]
         if mode == "install":
-            identities.extend((C_RELEASED_1_2_3[model], candidate_identity(model)))
+            identities.extend((C_RELEASED_1_2_3[model], C_RELEASED_1_2_4[model], candidate_identity(model)))
         return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
     identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
     if mode == "install":
