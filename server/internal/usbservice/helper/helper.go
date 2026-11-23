@@ -69,6 +69,15 @@ func Command(ctx context.Context, dataDir string) (*exec.Cmd, error) {
 	if err = checkDirectory(directory); err != nil {
 		return nil, err
 	}
+	// Use the verified canonical path for both the read and subsequent exec.
+	// A change to a parent directory alias cannot redirect the launch.
+	directory, err = filepath.EvalSymlinks(directory)
+	if err != nil {
+		return nil, err
+	}
+	if err = checkDirectory(directory); err != nil {
+		return nil, err
+	}
 	name := "worker-" + digest
 	if runtime.GOOS == "windows" {
 		name += ".exe"
