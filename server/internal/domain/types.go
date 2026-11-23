@@ -91,6 +91,7 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	PairingV1             bool                     `json:"pairing_v1,omitempty"`
 	ZProgramMaker         bool                     `json:"z_program_maker,omitempty"`
 	HubOTAV1              bool                     `json:"hub_ota_v1,omitempty"`
 	APIVersion            int                      `json:"api_version"`
@@ -126,6 +127,8 @@ func (c Capabilities) Supports(name string) bool {
 		return c.RecipeCapacity > 0
 	case "front_panel":
 		return c.FrontPanel
+	case "pairing_v1":
+		return c.PairingV1
 	case "brewing", "heating", "temperature", "pump":
 		return c.RecipeCapacity > 0 && (c.Model == "" || c.Model == "pico-s" || c.Model == "pico-pro" || c.Model == "pico-c")
 	case "telemetry_forwarding":
