@@ -13,7 +13,10 @@ import (
 
 var additionalHistoryField = regexp.MustCompile(`^(sensor_[A-Za-z0-9_-]{1,31}|actuator_[A-Za-z0-9_-]{1,31}_(enabled|level|rpm))$`)
 
-func validHistoryFields(fields []string) bool {
+func (p *pico) validHistoryFields(fields []string) bool {
+	if p.capabilities != nil && p.capabilities.Model == "zymatic" {
+		return p.capabilities.ModelFamily == "zymatic" && p.capabilities.Supports("history_persistent") && domain.IsZymaticHistory(fields)
+	}
 	if len(fields) < len(historyFields) || len(fields) > 48 || !reflect.DeepEqual(fields[:len(historyFields)], historyFields) {
 		return false
 	}
@@ -37,10 +40,13 @@ func (p *pico) History(ctx context.Context) (domain.History, error) {
 	defer p.unlock()
 	err := p.request(ctx, http.MethodGet, "/api/v1/history", nil, &result, 200)
 	if err == nil {
-		if !validHistoryFields(result.Fields) || len(result.Sessions) > 8 {
+		if !p.validHistoryFields(result.Fields) || len(result.Sessions) > 8 {
 			return result, &Error{Code: "invalid_response", Message: "Device history schema is unsupported"}
 		}
 		for _, session := range append([]domain.HistorySession{result.HistorySession}, result.Sessions...) {
+			if domain.IsZymaticHistory(result.Fields) && (session.RecordCount < 0 || session.RecordCount > 222 || session.PersistedRecordCount < 0 || session.PersistedRecordCount > session.RecordCount) {
+				return result, &Error{Code: "invalid_response", Message: "Zymatic history exceeds its record capacity"}
+			}
 			if session.SampleIntervalMS != 0 && (session.SampleIntervalMS < 15000 || session.SampleIntervalMS > 86400000) {
 				return result, &Error{Code: "invalid_response", Message: "Device history sampling interval is invalid"}
 			}
@@ -86,13 +92,28 @@ func (p *pico) HistoryPageWithSchema(ctx context.Context, id uint64, offset int)
 	if fields == nil {
 		fields = historyFields
 	}
-	if !validHistoryFields(fields) {
+	if !p.validHistoryFields(fields) {
 		return empty, &Error{Code: "invalid_response", Message: "Device history page schema is unsupported"}
+	}
+	zymatic := domain.IsZymaticHistory(fields)
+	if zymatic && (len(reply.Samples) > 3 || offset+len(reply.Samples) > 222) {
+		return empty, &Error{Code: "invalid_response", Message: "Zymatic history page exceeds its record capacity"}
 	}
 	result := make([]domain.Sample, 0, len(reply.Samples))
 	for _, row := range reply.Samples {
 		if len(row) != len(fields) {
 			return empty, &Error{Code: "invalid_response", Message: "Device history row has an invalid field count"}
+		}
+		if zymatic {
+			sample, err := decodeZymaticSample(row)
+			if err != nil {
+				return empty, err
+			}
+			if len(result) > 0 && sample.ElapsedMS <= result[len(result)-1].ElapsedMS {
+				return empty, &Error{Code: "invalid_response", Message: "Zymatic history page elapsed times do not advance"}
+			}
+			result = append(result, sample)
+			continue
 		}
 		for _, index := range []int{0, 4, 5, 6, 7, 8, 9, 10} {
 			low, high := float64(0), float64(255)

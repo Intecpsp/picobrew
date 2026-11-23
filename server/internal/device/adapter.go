@@ -123,7 +123,7 @@ func validateRecipe(recipe domain.MachineRecipe) error {
 }
 
 func validateCommand(command domain.Command) error {
-	if command.Channel != nil || command.Level != nil || command.Enabled != nil || command.Value != nil || command.DurationSeconds != nil || command.Confirm != nil {
+	if command.DisplayRevision != nil || command.Channel != nil || command.Level != nil || command.Enabled != nil || command.Value != nil || command.DurationSeconds != nil || command.Confirm != nil {
 		return invalid("This firmware does not advertise these command arguments")
 	}
 	known := false

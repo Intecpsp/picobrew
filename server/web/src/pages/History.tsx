@@ -410,24 +410,38 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
               <div key={index}>
                 <span className="timeline-dot" />
                 <time>{clockTime(sample.elapsed_ms)}</time>
-                <div>
-                  <strong>
-                    {accessory
-                      ? `Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`
-                      : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sessionState(brew, 'current_step', sample.current_step, sample.source)}`}
-                  </strong>
-                  <small>
-                    {!accessory &&
-                      `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sessionState(brew, 'compartment', sample.compartment, sample.source)} · `}
-                    {sessionState(brew, 'flags', sample.flags, sample.source, true)}
-                  </small>
-                  <small>
-                    {temperature(accessory ? sample.temperature_f : sample.wort_f, hub.unit)}
-                    {accessory
-                      ? ''
-                      : ` wort · Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`}
-                  </small>
-                </div>
+                {sample.zymatic_history ? (
+                  <div>
+                    <strong>
+                      {sample.current_step == null
+                        ? 'Step not recorded'
+                        : `Step ${sessionState(brew, 'current_step', sample.current_step, sample.source)}`}
+                    </strong>
+                    <small>
+                      {sessionState(brew, 'compartment', sample.compartment, sample.source)}
+                    </small>
+                    <small>{temperature(sample.wort_f, hub.unit)} wort</small>
+                  </div>
+                ) : (
+                  <div>
+                    <strong>
+                      {accessory
+                        ? `Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`
+                        : `Phase ${sessionState(brew, 'phase', sample.phase, sample.source)} · Step ${sessionState(brew, 'current_step', sample.current_step, sample.source)}`}
+                    </strong>
+                    <small>
+                      {!accessory &&
+                        `Controller ${sessionState(brew, 'controller_status', sample.controller_status, sample.source)} · Compartment ${sessionState(brew, 'compartment', sample.compartment, sample.source)} · `}
+                      {sessionState(brew, 'flags', sample.flags, sample.source, true)}
+                    </small>
+                    <small>
+                      {temperature(accessory ? sample.temperature_f : sample.wort_f, hub.unit)}
+                      {accessory
+                        ? ''
+                        : ` wort · Device state ${sessionState(brew, 'device_state', sample.device_state, sample.source, true)}`}
+                    </small>
+                  </div>
+                )}
               </div>
             ))}
             {events.length > 30 && (

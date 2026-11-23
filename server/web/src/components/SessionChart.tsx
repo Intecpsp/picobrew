@@ -107,6 +107,7 @@ export function SessionChart({
     () =>
       states
         .filter(([key]) => !accessory || key === 'device_state' || key === 'flags')
+        .filter(([key]) => !brew.sample_fields || brew.sample_fields.includes(key))
         .map(([key, label]) => {
           const runs: { start: number; end: number; value: number | null; source: string }[] = []
           for (const [i, s] of samples.entries()) {
@@ -119,7 +120,7 @@ export function SessionChart({
           }
           return { key, label, runs }
         }),
-    [samples, accessory, gapLimit]
+    [samples, accessory, gapLimit, brew.sample_fields]
   )
 
   const left = width < 480 ? 92 : 106,

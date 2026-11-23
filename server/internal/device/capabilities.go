@@ -22,6 +22,15 @@ func unsupportedCapability(name string) error {
 }
 
 func validateDiscoveredCommand(command domain.Command, caps domain.Capabilities) error {
+	if command.Command == "encoder" && caps.Supports("panel_revision") {
+		if command.DisplayRevision == nil || command.Click && command.Delta != 0 {
+			return invalid("Use the current display revision and send one dial action")
+		}
+		// Validate the normal encoder fields on this copy. The caller sends the revision.
+		command.DisplayRevision = nil
+	} else if command.DisplayRevision != nil {
+		return invalid("This command does not accept a display revision")
+	}
 	descriptor, described := caps.CommandFields[command.Command]
 	if !described {
 		return validateCommand(command)

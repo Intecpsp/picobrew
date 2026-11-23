@@ -14,6 +14,24 @@ export function HistorySamples({
   unit: Unit
 }) {
   const accessory = ['picoferm', 'picostill'].includes(brew.model)
+  const columns = (
+    [
+      ['wort_f', 'Wort'],
+      ['thermoblock_f', 'Thermoblock'],
+      ['target_f', 'Target'],
+      ['step_seconds', 'Step time'],
+      ['phase', 'Phase'],
+      ['controller_status', 'Controller'],
+      ['compartment', 'Compartment'],
+      ['current_step', 'Step'],
+    ] as const
+  ).filter(([key]) => !accessory && (!brew.sample_fields || brew.sample_fields.includes(key)))
+  const stateColumns = (
+    [
+      ['flags', 'Flags'],
+      ['device_state', 'State'],
+    ] as const
+  ).filter(([key]) => !brew.sample_fields || brew.sample_fields.includes(key))
   const stable: Record<string, { label: string; unit: string }> = {
     temperature_f: { label: 'Temperature', unit: 'F' },
     pressure_kpa: { label: 'Pressure', unit: 'kPa' },
@@ -36,25 +54,18 @@ export function HistorySamples({
         <thead>
           <tr>
             <th>Time</th>
-            {!accessory &&
-              [
-                'Wort',
-                'Thermoblock',
-                'Target',
-                'Step time',
-                'Phase',
-                'Controller',
-                'Compartment',
-                'Step',
-              ].map((label) => <th key={label}>{label}</th>)}
+            {columns.map(([key, label]) => (
+              <th key={key}>{label}</th>
+            ))}
             {extra.map((field) => (
               <th key={field}>
                 {metadata(field).label} (
                 {metadata(field).unit === 'F' ? unit : metadata(field).unit})
               </th>
             ))}
-            <th>Flags</th>
-            <th>State</th>
+            {stateColumns.map(([key, label]) => (
+              <th key={key}>{label}</th>
+            ))}
             <th>Source</th>
           </tr>
         </thead>
@@ -62,25 +73,18 @@ export function HistorySamples({
           {brew.samples.slice(page * 100, (page + 1) * 100).map((sample: Sample, index) => (
             <tr key={index}>
               <td>{clockTime(sample.elapsed_ms)}</td>
-              {!accessory && (
-                <>
-                  <td>{temperature(sample.wort_f, unit)}</td>
-                  <td>{temperature(sample.thermoblock_f, unit)}</td>
-                  <td>{temperature(sample.target_f, unit)}</td>
-                  <td>{duration(sample.step_seconds * 1000)}</td>
-                  <td>{sessionState(brew, 'phase', sample.phase, sample.source)}</td>
-                  <td>
-                    {sessionState(
-                      brew,
-                      'controller_status',
-                      sample.controller_status,
-                      sample.source
-                    )}
-                  </td>
-                  <td>{sessionState(brew, 'compartment', sample.compartment, sample.source)}</td>
-                  <td>{sessionState(brew, 'current_step', sample.current_step, sample.source)}</td>
-                </>
-              )}
+              {columns.map(([key]) => {
+                const raw = sample[key]
+                const value =
+                  key === 'wort_f' || key === 'thermoblock_f' || key === 'target_f'
+                    ? temperature(raw, unit)
+                    : key === 'step_seconds'
+                      ? raw == null
+                        ? 'Not recorded'
+                        : duration(raw * 1000)
+                      : sessionState(brew, key, raw, sample.source)
+                return <td key={key}>{value}</td>
+              })}
               {extra.map((field) => (
                 <td key={field}>
                   {sensorValue(
@@ -89,8 +93,9 @@ export function HistorySamples({
                   )}
                 </td>
               ))}
-              <td>{sessionState(brew, 'flags', sample.flags, sample.source)}</td>
-              <td>{sessionState(brew, 'device_state', sample.device_state, sample.source)}</td>
+              {stateColumns.map(([key]) => (
+                <td key={key}>{sessionState(brew, key, sample[key], sample.source)}</td>
+              ))}
               <td>{sample.source}</td>
             </tr>
           ))}
