@@ -1,7 +1,7 @@
 import { sessionState } from '../lib/sessionState'
 import type { BrewDetail, Sample, Unit } from '../types'
 import { clockTime, duration, temperature } from '../lib/utils'
-import { sampleReading } from '../lib/history'
+import { unheatedTarget, sampleReading } from '../lib/history'
 import { sensorValue } from '../lib/capabilities'
 
 export function HistorySamples({
@@ -66,7 +66,11 @@ export function HistorySamples({
                 <>
                   <td>{temperature(sample.wort_f, unit)}</td>
                   <td>{temperature(sample.thermoblock_f, unit)}</td>
-                  <td>{temperature(sample.target_f, unit)}</td>
+                  <td>
+                    {unheatedTarget(brew.model, sample.target_f)
+                      ? 'Unheated'
+                      : temperature(sample.target_f, unit)}
+                  </td>
                   <td>{duration(sample.step_seconds * 1000)}</td>
                   <td>{sessionState(brew, 'phase', sample.phase, sample.source)}</td>
                   <td>

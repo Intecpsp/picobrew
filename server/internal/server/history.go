@@ -128,6 +128,7 @@ func (s *Server) mergeHistoryBrew(device domain.Device, h domain.HistorySession,
 		}
 		b.DurationMS, b.GapCount = h.DurationMS, h.GapCount
 		b.SampleIntervalMS = h.SampleIntervalMS
+		b.RecoveredAfterRestart = h.RecoveredAfterRestart
 		b.Truncated = h.Truncated || h.StorageError || !complete
 		b.DeviceName = device.Name
 		b.SampleCount, err = s.db.SampleCount(id)
@@ -404,6 +405,15 @@ func (s *Server) brewDetail(id string) (domain.BrewDetail, error) {
 	var b domain.Brew
 	if _, e := s.db.Get("brew", id, &b); e != nil {
 		return domain.BrewDetail{}, e
+	}
+	// Older archives retained the machine's recovery flag in the sync receipt.
+	if b.State == "interrupted" && !b.RecoveredAfterRestart && b.DeviceHistoryID != 0 {
+		var receipt historyImport
+		_, err := s.db.Get("history-sync", id, &receipt)
+		if err != nil && !errors.Is(err, store.ErrNotFound) {
+			return domain.BrewDetail{}, err
+		}
+		b.RecoveredAfterRestart = receipt.Session.ID == b.DeviceHistoryID && receipt.Session.RecoveredAfterRestart
 	}
 	samples, e := s.db.Samples(id)
 	if e == nil {

@@ -6,9 +6,9 @@ test('decodes the recorded model and preserves ambiguous and unknown values', ()
   const value = (model: string, field: string, raw: number) =>
     sessionState({ ...brew, model }, field, raw, 'device', true)
   expect(value('pico-s', 'flags', 11)).toBe(
-    'Controller ready · Machine busy · Step filter inserted (0x0b)'
+    'Controller ready · Machine busy · Step filter inserted'
   )
-  expect(value('pico-s', 'flags', 52)).toBe('Stopped · Sampling gap · Unknown bits 0x20 (0x34)')
+  expect(value('pico-s', 'flags', 52)).toBe('Stopped · Sampling gap · Unknown bits 0x20')
   expect(value('pico-s', 'current_step', 1)).toBe('2')
   expect(value('pico-s', 'current_step', 255)).toBe('No step')
   expect(value('pico-pro', 'compartment', 5)).toBe('Adjunct 4 (5)')
@@ -27,4 +27,12 @@ test('decodes the recorded model and preserves ambiguous and unknown values', ()
       'simulation'
     )
   ).toBe('Not recorded')
+})
+
+test('an unheated Pico target is distinct from a missing or measured value', async () => {
+  const { unheatedTarget } = await import('./history')
+  expect(unheatedTarget('pico-s', 0)).toBe(true)
+  expect(unheatedTarget('pico-pro', 152)).toBe(false)
+  expect(unheatedTarget('pico-c', null)).toBe(false)
+  expect(unheatedTarget('picoferm', 0)).toBe(false)
 })
