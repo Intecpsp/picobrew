@@ -335,7 +335,10 @@ for (const viewport of [
       expect(observations).toEqual(
         [other, other, controller].map((display_variant) => ({ device_uid: uid, display_variant }))
       )
-      expect(commands).toHaveLength(1)
+      expect(commands).toEqual([
+        { command: 'encoder', click: true },
+        { command: 'restart', confirm: true },
+      ])
       await dialog.screenshot({
         path: test.info().outputPath(`c-verified-${controller}-${viewport.name}.png`),
       })
@@ -350,7 +353,10 @@ for (const viewport of [
       await expect(matching.locator('option')).toHaveCount(1)
       await expect(select).not.toBeVisible()
       expect(observations).toHaveLength(3)
-      expect(commands).toHaveLength(1)
+      expect(commands).toEqual([
+        { command: 'encoder', click: true },
+        { command: 'restart', confirm: true },
+      ])
       expect(errors).toEqual([])
     })
   }
