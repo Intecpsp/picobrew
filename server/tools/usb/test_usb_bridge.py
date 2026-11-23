@@ -11,6 +11,19 @@ import usb_bridge as bridge
 
 
 class WorkerTests(unittest.TestCase):
+    def test_another_hub_worker_cannot_open_the_same_usb_service(self):
+        import usb_avr
+        with tempfile.TemporaryDirectory() as tmp:
+            data = Path(tmp) / "hub"
+            directory = data / "usb-jobs"
+            bridge.private_files.ensure_private_directory(directory, parents=True, exist_ok=True)
+            target = {"port": "test", "label": "Test", "models": ["pico-s"]}
+            req = {"action": "backup", "model": "pico-s", "port": "test", "data_dir": str(data), "job_id": "1"*32}
+            with usb_avr.service_lock(directory):
+                with self.assertRaisesRegex(bridge.UserError,"Another USB operation"):
+                    bridge.run(req, io.BytesIO(), self.fail, discover=lambda: {"test": target})
+            self.assertFalse((directory / req["job_id"]).exists())
+
     def test_list_hides_paths_and_serials_and_rejects_disconnected_target(self):
         serial = SimpleNamespace(
             vid=0x20A0,

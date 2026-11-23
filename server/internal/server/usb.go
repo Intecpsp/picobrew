@@ -66,6 +66,18 @@ func (s *Server) usbStart(w http.ResponseWriter, r *http.Request) {
 			s.fail(w, 409, "device_identity", "USB service for a registered machine requires its verified model and device identity.")
 			return
 		}
+		s.mu.RLock()
+		rt := s.devices[in.DeviceID]
+		s.mu.RUnlock()
+		if rt != nil {
+			rt.mu.RLock()
+			inUse := rt.updatingFirmware || rt.view.Online && rt.view.Status != nil && rt.view.Status.Busy
+			rt.mu.RUnlock()
+			if inUse {
+				s.fail(w, 409, "device_busy", "Finish the active machine operation before USB service.")
+				return
+			}
+		}
 		uid = pin.UID
 		in.Model = d.Model
 	}

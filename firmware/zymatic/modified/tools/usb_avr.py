@@ -103,6 +103,10 @@ def plan(before, application):
     return application + before[len(application):end]
 
 
+class ServiceBusy(ValueError):
+    """Another process still owns the USB port protocol."""
+
+
 @contextmanager
 def service_lock(directory):
     # POSIX/Windows release the lock on process exit. Keep the inode to avoid
@@ -121,7 +125,7 @@ def service_lock(directory):
                 import fcntl
                 fcntl.flock(file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError as exc:
-            raise ValueError("Another Zymatic USB service is active for this Hub") from exc
+            raise ServiceBusy("Another USB service is active for this Hub") from exc
         yield
 
 

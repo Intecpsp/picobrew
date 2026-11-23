@@ -181,7 +181,14 @@ func TestWorkerRestartAndInvalidInputs(t *testing.T) {
 	if err != nil || v.State != "failed" {
 		t.Fatal(v, err)
 	}
-	if info := restarted.Devices(context.Background()); info.Available || info.Job == nil {
+	stale.State = "complete"
+	if err = m.persist(stale); err != nil {
+		t.Fatal(err)
+	}
+	if j, err := restarted.Get(stale.ID); err != nil || j.State != "complete" {
+		t.Fatal(j, err)
+	}
+	if info := restarted.Devices(context.Background()); info.Available || info.Job == nil || info.Job.State != "complete" {
 		t.Fatal(info)
 	}
 }

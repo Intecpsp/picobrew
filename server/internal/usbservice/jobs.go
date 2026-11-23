@@ -80,6 +80,7 @@ type Manager struct {
 	mu                       sync.Mutex
 	wg                       sync.WaitGroup
 	closed, active, canceled bool
+	inherited                bool
 	last                     *USBJob
 	reply                    io.WriteCloser
 	timer                    *time.Timer
@@ -101,16 +102,9 @@ func Open(dir string, db *store.Store, enabled bool) (*Manager, error) {
 		if err = json.Unmarshal(row, &j); err != nil {
 			return nil, err
 		}
-		if j.State == "running" || j.State == "waiting" {
-			j.State = "failed"
-			j.Confirmation = ""
-			j.Message = "The Hub restarted before it verified completion. Read the machine again before retrying."
-			if err = m.persist(j); err != nil {
-				return nil, err
-			}
-		}
 		if m.last == nil || j.CreatedAt.After(m.last.CreatedAt) {
 			m.last = &j
+			m.inherited = j.State == "running" || j.State == "waiting"
 		}
 	}
 	return m, nil
@@ -158,19 +152,35 @@ func (m *Manager) current() *USBJob {
 	if m.last == nil {
 		return nil
 	}
-	copy := m.withPair(*m.last)
+	j := *m.last
+	if m.inherited {
+		if disk, err := m.readJob(j.ID); err == nil {
+			j = disk
+		}
+	}
+	copy := m.withPair(j)
 	return &copy
 }
 func (m *Manager) storedJob(id string) (USBJob, error) {
 	m.mu.Lock()
-	if m.last != nil && m.last.ID == id {
+	if m.last != nil && m.last.ID == id && !m.inherited {
 		j := *m.last
 		m.mu.Unlock()
 		return j, nil
 	}
 	m.mu.Unlock()
+	return m.readJob(id)
+}
+func (m *Manager) readJob(id string) (USBJob, error) {
 	var j USBJob
 	_, err := m.db.Get("usb-job", id, &j)
+	// Another process can still own the worker and commit the real outcome.
+	// This instance never replays its prompt or overwrites its durable state.
+	if err == nil && (j.State == "running" || j.State == "waiting") {
+		j.State = "failed"
+		j.Confirmation = ""
+		j.Message = "This Hub process has no verified completion. If another Hub is open, check its job before retrying."
+	}
 	if errors.Is(err, store.ErrNotFound) {
 		err = ErrMissing
 	}
@@ -306,6 +316,7 @@ func (m *Manager) Start(in USBInput, expectedUID, hubHost string) (USBJob, error
 		return USBJob{}, err
 	}
 	m.active = true
+	m.inherited = false
 	m.canceled = false
 	m.last = &j
 	m.wg.Add(1)

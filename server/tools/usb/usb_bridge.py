@@ -136,6 +136,21 @@ def run(request, stream, emit, discover=devices):
     job = request.get("job_id")
     if not isinstance(job, str) or not re.fullmatch(r"[a-f0-9]{32}", job):
         raise UserError("The Hub supplied an invalid USB job identifier.")
+    import usb_avr
+
+    directory = data / "usb-jobs"
+    private_files.ensure_private_directory(directory, parents=True, exist_ok=True)
+    private_files.assert_private(directory, directory=True)
+    # The worker owns this OS lock across reads, physical confirmations, writes
+    # and readback. A restarting Hub cannot overlap a surviving worker.
+    try:
+        with usb_avr.service_lock(directory):
+            return _service(request, stream, emit, entries, action, model, port, display, data, job, expected)
+    except usb_avr.ServiceBusy:
+        raise UserError("Another USB operation is still using this Hub. Wait for it to finish.") from None
+
+
+def _service(request, stream, emit, entries, action, model, port, display, data, job, expected):
     job_dir = data / "usb-jobs" / job
     private_files.ensure_private_directory(job_dir, parents=True, exist_ok=True)
     private_files.assert_private(job_dir, directory=True)
