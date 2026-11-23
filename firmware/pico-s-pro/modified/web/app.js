@@ -272,7 +272,7 @@ $('importFile').addEventListener('change',async event=>{
   const file=event.target.files[0];event.target.value='';if(!file)return;
   try{
     if(file.size>16384)throw new Error('Recipe file is too large.');
-    const recipe=JSON.parse(await file.text());
+    const recipe=readRecipeFile(await file.text());
     const issue=recipeIssue(recipe);
     if(issue)throw new Error(issue);
     if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
