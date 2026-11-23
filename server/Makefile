@@ -12,6 +12,7 @@ HUB_COMMAND := ./picobrew-hub
 endif
 .PHONY: build server-start test run demo web
 build:
+	"$(GO)" run ./tools/usb-prepare -local "$(USB_WORKER_LOCAL)"
 	"$(GO)" build -trimpath -o "$(HUB_BINARY)" ./cmd/picobrew-hub
 server-start: build
 	"$(HUB_COMMAND)" --data ./data

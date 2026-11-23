@@ -30,8 +30,10 @@ root or `server/`, build and start the Hub with:
 make server-start
 ```
 
-This builds the Go executable with its bundled website and runs the Hub in the
-foreground. Both entry points use the same
+This builds the Go executable with its website and native USB tools, then starts it
+in the foreground. The first supported-platform build downloads one size- and
+SHA-256-verified USB worker from the project release. Later builds reuse the
+verified local file. Release executables already include it. Both entry points use the same
 `server/data` directory; an isolated server copy uses its own `data` directory.
 Press **Ctrl-C** to stop, including when the browser is receiving live updates.
 
@@ -43,8 +45,11 @@ If Make is not installed, run the following from the directory containing
 `go.mod`, `cmd/` and `internal/` (`server/` in the full checkout):
 
 ```sh
+go run ./tools/usb-prepare
 go build -trimpath ./cmd/picobrew-hub
 ```
+
+An unstaged raw Go build supports network operations. To produce a USB-enabled build from local programmer sources, run the native builder in the full repository and set `USB_WORKER_LOCAL` to its output directory when invoking Make.
 
 Then start it with `./picobrew-hub --data ./data` on macOS/Linux, or
 `.\picobrew-hub.exe --data .\data` in Windows PowerShell. The executable serves

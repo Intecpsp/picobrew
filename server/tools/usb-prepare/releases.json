@@ -1,0 +1,41 @@
+{
+  "tag": "usb-tools-v1.0.1",
+  "assets": {
+    "darwin-amd64": {
+      "platform": "darwin-amd64",
+      "name": "picobrew-usb-darwin-amd64",
+      "bytes": 24369616,
+      "sha256": "d8eca10e194410b353618e1258f8f1c222ff4c2d60262f425142a887b5d78e1e"
+    },
+    "darwin-arm64": {
+      "platform": "darwin-arm64",
+      "name": "picobrew-usb-darwin-arm64",
+      "bytes": 24118480,
+      "sha256": "142ba41363cfdbc2bf74742a4cfed332dd12a2f6ea166b69da17677e17f15ef3"
+    },
+    "linux-amd64": {
+      "platform": "linux-amd64",
+      "name": "picobrew-usb-linux-amd64",
+      "bytes": 39906088,
+      "sha256": "3d822a1755ac5b5efcd0162f0a38c17257c19a9aa9e721f9a246e0556c92551a"
+    },
+    "linux-arm": {
+      "platform": "linux-arm",
+      "name": "picobrew-usb-linux-arm",
+      "bytes": 21001224,
+      "sha256": "49ee7319c2162970d5ba4421011777ea9aefc387bbe8fde9d41477063f7fe4e2"
+    },
+    "linux-arm64": {
+      "platform": "linux-arm64",
+      "name": "picobrew-usb-linux-arm64",
+      "bytes": 39006896,
+      "sha256": "99653549de2f511f12e5cd9f0dbce087c122d682cca7244c0b821b846d408919"
+    },
+    "windows-amd64": {
+      "platform": "windows-amd64",
+      "name": "picobrew-usb-windows-amd64.exe",
+      "bytes": 25952736,
+      "sha256": "2f79c374b1211286ca3b86d265228559c7616702fd28c5b2b7363a51ed02a632"
+    }
+  }
+}

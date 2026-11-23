@@ -40,7 +40,9 @@ def programmer():
     if not path:
         raise ValueError("Install AVRDUDE 8.1 and put avrdude on PATH, or use PicoFlash")
     result = subprocess.run([path, "--version"], capture_output=True, text=True, timeout=10)
-    if result.returncode or "Avrdude version 8.1" not in (result.stdout + result.stderr).splitlines():
+    # Windows PATHEXT may preserve the uppercase .EXE spelling in argv[0].
+    accepted = {"avrdude version 8.1", "avrdude.exe version 8.1"}
+    if result.returncode or accepted.isdisjoint(line.strip().lower() for line in (result.stdout + result.stderr).splitlines()):
         raise ValueError("Use the tested AVRDUDE version 8.1, or prepare the HEX for PicoFlash")
     return os.path.abspath(path)
 
@@ -102,6 +104,10 @@ def plan(before, application):
     return application + before[len(application):end]
 
 
+class ServiceBusy(ValueError):
+    """Another process still owns the USB port protocol."""
+
+
 @contextmanager
 def service_lock(directory):
     # POSIX/Windows release the lock on process exit. Keep the inode to avoid
@@ -120,11 +126,11 @@ def service_lock(directory):
                 import fcntl
                 fcntl.flock(file, fcntl.LOCK_EX | fcntl.LOCK_NB)
         except OSError as exc:
-            raise ValueError("Another Zymatic USB service is active for this Hub") from exc
+            raise ServiceBusy("Another USB service is active for this Hub") from exc
         yield
 
 
-def service(data, port, action, source=None, *, confirm=None, key_file=None, hub_host=None, offline_program=None):
+def service(data, port, action, source=None, *, confirm=None, key_file=None, hub_host=None, offline_program=None, expected_uid=None):
     if action not in ("backup", "install", "restore"):
         raise ValueError("Unknown Zymatic USB service action")
     directory = Path(data).absolute() / "usb-stock" / "zymatic"
@@ -185,6 +191,8 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             interrupted = usb_application.interrupted_standalone(previous, before, application, pending=bool(pending))
             if interrupted:
                 standalone, installed = interrupted
+        if expected_uid and (not installed or installed["uid"] != expected_uid):
+            raise ValueError("The USB Zymatic differs from the registered brewer; no write was attempted")
         limit = usb_layout.qualified_limit(directory, before, installed)
         if action == "install":
             pages, metadata = usb_application.install_pages(standalone or before, application, installed,
@@ -203,7 +211,7 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             if pending:
                 usb_application.finish_transaction(previous, before)
             print(f"The installed application already matches {version}. No write needed.")
-            return
+            return metadata["uid"] if action == "install" else None
         write_input(work / "app-pages.bin", pages)
         expected = pages + before[len(pages):]
         print(f"Write Zymatic {version} via {port}. This updates the first {len(pages) // PAGE} "
@@ -226,3 +234,4 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             usb_application.finish_transaction(transaction, expected)
         print(f"Verified the entire readable program flash for Zymatic {version}. Disconnect USB "
               "and restart the brewer.")
+        return metadata["uid"] if action == "install" else None

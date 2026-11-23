@@ -351,7 +351,9 @@ def copy_sources(destination, *, include_root=True):
     if include_root and root_makefile.is_file():
         shutil.copy2(root_makefile, destination / 'Makefile')
     assert not (server / 'web').exists()
-    assert not (server / 'tools').exists()
+    # The USB preparer is pure Go and independent of firmware sources and Node.
+    shutil.copytree(SOURCE / 'tools' / 'usb-prepare', server / 'tools' / 'usb-prepare')
+    assert not (server / 'tools' / 'usb').exists()
     return server
 
 
@@ -380,7 +382,7 @@ def go_only_environment(folder, env, selected_go):
         result['MAKESHELL'] = str(Path(system_root) / 'System32/cmd.exe')
     for name in ('node', 'node.exe', 'npm', 'npm.cmd', 'npx', 'npx.cmd'):
         assert shutil.which(name, path=result['PATH']) is None, f'{name} remains available on PATH'
-    print('Dependency isolation verified: no Node/npm on PATH; no web/ or tooling in build fixtures.', flush=True)
+    print('Dependency isolation verified: no Node/npm on PATH; no web sources or programmer toolchain in build fixtures.', flush=True)
     return result, str(go)
 
 

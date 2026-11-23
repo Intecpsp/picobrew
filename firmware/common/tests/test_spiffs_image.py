@@ -1,5 +1,8 @@
+import hashlib
 import json
 import os
+import secrets
+import subprocess
 from pathlib import Path
 import sys
 import tempfile
@@ -52,6 +55,32 @@ class SpiffsImageNativeTests(unittest.TestCase):
                 self.assertTrue(report['independent_decode']['exact_contents'])
                 self.assertEqual(output.stat().st_mode & 0o077, 0)
 
+    def test_usb_key_image_matches_pinned_native_formatter(self):
+        import esp_provisioning
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            for profile, geometry in spiffs.PROFILES.items():
+                formatter = spiffs.compile_formatter(root/profile, self.esp8266, profile)
+                image = root/'image'
+                command = [str(formatter),str(geometry['partition_bytes']),str(geometry['block_bytes']),
+                           str(geometry['partition_offset']),str(image)]
+                subprocess.run(command, check=True, capture_output=True)
+                empty = image.read_bytes()
+                for _ in range(2):
+                    key = secrets.token_hex(32)
+                    source = root/'key'
+                    source.write_bytes(key.encode())
+                    result = subprocess.run(command+['/pb/api.key',str(source)],check=True,capture_output=True)
+                    self.assertTrue(json.loads(result.stdout)['remount_verified'])
+                    native = bytearray(image.read_bytes())
+                    staged = esp_provisioning.stage(empty,profile,key)
+                    # The C ABI declares three unused alignment bytes after the
+                    # page header. Some compiler/SDK combinations leave them
+                    # unspecified. The USB composer writes zeros there.
+                    for offset in ([256,768] if profile=='esp32-4m' else [256]):
+                        self.assertEqual(staged[offset+5:offset+8],bytes(3))
+                        native[offset+5:offset+8]=bytes(3)
+                    self.assertEqual(hashlib.sha256(native).digest(), hashlib.sha256(staged).digest())
     def test_invalid_explicit_input_preserves_existing_output(self):
         with tempfile.TemporaryDirectory(prefix='picobrew-spiffs-input-test-') as temporary:
             directory = Path(temporary)

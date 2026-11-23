@@ -22,6 +22,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/usbservice"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/webui"
 )
 
@@ -58,6 +59,7 @@ type Server struct {
 	newPairingClient          func(string) (registrationPairer, error)
 	cfg                       Config
 	db                        *store.Store
+	usb                       *usbservice.Manager
 	vault                     *vault
 	auth                      authState
 	mu                        sync.RWMutex
@@ -118,6 +120,12 @@ func New(cfg Config) (*Server, error) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New(), chatGPT: ai.NewChatGPT()}
+	s.usb, e = usbservice.Open(cfg.DataDir, db, !cfg.Demo)
+	if e != nil {
+		db.Close()
+		cancel()
+		return nil, e
+	}
 	s.telemetryProbeKey = secretToken()
 	s.telemetryClient = newReceiverClient()
 	s.firmwareGitHub = firmware.NewGitHub()
@@ -188,6 +196,7 @@ func (s *Server) BeginShutdown() {
 func (s *Server) Close() error {
 	s.BeginShutdown()
 	s.stopChatGPTCallback()
+	s.usb.Close()
 	s.mu.Lock()
 	for _, d := range s.devices {
 		d.cancel()
@@ -247,6 +256,11 @@ func (s *Server) routes() http.Handler {
 		r.Group(func(r chi.Router) {
 			r.Use(s.authenticate)
 			r.Post("/auth/logout", s.logout)
+			r.Get("/usb/devices", s.usbDevices)
+			r.Post("/usb/jobs", s.usbStart)
+			r.Get("/usb/jobs/{id}", s.usbJob)
+			r.Post("/usb/jobs/{id}/confirm", s.usbAnswer)
+			r.Post("/usb/jobs/{id}/cancel", s.usbAnswer)
 			r.Get("/devices", s.listDevices)
 			r.Post("/devices", s.saveDevice)
 			r.Post("/devices/pair", s.startMachinePairing)

@@ -419,7 +419,12 @@ export default function App() {
               ) : section === 'api' ? (
                 <Explorer />
               ) : (
-                <Fleet addMachine={parts[1] === 'new-device'} />
+                <Fleet
+                  addMachine={parts[1] === 'new-device'}
+                  usbJobId={
+                    new URLSearchParams(route.split('?')[1] || '').get('usb_job_id') || undefined
+                  }
+                />
               )}
             </Suspense>
           </main>

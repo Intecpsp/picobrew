@@ -1,0 +1,115 @@
+name: Package Hub USB workers
+on:
+  pull_request:
+    paths:
+      - 'server/tools/usb/**'
+      - 'server/tools/usb-prepare/**'
+      - 'server/internal/usbservice/**'
+      - 'firmware/**/tools/**'
+      - 'firmware/**/modified/firmware/**'
+      - 'firmware/**/modified/releases/**'
+      - 'firmware/zymatic/modified/extension/**'
+      - 'firmware/releases.json'
+      - '.github/workflows/hub-usb-tools.yml'
+  push:
+    tags: ['usb-tools-v*']
+  workflow_dispatch:
+concurrency:
+  group: usb-workers-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+permissions:
+  contents: read
+jobs:
+  native:
+    name: USB worker / ${{ matrix.platform }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {platform: darwin-arm64, runner: macos-15}
+          - {platform: darwin-amd64, runner: macos-15-intel}
+          - {platform: windows-amd64, runner: windows-2025}
+          - {platform: linux-amd64, runner: ubuntu-22.04}
+          - {platform: linux-arm64, runner: ubuntu-22.04-arm}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Install build-only dependencies
+        run: python -m pip install PyInstaller==6.22.3 -r firmware/common/requirements-usb.txt -r firmware/pico-s-pro/modified/requirements-usb.txt
+      - name: Test the USB protocol and build the native worker
+        run: |
+          python -m unittest discover -s server/tools/usb -p "test_*.py"
+          python server/tools/usb/build_worker.py --output artifacts
+      - name: Embed worker and test the packaged Hub
+        env: {PICOBREW_REQUIRE_USB_WORKER: "1"}
+        working-directory: server
+        shell: bash
+        run: |
+          go run ./tools/usb-prepare -local ../artifacts
+          go test ./internal/usbservice/helper -run TestEmbedded -count=1
+          suffix=""
+          if [ "${{ runner.os }}" = Windows ]; then suffix=.exe; fi
+          go build -trimpath -o "../artifacts/picobrew-hub-${{ matrix.platform }}${suffix}" ./cmd/picobrew-hub
+      - uses: actions/upload-artifact@v4
+        with:
+          name: usb-${{ matrix.platform }}
+          path: artifacts/
+          retention-days: 14
+
+  pi32:
+    name: USB worker / linux-arm (Pi OS 32-bit)
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 65
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker/setup-qemu-action@v3
+        with: {platforms: arm}
+      - name: Package worker in 32-bit Debian Bookworm
+        run: |
+          mkdir -p artifacts
+          docker run --rm --platform linux/arm/v7 -v "$GITHUB_WORKSPACE:/src" -w /src debian:bookworm-slim bash server/tools/usb/build_pi32.sh
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: server/go.mod
+          cache-dependency-path: server/go.sum
+      - name: Embed 32-bit worker in ARMv7 Hub
+        working-directory: server
+        run: |
+          GOOS=linux GOARCH=arm GOARM=7 go build -o /tmp/picobrew-stage ./tools/usb-prepare
+          /tmp/picobrew-stage -local ../artifacts
+          CGO_ENABLED=0 GOOS=linux GOARCH=arm GOARM=7 go test -c -o /tmp/picobrew-usb-test ./internal/usbservice/helper
+          docker run --rm --platform linux/arm/v7 -e PICOBREW_REQUIRE_USB_WORKER=1 \
+            -v /tmp/picobrew-usb-test:/usb-test:ro debian:bookworm-slim /usb-test -test.run TestEmbedded -test.v
+          GOOS=linux GOARCH=arm GOARM=7 go build -trimpath -o ../artifacts/picobrew-hub-linux-arm ./cmd/picobrew-hub
+      - uses: actions/upload-artifact@v4
+        with:
+          name: usb-linux-arm
+          path: artifacts/
+          retention-days: 14
+
+  publish:
+    if: startsWith(github.ref, 'refs/tags/usb-tools-v')
+    needs: [native, pi32]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: usb-*
+          merge-multiple: true
+          path: artifacts
+      - name: Publish the immutable build inputs and release manifest
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python server/tools/usb/release.py "$GITHUB_REF_NAME" artifacts
+          gh release create "$GITHUB_REF_NAME" artifacts/* --verify-tag --title "PicoBrew Hub USB tools ${GITHUB_REF_NAME#usb-tools-v}" --notes-file server/tools/usb/release-notes.md
