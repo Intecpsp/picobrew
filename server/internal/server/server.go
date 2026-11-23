@@ -54,6 +54,8 @@ type runtimeDevice struct {
 	telemetryReconnect bool // Guarded by mu; set by a verified reconnect or uptime rollback.
 }
 type Server struct {
+	pairings                  map[string]*machinePairing // guarded by deviceMu
+	newPairingClient          func(string) (registrationPairer, error)
 	cfg                       Config
 	db                        *store.Store
 	vault                     *vault
@@ -247,6 +249,9 @@ func (s *Server) routes() http.Handler {
 			r.Post("/auth/logout", s.logout)
 			r.Get("/devices", s.listDevices)
 			r.Post("/devices", s.saveDevice)
+			r.Post("/devices/pair", s.startMachinePairing)
+			r.Post("/devices/{id}/key", s.machineKey)
+			r.Post("/devices/{id}/website", s.machineWebsite)
 			r.Get("/devices/{id}", s.getDevice)
 			r.Put("/devices/{id}", s.saveDevice)
 			r.Delete("/devices/{id}", s.deleteDevice)
