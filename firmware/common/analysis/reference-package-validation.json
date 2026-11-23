@@ -14,9 +14,9 @@
       "model": "z-series",
       "profile": "esp32-4m",
       "source_entries_verified": 352,
-      "elf_sha256": "39402fb71473e79e9e288f850a5bcabdf619fde3974887b1ee68cedc8beee22b",
-      "build_report_sha256": "a3f81d2cf4e9816bf6afaa89feb36e6af6b26c89481e918064d417458cbcfac1",
-      "manifest_sha256": "2d8b9fe128f09e14c0e6b47d349d060ef8ec1306a3fdfe7f16d7e1924938fea6",
+      "elf_sha256": "05f5f7e6963f86935b5a0b256a019ca4cd3865db417930b0b01aedd8fce6714f",
+      "build_report_sha256": "a326abc60ff2ade6987af339581cbe89e9f400f07270a3dcd84c9646112e6927",
+      "manifest_sha256": "5eb1ba8b9087eb8dd012523bd581a1957bf1058c357a493ba9352dee46b7b34a",
       "components": [
         {
           "file": "bootloader.bin",
@@ -38,9 +38,9 @@
           "file": "application.bin",
           "kind": "factory-application",
           "offset": 65536,
-          "bytes": 1648352,
+          "bytes": 1649216,
           "maximum_bytes": 2031616,
-          "sha256": "7aec440cd30e2b8de11d6fc52ae502414da8843e31e783486dccf50f0455cb8b"
+          "sha256": "9d18d43076ffa0c0e1cb346ecd10cd68a55081aa636c5cac78ca6d1aac448525"
         },
         {
           "file": "spiffs.bin",
@@ -63,9 +63,9 @@
       "model": "picostill",
       "profile": "esp32-4m",
       "source_entries_verified": 108,
-      "elf_sha256": "7075d4a1a1fe18ec11caa48fccbff8a375541c4431e17064c5809ebf254299e9",
-      "build_report_sha256": "f9868ada4964d32a65a867e036e3624fa48bd05cf89a5e2a4e2c2423c03b2aca",
-      "manifest_sha256": "625d15095afcb93ba324f6913be0f9c4e28616235daf327ab5fb001a93bd37cb",
+      "elf_sha256": "548c09a72f275a75fbe7e1e20cee6ea5050046ac849f2038e14962f4aaf33e71",
+      "build_report_sha256": "a8ece32d7f78f2d9d0c70e1cf01faf73912ddd5bb9b3e2b413f9f4e2dbe30bb1",
+      "manifest_sha256": "bce5c21d753adb2dce5b69c380e38cbbce25de1e2879dd6a539b1159b50e885d",
       "components": [
         {
           "file": "bootloader.bin",
@@ -87,9 +87,9 @@
           "file": "application.bin",
           "kind": "factory-application",
           "offset": 65536,
-          "bytes": 807040,
+          "bytes": 807904,
           "maximum_bytes": 2031616,
-          "sha256": "4dc73626c3a8cbf6645edaecbd904326565df2b7a6ac1ae776d4f64f3f4bd4cc"
+          "sha256": "512fa1886a15b61f4aeb388fbb5342bf0a3651713759b70f5a672dc13ec63d8e"
         },
         {
           "file": "spiffs.bin",
@@ -112,17 +112,17 @@
       "model": "picoferm",
       "profile": "esp8266-2m",
       "source_entries_verified": 113,
-      "elf_sha256": "9466d7c3c8d79d160ad2919675f78af73e684da99c0c3634bb317d8c0fb5d9ef",
-      "build_report_sha256": "579836dd75ceb50f6e324161f564b7fe10df601eb15ab0a09dc1627ffb58fb70",
-      "manifest_sha256": "851462debda451a5b7c76ee93ad3f5e83cbc56563476be56ffc62cce1bf3f350",
+      "elf_sha256": "2f9d870e8a7c472715f23e021a8973b72e9d179951c7e7d72293914d39911f06",
+      "build_report_sha256": "b9358d76cb74b9f74cd20f301e888cb28d837500a8890de79b0b04a0113b73bb",
+      "manifest_sha256": "5a6028548001bca988acba472c75243359b86f9509831928c8d9a01449543947",
       "components": [
         {
           "file": "application.bin",
           "kind": "eboot-and-application",
           "offset": 0,
-          "bytes": 393488,
+          "bytes": 394352,
           "maximum_bytes": 1048576,
-          "sha256": "a21bab7e79dcc8d90a7dafc4868a96a0e73e15c03000053e653a7a3936ba90ec"
+          "sha256": "5b4abfe748471d8ec7f927b79f17dd978b6b3c58fd87f5de2a7cc9e0228e0cf7"
         },
         {
           "file": "spiffs.bin",
