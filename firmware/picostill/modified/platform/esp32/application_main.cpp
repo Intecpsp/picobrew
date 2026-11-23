@@ -54,6 +54,7 @@ public:
         device_.storage_ready(capacity && initialized.ok());
         pico_http_server_initialize(&http_, &socket_io_, &listener_, api::Engine::http_handler, &engine_,
                                     pico_common_web_assets, pico_common_web_assets_count);
+        pico_http_server_enable_pairing(&http_, false);
         pico_http_server_set_asset_io(&http_, &pico_common_web_asset_io, nullptr);
         apply_key();
         if (startup) { WiFi.persistent(false); apply_network(); }

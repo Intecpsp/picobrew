@@ -130,6 +130,13 @@ void pico_http_server_initialize(PicoHttpServer *server, const PicoHttpIo *io, v
                                   PicoHttpHandler handler, void *handler_context,
                                   const PicoHttpAsset *assets, size_t asset_count);
 /* Configure immediately after initialize, before polling/accepting clients. */
+/* Every provisioned device may grant browser launch from an authenticated Hub.
+ * Only machines with an independent physical code display and approval input
+ * may enable unauthenticated pairing requests. */
+void pico_http_server_enable_pairing(PicoHttpServer *server, bool physical_approval);
+bool pico_http_pairing_available(bool physical_approval);
+uint32_t pico_http_pairing_prompt(uint32_t now_ms, char code[9]);
+bool pico_http_pairing_decide(uint32_t now_ms, uint32_t serial, bool allow);
 void pico_http_server_set_asset_io(PicoHttpServer *server, const PicoHttpAssetIo *io,
                                     void *context);
 /* Accept exactly 64 lowercase hex characters, optionally followed by LF/CRLF.

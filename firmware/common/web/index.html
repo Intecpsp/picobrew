@@ -17,7 +17,7 @@
     <div class="connection"><span id="connectionDot" class="dot"></span><span id="connectionText">Disconnected</span><button id="connectButton" class="button small ghost">Connect</button></div>
   </header>
   <div class="shell">
-    <nav aria-label="Main navigation">
+    <nav aria-label="Main navigation" hidden>
       <p class="nav-heading">YOUR DEVICE</p>
       <button class="nav-button selected" data-tab="overview" aria-current="page">Overview <span>01</span></button>
       <button class="nav-button" data-tab="recipes" data-feature="recipes" hidden>Recipes <span id="recipeCount">0</span></button>
@@ -28,7 +28,12 @@
     </nav>
     <main>
       <div id="notice" class="notice" role="status" aria-live="polite" hidden></div>
-      <section id="overview" class="tab-panel">
+      <section id="publicOverview" class="card" aria-live="polite">
+        <h1 id="publicModel">Machine overview</h1>
+        <p id="publicState">Reading machine status…</p>
+        <p id="publicTemperatures"></p>
+      </section>
+      <section id="overview" class="tab-panel" hidden>
         <div class="page-heading"><div><p class="eyebrow">DEVICE OVERVIEW</p><h1 id="operationTitle">Your device, connected locally.</h1><p id="operationDetail" class="muted">Connect with your device key to see live readings and controls.</p></div><span id="modeBadge" class="badge">LOCAL API</span></div>
         <div class="metrics">
           <article class="metric" data-feature="brewing" hidden><span>Wort temperature</span><strong id="wortTemperature">—</strong><small>Current reading</small></article>
@@ -136,6 +141,6 @@
       <footer><span>Pico Local · <span id="firmwareVersion">Standalone firmware</span></span><span id="lastUpdated">Waiting for connection</span></footer>
     </main>
   </div>
-  <dialog id="connectDialog"><form id="connectForm"><p class="eyebrow">WELCOME TO PICO LOCAL</p><h2>Connect to your device.</h2><p class="muted">Enter the device API key you provisioned during setup.</p><label for="apiKey">Device API key</label><input id="apiKey" type="password" autocomplete="off" spellcheck="false" maxlength="64" pattern="[0-9a-f]{64}" required placeholder="Paste your device key"><p id="connectError" class="form-error" role="alert"></p><div class="dialog-actions"><button id="cancelConnect" type="button" class="button">Cancel</button><button id="submitConnect" class="button primary">Connect</button></div></form></dialog>
+  <dialog id="connectDialog"><form id="connectForm"><p class="eyebrow">WELCOME TO PICO LOCAL</p><h2>Connect to your device.</h2><p class="muted">Pair on the brewer or use a saved device key.</p><label for="apiKey">Device API key</label><input id="apiKey" type="password" autocomplete="off" spellcheck="false" maxlength="64" pattern="[0-9a-f]{64}" required placeholder="Paste your device key"><p id="connectError" class="form-error" role="alert"></p><div class="dialog-actions"><button id="pairButton" type="button" class="button" hidden>Pair using brewer dial</button><button id="copyDeviceKey" type="button" class="button" hidden>Copy device key</button><button id="cancelConnect" type="button" class="button">Cancel</button><button id="submitConnect" class="button primary">Connect</button></div></form></dialog>
 </body>
 </html>

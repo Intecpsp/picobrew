@@ -96,6 +96,7 @@ public:
         controller_.identity(uid);report(controller_.begin(original.bytes.data(),original.bytes.size()));
         engine_.set_telemetry_io(telemetry_.binding());report(engine_.begin());
         pico_http_server_initialize(&http_,&sdk::HttpListener::io,&listener_,api::Engine::http_handler,&engine_,pico_common_web_assets,pico_common_web_assets_count);
+        pico_http_server_enable_pairing(&http_, false);
         pico_http_server_set_asset_io(&http_,&pico_common_web_asset_io,nullptr);
         apply_key();WiFi.persistent(false);WiFi.mode(WIFI_STA);WiFi.setAutoConnect(false);WiFi.setAutoReconnect(true);
         WiFi.hostname("picoferm");apply_network();

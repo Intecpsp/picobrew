@@ -101,6 +101,7 @@ struct Application {
         http_io=listener.io();
         pico_http_server_initialize(&http,&http_io,&listener,api::Engine::http_handler,&engine,
             pico_common_web_assets,pico_common_web_assets_count);
+        pico_http_server_enable_pairing(&http, false);
         pico_http_server_set_asset_io(&http,&pico_common_web_asset_io,nullptr);
         pico_http_server_set_key(&http,provisioning.key(),std::strlen(provisioning.key()));
         engine.set_telemetry_io(telemetry.services());

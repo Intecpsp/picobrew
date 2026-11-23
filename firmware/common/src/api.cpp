@@ -30,6 +30,7 @@ void metadata_json(Writer& writer, const Session& session, bool storage_error, s
 }
 unsigned Engine::Impl::discovery_json(Writer& writer) {
     writer.text("{"); identity_json(writer, identity);
+    if (pico_http_pairing_available(false)) writer.text(",\"pairing_v1\":true");
     if (capabilities.z_program_maker) writer.text(",\"z_program_maker\":true");
     writer.text(",\"api_version\":1,\"firmware_version\":"); writer.quote(identity.firmware_version);
     writer.format(",\"mode\":\"standalone\",\"recipe_capacity\":%u,\"step_capacity\":%u,\"recipe_create_only\":%s,\"zero_minute_steps\":%s,\"restore_default_recipes\":%s,\"starter_recipe_count\":%u,\"recipe_labels\":\"printable ASCII\",\"commands\":[",
@@ -316,6 +317,19 @@ unsigned Engine::Impl::dispatch(const PicoHttpRequest& request, Writer& writer) 
         refresh(); writer.text("{"); identity_json(writer, identity); writer.text(",\"api_version\":1,\"firmware_version\":"); writer.quote(identity.firmware_version);
         writer.format(",\"mode\":\"standalone\",\"ready\":%s,\"auth_configured\":%s,\"uptime_ms\":%lu,\"storage_ready\":%s}",
             snapshot_valid && snapshot.ready ? "true" : "false", request.auth_configured ? "true" : "false", static_cast<unsigned long>(now()), persistent ? "true" : "false"); return 200;
+    }
+    if (!std::strcmp(request.path, "/api/v1/overview") && get) {
+        const Result result = refresh();
+        if (!result.ok()) return error(writer, result);
+        if (!snapshot_valid) return error(writer, Result(503, "not_ready", "The device snapshot is unavailable"));
+        writer.text("{"); identity_json(writer, identity);
+        writer.text(",\"ready\":"); writer.boolean(snapshot.ready);
+        if (pico_http_pairing_available(true)) writer.text(",\"pairing_v1\":true");
+        writer.text(",\"busy\":"); writer.boolean(snapshot.busy);
+        writer.text(",\"wort_f\":"); reading(writer, snapshot.wort_f);
+        writer.text(",\"thermoblock_f\":"); reading(writer, snapshot.thermoblock_f);
+        writer.text(",\"temperature_f\":"); reading(writer, snapshot.temperature_f);
+        writer.text("}"); return 200;
     }
     if (!request.auth_configured) return error(writer, Result(503, "api_key_not_provisioned", "Provision this device's API key before using protected endpoints"));
     if (!request.authenticated) return error(writer, Result(401, "unauthorized", "A valid device bearer key is required"));
