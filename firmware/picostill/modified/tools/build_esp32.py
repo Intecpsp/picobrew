@@ -105,7 +105,7 @@ def main():
     if len(image.read_bytes())>0x1f0000:raise ValueError('Application exceeds the selected standalone factory slot')
     size=subprocess.check_output([str(binary/'xtensa-esp32-elf-size'),str(elf)],text=True).strip()
     headers={p.relative_to(FIRMWARE).as_posix():digest(p) for base in (ROOT/'include',ROOT/'platform',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'src',COMMON/'platform/esp32') for p in sorted(base.rglob('*')) if p.suffix in ('.hpp','.h')}
-    report=dict(schema_version=1,model='picostill',firmware_version='1.2.4',complete_application_linked=True,flash_image_produced=True,
+    report=dict(schema_version=1,model='picostill',firmware_version='1.2.5',complete_application_linked=True,flash_image_produced=True,
                 hardware_tested=False,installation_qualified=False,compiler=subprocess.check_output([str(cxx),'--version'],text=True).splitlines()[0],
                 compiler_sha256=digest(cxx),flags=flags,owned_sources=evidence[0],sdk_sources=evidence[1],headers=headers,
                 required_symbols=retained,forbidden_symbols_absent=forbidden,elf_sha256=digest(elf),map_sha256=digest(map_file),
