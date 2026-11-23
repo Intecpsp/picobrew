@@ -12,7 +12,7 @@ import (
 // Retain the device's named channels and their physical units with the session,
 // so later firmware/settings changes cannot relabel an archived measurement.
 func (s *Server) saveHistorySchema(deviceID string, sessionID uint64, history domain.History) error {
-	if len(history.Fields) <= 11 && len(history.FieldMetadata) == 0 {
+	if (len(history.Fields) == 0 || len(history.Fields) == 11) && len(history.FieldMetadata) == 0 {
 		return nil
 	}
 	id := deviceID + "-" + strconv.FormatUint(sessionID, 10)

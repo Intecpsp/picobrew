@@ -161,6 +161,7 @@ type TelemetryStatus struct {
 	LastChecked *time.Time `json:"last_checked,omitempty"`
 }
 type Display struct {
+	Dial           string  `json:"dial,omitempty"`
 	Width          int     `json:"width"`
 	Height         int     `json:"height"`
 	Rotation       *int    `json:"rotation,omitempty"`
@@ -175,6 +176,7 @@ type Display struct {
 	Revision       *uint32 `json:"revision,omitempty"`
 }
 type Command struct {
+	DisplayRevision *uint32  `json:"display_revision,omitempty"`
 	Command         string   `json:"command"`
 	RecipeID        string   `json:"recipe_id,omitempty"`
 	Delta           int      `json:"delta,omitempty"`
@@ -309,6 +311,8 @@ type Adapted struct {
 	ProfileFingerprint string         `json:"profile_fingerprint,omitempty"`
 }
 type Sample struct {
+	// ZymaticHistory selects the named channels recorded by Zymatic EEPROM.
+	ZymaticHistory   bool                `json:"zymatic_history,omitempty"`
 	ElapsedMS        int64               `json:"elapsed_ms"`
 	ObservedAt       *time.Time          `json:"observed_at,omitempty"`
 	WortF            *float64            `json:"wort_f"`

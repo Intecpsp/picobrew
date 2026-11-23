@@ -64,6 +64,9 @@ class USBTests(unittest.TestCase):
         paths = list(self.cache.glob("avr-flash-*.bin"))
         self.assertEqual(len(paths), 1)
         self.assertEqual(stock.private_files.read_regular(paths[0], avr.FLASH, private=True), self.before)
+        report = self.cache / f"boot-evidence-v1-{hashlib.sha256(self.before).hexdigest()}.json"
+        self.assertEqual(stock.private_files.read_regular(report, 4096, private=True),
+                         avr.boot_evidence.as_json(self.before))
         self.assertFalse((self.cache / avr.OEM_PREFIX).exists())
         self.assertEqual([c[1] for c in self.avr.calls], [True, True])
         stock.save_private(self.cache / avr.OEM_PREFIX, self.before[:stock.APP_SIZE])

@@ -73,6 +73,10 @@ class ComposedImageTests(unittest.TestCase):
         self.assertEqual(len(image), manifest["application_bytes"])
         self.assertIsNone(build.recognize_private_application(self.original))
         offsets = [234, 0x1a7c4, 0x1bbca, build.START, 0x2eaa, 0x42ae, 0xd23a]
+        tables = build.tables
+        offsets += [tables.POOL, tables.PACKED_END - 1, tables.PACKED_END,
+                    tables.POOL_END - 1, tables.CRC_TABLE + 1, tables.CRC_TABLE + 255,
+                    tables.CRT, build.START - 1]
         offsets += [field["address"] for field in manifest["config"].values()] + [len(image)-1]
         for offset in offsets:
             damaged = bytearray(image)

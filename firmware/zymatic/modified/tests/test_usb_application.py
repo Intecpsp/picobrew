@@ -1,5 +1,6 @@
 """USB program and undo a real provisioned image using a memory-backed programmer."""
 
+from hashlib import sha256
 import json
 import os
 from pathlib import Path
@@ -10,6 +11,7 @@ from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
 import build
+import usb_layout
 import usb_application
 import usb_avr as avr
 import usb_stock as stock
@@ -18,6 +20,7 @@ import usb_stock as stock
 class MemoryProgrammer:
     def __init__(self, flash):
         self.flash = flash
+        self.application_limit = avr.BOOT_MIN
         self.identity = ("virtual", "synthetic-device", "usb:1")
         self.writes = 0
         self.interrupt = False
@@ -33,7 +36,7 @@ class MemoryProgrammer:
         assert operations == ["flash:v:read-1.bin:r", "flash:w:app-pages.bin:r"]
         assert self.flash == (work / "read-1.bin").read_bytes()
         pages = (work / "app-pages.bin").read_bytes()
-        assert len(pages) <= avr.BOOT_MIN and len(pages) % avr.PAGE == 0
+        assert len(pages) <= self.application_limit and len(pages) % avr.PAGE == 0
         self.writes += 1
         if self.tear_page is not None:
             start = self.tear_page * avr.PAGE
@@ -71,7 +74,37 @@ class ApplicationTest(unittest.TestCase):
         avr.service(self.data, "virtual", action, confirm=lambda _: next(confirmations), **options)
 
     def install(self, **options):
-        self.perform("install", ["INSTALL ZYMATIC", "WRITE " + build.VERSION], key_file=self.key, **options)
+        self.perform("install", ["INSTALL ZYMATIC", "WRITE " + usb_layout.release_1_2.VERSION], key_file=self.key, **options)
+
+    def test_measured_boot_window_upgrade_and_restore(self):
+        boot_start = avr.FLASH - 1024
+        boot = bytes(range(256)) * 4
+        original_flash = self.original.ljust(boot_start, b"\xff") + boot
+        self.device.flash = original_flash
+        self.install(hub_host="brew.lan:8080")
+        older = self.device.flash
+        original_id = usb_layout.identify(older)
+        self.assertEqual(original_id["firmware_version"], "1.2.0")
+        original_key = self.key.read_bytes()
+        directory = self.data / "usb-stock" / "zymatic"
+        digest = sha256(older).hexdigest()
+        stock.save_private(directory / f"isp-flash-{digest}.bin", older)
+        report = {"schema_version": 1, "interface": "atmelice_isp", "signature": "1e9705",
+                  "flash_sha256": digest, "usb_backup_sha256": digest, "registers": {"hfuse":"de", "lock":"ff"},
+                  "configured_boot_region": {"size_bytes":1024, "sha256": sha256(boot).hexdigest()}}
+        raw = json.dumps(report).encode()
+        stock.save_private(directory / f"isp-evidence-v1-{sha256(raw).hexdigest()}.json", raw)
+        self.assertEqual(usb_layout.qualified_limit(directory, older, dict(original_id, uid="other")), avr.BOOT_MIN)
+        self.assertEqual(usb_layout.qualified_limit(directory, older[:-1]+b"X", original_id), avr.BOOT_MIN)
+        self.device.application_limit=boot_start
+        self.perform("install", ["INSTALL ZYMATIC", "WRITE " + build.VERSION], key_file=self.key)
+        upgraded = usb_layout.identify(self.device.flash)
+        self.assertEqual((upgraded["uid"], upgraded["hub_host"], upgraded["firmware_version"]),
+                         (original_id["uid"], "brew.lan:8080", build.VERSION))
+        self.assertEqual(self.key.read_bytes(), original_key)
+        self.assertEqual(self.device.flash[boot_start:], boot)
+        self.restore()
+        self.assertEqual(self.device.flash, original_flash)
 
     def restore(self):
         self.perform("restore", ["RESTORE ZYMATIC", "WRITE 1.1.14"])
@@ -80,15 +113,15 @@ class ApplicationTest(unittest.TestCase):
         program = {"name": "My recipe", "steps": [
             {"name": "Circulate", "target_f": 0, "minutes": 3, "drain_minutes": 0, "location": 0}]}
         self.install(hub_host="brew.lan", offline_program=program)
-        identity = build.recognize_private_application(self.device.flash)
+        identity = usb_layout.identify(self.device.flash)
         self.assertEqual(identity["hub_host"], "brew.lan")
         self.assertEqual(len(identity["uid"]), 32)
         self.assertEqual(self.device.flash[avr.BOOT_MIN:], self.before[avr.BOOT_MIN:])
         self.install()
         self.assertEqual(self.device.writes, 1)
         self.install(hub_host="other.lan")
-        self.assertEqual(build.recognize_private_application(self.device.flash)["uid"], identity["uid"])
-        self.assertEqual(build.recognize_private_application(self.device.flash)["offline_program"]["name"], "My recipe")
+        self.assertEqual(usb_layout.identify(self.device.flash)["uid"], identity["uid"])
+        self.assertEqual(usb_layout.identify(self.device.flash)["offline_program"]["name"], "My recipe")
         self.restore()
         self.assertEqual(self.device.flash, self.before)
 
@@ -109,7 +142,7 @@ class ApplicationTest(unittest.TestCase):
         self.device.interrupt = True
         with self.assertRaisesRegex(ValueError, "Interrupted"):
             self.install()
-        self.assertIsNone(build.recognize_private_application(self.device.flash))
+        self.assertIsNone(usb_layout.identify(self.device.flash))
         self.device.interrupt = False
         self.restore()
         self.assertEqual(self.device.flash, self.before)
@@ -129,10 +162,10 @@ class ApplicationTest(unittest.TestCase):
     def test_reconfigure_and_restore_through_two_independent_torn_pages(self):
         self.install(hub_host="one.lan")
         self.device.tear_page = usb_application.end_page(
-            build.recognize_private_application(self.device.flash)["application_bytes"]) // avr.PAGE - 1
+            usb_layout.identify(self.device.flash)["application_bytes"]) // avr.PAGE - 1
         with self.assertRaisesRegex(ValueError, "Power lost"):
             self.install(hub_host="two.lan:8080")
-        self.assertIsNone(build.recognize_private_application(self.device.flash))
+        self.assertIsNone(usb_layout.identify(self.device.flash))
         # Retry recovery, with a second independent power loss after restoring
         # the complete stock application but before clearing the private data.
         self.device.tear_page = 450
