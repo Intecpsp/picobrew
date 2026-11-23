@@ -48,6 +48,7 @@ class StandaloneTests(unittest.TestCase):
     def test_remote_recipe_and_manual_start_wake_native_standby(self):self.run_case('standby-start')
     def test_recipe_step_index_ignores_common_steps_and_resume_labels(self):self.run_case('step-indices')
     def test_wifi_picker_keeps_lease_and_selects_from_deduplicated_snapshot(self):self.run_case('wifi-picker')
+    def test_pairing_requires_physical_selection_and_the_displayed_request(self):self.run_case('pairing')
     def test_all_native_network_entry_points_use_standalone_wifi_menu(self):self.run_case('network-menus')
     def test_rejected_resume_keeps_checkpoint_reviewable_and_discardable(self):self.run_case('recovery-rejected')
     def test_recovery_preflight_does_not_run_returning_assertions(self):self.run_case('recovery-preflight')

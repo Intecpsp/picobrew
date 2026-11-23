@@ -36,6 +36,7 @@ def build():
         "world_cancel": (None, [ctypes.c_void_p]),
         "world_recovery": (None, [ctypes.c_void_p, ctypes.c_uint]),
         "world_preferences": (ctypes.c_uint, [ctypes.c_void_p, ctypes.c_char]),
+        "world_pairing_mode": (None, [ctypes.c_void_p, ctypes.c_bool]),
         "world_http": (ctypes.c_char_p, [ctypes.c_void_p, ctypes.c_char_p, ctypes.c_bool]),
         "world_legacy_codec_test": (ctypes.c_bool, []),
     }
@@ -165,6 +166,39 @@ class EngineTests(unittest.TestCase):
                    f"Content-Type: application/json\r\nContent-Length: {len(body)}\r\n\r\n{body}")
         response = self.lib.world_http(self.world, request.encode(), True).decode()
         self.assertEqual(json.loads(response.split("\r\n\r\n", 1)[1])["temperature_unit"], "C")
+
+    def test_physical_and_headless_pairing_require_the_same_verified_claim(self):
+        key = "0123456789abcdef"*4
+        nonce = "fda817b2"*8
+        payload = json.dumps({"nonce": nonce}).encode()
+        def call(world, path, auth=False):
+            post = path.startswith("pairing/")
+            headers = [f"{'POST' if post else 'GET'} /api/v1/{path} HTTP/1.1", "Host: pico.local"]
+            if auth:
+                headers.append("Authorization: Bearer "+key)
+            if post:
+                headers += ["Content-Type: application/json", f"Content-Length: {len(payload)}"]
+            request = ("\r\n".join(headers)+"\r\n\r\n").encode() + (payload if post else b"")
+            wire = self.lib.world_http(world, request, True).decode()
+            headers, body = wire.split("\r\n\r\n",1)
+            return int(headers.split()[1]), json.loads(body)
+
+        for physical in (False, True):
+            world = self.new(0)
+            self.lib.world_pairing_mode(world,physical)
+            self.assertEqual(bool(call(world,"overview")[1].get("pairing_v1")), physical)
+            self.assertEqual(call(world,"pairing/grant")[0],401)
+            self.assertEqual(call(world,"pairing/claim")[0],404)
+            requested, data = call(world,"pairing/request")
+            self.assertEqual(requested,202 if physical else 401)
+            if physical:
+                self.assertEqual(data,{"state":"pending","code":nonce[:8]})
+                self.assertEqual(call(world,"pairing/claim"),(202,{"state":"pending"}))
+            else:
+                self.assertEqual(call(world,"pairing/request",True)[0],404)
+            self.assertEqual(call(world,"pairing/grant",True),(202,{"state":"approved"}))
+            self.assertEqual(call(world,"pairing/claim"),(200,{"api_key":key}))
+            self.assertEqual(call(world,"pairing/claim")[0],404)
 
     def test_strict_command_parsing_and_argument_bounds(self):
         bad = ['{}', '{"command":"start","command":"stop"}', '{"command":"start","enabled":true}',

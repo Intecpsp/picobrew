@@ -1,4 +1,4 @@
-# PicoFerm standalone firmware 1.2.0
+# PicoFerm standalone firmware 1.2.2
 
 This profile contains the complete PicoFerm application owner, sensor acquisition,
 local controls, authenticated API, embedded website, persistent recording and
@@ -15,7 +15,7 @@ has been flashed or operated as part of this verification. See
 
 | Feature | Implemented behavior |
 | --- | --- |
-| Identity | `picoferm` / `PicoFerm`, firmware `1.2.0`, API `/api/v1` |
+| Identity | `picoferm` / `PicoFerm`, firmware `1.2.2`, API `/api/v1` |
 | Sensors | Original temperature conversion, calibrated native pressure scale, battery voltage |
 | Local recording | Explicit start/stop; no automatic session resume after restart |
 | Sampling | Default 300 seconds; configurable integer 60–86400 seconds while idle |
@@ -34,6 +34,11 @@ This always-awake standalone profile keeps the LAN interface available. It does
 not use the OEM cloud exchange, deep-sleep schedule or automatic recording
 resume. Its power consumption and battery runtime therefore require physical
 measurement; OEM battery-life expectations do not transfer to this profile.
+
+A paired Hub can open the device website with a single-use ticket that expires
+after 30 seconds. Direct visits can show public status or accept a saved
+device key. Initial enrollment uses the device's USB credentials. This
+model has no display for comparing a pairing code.
 
 ## Provisioning and local operation
 
@@ -161,7 +166,7 @@ unbounded OEM acquisition and cloud application paths.
 `analysis/memory-validation.json` binds the actual target ELF and pinned compiler
 size probes to a 32-bit execution of the real controller, Engine, provisioning,
 verified transaction layer, all five pinned SPIFFS C sources and the original
-SDK UMM allocator. The current shared-engine build has **29,008 bytes** between
+SDK UMM allocator. The current shared-engine build has **28,704 bytes** between
 `_heap_start` and the SDK heap end. The 5,788-byte application owner is already in
 static RAM; it includes the 4,936-byte HTTP server and its 4,096-byte arena. The
 SDK's 4 KiB continuation stack is also static, so neither is counted twice as a
@@ -183,7 +188,7 @@ allocator's rounding and reserves the measured 140-byte difference between the
 native and target Engine ABI. It uses a maximum-length forwarding hostname,
 extreme valid 24-bit ADC readings, clock rollover, a stalled transmission, active
 sample pages and retained pages while another session records. All **14,238
-allocations** succeed; the peak is **27,160 bytes**, leaving **1,848 bytes**. The published 1.2.1 ELF retained 2,104 bytes in its release replay.
+allocations** succeed; the peak is **27,160 bytes**, leaving **1,544 bytes**. The published 1.2.1 ELF retained 2,104 bytes in its release replay.
 The largest serialized forwarding frame in that replay is 1,200 bytes. Every
 allocation returns to the allocator on teardown, apart from its fixed 8-byte
 sentinel. Real filesystem calls also verify the actual `ferm-cal` key; a

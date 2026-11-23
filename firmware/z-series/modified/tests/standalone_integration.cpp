@@ -22,6 +22,8 @@ struct World {
     std::map<unsigned,bool> pins;
     std::vector<HeadWifiNetwork> access_points;
     bool reject_network=false;
+    std::uint32_t pending_pair=0;
+    unsigned approved_pair=0, cancelled_pair=0;
     int scan_result=-1;
     unsigned scan_reads=0;
     std::uint32_t now=10000;
@@ -96,6 +98,13 @@ struct World {
         ports.http_poll=[](void* p,std::uint32_t){++self(p).http_polls;};
         ports.serial_poll=[](void*){};ports.save_network=[](void* p,const char*,const char*){return !self(p).reject_network;};ports.reconnect_network=[](void*){return true;};
         ports.lan_ready=[](void* p,std::uint32_t){return self(p).lan;};ports.save_configuration=[](void*){return true;};
+        ports.pair_prompt=[](void* p,std::uint32_t,char code[9]){
+            std::strcpy(code,"f82f8f33");return self(p).pending_pair;};
+        ports.pair_decide=[](void* p,std::uint32_t,std::uint32_t serial,bool allow){
+            auto& w=self(p);
+            if(!serial||w.pending_pair!=serial)return false;
+            if(allow)++w.approved_pair;else ++w.cancelled_pair;
+            w.pending_pair=0;return true;};
         assert(adapter.bind(ports,engine));
         assert(bind_runtime_heater(core.runtime,core.runtime_heater,core.heater,core.temperatures,core.ports.heater_gpio));
         core.heater.synchronization=core.ports.control;
@@ -388,6 +397,40 @@ void recipe_step_indices(){World w;assert(w.adapter.load_recipe(recipe(),true).o
     assert(runtime.dispatch({OpCode::StepName,0x8007})==RuntimeResult::Ok);
     assert(w.adapter.snapshot(snapshot).ok()&&snapshot.current_step==-1);
 }
+void physical_pairing(){
+    World w;
+    auto& menu=w.head.screens.menu_data;
+    auto select=[&](const char* label){
+        for(unsigned i=0;i<menu.count;++i){
+            if(std::strcmp(menu.items[i].text.data(),label))continue;
+            assert(w.head.receive_ui(menu.items[i].event));w.head_tick();return;
+        }
+        assert(!"Menu action missing");
+    };
+    auto press=[&](){
+        CoreButtonEvent button;button.id=1;button.argument=1;
+        assert(w.head.receive_button(button));w.head_tick();w.head_tick();
+    };
+    HeadUiEvent settings;settings.command=UiCommand::Settings;
+    assert(w.head.receive_ui(settings));w.head_tick();select("About");select("Pair with Hub");
+    assert(menu.count==1);w.pending_pair=17;w.adapter.poll();
+    assert(menu.count==2&&w.head.encoder.state.menu.selected==0);
+    api::Command remote;std::strcpy(remote.name,"encoder");remote.delta=1;remote.click=true;
+    assert(w.adapter.execute(remote).status==409);press();
+    assert(!w.approved_pair&&w.cancelled_pair==1);
+    w.pending_pair=18;select("Pair with Hub");
+    assert(w.head.receive_encoder(-1));w.head_tick();
+    assert(w.head.encoder.state.menu.selected==1&&w.adapter.execute(remote).status==409);
+    press();assert(w.approved_pair==1&&w.cancelled_pair==1);
+    w.pending_pair=19;select("Pair with Hub");
+    const auto stale=menu.items[1].event;
+    w.pending_pair=20;w.adapter.poll();
+    assert(w.head.encoder.state.menu.selected==0);
+    assert(w.head.receive_ui(stale));w.head_tick();
+    assert(menu.count==2&&w.approved_pair==1&&w.pending_pair==20);
+    w.pending_pair=0;w.adapter.poll();assert(menu.count==1);press();
+    select("Machine details");  // Original About presentation still reachable.
+}
 void native_network_menus(){World w;
     const auto check=[&](){assert(w.head.screens.menu_data.count==4);
         const UiCommand expected[]={UiCommand::WiFiScan,UiCommand::WiFiReconnect,UiCommand::WiFiDetails,UiCommand::Exit};
@@ -479,6 +522,7 @@ int main(int argc,char** argv){assert(argc==2);const std::string test=argv[1];
     else if(test=="sensor-fault")sensor_fault_cutoff();else if(test=="coffee-buffer")buffered_coffee();
     else if(test=="standby-start")standby_remote_start();else if(test=="step-indices")recipe_step_indices();
     else if(test=="wifi-picker")stable_wifi_picker_and_local_lease();
+    else if(test=="pairing")physical_pairing();
     else if(test=="network-menus")native_network_menus();else if(test=="recovery-rejected")rejected_resume_retains_checkpoint();
     else if(test=="recovery-preflight")recovery_preflight_has_no_diagnostics();else return 2;
 }

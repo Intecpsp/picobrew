@@ -14,6 +14,8 @@ namespace {
 struct World {
     std::map<std::string, std::vector<std::uint8_t>> files;
     std::unique_ptr<Engine> engine;
+    std::unique_ptr<PicoHttpServer> http;
+    int pairing_mode = -1;
     Snapshot snapshot;
     Settings settings;
     std::string command, state = "idle", output, sent, received = "HTTP/1.0 204 No Content\r\n\r\n", read_error;
@@ -158,7 +160,12 @@ struct World {
 }
 extern "C" {
 void* world_new(unsigned model) { return new World(model); }
-void world_delete(void* p) { delete static_cast<World*>(p); }
+void world_delete(void* p) {
+    World& world=World::self(p);
+    if(world.http)pico_http_server_initialize(world.http.get(),nullptr,nullptr,nullptr,nullptr,nullptr,0);
+    delete &world;
+}
+void world_pairing_mode(void* p,bool physical) { World::self(p).pairing_mode=physical?1:0; }
 unsigned world_status(void* p) { return World::self(p).status; }
 const char* world_request(void* p, unsigned method, const char* path, const char* body, unsigned auth) {
     World& w = World::self(p); PicoHttpRequest request = {}; PicoHttpResponse response = {}; char arena[PICO_HTTP_ARENA_CAPACITY] = {};
@@ -278,7 +285,7 @@ const char* world_http(void* p, const char* request, bool provisioned) {
         std::string input, output; std::size_t offset = 0; bool accepted = false, closed = false;
     } wire;
     wire.input = request;
-    const PicoHttpIo io = {
+    static const PicoHttpIo io = {
         [](void* p) -> int { Wire& w = *static_cast<Wire*>(p); if (w.accepted) return PICO_HTTP_IO_AGAIN; w.accepted = true; return 0; },
         [](void* p, int, std::uint8_t* data, std::size_t capacity) -> int {
             Wire& w = *static_cast<Wire*>(p); const std::size_t count = std::min(std::min(capacity, std::size_t(11)), w.input.size() - w.offset);
@@ -291,9 +298,17 @@ const char* world_http(void* p, const char* request, bool provisioned) {
         },
         [](void* p, int) { static_cast<Wire*>(p)->closed = true; }
     };
-    World& world = World::self(p); std::unique_ptr<PicoHttpServer> server(new PicoHttpServer);
-    pico_http_server_initialize(server.get(), &io, &wire, Engine::http_handler, world.engine.get(), nullptr, 0);
-    if (provisioned) pico_http_server_set_key(server.get(), "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef", 64);
+    World& world = World::self(p);
+    auto& server=world.http;
+    if(!server){
+        server.reset(new PicoHttpServer);
+        pico_http_server_initialize(server.get(), &io, &wire, Engine::http_handler, world.engine.get(), nullptr, 0);
+        if(world.pairing_mode>=0)pico_http_server_enable_pairing(server.get(),world.pairing_mode!=0);
+    }
+    server->io_context=&wire;
+    server->handler_context=world.engine.get();
+    if(provisioned!=bool(server->key[0]))
+        pico_http_server_set_key(server.get(),provisioned?"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef":nullptr,64);
     for (unsigned i = 0; i < 6000 && !wire.closed; ++i) { pico_http_server_poll(server.get(), world.time++); world.poll(); }
     pico_http_server_disconnect(server.get()); world.output = wire.output; return world.output.c_str();
 }

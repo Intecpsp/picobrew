@@ -15,6 +15,8 @@ struct Ports {
     bool (*save_network)(void*, const char* ssid, const char* password) = nullptr;
     bool (*reconnect_network)(void*) = nullptr;
     bool (*save_configuration)(void*) = nullptr;
+    std::uint32_t (*pair_prompt)(void*, std::uint32_t, char code[9]) = nullptr;
+    bool (*pair_decide)(void*, std::uint32_t, std::uint32_t, bool) = nullptr;
     api::Storage storage;
 };
 
@@ -40,7 +42,7 @@ public:
     bool service_stage(oem::CoreTickStage, std::uint32_t);
     bool service_effect(const oem::CoreAction&, std::uint32_t&);
 private:
-    enum class Page { Home, Recipes, Original, Scanning, Networks };
+    enum class Page { Home, Recipes, Original, Scanning, Networks, Pairing };
     oem::CoreApplication& core_;
     oem::HeadApplication& head_;
     Ports ports_;
@@ -80,6 +82,9 @@ private:
     bool wake_standby();
     bool clear_stop();
     bool show_settings();
+    bool show_about();
+    bool show_pairing();
+    std::uint32_t pairing_ticket_ = 0;
     bool show_network();
     bool start_wifi_scan();
     bool show_wifi_results(std::int32_t count);

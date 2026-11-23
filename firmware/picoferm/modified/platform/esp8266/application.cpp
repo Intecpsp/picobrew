@@ -80,7 +80,7 @@ public:
         provision_(storage_.binding(),this,[](void* p){auto& self=*static_cast<Application*>(p);return !self.setup_complete_||self.controller_.idle();}),
         controls_(diagnostics_,hardware_,*this,*this),http_(){controller_.bind(engine_);}
     void begin(){
-        Serial.begin(115200);Serial.println("PicoFerm standalone 1.2.1");
+        Serial.begin(115200);Serial.println("PicoFerm standalone 1.2.2");
         // Read the packed OEM record without sanitize(), put(), commit() or
         // boot-time migration. Modified records live only in /pb/ SPIFFS.
         oem::PersistentData original;original.bytes.fill(0xff);EEPROM.begin(oem::PersistentData::size);

@@ -1,4 +1,4 @@
-# PicoStill standalone firmware 1.2.0
+# PicoStill standalone firmware 1.2.2
 
 This is a complete, linked standalone application for the recovered PicoStill
 ESP32 board. It operates the original four thermistor channels, pressure
@@ -35,6 +35,11 @@ The board has no heater, brewing recipe interpreter, display or encoder.
 Discovery reports those capabilities as absent, the browser omits their
 controls, and unsupported API routes reject requests. The optional Hub supports
 this accessory without treating it as a brewer.
+
+A paired Hub can open the device website with a single-use ticket that expires
+after 30 seconds. Direct visits can show public status or accept a saved
+device key. Initial enrollment uses the device's USB credentials. This
+model has no display for comparing a pairing code.
 
 ## Units and native interlocks
 
