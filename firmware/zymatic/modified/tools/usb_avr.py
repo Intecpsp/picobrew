@@ -123,7 +123,7 @@ def service_lock(directory):
         yield
 
 
-def service(data, port, action, source=None, *, confirm=None, key_file=None, hub_host=None, offline_program=None):
+def service(data, port, action, source=None, *, confirm=None, key_file=None, hub_host=None, offline_program=None, expected_uid=None):
     if action not in ("backup", "install", "restore"):
         raise ValueError("Unknown Zymatic USB service action")
     directory = Path(data).absolute() / "usb-stock" / "zymatic"
@@ -181,6 +181,8 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             interrupted = usb_application.interrupted_standalone(previous, before, application, pending=bool(pending))
             if interrupted:
                 standalone, installed = interrupted
+        if expected_uid and (not installed or installed["uid"] != expected_uid):
+            raise ValueError("The USB Zymatic differs from the registered brewer; no write was attempted")
         if action == "install":
             pages, metadata = usb_application.install_pages(standalone or before, application, installed,
                                                            key_file, hub_host, offline_program)
