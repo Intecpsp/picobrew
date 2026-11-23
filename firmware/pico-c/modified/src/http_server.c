@@ -242,8 +242,8 @@ static void asset_unavailable(PicoHttpServer *s, uint32_t now)
             "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>Pico Local</title><h1>Pico Local</h1>"
-            "<p>The browser files are missing or do not match this firmware. "
-            "Install the matching web files with the firmware installer.</p>"
+            "<p>The browser files are missing or outdated. "
+            "Use the firmware installer to restore the matching files.</p>"
             "<p>The local API remains available. <a href=\"/api/v1/health\">Device health</a></p></html>";
         s->response = (PicoHttpResponse){503, "text/html; charset=utf-8",
                                         (const uint8_t *)fallback, sizeof(fallback) - 1, NULL};
