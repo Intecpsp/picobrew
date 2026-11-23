@@ -94,10 +94,11 @@ def main():
     b.files[BOOT] = bytes.fromhex('01 00 00 00 ba dc cd ab')
     assert not b.prepare() and not b.mutations
     b.files[BOOT] = NORMAL
-    for name, limit in ((APP, 162792), (RECOVERY, 50504)):
+    for name, minimum, maximum in ((APP, 188416, 196608), (RECOVERY, 50504, 65536)):
         original = b.alloc[name]
-        b.alloc[name] = limit - 1
-        assert not b.prepare() and not b.mutations
+        for invalid in (minimum - 1, maximum + 1):
+            b.alloc[name] = invalid
+            assert not b.prepare() and not b.mutations
         b.alloc[name] = original
     b.files[WORKER], b.alloc[WORKER] = b'Third-party image', 65536
     assert not b.prepare() and not b.mutations
@@ -117,8 +118,9 @@ def main():
     assert b.files[WORKER] == b'PicoBrew stock restore v1\0'
     before = list(b.mutations)
     assert b.prepare() and b.mutations == before
-    b.alloc[WORKER] = 8192
-    assert not b.prepare() and b.mutations == before
+    for invalid in (8192, 53249):
+        b.alloc[WORKER] = invalid
+        assert not b.prepare() and b.mutations == before
     assert b.files[BOOT] == NORMAL
     print('PASS: ARM stock restore reservation, identity, boot layout, capacity, readback and idempotent retry')
 

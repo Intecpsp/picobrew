@@ -119,8 +119,8 @@ bool qualify(char uid[33])
     /* Profiled 1 MiB S/Pro layout. SDK reports the on-device allocated payload
        capacity, while the published raw FAT sizes also include metadata. */
     return text_digest(digest, uid_hash) && inspect_file(loader_path, 14956, loader_hash) &&
-           allocation(app_path, 188416, 48*4096) && allocation(factory_path, STOCK_RECOVERY_BYTES, 16*4096) &&
-           allocation(worker_path, STOCK_WORKER_RESERVATION, STOCK_WORKER_RESERVATION+4096) && own_worker();
+           allocation(app_path, STOCK_APP_MIN_ALLOCATION, STOCK_APP_MAX_ALLOCATION) && allocation(factory_path, STOCK_RECOVERY_BYTES, STOCK_RECOVERY_MAX_ALLOCATION) &&
+           allocation(worker_path, STOCK_WORKER_RESERVATION, STOCK_WORKER_MAX_ALLOCATION) && own_worker();
 }
 
 bool matches(StockTarget target)

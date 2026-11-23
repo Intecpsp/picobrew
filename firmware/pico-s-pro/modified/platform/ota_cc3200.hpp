@@ -1,6 +1,7 @@
 /* Standalone boot handoff for the original CC3200 loader. */
 #pragma once
 #include <string.h>
+#include "stock_restore/stock.h"
 extern "C" {
 #include <utility/simplelink.h>
 #include <utility/fs.h>
@@ -105,7 +106,6 @@ static bool ota_commit(bool confirm)
 // The original loader can run a third image independently of both OEM slots.
 // This model/UID profile is shared with the USB installer's verified S/Pro backup.
 static const _u8 stock_worker_file[] = "/sys/mcuimg3.bin";
-static const uint32_t stock_worker_capacity = 49152;
 static const uint8_t stock_reservation[] = "PicoBrew stock restore v1";
 
 static bool stock_slot_available(bool *absent)
@@ -114,7 +114,8 @@ static bool stock_slot_available(bool *absent)
     int rc = sl_FsGetInfo(stock_worker_file, 0, &info);
     *absent = rc == SL_FS_ERR_FILE_NOT_EXISTS;
     if (*absent) return true;
-    if (rc != 0 || info.AllocatedLen < stock_worker_capacity ||
+    if (rc != 0 || info.AllocatedLen < STOCK_WORKER_RESERVATION ||
+        info.AllocatedLen > STOCK_WORKER_MAX_ALLOCATION ||
         info.FileLen != sizeof stock_reservation)
         return false;
     _i32 handle = -1;
@@ -144,9 +145,11 @@ static bool stock_layout_matches(const char *uid, bool allow_trial, bool *absent
         return false;
     SlFsFileInfo_t app = {}, recovery = {};
     return sl_FsGetInfo(reinterpret_cast<const _u8 *>("/sys/mcuimg2.bin"), 0, &app) == 0 &&
-           app.AllocatedLen >= 162792 &&
+           app.AllocatedLen >= STOCK_APP_MIN_ALLOCATION && app.AllocatedLen <= STOCK_APP_MAX_ALLOCATION &&
+           app.FileLen <= app.AllocatedLen &&
            sl_FsGetInfo(reinterpret_cast<const _u8 *>("/sys/mcuimg1.bin"), 0, &recovery) == 0 &&
-           recovery.AllocatedLen >= 50504 && stock_slot_available(absent);
+           recovery.AllocatedLen >= STOCK_RECOVERY_BYTES && recovery.AllocatedLen <= STOCK_RECOVERY_MAX_ALLOCATION &&
+           recovery.FileLen <= recovery.AllocatedLen && stock_slot_available(absent);
 }
 
 static bool stock_prepare(const char *uid)
@@ -155,7 +158,7 @@ static bool stock_prepare(const char *uid)
     if (!stock_layout_matches(uid, false, &absent)) return false;
     if (!absent) return true; // Retry after reserving, before entering recovery.
     _i32 handle = -1;
-    if (sl_FsOpen(stock_worker_file, FS_MODE_OPEN_CREATE(stock_worker_capacity, 0), NULL, &handle) != 0)
+    if (sl_FsOpen(stock_worker_file, FS_MODE_OPEN_CREATE(STOCK_WORKER_RESERVATION, 0), NULL, &handle) != 0)
         return false;
     int n = sl_FsWrite(handle, 0, const_cast<uint8_t *>(stock_reservation), sizeof stock_reservation);
     int closed = sl_FsClose(handle, NULL, NULL, 0);
