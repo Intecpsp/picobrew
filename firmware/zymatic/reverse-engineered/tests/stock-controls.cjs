@@ -269,7 +269,7 @@ console.log('Stock Zymatic controls: %d AVR executions passed.', checks);
 
 if (process.argv[3]) {
   const image = readFileSync(process.argv[3]);
-  assert(image.length > 0x1bc00 && image.length <= 0x1e000);
+  assert(image.length > 0x1bc00 && image.length <= 0x1fc00);
   for (let i = 0; i < image.length; i += 2) words[i / 2] = image[i] | (image[i + 1] << 8);
   checkBrewButton();
   require('../../modified/tests/offline-recipe.cjs')({cpu, words, run, execute, word, image});

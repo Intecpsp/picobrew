@@ -7,11 +7,11 @@ from pathlib import Path
 import re
 import secrets
 
-import build
+import usb_layout
 import usb_stock as stock
 
 PAGE = 256
-EXTENSION_LIMIT = 0x1e000
+EXTENSION_LIMIT = usb_layout.CONSERVATIVE
 
 
 def read_key(path, *, create):
@@ -33,13 +33,13 @@ def read_key(path, *, create):
     return bytes.fromhex(raw.strip().decode())
 
 
-def end_page(length):
-    if not stock.APP_SIZE < length <= EXTENSION_LIMIT:
+def end_page(length, limit=EXTENSION_LIMIT):
+    if not stock.APP_SIZE < length <= limit <= usb_layout.MAX_APPLICATION or limit % PAGE:
         raise ValueError("Standalone application falls outside its verified flash region")
     return (length + PAGE - 1) // PAGE * PAGE
 
 
-def install_pages(before, original, installed, key_file, host, offline_program=None):
+def install_pages(before, original, installed, key_file, host, offline_program=None, *, limit=EXTENSION_LIMIT):
     if len(before) != 128 * 1024:
         raise ValueError("Standalone installation requires a complete 128 KiB flash read")
     if not installed and not stock.is_original_app(before[:stock.APP_SIZE]):
@@ -47,21 +47,25 @@ def install_pages(before, original, installed, key_file, host, offline_program=N
     if not stock.is_original_app(original):
         raise ValueError("Installation requires the verified original 1.1.14 application")
     previous_end = stock.APP_SIZE if not installed else installed["application_bytes"]
-    if before[previous_end:EXTENSION_LIMIT].strip(b"\xff"):
+    if previous_end > limit:
+        raise ValueError("Verify this unit’s configured boot region before changing its installed application")
+    if before[previous_end:limit].strip(b"\xff"):
         raise ValueError("Occupied flash above the installed application prevents standalone setup")
     key = read_key(key_file, create=not installed)
     uid = installed["uid"] if installed else secrets.token_hex(16)
     if installed:
-        prior, _ = build.build_application(original, key, uid, installed["hub_host"], installed["offline_program"])
+        prior_release = usb_layout.for_version(installed["firmware_version"])
+        prior, _ = prior_release.build_application(original, key, uid, installed["hub_host"], installed["offline_program"])
         if before[:len(prior)] != prior:
             raise ValueError("Supplied API key does not match the installed image")
         if offline_program is None:
             offline_program = installed["offline_program"]
     hub_host = host or (installed["hub_host"] if installed else "picobrew.com")
-    target, metadata = build.build_application(original, key, uid, hub_host, offline_program)
-    if not build.recognize_private_application(target) or metadata["uid"] != uid:
+    release = usb_layout.best_fit(limit)
+    target, metadata = release.build_application(original, key, uid, hub_host, offline_program)
+    if not release.recognize_private_application(target) or metadata["uid"] != uid:
         raise ValueError("The generated standalone image failed verification")
-    end = end_page(max(len(target), previous_end))
+    end = end_page(max(len(target), previous_end), limit)
     return target.ljust(end, b"\xff"), metadata
 
 
@@ -156,9 +160,12 @@ def interrupted_standalone(path, live, original, *, pending):
             raise ValueError("Saved Zymatic USB transaction image failed verification")
         images[name] = data
     standalone = images["standalone"]
-    metadata = build.recognize_private_application(standalone)
+    metadata = usb_layout.identify(standalone)
     end = record["extent"]
-    if not metadata or type(end) is not int or end != end_page(metadata["application_bytes"]):
+    prior = usb_layout.identify(images["before"])
+    extent = max(metadata["application_bytes"] if metadata else 0,
+                 prior["application_bytes"] if prior else 0)
+    if not metadata or type(end) is not int or end != end_page(extent, usb_layout.MAX_APPLICATION):
         raise ValueError("Saved standalone transaction layout failed verification")
     before, target = images["before"], images["target"]
     if (before[end:] != target[end:] or target[end:] != standalone[end:]

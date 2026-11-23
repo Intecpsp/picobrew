@@ -2,6 +2,7 @@ package device
 
 import (
 	"context"
+	"encoding/json"
 	"net/http"
 	"reflect"
 	"testing"
@@ -84,5 +85,40 @@ func TestZymaticHistoryRejectsInvalidFieldsAndSamples(t *testing.T) {
 	p := pico{capabilities: &domain.Capabilities{Model: "zymatic", ModelFamily: "zymatic", HistoryPersistent: true}}
 	if p.validHistoryFields(historyFields) || p.validHistoryFields(append(fields, "flags")) || p.validHistoryFields(fields[:4]) {
 		t.Fatal("accepted undeclared history fields")
+	}
+}
+
+func TestGuardedZymaticDialPreservesFrameRevision(t *testing.T) {
+	rev := uint32(0)
+	seen := false
+	p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/api/v1":
+			replyJSON(w, 200, map[string]any{"mode": "standalone", "api_version": 1, "model": "zymatic", "model_family": "zymatic", "commands": []string{"encoder"}, "capabilities": map[string]bool{"panel_revision": true}})
+		case "/api/v1/commands":
+			var command domain.Command
+			if err := json.NewDecoder(r.Body).Decode(&command); err != nil || command.DisplayRevision == nil || *command.DisplayRevision != rev || !command.Click {
+				t.Error("lost dial input or displayed revision")
+				http.Error(w, "invalid dial", 400)
+				return
+			}
+			seen = true
+			replyJSON(w, 202, map[string]any{"accepted": true, "command": "encoder"})
+		default:
+			t.Error("unexpected endpoint")
+			http.NotFound(w, r)
+		}
+	})
+	ctx := context.Background()
+	for _, input := range []domain.Command{{Command: "encoder", Click: true}, {Command: "encoder", Delta: 1, Click: true, DisplayRevision: &rev}} {
+		if p.Command(ctx, input) == nil || seen {
+			t.Fatal("unguarded command reached brewer")
+		}
+	}
+	if err := p.Command(ctx, domain.Command{Command: "encoder", Click: true, DisplayRevision: &rev}); err != nil || !seen {
+		t.Fatal(err)
+	}
+	if validateCommand(domain.Command{Command: "encoder", Click: true, DisplayRevision: &rev}) == nil {
+		t.Fatal("legacy encoder accepted a foreign argument")
 	}
 }
