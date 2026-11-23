@@ -48,6 +48,55 @@ func TestFamilyIdentityAndUnsupportedSurfaces(t *testing.T) {
 	}
 }
 
+func TestZymaticDiscoveryHasNoDevicePreferencesOrForwarding(t *testing.T) {
+	p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path != "/api/v1" {
+			t.Errorf("unsupported operation reached Zymatic: %s %s", r.Method, r.URL.Path)
+		}
+		replyJSON(w, 200, map[string]any{"api_version": 1, "mode": "standalone", "model": "zymatic", "model_family": "zymatic", "commands": []string{"encoder"}})
+	})
+	ctx := context.Background()
+	caps, err := p.Discover(ctx)
+	if err != nil || caps.SettingsFields == nil || len(caps.SettingsFields) != 0 {
+		t.Fatalf("expected explicitly empty preferences, got %+v, %v", caps.SettingsFields, err)
+	}
+	_, settings := p.Settings(ctx)
+	_, telemetry := p.Telemetry(ctx)
+	writeTelemetry := p.UpdateTelemetry(ctx, map[string]any{"enabled": false, "host": "", "port": 8080})
+	for _, err := range []error{settings, telemetry, writeTelemetry} {
+		if deviceFailure(t, err).Code != "unsupported_capability" {
+			t.Fatal(err)
+		}
+	}
+	if err := p.UpdateSettings(ctx, map[string]any{"language": "en"}); err == nil {
+		t.Fatal("expected unsupported preference to be rejected")
+	}
+}
+
+func TestLegacyPicoDiscoveryKeepsDevicePreferences(t *testing.T) {
+	p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+		switch r.URL.Path {
+		case "/api/v1":
+			replyJSON(w, 200, map[string]any{"api_version": 1, "mode": "standalone", "recipe_capacity": 16})
+		case "/api/v1/settings":
+			replyJSON(w, 200, map[string]any{"language": "en"})
+		default:
+			t.Errorf("unexpected route %s", r.URL.Path)
+		}
+	})
+	ctx := context.Background()
+	if _, err := p.Discover(ctx); err != nil {
+		t.Fatal(err)
+	}
+	prefs, err := p.Settings(ctx)
+	if err != nil || prefs["language"] != "en" {
+		t.Fatalf("missing legacy settings: %+v, %v", prefs, err)
+	}
+	if err := p.UpdateSettings(ctx, map[string]any{"language": "es"}); err != nil {
+		t.Fatal(err)
+	}
+}
+
 func TestDiscoveredAccessoryCommandArgumentsAndFalseValues(t *testing.T) {
 	caps := domain.Capabilities{Commands: []string{"set-pump", "set-fan", "calibrate", "set-sampling-interval"}, CommandFields: map[string]domain.CommandFields{
 		"set-pump":              {Allowed: []string{"enabled"}, Required: []string{"enabled"}},

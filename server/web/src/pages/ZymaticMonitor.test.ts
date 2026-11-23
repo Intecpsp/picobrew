@@ -64,7 +64,14 @@ function page(d: Device, fleet = false) {
 function displayCalls() {
   return fetchMock.mock.calls.filter(([url]) => String(url).endsWith('/paired-unit/display'))
 }
+const showModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal')
 beforeEach(() => {
+  Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
+    configurable: true,
+    value(this: HTMLDialogElement) {
+      this.open = true
+    },
+  })
   vi.stubGlobal('fetch', fetchMock)
   vi.useFakeTimers()
   vi.spyOn(HTMLCanvasElement.prototype, 'getContext').mockReturnValue({
@@ -74,6 +81,8 @@ beforeEach(() => {
 })
 afterEach(() => {
   cleanup()
+  if (showModal) Object.defineProperty(HTMLDialogElement.prototype, 'showModal', showModal)
+  else Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
   vi.useRealTimers()
   vi.unstubAllGlobals()
   vi.restoreAllMocks()
@@ -202,5 +211,47 @@ it('lists a monitored machine without suggesting remote program controls', async
     'View machine'
   )
   expect(screen.getByText('Programs start at the brewer')).toBeTruthy()
+  expect(screen.queryByText('Waiting for machine status')).toBeNull()
+})
+
+it('uses the paired Zymatic front panel and retained history without offering unsupported device settings or brew telemetry', async () => {
+  const paired = {
+    ...device,
+    capabilities: {
+      ...device.capabilities!,
+      firmware_version: '1.3.2',
+      commands: ['encoder'],
+      capabilities: {
+        display: true,
+        front_panel: true,
+        panel_revision: true,
+        history_persistent: true,
+        temperature: true,
+      },
+    },
+  }
+  fetchMock.mockImplementation(async (url) =>
+    response(String(url).endsWith('/display') ? { ...frame, revision: 4, dial: 'menu' } : {})
+  )
+  const view = render(page(paired))
+  await act(async () => {})
+  expect(screen.getByRole('button', { name: 'Import retained history' })).toBeTruthy()
+  expect(screen.getByRole('button', { name: 'Press dial' })).toBeTruthy()
+  expect(screen.getByText('Machine status')).toBeTruthy()
+  expect(screen.queryByText('Step time')).toBeNull()
+  expect(screen.queryByText('Target')).toBeNull()
+  await act(async () => screen.getByRole('button', { name: 'Manage machine' }).click())
+  expect(screen.queryByRole('button', { name: 'Brewer preferences' })).toBeNull()
+  expect(
+    fetchMock.mock.calls
+      .map(([url]) => String(url))
+      .some((url) => /\/(settings|telemetry)$/.test(url))
+  ).toBe(false)
+
+  await act(async () => screen.getByRole('button', { name: 'Close dialog' }).click())
+  view.rerender(page({ ...paired, status: { ...status, state: 'program_running', busy: true } }))
+  expect(screen.queryByText('Current step')).toBeNull()
+  view.rerender(page(paired, true))
+  expect(screen.getByText('Select a program with the front panel')).toBeTruthy()
   expect(screen.queryByText('Waiting for machine status')).toBeNull()
 })
