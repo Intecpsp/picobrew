@@ -129,10 +129,14 @@ void pico_local_control_delay(uint32_t milliseconds)
     }
 }
 
+static bool pairing_prompt_active;
+void pico_local_lock_pairing_input(bool locked) { pairing_prompt_active = locked; }
+
 PicoLocalControlResult pico_local_control_encoder(int delta, bool click)
 {
     if (!local.ready || !local.application || !pico_local_control_foreground())
         return PICO_LOCAL_CONTROL_NOT_READY;
+    if (pairing_prompt_active) return PICO_LOCAL_CONTROL_NOT_READY;
     if (delta < -100 || delta > 100)
         return PICO_LOCAL_CONTROL_INVALID;
     PicoEncoder *e = &local.application->ui.encoder;

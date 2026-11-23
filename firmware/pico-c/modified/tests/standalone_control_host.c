@@ -351,6 +351,9 @@ static void test_guards_and_queue(void)
     assert(pico_local_control_command("rinse",NULL)==PICO_LOCAL_CONTROL_STOPPED);
     assert(pico_local_control_command("clear-stop",NULL)==PICO_LOCAL_CONTROL_OK);
     app.ui.encoder.minimum=-10; app.ui.encoder.maximum=10;
+    pico_local_lock_pairing_input(true);
+    assert(pico_local_control_encoder(1,true)==PICO_LOCAL_CONTROL_NOT_READY);
+    pico_local_lock_pairing_input(false);
     assert(pico_local_control_encoder(100,true)==PICO_LOCAL_CONTROL_OK);
     assert(app.ui.encoder.position==10 && app.ui.encoder.click_latch==0 && !sim.irq_masked);
     assert(pico_local_control_encoder(-100,false)==PICO_LOCAL_CONTROL_OK && app.ui.encoder.position==-10);

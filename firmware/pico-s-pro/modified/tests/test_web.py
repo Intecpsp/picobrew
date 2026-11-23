@@ -33,7 +33,7 @@ class Handler(BaseHTTPRequestHandler):
         body = self.rfile.read(int(self.headers.get("Content-Length", 0)))
         encoding = None
         if self.path.startswith("/api/"):
-            if self.headers.get("Authorization") != "Bearer " + TEST_KEY:
+            if self.path != "/api/v1/overview" and self.headers.get("Authorization") != "Bearer " + TEST_KEY:
                 code, data = 401, {"error": "unauthorized", "message": "Invalid device key"}
             else:
                 with LOCK:
@@ -101,12 +101,53 @@ class BrowserWorkflow(unittest.TestCase):
         self.assertEqual(self.errors, [])
 
     def connect(self):
+        if not self.page.locator("#connectDialog").is_visible():
+            self.page.locator("#connectButton").click()
         self.page.locator("#apiKey").fill(TEST_KEY)
         self.page.locator("#submitConnect").click()
         expect(self.page.locator("#connectionText")).to_have_text("Connected")
         expect(self.page.locator("#connectDialog")).not_to_be_visible()
 
+    def test_pair_using_dial_without_entering_a_key(self):
+        requests = []
+        def pairing(route):
+            operation = route.request.url.rsplit("/", 1)[-1]
+            nonce = route.request.post_data_json["nonce"]
+            self.assertRegex(nonce, "^[0-9a-f]{64}$")
+            self.assertNotIn("authorization", route.request.headers)
+            requests.append((operation, nonce))
+            if operation == "request":
+                route.fulfill(status=202, json={"state": "pending", "code": nonce[:8]})
+            elif len(requests) == 2:
+                route.fulfill(status=202, json={"state": "pending"})
+            else:
+                route.fulfill(status=200, json={"api_key": TEST_KEY})
+        self.page.route("**/api/v1/pairing/**", pairing)
+        self.page.locator("#connectButton").click()
+        self.page.locator("#pairButton").click()
+        expect(self.page.locator("#connectError")).to_contain_text("Confirm code")
+        expect(self.page.locator("#connectionText")).to_have_text("Connected")
+        self.assertEqual([row[0] for row in requests], ["request", "claim", "claim"])
+        self.assertEqual(len({row[1] for row in requests}), 1)
+        self.assertEqual(self.page.evaluate("sessionStorage.getItem('pico-api-key')"), TEST_KEY)
+
+    def test_hub_pairing_link_is_removed_before_redemption(self):
+        nonce = "ab" * 32
+        paths = []
+        def claim(route):
+            self.assertEqual(route.request.post_data_json, {"nonce": nonce})
+            paths.append(self.page.url)
+            route.fulfill(status=200, json={"api_key": TEST_KEY})
+        self.page.route("**/api/v1/pairing/claim", claim)
+        self.page.goto("about:blank")
+        self.page.goto(self.base + "/#pair=" + nonce)
+        expect(self.page.locator("#connectionText")).to_have_text("Connected")
+        self.assertEqual(len(paths), 1)
+        self.assertNotIn("#", paths[0])
+        self.assertNotIn(nonce, self.page.url)
+
     def test_connection_live_frame_and_desktop_layout(self):
+        expect(self.page.locator("#publicTemperatures")).to_contain_text("72.4°F")
         expect(self.page.locator("#startRecipe")).to_be_disabled()
         self.connect()
         expect(self.page.locator("#wortTemperature")).to_have_text("72.4°F")
@@ -236,6 +277,7 @@ class BrowserWorkflow(unittest.TestCase):
         self.assertIsNone(self.page.evaluate("sessionStorage.getItem('pico-api-key')"))
 
     def test_auth_failure_and_untrusted_recipe_label(self):
+        self.page.locator("#connectButton").click()
         self.page.locator("#apiKey").fill("b" * 64)
         self.page.locator("#submitConnect").click()
         expect(self.page.locator("#connectError")).to_have_text("Invalid device key")

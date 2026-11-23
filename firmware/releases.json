@@ -348,6 +348,50 @@
       "archive_sha256": "fde1c633c9ee77cf35323d6ebbc04ff6ee4c985c7580e34c6591c74a10144b98",
       "binary_sha256": "21eb9d54e78dafb511cb3bc7840573b48143539428ac5edb755492380c2f9635",
       "binary_bytes": 1642048
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.5",
+      "kind": "standalone",
+      "source_commit": "77d9cab5454821c532885753f840aaf628773620",
+      "archive_sha256": "66a554deccb1bdee44340d349c5432d3bd6621099fde115a5f3f93c797aa109b",
+      "binary_sha256": "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b",
+      "binary_bytes": 168392,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.5",
+      "kind": "standalone",
+      "source_commit": "77d9cab5454821c532885753f840aaf628773620",
+      "archive_sha256": "74ba8600f82921e28a28ade1d01de59df725602c29306a35cf53bd5bbe022376",
+      "binary_sha256": "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c",
+      "binary_bytes": 168400,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.4",
+      "kind": "standalone",
+      "source_commit": "77d9cab5454821c532885753f840aaf628773620",
+      "display_variant": "ssd1309",
+      "archive_sha256": "fc3c06cb551e5c28f3c04e289d469ff280251e08e312fd217f30547483273d99",
+      "binary_sha256": "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424",
+      "binary_bytes": 164088
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.4",
+      "kind": "standalone",
+      "source_commit": "77d9cab5454821c532885753f840aaf628773620",
+      "display_variant": "ssd1325",
+      "archive_sha256": "665ff38ca4dacc266dd95a00917d7eb14fed9fcf2e268e0f29526ea9adde4e8b",
+      "binary_sha256": "b5b14f098652d1bd42396b22410028af86b8c5cd0d5bf8ac0a50533b40422f9f",
+      "binary_bytes": 164192
     }
   ]
 }
