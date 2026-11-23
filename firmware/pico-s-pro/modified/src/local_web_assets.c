@@ -2,9 +2,9 @@
 #include "picobrew/web_assets.h"
 
 const PicoHttpAsset pico_web_assets[] = {
-    /* gzip SHA-256: 80bc20ed1c7b655f545cf730d573dfd11991dbd58581c8fa93d487a0bbe66a08 */
-    {"/", "text/html; charset=utf-8", "gzip", NULL, 4126, "/local/web/i.gz"},
-    {"/index.html", "text/html; charset=utf-8", "gzip", NULL, 4126, "/local/web/i.gz"},
+    /* gzip SHA-256: cb34be8aace2567cd196bea9269f3ee0325d284496b5a268406a8c1e5dcf6312 */
+    {"/", "text/html; charset=utf-8", "gzip", NULL, 6151, "/local/web/i.gz"},
+    {"/index.html", "text/html; charset=utf-8", "gzip", NULL, 6151, "/local/web/i.gz"},
     /* gzip SHA-256: 8e262f6650679632f7b6320a9d9e692793bbf517d23bb469794c027d9a2ca366 */
     {"/app.js", "application/javascript; charset=utf-8", "gzip", NULL, 7481, "/local/web/a.gz"},
     /* gzip SHA-256: 148f1e58569176ff0c61c80ee7377e5853982100f54fefb80dff8d1652e9434b */

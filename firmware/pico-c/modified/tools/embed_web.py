@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Build installed gzip browser files and small firmware descriptors, entirely offline."""
 import argparse
+import base64
 import gzip
 import hashlib
 import json
@@ -25,6 +26,13 @@ def generate():
                 'fail_safe': False, 'assets': []}
     for name, content_type in ASSETS:
         raw = (ROOT / 'web' / name).read_bytes()
+        if name == 'index.html':
+            # The deployed recovery protocol has five fixed website files.
+            icon_link = b'href="/favicon.ico"'
+            if raw.count(icon_link) != 1:
+                raise ValueError('Expected one local favicon link in the website index')
+            icon = base64.b64encode((ROOT / 'web/favicon.ico').read_bytes())
+            raw = raw.replace(icon_link, b'href="data:image/x-icon;base64,' + icon + b'"')
         packed = bytearray(gzip.compress(raw, compresslevel=9, mtime=0))
         # gzip.compress varies the OS header byte across supported Python versions.
         packed[9] = 255

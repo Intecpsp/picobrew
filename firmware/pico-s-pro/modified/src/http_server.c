@@ -209,7 +209,7 @@ static void prepare_response(PicoHttpServer *s, uint32_t now)
     int count = snprintf(s->line, sizeof(s->line),
         "HTTP/1.1 %u %s\r\nContent-Type: %s\r\nContent-Length: %lu\r\n"
         "Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n"
-        "Content-Security-Policy: default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'\r\n"
+        "Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'\r\n"
         "%s%s%s%s\r\n",
         r->status, reason(r->status), r->content_type, (unsigned long)r->body_length,
         r->content_encoding ? "Content-Encoding: " : "",
