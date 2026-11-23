@@ -139,7 +139,7 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["recipe_create_only"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.3.5")
+        self.assertEqual(data["firmware_version"], "1.3.6")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]

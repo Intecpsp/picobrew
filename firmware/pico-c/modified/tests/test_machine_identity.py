@@ -59,7 +59,7 @@ class MachineIdentity(unittest.TestCase):
                             self.assertEqual({key: data[key] for key in ('model', 'model_name', 'model_family')},
                                              {'model': 'pico-c', 'model_name': 'Pico C', 'model_family': 'pico-c'})
                         if route in ('/api/v1', '/api/v1/health'):
-                            self.assertEqual(data['firmware_version'], '1.2.4')
+                            self.assertEqual(data['firmware_version'], '1.2.5')
                             self.assertEqual(data['api_version'], 1)
                         if route == '/api/v1':
                             self.assertIs(data['firmware_update'], False)
