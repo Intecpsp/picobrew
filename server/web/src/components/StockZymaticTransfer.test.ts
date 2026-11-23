@@ -116,3 +116,47 @@ it('routes both preview and publish exclusively to the selected paired brewer', 
   ).toEqual([false, true])
   expect(localStorage.getItem('stock-zymatic-serial')).toBe('AAAAAAAAAAAA')
 })
+
+it('shows the stock compiler’s scaled bill and reviewed directions before publishing', async () => {
+  const beer = {
+    ...saved,
+    native_program: undefined,
+    batch_liters: 10,
+    notes:
+      'Hub adaptation (Primary honey). Mix the honey into the cooled wort before pitching.\n\nArchived keg procedure',
+    ingredients: [
+      {
+        name: 'Honey',
+        kind: 'fermentable',
+        unit: 'kg',
+        amount: 0.1,
+        use: 'fermentation',
+        minutes: 0,
+      },
+      { name: 'Hallertau', kind: 'hop', unit: 'g', amount: 20, use: 'boil', minutes: 60 },
+    ],
+  }
+  fetchMock.mockImplementation(async (_url, opts) =>
+    opts?.method === 'POST'
+      ? json({
+          items: [
+            {
+              recipe_id: beer.id,
+              revision: beer.revision,
+              program,
+              batch_liters: 5,
+              hop_slots_by_minute: { 60: 3 },
+            },
+          ],
+        })
+      : json({ machine: 'AAAAAAAAAAAA', items: [] })
+  )
+  render(createElement(StockZymaticTransfer, { ...props, recipes: [beer] }))
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Preview stock menu' }))
+  await screen.findByText('Mix the honey into the cooled wort before pitching.')
+  expect(screen.queryByText('Archived keg procedure')).toBeNull()
+  expect(screen.getByText('Honey').closest('tr')?.textContent).toContain('50 gFermentation')
+  expect(screen.getByText('Hallertau').closest('tr')?.textContent).toContain(
+    '10 gHop slot 3 · 60 min before boil ends'
+  )
+})

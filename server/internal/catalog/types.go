@@ -27,6 +27,7 @@ type Source struct {
 }
 
 type Summary struct {
+	Edition           string   `json:"edition,omitempty"`
 	BrewReady         bool     `json:"brew_ready,omitempty"`
 	ID                string   `json:"id"`
 	Name              string   `json:"name"`

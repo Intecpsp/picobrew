@@ -5,21 +5,69 @@
     "source_sha256": "68a3ff0969bdb3b8fe3794bfebc7dbb45350cc0fe38c14f558dc52f49bc838b6"
   },
   "public-093364df216645d49f8847b62f8ef0ec": {
-    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Tettnanger in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Irish Moss.",
-    "source_sha256": "cb727c9e1f95ddae9abd5a98c9d6403f4758519bf04f3ffec733bb90f0582a8b"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Tettnanger goes in with five minutes left after the 30-minute bittering addition. Use the recorded 90-minute boil. The timed hop additions start with 30, 5 minutes remaining. Original record: Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "cb727c9e1f95ddae9abd5a98c9d6403f4758519bf04f3ffec733bb90f0582a8b",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-1021bd555de04b0a82463322480c6390": {
-    "blocker": "Confirm the cage and exposure for Fuggles. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Fuggles in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Whirlfloc.",
-    "source_sha256": "2cb1b4868ea600ef7a12500b1c08d105a0c11d52d99db08506c0d62e8b5f92d0"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. The source credits a 2015 Brewmasters of Alpharetta meeting. Keep the Fuggles charge at five minutes. Use the recorded 60-minute boil. The timed hop additions start with 60, 5 minutes remaining. Original record: Confirm the cage and exposure for Fuggles. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "2cb1b4868ea600ef7a12500b1c08d105a0c11d52d99db08506c0d62e8b5f92d0",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-103c339d154e4e089fdc05a2e6b91347": {
     "additions": [
       {
         "amount": 28.349523125,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Cascade",
         "unit": "g",
         "use": "dry-hop"
@@ -27,7 +75,7 @@
       {
         "amount": 14.174761563,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Citra",
         "unit": "g",
         "use": "dry-hop"
@@ -35,22 +83,101 @@
       {
         "amount": 14.174761563,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Centennial",
         "unit": "g",
         "use": "dry-hop"
       }
     ],
-    "blocker": "Confirm the cage and exposure for Centennial/Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program. The dissolved corn sugar needs a manual boil addition.",
     "edits": [
       {
         "from": 3.18,
         "path": "/H2O",
         "to": 3.5
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 14,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/3/BoilUse",
+        "from": 4,
+        "to": 0
+      },
+      {
+        "path": "/Hops/4/BoilUse",
+        "from": 4,
+        "to": 0
       }
     ],
-    "evidence": "The loading sheet puts Centennial/Citra in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss. The author dissolves the corn sugar into the boil, uses 3.5 US gal starting water and adds three dry hops at one week.",
-    "source_sha256": "68d174e9a92c0c234d8362cfb0ec873bc960ded2d4df0965df0631afe006428b"
+    "evidence": "For 2.5 US gal, the author starts with 3.5 US gal water, adds 4 oz dextrose to the boil and dry hops on day seven with 1 oz Cascade, ½ oz Citra and ½ oz Centennial. This version chooses five days of contact, the low end of PicoBrew’s Atomic Amber dry-hop range. Omit the unitless Irish moss: this frees the third cage for the late Centennial and Citra. The saved hop exposures are 60, 15 and five minutes. Instead of opening the brewer, dissolve the scaled dextrose in a small amount of water in a separate saucepan, bring to a boil and cool covered. Mix into the unpressurized fermenter with the chilled wort, measure gravity, then pitch US-05 and fit the airlock. Ferment to stable gravity before packaging. This is part of the fermentable bill. The lighter boil can raise hop utilization slightly. Include the syrup water in the final volume to retain the original sugar concentration and dry finish. https://help.mangrovejacks.com/hc/en-us/article_attachments/360008927158 https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/1704720c78ac436b9ca46bbc8a2dfbe3.json Original record: Confirm the cage and exposure for Centennial/Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program. The dissolved corn sugar needs a manual boil addition.",
+    "source_sha256": "68d174e9a92c0c234d8362cfb0ec873bc960ded2d4df0965df0631afe006428b",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "minutes": 0,
+          "use": "before pitching"
+        }
+      }
+    ],
+    "edition": "Pitch-time corn sugar · unfined"
   },
   "public-121022c460cd476dba8af6d7fac04f1f": {
     "additions": [
@@ -202,7 +329,6 @@
     "source_sha256": "cb007e15a951be0916fdb0e7be613bed148c6256c50ee19149d142bce0ee9ff6"
   },
   "public-1e6200a087014a7da345c475878563ed": {
-    "blocker": "The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
     "edits": [
       {
         "from": 60.0,
@@ -213,13 +339,54 @@
         "from": true,
         "path": "/IsFirstWort",
         "to": false
+      },
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
       }
     ],
-    "evidence": "The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger.",
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Use the saved machine schedule instead of the mash table, which lists different rests. Mash for 90 min at 152°F, then 15 min at 175°F. The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger. Original record: The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
     "first_wort_hops": [
       "Tettnanger"
     ],
-    "source_sha256": "d5e62647dd8e9d0cb487925d0d3e5d5bd69479e3e79ecc4e2f0813a1bdd09900"
+    "source_sha256": "d5e62647dd8e9d0cb487925d0d3e5d5bd69479e3e79ecc4e2f0813a1bdd09900",
+    "steps": [
+      {
+        "name": "Single Step Infu...",
+        "kind": "mash",
+        "target_c": 66.66666666666667,
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "target_c": 79.44444444444444,
+        "minutes": 15,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "minutes": 70,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "edition": "Unadjusted brewing water · saved schedule"
   },
   "public-2297547543314ebcb0de8fffdb0c57bc": {
     "additions": [
@@ -461,14 +628,62 @@
     "source_sha256": "5e8a95d4b27a7f161de8f1dc54ae073e8f6ceb41b143b9c8b8fe18b5ad044ef8"
   },
   "public-27f1d394ce69470796e31241c75742e1": {
-    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Citra in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Whirlfloc. The author lists alternative yeast strains. No note settles the Whirlfloc and Citra routing.",
-    "source_sha256": "ea367d7850b67531384fe29e49489efe31d68ab5dd91b3b7d4a620bdcaea3fd4"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Use the recorded S-04 or one of the author’s alternatives, WLP001 or Wyeast 1056. Citra gets five minutes. Use the recorded 60-minute boil. The timed hop additions start with 60, 20, 5 minutes remaining. Original record: Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "ea367d7850b67531384fe29e49489efe31d68ab5dd91b3b7d4a620bdcaea3fd4",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.2,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-31629479e90b4bc7ab358314f66c8d94": {
-    "blocker": "Confirm the cage and exposure for Liberty. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Liberty in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Irish Moss.",
-    "source_sha256": "bf2f030a84ceaf4c81d988ca06d8cf3348dc5869efa92517204d982bbec392bd"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The one-minute Liberty goes in after the 60-minute bittering addition. Use the recorded 60-minute boil. The timed hop additions start with 60, 1 minutes remaining. Original record: Confirm the cage and exposure for Liberty. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "bf2f030a84ceaf4c81d988ca06d8cf3348dc5869efa92517204d982bbec392bd",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 5,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-37948960239240a7b7cbcb8f59b58a7d": {
     "blocker": "The ingredient editor lists this Citra at one minute. Confirm that the 30-minute post-boil program is intended and provide a controlled cooling step.",
@@ -658,12 +873,91 @@
     "source_sha256": "3a775dd2544878255ce913883c938f30a2ed4b97cfe727b3afd5e554b2529671"
   },
   "public-3bc7fd9b025a48509eb0d7c3769c8ce7": {
-    "blocker": "Confirm the cage and exposure for Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. Both Whirlfloc and yeast nutrient have zero recorded quantities.",
     "carbonation": {
       "volumes": 2.8
     },
-    "evidence": "The loading sheet puts Saaz in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Whirlfloc, Yeast Nutrient. The author specifies a 67°F pitch and a rise during fermentation, with original water ion targets. The fining quantities are absent.",
-    "source_sha256": "f9cb98c8031a6755ccb645578cdaa3d5db9310ed79561b777ae8619dac154d37"
+    "evidence": "Use The Malt Miller Concentrated Yeast Vit at pitching in place of the unspecified kettle nutrient. Weigh 0.05 g per liter of wort actually collected, mix into a small portion of wort, and add it to the fermenter as the supplier directs. This version also omits the zero-quantity Whirlfloc. Keep the 94:6 Pilsner-to-aromatic grist, the 60-minute Magnum and five-minute Saaz, 67°F pitch, author’s rise during active fermentation and 2.8 volumes of carbonation. https://www.themaltmiller.co.uk/product/tmm-concentrated-yeast-vit-50g/ Original record: Confirm the cage and exposure for Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. Both Whirlfloc and yeast nutrient have zero recorded quantities.",
+    "source_sha256": "f9cb98c8031a6755ccb645578cdaa3d5db9310ed79561b777ae8619dac154d37",
+    "steps": [
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "minutes": 75,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Adjuncts/1",
+        "from": {
+          "Location": 3,
+          "Amount": 0.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 89,
+          "Name": "Yeast Nutrient",
+          "Use": "Other",
+          "AdjunctType": "Other"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "additions": [
+      {
+        "name": "The Malt Miller Concentrated Yeast Vit",
+        "amount": 0.47317647300000004,
+        "unit": "g",
+        "kind": "misc",
+        "use": "fermentation",
+        "minutes": 0
+      }
+    ],
+    "edition": "Pitch-time nutrient · unfined"
   },
   "public-3eaa338511974151922bfa8b2a042076": {
     "blocker": "The separate steep, extract addition and Irish moss addition at 15 minutes need operator handling. The salt dose lacks a unit.",
@@ -774,7 +1068,6 @@
     "source_sha256": "859d6c2532f5b9114fe3a1a743b987697ccbc163812bea65e1c601d62306cb0b"
   },
   "public-5b779376cb834a8bbfc3dd9bbcaafa75": {
-    "blocker": "The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
     "edits": [
       {
         "from": 60.0,
@@ -785,13 +1078,54 @@
         "from": true,
         "path": "/IsFirstWort",
         "to": false
+      },
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
       }
     ],
-    "evidence": "The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger.",
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Use the saved machine schedule instead of the mash table, which lists different rests. Mash for 90 min at 152°F, then 15 min at 175°F. The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger. Original record: The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
     "first_wort_hops": [
       "Tettnanger"
     ],
-    "source_sha256": "1f88d4fdffd65b587731a0a53019b3a071966ae593dcaf6b703241988d3e8818"
+    "source_sha256": "1f88d4fdffd65b587731a0a53019b3a071966ae593dcaf6b703241988d3e8818",
+    "steps": [
+      {
+        "name": "Single Step Infu...",
+        "kind": "mash",
+        "target_c": 66.66666666666667,
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "target_c": 79.44444444444444,
+        "minutes": 15,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "minutes": 70,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "edition": "Unadjusted brewing water · saved schedule"
   },
   "public-5c460b41f7de42a984266c3fdac60d8b": {
     "additions": [
@@ -954,9 +1288,33 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "Confirm the cage and exposure for Amarillo. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Amarillo in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes. The author adds ½ tsp each of calcium chloride and gypsum to RO water and dry-hops one ounce each of Simcoe and Amarillo for seven days.",
-    "source_sha256": "43f50e86ca314f3276e893604314834f173e980a2362aac8de6d4207ef6dab5a"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Use reverse-osmosis water with ½ tsp each of gypsum and calcium chloride. Dry hop with 1 oz each of Simcoe and Amarillo for seven days. Use the recorded 90-minute boil. The timed hop additions start with 90, 10, 5 minutes remaining. Original record: Confirm the cage and exposure for Amarillo. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "43f50e86ca314f3276e893604314834f173e980a2362aac8de6d4207ef6dab5a",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-5cd2399a5e684c87a3fcb07158ea06a4": {
     "blocker": "This is a temperature-sweep program with an unidentified placeholder hop. Treat it as a program rather than an ingredient beer recipe.",
@@ -1119,16 +1477,90 @@
     "source_sha256": "c8bcfe5fd4a02aba550f4f58e7a59ee9b1b073cc39a062ebc831952aa6038f4e"
   },
   "public-685685cee74449a6a3dc2445ea49be08": {
-    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The corn sugar must be added during the boil.",
     "edits": [
       {
         "from": 3.72,
         "path": "/H2O",
         "to": 4
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
       }
     ],
-    "evidence": "The loading sheet puts Tettnanger in cage 3 for the 8-minute addition. The saved boil ends in cage 2 for 8 minutes, where the sheet places Irish Moss. The author specifies 4 US gal starting water and dissolved corn sugar in the final 30 minutes.",
-    "source_sha256": "346b3c6a9e5a0153499a01a1b3c9a50d54cf191df5e6899a3f51e99a75895e4c"
+    "evidence": "The author starts with 4 US gal of water for 3.2 US gal of beer and adds 4 oz dextrose in the last 30 minutes of the 90-minute boil. Keep Tettnanger at 60 and eight minutes. With the unitless Irish moss omitted, the second hop cage opens at eight minutes as the saved program specifies. Instead of opening the brewer, dissolve the scaled dextrose in a small amount of water in a separate saucepan, bring to a boil and cool covered. Mix into the unpressurized fermenter with the chilled wort, measure gravity, then pitch US-05 and fit the airlock. Ferment to stable gravity before packaging. This is part of the fermentable bill. The lighter boil can raise hop utilization slightly. Include the syrup water in the final volume to retain the original sugar concentration and dry finish. https://help.mangrovejacks.com/hc/en-us/article_attachments/360008927158 Original record: Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The corn sugar must be added during the boil.",
+    "source_sha256": "346b3c6a9e5a0153499a01a1b3c9a50d54cf191df5e6899a3f51e99a75895e4c",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "minutes": 0,
+          "use": "before pitching"
+        }
+      }
+    ],
+    "edition": "Pitch-time corn sugar · unfined"
   },
   "public-68a8c857c67b4baaa12953811da183f8": {
     "additions": [
@@ -1306,9 +1738,38 @@
     "source_yeast": "Imperial B63 Monastic"
   },
   "public-6fcead2ee5da4b0db1a394de2bf971e7": {
-    "blocker": "Confirm the cage and exposure for Galaxy. Loading the sheet as printed would leave the final hop charge dry in the saved program. Irish moss has a zero quantity.",
-    "evidence": "The loading sheet puts Galaxy in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss.",
-    "source_sha256": "b202471d443d07f5a5b790c9a3a84eb2594f018bbd3978caac79a4eb196e7e89"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The late Galaxy charge gets five minutes. The original fining amount was zero. Use the recorded 60-minute boil. The timed hop additions start with 60, 15, 5 minutes remaining. Original record: Confirm the cage and exposure for Galaxy. Loading the sheet as printed would leave the final hop charge dry in the saved program. Irish moss has a zero quantity.",
+    "source_sha256": "b202471d443d07f5a5b790c9a3a84eb2594f018bbd3978caac79a4eb196e7e89",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.0,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-71caf643b0ab4077afacaa0f436c1d5e": {
     "additions": [
@@ -1411,9 +1872,33 @@
     "source_sha256": "82cb6d16de14dd061dfd4b459034a71da8cbc891dec1f1dce81061730c1c4a85"
   },
   "public-7e4d6360e049409d819f2ce9f200a050": {
-    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Cascade in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Irish Moss. The note identifies the recipe's origin. It gives no alternate cage layout.",
-    "source_sha256": "4615c52eb1b9b59e542f51139ea04b2574395285ea6fa336108892419b40c8a7"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The author credits Charlie Papazian’s 2018 Big Brew Day recipe. Keep the one-minute Cascade addition. Use the recorded 60-minute boil. The timed hop additions start with 60, 1 minutes remaining. Original record: Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "4615c52eb1b9b59e542f51139ea04b2574395285ea6fa336108892419b40c8a7",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-8027f387724342e79e2aee924a998dd8": {
     "additions": [
@@ -1837,9 +2322,85 @@
     "source_sha256": "52304f0e1f4d6f596abe75a067b0d2a67faaa058cbc6d373a0e3a8956d45c044"
   },
   "public-99d0865668424a149ad4387a46e6798c": {
-    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Citra in cage 4 for the 3-minute addition. The saved boil ends in cage 3 for 3 minutes. The native five- and three-minute switches precede the corresponding printed hop cages by one cage.",
-    "source_sha256": "e01e26565c7846211c45c1ba88f952bd7439c4e74e0e58fc3f5a1a1620622236"
+    "evidence": "Use The Malt Miller Concentrated Yeast Vit at pitching in place of the unspecified kettle nutrient. Weigh 0.05 g per liter of wort actually collected, mix into a small portion of wort, and add it to the fermenter as the supplier directs. Christopher Gray’s original and its revision both weigh ½ oz each of Centennial, Mosaic and Citra. Their native cages receive those hops for 60, five and three minutes once the nutrient moves out of the kettle. The source nutrient was recorded as 0.5 without a unit. https://www.themaltmiller.co.uk/product/tmm-concentrated-yeast-vit-50g/ https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/cb6f1e9ad95f4091922f34ed1007cd90.json Original record: Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "e01e26565c7846211c45c1ba88f952bd7439c4e74e0e58fc3f5a1a1620622236",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.5,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 89,
+          "Name": "Yeast Nutrient",
+          "Use": "Other",
+          "AdjunctType": "Other"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "additions": [
+      {
+        "name": "The Malt Miller Concentrated Yeast Vit",
+        "amount": 0.49210353192,
+        "unit": "g",
+        "kind": "misc",
+        "use": "fermentation",
+        "minutes": 0
+      }
+    ],
+    "edition": "Pitch-time nutrient"
   },
   "public-9b7ffd57968b41e28e8de72c7221433a": {
     "blocker": "The remaining Amarillo and Falconer’s Flight charges are assigned to the same cage as the dry-hop placeholders. Confirm their intended whirlpool exposure and the operator's cooling procedure.",
@@ -2006,9 +2567,33 @@
     "source_sha256": "505d5a45bd9967553e4c1790a3ffdbb506b6707f8f4eb0f3032eeaadd33b8e6a"
   },
   "public-9c051402c81041878199ce16f5a57532": {
-    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Cascade in cage 3 for the 10-minute addition. The saved boil ends in cage 2 for 10 minutes, where the sheet places Whirlfloc. The author describes the base recipe and color change without specifying a different final cage.",
-    "source_sha256": "6d752883317806391c6c39fda8ab96048d5ba2a4fa8f567f371a0eaad47ea73e"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. The quarter teaspoon of calcium sulfate stays in the mash water. The final Cascade charge gets ten minutes. Use the recorded 60-minute boil. The timed hop additions start with 60, 10 minutes remaining. Original record: Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "6d752883317806391c6c39fda8ab96048d5ba2a4fa8f567f371a0eaad47ea73e",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.5,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/1/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-9c2bfff398d44806a65304793c5adf3b": {
     "blocker": "This is a cleaning utility. Never use its displayed ingredients to generate a beer recipe.",
@@ -2016,9 +2601,66 @@
     "source_sha256": "5f11ad12151c957068d1e90997367f5cc363b2b76399613362df67fad99a9b4d"
   },
   "public-a1871ddec9864cc7abb805079cb9a927": {
-    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The yeast nutrient quantity is zero.",
-    "evidence": "The loading sheet puts Tettnanger in cage 4 for the 10-minute addition. The saved boil ends in cage 3 for 10 minutes. The author's gram and ounce equivalents confirm the measured hop weights.",
-    "source_sha256": "70a0f56ac401a4a0a2364c1f8014d7b09931ade589acd5cdd0a394d7ff7ecd3d"
+    "evidence": "Use The Malt Miller Concentrated Yeast Vit at pitching in place of the unspecified kettle nutrient. Weigh 0.05 g per liter of wort actually collected, mix into a small portion of wort, and add it to the fermenter as the supplier directs. The recorded nutrient quantity is zero. Keep WLP940 and the native 90-, 40- and ten-minute hops. The author corroborates the rounded gram weights for Hersbruck and Tettnanger. https://www.themaltmiller.co.uk/product/tmm-concentrated-yeast-vit-50g/ Original record: Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The yeast nutrient quantity is zero.",
+    "source_sha256": "70a0f56ac401a4a0a2364c1f8014d7b09931ade589acd5cdd0a394d7ff7ecd3d",
+    "steps": [
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.0,
+          "Time": 60,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 89,
+          "Name": "Yeast Nutrient",
+          "Use": "Other",
+          "AdjunctType": "Other"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "additions": [
+      {
+        "name": "The Malt Miller Concentrated Yeast Vit",
+        "amount": 0.47317647300000004,
+        "unit": "g",
+        "kind": "misc",
+        "use": "fermentation",
+        "minutes": 0
+      }
+    ],
+    "edition": "Pitch-time nutrient"
   },
   "public-a46c7c74072544ebaf1ead2569c3dc7b": {
     "additions": [
@@ -2052,15 +2694,36 @@
     "source_sha256": "37add7bf624443b341d91a0c9b22f97b92ec0e8e7f3718ce0113cc4187559f1c"
   },
   "public-a48dafac01df40679cb4b27b6aeba263": {
-    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
     "edits": [
       {
-        "from": "Chocolate",
-        "path": "/Fermentables/5/Name",
+        "from": "Other (See Notes)",
+        "path": "/Fermentables/6/Name",
         "to": "Rice hulls"
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
       }
     ],
-    "evidence": "The loading sheet puts Cascade in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss. The author identifies the ½ lb placeholder in the mash as rice hulls.",
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Use the half pound of rice hulls identified by the author. Cascade gets the final five minutes. Use the recorded 60-minute boil. The timed hop additions start with 60, 30, 5 minutes remaining. Original record: Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
     "ingredient_edits": [
       {
         "name": "Rice hulls",
@@ -2075,7 +2738,8 @@
         "use": "mash"
       }
     ],
-    "source_sha256": "0f2facb5de2152646dfa9a6b6389d1367e7d82fcb995e7e11a7a81ce40da7d42"
+    "source_sha256": "0f2facb5de2152646dfa9a6b6389d1367e7d82fcb995e7e11a7a81ce40da7d42",
+    "edition": "Unfined"
   },
   "public-a8973fe5bc944025a4fdf1b7460f8b9e": {
     "blocker": "Confirm the cage and exposure for Herkules. Loading the sheet as printed would leave the final hop charge dry in the saved program. The pepper amount is zero in the structured record and the notes give no amount.",
@@ -2290,13 +2954,41 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "Confirm the cage and exposure for Crystal/Simcoe. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Crystal/Simcoe in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes. The author dry-hops 0.4 oz Amarillo for seven days and prefers whole rather than pellet hops.",
-    "source_sha256": "b2344f7dc7d1aa271cdb651aceaccdb0bec6c563054285545090fdbef96ead4a"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The author prefers leaf hops and calls for 0.4 oz Amarillo in the fermenter for seven days. Crystal and Simcoe share the one-minute addition. Use the recorded 90-minute boil. The timed hop additions start with 90, 10, 1 minutes remaining. Original record: Confirm the cage and exposure for Crystal/Simcoe. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "b2344f7dc7d1aa271cdb651aceaccdb0bec6c563054285545090fdbef96ead4a",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.5,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      },
+      {
+        "path": "/Hops/3/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-b0b8996eb0ae446a91b89942e087c3df": {
-    "blocker": "The saved program only selects cage 1 for 60 minutes. Confirm the full boil duration and the exposure of the two loads.",
-    "evidence": "The author confirms 1.5 oz cacao nibs, two weeks of fermentation and 1 oz liquid BrewCraft hazelnut flavor before final kegging or bottling. The sheet puts the cacao in cage 1 at 90 minutes and Tettnanger in cage 2 at 60 minutes. The author bottle-ages the beer for two months.",
+    "evidence": "This edition uses the loading sheet’s 90-minute boil. Put 1.5 oz cacao nibs in cage 1 at the start and 1 oz Tettnanger in cage 2 with 60 minutes remaining. The original program stopped after 60 minutes in cage 1, leaving cage 2 dry. The author confirms the cacao dose. This edition interprets the author’s liquid ounce of BrewCraft hazelnut flavor as one US fluid ounce. Add it before final kegging or bottling, after two weeks of fermentation. Bottle-age for two months. The source starting water is 3.70 US gal for its 2.5-gal batch. Chill separately after the final five-minute drain. The original chiller used a 65°F target, a ten-minute circulation and a ten-minute drain. This edition uses the same 202°F hot-side target through the keg and every loaded cage. The original called for 207°F. The lower setting avoids wetting a loaded cage while the Z is still warming from its keg-path limit. The Hub scales starting water and the whole bill together to respect the destination keg’s working fill.",
     "fermentation": [
       {
         "days": 14,
@@ -2304,7 +2996,75 @@
         "target_c": 18.333333333333332
       }
     ],
-    "source_sha256": "7e925e12be7dcd0b80328574b9665fd685352efdff041425fb7c73fdace4127c"
+    "source_sha256": "7e925e12be7dcd0b80328574b9665fd685352efdff041425fb7c73fdace4127c",
+    "edition": "Declared hop schedule",
+    "edits": [
+      {
+        "path": "/Adjuncts/0/Units",
+        "from": null,
+        "to": "oz"
+      },
+      {
+        "path": "/Hops/0/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "slot_additions": [
+      "Cacao Nibs"
+    ],
+    "additions": [
+      {
+        "name": "BrewCraft hazelnut natural flavoring",
+        "kind": "misc",
+        "use": "bottling",
+        "amount": 29.5735295625,
+        "unit": "mL",
+        "minutes": 0
+      }
+    ],
+    "steps": [
+      {
+        "name": "Heat Water",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 66.66666666666667,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "location": 2,
+        "target_c": 66.66666666666667,
+        "minutes": 90,
+        "drain_minutes": 8
+      },
+      {
+        "name": "Heat to Boil",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 94.44444444444444,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Boil cage 1",
+        "kind": "boil",
+        "location": 3,
+        "target_c": 94.44444444444444,
+        "minutes": 30,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Boil cage 2",
+        "kind": "boil",
+        "location": 4,
+        "target_c": 94.44444444444444,
+        "minutes": 60,
+        "drain_minutes": 5
+      }
+    ]
   },
   "public-b10ffeb17d734945b60a6cd832c6e09e": {
     "blocker": "Confirm the cage and exposure for Czech Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. The water-treatment amounts have no unit.",
@@ -2540,9 +3300,85 @@
     "source_sha256": "ede89f0309dc965ed48a0afc1a185b414797aa1901292e4351766f6fd5d2335a"
   },
   "public-cb6f1e9ad95f4091922f34ed1007cd90": {
-    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
-    "evidence": "The loading sheet puts Citra in cage 4 for the 3-minute addition. The saved boil ends in cage 3 for 3 minutes. The native five- and three-minute switches precede the corresponding printed hop cages by one cage.",
-    "source_sha256": "1081a192be2ac997f35abece0f34300d0e436fbee47d3d8d845cd6ce3ef135f2"
+    "evidence": "Use The Malt Miller Concentrated Yeast Vit at pitching in place of the unspecified kettle nutrient. Weigh 0.05 g per liter of wort actually collected, mix into a small portion of wort, and add it to the fermenter as the supplier directs. Christopher Gray’s original and its revision both weigh ½ oz each of Centennial, Mosaic and Citra. Their native cages receive those hops for 60, five and three minutes once the nutrient moves out of the kettle. The source nutrient was recorded as 0.5 without a unit. https://www.themaltmiller.co.uk/product/tmm-concentrated-yeast-vit-50g/ https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/99d0865668424a149ad4387a46e6798c.json Original record: Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "source_sha256": "1081a192be2ac997f35abece0f34300d0e436fbee47d3d8d845cd6ce3ef135f2",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.5,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 89,
+          "Name": "Yeast Nutrient",
+          "Use": "Other",
+          "AdjunctType": "Other"
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2/BoilUse",
+        "from": 4,
+        "to": 0
+      }
+    ],
+    "additions": [
+      {
+        "name": "The Malt Miller Concentrated Yeast Vit",
+        "amount": 0.49210353192,
+        "unit": "g",
+        "kind": "misc",
+        "use": "fermentation",
+        "minutes": 0
+      }
+    ],
+    "edition": "Pitch-time nutrient"
   },
   "public-cda18131d3d54bacbb353a6b5e28a502": {
     "blocker": "Confirm the cage and exposure for Cascade/Centennial. Loading the sheet as printed would leave the final hop charge dry in the saved program. Duplicate Cascade entries in the final cage could be intentional separate weights or a duplicate ingredient.",

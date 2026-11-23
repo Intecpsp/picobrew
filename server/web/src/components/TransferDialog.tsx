@@ -9,6 +9,7 @@ import { isNative, kindLabel } from '../lib/programs'
 import type { BulkDeployment, Device, Recipe } from '../types'
 import { Badge, Button, Empty, ErrorBanner, Field, Modal } from './ui'
 import { ProgramTable } from './Program'
+import { TransferLoadingSheet } from './RecipeLoadingSheet'
 
 const receiptKey = (deviceID: string) => `hub-last-transfer-${deviceID}`
 function savedReceipt(deviceID: string) {
@@ -471,6 +472,15 @@ export function TransferDialog({
                     {statuses[item.status] || item.status}
                   </Badge>
                 </header>
+                {item.native && (
+                  <TransferLoadingSheet
+                    source={recipes.find(
+                      (r) => r.id === item.recipe_id && r.revision === item.source_revision
+                    )}
+                    batchLiters={item.batch_liters}
+                    slots={item.hop_slots_by_minute}
+                  />
+                )}
                 {item.reason && <p>{item.reason}</p>}
                 {!!item.warnings?.length && (
                   <ul className="warning-list">

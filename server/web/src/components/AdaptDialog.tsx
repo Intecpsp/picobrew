@@ -1,11 +1,11 @@
-import { unmeasuredYeast } from '../lib/beerCrafter'
+import { EditionInstructions, RecipeLoadingSheet } from './RecipeLoadingSheet'
 import { StockZymaticTransfer, offlineTarget, stockTarget } from './StockZymaticTransfer'
 import { useEffect, useRef, useState } from 'react'
 import { ArrowUpRight, Send } from 'lucide-react'
 import { useHub } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
 import { isNative, routeLabel } from '../lib/programs'
-import { formatNumber, formatQuantity, formatTemperature, formatVolume } from '../lib/recipeDisplay'
+import { formatNumber, formatTemperature, formatVolume } from '../lib/recipeDisplay'
 import { beerStats } from '../lib/beerCrafter'
 import type { Adapted, MachineRecipe, Recipe } from '../types'
 import { Badge, Button, ErrorBanner, Field, Modal } from './ui'
@@ -243,7 +243,7 @@ export function AdaptDialog({
       <p>
         {native
           ? 'The original PicoPak schedule is sent as recorded.'
-          : 'Ingredients scale together to fit the selected brewer’s grain and hop capacities. The preview shows quantities and estimated yield.'}
+          : 'Ingredients scale together to fit the selected brewer’s grain, hop and starting-water limits. The preview shows quantities and estimated yield.'}
       </p>
       {adapted && previewResult?.existing && (
         <p className="notice">
@@ -331,39 +331,13 @@ export function AdaptDialog({
           )}
           {!native && (
             <>
+              <EditionInstructions notes={adapted.recipe.notes} />
               <h3>Scaled ingredients</h3>
-              <table className="data-table">
-                <thead>
-                  <tr>
-                    <th>Ingredient</th>
-                    <th>Original</th>
-                    <th>Adapted</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {unmeasuredYeast(adapted.recipe) && (
-                    <tr>
-                      <td>{unmeasuredYeast(adapted.recipe)}</td>
-                      <td>Pitch amount unspecified</td>
-                      <td>Pitch amount unspecified</td>
-                    </tr>
-                  )}
-                  {adapted.recipe.ingredients.map((item, index) => (
-                    <tr key={index}>
-                      <td>{item.name}</td>
-                      <td>
-                        {formatQuantity(
-                          recipe.ingredients[index]?.amount || 0,
-                          recipe.ingredients[index]?.unit || item.unit
-                        )}
-                      </td>
-                      <td>
-                        <strong>{formatQuantity(item.amount, item.unit)}</strong>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+              <RecipeLoadingSheet
+                recipe={adapted.recipe}
+                slots={adapted.hop_slots_by_minute}
+                original={recipe.ingredients}
+              />
             </>
           )}
           {adapted.machine_recipe || (native && adapted.recipe.native_program) ? (

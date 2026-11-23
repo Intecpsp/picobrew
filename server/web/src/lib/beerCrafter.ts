@@ -74,33 +74,75 @@ export function ingredientBill(ingredients: Ingredient[], kind: string) {
 const kettleHop = (i: Ingredient) =>
   i.kind === 'hop' && ['boil', 'first-wort', 'first wort'].includes(key(i.use))
 export function beerStats(r: Recipe) {
-  const grain = r.ingredients.filter((i) => i.kind === 'fermentable' && i.amount > 0)
-  const hops = r.ingredients.filter((i) => kettleHop(i) && i.amount > 0 && i.minutes > 0)
-  const gallons = r.batch_liters / litersPerGallon
-  const points = grain.reduce(
-    (sum, i) =>
-      sum +
-      ((i.amount * poundsPerKg * sucrosePPG * (i.yield ?? 0)) / 100) *
-        (goesInKeg(i.type) ? 1 : r.efficiency / 100),
-    0
+  // Lactose is also stored as a weighed miscellaneous addition in older records.
+  const milkSugar = (i: Ingredient) => /\b(lactose|milk sugar)\b/i.test(i.name)
+  const bill = r.ingredients.filter(
+    (i) => i.amount > 0 && (i.kind === 'fermentable' || (i.kind === 'misc' && milkSugar(i)))
   )
-  const og =
-    gallons > 0 && r.efficiency > 0 && grain.length && grain.every((i) => (i.yield ?? 0) > 0)
-      ? 1 + points / gallons / 1000
-      : null
-  const colorUnits = grain.reduce((sum, i) => sum + i.amount * poundsPerKg * (i.color ?? 0), 0)
+  const hotUses = ['mash', 'steep', 'boil']
+  const laterUses = ['secondary', 'conditioning', 'priming', 'packaging', 'bottling']
+  const kettle = bill.filter((i) => hotUses.includes(key(i.use)))
+  const beforePitch = bill.filter((i) => key(i.use) === 'before pitching')
+  const knownPlacement = bill.every((i) =>
+    [...hotUses, ...laterUses, 'before pitching', 'starter', 'primary', 'fermentation'].includes(
+      key(i.use)
+    )
+  )
+  const gallons = r.batch_liters / litersPerGallon
+  function pointsPerGallon(items: Ingredient[], volume: number) {
+    if (
+      volume <= 0 ||
+      !items.length ||
+      !knownPlacement ||
+      !items.every(
+        (i) => i.unit === 'kg' && (i.yield ?? 0) > 0 && (goesInKeg(i.type) || r.efficiency > 0)
+      )
+    )
+      return null
+    const points = items.reduce(
+      (sum, i) =>
+        sum +
+        i.amount *
+          poundsPerKg *
+          sucrosePPG *
+          ((i.yield ?? 0) / 100) *
+          (goesInKeg(i.type) ? 1 : r.efficiency / 100),
+      0
+    )
+    return points / volume
+  }
+  // A generic primary addition could be before or after the pitching-gravity reading.
+  const pitchingPoints = bill.some((i) => ['primary', 'fermentation'].includes(key(i.use)))
+    ? null
+    : pointsPerGallon([...kettle, ...beforePitch], gallons)
+  const og = pitchingPoints === null ? null : 1 + pitchingPoints / 1000
+  const colorUnits = kettle.reduce((sum, i) => sum + i.amount * poundsPerKg * (i.color ?? 0), 0)
   const srm =
-    gallons > 0 && grain.length && grain.every((i) => i.color !== undefined)
+    gallons > 0 &&
+    knownPlacement &&
+    kettle.length &&
+    kettle.every((i) => i.unit === 'kg' && i.color !== undefined)
       ? 1.4922 * (colorUnits / gallons) ** 0.6859
       : null
   const yeasts = r.ingredients.filter((i) => i.kind === 'yeast')
   const attenuations = new Set(yeasts.map((i) => i.attenuation))
   const attenuation = attenuations.size === 1 ? yeasts[0]?.attenuation : undefined
+  // Yeast attenuation alone cannot predict residual lactose, fermentation of
+  // supplemental sugars, or packaged gravity after additions and dilution.
+  const simpleFermentation = bill.every(
+    (i) => key(i.use) === 'starter' || (hotUses.includes(key(i.use)) && !milkSugar(i))
+  )
   const fg =
-    og !== null && attenuation && attenuation <= 100 ? 1 + (og - 1) * (1 - attenuation / 100) : null
+    og !== null && simpleFermentation && attenuation && attenuation <= 100
+      ? 1 + (og - 1) * (1 - attenuation / 100)
+      : null
   const abv = og !== null && fg !== null ? (og - fg) * 131.25 : null
-  const boilGravity =
-    og === null ? null : 1 + ((og - 1) * r.batch_liters) / (r.boil_liters || r.batch_liters)
+  const kettlePoints = pointsPerGallon(kettle, (r.boil_liters || r.batch_liters) / litersPerGallon)
+  const varyingBoilGravity = kettle.some(
+    (i) => key(i.use) === 'boil' && i.minutes > 0 && i.minutes !== r.boil_minutes
+  )
+  const boilGravity = kettlePoints === null || varyingBoilGravity ? null : 1 + kettlePoints / 1000
+  const hops = r.ingredients.filter((i) => kettleHop(i) && i.amount > 0 && i.minutes > 0)
   let ibu: number | null = null
   if (r.batch_liters > 0 && !hops.length) ibu = 0
   else if (boilGravity !== null && hops.every((i) => (i.alpha ?? 0) > 0)) {

@@ -37,11 +37,20 @@ func Profiles() []domain.Profile {
 		URL:         "https://www.smallbrewcompanion.com/docs/adjust-recipe-advanced-feature/",
 		Description: "The guide recommends staying below 4.5 lb for C/S/Pro. The Hub rounds down to a 2 kg planning ceiling.",
 	}
+	zFillSource := domain.ProfileSource{
+		Label:       "PicoBrew Inc. Beer Crafter starting water",
+		URL:         "https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/14a02ce90d1f49b7b5a75b1713344825.json",
+		Description: "The Hub uses the 4.27 US gallons specified in PicoBrew’s Let It All Hang Out brew sheet as a conservative planning ceiling for one stock brew keg.",
+	}
 	return []domain.Profile{
 		{
 			ID: "pico-pro", Name: "Pico Pro (standalone)", BatchLiters: 5, Efficiency: 50,
 			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
 			Sources: []domain.ProfileSource{picoSource, grainSource, {
+				Label:       "Pico Pro brewing keg fill",
+				URL:         "https://www.williams-sonoma.com/netstorage/pdf/113075-Picobrew-Pico-Pro-Manual.pdf",
+				Description: "The PicoPak instructions specify 1 US gallon plus 6 US cups of water in the brew keg.",
+			}, {
 				Label:       "PicoBrew: Pico Pro specifications",
 				URL:         "https://picobrew.com/store/products/pico",
 				Description: "Manufacturer nominal batch size: 5 L. The separately listed 6.6 L keg volume is not the batch size.",
@@ -50,19 +59,33 @@ func Profiles() []domain.Profile {
 		{
 			ID: "pico-s", Name: "Pico S (standalone)", BatchLiters: 5, Efficiency: 50,
 			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
-			Sources: []domain.ProfileSource{picoSource, grainSource},
+			Sources: []domain.ProfileSource{picoSource, grainSource, {
+				Label:       "Original Pico brewing keg fill",
+				URL:         "https://www.williams-sonoma.com/netstorage/pdf/Pico-Brew-Pico-Craft-Beer-Brewing-Appliance-89744-User-Manual.pdf",
+				Description: "The PicoPak instructions identify the brew keg’s fill line as 1 US gallon plus 6 US cups.",
+			}},
 		},
 		{
 			ID: "pico-c", Name: "Pico C (standalone)", BatchLiters: 5, Efficiency: 50,
 			MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 2, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: picoAssumptions,
 			Sources: []domain.ProfileSource{picoSource, grainSource, {
+				Label:       "Pico C brewing keg fill",
+				URL:         "https://www.williams-sonoma.com/netstorage/pdf/111895-Picobrew-New-Model-C-Manual.pdf",
+				Description: "The PicoPak instructions fill the original brew keg to its 5.2 L mark.",
+			}, {
 				Label:       "PicoBrew: Pico C specifications",
 				URL:         "https://picobrew.com/store/products/picoc",
 				Description: "Manufacturer nominal batch size: 5 L. This specification does not establish grain capacity or efficiency.",
 			}},
 		},
-		{ID: "z", Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
-		{ID: "zymatic", Name: "Zymatic (stock menu sync)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 25, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. Use the stock Zymatic menu to publish a recipe for the machine to fetch."},
+		{ID: "z", Sources: []domain.ProfileSource{zFillSource, {
+			Label: "Z Series brewing instructions", URL: "https://picobrew.com/about/manual?p=z_manual.txt",
+			Description: "PicoBrew specifies a 5-US-gallon brew keg and the starting water called for by the recipe.",
+		}}, Name: "PicoBrew Z (standalone canonical recipes)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 15, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, ControlSupported: true, Notes: assumptions + " Nominal one-module planning batch is 2.5 US gallons; grain capacity is 9 lb. Hardware identity remains generic z-series until Z1/Z2 mapping is established. Canonical recipes require explicitly verified direct valve locations 1–6 and at most 15 steps. Archived Z/Zymatic native programs use a different routing/pause grammar and require explicit conversion before deployment."},
+		{ID: "zymatic", Sources: []domain.ProfileSource{zFillSource, {
+			Label: "Zymatic brewing instructions", URL: "https://picodevblob.blob.core.windows.net/content/zymatic/Zymatic_Manual.pdf",
+			Description: "PicoBrew specifies a 5-US-gallon brew keg and the starting water called for by the recipe.",
+		}}, Name: "Zymatic (stock menu sync)", BatchLiters: 9.46352946, Efficiency: 70, MaxSteps: 25, MaxTargetC: 100, MaxGrainKG: 4.08233133, HopSlots: 4, MaxHopSlotG: 42.5, Notes: assumptions + " Nominal batch is 2.5 US gallons; grain capacity is 9 lb. Use the stock Zymatic menu to publish a recipe for the machine to fetch."},
 	}
 }
 
@@ -248,6 +271,48 @@ func mashLoadKG(in domain.Ingredient) float64 {
 	return in.Amount
 }
 
+// BeerXML water profiles, mash infusions and sparge additions can describe
+// different quantities. Only sum water identified as a starting charge.
+func startingKegWater(r domain.Recipe) float64 {
+	var liters, legacyLiters float64
+	var waterEntries int
+	for _, in := range r.Ingredients {
+		if in.Kind != "water" || in.Unit != "L" {
+			continue
+		}
+		waterEntries++
+		switch strings.ToLower(strings.TrimSpace(in.Use)) {
+		case "starting keg":
+			liters += in.Amount
+		case "mash":
+			switch strings.ToLower(strings.TrimSpace(in.Name)) {
+			case "source starting water", "scaled source water (reference)", "starting keg water":
+				liters += in.Amount
+			case "brewing water":
+				// Older Hub estimators created a single row with this label.
+				legacyLiters = in.Amount
+			}
+		}
+	}
+	if waterEntries == 1 {
+		liters += legacyLiters
+	}
+	return liters
+}
+
+func stockKegFillLimit(model string) float64 {
+	const usGallonLiters = 3.785411784
+	switch model {
+	case "pico-s", "pico-pro":
+		return (1 + 6.0/16) * usGallonLiters // Pico S and Pro stock brew-keg fill line.
+	case "pico-c":
+		return 5.2 // C brew keg mark.
+	case "z", "zymatic":
+		return 4.27 * usGallonLiters // Manufacturer brew sheet for a stock 5-US-gal keg.
+	}
+	return 0
+}
+
 // ValidateCapacity checks the quantities for one batch, after scaling when adapting.
 func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 	if r.Provenance != nil && r.Provenance.MaxBatchLiters > 0 && r.BatchLiters > r.Provenance.MaxBatchLiters {
@@ -257,6 +322,15 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 		return fmt.Errorf("batch exceeds the %.3g L limit for %s", profile.BatchLiters, profile.Name)
 	}
 
+	if fill := startingKegWater(r); fill > 0 {
+		limit := stockKegFillLimit(profile.ID)
+		if limit == 0 {
+			return fmt.Errorf("no working keg fill is available for %s", profile.Name)
+		}
+		if fill > limit+1e-9 {
+			return fmt.Errorf("starting keg water %.2f L exceeds the %.2f L working fill for %s", fill, limit, profile.Name)
+		}
+	}
 	if profile.MaxSteps > 0 && len(r.Steps) > profile.MaxSteps {
 		return fmt.Errorf("recipe has %d steps; configured profile allows %d", len(r.Steps), profile.MaxSteps)
 	}
@@ -287,7 +361,7 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 // deployment always requires CanDeploy and a non-nil MachineRecipe.
 func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain.Adapted, error) {
 	plan, err := adapt(r, profile, batchLiters, false)
-	blockReviewedProgram(&plan)
+	applyProgramBlocker(&plan)
 	return plan, err
 }
 
@@ -544,6 +618,10 @@ func fittingBatch(r domain.Recipe, p domain.Profile) (float64, string) {
 	if peak > 0 && p.MaxHopSlotG > 0 && p.MaxHopSlotG/peak < scale {
 		scale = p.MaxHopSlotG / peak
 		reason = fmt.Sprintf("The %g-minute addition fills its %.3g g slot.", minute, p.MaxHopSlotG)
+	}
+	if fill, limit := startingKegWater(r), stockKegFillLimit(p.ID); fill > 0 && limit > 0 && limit/fill < scale {
+		scale = limit / fill
+		reason = fmt.Sprintf("The starting water fills the stock brew keg to its %.2f L planning limit.", limit)
 	}
 	if math.IsInf(scale, 1) {
 		return p.BatchLiters, "Using the profile batch volume because the recipe has no measured grain or timed hops with a capacity limit."

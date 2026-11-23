@@ -43,15 +43,17 @@ export function FermentationPlan({
     if (!ready || water.length > 1) return
     change({
       ingredients: water.length
-        ? recipe.ingredients.map((i) => (i === water[0] ? { ...i, amount: estimate } : i))
+        ? recipe.ingredients.map((i) =>
+            i === water[0] ? { ...i, amount: estimate, use: 'starting keg', minutes: 0 } : i
+          )
         : [
             ...recipe.ingredients,
             {
-              name: 'Brewing water',
+              name: 'Starting keg water',
               kind: 'water',
               unit: 'L',
               amount: estimate,
-              use: 'mash',
+              use: 'starting keg',
               minutes: 0,
             },
           ],

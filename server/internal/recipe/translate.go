@@ -12,9 +12,8 @@ import (
 
 const minBoilTargetC = 85
 
-// An unresolved archived instruction applies to every encoding of the recipe,
-// including an explicit set of flow paths or an exact native copy.
-func sourceProgramBlocker(r domain.Recipe) string {
+// A recipe-wide blocker applies even when the flow paths have been assigned.
+func programBlocker(r domain.Recipe) string {
 	if r.Provenance != nil {
 		for _, warning := range r.Provenance.Warnings {
 			if strings.HasPrefix(warning, "Source program review:") {
@@ -22,11 +21,26 @@ func sourceProgramBlocker(r domain.Recipe) string {
 			}
 		}
 	}
+	for _, in := range r.Ingredients {
+		if in.Kind != "hop" && in.Kind != "misc" {
+			continue
+		}
+		switch strings.ToLower(strings.TrimSpace(in.Use)) {
+		case "aroma", "whirlpool", "flameout", "flame out", "flame-out", "hop stand", "hop-stand", "hopstand", "post-boil", "post boil":
+		case "boil":
+			if in.Kind != "hop" || in.Minutes != 0 {
+				continue
+			}
+		default:
+			continue
+		}
+		return fmt.Sprintf("The post-boil addition of %s has no verified loading slot and contact time at its target temperature. This recipe is available for planning.", in.Name)
+	}
 	return ""
 }
 
-func blockReviewedProgram(plan *domain.Adapted) {
-	reason := sourceProgramBlocker(plan.Recipe)
+func applyProgramBlocker(plan *domain.Adapted) {
+	reason := programBlocker(plan.Recipe)
 	if reason == "" {
 		return
 	}
@@ -123,7 +137,7 @@ func Translate(r domain.Recipe, p domain.Profile, liters float64) (domain.Adapte
 	if r.Provenance != nil {
 		plan.Warnings = append(plan.Warnings, "Review the source notes for yeast pitch, manual additions and water losses on your equipment.")
 	}
-	blockReviewedProgram(&plan)
+	applyProgramBlocker(&plan)
 	return plan, nil
 }
 

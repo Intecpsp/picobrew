@@ -113,6 +113,9 @@ func (s *Server) copyCatalogEntry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	v := *detail.Recipe
+	if detail.Edition != "" {
+		v.Name += " (" + detail.Edition + ")"
+	}
 	if in.StockProgram {
 		if detail.StockProgram == nil {
 			s.fail(w, 422, "stock_program", "This source has no matched Zymatic brew sheet and program")

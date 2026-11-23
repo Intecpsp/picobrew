@@ -670,8 +670,27 @@
   },
   "public-2b6bfc44fe584a4694de45718fbc9316": {
     "source_sha256": "786bb0bfc7af81ceb1cfd185b04221363fc1391884d3f3d20d42eeb157d44dea",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Irish Moss in cage 4 at 5 min. The original boil visits cage 1 at 45 min, cage 2 at 30 min, cage 3 at 10 min."
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The original 45-minute boil has hop starts at 45, 30 and ten minutes. The separate five-minute fining cage can be omitted without changing them. Use the recorded 45-minute boil. The timed hop additions start with 45, 30, 10 minutes remaining. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 5,
+          "Amount": 0.2,
+          "Time": 5,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-2f9294f6443745e4b03b2a6c7d7f4b7e": {
     "source_sha256": "1473cd25a1fa7d072f4d6b73792e6bf49c30944e482fdd3d8a58b04778629693",
@@ -972,8 +991,63 @@
         }
       }
     ],
-    "blocker": "The 19-minute stage is recorded at 180°F in both records. The author gives no conventional boil target. The Hub cannot run it as a timed boil.",
-    "evidence": "Put 0.65 oz of Hallertauer with the mash grain. The author explicitly corrects the archived boil placement and calls for WLP645 after souring. The author specifies at least 90°F for souring, while the archived first stage is limited to 85°F. Pitch WLP645 when sufficiently sour, around days four to five."
+    "evidence": "The author places all 0.65 oz of Hallertauer in the grain basket. Leave hop cage 1 empty. The original program mashes at 149°F for 90 minutes, drains for eight, heats to 180°F, then circulates through the keg for nine minutes and the empty cage for ten, with a five-minute drain. These are heated holds. After the hot-side program, follow the separate chilling instruction: the source targets 90°F for ten minutes with a ten-minute drain. The author specifies at least 90°F for souring. The recorded chill target and yeast record both give 90°F, superseding the editor’s 85°F value. Start with WLP677. Pitch WLP645 when sufficiently sour, around days four to five. The second stage is 70°F for 30 days.",
+    "boil_minutes": 0,
+    "steps": [
+      {
+        "name": "Heat water",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 65.0,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "location": 2,
+        "target_c": 65.0,
+        "minutes": 90,
+        "drain_minutes": 8
+      },
+      {
+        "name": "Heat to 180 F",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 82.22222222222221,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Keg hold",
+        "kind": "hold",
+        "location": 1,
+        "target_c": 82.22222222222221,
+        "minutes": 9,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Empty cage hold",
+        "kind": "hold",
+        "location": 3,
+        "target_c": 82.22222222222221,
+        "minutes": 10,
+        "drain_minutes": 5
+      }
+    ],
+    "source_yeast": "White Labs WLP677 for souring, followed by WLP645 when sufficiently sour",
+    "fermentation": [
+      {
+        "name": "Souring",
+        "target_c": 32.22222222222222,
+        "days": 4
+      },
+      {
+        "name": "Brett fermentation",
+        "target_c": 21.11111111111111,
+        "days": 30
+      }
+    ]
   },
   "public-402298151b874c8a8cd0b1981d5c17ac": {
     "source_sha256": "b8f5646df4065bd73a639eebc368cbc5387adfdff7726e95bac0cced06d8e9a2",
@@ -995,13 +1069,51 @@
         "minutes": 0
       }
     ],
-    "blocker": "Keep the starter separate from the mash. The mass of the timed Whirlfloc load cannot be confirmed.",
-    "evidence": "Prepare a separate 0.5 L starter with 53 g of light DME. Use the four dry-hop rounds in the author’s sequence. The fining line in the boil has no independently recorded unit."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Use the author’s 53 g of light DME and 0.5 L water for the starter. After brewing, dry hop in four successive three-day rounds as specified. Use the recorded 90-minute boil. The timed hop additions start with 60, 15, 10, 5 minutes remaining. Original record: Keep the starter separate from the mash. The mass of the timed Whirlfloc load cannot be confirmed.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-47cffe7de6584540b81700c935b38428": {
     "source_sha256": "35ac0e7f6fe1f7b9e2ca7d93d50cc4f514cff806a2273963e4d6a4a7e6b9c823",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
-    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 1 at 30 min. The native valve schedule confirms the visit."
+    "evidence": "Unfined option. Omit Irish Moss from this batch. In the 63-minute boil, Centennial starts with 30 minutes left. Northern Brewer and the final Centennial dose get one minute. Use the recorded 63-minute boil. The timed hop additions start with 30, 1 minutes remaining. Original record: The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 2,
+          "Amount": 1.0,
+          "Time": 30,
+          "Units": "tsp",
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-4b2c99c18f4543daaaff2cfd0d08d806": {
     "source_sha256": "79178dadc649b5c0127c07a00c10f628531658ae154185dffb6a7d712734ec14",
@@ -1015,8 +1127,63 @@
   },
   "public-5404deb3b91a471c93b437bbc560b89d": {
     "source_sha256": "1215a1f6690e311055b96ec8c53cc04039b29eeedf2d0a6b904711b8dfed6869",
-    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
-    "evidence": "The original machine ran 102°F for 20 min, 152°F for 30 min, 154°F for 75 min, 175°F for 10 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. Dry hopping is an optional choice of 1–1.5 oz total from the recipe varieties. There is no mandatory blend."
+    "evidence": "PicoBrew permits a single variety from this recipe at 1 or 1.5 oz. This edition chooses 1 oz Cascade and five days of post-fermentation contact. PicoBrew gives that same variety, amount and five-to-seven-day window in Brown Buggah. Keep the native 75-minute rest at 154°F. The separate form lists 60 minutes. Scale the bill together to fit the original shared 20-minute cage. https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/3254b95ebbfe409eb69276c97cae7647.json Original record: The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 75,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 10,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "additions": [
+      {
+        "name": "Cascade",
+        "amount": 28.349523125,
+        "unit": "g",
+        "kind": "hop",
+        "use": "dry-hop",
+        "minutes": 7200
+      }
+    ],
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "edition": "Cascade dry hop · saved mash"
   },
   "public-5c441d8d8d504c9281aced42daa176bf": {
     "source_sha256": "4b3182acb5558e8dae91cea010e1bf119b8b16d53e6bc92106918729e3398ece",
@@ -1220,8 +1387,71 @@
   },
   "public-7462ae29eff04c6c97052fd87c21d7b7": {
     "source_sha256": "516871c38e8b2638f75521b4e1362f76ca93ae525cc999a6b3718d53e7ea2471",
-    "blocker": "Neither the selected mash-hop weight nor the additional native dough-in rest is confirmed.",
-    "evidence": "The author describes an optional mash addition of up to two ounces of Cascade and an optional dry hop over five to seven days."
+    "evidence": "For this version, use the upper hop amounts that PicoBrew permits. Put 2 oz Cascade in the grain basket. After fermentation, dry hop with 1.5 oz each of Columbus, Centennial and Simcoe for five days. PicoBrew allows up to those weights and five to seven days of contact. The saved machine program adds a 20-minute rest at 102°F before the 90-minute mash at 152°F, with eight minutes of draining after each rest. The recipe form lists only the second rest. The eight-minute cage exceeds the original weight limit at the source batch size, so the Hub fits the entire bill to the brewer.",
+    "additions": [
+      {
+        "name": "Cascade",
+        "kind": "hop",
+        "amount": 56.69904625,
+        "unit": "g",
+        "minutes": 0,
+        "use": "mash"
+      },
+      {
+        "name": "Columbus",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
+      },
+      {
+        "name": "Centennial",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
+      }
+    ],
+    "steps": [
+      {
+        "name": "Dough-in",
+        "minutes": 20,
+        "kind": "mash",
+        "target_c": 38.888888888888886,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash",
+        "minutes": 90,
+        "kind": "mash",
+        "target_c": 66.66666666666667,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "minutes": 60,
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "edition": "Five-day dry hop"
   },
   "public-75b67a1165a74f9abb58aad407012234": {
     "source_sha256": "6098f9f5cfa362a189cbc6d503c4a923c21d29a2811c6c17f8134d2b3f6c9929",
@@ -1261,10 +1491,80 @@
         "unit": "g",
         "use": "mash",
         "minutes": 0
+      },
+      {
+        "name": "Columbus",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
+      },
+      {
+        "name": "Centennial",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
+      },
+      {
+        "name": "Chinook",
+        "kind": "hop",
+        "amount": 42.5242846875,
+        "unit": "g",
+        "minutes": 7200,
+        "use": "dry-hop"
       }
     ],
-    "blocker": "The author gives a per-hop upper limit for the three dry hops, but the one-ounce working dose could refer to the blend or to each variety.",
-    "evidence": "Place 1 oz Amarillo and ½ oz Cascade in the grain basket. For dry hopping the author writes 1 oz of Columbus, Centennial and Chinook, then offers up to 1.5 oz each for 5–7 days. The original Spock the Melder gives an upper bound per variety as well."
+    "evidence": "Put 1 oz Amarillo and 0.5 oz Cascade in the grain basket. For this version, dry hop after fermentation with 1.5 oz each of Columbus, Centennial and Chinook for five days. The author explicitly allows up to 1.5 oz per variety for five to seven days. Their separate one-ounce instruction leaves the division among varieties open. The mash holds and drains follow the saved machine program. The Hub fits the entire bill to the brewer, including the two varieties that share the eight-minute cage.",
+    "steps": [
+      {
+        "drain_minutes": 8,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Dough In",
+        "target_c": 38.888888888888886,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash 1",
+        "target_c": 66.66666666666667,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 8,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash 2",
+        "target_c": 67.77777777777777,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 6,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash Out",
+        "target_c": 79.44444444444444,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222223
+      }
+    ],
+    "edition": "Five-day dry hop"
   },
   "public-82ac9762a9954f7196fb6799cd5215a0": {
     "source_sha256": "03dc90fc7c17bbedf26a4ab33199bbe99a224e3f0f445cc9631f963c54ffa9f9",
@@ -1293,7 +1593,6 @@
         }
       }
     ],
-    "blocker": "The 19-minute stage is recorded at 180°F in both records. The author gives no conventional boil target. The Hub cannot run it as a timed boil.",
     "fermentation": [
       {
         "name": "Souring",
@@ -1306,12 +1605,75 @@
         "days": 30
       }
     ],
-    "evidence": "Put 0.65 oz of Hallertauer with the mash grain. The author explicitly corrects the archived boil placement and calls for WLP645 after souring."
+    "evidence": "The author places all 0.65 oz of Hallertauer in the grain basket. Leave hop cage 1 empty. The original program mashes at 149°F for 90 minutes, drains for eight, heats to 180°F, then circulates through the keg for nine minutes and the empty cage for ten, with a five-minute drain. These are heated holds. After the hot-side program, follow the separate chilling instruction: the source targets 100°F for ten minutes with a ten-minute drain. The author specifies 100°F for four days and identifies the editor’s 85°F maximum. Start with WLP677. Pitch WLP645 when sufficiently sour, around days four to five. The second stage is 70°F for 30 days.",
+    "boil_minutes": 0,
+    "steps": [
+      {
+        "name": "Heat water",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 65.0,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "location": 2,
+        "target_c": 65.0,
+        "minutes": 90,
+        "drain_minutes": 8
+      },
+      {
+        "name": "Heat to 180 F",
+        "kind": "heat",
+        "location": 1,
+        "target_c": 82.22222222222221,
+        "minutes": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Keg hold",
+        "kind": "hold",
+        "location": 1,
+        "target_c": 82.22222222222221,
+        "minutes": 9,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Empty cage hold",
+        "kind": "hold",
+        "location": 3,
+        "target_c": 82.22222222222221,
+        "minutes": 10,
+        "drain_minutes": 5
+      }
+    ],
+    "source_yeast": "White Labs WLP677 for souring, followed by WLP645 when sufficiently sour"
   },
   "public-839485208a0d4ec78ac7e96377960613": {
     "source_sha256": "19f5c08c1c1042ba1d8da90fa85e38aae3b5e86d2f9cd71e65876574c2d349fe",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
-    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 2 at 15 min. The native valve schedule confirms the visit."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Give Columbus 60 minutes and Centennial the final five minutes. The 15-minute cage held the fining alone. Use the recorded 60-minute boil. The timed hop additions start with 60, 5 minutes remaining. Original record: The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": "tsp",
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-8c76bb1960ba4e639e43e7fc3d9d2300": {
     "source_sha256": "04b80b0057cf6c012ca99d72a6d8651372ad0fda8562ec38473fac14cea38b02",
@@ -1329,8 +1691,27 @@
   },
   "public-8da1a958f6c845b68e9bf96031aa93cc": {
     "source_sha256": "0406061fcbeaf8154c8277b8bf4f7c74ea8dae3df43c528d4b56f5d82527be15",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Whirlfloc in cage 3 at 10 min. The original boil visits cage 1 at 60 min, cage 2 at 15 min."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Keep both hop contacts at 60 and 15 minutes. The original machine never entered the separate ten-minute fining cage. Use the recorded 60-minute boil. The timed hop additions start with 60, 15 minutes remaining. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.2,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-8ddef4aab5bf495da66b9b20b392ddf9": {
     "source_sha256": "4a3c83f580d2f646c4ec66f533de1c960722c29514d63acf887f288a718c6728",
@@ -1349,8 +1730,27 @@
   },
   "public-93a98b3c7b3f4adfa0118337acdbd768": {
     "source_sha256": "925e540565762d45ca5924b96a5155303399b5591d23f4cbc88bb3be782e62c7",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Irish Moss in cage 3 at 15 min. The original boil visits cage 1 at 60 min, cage 2 at 30 min, cage 3 at 10 min, cage 4 at 5 min."
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Removing the separate 15-minute fining frees the four hop loads to run at their original 60, 30, ten and five minutes without a cage reload. Use the recorded 60-minute boil. The timed hop additions start with 60, 30, 10, 5 minutes remaining. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.3,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-9713c2a170d346beb7206475f766acca": {
     "source_sha256": "7fe35ee4b8f2d48053debe78ad90757c649fd6db5f33c714b7c3e5eee6275762",
@@ -1364,8 +1764,27 @@
   },
   "public-988ff2d9a29a4040b464a3e401a3e9de": {
     "source_sha256": "54ac58a6c0bbec619b27080b23e2466f19aa995f2af11c26c5fd3aa11e2facdb",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Irish Moss in cage 2 at 10 min. The original boil visits cage 1 at 45 min."
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The named bittering hop runs for the entire 45-minute boil. The original never entered its separate ten-minute fining cage. Keep the recorded 45-minute boil and the 45-minute hop addition. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.2,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-98904fef31054176a1cab1373cc0d355": {
     "source_sha256": "356eb8c206d6129ae8659c77882b4b79be385c80a2039b50a8f7ffa929429302",
@@ -1384,8 +1803,27 @@
   },
   "public-9d963d3c59e5412fa404d3f3409dd6a5": {
     "source_sha256": "7856a5c79437bfe243a5069dc60644631b058974c731af126e1d797047c82f2a",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Whirlfloc in cage 4 at 10 min. The original boil visits cage 1 at 60 min, cage 2 at 30 min, cage 3 at 15 min."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Keep the 60-, 30- and 15-minute hop loads. The original does not enter the ten-minute fining cage. Use the recorded 60-minute boil. The timed hop additions start with 60, 30, 15 minutes remaining. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 5,
+          "Amount": 0.5,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-9dc796b03fb348cab536bb7582338ff3": {
     "source_sha256": "dfa2929d7710da0d0d52d2aa194a78a01f20413ecdf6b47cec3133d2362c7a6d",
@@ -1399,8 +1837,87 @@
   },
   "public-9fe7e5e06263437b92ff5cd7f796fcc9": {
     "source_sha256": "6af204baaaaac80c28190076bcbe1c147519f73661734bd0659befcf22822144",
-    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
-    "evidence": "The original machine ran 104°F for 20 min, 140°F for 30 min, 148°F for 60 min, 165°F for 20 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. The author specifies Nelson Sauvin and Galaxy, 1.25 oz each, with two alternative cold-side contact schedules."
+    "evidence": "Use Brandon Lackey’s first dry-hop option, 1.25 oz each of Nelson Sauvin and Galaxy for seven days before chilling. Use the 104, 140, 148 and 165°F grain rests saved in the machine program. The separate form lists different rests. Omit the unitless Whirlfloc. Original record: The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 40.0
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 60.0
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 64.44444444444444
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 73.88888888888889
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Nelson Sauvin",
+        "use": "dry-hop",
+        "minutes": 0,
+        "set": {
+          "minutes": 10080
+        }
+      },
+      {
+        "name": "Galaxy",
+        "use": "dry-hop",
+        "minutes": 0,
+        "set": {
+          "minutes": 10080
+        }
+      }
+    ],
+    "edition": "Saved mash and dry hops · unfined"
   },
   "public-a88a0b1894984356af439b5a9cfb01be": {
     "source_sha256": "f09da655bc7b5c779e13ad20a2f6aa4f4ecd0e9a67bd5ba09a3db24fb26c80ea",
@@ -1504,7 +2021,6 @@
   },
   "public-b235219ca8f54d00bb78124688ea558b": {
     "source_sha256": "44cde2b4e1cd84044b7663ce15db31e48b67641bfb1f75697520daa69aa46914",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
     "additions": [
       {
         "name": "Mash pH stabilizer",
@@ -1523,7 +2039,27 @@
         "minutes": 0
       }
     ],
-    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 3 at 15 min. The native valve schedule confirms the visit. The author gives two teaspoons of pH stabilizer and three teaspoons of Burton salts in the mash."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Keep the four Chinook additions, two teaspoons of mash pH stabilizer and three teaspoons of Burton water salts. Use the recorded 60-minute boil. The timed hop additions start with 60, 45, 15, 5 minutes remaining. Original record: The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": "tsp",
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-b5a59eb89a2f4046b55a4a5b8d89a0b7": {
     "source_sha256": "0e88b622f16a94fee819945e3680287caaa32c74275df3376a0c112928aebd31",
@@ -1566,8 +2102,26 @@
   },
   "public-b6dc5f9b01a64e858bbeb0489b9f2344": {
     "source_sha256": "1781beb1cb9ede17ee008206dcb1345cb0150baa0a46edfd982bcfb47d6551b1",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
-    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit."
+    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit. This version uses 1 g of The Home Brew Shop Irish Moss Copper Finings. Weigh this product for the original batch. The supplier gives approximately 1 g per teaspoon and recommends checking the weight. The brewer did not name a brand. Product specification: https://www.the-home-brew-shop.co.uk/products/irish-moss-copper-finings-100g",
+    "ingredient_edits": [
+      {
+        "name": "Irish Moss",
+        "use": "boil",
+        "minutes": 15,
+        "set": {
+          "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+          "unit": "g",
+          "amount": 1
+        }
+      }
+    ],
+    "slot_additions": [
+      {
+        "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+        "minutes": 15
+      }
+    ],
+    "edition": "Weighed Irish moss"
   },
   "public-b7fcd1612c4f4b17b3bf4d1e1f38f2bb": {
     "source_sha256": "8632ac1bb4b6f93203aabf8d38aa532e1e27216f01f575c6977a1bada8ab95f5",
@@ -1655,7 +2209,6 @@
   },
   "public-c64a25fbe0ca4e4fae0ce08668c83235": {
     "source_sha256": "c9f373c154231ac3e02c300dd44bd1e8561880b7ec23049641b6770133370b6d",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
     "additions": [
       {
         "name": "Mash pH stabilizer",
@@ -1674,7 +2227,27 @@
         "minutes": 0
       }
     ],
-    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 3 at 15 min. The native valve schedule confirms the visit. The author gives two teaspoons of pH stabilizer and three teaspoons of Burton salts in the mash."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Cascade and Centennial share the late additions. Keep the author’s two teaspoons of mash pH stabilizer and three teaspoons of Burton water salts. Use the recorded 60-minute boil. The timed hop additions start with 60, 30, 15, 5 minutes remaining. Original record: The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": "tsp",
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-c74ba5c52d43482bb799a77447cf0e46": {
     "source_sha256": "e99e73f470b60f0285180f27424e82e27f9ea1302befe920eab24056870ba7a8",
@@ -1734,12 +2307,72 @@
   },
   "public-c8fc5d58f0c545c89409d3ecf4cdecde": {
     "source_sha256": "afcba1a7508cc91edeaff0071f5af141c95ae3c131bf7f73673ada112d26211a",
-    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
-    "evidence": "The original machine ran 131°F for 10 min, 147°F for 30 min, 154°F for 60 min, 175°F for 10 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. The author specifies four quarter-ounce dry additions and one eighth-ounce Centennial addition, all for three days."
+    "evidence": "Thomas Goebel calls for ¼ oz each of Mosaic, Citra, Saaz and Northern Brewer, plus ⅛ oz Centennial, all for three days. Use the saved machine’s 131, 147, 154 and 175°F grain rests. The form lists lower starting targets. Omit the unitless Irish moss. Original record: The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.2,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 10,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 55.0
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 63.888888888888886
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edition": "Saved mash and dry hops · unfined"
   },
   "public-c9ac8f204ef14a0187cb509e6a51c57f": {
     "source_sha256": "e8cec01303d3b6c706554a4cfcccd2a02ad5ef3cda58a4d2aa88077b4c2e3e37",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
     "edits": [
       {
         "path": "/FermentationSteps/0/Days",
@@ -1747,7 +2380,26 @@
         "to": 30
       }
     ],
-    "evidence": "The recipe specifies 0.5 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit. Flaked maize may replace the flaked rice at equal weight. After 30 days of fermentation, hold three days at room temperature, crash to 32°F, rack and lager four to six weeks before carbonating."
+    "evidence": "The recipe specifies 0.5 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit. Flaked maize may replace the flaked rice at equal weight. After 30 days of fermentation, hold three days at room temperature, crash to 32°F, rack and lager four to six weeks before carbonating. This version uses 0.5 g of The Home Brew Shop Irish Moss Copper Finings. Weigh this product for the original batch. The supplier gives approximately 1 g per teaspoon and recommends checking the weight. The brewer did not name a brand. Product specification: https://www.the-home-brew-shop.co.uk/products/irish-moss-copper-finings-100g",
+    "ingredient_edits": [
+      {
+        "name": "Irish Moss",
+        "use": "boil",
+        "minutes": 15,
+        "set": {
+          "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+          "unit": "g",
+          "amount": 0.5
+        }
+      }
+    ],
+    "slot_additions": [
+      {
+        "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+        "minutes": 15
+      }
+    ],
+    "edition": "Weighed Irish moss"
   },
   "public-c9d1b58a0e8143ee85b05d261712e63b": {
     "source_sha256": "9b4377a2d0d7180f41c025471b9914a65e7c510fbc38030132ef4dde5b517478",
@@ -1779,8 +2431,27 @@
   },
   "public-d18b62c569f0455ba3fc3e46a8e874ea": {
     "source_sha256": "14bd75860e22ccd94ce8438456bc2b23dcc6743a24f851ca2e41fbf6fa1d7e33",
-    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
-    "evidence": "The ingredient rows call for Whirlfloc in cage 3 at 5 min. The original boil visits cage 1 at 60 min, cage 2 at 15 min."
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. The original provides 60- and 15-minute boil exposures. The fining-only five-minute cage was never reached. Use the recorded 60-minute boil. The timed hop additions start with 60, 15 minutes remaining. Original record: The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.5,
+          "Time": 5,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-d1c265bc15e04a88a27df8a3a21f5bab": {
     "source_sha256": "db0dc558d3015bd9a43c1c6989d749dd8a4dcfce88af35e2fa3ce1e853fffdf0",
@@ -1903,8 +2574,26 @@
   },
   "public-e094e22321794eef854389d42b0f36c4": {
     "source_sha256": "4ccf392bb993f80d8bc1aa00a4e3ce1fd6df7a8eed269582660afb9ea072c72f",
-    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
-    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 3 at 15 min. The native valve schedule confirms the visit."
+    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 3 at 15 min. The native valve schedule confirms the visit. This version uses 1 g of The Home Brew Shop Irish Moss Copper Finings. Weigh this product for the original batch. The supplier gives approximately 1 g per teaspoon and recommends checking the weight. The brewer did not name a brand. Product specification: https://www.the-home-brew-shop.co.uk/products/irish-moss-copper-finings-100g",
+    "ingredient_edits": [
+      {
+        "name": "Irish Moss",
+        "use": "boil",
+        "minutes": 15,
+        "set": {
+          "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+          "unit": "g",
+          "amount": 1
+        }
+      }
+    ],
+    "slot_additions": [
+      {
+        "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+        "minutes": 15
+      }
+    ],
+    "edition": "Weighed Irish moss"
   },
   "public-e5a3b2fee8b84f7c9fd1f38f66bcfbea": {
     "source_sha256": "e8d6826ab31a029b771262f8a71ba4485bbdabc8966a69bbf4a07270cd24600f",

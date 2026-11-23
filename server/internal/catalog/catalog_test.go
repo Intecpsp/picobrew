@@ -363,7 +363,7 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 	}
 	profiles := recipe.Profiles()
 	counts := map[string]int{}
-	measured := 0
+	measured, editions := 0, 0
 	for _, entry := range a.entries {
 		if entry.Kind != "recipe" {
 			continue
@@ -437,6 +437,12 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 			}
 			counts[p.ID]++
 		}
+		if d.Edition != "" {
+			editions++
+			if !allModels || d.SourceReview == nil || d.SourceReview.Evidence == "" || d.SourceReview.Blocker != "" || entry.Edition != d.Edition {
+				t.Fatal("published adaptation lacks a verified program or its assumptions", entry.ID)
+			}
+		}
 		if entry.allBrewers != allModels {
 			t.Fatal("incorrect catalog eligibility", entry.ID)
 		}
@@ -447,12 +453,12 @@ func TestEveryIngredientRecipeHasFiveMachineVersions(t *testing.T) {
 	}
 	for _, profile := range profiles {
 		shared := a.List(Query{Kind: "all-brewers", Model: profile.ID})
-		if shared.Total != 846 || counts[profile.ID] != shared.Total {
+		if shared.Total != 975 || counts[profile.ID] != shared.Total {
 			t.Fatalf("%s: %d shared recipes, %d working programs", profile.ID, shared.Total, counts[profile.ID])
 		}
 	}
-	if measured != 1316 || len(counts) != 5 {
-		t.Fatal(measured, counts)
+	if measured != 1316 || editions != 127 || len(counts) != 5 {
+		t.Fatal(measured, editions, counts)
 	}
 	t.Logf("%d measured recipes, compiled schedules per model: %v", measured, counts)
 }

@@ -103,3 +103,62 @@ test('temperature forecast respects timed ramps, drains, native routing and unkn
     wortCurve({ ...recipe, source_model: 'pico-s', native_program: program }).minutes
   ).toBeGreaterThan(10)
 })
+
+test('before-pitch dextrose raises pitching gravity without changing kettle utilization', () => {
+  // Circle of Sun has 4 avoirdupois ounces for the original 3.2-US-gallon batch.
+  const sugar: Ingredient = {
+    ...grain,
+    name: 'Corn Sugar (Dextrose)',
+    type: 'Sugar',
+    amount: 0.1133980925,
+    yield: (45.65 / 46) * 100,
+    color: 0,
+    use: 'before pitching',
+  }
+  const source = { ...recipe, batch_liters: 3.2 * 3.785411784 }
+  const base = beerStats(source)
+  const withSugar = beerStats({ ...source, ingredients: [...source.ingredients, sugar] })
+  expect(withSugar.og! - base.og!).toBeCloseTo((0.25 * 45.65) / 3.2 / 1000, 8)
+  expect(withSugar.ibu).toBe(base.ibu)
+  expect(withSugar.srm).toBe(base.srm)
+  expect(withSugar.fg).toBeNull()
+  expect(withSugar.abv).toBeNull()
+  const ambiguous = beerStats({
+    ...source,
+    ingredients: [...source.ingredients, { ...sugar, use: 'fermentation' }],
+  })
+  expect(ambiguous.og).toBeNull()
+  expect(ambiguous.ibu).toBe(base.ibu)
+})
+
+test('late lactose has no kettle or pitching extract and makes packaged gravity uncertain', () => {
+  const base = beerStats(recipe)
+  for (const milkSugar of [
+    {
+      ...grain,
+      name: 'Lactose Milk Sugar',
+      amount: 0.226796185,
+      use: 'conditioning',
+      type: 'Sugar',
+      yield: 98,
+      color: 1,
+    },
+    { ...grain, name: 'Lactose', kind: 'misc', unit: 'g', amount: 226.796185, use: 'conditioning' },
+  ]) {
+    const stats = beerStats({ ...recipe, ingredients: [...recipe.ingredients, milkSugar] })
+    expect(stats).toEqual({ ...base, fg: null, abv: null })
+  }
+})
+
+test('withholds single-gravity IBU for a timed late kettle fermentable', () => {
+  const stats = beerStats({
+    ...recipe,
+    boil_minutes: 60,
+    ingredients: [
+      ...recipe.ingredients,
+      { ...grain, name: 'Dry extract', type: 'Dry Extract', use: 'boil', minutes: 10 },
+    ],
+  })
+  expect(stats.ibu).toBeNull()
+  expect(stats.og).toBeGreaterThan(beerStats(recipe).og!)
+})

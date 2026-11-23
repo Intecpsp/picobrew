@@ -21,10 +21,12 @@ var machineSerial = regexp.MustCompile(`^[A-Z0-9]{1,32}$`)
 var resetPoint = regexp.MustCompile(`^-?[0-9]{1,10}(/-?[0-9]{1,10}){6}/[01]$`)
 
 type stockItem struct {
-	RecipeID    string               `json:"recipe_id"`
-	Revision    int64                `json:"revision"`
-	Program     domain.MachineRecipe `json:"program"`
-	Maintenance bool                 `json:"maintenance,omitempty"`
+	BatchLiters      float64              `json:"batch_liters,omitempty"`
+	HopSlotsByMinute map[int]int          `json:"hop_slots_by_minute,omitempty"`
+	RecipeID         string               `json:"recipe_id"`
+	Revision         int64                `json:"revision"`
+	Program          domain.MachineRecipe `json:"program"`
+	Maintenance      bool                 `json:"maintenance,omitempty"`
 }
 type stockSession struct {
 	ID       string
@@ -191,6 +193,7 @@ func (s *Server) compileStockSelection(w http.ResponseWriter, refs []stockRefere
 				saved.SourceModel = "zymatic"
 			}
 		}
+		item := stockItem{RecipeID: saved.ID, Revision: saved.Revision, Maintenance: saved.Kind == "maintenance"}
 		var p domain.MachineRecipe
 		var err error
 		if len(saved.Ingredients) > 0 && !recipe.IsNative(saved) {
@@ -201,6 +204,8 @@ func (s *Server) compileStockSelection(w http.ResponseWriter, refs []stockRefere
 					err = errors.New(strings.Join(plan.DeploymentBlockers, "; "))
 				} else {
 					p = *plan.MachineRecipe
+					item.BatchLiters = plan.Recipe.BatchLiters
+					item.HopSlotsByMinute = plan.HopSlotsByMinute
 				}
 			}
 		} else {
@@ -210,7 +215,7 @@ func (s *Server) compileStockSelection(w http.ResponseWriter, refs []stockRefere
 			s.fail(w, 422, "stock_program", saved.Name+": "+err.Error())
 			return nil, false
 		}
-		item := stockItem{saved.ID, saved.Revision, p, saved.Kind == "maintenance"}
+		item.Program = p
 		changes = append(changes, item)
 	}
 	return changes, true
