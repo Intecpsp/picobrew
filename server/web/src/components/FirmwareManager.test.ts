@@ -296,6 +296,38 @@ describe('Hub firmware packages', () => {
     ).toHaveLength(0)
     expect(screen.queryByRole('button', { name: /install firmware/i })).toBeNull()
   })
+  it('keeps another brewer’s USB prompt outside a machine-scoped restoration', async () => {
+    fetchMock.mockImplementation(async (url, opts) => {
+      if (String(url).endsWith('/devices/s/firmware'))
+        return json({
+          packages: [],
+          stock_restore_guide: true,
+          usb_restore_target: { model: 'pico-s', device_uid: 'saved' },
+        })
+      if (String(url).endsWith('/usb/devices'))
+        return json({
+          available: true,
+          devices: [],
+          job: {
+            id: 'job',
+            model: 'pico-s',
+            device_id: 'other',
+            action: 'restore',
+            state: 'waiting',
+            confirmation: 'prompt',
+            message: 'Other machine confirmation',
+          },
+        })
+      return response(url, opts)
+    })
+    show(createElement(MachineFirmwareDialog, { deviceID: 's', onClose: close }))
+    await userEvent
+      .setup()
+      .click(await screen.findByRole('button', { name: 'Restore original firmware via USB' }))
+    expect(await screen.findByText(/Another USB operation is in progress/)).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
+    expect(screen.queryByText('Other machine confirmation')).toBeNull()
+  })
   it.each(['pico-s', 'pico-c', 'picoferm', 'picostill', 'z-series'])(
     'starts a restore bound to the registered %s and awaits hardware verification',
     async (model) => {
@@ -316,6 +348,7 @@ describe('Hub firmware packages', () => {
           return json(
             {
               id: 'job-1',
+              device_id: 's',
               model,
               port: 'port-1',
               action: 'restore',

@@ -18,6 +18,7 @@ interface Job {
   state: 'running' | 'waiting' | 'complete' | 'failed' | 'canceled'
   message: string
   confirmation?: string
+  device_id?: string
   pairing_ready?: boolean
 }
 interface Discovery {
@@ -77,7 +78,7 @@ export function StockSetupGuide({
         if (
           result.job &&
           result.job.id !== dismissed.current &&
-          (active(result.job) || !lockedModel || result.job.model === lockedModel)
+          (active(result.job) || !deviceID || result.job.device_id === deviceID)
         )
           setJob(result.job)
       })
@@ -88,7 +89,7 @@ export function StockSetupGuide({
         if (!controller.signal.aborted) setReading(false)
       })
     return () => controller.abort()
-  }, [refresh, lockedModel])
+  }, [refresh, lockedModel, deviceID])
   useEffect(() => {
     if (!job || !active(job) || busy) return
     const controller = new AbortController()
@@ -97,7 +98,12 @@ export function StockSetupGuide({
       try {
         const next = await api<Job>('/usb/jobs/' + job.id, { signal: controller.signal })
         if (!controller.signal.aborted) {
-          setJob(next)
+          if (deviceID && next.device_id !== deviceID && !active(next)) {
+            setJob(undefined)
+            setRefresh((n) => n + 1)
+          } else {
+            setJob(next)
+          }
           setError('')
         }
       } catch (e) {
@@ -110,7 +116,7 @@ export function StockSetupGuide({
       controller.abort()
       clearTimeout(timer)
     }
-  }, [job?.id, job?.state, busy])
+  }, [job?.id, job?.state, busy, deviceID])
   const ports = (discovery?.devices || []).filter(
     (d) => !lockedModel || d.models.includes(lockedModel)
   )
@@ -138,7 +144,9 @@ export function StockSetupGuide({
       ...(selectedModel === 'pico-c' ? { display } : {}),
       ...(deviceID ? { device_id: deviceID } : {}),
     })
-  const paired = job?.state === 'complete' && job.action === 'install' && job.pairing_ready
+  const anotherDevice = Boolean(deviceID && job && job.device_id !== deviceID)
+  const paired =
+    !anotherDevice && job?.state === 'complete' && job.action === 'install' && job.pairing_ready
   return (
     <Modal
       title={lockedModel ? 'Restore original firmware' : 'USB setup and recovery'}
@@ -159,9 +167,11 @@ export function StockSetupGuide({
             {actions[job.action]} · {usbLabel(job.model)}
           </h3>
           <p role="status" aria-live="polite">
-            {job.message}
+            {anotherDevice
+              ? 'Another USB operation is in progress. Open USB setup and recovery from Add machine to continue it.'
+              : job.message}
           </p>
-          {job.state === 'waiting' && job.confirmation && (
+          {!anotherDevice && job.state === 'waiting' && job.confirmation && (
             <div className="actions">
               <Button
                 disabled={busy}
