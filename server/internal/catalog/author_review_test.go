@@ -3,6 +3,7 @@ package catalog
 import (
 	"math"
 	"slices"
+	"strings"
 	"testing"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/recipe"
@@ -39,28 +40,67 @@ func TestUnresolvedReviewsKeepTheirEvidenceAndCannotProducePrograms(t *testing.T
 	}
 }
 
-// Clony's known mash additions survive, but the author leaves the division
-// of the one-ounce dry-hop dose ambiguous across three varieties.
-func TestClonyPreservesMeasuredMashHopsAndWithholdsAmbiguousDryHopAmounts(t *testing.T) {
+func TestAuthorPermittedHopAmountsScaleForEachBrewer(t *testing.T) {
 	a, err := Open()
 	if err != nil {
 		t.Fatal(err)
 	}
-	d, err := a.Detail("public-823b71d5482840c18854cab4635568a9")
-	if err != nil {
-		t.Fatal(err)
-	}
-	var mash []string
-	for _, in := range d.Recipe.Ingredients {
-		if in.Kind == "hop" && in.Use == "mash" {
-			mash = append(mash, in.Name)
+	const gramsPerOunce = 28.349523125
+	for _, tc := range []struct {
+		id       string
+		mashOz   map[string]float64
+		dryNames []string
+		drains   []int
+	}{
+		{"public-823b71d5482840c18854cab4635568a9", map[string]float64{"Amarillo": 1, "Cascade": 0.5}, []string{"Columbus", "Centennial", "Chinook"}, []int{8, 0, 8, 6}},
+		{"public-7462ae29eff04c6c97052fd87c21d7b7", map[string]float64{"Cascade": 2}, []string{"Columbus", "Centennial", "Simcoe"}, []int{8, 8}},
+	} {
+		d, err := a.Detail(tc.id)
+		if err != nil {
+			t.Fatal(tc.id, err)
 		}
-		if in.Use == "dry-hop" {
-			t.Fatal("unconfirmed allocation", in)
+		if d.SourceReview == nil || d.SourceReview.Blocker != "" || !strings.Contains(d.Recipe.Notes, d.SourceReview.Evidence) {
+			t.Fatal(tc.id, "missing the reviewed option and its instructions")
 		}
-	}
-	if !slices.Equal(mash, []string{"Amarillo", "Cascade"}) || d.SourceReview == nil || d.SourceReview.Blocker == "" || d.BrewReady {
-		t.Fatal("incomplete source review", mash, d.SourceReview)
+		for _, profile := range recipe.Profiles() {
+			plan, err := recipe.Translate(*d.Recipe, profile, 0)
+			if err != nil || plan.MachineRecipe == nil || len(plan.DeploymentBlockers) != 0 {
+				t.Fatal(tc.id, profile.ID, err, plan.DeploymentBlockers)
+			}
+			r := plan.Recipe
+			grams := gramsPerOunce * r.BatchLiters / d.Recipe.BatchLiters
+			seenMash, seenDry := map[string]bool{}, map[string]bool{}
+			for _, in := range r.Ingredients {
+				if in.Use != "mash" && in.Use != "dry-hop" || in.Kind != "hop" {
+					continue
+				}
+				oz, ok := tc.mashOz[in.Name]
+				seen, minutes := seenMash, 0
+				if in.Use == "dry-hop" {
+					oz, ok = 1.5, slices.Contains(tc.dryNames, in.Name)
+					seen, minutes = seenDry, 5*24*60
+				}
+				if !ok || seen[in.Name] || in.Unit != "g" || in.Minutes != float64(minutes) || math.Abs(in.Amount-grams*oz) > 1e-8 {
+					t.Fatal(tc.id, profile.ID, "unexpected hop amount or contact time", in)
+				}
+				seen[in.Name] = true
+			}
+			if len(seenMash) != len(tc.mashOz) || len(seenDry) != len(tc.dryNames) {
+				t.Fatal(tc.id, profile.ID, "missing mash or dry hops", seenMash, seenDry)
+			}
+			var drains []int
+			for _, step := range r.Steps {
+				if step.Kind == "mash" || step.Kind == "mash-out" {
+					drains = append(drains, step.DrainMinutes)
+				}
+			}
+			if !slices.Equal(drains, tc.drains) || len(plan.HopSlotsByMinute) != 4 || plan.HopSlotsByMinute[8] != 4 {
+				t.Fatal(tc.id, profile.ID, "incorrect mash drains or late boil additions", drains, plan.HopSlotsByMinute)
+			}
+			if len(r.Fermentation) != 3 || r.Fermentation[0].Days != 6 || r.Fermentation[1].Days != 8 || r.Fermentation[2].Days != 3 {
+				t.Fatal(tc.id, profile.ID, "missing original fermentation plan", r.Fermentation)
+			}
+		}
 	}
 }
 

@@ -114,6 +114,33 @@ func TestCatalogReviewedFilter(t *testing.T) {
 	}
 }
 
+func TestCopyAdaptationRetainsEditionEvidenceAndOriginal(t *testing.T) {
+	_, h, c := newTestServer(t)
+	token := signIn(t, c, h.URL)
+	base := h.URL + "/api/v1/catalog/public-19d6e5c595b04bdeba536e6761e193b2"
+	status, body := request(t, c, "GET", base, "", nil, nil)
+	var detail catalog.Detail
+	if status != 200 || json.Unmarshal(body, &detail) != nil || detail.Edition != "Unfined" ||
+		detail.SourceReview == nil || detail.SourceReview.Evidence == "" || detail.BrewSheet != nil {
+		t.Fatal("missing adaptation evidence or unexpected stock instructions", status)
+	}
+	status, body = request(t, c, "POST", base+"/copy", token, map[string]bool{}, nil)
+	var saved domain.Recipe
+	if status != 201 || json.Unmarshal(body, &saved) != nil || saved.Name != "Heinielicious (Unfined)" ||
+		!strings.HasPrefix(saved.Notes, "Hub adaptation (Unfined). "+detail.SourceReview.Evidence) ||
+		saved.Provenance == nil || saved.Provenance.SHA256 != detail.SourceRecords[0].SHA256 {
+		t.Fatal("library copy lost its edition, source or assumptions", status)
+	}
+	status, body = request(t, c, "GET", base+"/source", "", nil, nil)
+	if status != 200 || catalog.Verify(body, detail.SourceRecords[0].Bytes, saved.Provenance.SHA256) != nil {
+		t.Fatal("library provenance does not identify the original", status)
+	}
+	status, _ = request(t, c, "POST", base+"/copy", token, map[string]bool{"stock_program": true}, nil)
+	if status != 422 {
+		t.Fatal("offered the original stock program for an adaptation", status)
+	}
+}
+
 func TestCatalogReferencesAndUnsupportedCopy(t *testing.T) {
 	_, h, c := newTestServer(t)
 	csrf := signIn(t, c, h.URL)

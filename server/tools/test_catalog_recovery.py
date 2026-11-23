@@ -43,7 +43,9 @@ class RecoveryTests(unittest.TestCase):
         review = load_reviews()[entry["id"]]
         result = reviewed_recovery(entry, raw, review, None, recovery, recover_units)
         self.assertFalse(any(i["name"] == moss["Name"] for i in result["ingredients"]))
-        self.assertIn("Irish moss", result["review"])
+        self.assertEqual(result["edition"], "Unfined")
+        self.assertIn("did not specify a unit", result["evidence"])
+        self.assertNotIn("review", result)
 
     def test_author_teaspoon_overrides_printed_ounces_and_preserves_archived_recipe(self):
         entry, raw = archived_recipe("public-15e287774d754dec85e993b595a63df1")  # Patersbier v4
@@ -51,11 +53,12 @@ class RecoveryTests(unittest.TestCase):
         self.assertEqual(raw["VM"]["Recipe"]["Notes"].strip(), "1tsp irish moss")
         review = load_reviews()[entry["id"]]
         result = reviewed_recovery(entry, raw, review, None, recovery, recover_units)
-        moss, = [i for i in result["ingredients"] if i["name"] == "Irish Moss"]
-        self.assertAlmostEqual(moss["amount"], 4.92892159375)
-        self.assertEqual((moss["unit"], moss["minutes"]), ("mL", 10))
-        self.assertFalse(moss.get("slot_addition"))
-        self.assertTrue(result["review"])
+        moss, = [i for i in result["ingredients"] if i["name"] == "Irish Moss Copper Finings (The Home Brew Shop)"]
+        self.assertEqual((moss["amount"], moss["unit"], moss["minutes"]), (1, "g", 10))
+        self.assertTrue(moss["slot_addition"])
+        self.assertEqual(result["edition"], "Weighed Irish moss")
+        self.assertIn("did not name a brand", result["evidence"])
+        self.assertNotIn("review", result)
         self.assertEqual(raw, original)
 
     def test_author_weighed_spices_replace_placeholder_hop_once(self):
@@ -68,6 +71,16 @@ class RecoveryTests(unittest.TestCase):
         coriander, = [i for i in late_spices if i["name"] == "Coriander Seed"]
         self.assertAlmostEqual(coriander["amount"], 14.1747615625)
         self.assertNotIn("review", result)
+
+    def test_author_rice_hulls_do_not_replace_chocolate_malt(self):
+        entry, raw = archived_recipe("public-a48dafac01df40679cb4b27b6aeba263")  # Pig Twn Oat Stout
+        result = reviewed_recovery(entry, raw, load_reviews()[entry["id"]], None, recovery, recover_units)
+        grain = {i["name"]: i for i in result["ingredients"] if i["use"] == "mash"}
+        self.assertEqual(grain["Rice hulls"]["unit"], "g")
+        self.assertAlmostEqual(grain["Rice hulls"]["amount"], 226.796185)
+        self.assertEqual(grain["Chocolate"]["unit"], "kg")
+        self.assertAlmostEqual(grain["Chocolate"]["amount"], 0.181436948)
+        self.assertNotIn("Other", grain)
 
     def test_rejects_stale_review_digest_and_stale_source_edit(self):
         entry, raw = archived_recipe("public-15e287774d754dec85e993b595a63df1")

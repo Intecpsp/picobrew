@@ -74,9 +74,33 @@
     "source_sha256": "a910053b69b00c788878024b03148c8ac23814c093a81b8f07d18c9a82cb4025"
   },
   "public-73d58ebe2a8248519b11f24d3cc100c4": {
-    "blocker": "Confirm the unit for 0.25 Calcium Sulfate, 0.25 Calcium Chloride.",
-    "evidence": "The ingredient record lists 0.25 Calcium Sulfate, 0.25 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "12a844383482ad1c2b47194a7a907fac66b7e051cf5a386ba8716ed06189d935"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.25 Calcium Sulfate, 0.25 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.25 Calcium Sulfate, 0.25 Calcium Chloride.",
+    "source_sha256": "12a844383482ad1c2b47194a7a907fac66b7e051cf5a386ba8716ed06189d935",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-740898877f9242e28160ee1fb764b602": {
     "additions": [
@@ -99,9 +123,25 @@
     "source_sha256": "54ad0d47a1d9b4abbd0e767aa75e9ac02c826cf1ebb6dc055752b6edab1a395c"
   },
   "public-7512ab3daea8423b9deda5d426961f06": {
-    "blocker": "Confirm the unit for 0.25 Calcium Carbonate.",
-    "evidence": "The ingredient record lists 0.25 Calcium Carbonate. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "ca729ce3365c59ec95cc1e4721aab6f9d46ed02d9c51e43f2bc5f18dd0b662c8"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out chalk (calcium carbonate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.25 Calcium Carbonate. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.25 Calcium Carbonate.",
+    "source_sha256": "ca729ce3365c59ec95cc1e4721aab6f9d46ed02d9c51e43f2bc5f18dd0b662c8",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 1,
+            "Name": "Calcium Carbonate",
+            "Description": "Chalk"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-7605d041dc7f4675b4ce295c7cebe5dc": {
     "blocker": "The whirlpool blend, exact dose, and unit of the two-unit gypsum charge are unresolved.",
@@ -134,9 +174,33 @@
     "source_sha256": "fac13c8649061a4c41d5c36a36c10c7a635d2fdb0304cf70ee7cb8c8275db547"
   },
   "public-795f36b739094bdfbc72153bd49a10fe": {
-    "blocker": "Confirm the unit for 1 Calcium Carbonate, 1 Calcium Chloride.",
-    "evidence": "The ingredient record lists 1 Calcium Carbonate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "561bfe3be66809cf8daa297550cd16ea7b6e24379ec60573790d2b9138fd526f"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out chalk (calcium carbonate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 1 Calcium Carbonate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 1 Calcium Carbonate, 1 Calcium Chloride.",
+    "source_sha256": "561bfe3be66809cf8daa297550cd16ea7b6e24379ec60573790d2b9138fd526f",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 1,
+            "Name": "Calcium Carbonate",
+            "Description": "Chalk"
+          },
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-7addb26753124978a8749d6d2d3e67de": {
     "blocker": "The number or measured weight of fresh sprigs is unspecified.",
@@ -222,9 +286,25 @@
     "source_sha256": "da34a24a2750d08e888a82f7d2faee1ee88ec2ae523220dccc57aa5b37a3e237"
   },
   "public-7f3a3cd7efd346eaab5eb861dd5bd91b": {
-    "blocker": "Confirm the unit for 4 Calcium Sulfate.",
-    "evidence": "The ingredient record lists 4 Calcium Sulfate. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "3af9eecfc5fd4bdafbc4113ae719bd982bdf3b28a9cdddb29b3c9da3f51dc941"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 4 Calcium Sulfate. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 4 Calcium Sulfate.",
+    "source_sha256": "3af9eecfc5fd4bdafbc4113ae719bd982bdf3b28a9cdddb29b3c9da3f51dc941",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 4.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-7f4e156103e74deb84ba70e15df6917f": {
     "additions": [
@@ -273,9 +353,50 @@
     "source_sha256": "342cbabf251022984d4a9aee21aed9bc5f68d0f540c2171dd538dc24271840b0"
   },
   "public-83abcfcf317041539b5cb9d5c36ecc99": {
-    "blocker": "The water entries give 0.5 each of gypsum and calcium chloride without units. The recorded boil doses (0.1 Irish Moss) have no authored units.",
-    "evidence": "The third cage combines 0.1 Irish moss and the 10-minute experimental grapefruit hops.",
-    "source_sha256": "db255516cf8ad6f2a041e98f623004706c5956ff51bc62fb3f585a6418e801d8"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Irish Moss kettle fining. The beer may finish less clear. The third cage combines 0.1 Irish moss and the 10-minute experimental grapefruit hops. Original record: The water entries give 0.5 each of gypsum and calcium chloride without units. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "db255516cf8ad6f2a041e98f623004706c5956ff51bc62fb3f585a6418e801d8",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings"
   },
   "public-84404e1d50624a7e883c7d079fa5fc99": {
     "additions": [
@@ -345,9 +466,84 @@
     "source_sha256": "b012d43ab3c03ce8f8259309934e6077a5ee31cd6e171f4c5f36cab2f5c7727d"
   },
   "public-8829f80f108f41d286f383b68b819532": {
-    "blocker": "The magnesium sulfate amount is four without any unit. The recorded boil doses (1 Whirlfloc) have no authored units.",
-    "evidence": "The third cage contains the 10-minute Whirlfloc. The ingredient bill also identifies 0.5 lb maple syrup.",
-    "source_sha256": "b7f8b0fc139e357a7f0bcb4667c708663047e14421db39acf88699a4080bdf9a"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out Epsom salt (magnesium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Whirlfloc kettle fining. The beer may finish less clear. Use the saved machine schedule instead of the mash table, which lists different rests. Mash for 20 min at 104°F, then 40 min at 145°F, then 80 min at 162°F, then 20 min at 175°F. The third cage contains the 10-minute Whirlfloc. The ingredient bill also identifies 0.5 lb maple syrup. Original record: The magnesium sulfate amount is four without any unit. The recorded boil doses (1 Whirlfloc) have no authored units.",
+    "source_sha256": "b7f8b0fc139e357a7f0bcb4667c708663047e14421db39acf88699a4080bdf9a",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "target_c": 40.0,
+        "minutes": 20,
+        "drain_minutes": 4,
+        "location": 0
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "target_c": 62.77777777777778,
+        "minutes": 40,
+        "drain_minutes": 4,
+        "location": 0
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "target_c": 72.22222222222223,
+        "minutes": 80,
+        "drain_minutes": 4,
+        "location": 0
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "target_c": 79.44444444444444,
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 4.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 4,
+            "Name": "Magnesium Sulfate",
+            "Description": "Epsom Salt"
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings · saved schedule"
   },
   "public-88f373b5fd1e48d4a2d839a9644d6b0c": {
     "blocker": "The calcium chloride unit and intended fourth-cage visit need confirmation. The recorded boil doses (0.1 Irish Moss, 0.1 Yeast Nutrient) have no authored units.",
@@ -393,7 +589,6 @@
     "source_sha256": "873114c7a0b1e135170dad991aed3b239ffe15d58fe45efd2a4573dc33285457"
   },
   "public-8a86d3e9581142a0b8c3b6529f3616d8": {
-    "blocker": "The lactose needs a direct keg addition during the boil.",
     "edits": [
       {
         "from": 0.0,
@@ -406,13 +601,82 @@
         "to": "oz"
       }
     ],
-    "evidence": "Dissolve 4 oz lactose in hot water and add directly to the keg in the final 10–15 minutes, per the author. The zero amount on the loading sheet is superseded.",
-    "source_sha256": "e269642bc42186806275c464a2e8364fca8f4a315a344b8ca82726f6b53db886"
+    "evidence": "Keep the recorded Glacier at 60 minutes and Willamette at 25 and 15 minutes. The notes specify 4 oz lactose per 2.5 US gal in the final 10–15 minutes. For this version, brew the full grain and hop program with the brewer closed. After primary fermentation, dissolve the scaled lactose in enough water in a separate saucepan, boil gently for five minutes and cool covered to beer temperature. Gently mix into the unpressurized beer before carbonation. The lactose retains its sweetness and body. The lighter late boil can modestly change bitterness. Count the syrup water in the finished volume, which can differ from the Hub estimate. https://byo.com/articles/sweet-stout/ Original record: The lactose needs a direct keg addition during the boil.",
+    "source_sha256": "e269642bc42186806275c464a2e8364fca8f4a315a344b8ca82726f6b53db886",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Lactose",
+        "use": "boil",
+        "set": {
+          "minutes": 0,
+          "use": "conditioning"
+        }
+      }
+    ],
+    "edition": "Lactose after fermentation"
   },
   "public-8ba3d43765544b50a7da5a1e297504d8": {
-    "blocker": "Confirm the unit for 0.5 Calcium Chloride.",
-    "evidence": "The ingredient record lists 0.5 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "a611817b2827ecc8484d2f1fed7aba8e020f08f7fe3ec20e3b75bf6f6be95820"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.5 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.5 Calcium Chloride.",
+    "source_sha256": "a611817b2827ecc8484d2f1fed7aba8e020f08f7fe3ec20e3b75bf6f6be95820",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-8bcb79855d084e15a29133b5b833a1aa": {
     "blocker": "Adding acid malt mid-mash requires an operator. The native late-boil route also differs from the separate coriander and salt cage schedule. The recorded boil doses (0.5 Coriander Seed, 0.4 Sea Salt) have no authored units.",
@@ -485,26 +749,134 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "The 0.5 calcium chloride dose has no unit. The recorded boil doses (1 Whirlfloc) have no authored units.",
     "edits": [
       {
         "from": "Other (See Notes)",
         "path": "/Hops/5/Name",
         "to": "Motueka"
+      },
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 1.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "The unnamed five-minute hop is Motueka. The author adds 1.5 oz each of Galaxy and Nelson Sauvin for ten days after brewing.",
-    "source_sha256": "53500027e301736b2b10b7962c9dda09d52bb81e4354c30b02326ba56ea9692a"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Whirlfloc kettle fining. The beer may finish less clear. Use the saved machine schedule instead of the mash table, which lists different rests. Mash for 20 min at 104°F, then 90 min at 148°F, then 20 min at 168°F. The unnamed five-minute hop is Motueka. The author adds 1.5 oz each of Galaxy and Nelson Sauvin for ten days after brewing. Original record: The 0.5 calcium chloride dose has no unit. The recorded boil doses (1 Whirlfloc) have no authored units.",
+    "source_sha256": "53500027e301736b2b10b7962c9dda09d52bb81e4354c30b02326ba56ea9692a",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "target_c": 40.0,
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "target_c": 64.44444444444444,
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash out",
+        "kind": "mash-out",
+        "target_c": 75.55555555555556,
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings · saved schedule"
   },
   "public-90636c102fba4a038b54c68a02cf1175": {
-    "blocker": "The recorded boil doses (0.1 Irish Moss) have no authored units.",
-    "evidence": "The author quotes a 5.5-gallon original with one Whirlfloc tablet. This smaller edition halves both hops and substitutes a unitless 0.1 Irish moss at 15 minutes.",
-    "source_sha256": "cc737eefc4b9b4513cad5c29105a10315617e604cb38d0b0ed60464680c3aff1"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Retain the smaller Pico edition’s grain bill, Wyeast 2565 and the two quarter-ounce additions of Northern Brewer and Saaz. The quoted larger batch specifies a Whirlfloc tablet, while the Pico ingredient is unitless Irish moss. Use the recorded 60-minute boil. The timed hop additions start with 60, 30 minutes remaining. Original record: The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "cc737eefc4b9b4513cad5c29105a10315617e604cb38d0b0ed60464680c3aff1",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-90d617c9d5ce479aa81a3071732a0e59": {
-    "blocker": "Confirm the unit for 3.5 Calcium Carbonate, 2 Magnesium Sulfate.",
-    "evidence": "The ingredient record lists 3.5 Calcium Carbonate, 2 Magnesium Sulfate. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "73962135f3a18ca98fcd6b0821038783c10552f58f4b7fb451010028913ac5a4"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out chalk (calcium carbonate) and Epsom salt (magnesium sulfate). The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 3.5 Calcium Carbonate, 2 Magnesium Sulfate. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 3.5 Calcium Carbonate, 2 Magnesium Sulfate.",
+    "source_sha256": "73962135f3a18ca98fcd6b0821038783c10552f58f4b7fb451010028913ac5a4",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 3.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 1,
+            "Name": "Calcium Carbonate",
+            "Description": "Chalk"
+          },
+          {
+            "Amount": 2.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 4,
+            "Name": "Magnesium Sulfate",
+            "Description": "Epsom Salt"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-92af7277c2ac49788b9230d21c0570d5": {
     "blocker": "The calcium chloride unit is missing. The machine omits the spice cage and uses a 120°F first rest instead of the declared 152°F. The recorded boil doses (0.2 Lemon Zest, 0.1 Coriander Seed) have no authored units.",
@@ -522,26 +894,71 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "The gypsum unit is missing. The optional peppercorn addition requires an operator if selected.",
     "edits": [
       {
-        "from": 0.5,
-        "path": "/Adjuncts/0/Amount",
-        "to": 1
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
       },
       {
-        "from": null,
-        "path": "/Adjuncts/0/Units",
-        "to": "tsp"
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.5,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 25,
+          "Name": "Peppercorns",
+          "Use": "Spice",
+          "AdjunctType": "Spice"
+        },
+        "remove": true
       }
     ],
-    "evidence": "The author describes an optional roughly teaspoon-sized charge of crushed peppercorns directly into the boil at ten minutes. Dry hop with 2 oz Centennial for seven days.",
-    "source_sha256": "cae7abdd1c8fe3b25f91543831fe2d9b8b17340dab96860035f25b61f218f833"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Choose the author’s unspiced option and leave out the optional peppercorns. Dry hop with 2 oz Centennial for seven days. Original record: The gypsum unit is missing. The optional peppercorn addition requires an operator if selected.",
+    "source_sha256": "cae7abdd1c8fe3b25f91543831fe2d9b8b17340dab96860035f25b61f218f833",
+    "edition": "Unadjusted brewing water · unspiced"
   },
   "public-93d7f0324fb44a3ca3d7a1ac726d67e2": {
-    "blocker": "Confirm the intended Whirlfloc amount and unit.",
-    "evidence": "The 15-minute cage is present in the native program, but the Whirlfloc dose is zero in both ingredient and loading records.",
-    "source_sha256": "727e9f909137b0a79749e3540abd94a5f775c51601fe9fb28e2e8695f01fea7a"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. The original gives zero for the fining, and its hop cages start at 60, 30, 15 and five minutes. Retain WLP830 for fermentation. Use the recorded 60-minute boil. The timed hop additions start with 60, 30, 15, 5 minutes remaining. Original record: Confirm the intended Whirlfloc amount and unit.",
+    "source_sha256": "727e9f909137b0a79749e3540abd94a5f775c51601fe9fb28e2e8695f01fea7a",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-97238ad78d4b4a199b3a4c8a939b6ae8": {
     "additions": [
@@ -663,8 +1080,7 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "The Whirlfloc dose and the units for gypsum and magnesium sulfate are missing.",
-    "evidence": "The author adds Whirlfloc at 20 minutes, a vial of Clarity Ferm at pitch and 1 oz bagged Amarillo for two days. Pitch at 72°F, cool to 62°F as fermentation starts and raise to 70°F near the end.",
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and Epsom salt (magnesium sulfate). The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Whirlfloc kettle fining. The beer may finish less clear. Retain the author’s Clarity Ferm dose and two-day Amarillo dry hop. Original record: The Whirlfloc dose and the units for gypsum and magnesium sulfate are missing.",
     "fermentation": [
       {
         "days": 12,
@@ -677,12 +1093,61 @@
         "target_c": 21.11111111111111
       }
     ],
-    "source_sha256": "6411f94a4adedf3b3416b49fd6feec0538bb7833215eab7a6db38239660ab876"
+    "source_sha256": "6411f94a4adedf3b3416b49fd6feec0538bb7833215eab7a6db38239660ab876",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 4,
+            "Name": "Magnesium Sulfate",
+            "Description": "Epsom Salt"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings"
   },
   "public-9dadea5b1faf4f7bb8171cab63517c85": {
-    "blocker": "Confirm the Whirlfloc unit and whether fermentation is the intended stage.",
-    "evidence": "Whirlfloc is listed as a fermentation addition, amount 1. Neither its ingredient row nor the fermentation load specifies a unit.",
-    "source_sha256": "10981d3013d68e01eec6251de962179ef62feb86a5df0b4a7a19ea241f391cc2"
+    "evidence": "Unfined option. Omit the Whirlfloc entry. Use the 60-minute East Kent Goldings charge and Wyeast 1318. The fining was entered under fermentation without a unit. Keep the recorded 60-minute boil and the 60-minute hop addition. Original record: Confirm the Whirlfloc unit and whether fermentation is the intended stage.",
+    "source_sha256": "10981d3013d68e01eec6251de962179ef62feb86a5df0b4a7a19ea241f391cc2",
+    "edits": [
+      {
+        "path": "/DryAdjuncts/0",
+        "from": {
+          "Location": 0,
+          "Amount": 1.0,
+          "Time": 0,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Time must be greater than 0.",
+              "Type": 1
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-9e9638e76d034fb894a289c7361729c5": {
     "additions": [
@@ -701,9 +1166,25 @@
     "source_sha256": "39c19529630552241979f6f3a96e304a6f8052cea0bedce49aa41c17d0fa54a9"
   },
   "public-a1183e00e16e4937bb863ad6aac89e3e": {
-    "blocker": "Confirm the unit for 0.5 Calcium Chloride.",
-    "evidence": "The ingredient record lists 0.5 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "52ab29ca25fb4b3ae5eeac0c7c0acddd35029af3019b258ac49d71b521b5bfb6"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.5 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.5 Calcium Chloride.",
+    "source_sha256": "52ab29ca25fb4b3ae5eeac0c7c0acddd35029af3019b258ac49d71b521b5bfb6",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-a1f26bc458ad4e6baf4c84f306374afe": {
     "blocker": "The amount of hibiscus and the units and placement of both spices are unresolved.",
@@ -726,22 +1207,39 @@
     "source_sha256": "990bdf2bae467b223a85c00a083619c89bf011a1430cf7d03e9500f40d1fc6f5"
   },
   "public-a448ee863e44494e938060a4ffaa4e7e": {
+    "additions": [
+      {
+        "amount": 52.67524296774194,
+        "kind": "hop",
+        "minutes": 2880,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 17.55841432258065,
+        "kind": "hop",
+        "minutes": 2880,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
     "blocker": "The authored four-basket brew lacks recoverable visit times. The gypsum unit is missing.",
-    "evidence": "The January 3 note gives a Cascade/Golding blend for each of the first three baskets and a smaller Golding portion for basket four. The saved program instead runs two baskets with generic hops. The author also expresses the dry-hop rate per barrel.",
+    "evidence": "The January 3 note gives a Cascade/Golding blend for each of the first three baskets and a smaller Golding portion for basket four. The saved program instead runs two baskets with generic hops. Add Centennial and Cascade to the fermentor seven days after fermentation, two days before cooling. At the 2.5 US gallon batch size, 1.44 lb and 0.48 lb per 31 US gallon beer barrel give 52.7 g Centennial and 17.6 g Cascade.",
     "source_sha256": "d419f26a87e57fd61cd5ce4ee28be8495642628550bc55bc7959f657233c7955"
   },
   "public-a4f2f8836aa741829b48adc8cf040594": {
     "additions": [
       {
-        "amount": 44.36029434375,
+        "amount": 15,
         "kind": "misc",
         "minutes": 0,
-        "name": "100% cocoa powder",
-        "unit": "mL",
+        "name": "Hershey's natural unsweetened cocoa (100% cacao)",
+        "unit": "g",
         "use": "mash"
       }
     ],
-    "blocker": "The cocoa dose is given by volume. Its mass is needed to include it in the grain-basket capacity calculation.",
     "edits": [
       {
         "from": [
@@ -768,11 +1266,11 @@
         "to": []
       }
     ],
-    "evidence": "The author explicitly puts three US tablespoons of 100% cocoa powder into the grain, superseding the unitless 1.5 fermentation entry. The original 90-minute boil uses hop visits at 90 and 30 minutes.",
-    "source_sha256": "528bb3c87342fea3b03d7de029a825b87a0379852c9137c9b982c5a6e14cfdc0"
+    "evidence": "The brewer mixed three tablespoons of 100% cocoa powder into the grain. This version uses Hershey’s natural unsweetened cocoa, labeled 5 g per tablespoon, for 15 g in the original batch. The brewer did not specify a brand. The original 90-minute boil uses hop visits at 90 and 30 minutes. Product label: https://www.hersheyland.com/products/hersheys-cocoa-100-cacao-natural-unsweetened-8-oz-can.html",
+    "source_sha256": "528bb3c87342fea3b03d7de029a825b87a0379852c9137c9b982c5a6e14cfdc0",
+    "edition": "Weighed cocoa"
   },
   "public-a5b2f7b6f17c4a32bc83b548cbc33486": {
-    "blocker": "The 15-minute cage contents include a volume-measured dose. Its weight is unknown for the slot-capacity check.",
     "edits": [
       {
         "from": null,
@@ -780,8 +1278,27 @@
         "to": "tsp"
       }
     ],
-    "evidence": "The author measures half a US teaspoon of Irish moss and puts it in the second cage with Northern Brewer for the final 15 minutes. This corrects the printed half ounce.",
-    "source_sha256": "c31de0b86efc0d21f407bd356095b34671b83aae24d1a8219f4a5bf417ef2a4b"
+    "evidence": "The author measures half a US teaspoon of Irish moss and puts it in the second cage with Northern Brewer for the final 15 minutes. This corrects the printed half ounce. This version uses 0.5 g of The Home Brew Shop Irish Moss Copper Finings. Weigh this product for the original batch. The supplier gives approximately 1 g per teaspoon and recommends checking the weight. The brewer did not name a brand. Product specification: https://www.the-home-brew-shop.co.uk/products/irish-moss-copper-finings-100g",
+    "ingredient_edits": [
+      {
+        "minutes": 15,
+        "name": "Irish Moss",
+        "set": {
+          "amount": 0.5,
+          "name": "Irish Moss Copper Finings (The Home Brew Shop)",
+          "unit": "g"
+        },
+        "use": "boil"
+      }
+    ],
+    "slot_additions": [
+      {
+        "minutes": 15,
+        "name": "Irish Moss Copper Finings (The Home Brew Shop)"
+      }
+    ],
+    "source_sha256": "c31de0b86efc0d21f407bd356095b34671b83aae24d1a8219f4a5bf417ef2a4b",
+    "edition": "Weighed Irish moss"
   },
   "public-a6626ce593d3487ab4e527fb325eb760": {
     "blocker": "The gypsum amount has no unit and no dry-hop quantities are recorded.",
@@ -789,9 +1306,33 @@
     "source_sha256": "6b461f3eb9fd2c2685226d898c93b6abc890ae905a93f8433dbf957612aa18c8"
   },
   "public-a965576259d54bbfaacb5f35b628ffed": {
-    "blocker": "Confirm the unit for 1 Calcium Sulfate, 1 Calcium Chloride.",
-    "evidence": "The ingredient record lists 1 Calcium Sulfate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "9ff22c87db59a5f335100b142c03dd1804a95ca270aa2f2107f59eaccaace824"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 1 Calcium Sulfate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 1 Calcium Sulfate, 1 Calcium Chloride.",
+    "source_sha256": "9ff22c87db59a5f335100b142c03dd1804a95ca270aa2f2107f59eaccaace824",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-aa83c059a6c14e7299900ee27d38c169": {
     "additions": [
@@ -1006,22 +1547,56 @@
       {
         "amount": 49.611665468750004,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 4320,
         "name": "Centennial",
         "unit": "g",
         "use": "dry-hop"
       }
     ],
-    "blocker": "The recorded boil doses (0.1 Irish Moss) have no authored units.",
     "edits": [
       {
         "from": 3.19,
         "path": "/H2O",
         "to": 3.5
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "Starting water is 3.5 US gallons by the author’s brew instructions. Add 1.75 oz Centennial pellets to the fermenter at one week. The 15-minute moss shares the final Centennial cage.",
-    "source_sha256": "7c51a9a434301ad969853b83d9312010214378522e0d477fe6569625810cddba"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Start with the author’s 3.5 US gallons at source size. Add the author’s 1.75 oz Centennial pellets at day seven. The archived fermentation plan runs ten days at 65°F, then targets 44°F for the cold crash. This edition uses the remaining three warm days for hop contact. Remove the hops on day ten. If fermentation is still active, wait for stable gravity before chilling. The author specifies the addition day but leaves removal timing open. Use the recorded 75-minute boil. The timed hop additions start with 45, 30, 15 minutes remaining. Original record: The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "7c51a9a434301ad969853b83d9312010214378522e0d477fe6569625810cddba",
+    "edition": "Unfined · 3-day dry hop",
+    "fermentation": [
+      {
+        "name": "Fermentation",
+        "days": 7,
+        "target_c": 18.333333333333332
+      },
+      {
+        "name": "Centennial dry hop",
+        "days": 3,
+        "target_c": 18.333333333333332
+      },
+      {
+        "name": "Crash Chill",
+        "days": 0,
+        "target_c": 6.666666666666667
+      }
+    ]
   },
   "public-afc8c804069c42989136a12e92f90ac9": {
     "blocker": "The extract and sugar must be added slowly during heat-up and the hydrated nutrient added directly later. The program cannot prompt for these manual operations.",
@@ -1149,12 +1724,81 @@
         "type": "Water Agent",
         "unit": "mL",
         "use": "mash"
+      },
+      {
+        "name": "Citra",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "kind": "hop",
+        "use": "dry-hop",
+        "minutes": 7200
+      },
+      {
+        "name": "Amarillo",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "kind": "hop",
+        "use": "dry-hop",
+        "minutes": 7200
       }
     ],
-    "blocker": "The timed moss charge produces a fifth cage addition, and the saved program has no reload. Dry-hop variety choices stay with the brewer. The recorded boil doses (0.1 Irish Moss) have no authored units.",
-    "evidence": "The author specifies ¼ tsp each of gypsum and calcium chloride, and Nottingham yeast as the first choice. Dry-hop options are a half ounce from each of two listed groups for 5–7 days.",
+    "evidence": "Use ½ oz Citra and ½ oz Amarillo for the last five days of fermentation. PicoBrew explicitly allows those varieties in their respective groups for five to seven days. Keep Nottingham and the quarter-teaspoon water salts. Omit the separate 15-minute Irish moss charge. The remaining hop countdowns match the native 60-, ten-, seven- and five-minute exposures in sequence. Follow the saved machine mash at 106, 156 and 175°F. The separate form lists four different rests. Original record: The timed moss charge produces a fifth cage addition, and the saved program has no reload. Dry-hop variety choices stay with the brewer. The recorded boil doses (0.1 Irish Moss) have no authored units.",
     "source_sha256": "7b9d11af9e7823f1a97d6e5f0d4ccbef34c7cf5a799a4ab92409df4b8d427147",
-    "source_yeast": "Nottingham dry ale yeast"
+    "source_yeast": "Nottingham dry ale yeast",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 41.11111111111111
+      },
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 68.88888888888889
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edition": "Saved mash and dry hops · unfined"
   },
   "public-b19cf17302454b20ac12d584174952ce": {
     "blocker": "The recorded boil doses (1.5 Lactose) have no authored units.",
@@ -1169,36 +1813,187 @@
     "source_sha256": "7c369111cb7fc2850b222b6f5f71818e579d059c2ae91bde562ca7a7f7684766"
   },
   "public-b4550d14af124352b289dd5a9523dca0": {
-    "blocker": "The calcium chloride amount is 1 without a unit. The recorded boil doses (0.2 Whirlfloc) have no authored units.",
-    "evidence": "Whirlfloc shares the 10-minute Galaxy cage with an amount of 0.2 and no unit. The native program also visits that cage for ten minutes.",
-    "source_sha256": "8793e58e0e562e0ce9d0e43b685a52e108337fc7cec0e2a8a73a87d00a59cc0d"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Whirlfloc kettle fining. The beer may finish less clear. Whirlfloc shares the 10-minute Galaxy cage with an amount of 0.2 and no unit. The native program also visits that cage for ten minutes. Original record: The calcium chloride amount is 1 without a unit. The recorded boil doses (0.2 Whirlfloc) have no authored units.",
+    "source_sha256": "8793e58e0e562e0ce9d0e43b685a52e108337fc7cec0e2a8a73a87d00a59cc0d",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.2,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings"
   },
   "public-b53897ad6a2341659ecdb31e3dfd91c4": {
     "additions": [
       {
         "amount": 226.796185,
         "kind": "misc",
-        "minutes": 10,
+        "minutes": 0,
         "name": "Lactose",
         "unit": "g",
-        "use": "boil"
+        "use": "conditioning"
       }
     ],
-    "blocker": "The timed lactose addition requires an operator at the keg. The recorded boil doses (0.1 Irish Moss) have no authored units.",
     "edits": [
       {
         "from": 3.49,
         "path": "/H2O",
         "to": 3.75
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "Start with 3.75 US gallons. This fourth edition calls for 8 oz lactose in one cup of warm water, added directly to the keg with ten minutes left.",
-    "source_sha256": "959c0b989e402de8926436ea63359f5613b7343e56582f138690d8e7917806ce"
+    "evidence": "Edition 4 calls for 8 oz lactose and one cup of water per 2.8 US gal, originally added with ten minutes left. Start with the recorded 3.75 US gal at source size. Keep Goldings and Perle at both 60 and ten minutes. For this version, brew the full grain and hop program with the brewer closed. After primary fermentation, dissolve the scaled lactose in enough water in a separate saucepan, boil gently for five minutes and cool covered to beer temperature. Gently mix into the unpressurized beer before carbonation. The lactose retains its sweetness and body. The lighter late boil can modestly change bitterness. Count the syrup water in the finished volume, which can differ from the Hub estimate. Omit Irish Moss and allow the beer to settle. https://byo.com/articles/sweet-stout/ Original record: The timed lactose addition requires an operator at the keg. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "959c0b989e402de8926436ea63359f5613b7343e56582f138690d8e7917806ce",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edition": "Lactose after fermentation · unfined"
   },
   "public-b627d64a79604911a8e70422462aa497": {
-    "blocker": "The gypsum and calcium chloride amounts (0.3 and 0.4) have no unit.",
-    "evidence": "The author dry hops with one ounce each of Simcoe and Citra. The native 90-minute boil visits the final cage for one minute.",
-    "source_sha256": "d18c2444bb9661ec30550e78b4e77c26755c2a415b696f742b609fa2bcf1faa5"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The author dry hops with one ounce each of Simcoe and Citra. The native 90-minute boil visits the final cage for one minute. The Pico brewer does not specify dry-hop contact time. After primary fermentation, add the one-ounce Simcoe and Citra charges together for three days at the Pico recipe’s 68°F, then remove the hops. Bruce Browne’s Malibrew Pale v3 gives the same varieties and quantities three to four days of contact. This version uses the shorter interval and keeps Mansfield’s fermentation temperature. https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/90ba9a8fc9d94ca3915598bf7c7a8737.json Original record: The gypsum and calcium chloride amounts (0.3 and 0.4) have no unit.",
+    "source_sha256": "d18c2444bb9661ec30550e78b4e77c26755c2a415b696f742b609fa2bcf1faa5",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.3,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.4,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water · 3-day dry hop",
+    "ingredient_edits": [
+      {
+        "name": "Simcoe",
+        "use": "dry-hop",
+        "minutes": 0,
+        "set": {
+          "minutes": 4320
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "minutes": 0,
+        "set": {
+          "minutes": 4320
+        }
+      }
+    ],
+    "fermentation": [
+      {
+        "days": 10.0,
+        "name": "Fermentation",
+        "target_c": 20.0
+      },
+      {
+        "name": "Simcoe and Citra dry hop",
+        "days": 3,
+        "target_c": 20
+      },
+      {
+        "days": 0,
+        "name": "Crash Chill",
+        "target_c": 6.666666666666667
+      }
+    ]
   },
   "public-b664466c75c74b81baa3ba3ed358c872": {
     "additions": [
@@ -1261,9 +2056,25 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "The 0.25 gypsum dose has no unit.",
-    "evidence": "The author dry hops with ¼ oz each of Amarillo and Simcoe for the final seven days. The 60-, 20- and 5-minute boil fits the recorded three cages.",
-    "source_sha256": "cd18cf3dcfd0f8ce7488cb6466001c1c8bec363092a9a3be91ea064a84d4d307"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The author dry hops with ¼ oz each of Amarillo and Simcoe for the final seven days. The 60-, 20- and 5-minute boil fits the recorded three cages. Original record: The 0.25 gypsum dose has no unit.",
+    "source_sha256": "cd18cf3dcfd0f8ce7488cb6466001c1c8bec363092a9a3be91ea064a84d4d307",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-b91b7a781b364cd9a3311b27d5219c91": {
     "blocker": "The timed direct lactose addition needs an operator. The two bittering charges together also exceed the original cage limit at source size.",
@@ -1285,14 +2096,6 @@
   "public-b93557d881104288916ca6f5192f3059": {
     "additions": [
       {
-        "amount": 4.92892159375,
-        "kind": "misc",
-        "minutes": 10,
-        "name": "Optional crushed pink peppercorns",
-        "unit": "mL",
-        "use": "boil"
-      },
-      {
         "amount": 56.69904625,
         "kind": "hop",
         "minutes": 10080,
@@ -1301,7 +2104,6 @@
         "use": "dry-hop"
       }
     ],
-    "blocker": "If selected, the peppercorns are a manual kettle addition. Their weight for a timed slot is unspecified.",
     "edits": [
       {
         "from": [
@@ -1328,8 +2130,9 @@
         "to": []
       }
     ],
-    "evidence": "The author describes optional crushed pink peppercorns, approximately one teaspoon ten minutes before the boil ends. The separate dry-hop charge is 2 oz Centennial for seven days. The peppercorns do not belong in the fermenter.",
-    "source_sha256": "dc83ff85befd911f448f620eaf3bf918193762757c83a0ad6687b390c6c11d17"
+    "evidence": "This program makes the author’s unspiced version. Leave out the optional peppercorns and load the four timed hop additions. After fermentation, dry hop with 2 oz Centennial for seven days. The alternative spiced version calls for roughly a teaspoon added manually with ten minutes left. The author gives no measured peppercorn weight for loading a hop slot.",
+    "source_sha256": "dc83ff85befd911f448f620eaf3bf918193762757c83a0ad6687b390c6c11d17",
+    "edition": "Without optional peppercorns"
   },
   "public-b96deae553e74a6eaea67113ba344f68": {
     "additions": [
@@ -1412,16 +2215,30 @@
     "source_sha256": "8ba3bc8cc6c057931880413d4513974cd43352cd0c806fde8d825372f200ed22"
   },
   "public-ba7e2b5cd49e48d5a238c027fd066d0c": {
-    "blocker": "The 0.5 calcium chloride dose has no unit.",
     "edits": [
       {
         "from": "American Two-Row Toasted",
         "path": "/Fermentables/0/Name",
         "to": "Belgian Pils, toasted"
+      },
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
       }
     ],
-    "evidence": "The author specifies toasting the Belgian Pils portion in place of the American toasted malt placeholder. The hybrid grain bill also has an untoasted 2.25 lb Belgian Pils portion.",
-    "source_sha256": "16cd19d08aced640cd9c4df8ee43c83e257f967e245af1d47218c087e04d9e94"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The author specifies toasting the Belgian Pils portion in place of the American toasted malt placeholder. The hybrid grain bill also has an untoasted 2.25 lb Belgian Pils portion. Original record: The 0.5 calcium chloride dose has no unit.",
+    "source_sha256": "16cd19d08aced640cd9c4df8ee43c83e257f967e245af1d47218c087e04d9e94",
+    "edition": "Unadjusted brewing water"
   },
   "public-bae543cb372b415ab11efbb3ad3e2f54": {
     "blocker": "The chalk unit is unspecified and the intended timing for the spruce tips and moss differs between the load sheet and native sequence. The recorded boil doses (1.5 Spruce Tips, 0.2 Irish Moss) have no authored units.",
@@ -1456,9 +2273,48 @@
         "use": "fermentation"
       }
     ],
-    "blocker": "The two 0.8 RO-water salt doses have no recorded units.",
-    "evidence": "The author specifies a 1.046 original gravity, and 1.25 oz whole Kenyan coffee beans in the carboy for 24 hours after fermentation. When using tap water, omit the acid malt.",
-    "source_sha256": "c07f4ddab35dbbbc1db9974052740997589c0440dfeabc22e55d82ee5f7ac6d0"
+    "edits": [
+      {
+        "from": [
+          {
+            "Amount": 0.8,
+            "Description": "Gypsum",
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Units": null
+          },
+          {
+            "Amount": 0.8,
+            "Description": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Units": null
+          }
+        ],
+        "path": "/Amendments",
+        "to": []
+      },
+      {
+        "from": {
+          "Amount": 0.13,
+          "Color": 1.9,
+          "ColorPts": 0.06968051343536215,
+          "Errors": [],
+          "FermentableID": 99,
+          "FermentableType": "Grain",
+          "Name": "German Acid Malt",
+          "PotentialGravity": 0.750012848043984,
+          "Yield": 33.6
+        },
+        "path": "/Fermentables/2",
+        "remove": true
+      }
+    ],
+    "evidence": "This version uses the author’s tap-water option and omits the acid malt. His reverse-osmosis batch used calcium sulfate and calcium chloride. The two 0.8 amounts have no recorded units. His instructions for The Rapture Blonde and CitraVeza describe using straight tap water without those salts. Tap-water mineral content varies by supply, so the result can differ from his RO batch. After fermentation, put 1.25 oz of whole Kenyan coffee beans in the carboy for 24 hours before kegging. He reported 1.046 original gravity.",
+    "source_sha256": "c07f4ddab35dbbbc1db9974052740997589c0440dfeabc22e55d82ee5f7ac6d0",
+    "edition": "Tap-water version"
   },
   "public-bf14f984d92540f48aaa36282e180d1d": {
     "additions": [
@@ -1519,15 +2375,24 @@
     "source_sha256": "2b7e6558fdcffb3fe0017a57f4a5dcffd768ed7086f21b8e33dbc8c8e933ec08"
   },
   "public-c1871927a0374a28a3bd234bfe75002b": {
-    "blocker": "The author’s coriander dose lacks a unit. The linked original measures the ground spice by volume. A measured cage weight is missing.",
     "edits": [
       {
         "from": null,
         "path": "/Adjuncts/0/Units",
         "to": "oz"
+      },
+      {
+        "from": 0.1,
+        "path": "/Adjuncts/1/Amount",
+        "to": 1
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/1/Units",
+        "to": "g"
       }
     ],
-    "evidence": "The author specifies a 154°F infusion, 60-minute bittering charge, and orange peel and coriander at ten minutes, matching the two-stage boil table. Prepare a 750 mL yeast starter. Ferment at 65°F for a week and use a secondary for two weeks. Extra orange zest in secondary is optional. The author gives no separate secondary temperature. Ackley’s six-gallon all-grain recipe gives 3 oz Valencia peel and 1.5 tsp ground coriander. Its peel scales to 1.25 oz, consistent with the 1.3 entered. Its coriander scales to 0.625 tsp, while this record lists 0.1 with no unit. https://blog.homebrewing.org/blue-moon-recipe-clone-extract-all-grain/",
+    "evidence": "This version uses the coriander dose from David Ackley’s all-grain recipe, which the Pico brewer credits. Its 1½ tsp for 6 US gal scales to ⅝ tsp for 2.5 gal. The Spice & Tea Exchange labels its ground coriander at 0.4 g per ¼ tsp. Freshly grind the seeds and weigh 1 g of the ground spice for the original batch. The Pico entry’s bare 0.1 has no known unit. Use the Pico brewer’s 1.3 oz orange peel, 154°F infusion, 60-minute boil, and ten-minute spice addition. Prepare a 750 mL starter. Ferment at 65°F for one week and transfer to secondary for two weeks. Extra orange zest is optional. https://blog.homebrewing.org/blue-moon-recipe-clone-extract-all-grain/ https://www.spiceandtea.com/products/coriander-ground",
     "fermentation": [
       {
         "days": 7,
@@ -1535,22 +2400,59 @@
         "target_c": 18.333333333333332
       }
     ],
-    "slot_additions": [
-      "Orange Peel"
+    "ingredient_edits": [
+      {
+        "minutes": 10,
+        "name": "Orange Peel",
+        "set": {
+          "name": "Dried sweet Valencia orange peel"
+        },
+        "use": "boil"
+      },
+      {
+        "minutes": 10,
+        "name": "Coriander Seed",
+        "set": {
+          "name": "Freshly ground coriander seed (The Spice & Tea Exchange)"
+        },
+        "use": "boil"
+      }
     ],
-    "source_sha256": "00d4c84f40982bd5a86d6abbef54a1d4b6d881ac1c8de5f36fca3b0b8092971f"
+    "slot_additions": [
+      "Dried sweet Valencia orange peel",
+      "Freshly ground coriander seed (The Spice & Tea Exchange)"
+    ],
+    "source_sha256": "00d4c84f40982bd5a86d6abbef54a1d4b6d881ac1c8de5f36fca3b0b8092971f",
+    "edition": "Parent recipe’s coriander dose"
   },
   "public-c2d725f523ac4bfeadc7cea506c6fa43": {
-    "blocker": "The Irish moss entry has an amount of one with no unit. The generated cage sheet prints one ounce for this small batch. Confirm the intended fining dose before scaling.",
     "edits": [
       {
         "from": "German Smoked",
         "path": "/Fermentables/3/Name",
         "to": "Cherrywood smoked malt"
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "The author identifies the smoked malt as cherrywood smoked. The 10-minute Irish moss appears in both the fourth loading slot and the timed boil table. The native program stops visiting cages after the 15-minute Willamette stage.",
-    "source_sha256": "9bc38195e05094da2edffca7f2cf27037a5f0b714a25a2ec3599bbf9ec2b2a80"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. Use cherrywood-smoked malt as identified by the author. East Kent Goldings and Willamette receive their full 60- and 15-minute boils. Use the recorded 60-minute boil. The timed hop additions start with 60, 15 minutes remaining. Original record: The Irish moss entry has an amount of one with no unit. The generated cage sheet prints one ounce for this small batch. Confirm the intended fining dose before scaling.",
+    "source_sha256": "9bc38195e05094da2edffca7f2cf27037a5f0b714a25a2ec3599bbf9ec2b2a80",
+    "edition": "Unfined"
   },
   "public-c2ecae726cc54b86844eb064a9a7a466": {
     "additions": [
@@ -1576,8 +2478,26 @@
     "source_sha256": "2e608b57f986b344f244ac019973bff90efd397324a44adc0d184bd147a4cca5"
   },
   "public-c5416c5c57544040bf14cf4a80ad28f9": {
+    "additions": [
+      {
+        "amount": 52.67524296774194,
+        "kind": "hop",
+        "minutes": 2880,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 17.55841432258065,
+        "kind": "hop",
+        "minutes": 2880,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
     "blocker": "The four-cage timing is unclear: the saved program waters just two cages and the generated list uses fractional-minute placeholders. The gypsum unit is missing.",
-    "evidence": "The later January 6 revision reduces each of the first three cages to 0.75 oz Cascade plus 0.75 oz Golding. The fourth holds 1 oz Cascade and 0.5 oz Golding. The older January 3 recipe is background.",
+    "evidence": "The later January 6 revision reduces each of the first three cages to 0.75 oz Cascade plus 0.75 oz Golding. The fourth holds 1 oz Cascade and 0.5 oz Golding. The older January 3 recipe is background. Add Centennial and Cascade to the fermentor seven days after fermentation, two days before cooling. At the 2.5 US gallon batch size, 1.44 lb and 0.48 lb per 31 US gallon beer barrel give 52.7 g Centennial and 17.6 g Cascade.",
     "source_sha256": "5cff7a62b3fec3ea0b37b02c9f8a0b00d0077d0286e6ebc35e70ca9db52808b6"
   },
   "public-c5592628e6cc46b792e29f7deb146f2e": {
@@ -1633,16 +2553,77 @@
         "name": "Strawberries",
         "unit": "g",
         "use": "fermentation"
+      },
+      {
+        "name": "MoreBeer gelatin finings",
+        "amount": 1.2322303984375,
+        "unit": "mL",
+        "kind": "misc",
+        "use": "conditioning",
+        "minutes": 0
       }
     ],
-    "blocker": "The gelatin dose for fining after the strawberry infusion is missing. The recorded boil doses (0.1 Irish Moss) have no authored units.",
-    "evidence": "After primary, steep 2.5 lb washed, halved and frozen strawberries in a strainer bag for two weeks, then fine with gelatin. The native boil waters the Irish moss cage for the final 15 minutes.",
-    "source_sha256": "54fa65677a1815ece107304c03debaa95c0416c7363c49e585d3ea9d761f7e8b"
+    "evidence": "Keep the author’s 2.5 lb of cleaned, halved, frozen strawberries in a strainer bag for two weeks after primary fermentation. Remove the fruit before adding gelatin. For this version, follow the MoreBeer gelatin rate of ½ tsp per five US gallons, equivalent to ¼ tsp for the source batch. Prepare the gelatin according to its package directions. Omit the unitless kettle Irish moss. The original Willamette addition boils for 60 minutes. https://morebeer.com/web_files/morebeer.com/files/Catalog/WebCat%28overhead%29.pdf Original record: The gelatin dose for fining after the strawberry infusion is missing. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "54fa65677a1815ece107304c03debaa95c0416c7363c49e585d3ea9d761f7e8b",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "Single Step Infu...",
+        "kind": "mash",
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edition": "Strawberries with gelatin in secondary"
   },
   "public-c6f4d589e4d2403f84c9d4cc4647b587": {
-    "blocker": "Confirm the unit for 1 Calcium Sulfate.",
-    "evidence": "The ingredient record lists 1 Calcium Sulfate. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "3d5064faa9c3d893a39cf84b7e74838adce6ed19ef2f93741dc2cef3d26651e4"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 1 Calcium Sulfate. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 1 Calcium Sulfate.",
+    "source_sha256": "3d5064faa9c3d893a39cf84b7e74838adce6ed19ef2f93741dc2cef3d26651e4",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-cb3351b84b5946a5b00739e639bdd24a": {
     "additions": [
@@ -1687,7 +2668,7 @@
       {
         "amount": 25,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Centennial",
         "unit": "g",
         "use": "dry-hop"
@@ -1695,7 +2676,7 @@
       {
         "amount": 25,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Cascade",
         "unit": "g",
         "use": "dry-hop"
@@ -1703,7 +2684,7 @@
       {
         "amount": 12,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Ahtanum",
         "unit": "g",
         "use": "dry-hop"
@@ -1711,7 +2692,7 @@
       {
         "amount": 12,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Simcoe",
         "unit": "g",
         "use": "dry-hop"
@@ -1719,27 +2700,139 @@
       {
         "amount": 18,
         "kind": "hop",
-        "minutes": 0,
+        "minutes": 7200,
         "name": "Columbus",
         "unit": "g",
         "use": "dry-hop"
       }
     ],
-    "blocker": "The magnesium sulfate amount is 1 without a unit.",
-    "evidence": "The dry-hop bill is 25 g each Centennial and Cascade, 12 g each Ahtanum and Simcoe, and 18 g Columbus. The measured hop proportions differ by variety.",
-    "source_sha256": "a54b27cdf57c477288bec6cfde5ef932732414235ae54323d2730716e23e5c15"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out Epsom salt (magnesium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The dry-hop bill is 25 g each Centennial and Cascade, 12 g each Ahtanum and Simcoe, and 18 g Columbus. The measured hop proportions differ by variety. The Pico brewer does not specify dry-hop contact time. Complete the original 66°F primary fermentation, cool to 57°F (14°C), and add all five dry-hop varieties together for five days. Separate the beer from the hops before chilling. BrewDog’s Nanny State recipe (#32) confirms the five varieties but gives no duration. This edition borrows the five-day, 14°C post-fermentation method from Punk IPA (#2) in the same brewer’s DIY Dog book and keeps Brian Taylor’s recorded hop weights. https://d1fnkk8n0t8a0e.cloudfront.net/docs/DIY_DOG_Combined_LR.pdf Original record: The magnesium sulfate amount is 1 without a unit.",
+    "source_sha256": "a54b27cdf57c477288bec6cfde5ef932732414235ae54323d2730716e23e5c15",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 4,
+            "Name": "Magnesium Sulfate",
+            "Description": "Epsom Salt"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water · 5-day dry hop",
+    "fermentation": [
+      {
+        "days": 10.0,
+        "name": "Fermentation",
+        "target_c": 18.88888888888889
+      },
+      {
+        "name": "Dry hop at 14°C",
+        "days": 5,
+        "target_c": 14
+      },
+      {
+        "days": 0,
+        "name": "Crash Chill",
+        "target_c": 6.666666666666667
+      }
+    ]
   },
   "public-cda8fe3edee245a090c3f7f7cf22e5e9": {
-    "blocker": "The calcium chloride dose 0.25 lacks a unit. The nominal 80-minute bittering schedule conflicts with the native 80-minute first cage followed by ten more minutes. The recorded boil doses (0.1 Irish Moss) have no authored units.",
     "edits": [
       {
         "from": "German Pilsener",
         "path": "/Fermentables/0/Name",
         "to": "Floor-malted Bohemian Pilsner"
+      },
+      {
+        "path": "/Hops/0/Time",
+        "from": 80.0,
+        "to": 90
+      },
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.1,
+          "Time": 5,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "Use floor-malted Bohemian Pilsner. The author customized the mash and omitted the chiller. The native timed grain rests include 120, 140, 160 and 175°F.",
-    "source_sha256": "eb1dcf8dcd417bd9f293a2fce130dc940c466312ef0d3d552146292824449dbe"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out calcium chloride. The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Irish Moss kettle fining. The beer may finish less clear. Use the saved machine schedule instead of the mash table, which lists different rests. Mash for 20 min at 120°F, then 30 min at 140°F, then 60 min at 160°F, then 10 min at 175°F. The first cage remains active for 80 minutes before the final ten-minute Saaz cage. This program gives 90 minutes of bittering contact, compared with 80 on the recipe form. Use floor-malted Bohemian Pilsner. The author customized the mash and omitted the chiller. The native timed grain rests include 120, 140, 160 and 175°F. Original record: The calcium chloride dose 0.25 lacks a unit. The nominal 80-minute bittering schedule conflicts with the native 80-minute first cage followed by ten more minutes. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "eb1dcf8dcd417bd9f293a2fce130dc940c466312ef0d3d552146292824449dbe",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "target_c": 48.888888888888886,
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "target_c": 60.0,
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "target_c": 71.11111111111111,
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "target_c": 79.44444444444444,
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "target_c": 97.22222222222223,
+        "minutes": 90,
+        "drain_minutes": 0,
+        "location": 0
+      }
+    ],
+    "boil_minutes": 90,
+    "edition": "Unadjusted brewing water · no kettle finings · saved schedule"
   },
   "public-cf6c494724924168b12a378684f1e973": {
     "additions": [
@@ -2003,15 +3096,55 @@
     "source_sha256": "62115fd3e4e96990778b432bfb7bd8d4080e956b9426ad6f83ce3771fa5056dc"
   },
   "public-e17f5a80f0a8417f9fc5edd24d2b3c42": {
-    "blocker": "The 0.5 gypsum dose has no unit.",
-    "evidence": "The author specifies Inland Island Northern California Ale yeast. The source sets the boil to 201°F with three native hop cage visits.",
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The author specifies Inland Island Northern California Ale yeast. The source sets the boil to 201°F with three native hop cage visits. Original record: The 0.5 gypsum dose has no unit.",
     "source_sha256": "600ca158465182c876b2bb71a6581ed1dd04fca13a913eb913f40066cf9c2cee",
-    "source_yeast": "Inland Island Northern California Ale"
+    "source_yeast": "Inland Island Northern California Ale",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-e2e7706946534ddeb6c705a084608749": {
-    "blocker": "The actual fining dose is missing.",
-    "evidence": "The author used Irish moss in the cloudy first batch and suggests Whirlfloc as an alternative. Both the sheet and structured row give a zero Irish moss dose.",
-    "source_sha256": "228bb5a2c8e465f6f4ae3ae1b93d55cc12fbdd2dd08bdaefe43bd01e2b7afa80"
+    "evidence": "Unfined option. Omit Irish Moss from this batch. The author reports haze even with Irish moss and recommends at least two weeks of conditioning before serving. This edition keeps the rack and conditioning advice. Use the recorded 60-minute boil. The timed hop additions start with 60, 15 minutes remaining. Original record: The actual fining dose is missing.",
+    "source_sha256": "228bb5a2c8e465f6f4ae3ae1b93d55cc12fbdd2dd08bdaefe43bd01e2b7afa80",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.0,
+          "Time": 15,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-e33ed719a5224af08543e386655649c5": {
     "additions": [
@@ -2051,9 +3184,33 @@
     "source_sha256": "06a64c7c3c7f351a5ddb05c48687288f95edf42a0a33ec90bb4f376ff9c3f077"
   },
   "public-e485b8582cb840ed898374bdb39d0dec": {
-    "blocker": "Confirm the intended Irish moss dose and whether it belongs in fermentation.",
-    "evidence": "The dry-adjunct field and fermentation loading sheet both identify one unit of Irish moss, with no unit of measure.",
-    "source_sha256": "73896093d0a7e417cae04b244ba649efe77f089397c667a99948602f70094320"
+    "evidence": "Unfined option. Omit the Irish Moss entry. Keep the whole 60-minute Cluster addition and Wyeast 1056. The fining was entered under fermentation without a unit. Keep the recorded 60-minute boil and the 60-minute hop addition. Original record: Confirm the intended Irish moss dose and whether it belongs in fermentation.",
+    "source_sha256": "73896093d0a7e417cae04b244ba649efe77f089397c667a99948602f70094320",
+    "edits": [
+      {
+        "path": "/DryAdjuncts/0",
+        "from": {
+          "Location": 0,
+          "Amount": 1.0,
+          "Time": 0,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Time must be greater than 0.",
+              "Type": 1
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-e75e8525d66340fcac87502a69442c99": {
     "blocker": "The spice quantities are zero in the source, and the manual post-boil steep is missing from the saved program.",
@@ -2128,37 +3285,219 @@
       {
         "amount": 113.3980925,
         "kind": "misc",
-        "minutes": 15,
+        "minutes": 0,
         "name": "Lactose",
         "unit": "g",
-        "use": "boil"
+        "use": "conditioning"
       }
     ],
-    "blocker": "The timed lactose addition needs an operator at the keg. The recorded boil doses (0.1 Irish Moss) have no authored units.",
     "edits": [
       {
         "from": 3.49,
         "path": "/H2O",
         "to": 3.75
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
       }
     ],
-    "evidence": "For the third edition, start with 3.75 gallons and add 4 oz lactose in hot water to the keg at 15 minutes. The fourth edition uses a different lactose dose and time.",
-    "source_sha256": "0b3b9c2f8b5e30441e742cb044f6dc4a01d38d352361316b1922b1b8879cc12f"
+    "evidence": "Edition 3 calls for 4 oz lactose per 2.8 US gal, originally added with 15 minutes left. Start with the recorded 3.75 US gal at source size. Keep Goldings and Perle at both 60 and ten minutes. For this version, brew the full grain and hop program with the brewer closed. After primary fermentation, dissolve the scaled lactose in enough water in a separate saucepan, boil gently for five minutes and cool covered to beer temperature. Gently mix into the unpressurized beer before carbonation. The lactose retains its sweetness and body. The lighter late boil can modestly change bitterness. Count the syrup water in the finished volume, which can differ from the Hub estimate. Omit Irish Moss and allow the beer to settle. https://byo.com/articles/sweet-stout/ Original record: The timed lactose addition needs an operator at the keg. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "0b3b9c2f8b5e30441e742cb044f6dc4a01d38d352361316b1922b1b8879cc12f",
+    "steps": [
+      {
+        "name": "Dough In",
+        "kind": "mash",
+        "minutes": 20,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 38.888888888888886
+      },
+      {
+        "name": "Mash 1",
+        "kind": "mash",
+        "minutes": 30,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash 2",
+        "kind": "mash",
+        "minutes": 60,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 6,
+        "location": 0,
+        "target_c": 79.44444444444444
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edition": "Lactose after fermentation · unfined"
   },
   "public-ea0f1c0dc02c42099245ea212add6069": {
-    "blocker": "Confirm the unit for 0.25 Calcium Sulfate, 0.2 Calcium Chloride.",
-    "evidence": "The ingredient record lists 0.25 Calcium Sulfate, 0.2 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "837441c0aebf47f895aa88814ffc900bc5a053e9c3e42539498a3ddf04432a37"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.25 Calcium Sulfate, 0.2 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.25 Calcium Sulfate, 0.2 Calcium Chloride.",
+    "source_sha256": "837441c0aebf47f895aa88814ffc900bc5a053e9c3e42539498a3ddf04432a37",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.25,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.2,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-ea9646850eab4257bdb6d162bd9712ec": {
-    "blocker": "The Whirlfloc entry has an amount of one with no unit. The generated cage sheet prints one ounce for this small batch. Confirm the intended fining dose before scaling.",
-    "evidence": "The loading sheet specifies one ounce of Whirlfloc with the 20-minute Citra. The native program explicitly visits this cage for 19 minutes before advancing to the final one-minute cage.",
-    "source_sha256": "e8ef468efe1990eb0a2adf02b882ea6ad062ab23d2b3e12d2cc869cddb1c327b"
+    "evidence": "Use the saved Citra additions at 60, 30, 20 and one minute and keep the recorded ¾ oz Citra dry hop. The source leaves its duration blank. This edition chooses five days after fermentation, following PicoBrew’s Citra-containing Chewie Jack dry hop. Omit the Whirlfloc, whose unit was lost. https://github.com/jeffreydwalter/picobrew-recipes/blob/8e0289a5b9aaef8b87d94bbe2eb4b7b4f1430e6e/data/recipes/3deadd1cfd35490cb6d4ffcee9ff7bf8.json Original record: The Whirlfloc entry has an amount of one with no unit. The generated cage sheet prints one ounce for this small batch. Confirm the intended fining dose before scaling.",
+    "source_sha256": "e8ef468efe1990eb0a2adf02b882ea6ad062ab23d2b3e12d2cc869cddb1c327b",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 1.0,
+          "Time": 20,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "steps": [
+      {
+        "name": "Single Step Infu...",
+        "kind": "mash",
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 66.66666666666667
+      },
+      {
+        "name": "Mash Out",
+        "kind": "mash-out",
+        "minutes": 10,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 75.55555555555556
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "minutes": 0,
+        "set": {
+          "minutes": 7200
+        }
+      }
+    ],
+    "resolve_warnings": [
+      "Dry-hop duration is unspecified (source Time=0); the amount is retained but no contact duration was invented."
+    ],
+    "edition": "Five-day Citra dry hop · unfined"
   },
   "public-ebb6f164d179458fa007eadc9ad587e8": {
-    "blocker": "The gypsum and calcium chloride amounts have no units. The recorded boil doses (0.1 Irish Moss) have no authored units.",
-    "evidence": "The author records pitching slurry after brewing. The 0.1 Irish moss is assigned to a ten-minute cage in the ingredient and loading records, which the native program omits.",
-    "source_sha256": "71c8c0b2b20a1b09637ca9f1b94006b0216d9e0ee3f0aee735916f528c246c6f"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out gypsum (calcium sulfate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. Leave out the unmeasured Irish Moss kettle fining. The beer may finish less clear. The author records pitching slurry after brewing. The 0.1 Irish moss is assigned to a ten-minute cage in the ingredient and loading records, which the native program omits. Original record: The gypsum and calcium chloride amounts have no units. The recorded boil doses (0.1 Irish Moss) have no authored units.",
+    "source_sha256": "71c8c0b2b20a1b09637ca9f1b94006b0216d9e0ee3f0aee735916f528c246c6f",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 2,
+            "Name": "Calcium Sulfate",
+            "Description": "Gypsum"
+          },
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      },
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.1,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 17,
+          "Name": "Irish Moss",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unadjusted brewing water · no kettle finings"
   },
   "public-ec0f69ba96e849098abb2c7d167428b7": {
     "additions": [
@@ -2191,9 +3530,25 @@
     "source_sha256": "49ef33b419d6a0b82db6febe57b4923ef03f5e1a596b820fbb8c163a5861d80a"
   },
   "public-ec6bc7b5d5da4ae6a8e77e2eacfe2431": {
-    "blocker": "Confirm the unit for 0.5 Calcium Carbonate.",
-    "evidence": "The ingredient record lists 0.5 Calcium Carbonate. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "90eb71362ec7310a22b4d771dc77cfc1cbfaace3788c4370fb555af855b3dc99"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out chalk (calcium carbonate). The Pico record lists no unit for this water addition. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 0.5 Calcium Carbonate. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 0.5 Calcium Carbonate.",
+    "source_sha256": "90eb71362ec7310a22b4d771dc77cfc1cbfaace3788c4370fb555af855b3dc99",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 0.5,
+            "Units": null,
+            "Errors": [],
+            "ID": 1,
+            "Name": "Calcium Carbonate",
+            "Description": "Chalk"
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-ee52440a564c4c77a44f3c940901c9bb": {
     "blocker": "The hop and RO-water salt quantities lack units. The hop stand and its separate flow path need to be represented.",
@@ -2245,9 +3600,33 @@
     "source_sha256": "598412a598d569c02d8b6870df2894f73ba39da6fbbd91de998c75dd58857197"
   },
   "public-f0c315f062d04f039f4cd5997440d90c": {
-    "blocker": "Confirm the unit for 1 Calcium Carbonate, 1 Calcium Chloride.",
-    "evidence": "The ingredient record lists 1 Calcium Carbonate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries.",
-    "source_sha256": "c5d9c7fc48456468bc7ce30f1f096144a848093f556673d11ed18a7434f826c6"
+    "evidence": "Use chlorine-free brewing water already suitable for this grain bill. This Hub version leaves out chalk (calcium carbonate) and calcium chloride. The Pico record lists no unit for these water additions. Mineral balance, mash pH and the finished flavor will depend on the water you use. The ingredient record lists 1 Calcium Carbonate, 1 Calcium Chloride. The water-loading instruction has no dose or unit for these entries. Original record: Confirm the unit for 1 Calcium Carbonate, 1 Calcium Chloride.",
+    "source_sha256": "c5d9c7fc48456468bc7ce30f1f096144a848093f556673d11ed18a7434f826c6",
+    "edits": [
+      {
+        "path": "/Amendments",
+        "from": [
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 1,
+            "Name": "Calcium Carbonate",
+            "Description": "Chalk"
+          },
+          {
+            "Amount": 1.0,
+            "Units": null,
+            "Errors": [],
+            "ID": 3,
+            "Name": "Calcium Chloride",
+            "Description": null
+          }
+        ],
+        "to": []
+      }
+    ],
+    "edition": "Unadjusted brewing water"
   },
   "public-f1b69f1d64c849dc809ffdee666efa50": {
     "blocker": "The 1.5 oz hop placeholders and 4 oz adjunct loads disagree on both weight and the first lilac cage. The intended two floral amounts are missing. The recorded boil doses (4 Lilac) have no authored units.",
@@ -2378,19 +3757,56 @@
         "use": "packaging"
       }
     ],
-    "blocker": "A manual keg addition is needed at ten minutes. The recorded boil doses (0.5 Whirlfloc) have no authored units.",
-    "evidence": "The listed half pound lactose is dissolved in a cup of water and added to the keg with ten minutes left. After fermentation, split one vanilla bean and infuse it in the serving keg for at least a week.",
+    "evidence": "The author weighed 8 oz lactose in one cup water per 3 US gal, originally added with ten minutes left. Keep the 90-minute 154°F mash, Magnum at 60 and Goldings at ten. After fermentation, split the scaled vanilla bean lengthwise, cut it in half and place it in the unpressurized serving keg before filling. Leave it for at least one week during carbonation. For this version, brew the full grain and hop program with the brewer closed. After primary fermentation, dissolve the scaled lactose in enough water in a separate saucepan, boil gently for five minutes and cool covered to beer temperature. Gently mix into the unpressurized beer before carbonation. The lactose retains its sweetness and body. The lighter late boil can modestly change bitterness. Count the syrup water in the finished volume, which can differ from the Hub estimate. Omit Whirlfloc and allow the beer to settle. https://byo.com/articles/sweet-stout/ Original record: A manual keg addition is needed at ten minutes. The recorded boil doses (0.5 Whirlfloc) have no authored units.",
     "ingredient_edits": [
       {
         "name": "Lactose Milk Sugar",
         "set": {
-          "minutes": 10,
-          "use": "boil"
+          "minutes": 0,
+          "use": "conditioning"
         },
         "use": "mash"
       }
     ],
-    "source_sha256": "8113e8f33f6c8b3293c88ebdab2e7041cbd4b3a2001ee16d2c32196956611aa8"
+    "source_sha256": "8113e8f33f6c8b3293c88ebdab2e7041cbd4b3a2001ee16d2c32196956611aa8",
+    "steps": [
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "minutes": 90,
+        "drain_minutes": 8,
+        "location": 0,
+        "target_c": 67.77777777777777
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "drain_minutes": 0,
+        "location": 0,
+        "target_c": 97.22222222222221
+      }
+    ],
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 3,
+          "Amount": 0.5,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Lactose after fermentation · unfined"
   },
   "public-f70771e3179745e8b70432d57701e472": {
     "blocker": "The recorded boil doses (0.4 Bitter Orange Peel) have no authored units.",
@@ -2418,9 +3834,33 @@
     "source_sha256": "f8a661c691b8a0ed2897a6d510a60222b697b6bd12e8c3579c460170bd7be0ab"
   },
   "public-f7ccc93163654772acca7aaa6949a584": {
-    "blocker": "The intended fining dose is missing.",
-    "evidence": "The source and sheet both give zero Whirlfloc for the ten-minute cage, which the native program does not visit.",
-    "source_sha256": "02de73baee3adf5c396b9fe517570561a98de3da5d6887fa92ab1b62211220ce"
+    "evidence": "Unfined option. Omit Whirlfloc from this batch. Both Fuggles and Kent Golding appear in the 60- and 15-minute additions. The original ten-minute fining dose was zero. Use the recorded 60-minute boil. The timed hop additions start with 60, 15 minutes remaining. Original record: The intended fining dose is missing.",
+    "source_sha256": "02de73baee3adf5c396b9fe517570561a98de3da5d6887fa92ab1b62211220ce",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 4,
+          "Amount": 0.0,
+          "Time": 10,
+          "Units": null,
+          "BoilUse": 4,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "AdjunctRound": 1,
+          "AdjunctID": 81,
+          "Name": "Whirlfloc",
+          "Use": "Fining",
+          "AdjunctType": "Fining"
+        },
+        "remove": true
+      }
+    ],
+    "edition": "Unfined"
   },
   "public-f7fee819294740118bb6d8ef9216ebce": {
     "additions": [

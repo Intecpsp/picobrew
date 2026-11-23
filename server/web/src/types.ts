@@ -469,6 +469,7 @@ export interface CatalogSource {
   reference_count: number
 }
 export interface CatalogSummary {
+  edition?: string
   brew_ready?: boolean
   id: string
   name: string
@@ -562,6 +563,7 @@ export interface CatalogReferences {
   }[]
 }
 export interface DeploymentItem {
+  hop_slots_by_minute?: Record<number, number>
   recipe_id: string
   source_revision: number
   batch_liters: number

@@ -57,9 +57,9 @@ def select_ingredient(ingredients, selector):
 
 
 def reviewed_recovery(entry, raw, review, previous, recovery, recover_units):
-    allowed = {"source_sha256", "evidence", "blocker", "edits", "additions", "steps",
+    allowed = {"source_sha256", "evidence", "edition", "blocker", "edits", "additions", "steps",
                "resolve_warnings", "ingredient_edits", "slot_additions", "first_wort_hops",
-               "source_yeast", "fermentation", "carbonation"}
+               "source_yeast", "fermentation", "carbonation", "boil_minutes", "water"}
     if set(review) - allowed or not review["evidence"].strip():
         raise ValueError("Unexpected or empty review")
     digest = entry["source_records"][0]["sha256"]
@@ -76,6 +76,11 @@ def reviewed_recovery(entry, raw, review, previous, recovery, recover_units):
     baseline, original_warnings = convert_public(raw)
     automatic = recovery(entry, working) or {}
     result = {"source_sha256": digest, "evidence": review["evidence"]}
+    if "edition" in review:
+        label = review["edition"]
+        if not isinstance(label, str) or label != label.strip() or not 1 <= len(label) <= 64:
+            raise ValueError("A Hub adaptation needs a short visible label")
+        result["edition"] = label
     original_source = raw["VM"]["Recipe"]
     oversize = original_source["BatchSize"] >= 3.5 and any(
         error["Type"] == 10 and error["Description"] == "Batch size must be less than 3.5 Gallons."
@@ -129,7 +134,7 @@ def reviewed_recovery(entry, raw, review, previous, recovery, recover_units):
         value = review.get(key, converted[key])
         if value != original.get(key) and (key in review or value != baseline[key]):
             result[key] = value
-    for key in ("source_yeast", "carbonation"):
+    for key in ("source_yeast", "carbonation", "water"):
         if key in review:
             result[key] = review[key]
     return result

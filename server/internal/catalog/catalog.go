@@ -167,8 +167,12 @@ func openBytes(data []byte) (*Archive, error) {
 			}
 			entry.Search += " picopak " + strings.ToLower(product.Creator)
 		}
+		entry.Edition = a.recovered[entry.ID].Edition
+		if entry.Edition != "" {
+			entry.Search += " " + strings.ToLower(entry.Edition)
+		}
 		_, hasStockSheet := a.sheets[entry.ID]
-		entry.BrewReady = hasStockSheet && a.recovered[entry.ID].Review == ""
+		entry.BrewReady = hasStockSheet && entry.Edition == "" && a.recovered[entry.ID].Review == ""
 		a.byID[entry.ID] = entry.Summary
 		counts[entry.SourceID]++
 		if entry.Style != "" {
@@ -367,6 +371,9 @@ func (a *Archive) Detail(id string) (Detail, error) {
 	}
 	if result.Recipe != nil {
 		result.Recipe.SourceYeast = recipe.SourceYeast(*result.Recipe)
+		if result.SourceID == "public-recipes" {
+			preserveFinalFermentationTarget(&result, a.recovered[id].Fermentation)
+		}
 	}
 	if fix, ok := a.recovered[id]; ok {
 		if err := fix.apply(&result); err != nil {
@@ -376,7 +383,7 @@ func (a *Archive) Detail(id string) (Detail, error) {
 			result.SourceReview = &SourceReview{Evidence: fix.Evidence, Blocker: fix.Review}
 		}
 	}
-	if sheet, ok := a.sheets[id]; ok {
+	if sheet, ok := a.sheets[id]; ok && result.Edition == "" {
 		if sheet.SourceSHA256 != result.SourceRecords[0].SHA256 || result.SourceID != "public-recipes" || result.Recipe == nil {
 			return Detail{}, fmt.Errorf("catalog: brew sheet source mismatch for %s", id)
 		}

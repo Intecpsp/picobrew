@@ -372,3 +372,29 @@ describe('recipe adaptation planning and deployment review', () => {
     expect(requests('/commands')).toHaveLength(0)
   })
 })
+
+it('shows the edition procedure, hop slot, manual stage and contact time before sending', async () => {
+  const result = plan(5, true)
+  result.recipe.notes =
+    'Hub adaptation (Post-brew lactose). Add the cooled lactose after fermentation. https://example.org/guide Original record: Open the hot keg.\n\nHistorical instructions'
+  result.recipe.ingredients.push(
+    { name: 'Lactose', kind: 'misc', amount: 80, unit: 'g', use: 'conditioning', minutes: 0 },
+    { name: 'Cascade', kind: 'hop', amount: 5, unit: 'g', use: 'boil', minutes: 15 },
+    { name: 'Citra', kind: 'hop', amount: 10, unit: 'g', use: 'dry-hop', minutes: 7200 }
+  )
+  result.hop_slots_by_minute = { 15: 2 }
+  fetchMock.mockResolvedValue(json(result))
+  render(element(state({ devices }), { ...source, ingredients: result.recipe.ingredients }))
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Preview recipe' }))
+  await screen.findByText('Add the cooled lactose after fermentation.')
+  expect(screen.getByRole('heading', { name: 'Hub adaptation · Post-brew lactose' })).toBeTruthy()
+  expect(screen.getByRole('link', { name: 'example.org' }).getAttribute('href')).toBe(
+    'https://example.org/guide'
+  )
+  expect(screen.queryByText(/Open the hot keg/)).toBeNull()
+  expect(screen.getByText('Conditioning').closest('tr')?.textContent).toContain('Lactose')
+  expect(
+    screen.getByText('Hop slot 2 · 15 min before boil ends').closest('tr')?.textContent
+  ).toContain('Cascade')
+  expect(screen.getByText('Dry hop · 5 days').closest('tr')?.textContent).toContain('Citra')
+})

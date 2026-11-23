@@ -113,8 +113,12 @@ func TestStockManualPathsVerifyMeasuredHopTiming(t *testing.T) {
 	}
 	owner := h.URL + "/api/v1/stock-zymatics/TEST/recipes"
 	submit := stockSubmission{Recipes: []stockReference{{RecipeID: r.ID, Revision: r.Revision}}}
-	if code, b := request(t, c, "POST", owner, token, submit, nil); code != 200 || !strings.Contains(string(b), "Hop slot 1") {
-		t.Fatal(code, string(b))
+	code, body := request(t, c, "POST", owner, token, submit, nil)
+	var preview struct{ Items []stockItem }
+	if code != 200 || json.Unmarshal(body, &preview) != nil || len(preview.Items) != 1 ||
+		preview.Items[0].BatchLiters <= 0 || preview.Items[0].HopSlotsByMinute[30] != 1 ||
+		!strings.Contains(string(body), "Hop slot 1") {
+		t.Fatal(code, string(body))
 	}
 	submit.Recipes[0].Locations = []int{2, 1}
 	for _, publish := range []bool{false, true} {

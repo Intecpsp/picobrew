@@ -33,6 +33,7 @@ type DeploymentInput struct {
 }
 
 type DeploymentItem struct {
+	HopSlotsByMinute map[int]int `json:"hop_slots_by_minute,omitempty"`
 	DeploymentSelection
 	// Keep the requested volume (zero means automatic) alongside the previewed yield.
 	RequestedBatchLiters *float64              `json:"requested_batch_liters,omitempty"`
@@ -237,6 +238,7 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				requested := selection.BatchLiters
 				item.RequestedBatchLiters = &requested
 				item.BatchLiters = adapted.Recipe.BatchLiters
+				item.HopSlotsByMinute = adapted.HopSlotsByMinute
 				native := *adapted.MachineRecipe
 				item.Native, item.Warnings = &native, adapted.Warnings
 				previous, exists := byID[native.ID]
