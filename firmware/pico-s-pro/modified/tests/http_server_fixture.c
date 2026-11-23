@@ -8,12 +8,14 @@ static const char key[] = "0123456789abcdef0123456789abcdef0123456789abcdef01234
 static const char auth[] = "Authorization: Bearer 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\r\n";
 static PicoHttpServer server;
 static unsigned cases, dispatched;
+#ifdef PICO_TEST_HEAP_ARENA
 static bool fail_allocation;
 void *pico_test_malloc(size_t size)
 {
     assert(size == PICO_HTTP_ARENA_CAPACITY);
     return fail_allocation ? NULL : malloc(size);
 }
+#endif
 static char last_body[4096];
 static size_t last_body_length;
 
@@ -135,7 +137,11 @@ static void finish(void)
         poll(i);
     assert(wire.closed == 1);
     assert(server.client == -1);
+#ifdef PICO_TEST_HEAP_ARENA
     assert(server.arena == NULL);
+#else
+    assert(server.arena[0] == '\0');
+#endif
     wire.output[wire.produced] = '\0';
 }
 
@@ -157,6 +163,7 @@ static void check(const char *request, bool provision, unsigned status, unsigned
     result(status, expected_dispatch);
 }
 
+#ifdef PICO_TEST_PAIRING
 static void pairing_post(const char *operation, const char *nonce, bool authenticated, unsigned expected)
 {
     static char request[512];
@@ -207,14 +214,20 @@ static void physical_pairing(void)
     pairing_post("claim",bob,false,404);
 }
 
+#endif
+
 int main(void)
 {
+#ifdef PICO_TEST_HEAP_ARENA
     fail_allocation = true;
     check("GET /api/v1/health HTTP/1.1\r\nHost: pico\r\n\r\n", false, 503, 0);
     assert(wire.consumed == 0 && strstr((const char *)wire.output, "out_of_memory"));
     fail_allocation = false;
+#endif
+#ifdef PICO_TEST_PAIRING
     physical_pairing();
     check("GET /api/v1/overview HTTP/1.1\r\nHost: pico\r\n\r\n", false, 200, 1);
+#endif
     char request[8192], body[4096], key_line[80];
     check("GET /api/v1/health HTTP/1.1\r\nHost: pico\r\n\r\n", false, 200, 1);
     check("GET /api/v1/status HTTP/1.1\r\nHost: pico\r\n\r\n", false, 503, 0);
