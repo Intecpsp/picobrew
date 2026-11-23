@@ -312,7 +312,6 @@ for (const width of [1280, 390]) {
           /discards the interrupted brew checkpoint/
         )
         await page.getByLabel('Recipe on this machine', { exact: true }).selectOption(installed.id)
-        await page.getByText('Manage saved recipes', { exact: true }).click()
         await page.getByRole('button', { name: 'Edit saved program', exact: true }).click()
         const editor = page.getByRole('dialog', { name: 'Edit the machine’s saved program' })
         await expect(editor.getByLabel('Flow path')).toHaveValue('6')

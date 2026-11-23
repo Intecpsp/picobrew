@@ -396,7 +396,7 @@ test('community catalog preserves source schedules through copy, bulk transfer a
     await page
       .getByLabel('Recipe on this machine', { exact: true })
       .selectOption(original.native_program.id)
-    await page.getByText('Manage saved recipes', { exact: true }).click()
+    await expect(page.getByText(/recipe slots used/)).toBeVisible()
     await page.getByRole('button', { name: 'Edit saved program', exact: true }).click()
     dialog = page.getByRole('dialog', { name: 'Edit the machine’s saved program', exact: true })
     await dialog.getByLabel('Saved program name', { exact: true }).fill('Pico Pale bench edit')
