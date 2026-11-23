@@ -435,6 +435,20 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
                 {events.length - 30} more transitions are included in the raw samples and exports.
               </p>
             )}
+            {brew.state === 'interrupted' && (
+              <div>
+                <span className="timeline-dot" />
+                <time>{clockTime(brew.duration_ms)}</time>
+                <div>
+                  <strong>Session interrupted</strong>
+                  <small>
+                    {brew.recovered_after_restart
+                      ? 'The brewer restarted while the session was open. This is its last saved checkpoint.'
+                      : 'The brewer recorded an interruption without a specific cause.'}
+                  </small>
+                </div>
+              </div>
+            )}
           </div>
         </section>
       </div>

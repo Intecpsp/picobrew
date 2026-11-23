@@ -56,7 +56,7 @@ export function StockRestoreGuide({
                   ' to stock removes its standalone controls, custom API and any Hub wireless updates. A future conversion requires USB.'
               : 'Connect only the intended idle machine. Keep power and USB connected throughout the write and verification.'}
           </p>
-          <label className="check-label">
+          <label className="checkbox-row">
             <input
               type="checkbox"
               checked={confirmed}
