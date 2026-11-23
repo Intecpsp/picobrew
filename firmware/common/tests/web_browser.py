@@ -136,6 +136,12 @@ def main():
                         expect(page.locator('#operationTitle')).to_have_text('An interrupted brew is waiting.')
                         assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), 'Recovery panel overflow'
                         page.screenshot(path=str(output/f'recovery-{width}.png'),full_page=True)
+                        for key,value in [('ready',False),('filter_inserted',False)]:
+                            previous=status[key];status[key]=value
+                            expect(page.locator('#resumeInterrupted')).to_be_disabled()
+                            status[key]=previous
+                            expect(page.locator('#resumeInterrupted')).to_be_enabled()
+                        assert commands==[], 'Recovery checks caused a mutation'
                         dialogs=[]
                         def cancel_recovery(dialog):dialogs.append(dialog.message);dialog.dismiss()
                         page.once('dialog',cancel_recovery);page.locator('#resumeInterrupted').click()
