@@ -1,5 +1,6 @@
 """CH340 service exercises ROM handshakes, per-unit enrollment and stock return without appliances."""
 import contextlib
+import errno
 import hashlib
 import io
 import os
@@ -99,7 +100,17 @@ class ServiceTests(unittest.TestCase):
             # Darwin's pseudo terminal lacks the IOSSIOSPEED arbitrary-baud
             # ioctl. Exercise framing there at a POSIX standard baud.
             baud = 115200 if sys.platform == "darwin" else 921600
-            with service.probe.SerialTransport(os.ttyname(slave),baud,exclusive=True) as raw:
+            with service.probe.SerialTransport(os.ttyname(slave),baud,exclusive=True) as raw, contextlib.ExitStack() as stack:
+                # Linux user-mode emulation may expose a PTY but omit its BREAK
+                # ioctl. Emulate only that electrical signal on this test PTY.
+                try:
+                    raw.break_condition=True
+                    raw.break_condition=False
+                except OSError as exc:
+                    if exc.errno!=errno.ENOTTY:
+                        raise
+                    stack.enter_context(mock.patch.object(raw.serial, "_update_break_state"))
+                    raw.break_condition=False
                 release=threading.Event()
                 errors=[]
                 def peer():
