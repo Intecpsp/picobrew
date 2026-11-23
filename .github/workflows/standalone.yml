@@ -101,11 +101,15 @@ jobs:
       - name: Rebuild the Hub recovery image
         if: runner.os == 'Linux'
         run: python tools/build_hub_recovery.py --check
+      - name: Rebuild the independent stock restore worker
+        if: runner.os == 'Linux'
+        run: python tools/build_stock_worker.py --check
       - name: Build both product images and verify their packages and native storage
         shell: bash
         run: |
           for model in pico-pro pico-s; do
             make standalone-storage-test MODEL="$model" PYTHON=python
+            python tests/test_stock_prepare_arm.py --elf "build/standalone/$model/firmware/$model-standalone.elf"
             python tools/verify_firmware_package.py --model "$model"
             python tools/package_hub_firmware.py --model "$model" --firmware-directory "build/standalone/$model/firmware"
           done
