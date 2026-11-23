@@ -28,6 +28,19 @@ func (a *stableObserver) VerifyStableApplication(_ context.Context, uid, model s
 	return a.stableErr
 }
 
+func TestStockRestoreUpgradeHintOnlyForEarlierHubOTAReleases(t *testing.T) {
+	for _, v := range []string{"1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4", "1.3.5"} {
+		if !stockUpgradeAvailable(v) {
+			t.Fatalf("missing update hint for %q", v)
+		}
+	}
+	for _, v := range []string{"", "1.2.0", "1.3.6", "1.3.7", "1.3.10", "2.0.0", "preview"} {
+		if stockUpgradeAvailable(v) {
+			t.Fatalf("unwarranted update hint for %q", v)
+		}
+	}
+}
+
 func TestStockObservationRequiresACompletedImageReadback(t *testing.T) {
 	for _, stage := range []string{"", "preparing", "staging_worker", "selecting_worker", "application", "recovery"} {
 		for _, state := range []string{"running", "interrupted", "restart_requested"} {

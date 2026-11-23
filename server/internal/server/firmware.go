@@ -655,7 +655,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 	}
 	if out.USBRestoreTarget != nil && stockfirmware.WirelessProfile(out.USBRestoreTarget.Model, out.USBRestoreTarget.UID) {
 		out.StockRestoreWireless = out.InstallSupported && stockCapable && out.RetryPackageID == "" && !active
-		out.StockRestoreUpgrade = out.InstallSupported && !stockCapable && out.RetryPackageID == "" && !active
+		out.StockRestoreUpgrade = out.InstallSupported && !stockCapable && stockUpgradeAvailable(out.CurrentVersion) && out.RetryPackageID == "" && !active
 	}
 	if stockPending(stock) {
 		// The brewer can remain on custom firmware after a failed preflight,

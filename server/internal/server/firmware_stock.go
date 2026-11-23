@@ -21,6 +21,16 @@ func (s *Server) stockReceipt(id string) (*firmware.StockReceipt, int64, error) 
 	return &receipt, version, err
 }
 
+// These published S/Pro releases support Hub OTA and predate stock restore.
+// A later or unidentified build must advertise the restoration capability.
+func stockUpgradeAvailable(installed string) bool {
+	switch installed {
+	case "1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4", "1.3.5":
+		return true
+	}
+	return false
+}
+
 func stockPending(receipt *firmware.StockReceipt) bool {
 	return receipt != nil && receipt.Stage != "" && (receipt.State == "running" || receipt.State == "interrupted")
 }
