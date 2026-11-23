@@ -1,6 +1,6 @@
 # Zymatic standalone firmware
 
-Both versions use the brewing controller from PicoBrew 1.1.14. The Hub chooses the version that fits the verified application space on each brewer. **About Zymatic** shows the installed version.
+Both versions use the brewing controller from PicoBrew 1.1.14. The Hub chooses the version that fits the verified application space on each brewer. **About Zymatic** shows the installed version. [Flash layout and compatibility evidence](flash-layout.md)
 
 | Feature | 1.2.0 | 1.3.0 |
 | --- | --- | --- |
