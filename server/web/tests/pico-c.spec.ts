@@ -291,7 +291,7 @@ for (const viewport of [
         .click()
       await expect(page.getByRole('dialog')).toContainText('Restart acknowledged')
       expect(commands.at(-1)).toEqual({ command: 'restart', confirm: true })
-      await page.getByRole('button', { name: 'Close', exact: true }).click()
+      await page.getByRole('button', { name: 'Close dialog', exact: true }).click()
 
       await page.getByRole('button', { name: 'Firmware 1.2.0', exact: true }).click()
       const dialog = page.getByRole('dialog', { name: 'Machine firmware', exact: true })
