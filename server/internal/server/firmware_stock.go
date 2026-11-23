@@ -26,6 +26,9 @@ func stockPending(receipt *firmware.StockReceipt) bool {
 }
 
 func stockIssue(stage, detail string) string {
+	if stage == "committing" {
+		return "The brewer verified both original images. The Hub could not confirm the stock boot selection. Check the brewer’s display. " + detail
+	}
 	if stage == "rebooting" {
 		return "Both original images and the stock boot selection were verified. The Hub could not confirm the restart. Check the brewer’s display. " + detail
 	}
@@ -38,7 +41,7 @@ var stockStages = map[string]string{
 	"selecting_worker": "Starting the verified restoration worker.",
 	"application":      "Restoring the original application.",
 	"recovery":         "Restoring the original recovery image.",
-	"committing":       "Verifying both original images and selecting the stock application.",
+	"committing":       "Both original images verified. Selecting the stock application.",
 	"rebooting":        "Original images and boot selection verified. Requesting restart into stock firmware.",
 }
 
@@ -186,7 +189,7 @@ func (s *Server) restoreStock(w http.ResponseWriter, r *http.Request) {
 }
 
 // A receipts-only action for an OEM application which cannot call the Hub back.
-// Matching the specific verified handoff prevents late taps from acknowledging a newer operation.
+// Bind the observation to the paired machine and this specific restoration.
 func (s *Server) observeStockStartup(w http.ResponseWriter, r *http.Request) {
 	var in struct {
 		UID     string    `json:"device_uid"`
@@ -216,11 +219,16 @@ func (s *Server) observeStockStartup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if !allowed || !s.registeredDevice(d) || !match || !canObserveStock(receipt) || receipt.UID != in.UID || !receipt.Started.Equal(in.Started) {
-		s.fail(w, 409, "stock_handoff_unverified", "A verified boot selection for this paired brewer is required")
+		s.fail(w, 409, "stock_handoff_unverified", "This restoration must have verified both original images and reached stock boot selection for the paired brewer")
 		return
 	}
-	receipt.State = "owner_confirmed"
-	receipt.Message = "Both original images and boot selection were verified. You confirmed the stock startup screen on the brewer."
+	if receipt.Stage == "committing" {
+		receipt.State = "owner_reported"
+		receipt.Message = "The brewer verified both original images. You reported seeing the stock startup screen. The Hub did not confirm the boot selection."
+	} else {
+		receipt.State = "owner_confirmed"
+		receipt.Message = "Both original images and boot selection were verified. You confirmed the stock startup screen on the brewer."
+	}
 	if _, err = s.db.Put("firmware-stock-restore", id, *receipt, version); err != nil {
 		s.storeError(w, err)
 		return
@@ -228,7 +236,19 @@ func (s *Server) observeStockStartup(w http.ResponseWriter, r *http.Request) {
 	s.json(w, 200, receipt)
 }
 func canObserveStock(receipt *firmware.StockReceipt) bool {
-	return receipt != nil && receipt.Stage == "rebooting" && (receipt.State == "running" || receipt.State == "interrupted" || receipt.State == "restart_requested")
+	if receipt == nil {
+		return false
+	}
+	switch receipt.Stage {
+	case "committing":
+		// The worker independently verified both images before this checkpoint;
+		// the Hub has no durable acknowledgment of the stock selector.
+		return receipt.State == "running" || receipt.State == "interrupted"
+	case "rebooting":
+		return receipt.State == "running" || receipt.State == "interrupted" || receipt.State == "restart_requested"
+	default:
+		return false
+	}
 }
 
 // Abandon the previous stock journal only after observing this same paired

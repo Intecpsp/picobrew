@@ -105,6 +105,14 @@ for (const viewport of [
     })
     let supportsWirelessRestore = false
     let stockRequests = 0
+    const lostSelectionReply = viewport.name === 'mobile'
+    const observedState = lostSelectionReply ? 'owner_reported' : 'owner_confirmed'
+    const observedMessage = lostSelectionReply
+      ? 'You reported stock startup. The Hub did not confirm the boot selection.'
+      : 'You confirmed stock startup.'
+    const interruptedMessage = lostSelectionReply
+      ? 'Both original images were verified. The Hub could not confirm the stock boot selection.'
+      : 'Both original images and the boot selection were verified.'
     let selectedStock = false
     let confirmedStock = false
     const started = '2026-01-01T00:00:00Z'
@@ -113,7 +121,7 @@ for (const viewport of [
       if (path.endsWith('/firmware/stock-started')) {
         expect(route.request().postDataJSON()).toEqual({ device_uid: 'pinned-pico-s', started })
         confirmedStock = true
-        await route.fulfill({ json: { state: 'owner_confirmed' } })
+        await route.fulfill({ json: { state: observedState } })
         return
       }
       if (path.endsWith('/firmware/restore-stock')) {
@@ -144,15 +152,19 @@ for (const viewport of [
                       device_uid: 'pinned-pico-s',
                       started,
                       state: confirmedStock
-                        ? 'owner_confirmed'
+                        ? observedState
                         : selectedStock
                           ? 'interrupted'
                           : 'running',
-                      stage: selectedStock ? 'rebooting' : 'recovery',
+                      stage: selectedStock
+                        ? lostSelectionReply
+                          ? 'committing'
+                          : 'rebooting'
+                        : 'recovery',
                       message: confirmedStock
-                        ? 'You confirmed stock startup.'
+                        ? observedMessage
                         : selectedStock
-                          ? 'Both original images and the boot selection were verified.'
+                          ? interruptedMessage
                           : 'Restoring the original recovery image.',
                     }
                   : undefined,
@@ -236,8 +248,9 @@ for (const viewport of [
     selectedStock = true
     await dialog.getByRole('button', { name: 'Close dialog' }).click()
     await page.getByRole('button', { name: /^Firmware / }).click()
+    await expect(dialog.getByText(`Stock restoration: ${interruptedMessage}`)).toBeVisible()
     await dialog.getByRole('button', { name: 'I see the original PicoBrew startup screen' }).click()
-    await expect(dialog.getByText('Stock restoration: You confirmed stock startup.')).toBeVisible()
+    await expect(dialog.getByText(`Stock restoration: ${observedMessage}`)).toBeVisible()
     expect(stockRequests).toBe(1)
     expect(errors).toEqual([])
   })

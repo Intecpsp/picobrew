@@ -74,7 +74,7 @@ var endpoints = []endpoint{
 	{"GET", "/firmware/packages/{packageID}", "Read saved package metadata and acquisition provenance", nil},
 	{"DELETE", "/firmware/packages/{packageID}", "Remove a firmware package from the Hub", nil},
 	{"GET", "/firmware/packages/{packageID}/download", "Download the package after verifying its cached archive hash", nil},
-	{"POST", "/devices/{id}/firmware/stock-started", "Record owner observation of OEM startup for a verified stock handoff", map[string]any{"device_uid": "authenticated-device-uid", "started": "2026-01-01T00:00:00Z"}},
+	{"POST", "/devices/{id}/firmware/stock-started", "Record owner observation of OEM startup after both original firmware images were verified", map[string]any{"device_uid": "authenticated-device-uid", "started": "2026-01-01T00:00:00Z"}},
 	{"POST", "/devices/{id}/firmware/restore-stock", "Restore verified original firmware over Wi-Fi on a qualified Pico S/Pro", map[string]any{"device_uid": "authenticated-device-uid", "acknowledge_loss_of_hub": true, "confirm_restore": true}},
 	{"POST", "/devices/{id}/firmware/install", "Install a validated OTA package on an idle, recovery-equipped Pico S/Pro", map[string]any{"device_uid": "authenticated-device-uid", "package_id": strings.Repeat("a", 64), "confirm": true}},
 	{"GET", "/devices/{id}/firmware", "Read model-scoped firmware packages and installation availability", nil},

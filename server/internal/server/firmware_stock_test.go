@@ -28,6 +28,19 @@ func (a *stableObserver) VerifyStableApplication(_ context.Context, uid, model s
 	return a.stableErr
 }
 
+func TestStockObservationRequiresACompletedImageReadback(t *testing.T) {
+	for _, stage := range []string{"", "preparing", "staging_worker", "selecting_worker", "application", "recovery"} {
+		for _, state := range []string{"running", "interrupted", "restart_requested"} {
+			if canObserveStock(&firmware.StockReceipt{Stage: stage, State: state}) {
+				t.Fatalf("early observation accepted at %s/%s", stage, state)
+			}
+		}
+	}
+	if canObserveStock(&firmware.StockReceipt{Stage: "committing", State: "restart_requested"}) {
+		t.Fatal("inconsistent receipt accepted")
+	}
+}
+
 func TestOwnerCanConfirmOnlyTheirVerifiedStockHandoffWhileOffline(t *testing.T) {
 	s, d, _ := identityFixture(t, filepath.Join(t.TempDir(), "store.sqlite"), "unit")
 	uid := "unit"
@@ -37,7 +50,7 @@ func TestOwnerCanConfirmOnlyTheirVerifiedStockHandoffWhileOffline(t *testing.T) 
 	d.view.Online = false
 	d.awaitingIdentity = true
 	d.view.ModelSource = "firmware"
-	receipt := firmware.StockReceipt{UID: uid, Model: "pico-pro", Started: time.Unix(0, 0).UTC(), Stage: "committing", State: "interrupted"}
+	receipt := firmware.StockReceipt{UID: uid, Model: "pico-pro", Started: time.Unix(0, 0).UTC(), Stage: "recovery", State: "interrupted"}
 	version, err := s.db.Put("firmware-stock-restore", d.view.ID, receipt, 0)
 	if err != nil {
 		t.Fatal(err)
@@ -50,6 +63,29 @@ func TestOwnerCanConfirmOnlyTheirVerifiedStockHandoffWhileOffline(t *testing.T) 
 	timeString := receipt.Started.Format(time.RFC3339)
 	if observe(uid, timeString) != 409 {
 		t.Fatal("unverified boot handoff accepted")
+	}
+	// A lost /commit reply can coincide with an actual reboot to OEM. Only
+	// owner observation can close this case. The selector remains unverified.
+	receipt.Stage = "committing"
+	version, err = s.db.Put("firmware-stock-restore", d.view.ID, receipt, version)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if observe("other", timeString) != 409 || observe(uid, "2000-01-01T00:00:00Z") != 409 {
+		t.Fatal("wrong interrupted stock receipt accepted")
+	}
+	w := httptest.NewRecorder()
+	s.machineFirmware(w, identityRequest("GET", "/api/v1/devices/registered/firmware", ""))
+	if !bytes.Contains(w.Body.Bytes(), []byte(`"can_confirm_stock_startup":true`)) {
+		t.Fatal("offline lost commit cannot be closed")
+	}
+	if observe(uid, timeString) != 200 {
+		t.Fatal("lost commit owner observation rejected")
+	}
+	reported, version, err := s.stockReceipt(d.view.ID)
+	if err != nil || stockPending(reported) || reported.State != "owner_reported" || reported.Stage != "committing" ||
+		!strings.Contains(reported.Message, "did not confirm the boot selection") || !strings.Contains(reported.Message, "reported seeing") || observe(uid, timeString) != 409 {
+		t.Fatal("owner observation incorrectly treated as verified boot selection", reported, err)
 	}
 	receipt.Stage = "rebooting"
 	if _, err = s.db.Put("firmware-stock-restore", d.view.ID, receipt, version); err != nil {
@@ -64,7 +100,7 @@ func TestOwnerCanConfirmOnlyTheirVerifiedStockHandoffWhileOffline(t *testing.T) 
 		t.Fatal("address mismatch accepted")
 	}
 	d.awaitingIdentity = true
-	w := httptest.NewRecorder()
+	w = httptest.NewRecorder()
 	s.machineFirmware(w, identityRequest("GET", "/api/v1/devices/registered/firmware", ""))
 	if w.Code != 200 || !bytes.Contains(w.Body.Bytes(), []byte(`"can_confirm_stock_startup":true`)) {
 		t.Fatal("verified offline handoff missing", w.Body.String())
