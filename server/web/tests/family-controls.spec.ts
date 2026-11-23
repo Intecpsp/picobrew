@@ -326,6 +326,17 @@ for (const width of [1280, 390]) {
         await expect(canvas).toBeVisible()
         await expect(page.getByRole('button', { name: 'Pause session' })).toHaveCount(0)
         await expect(page.getByRole('button', { name: 'Resume session' })).toHaveCount(0)
+        const resumeCheckpoint = page.getByRole('button', {
+          name: 'Resume interrupted brew',
+          exact: true,
+        })
+        for (const condition of [{ ready: false }, { filter_inserted: false }]) {
+          Object.assign(status, { ready: true, filter_inserted: true }, condition)
+          await page.reload()
+          await expect(resumeCheckpoint).toBeDisabled()
+        }
+        Object.assign(status, { ready: true, filter_inserted: true })
+        await page.reload()
         await page.getByRole('button', { name: 'Other programs', exact: true }).click()
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Clean')
         await expect(page.getByLabel('Other programs', { exact: true })).toContainText('Chill')
@@ -342,7 +353,7 @@ for (const width of [1280, 390]) {
         expect(
           await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
         ).toBe(true)
-        await page.getByRole('button', { name: 'Resume interrupted brew', exact: true }).click()
+        await resumeCheckpoint.click()
         let dialog = page.getByRole('dialog', { name: 'Resume Saved pale ale?' })
         await expect(dialog).toContainText('water, vessel and filter')
         await expect(dialog).toContainText('30 seconds')
