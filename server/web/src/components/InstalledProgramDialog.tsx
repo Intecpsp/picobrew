@@ -45,7 +45,9 @@ export function InstalledProgramDialog({
       // These Hub rejections happen before a write. Keep the draft editable.
       const rejectedBeforeWrite =
         error instanceof APIError &&
-        ['invalid_json', 'invalid_recipe', 'unsupported_recipe', 'machine_not_idle'].includes(error.code)
+        ['invalid_json', 'invalid_recipe', 'unsupported_recipe', 'machine_not_idle'].includes(
+          error.code
+        )
       setRefreshRequired(!rejectedBeforeWrite)
     } finally {
       setBusy('')
