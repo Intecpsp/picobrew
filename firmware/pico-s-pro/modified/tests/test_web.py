@@ -224,6 +224,22 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#notice")).to_have_text("Recipe deleted.")
         expect(self.page.locator("#recipeCapacity")).to_have_text("1 / 16")
 
+    def test_recipe_text_fields_enforce_the_device_character_set(self):
+        self.connect()
+        self.page.locator('[data-tab="recipes"]').click()
+        self.page.locator('#newRecipe').click()
+        new_id = self.page.locator('#recipeId')
+        new_id.fill('my-recipe_1')
+        self.assertTrue(new_id.evaluate('e => e.checkValidity()'))
+        new_id.fill('my recipe')
+        self.assertFalse(new_id.evaluate('e => e.checkValidity()'))
+        for selector in ('#recipeName', '#steps input[data-field="name"]'):
+            field = self.page.locator(selector).first
+            field.fill('Märzen')
+            self.assertFalse(field.evaluate('e => e.checkValidity()'))
+            field.fill('Marzen (dark)')
+            self.assertTrue(field.evaluate('e => e.checkValidity()'))
+
     def test_control_state_and_restart_follow_firmware(self):
         with LOCK:
             backend.LIB.test_ready(0)
@@ -281,7 +297,7 @@ class BrowserWorkflow(unittest.TestCase):
         expect(self.page.locator("#clearStop")).to_be_enabled(timeout=8000)
         self.page.locator("#clearStop").click()
         expect(self.page.locator("#modeBadge")).to_have_text("READY")
-        self.page.locator("#program").select_option("rinse")
+        self.page.locator("#program").select_option(label="Deep Clean")
         self.page.locator("#runProgram").click()
         expect(self.page.locator("#modeBadge")).to_have_text("IN PROGRESS")
 

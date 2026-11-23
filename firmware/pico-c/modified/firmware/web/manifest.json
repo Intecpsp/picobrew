@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6397,
+      "length": 6428,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "e1c0de1d455b4a8cc30bc2b875968dd8aa85506603409752b6f16484a5d50f87",
-      "source_length": 60278,
-      "source_sha256": "53a5001b6088ce9c0530893eccb1bf51c39e90a70cf172e2223e0a0ae3babd1f"
+      "sha256": "f52174d7e4b47c07dccbf953e7a83ce42e0e06dab9ad9bc2259dda78dd556afb",
+      "source_length": 60335,
+      "source_sha256": "fb31302f8bc7ea277840fbac875a06c6c8562496af5965d97ab3e01ee00aa56f"
     },
     {
       "source": "app.js",
@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 7539,
+      "length": 7597,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "7f2ca5c5f736f6fc1fdfdcb03e4589007b344f8a12224e0027563744243bb4a6",
-      "source_length": 23382,
-      "source_sha256": "d414374bb113c8ed936db63a6cdd03b5864648fa311c876b0d04515e468aafd5"
+      "sha256": "d4c0e24a721184a2fe2e8883077a9c7a8497d7d54d1191d2763017de483d398d",
+      "source_length": 23479,
+      "source_sha256": "3ccc57272d2a897a1280bf8ba868a29bab73c5415c9e7fab17775a2a2208278d"
     },
     {
       "source": "api-explorer.js",
@@ -36,12 +36,12 @@
       "payload": "api-explorer.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 3541,
+      "length": 3551,
       "max_size": 3584,
       "allocation_blocks": 1,
-      "sha256": "effde96ae1f3520191453b729c2b4820accacf90d3ee67eea91d036ddaa0655a",
-      "source_length": 9383,
-      "source_sha256": "e0ae4665eeb050d13c5df1740c07ebb3374dcf977818e6261db60a311389af83"
+      "sha256": "0ae80cf7c8717efcee5227ddde83336f5a3ec156ba870aa81775de8cf589ea9e",
+      "source_length": 9423,
+      "source_sha256": "19a23b6fe09a637a2728a3da3fcd55919963924e81012c50b95f4c479096bcc4"
     },
     {
       "source": "history.js",

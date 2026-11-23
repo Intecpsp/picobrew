@@ -11,7 +11,7 @@ let pollTimer;
 let apiExplorer;
 let brewHistory;
 const programLabels = {'sous-vide':'Sous vide', 'cold-brew':'Cold brew', manual:'Manual brewing',
-  rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
+  'deep-clean':'Deep Clean', rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
   'drain-reservoir':'Drain reservoir', 'drain-filter':'Drain step filter', 'rack-beer':'Rack beer',
   utilities:'Utilities menu', settings:'Settings menu'};
 
@@ -162,7 +162,7 @@ function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_
   for (const [field,type,min,max] of definitions) {
     const cell=document.createElement('td');let input;
     if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
-    else {input=document.createElement('input');input.type=type;if(type==='text')input.maxLength=21;else{input.min=min;input.max=max;input.step=1;}}
+    else {input=document.createElement('input');input.type=type;if(type==='text'){input.maxLength=21;input.pattern='[ -~]+';input.title='Use printable ASCII characters';}else{input.min=min;input.max=max;input.step=1;}}
     input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
     input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
   }

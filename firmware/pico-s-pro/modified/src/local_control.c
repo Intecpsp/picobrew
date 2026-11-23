@@ -24,7 +24,7 @@ static struct {
 static const char *const commands[] = {
     "", "brew", "sous-vide", "cold-brew", "manual", "rinse", "first-rinse",
     "descale", "circulate", "drain-reservoir", "drain-filter", "rack-beer",
-    "utilities", "settings"
+    "utilities", "settings", "deep-clean"
 };
 
 bool pico_local_control_foreground(void)
@@ -285,6 +285,7 @@ bool pico_local_control_run_pending(void)
     case 11: pico_recipe_rack_beer(&a->recipe); break;
     case 12: pico_utilities_menu(); break;
     case 13: pico_settings_menu(); break;
+    case 14: pico_recipe_circulation_program(&a->recipe); break; /* Utilities > Deep Clean */
     default: break;
     }
     if (local.stopped) {
