@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "models": [
-    "picoferm",
+    "z-series",
     "picostill",
-    "z-series"
+    "picoferm"
   ],
   "all_three_models": true,
   "hardware_access_performed": false,
@@ -11,28 +11,44 @@
   "wrong_geometry_with_valid_md5_rejected": true,
   "cases": [
     {
-      "model": "picoferm",
-      "profile": "esp8266-2m",
-      "source_entries_verified": 112,
-      "elf_sha256": "f2a9af2399ac2fff9aa424974bce43f538d3ebbf689fda23bacf10ee283b0d25",
-      "build_report_sha256": "6271201da1b21f0917826d4fa3b5ef1d3bd261bab9c51bad19d479f858dfb129",
-      "manifest_sha256": "1a362e35f3d0125195da9cbd0fa56c36f9c2e5f7470f8a3836308f77a8148168",
+      "model": "z-series",
+      "profile": "esp32-4m",
+      "source_entries_verified": 352,
+      "elf_sha256": "59a711349f11fc1fa6612a5878d39b56992ffd4685724295892b71be68163668",
+      "build_report_sha256": "70b8fb615ca0c1468fe4552340400d6e52427ad37b6a45558feec4b56de206bb",
+      "manifest_sha256": "4e5e7748f8bee73c8426e29c0d142640e3958682988137159134c43401d23b72",
       "components": [
         {
+          "file": "bootloader.bin",
+          "kind": "pinned-sdk-bootloader",
+          "offset": 4096,
+          "bytes": 16176,
+          "maximum_bytes": 28672,
+          "sha256": "6c63535767d25b656672913879672d01cbfabef8c25b62dffb91f98d04f37998"
+        },
+        {
+          "file": "partitions.bin",
+          "kind": "explicit-reference-partition-table",
+          "offset": 32768,
+          "bytes": 3072,
+          "maximum_bytes": 4096,
+          "sha256": "cc5b9d52da361e51fdf767a6adf777909c44d0546a1f80d0f3bae3aa154a1ab9"
+        },
+        {
           "file": "application.bin",
-          "kind": "eboot-and-application",
-          "offset": 0,
-          "bytes": 383200,
-          "maximum_bytes": 1048576,
-          "sha256": "413bef332129a1b31252ad3370d9d30a070d8d6ce06b86931d0772b4e852392e"
+          "kind": "factory-application",
+          "offset": 65536,
+          "bytes": 1647088,
+          "maximum_bytes": 2031616,
+          "sha256": "290b4beda9fa7f25bff7f125cf45706f674045a8379ee4d69e541c7c89229adb"
         },
         {
           "file": "spiffs.bin",
           "kind": "verified-empty-spiffs",
-          "offset": 1048576,
-          "bytes": 1028096,
-          "maximum_bytes": 1028096,
-          "sha256": "18a484702761fe942d97a59918fabc46d3f375c6e7c33ad252fbf612797aff48"
+          "offset": 2097152,
+          "bytes": 2097152,
+          "maximum_bytes": 2097152,
+          "sha256": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6"
         }
       ],
       "deterministic_refresh": true,
@@ -46,10 +62,10 @@
     {
       "model": "picostill",
       "profile": "esp32-4m",
-      "source_entries_verified": 107,
-      "elf_sha256": "90d53853b3b389bc38713911a78da25fb9a1d8e97e076899909086b1d06bce2a",
-      "build_report_sha256": "ade3850374b8474cdb16b123380fded85ba5ebc1df6e8f5a66cc6629f17198db",
-      "manifest_sha256": "dabab38455058487db03cb0b044ee465b522abfd5ae4f086da7f9e4648efb546",
+      "source_entries_verified": 108,
+      "elf_sha256": "faed0847acbcd58af348460c71dcd4e8884084d680a9b5b4297a02447f7a6990",
+      "build_report_sha256": "db73fd1a9aa81c65d34ba58a1f6b1587fba6d857d7d86f7e641397eccc427d82",
+      "manifest_sha256": "831f8aafdc661f1455a0df63b932f4c522de8740e97605e6603e92433e2e87cb",
       "components": [
         {
           "file": "bootloader.bin",
@@ -71,9 +87,9 @@
           "file": "application.bin",
           "kind": "factory-application",
           "offset": 65536,
-          "bytes": 796784,
+          "bytes": 805776,
           "maximum_bytes": 2031616,
-          "sha256": "79dba344ccee884302126aa3d835fc3860b8b9dcfa293fb3de477240744d1d1b"
+          "sha256": "fcfacf35eff362954b5104f3b26707b14ea696c5d6ad8c22e958822620e6f642"
         },
         {
           "file": "spiffs.bin",
@@ -93,44 +109,28 @@
       "filesystem_remount_and_independent_decode": true
     },
     {
-      "model": "z-series",
-      "profile": "esp32-4m",
-      "source_entries_verified": 351,
-      "elf_sha256": "0d9f1d2e0b651188b96fb43e046547edbc34402441b9b2dbca7530be57066bdb",
-      "build_report_sha256": "6c71c5a98ba13264764b5d1eca0820f448e9dc9547d94f41b2a85132fb3c8c6c",
-      "manifest_sha256": "13a2e58003dd02b0b54d559b160b309a4dbde9b230501c5338619bb84c53f9be",
+      "model": "picoferm",
+      "profile": "esp8266-2m",
+      "source_entries_verified": 113,
+      "elf_sha256": "28d0853eab1219542570f7a94c0431bb59b9720dbc8242b50fff34e0974e5b93",
+      "build_report_sha256": "ae5375f59ba19a40d4e72fe5d1d3dcae5ff3ed17dce0e99b1a9d3b44d5d159a0",
+      "manifest_sha256": "0be2aab69275b24d6bbe45b7fbd3d17ea3ccb46ab924decbed8ded74d6964044",
       "components": [
         {
-          "file": "bootloader.bin",
-          "kind": "pinned-sdk-bootloader",
-          "offset": 4096,
-          "bytes": 16176,
-          "maximum_bytes": 28672,
-          "sha256": "6c63535767d25b656672913879672d01cbfabef8c25b62dffb91f98d04f37998"
-        },
-        {
-          "file": "partitions.bin",
-          "kind": "explicit-reference-partition-table",
-          "offset": 32768,
-          "bytes": 3072,
-          "maximum_bytes": 4096,
-          "sha256": "cc5b9d52da361e51fdf767a6adf777909c44d0546a1f80d0f3bae3aa154a1ab9"
-        },
-        {
           "file": "application.bin",
-          "kind": "factory-application",
-          "offset": 65536,
-          "bytes": 1634176,
-          "maximum_bytes": 2031616,
-          "sha256": "c96d04e67f2cf0439fae038f0cbf7a84357fca38600d6522a637865e0d87acb6"
+          "kind": "eboot-and-application",
+          "offset": 0,
+          "bytes": 392224,
+          "maximum_bytes": 1048576,
+          "sha256": "12b3a2f197a9f54b07a3d9dc4980e77e7017a663d4f5bed3683b12f16250af0f"
         },
         {
           "file": "spiffs.bin",
           "kind": "verified-empty-spiffs",
-          "offset": 2097152,
-          "bytes": 2097152,
-          "maximum_bytes": 2097152,
-          "sha256": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6"
+          "offset": 1048576,
+          "bytes": 1028096,
+          "maximum_bytes": 1028096,
+          "sha256": "18a484702761fe942d97a59918fabc46d3f375c6e7c33ad252fbf612797aff48"
         }
       ],
       "deterministic_refresh": true,
@@ -152,6 +152,6 @@
     "dependencies/reference-images.json": "29846a20cd20b6aa891cf9db2378e6394c1da010e5c2ab1214954cd3f06f325c",
     "dependencies/spiffs-format-abi.json": "1ff306ea0e9d752fdef39d08c62e50cb247b2088b1a47fa2a1eb690ab2770e11"
   },
-  "image_parser_sha256": "c8c0260d815e36cf33f069d653b0d27857713c01171ebc3cb296697631b8ece5",
+  "image_parser_sha256": "8cc5d7b9aeb6cdfe56c0536a1ac0830478e793ebe304fa9ff06a3749d0e1fa10",
   "scope": "Real complete application ELFs and build reports; deterministic offline packages, every allocated image byte bound to ELF, exact partition geometry and filesystem readback, corruption/stale-input rejection. No hardware installation or runtime qualification."
 }
