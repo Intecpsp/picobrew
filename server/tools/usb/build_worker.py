@@ -244,6 +244,11 @@ def project_files():
                 "tools/usb_layout.py",
             )
         )
+    if (zymatic / "tools/release_1_3_0.py").is_file():
+        patterns.extend(
+            f"firmware/zymatic/modified/{resource}"
+            for resource in ("extension/1.3.0/*.bin", "extension/1.3.0/extension.json", "tools/release_1_3_0.py")
+        )
     files = set(extra)
     for pattern in patterns:
         matches = list(ROOT.glob(pattern))

@@ -30,13 +30,15 @@ typedef uintptr_t FlashAddress;
 #endif
 #include "site/zymatic_site.h"
 #include "site/zymatic_pair_js.h"
+#include "site/zymatic_favicon.h"
 
 enum { REQUEST = 1, HOST = 2, LENGTH = 4, AUTH = 8, VALID_KEY = 16, CR = 32, HTTP11 = 64, BODY = 128 };
-enum { UNKNOWN, INDEX, PAIR_SCRIPT, HEALTH, OVERVIEW, DISCOVER, STATUS, DISPLAY, ENCODER, HISTORY, HISTORY_ROWS, PAIR_REQUEST, PAIR_CLAIM, PAIR_GRANT };
+enum { UNKNOWN, INDEX, PAIR_SCRIPT, FAVICON, HEALTH, OVERVIEW, DISCOVER, STATUS, DISPLAY, ENCODER, HISTORY, HISTORY_ROWS, PAIR_REQUEST, PAIR_CLAIM, PAIR_GRANT };
 enum { BAD = 1, DENIED, MISSING, METHOD, LARGE, UNPAIRED, CHANGED, INVALID_COMMAND, HISTORY_BUSY };
 enum { PAGE = 128, FRAME_BYTES = 1024 };
 _Static_assert(sizeof(zymatic_site) + 128 <= 2048, "HTML response must fit one W5100 send");
 _Static_assert(sizeof(zymatic_pair_js) + 128 <= 2048, "Pairing script must fit one W5100 send");
+_Static_assert(sizeof(zymatic_favicon) + 128 <= 2048, "Favicon response must fit one W5100 send");
 _Static_assert(sizeof(ZymaticNetwork) <= 424, "Check AVR static-memory budget");
 #ifdef __AVR__
 #define FRAME ((const volatile uint8_t *)(uintptr_t)0x266a)
@@ -167,6 +169,7 @@ static void parse_request(ZymaticNetwork *n, char *line)
         }
     } else if (!equal(line, CONSTANT("GET"), 0)) n->http_error = METHOD;
     else if (equal(path, CONSTANT("/"), 0)) n->route = INDEX;
+    else if (equal(path, CONSTANT("/favicon.ico"), 0)) n->route = FAVICON;
     else if (equal(path, CONSTANT("/pair.js"), 0)) n->route = PAIR_SCRIPT;
     else if (equal(path, CONSTANT("/api/v1/health"), 0)) n->route = HEALTH;
     else if (equal(path, CONSTANT("/api/v1/overview"), 0)) n->route = OVERVIEW;
@@ -237,7 +240,7 @@ uint8_t zymatic_api_feed(ZymaticNetwork *n, uint8_t byte, const uint8_t key[32])
         else if (!(n->flags & REQUEST)) parse_request(n, n->buffer.line);
         else if (!n->line_used) {
             if ((n->flags & HTTP11) && !(n->flags & HOST)) n->http_error = BAD;
-            else if (n->route != INDEX && n->route != PAIR_SCRIPT && n->route != HEALTH && n->route != OVERVIEW && n->route != PAIR_REQUEST && n->route != PAIR_CLAIM && !(n->flags & VALID_KEY)) n->http_error = DENIED;
+            else if ((n->route < INDEX || n->route > OVERVIEW) && n->route != PAIR_REQUEST && n->route != PAIR_CLAIM && !(n->flags & VALID_KEY)) n->http_error = DENIED;
             else if (!n->route) n->http_error = MISSING;
             else if (n->route == ENCODER || n->route >= PAIR_REQUEST) {
                 if (!n->body_length) n->http_error = BAD;
@@ -614,11 +617,13 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
     default: literal(n, (n->route == ENCODER || (pairing && pairing!=ZP_REDEEMED)) ? CONSTANT("202 Accepted") : CONSTANT("200 OK")); break;
     }
     literal(n, CONSTANT("\r\nConnection: close\r\nCache-Control: no-store\r\nContent-Type: "));
-    if ((n->route == INDEX || n->route == PAIR_SCRIPT) && !n->http_error) {
-        literal(n, n->route == INDEX ? CONSTANT("text/html; charset=utf-8") : CONSTANT("application/javascript"));
+    if (n->route >= INDEX && n->route <= FAVICON && !n->http_error) {
+        literal(n, n->route == INDEX ? CONSTANT("text/html; charset=utf-8") :
+                   n->route == FAVICON ? CONSTANT("image/x-icon") : CONSTANT("application/javascript"));
         literal(n, CONSTANT("\r\nContent-Encoding: gzip\r\n\r\n"));
         n->line_used = n->response_bytes;
-        n->response_bytes += n->route == INDEX ? sizeof(zymatic_site) : sizeof(zymatic_pair_js);
+        n->response_bytes += n->route == INDEX ? sizeof(zymatic_site) :
+                             n->route == FAVICON ? sizeof(zymatic_favicon) : sizeof(zymatic_pair_js);
         return;
     }
     n->line_used = 0;
@@ -662,7 +667,7 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
         append_temperature(n, 1);
         append(n, '}');
     }
-    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.0\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
+    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.1\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
     else if (n->route == DISPLAY) {
         literal(n, CONSTANT("{\"width\":128,\"height\":64,\"format\":\"page-lsb-hex\",\"total_bytes\":1024,\"offset\":"));
         number(n, n->display_offset);
@@ -706,11 +711,12 @@ uint8_t zymatic_api_reply_byte(const ZymaticNetwork *n, uint16_t offset)
     if (n->line_used && offset >= n->line_used) {
         offset -= n->line_used;
         if (n->route == INDEX) return SITE_BYTE(offset);
-        if (n->route == PAIR_SCRIPT) {
+        if (n->route == PAIR_SCRIPT || n->route == FAVICON) {
 #ifdef __AVR__
-            return pgm_read_byte_far(pgm_get_far_address(zymatic_pair_js) + offset);
+            uint32_t start = n->route == FAVICON ? pgm_get_far_address(zymatic_favicon) : pgm_get_far_address(zymatic_pair_js);
+            return pgm_read_byte_far(start + offset);
 #else
-            return zymatic_pair_js[offset];
+            return (n->route == FAVICON ? zymatic_favicon : zymatic_pair_js)[offset];
 #endif
         }
         if (offset >= PAGE * 2) return offset == PAGE * 2 ? '"' : '}';

@@ -30,7 +30,7 @@ From the checkout’s `server/` directory, use a brewer running the verified sto
 
 Setup captures two matching flash reads, checks the original application and available flash, then asks for two confirmations before it writes. It generates a unique UID and key for that brewer. Keep the key and the private Hub data directory for later updates and restoration. To set the recipe offered offline, add `--offline-program /absolute/path/zymatic-program.json`. The default is American Brown Ale. On an already converted brewer, omitting the recipe or host retains the installed value.
 
-Disconnect USB after verification and check **About Zymatic** for the version reported by the installer. Initial setup uses **1.2.0**. A qualifying boot configuration permits **1.3.0** on a subsequent USB update. On Ethernet, pair the brewer's IP address and key in the Hub. Use the recipe menu on the brewer for both Wi-Fi and Ethernet sync. To return to stock, run the restore command above against the same Hub data directory. Restoration clears the recognized extension and its private key from program flash and checks the complete readable result.
+Disconnect USB after verification and check **About Zymatic** for the version reported by the installer. Initial setup uses **1.2.0**. A qualifying boot configuration permits **1.3.1** on a subsequent USB update from 1.2.0 or 1.3.0. On Ethernet, pair the brewer's IP address and key in the Hub. Use the recipe menu on the brewer for both Wi-Fi and Ethernet sync. To return to stock, run the restore command above against the same Hub data directory. Restoration clears the recognized extension and its private key from program flash and checks the complete readable result.
 
 ## Use the original Windows updater
 

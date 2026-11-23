@@ -20,7 +20,7 @@ def main():
     parser.add_argument("--uid")
     parser.add_argument("--hub-host", default="picobrew.com")
     parser.add_argument("--offline-program", type=Path)
-    parser.add_argument("--firmware-version", choices=(usb_layout.release_1_2.VERSION, build.VERSION),
+    parser.add_argument("--firmware-version", choices=(usb_layout.release_1_2.VERSION, build.PREVIOUS_VERSION, build.VERSION),
                         default=usb_layout.release_1_2.VERSION, help="1.3 requires a verified boot window on the target unit")
     args = parser.parse_args()
     recipe = offline_program.read_program(args.offline_program)

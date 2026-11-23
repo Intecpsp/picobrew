@@ -18,7 +18,8 @@ TEMPLATE = ROOT / "extension"
 START = tables.HIGH_START
 LIMIT = 0x1fc00
 BSS = 0x2c8a
-VERSION = "1.3.0"
+VERSION = "1.3.1"
+PREVIOUS_VERSION = "1.3.0"
 FIELDS = {"provision_key": 32, "provision_uid": 33, "provision_host": 64, "provision_recipe": recipes.SIZE}
 
 SERIAL_READS = (
@@ -54,17 +55,32 @@ def sources_sha():
     return digest.hexdigest()
 
 
-def template():
-    record = json.loads((TEMPLATE / "extension.json").read_bytes())
-    code = (TEMPLATE / "extension.bin").read_bytes()
-    if (record["source_sha256"] != sources_sha() or record["extension_sha256"] != sha(code)
+def template_directory(version):
+    if version == VERSION:
+        return TEMPLATE
+    if version == PREVIOUS_VERSION:
+        return TEMPLATE / PREVIOUS_VERSION
+    raise ValueError("Unknown Zymatic extension version")
+
+
+def template(version=VERSION):
+    directory = template_directory(version)
+    metadata = (directory / "extension.json").read_bytes()
+    record = json.loads(metadata)
+    if version == PREVIOUS_VERSION:
+        if sha(metadata) != "cc70f6d3ea0d137def6b669533b8b12fba25110b33220be4f0dbb3798f55f9e1":
+            raise ValueError("Zymatic 1.3.0 extension metadata differs from the released manifest")
+    elif record["source_sha256"] != sources_sha():
+        raise ValueError("The AVR extension differs from its recorded sources; rebuild the template")
+    code = (directory / "extension.bin").read_bytes()
+    if (record["extension_sha256"] != sha(code)
             or len(code) != record["extension_bytes"] or not 0 < len(code) <= LIMIT - START):
         raise ValueError("The AVR extension differs from its recorded sources or binary; rebuild the template")
-    low = (TEMPLATE / "low.bin").read_bytes()
+    low = (directory / "low.bin").read_bytes()
     if len(low) != record["low_bytes"] or sha(low) != record["low_sha256"] or not (
             0 < len(low) <= tables.POOL_END - tables.PACKED_END):
         raise ValueError("Invalid low-flash extension")
-    crc_code = (TEMPLATE / "crc-hole.bin").read_bytes()
+    crc_code = (directory / "crc-hole.bin").read_bytes()
     if len(crc_code) != record["crc_hole_bytes"] or sha(crc_code) != record["crc_hole_sha256"] or not 0 < len(crc_code) <= 254:
         raise ValueError("Invalid CRC-table region")
     for name, size in (FIELDS | DERIVED).items():
@@ -90,7 +106,7 @@ def call(address):
     return b"\x0e\x94" + struct.pack("<H", address // 2)
 
 
-def patch_list(symbols, port=80):
+def patch_list(symbols, port=80, version=VERSION):
     end = symbols["__extension_bss_end"] - 0x800000
     host = symbols["zymatic_hub_host"] - 0x800000
     authority = symbols["zymatic_hub_authority"] - 0x800000
@@ -139,8 +155,9 @@ def patch_list(symbols, port=80):
             patches.append((label, pc, load_pointer(register, 80), load_pointer(register, port)))
     # About Zymatic and the startup banner both convert three literal unsigned
     # components with base-10 itoa. The stock wire protocol remains 1.1.14.
-    for label, pc, old, new in [("about-minor", 0x8428, 1, 3), ("about-patch", 0x844c, 14, 0),
-                                ("boot-minor", 0xa444, 1, 3), ("boot-patch", 0xa468, 14, 0)]:
+    _, minor, patch = map(int, version.split("."))
+    for label, pc, old, new in [("about-minor", 0x8428, 1, minor), ("about-patch", 0x844c, 14, patch),
+                                ("boot-minor", 0xa444, 1, minor), ("boot-patch", 0xa468, 14, patch)]:
         patches.append((label, pc, immediate(0xe000, 24, old), immediate(0xe000, 24, new)))
     for symbol, sites in OFFLINE.items():
         for pc, before in sites:
@@ -170,23 +187,24 @@ def provisioning(key, uid, hub_host):
             "provision_host": hub_host.encode("ascii").ljust(64, b"\0")}
 
 
-def build_application(original, key, uid, hub_host="picobrew.com", offline_program=None):
+def build_application(original, key, uid, hub_host="picobrew.com", offline_program=None, *, version=VERSION):
     if not stock.is_original_app(original):
         raise ValueError("Use the verified, decoded application from the Zymatic 1.1.14 archive")
     tables.verify_library(original)
     image = bytearray(original)
-    code, record = template()
+    directory = template_directory(version)
+    code, record = template(version)
     symbols = record["symbols"]
     _, port = hub_origin(hub_host)
-    patches = patch_list(symbols, port)
+    patches = patch_list(symbols, port, version)
     for name, pc, before, after in patches:
         if image[pc:pc+len(before)] != before:
             raise ValueError(f"Original 1.1.14 bytes differ at {name}")
         image[pc:pc+len(after)] = after
-    low = (TEMPLATE / "low.bin").read_bytes()
+    low = (directory / "low.bin").read_bytes()
     if image[tables.CRC_TABLE:tables.CRC_TABLE+256] != tables.sensor_crc_table():
         raise ValueError("Unexpected 1.1.14 sensor CRC table")
-    crc_code = (TEMPLATE / "crc-hole.bin").read_bytes()
+    crc_code = (directory / "crc-hole.bin").read_bytes()
     image[tables.CRC_TABLE:tables.CRC_TABLE+256] = (b"\xff" + crc_code).ljust(256, b"\xff")
     packed = tables.pack_pool(bytes(image[tables.POOL:tables.POOL_END]))
     image[tables.POOL:tables.POOL_END] = (packed + low).ljust(tables.POOL_END - tables.POOL, b"\xff")
@@ -203,7 +221,7 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
     image[where:where+2] = struct.pack("<H", legacy_sum(image))
     image[-4:] = struct.pack("<I", zlib.crc32(image[:-4]))
     metadata = {
-        "schema_version": 1, "model": "zymatic", "firmware_version": VERSION,
+        "schema_version": 1, "model": "zymatic", "firmware_version": version,
         "oem_application_sha256": stock.APP_SHA256, "binary_sha256": sha(image),
         "application_bytes": len(image), "uid": uid, "hub_host": hub_host, "hub_port": port,
         "offline_program": recipes.unpack_program(fields["provision_recipe"]),
@@ -219,9 +237,9 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
     return bytes(image), metadata
 
 
-def recognize_private_application(flash):
+def recognize_private_application(flash, *, version=VERSION):
     """Identify only a verified composition. Private key material is never returned."""
-    code, record = template()
+    code, record = template(version)
     length = START + len(code)
     if len(flash) < length:
         return None
@@ -243,14 +261,14 @@ def recognize_private_application(flash):
     recovered = bytearray(application[:tables.CRT] + initializer)
     recovered[tables.POOL:tables.POOL_END] = raw_pool
     recovered[tables.CRC_TABLE:tables.CRC_TABLE+256] = tables.sensor_crc_table()
-    for name, pc, before, after in patch_list(symbols, port):
+    for name, pc, before, after in patch_list(symbols, port, version):
         if recovered[pc:pc+len(after)] != after:
             return None
         recovered[pc:pc+len(before)] = before
     if not stock.is_original_app(recovered):
         return None
     try:
-        expected, metadata = build_application(bytes(recovered), values["provision_key"], uid, host, recipe)
+        expected, metadata = build_application(bytes(recovered), values["provision_key"], uid, host, recipe, version=version)
     except ValueError:
         return None
     if expected != application:
