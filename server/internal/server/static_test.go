@@ -45,7 +45,8 @@ func TestBundledWebsiteWorksOutsideCheckout(t *testing.T) {
 	t.Chdir(t.TempDir())
 	_, h, client := newTestServer(t)
 	response, index := getWebsite(t, client, "GET", h.URL+"/", nil)
-	if response.StatusCode != 200 || !bytes.Contains(index, []byte("<title>PicoBrew Hub</title>")) {
+	if response.StatusCode != 200 || !bytes.Contains(index, []byte("<title>PicoBrew Hub</title>")) ||
+		!bytes.Contains(index, []byte(`href="/favicon.ico"`)) {
 		t.Fatalf("bundled index: %d %s", response.StatusCode, index)
 	}
 	if response.Header.Get("Content-Type") != "text/html; charset=utf-8" || response.Header.Get("Cache-Control") != "no-cache" || response.Header.Get("ETag") == "" {
@@ -127,6 +128,7 @@ func TestBundledWebsiteAssetsSupportRangesAndMissingPathsStay404(t *testing.T) {
 	for _, item := range []struct{ name, mime string }{
 		{"/" + workers[0], "text/javascript; charset=utf-8"},
 		{"/" + fonts[0], "font/ttf"},
+		{"/favicon.ico", "image/x-icon"},
 	} {
 		want, err := fs.ReadFile(files, strings.TrimPrefix(item.name, "/"))
 		if err != nil || len(want) < 32 {

@@ -1363,26 +1363,37 @@ hr,
   justify-content: center;
   overflow: hidden;
 }
+.oled-screen {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: min(100%, 384px);
+  aspect-ratio: 2 / 1;
+}
 .oled canvas {
   image-rendering: pixelated;
   image-rendering: crisp-edges;
-  width: min(100%, 384px);
-  aspect-ratio: auto;
+  width: 100%;
   height: auto;
-  max-height: 220px;
+  max-height: 100%;
   object-fit: contain;
 }
 .oled > span {
+  min-height: 1lh;
   font-size: $text-small;
   color: #88a080;
   letter-spacing: 0.07em;
   margin-top: 18px;
 }
 .oled-placeholder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
   color: #a9bea0;
   font-family: monospace;
   font-size: $text-body;
-  padding: 50px 10px;
+  padding: 0 10px;
   text-align: center;
 }
 .dial-controls {
@@ -3230,7 +3241,7 @@ hr,
   .front-panel .section-heading {
     flex-wrap: wrap;
   }
-  .oled canvas {
+  .oled-screen {
     max-width: 320px;
   }
   .front-panel .help-text {

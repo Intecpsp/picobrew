@@ -111,6 +111,8 @@ func webContentType(name string) string {
 		return "text/html; charset=utf-8"
 	case ".js", ".mjs":
 		return "text/javascript; charset=utf-8"
+	case ".ico":
+		return "image/x-icon"
 	case ".css":
 		return "text/css; charset=utf-8"
 	case ".wasm":

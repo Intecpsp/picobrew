@@ -69,9 +69,12 @@ const lockReasons: Record<string, string> = {
 const displayPaused = 'The display mirror will resume when the program ends.'
 
 function useBrewerDisplay(path: string | null, interval: number) {
-  const [frame, setFrame] = useState<{ path: string; data: Display | null; error: string } | null>(
-    null
-  )
+  const [frame, setFrame] = useState<{
+    path: string
+    version: number
+    data: Display | null
+    error: string
+  } | null>(null)
   const [version, setVersion] = useState(0)
   useEffect(() => {
     if (!path) {
@@ -84,11 +87,16 @@ function useBrewerDisplay(path: string | null, interval: number) {
       let delay = interval
       try {
         const data = await api<Display>(source, { signal: controller.signal })
-        if (!controller.signal.aborted) setFrame({ path: source, data, error: '' })
+        if (!controller.signal.aborted) setFrame({ path: source, version, data, error: '' })
       } catch (failure) {
         if (controller.signal.aborted) return
         const busy = failure instanceof APIError && failure.code === 'device_display_busy'
-        setFrame({ path: source, data: null, error: busy ? displayPaused : errorMessage(failure) })
+        setFrame({
+          path: source,
+          version,
+          data: null,
+          error: busy ? displayPaused : errorMessage(failure),
+        })
         if (busy) delay = Math.max(5000, interval)
       }
       if (!controller.signal.aborted) timer = setTimeout(() => void readFrame(source), delay)
@@ -102,10 +110,10 @@ function useBrewerDisplay(path: string | null, interval: number) {
   return {
     data: frame?.path === path ? frame.data : null,
     error: frame?.path === path ? frame.error : '',
-    reload: () => {
-      setFrame(null)
-      setVersion((n) => n + 1)
-    },
+    // Keep displaying the last frame during a dial refresh. Its revision can
+    // authorize another guarded input only after the new request succeeds.
+    current: !!path && frame?.path === path && frame.version === version && !!frame.data,
+    reload: () => setVersion((n) => n + 1),
   }
 }
 
@@ -133,9 +141,11 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   )
   const guardedDial = supports(device?.capabilities, 'panel_revision')
   const turnEnabled =
-    !guardedDial || (display.data?.revision != null && display.data.dial === 'menu')
+    !guardedDial ||
+    (display.current && display.data?.revision != null && display.data.dial === 'menu')
   const pressEnabled =
-    turnEnabled || (display.data?.revision != null && display.data.dial === 'press')
+    turnEnabled ||
+    (display.current && display.data?.revision != null && display.data.dial === 'press')
   const native = useResource<MachineRecipe[] | { recipes: MachineRecipe[] }>(
     device?.online && supports(device.capabilities, 'recipes') ? `/devices/${id}/recipes` : null
   )
