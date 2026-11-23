@@ -89,6 +89,11 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "ota_unavailable", "Use an enabled physical brewer with a unique key")
 		return
 	}
+	stock, stockVersion, err := s.stockReceipt(view.ID)
+	if err != nil {
+		s.storeError(w, err)
+		return
+	}
 	var prior firmware.InstallReceipt
 	priorVersion, err := s.db.Get("firmware-install", view.ID, &prior)
 	if err != nil && !errors.Is(err, store.ErrNotFound) {
@@ -165,6 +170,12 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 	if !resume && currentVersion == payload.FirmwareVersion {
 		s.fail(w, 409, "firmware_already_installed", "This firmware version is already installed on the brewer")
 		return
+	}
+	if stockPending(stock) {
+		if err := s.reconcileCustomBoot(r.Context(), d, in.UID, stock, stockVersion); err != nil {
+			s.fail(w, 409, "stock_restore_pending", "The previous stock restoration is pending and the Hub could not verify a stable custom application on this brewer")
+			return
+		}
 	}
 	receipt := firmware.InstallReceipt{UID: in.UID, Model: model, PackageID: in.PackageID, Started: time.Now().UTC(), State: "running", Message: "Checking recovery, transferring the package and confirming the new boot."}
 	previousStage := ""

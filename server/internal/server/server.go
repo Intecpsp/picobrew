@@ -280,6 +280,8 @@ func (s *Server) routes() http.Handler {
 			r.Get("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Put("/devices/{id}/telemetry", s.machineTelemetry)
 			r.Post("/devices/{id}/firmware/install", s.installFirmware)
+			r.Post("/devices/{id}/firmware/restore-stock", s.restoreStock)
+			r.Post("/devices/{id}/firmware/stock-started", s.observeStockStartup)
 			r.Get("/devices/{id}/firmware", s.machineFirmware)
 			r.Put("/devices/{id}/firmware/hardware", s.verifyFirmwareHardware)
 			r.Post("/devices/{id}/sync-history", s.syncHistory)

@@ -328,6 +328,44 @@ describe('Hub firmware packages', () => {
     expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
     expect(screen.queryByText('Other machine confirmation')).toBeNull()
   })
+  it('requires both confirmations before restoring over Wi-Fi and leaves USB available', async () => {
+    let writes = 0
+    fetchMock.mockImplementation(async (url, options) => {
+      if (String(url).endsWith('/devices/s/firmware'))
+        return json({
+          model: 'pico-s',
+          device_uid: 'paired',
+          packages: [],
+          stock_restore_wireless: true,
+          stock_restore_guide: true,
+          usb_restore_target: { model: 'pico-s', device_uid: 'paired' },
+        })
+      if (String(url).endsWith('/devices/s/firmware/restore-stock')) {
+        expect(options?.method).toBe('POST')
+        expect(JSON.parse(String(options?.body))).toEqual({
+          device_uid: 'paired',
+          acknowledge_loss_of_hub: true,
+          confirm_restore: true,
+        })
+        writes++
+        return json({}, 202)
+      }
+      return response(url, options)
+    })
+    show(createElement(MachineFirmwareDialog, { deviceID: 's', onClose: close }))
+    const u = userEvent.setup()
+    expect(
+      await screen.findByRole('button', { name: 'Restore original firmware via USB' })
+    ).toBeTruthy()
+    await u.click(screen.getByRole('button', { name: 'Restore original firmware over Wi-Fi' }))
+    const review = await screen.findByRole('button', { name: 'Review restoration' })
+    expect((review as HTMLButtonElement).disabled).toBe(true)
+    await u.click(screen.getByRole('checkbox'))
+    await u.click(review)
+    expect(writes).toBe(0)
+    await u.click(await screen.findByRole('button', { name: 'Restore and restart brewer' }))
+    await waitFor(() => expect(writes).toBe(1))
+  })
   it.each(['pico-s', 'pico-c', 'picoferm', 'picostill', 'z-series'])(
     'starts a restore bound to the registered %s and awaits hardware verification',
     async (model) => {

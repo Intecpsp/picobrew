@@ -387,6 +387,17 @@ export interface FirmwarePackage extends FirmwareCandidate {
   }
 }
 export interface MachineFirmware {
+  can_confirm_stock_startup?: boolean
+  stock_restore_wireless?: boolean
+  stock_restore_upgrade?: boolean
+  last_stock_restore?: {
+    started: string
+    device_uid: string
+    model: string
+    stage: string
+    state: string
+    message: string
+  }
   stock_restore_guide?: boolean
   usb_restore_target?: { model: string; device_uid: string }
   device_id: string
