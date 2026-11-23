@@ -454,9 +454,19 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(recovery.files[APP_NAME], packaged.read_bytes())
         self.assertEqual(recovery.files[KEY_NAME], KEY)
 
+    def test_previous_pico_c_release_retains_its_display_mapping(self):
+        for display, other in (("ssd1309", "ssd1325"), ("ssd1325", "ssd1309")):
+            archive = installer.C_FIRMWARE.parent / "releases" / "pico-c" / display / "1.2.3.zip"
+            with zipfile.ZipFile(archive) as bundle:
+                old = bundle.read("pico-c-standalone.bin")
+            previous = installer._image_metadata(old)
+            self.assertIn(previous, installer._approved_current_applications("install", "pico-c-" + display))
+            self.assertNotIn(previous, installer._approved_current_applications("install", "pico-c-" + other))
+            self.assertNotEqual(installer.candidate_identity("pico-c-" + display)[1], previous["sha256"])
+
     def test_previous_ota_release_is_approved_only_for_its_model(self):
         for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3"):
+            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4"):
                 archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
                 with zipfile.ZipFile(archive) as bundle:
                     old = bundle.read(model + "-standalone.bin")

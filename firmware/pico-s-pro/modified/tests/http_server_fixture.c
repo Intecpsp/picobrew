@@ -1,5 +1,6 @@
 #include "picobrew/http_server.h"
 #include <assert.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
@@ -7,6 +8,12 @@ static const char key[] = "0123456789abcdef0123456789abcdef0123456789abcdef01234
 static const char auth[] = "Authorization: Bearer 0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef\r\n";
 static PicoHttpServer server;
 static unsigned cases, dispatched;
+static bool fail_allocation;
+void *pico_test_malloc(size_t size)
+{
+    assert(size == PICO_HTTP_ARENA_CAPACITY);
+    return fail_allocation ? NULL : malloc(size);
+}
 static char last_body[4096];
 static size_t last_body_length;
 
@@ -86,7 +93,7 @@ static bool handler(const PicoHttpRequest *request, PicoHttpResponse *response,
     unsigned prior_calls = wire.poll_calls;
     pico_http_server_poll(&server, 1);
     assert(prior_calls == wire.poll_calls);
-    if (strcmp(request->path, "/api/v1/health") != 0)
+    if (strcmp(request->path, "/api/v1/health") != 0 && strcmp(request->path, "/api/v1/overview") != 0)
         assert(request->authenticated && request->auth_configured);
     const char *result = "{\"ok\":true}";
     if (strcmp(request->path, "/api/v1/echo") == 0) {
@@ -128,7 +135,7 @@ static void finish(void)
         poll(i);
     assert(wire.closed == 1);
     assert(server.client == -1);
-    assert(server.arena[0] == '\0');
+    assert(server.arena == NULL);
     wire.output[wire.produced] = '\0';
 }
 
@@ -150,8 +157,64 @@ static void check(const char *request, bool provision, unsigned status, unsigned
     result(status, expected_dispatch);
 }
 
+static void pairing_post(const char *operation, const char *nonce, bool authenticated, unsigned expected)
+{
+    static char request[512];
+    char body[100];
+    snprintf(body, sizeof body, "{ \"nonce\" : \"%s\" }",nonce);
+    int size = snprintf(request,sizeof request, "POST /api/v1/pairing/%s HTTP/1.1\r\nHost: pico\r\n%s"
+                        "Content-Type: application/json\r\nContent-Length: %zu\r\n\r\n%s",
+                        operation,authenticated?auth:"",strlen(body),body);
+    memset(&wire,0,sizeof wire);
+    wire.input=(const uint8_t *)request; wire.input_length=(size_t)size;
+    wire.read_chunk=wire.write_chunk=128;
+    dispatched=0; finish(); result(expected,0);
+    assert(!strstr((const char *)wire.output,nonce));
+    if (expected!=200) assert(!strstr((const char *)wire.output,key));
+}
+
+static void physical_pairing(void)
+{
+    const char *alice="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef";
+    const char *bob="1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcde0";
+    setup("",0,true);
+    pico_http_server_enable_pairing(&server);
+    char code[9];
+    pairing_post("request",alice,false,202);
+    assert(strstr((const char *)wire.output,"\"code\":\"12345678\""));
+    pairing_post("request",bob,false,409);
+    pairing_post("claim",bob,false,404);
+    pairing_post("claim",alice,false,202);
+    uint32_t request=pico_http_pairing_prompt(100,code);
+    assert(request && !strcmp(code,"12345678"));
+    assert(!pico_http_pairing_decide(100,request+1,true));
+    assert(pico_http_pairing_decide(100,request,true));
+    pairing_post("claim",alice,false,200);
+    assert(strstr((const char *)wire.output,key));
+    pairing_post("claim",alice,false,404);
+    pairing_post("grant",alice,false,401);
+    pairing_post("grant",alice,true,202);
+    assert(!pico_http_pairing_prompt(200,code));
+    pairing_post("claim",alice,false,200);
+    pairing_post("claim",alice,false,404);
+    pairing_post("request",bob,false,202);
+    request=pico_http_pairing_prompt(100,code);
+    assert(pico_http_pairing_decide(200,request,false));
+    pairing_post("claim",bob,false,404);
+    pairing_post("request",bob,false,202);
+    request=pico_http_pairing_prompt(100,code);
+    assert(!pico_http_pairing_decide(90100,request,true));
+    pairing_post("claim",bob,false,404);
+}
+
 int main(void)
 {
+    fail_allocation = true;
+    check("GET /api/v1/health HTTP/1.1\r\nHost: pico\r\n\r\n", false, 503, 0);
+    assert(wire.consumed == 0 && strstr((const char *)wire.output, "out_of_memory"));
+    fail_allocation = false;
+    physical_pairing();
+    check("GET /api/v1/overview HTTP/1.1\r\nHost: pico\r\n\r\n", false, 200, 1);
     char request[8192], body[4096], key_line[80];
     check("GET /api/v1/health HTTP/1.1\r\nHost: pico\r\n\r\n", false, 200, 1);
     check("GET /api/v1/status HTTP/1.1\r\nHost: pico\r\n\r\n", false, 503, 0);

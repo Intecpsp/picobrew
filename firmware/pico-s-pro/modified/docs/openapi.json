@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Pico S/Pro Standalone API",
-    "version": "1.2.0",
+    "version": "1.3.5",
     "description": "Local appliance API implemented by src/local_api.c. Experimental reconstructed firmware; hardware behavior and timing still require bench validation. The appliance serves HTTP on its LAN address with a separately provisioned bearer key. API calls are bounded to 4095 body bytes, one connection at a time; Content-Length and application/json are required for POST, PUT and PATCH. Chunked transfer, CORS, cookies and query parameters other than the documented history id are unsupported. Recipes/settings and the local session counter use CRC-checked, readback-verified two-bank SLFS records. Recent events are an eight-entry RAM ring. Brew history is stored on the Pico in a bounded shared flash pool and survives normal restarts; the oldest completed histories are retired as space is needed. 503 on a write can mean commit verification failed after data was written: read the resource before retrying. Calls that start workflows return acceptance, not completion."
   },
   "servers": [
@@ -868,6 +868,128 @@
         "tags": [
           "Appliance"
         ]
+      }
+    },
+    "/api/v1/overview": {
+      "get": {
+        "operationId": "getOverview",
+        "summary": "Read public brewer status",
+        "security": [],
+        "tags": [
+          "Appliance"
+        ],
+        "responses": {
+          "200": {
+            "description": "Model, readiness, busy state, current temperatures and physical pairing availability."
+          }
+        }
+      }
+    },
+    "/api/v1/pairing/request": {
+      "post": {
+        "operationId": "requestPairing",
+        "summary": "Request dial approval",
+        "tags": [
+          "Appliance"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairingTicket"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Pending physical approval or accepted grant."
+          },
+          "400": {
+            "description": "Invalid ticket format."
+          },
+          "503": {
+            "description": "Device key has not been provisioned."
+          },
+          "409": {
+            "description": "A different ticket is already in progress."
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/pairing/claim": {
+      "post": {
+        "operationId": "claimPairing",
+        "summary": "Redeem an approved one-time ticket",
+        "tags": [
+          "Appliance"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairingTicket"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Pending physical approval or accepted grant."
+          },
+          "400": {
+            "description": "Invalid ticket format."
+          },
+          "503": {
+            "description": "Device key has not been provisioned."
+          },
+          "200": {
+            "description": "The key is returned once as api_key."
+          },
+          "404": {
+            "description": "Invalid, expired, canceled or used ticket."
+          }
+        },
+        "security": []
+      }
+    },
+    "/api/v1/pairing/grant": {
+      "post": {
+        "operationId": "grantPairing",
+        "summary": "Authorize an owner’s browser session",
+        "tags": [
+          "Appliance"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/PairingTicket"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "Pending physical approval or accepted grant."
+          },
+          "400": {
+            "description": "Invalid ticket format."
+          },
+          "503": {
+            "description": "Device key has not been provisioned."
+          },
+          "401": {
+            "description": "The per-device bearer is required."
+          },
+          "409": {
+            "description": "A different ticket is already in progress."
+          }
+        }
       }
     }
   },
@@ -2260,6 +2382,20 @@
           }
         },
         "description": "Outbound JSON sent to the separately configured HTTP receiver. This is not an inbound POST route on the Pico. No device API key is included."
+      },
+      "PairingTicket": {
+        "type": "object",
+        "required": [
+          "nonce"
+        ],
+        "additionalProperties": false,
+        "properties": {
+          "nonce": {
+            "type": "string",
+            "pattern": "^[0-9a-f]{64}$",
+            "description": "Generate 32 random bytes with a cryptographic random-number generator for every request."
+          }
+        }
       }
     },
     "responses": {

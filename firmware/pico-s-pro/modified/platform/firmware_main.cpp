@@ -174,6 +174,7 @@ void setup()
     pico_local_store_set_reader(pico_energia_local_file_read);
     pico_energia_http_initialize(&local_http, pico_local_api_http_handler, &local_api,
                                  pico_web_assets, pico_web_assets_count, PICO_LOCAL_API_PORT);
+    pico_http_server_enable_pairing(&local_http.http);
     pico_local_control_bind(&application, service_local_http, &local_http);
     pico_history_bind(&application, pico_energia_history_storage(), NULL);
     pico_telemetry_bind(&application, pico_energia_telemetry_storage(),

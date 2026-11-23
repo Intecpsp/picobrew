@@ -6,6 +6,25 @@ recipes, session identity, preferences, history and execution stay on the
 appliance. The Hub is optional. See the [component guide](../README.md) for
 build variants, source provenance, tests and the physical qualification boundary.
 
+## Pair from the Hub or device website
+
+Open the device website for its current temperatures and brewing state. To connect a
+Hub or browser for the first time, choose **Pair**, then use the brewer's physical
+dial to open **Settings → About → Pair with Hub**. Compare the eight characters
+on both screens. Turn the dial to **Pair** and press it to approve. The default
+selection is **Cancel**. A previously paired Hub can open a signed-in device
+tab directly. **Forget key** disconnects that tab.
+
+Pairing requires a device key provisioned during USB setup. A client creates a
+fresh, cryptographically random 32-byte nonce, encodes it as 64 lowercase hex
+characters and posts it as JSON to `/api/v1/pairing/request`. The pending request
+expires after 90 seconds. Physical approval or an authenticated
+`POST /api/v1/pairing/grant` makes the ticket claimable for 30 seconds.
+`POST /api/v1/pairing/claim` returns the per-unit key once, only to that ticket's
+holder. The device site accepts Hub tickets in a URL fragment, removes the
+fragment on load and validates the redeemed credential using protected endpoints.
+The brewer serves HTTP on the local network. Use a trusted LAN.
+
 ## Identity and display geometry
 
 Discovery, health and status identify the compiled target as:

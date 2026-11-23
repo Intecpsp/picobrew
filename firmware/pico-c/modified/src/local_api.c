@@ -196,7 +196,7 @@ static int discovery(Writer *w)
 {
     text(w, "{"); identity(w);
     text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
-            "\",\"mode\":\"standalone\",\"recipe_capacity\":16,\"step_capacity\":15,"
+            "\",\"mode\":\"standalone\",\"pairing_v1\":true,\"recipe_capacity\":16,\"step_capacity\":15,"
             "\"recipe_create_only\":true,\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
             "\"descale\",\"circulate\",\"drain-reservoir\",\"drain-filter\",\"rack-beer\",\"utilities\","
@@ -209,7 +209,7 @@ static int discovery(Writer *w)
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
     return 200;
 }
-static int status(PicoLocalApi *api, Writer *w)
+static int status(PicoLocalApi *api, Writer *w, bool public_view)
 {
     PicoApplication *a = api->application;
     PicoNetwork *n = &a->network;
@@ -229,6 +229,15 @@ static int status(PicoLocalApi *api, Writer *w)
         a->hardware->interrupts_enable(a->hardware_context);
     bool ready = pico_local_control_is_ready();
     text(w, "{"); identity(w);
+    text(w, ",\"wort_f\":");
+    if (ready) number(w, wort); else text(w, "null");
+    text(w, ",\"thermoblock_f\":"); if (ready) number(w, thermoblock); else text(w, "null");
+    if (public_view) {
+        format(w, ",\"pairing_v1\":%s,\"ready\":%s,\"busy\":%s}",
+               api->auth_configured ? "true" : "false", ready ? "true" : "false",
+               pico_local_control_busy() ? "true" : "false");
+        return 200;
+    }
     format(w, ",\"uptime_ms\":%lu,\"ready\":%s,\"device_uid\":",
            (unsigned long)n->platform->millis(n->platform_context), ready ? "true" : "false");
     quote(w, a->state.device_uid);
@@ -236,10 +245,8 @@ static int status(PicoLocalApi *api, Writer *w)
            pico_local_control_stopped() ? "true" : "false");
     quote(w, pico_local_control_stop_reason()); text(w, ",\"command\":");
     quote(w, pico_local_control_command_name());
-    format(w, ",\"device_state\":%u,\"phase\":%u,\"controller_status\":%u,\"compartment\":%u,\"wort_f\":",
+    format(w, ",\"device_state\":%u,\"phase\":%u,\"controller_status\":%u,\"compartment\":%u",
            a->state.device_state, phase, controller_status, compartment);
-    if (ready) number(w, wort); else text(w, "null");
-    text(w, ",\"thermoblock_f\":"); if (ready) number(w, thermoblock); else text(w, "null");
     text(w, ",\"target_f\":"); if (ready) number(w, target); else text(w, "null");
     format(w, ",\"step_seconds\":%ld,\"current_step\":%ld,\"step_count\":%u,\"recipe_name\":",
            (long)seconds, (long)a->state.recipe.current_step, a->state.recipe.step_count);
@@ -681,7 +688,9 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
         error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/system/restart"))
         result = restart_system(api, &w, method, body, length);
-    else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w) :
+    else if (!strcmp(path, "/api/v1/overview")) result = get ? status(api, &w, true) :
+        error(&w, 405, "method_not_allowed", "Use GET");
+    else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w, false) :
         error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/display")) result = get ? display(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET");

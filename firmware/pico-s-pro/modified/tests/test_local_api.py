@@ -130,11 +130,16 @@ class LocalApi(unittest.TestCase):
         code, data = request("GET", "/api/v1")
         self.assertEqual(code, 200)
         self.assertEqual(data["api_version"], 1)
+        overview = request("GET", "/api/v1/overview")[1]
+        self.assertEqual(set(overview), {key for key in data if key in {"model", "model_name", "model_family", "display_variant"}} |
+                         {"pairing_v1", "ready", "busy", "wort_f", "thermoblock_f"})
+        self.assertEqual(overview["wort_f"], 72.4)
+        self.assertTrue(data["pairing_v1"])
         self.assertTrue(data["zero_minute_steps"])
         self.assertTrue(data["recipe_create_only"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.3.4")
+        self.assertEqual(data["firmware_version"], "1.3.5")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]
