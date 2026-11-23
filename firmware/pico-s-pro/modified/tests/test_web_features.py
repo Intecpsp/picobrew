@@ -85,7 +85,7 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.3.4')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.3.5')
         expect(self.page.locator('#modelName')).to_have_text('Pico Pro brewing console')
         expect(self.page).to_have_title('Pico Pro · Pico Local')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)
@@ -250,6 +250,7 @@ class WebFeatures(unittest.TestCase):
         spec = json.loads((Path(__file__).resolve().parents[1] / 'docs/openapi.json').read_text())
         expected = {method.upper() + ' ' + path for path, item in spec['paths'].items()
                     for method in item if method in {'get', 'put', 'post', 'patch', 'delete', 'head', 'options'}}
+        expected = {entry for entry in expected if '/pairing/' not in entry}
         expected.remove('PUT /api/v1/telemetry')  # Hub-managed, never edited by this website.
         actual = set(self.page.locator('#apiEndpoint option').evaluate_all('options=>options.map(option=>option.value)'))
         self.assertEqual(actual, expected)

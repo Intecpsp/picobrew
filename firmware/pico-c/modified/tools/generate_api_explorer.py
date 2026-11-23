@@ -51,7 +51,8 @@ def catalog(spec):
                 continue
             # Hub pairing owns this destination. Keep the authenticated API
             # available to the Hub without offering a manual website editor.
-            if path == '/api/v1/telemetry' and method == 'put':
+            # Pairing belongs to the Connect dialog. Never print reusable keys in the explorer.
+            if path.startswith('/api/v1/pairing/') or (path == '/api/v1/telemetry' and method == 'put'):
                 continue
             specs = []
             template = path

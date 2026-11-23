@@ -33,6 +33,7 @@ void pico_local_control_bus_select(unsigned pin, bool active);
  */
 PicoLocalControlResult pico_local_control_command(const char *command,
                                                  const char *recipe_id);
+void pico_local_lock_pairing_input(bool locked);
 PicoLocalControlResult pico_local_control_encoder(int delta, bool click);
 bool pico_local_control_busy(void);
 bool pico_local_control_stopped(void);

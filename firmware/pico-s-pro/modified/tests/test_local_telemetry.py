@@ -113,7 +113,7 @@ class TelemetryTests(unittest.TestCase):
         self.assertNotIn("api.key", request)
         self.assertIn(f"Content-Length: {len(body)}", header)
         payload = json.loads(body)
-        self.assertEqual(payload["firmware_version"], "1.3.4")
+        self.assertEqual(payload["firmware_version"], "1.3.5")
         self.assertEqual(payload["schema_version"], 1)
         self.assertEqual(payload["status"]["wort_f"], 153.2)
         self.assertEqual(self.lib.tf_address(), 0x0a000109)

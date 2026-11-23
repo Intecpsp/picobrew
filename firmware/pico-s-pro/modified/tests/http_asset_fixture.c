@@ -1,3 +1,5 @@
+#include <stdlib.h>
+void *pico_test_malloc(size_t size) { return malloc(size); }
 #include "picobrew/http_server.h"
 #include <assert.h>
 #include <stdio.h>
@@ -101,7 +103,7 @@ static int read_asset(void *context, int handle, size_t offset, uint8_t *data, s
     assert(wire.file_opens == 1 && !wire.file_closes);
     assert(offset == wire.read_offset && length > 0 && length <= PICO_HTTP_IO_BUDGET);
     assert(offset + length <= assets[0].length);
-    assert(data >= (uint8_t *)server.arena && data + length <= (uint8_t *)server.arena + sizeof(server.arena));
+    assert(data >= (uint8_t *)server.arena && data + length <= (uint8_t *)server.arena + PICO_HTTP_ARENA_CAPACITY);
     if (wire.fail_read == wire.file_reads)
         return PICO_HTTP_IO_ERROR;
     if (wire.zero_read == wire.file_reads)
@@ -150,7 +152,7 @@ static void finish(void)
     assert(wire.socket_closes == 1);
     assert(wire.file_closes == wire.file_opens);
     assert(server.client == -1 && server.asset_handle == -1);
-    assert(server.arena[0] == '\0');
+    assert(server.arena == NULL);
     wire.output[wire.produced] = 0;
 }
 

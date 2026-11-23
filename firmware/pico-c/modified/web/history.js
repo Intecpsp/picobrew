@@ -203,3 +203,17 @@ function setupHistory({session,enqueue}) {
   clear();update();
   return {activate:()=>load(),update};
 }
+
+// Measurement formatting shared by the overview and session views.
+function temperature(value) {
+  const number = Number(value);
+  if (value === null || value === undefined || !Number.isFinite(number)) return '—';
+  const unit = state.settings.temperature_unit;
+  return (unit === 'C' ? (number-32)*5/9 : number).toFixed(1)+'°'+unit;
+}
+function duration(seconds) {
+  if (!Number.isFinite(Number(seconds))) return '—';
+  const value = Math.max(0, Math.floor(Number(seconds)));
+  const minutes = Math.floor(value/60);
+  return minutes+':'+String(value%60).padStart(2,'0');
+}

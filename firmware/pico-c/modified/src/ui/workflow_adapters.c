@@ -3,6 +3,7 @@
  * control flow is an implementation candidate until the C comparisons pass. */
 #include "ui_internal.h"
 #include "pico_c/local_control.h"
+#include "pico_c/http_server.h"
 
 void pico_menu_populate_from_menu(const PicoMenu *menu, uint32_t language, uint32_t status_selector)
 {
@@ -206,6 +207,50 @@ void pico_ui_network_menu(void)
         }
     }
 }
+#if PICO_STANDALONE
+static void pair_with_hub(void)
+{
+    char code[9];
+    uint32_t request = pico_http_pairing_prompt(ui_millis(), code);
+    pico_display_clear();
+    pico_ui_draw_subheader("PAIR WITH HUB");
+    if (!request) {
+        pico_display_center_text(3, "Start pairing on");
+        pico_display_center_text(4, "the Hub or website");
+        pico_display_flush();
+        pico_display_wait_for_click();
+        return;
+    }
+    pico_display_center_text(2, "Compare code");
+    pico_display_center_text(3, code);
+    strcpy(pico_ui_active->menu_labels[0], "Cancel");
+    strcpy(pico_ui_active->menu_labels[1], "Pair");
+    pico_local_lock_pairing_input(true);
+    uint32_t selected = pico_menu_choose(5, 2, 0);
+    pico_local_lock_pairing_input(false);
+    bool current = pico_http_pairing_decide(ui_millis(), request, selected == 1);
+    pico_display_clear();
+    pico_display_center_text(3, !current ? "Request expired" : selected == 1 ? "Pairing approved" : "Pairing canceled");
+    pico_display_flush();
+    ui_delay(900);
+}
+
+static void about_menu(void)
+{
+    for (;;) {
+        pico_display_clear();
+        pico_ui_draw_subheader("ABOUT");
+        strcpy(pico_ui_active->menu_labels[0], "Device information");
+        strcpy(pico_ui_active->menu_labels[1], "Pair with Hub");
+        pico_label_back(pico_ui_active->menu_labels[2]);
+        switch (pico_menu_choose(3, 3, 0)) {
+        case 0: pico_screen_device_information(); break;
+        case 1: pair_with_hub(); break;
+        default: return;
+        }
+    }
+}
+#endif
 void pico_settings_menu(void)
 {
     for (;;) {
@@ -225,7 +270,11 @@ void pico_settings_menu(void)
             pico_ui_network_menu();
             break;
         case 3:
+#if PICO_STANDALONE
+            about_menu();
+#else
             pico_screen_device_information();
+#endif
             break;
         default:
             return;

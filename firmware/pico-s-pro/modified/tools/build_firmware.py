@@ -141,8 +141,9 @@ def main():
     if a.standalone:
         report['cloud_protocol_strings_absent']=True
         report['api_key_embedded']=False
-        report['bounded_feature_heap_payload_bytes'] = 4704
+        report['bounded_feature_heap_payload_bytes'] = 8800
         report['feature_heap_allocations'] = {
+            'local_http_arena': {'maximum_payload_bytes': 4096, 'maximum_live_allocations': 1},
             'history_tail': {'maximum_payload_bytes': 3552, 'maximum_live_allocations': 1},
             'optional_telemetry_frame': {'maximum_payload_bytes': 1152, 'maximum_live_allocations': 1},
             'scope': 'Lazy buffers reused within the retained 32768-byte native heap; allocator overhead and other runtime allocations are additional. Allocation failure is reported without changing brewing controls.'}
