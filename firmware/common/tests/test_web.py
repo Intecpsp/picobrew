@@ -13,7 +13,7 @@ class CommonWebTests(unittest.TestCase):
     def test_generated_assets_are_current_and_deterministic(self):
         subprocess.run(['python3', str(ROOT / 'tools/embed_web.py'), '--check'], check=True)
         manifest = json.loads((ROOT / 'firmware/web/manifest.json').read_text())
-        self.assertEqual(len(manifest['assets']), 6)
+        self.assertIn('<link rel="icon" type="image/x-icon" href="/favicon.ico">', (ROOT / 'web/index.html').read_text())
         for entry in manifest['assets']:
             original = (ROOT / 'web' / entry['source']).read_bytes()
             compressed = (ROOT / 'firmware/web' / (entry['source'] + '.gz')).read_bytes()
@@ -32,7 +32,7 @@ class CommonWebTests(unittest.TestCase):
                 '-I' + str(ROOT / 'include'), str(ROOT / 'tests/web_assets.cpp'),
                 str(ROOT / 'src/common_web_assets.cpp'), '-o', binary], check=True)
             subprocess.run([binary, directory], check=True)
-            names = ['index.html', 'index.html', 'device.js', 'app.js', 'api-explorer.js', 'history.js', 'style.css']
+            names = ['index.html', 'index.html', 'device.js', 'app.js', 'api-explorer.js', 'history.js', 'style.css', 'favicon.ico']
             for index, name in enumerate(names):
                 self.assertEqual((Path(directory) / f'asset-{index}.gz').read_bytes(),
                     (ROOT / 'firmware/web' / (name + '.gz')).read_bytes())

@@ -113,6 +113,7 @@ static void http_matrix(void)
     char input[1700];
     struct case_t { const char *line, *auth, *extra, *expected; } cases[] = {
         {"GET / HTTP/1.1", "", "", "Content-Encoding: gzip"},
+        {"GET /favicon.ico HTTP/1.1", "", "", "Content-Type: image/x-icon"},
         {"GET /pair.js HTTP/1.1", "", "", "Content-Type: application/javascript"},
         {"GET /api/v1/overview HTTP/1.1", "", "", "\"pairing_v1\":true"},
         {"GET /api/v1/health HTTP/1.1","","","{\"ok\":true}"},

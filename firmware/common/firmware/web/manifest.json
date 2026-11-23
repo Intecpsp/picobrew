@@ -5,10 +5,10 @@
       "source": "index.html",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 4954,
-      "source_length": 17640,
-      "source_sha256": "4207f1b4584b198799e7109cdb55d2268ab79391759c8cc047f4a3f209618b37",
-      "sha256": "6a2e2ee4d3dc778c411891ab7fb6f1e2a6934a05330bc315a73a0c53d4c7249e",
+      "length": 4980,
+      "source_length": 17700,
+      "source_sha256": "e2a01085615fd9ac8b06d0034decaea94ca05f0882e94f8ec19a4ed692ff6a54",
+      "sha256": "db2a7a238311c07add995eb97eda0d2ca7d813c4e719373a160a17e771cd878a",
       "file_path": "/common/web/index.html.gz"
     },
     {
@@ -60,6 +60,16 @@
       "source_sha256": "20c4e991596cca93eb948ab37ea0acb4eb1a3b99b89500f9730d01069805c731",
       "sha256": "689bd4a9cc191056d29a63813a2c5fa9bd16aa9ca06a7e4faafd27924e780df4",
       "file_path": "/common/web/style.css.gz"
+    },
+    {
+      "source": "favicon.ico",
+      "content_type": "image/x-icon",
+      "content_encoding": "gzip",
+      "length": 1154,
+      "source_length": 34494,
+      "source_sha256": "63cb852c23c1b1bda83e133dcb7e070aabb3e594531196ddeab8e23d32baa4ea",
+      "sha256": "2ea002def5c36203b825596b669709529924c2175f3c42f706a8aab30c1fb22a",
+      "file_path": "/common/web/favicon.ico.gz"
     }
   ]
 }

@@ -8,6 +8,12 @@ const site=join(__dirname,"../site");
 const bytes=readFileSync(join(site,"zymatic_site.h"),"utf8").match(/0x[0-9a-f]{2}/g).map(Number);
 const html=gunzipSync(Buffer.from(bytes)).toString();
 assert.equal(html,readFileSync(join(site,"index.html"),"utf8"));
+assert.match(html, /<link rel="icon" href="\/favicon\.ico">/);
+const iconBytes=readFileSync(join(site,"zymatic_favicon.h"),"utf8").match(/0x[0-9a-f]{2}/g).map(Number);
+const icon=gunzipSync(Buffer.from(iconBytes));
+assert.deepEqual(icon,readFileSync(join(site,"favicon.ico")));
+assert.equal(require("node:crypto").createHash("sha256").update(icon).digest("hex"),
+  "b6eb1fd09848e2b533d0bbd5d497dc364536e484bd588e183a9b2a21baed58ee");
 const jsBytes=readFileSync(join(site,"zymatic_pair_js.h"),"utf8").match(/0x[0-9a-f]{2}/g).map(Number);
 const pairing=gunzipSync(Buffer.from(jsBytes)).toString();
 assert.equal(pairing,readFileSync(join(site,"pair.js"),"utf8"));

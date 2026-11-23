@@ -1,16 +1,16 @@
-# Zymatic 1.3.0 flash layout
+# Zymatic 1.3.1 flash layout
 
-This build composes a 129,822-byte ATmega1284P application from the recognized PicoBrew 1.1.14 image. Its final USB page ends at byte address `0x1fc00`. A unit must have a verified boot section starting there. A unit reserving 2, 4 or 8 KiB, or one whose boot section is unknown, uses the smaller 1.2.0 application. [Installation and boot evidence](recovery.md)
+This build composes a 130,028-byte ATmega1284P application from the recognized PicoBrew 1.1.14 image. Its final USB page ends at byte address `0x1fc00`. A unit must have a verified boot section starting there. A unit reserving 2, 4 or 8 KiB, or one whose boot section is unknown, uses the smaller 1.2.0 application. [Installation and boot evidence](recovery.md)
 
-| Byte range, end exclusive | Original use | 1.3.0 contents |
+| Byte range, end exclusive | Original use | 1.3.1 contents |
 | --- | --- | --- |
-| `0x0254–0x1c77` | 6,691 bytes of text and bitmap data | 4,254-byte lossless block dictionary, then 2,380 bytes of extension code and website starting at `0x12f2` |
+| `0x0254–0x1c77` | 6,691 bytes of text and bitmap data | 4,254-byte lossless block dictionary, then 2,402 bytes of extension code and website starting at `0x12f2` |
 | `0x2177–0x2277` | 256-byte Dallas/Maxim sensor CRC-8 table | 230 bytes of code starting at `0x2178`, including the bitwise equivalent CRC |
 | `0x1b24a–0x1b920` | Beginning of the SRAM startup data | 1,730-byte encoding of all 2,432 initialized SRAM bytes followed by padding |
-| `0x1b920–0x1fb1e` | End of the startup data and unused application space | 16,894 bytes of AVR code, website asset, private provisioning fields and image CRC |
+| `0x1b920–0x1fbec` | End of the startup data and unused application space | 17,100 bytes of AVR code, website asset, private provisioning fields and image CRC |
 | `0x1fc00–0x20000` | Terminal 1 KiB | Reserved for the verified bootloader |
 
-Addresses are flash **byte** addresses. The bootloader reads and writes 256-byte pages. The linker reserves 768 bytes for custom static state at SRAM address `0x2c8a`. The builder checks the actual linked lengths, bounds, hashes and provisioning fields before producing the private image. Exact opcodes and both before/after instruction encodings for each patch are in [the composition code](tools/build.py). The layout, dictionary and five reused AVR library function hashes are defined in [the packer](tools/oem_tables.py) and [linker script](src/overlay.ld).
+Addresses are flash **byte** addresses. The bootloader reads and writes 256-byte pages. The linker reserves 768 bytes for custom static state at SRAM address `0x2c8a`. The builder checks the actual linked lengths, bounds, hashes and provisioning fields before producing the private image. Exact opcodes and both before/after instruction encodings for each patch are in [the composition code](tools/zymatic_build.py). The layout, dictionary and five reused AVR library function hashes are defined in [the packer](tools/oem_tables.py) and [linker script](src/overlay.ld).
 
 ## Original controller reads
 

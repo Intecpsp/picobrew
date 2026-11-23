@@ -5,8 +5,9 @@ import json
 import re
 
 import boot_evidence
-import build
+import zymatic_build as build
 import release_1_2
+import release_1_3_0
 import usb_stock as stock
 
 CONSERVATIVE = 0x1e000
@@ -19,12 +20,14 @@ def identify(flash):
     legacy = release_1_2.recognize_private_application(flash)
     if legacy or build.VERSION == release_1_2.VERSION:
         return legacy
-    return build.recognize_private_application(flash)
+    return build.recognize_private_application(flash) or release_1_3_0.recognize_private_application(flash)
 
 
 def for_version(version):
     if version == release_1_2.VERSION:
         return release_1_2
+    if version == release_1_3_0.VERSION:
+        return release_1_3_0
     if version == build.VERSION:
         return build
     raise ValueError("Unknown Zymatic application version")

@@ -6,9 +6,14 @@
 
 int main(int argc,char** argv) {
     assert(argc==2);
-    assert(pico_common_web_assets_count==7);
+    assert(pico_common_web_assets_count==8);
+    bool found_favicon=false;
     for(size_t i=0;i<pico_common_web_assets_count;++i) {
         const PicoHttpAsset& asset=pico_common_web_assets[i];
+        if(std::strcmp(asset.path,"/favicon.ico")==0) {
+            assert(std::strcmp(asset.content_type,"image/x-icon")==0);
+            found_favicon=true;
+        }
         assert(asset.data==nullptr&&asset.file_path&&asset.length>10);
         assert(std::strcmp(asset.content_encoding,"gzip")==0);
         int handle=pico_common_web_asset_io.open(nullptr,asset.file_path,asset.length);
@@ -27,6 +32,7 @@ int main(int argc,char** argv) {
         FILE* file=std::fopen(path,"wb");assert(file);assert(std::fwrite(bytes.data(),1,bytes.size(),file)==bytes.size());assert(std::fclose(file)==0);
         pico_common_web_asset_io.close(nullptr,handle);
     }
+    assert(found_favicon);
     assert(pico_common_web_asset_io.open(nullptr,"/missing",0)==PICO_HTTP_IO_ERROR);
     assert(pico_common_web_asset_io.open(nullptr,nullptr,0)==PICO_HTTP_IO_ERROR);
 }

@@ -53,6 +53,7 @@ function page(d: Device, fleet = false) {
     loading: false,
     notify: vi.fn(),
     navigate: vi.fn(),
+    refresh: vi.fn().mockResolvedValue(undefined),
   } as unknown as HubState
   return createElement(
     HubContext.Provider,
@@ -139,6 +140,58 @@ it('waits for a full frame before polling again and abandons the old request whe
     await vi.advanceTimersByTimeAsync(16000)
   })
   expect(displayCalls()).toHaveLength(1)
+})
+
+it('keeps the last frame visible and waits for a fresh revision before accepting another dial input', async () => {
+  const commands: unknown[] = []
+  let finishFrame!: (value: Response) => void
+  const nextFrame = new Promise<Response>((resolve) => {
+    finishFrame = resolve
+  })
+  const menu = { ...frame, data: '00'.repeat(1024), revision: 17, dial: 'menu' }
+  const prompt = { ...frame, data: 'ff'.repeat(1024), revision: 18, dial: 'press' }
+  fetchMock.mockImplementation(async (url, init) => {
+    if (String(url).endsWith('/commands')) commands.push(JSON.parse(String(init?.body)))
+    if (String(url).endsWith('/display')) {
+      if (commands.length === 1) return nextFrame
+      return response(commands.length ? prompt : menu)
+    }
+    return response({})
+  })
+  render(
+    page({
+      ...device,
+      capabilities: {
+        ...device.capabilities!,
+        commands: ['encoder'],
+        capabilities: { front_panel: true, panel_revision: true },
+      },
+    })
+  )
+  await act(async () => {})
+  const up = screen.getByRole<HTMLButtonElement>('button', { name: 'Move selection up' })
+  const down = screen.getByRole<HTMLButtonElement>('button', { name: 'Move selection down' })
+  const press = screen.getByRole<HTMLButtonElement>('button', { name: 'Press dial' })
+  const canvas = screen.getByLabelText<HTMLCanvasElement>('Live Pico OLED display')
+  const draw = vi.mocked(canvas.getContext('2d')!.putImageData)
+  expect(draw).toHaveBeenCalledTimes(1)
+  const firstPixel = () => Array.from(draw.mock.lastCall![0].data.slice(0, 4))
+  const menuPixel = firstPixel()
+
+  await act(async () => down.click())
+  expect(commands).toEqual([{ command: 'encoder', delta: 1, display_revision: 17 }])
+  expect(displayCalls()).toHaveLength(2)
+  expect(canvas.hidden).toBe(false)
+  expect(draw).toHaveBeenCalledTimes(1)
+  expect([up.disabled, down.disabled, press.disabled]).toEqual([true, true, true])
+  await act(async () => press.click())
+  expect(commands).toHaveLength(1)
+
+  await act(async () => finishFrame(response(prompt)))
+  expect(firstPixel()).not.toEqual(menuPixel)
+  expect([up.disabled, down.disabled, press.disabled]).toEqual([true, true, false])
+  await act(async () => press.click())
+  expect(commands[1]).toEqual({ command: 'encoder', click: true, display_revision: 18 })
 })
 
 it('lists a monitored machine without suggesting remote program controls', async () => {

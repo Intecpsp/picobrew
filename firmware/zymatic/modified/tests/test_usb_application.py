@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-import build
+import zymatic_build as build
 import usb_layout
 import usb_application
 import usb_avr as avr
@@ -105,6 +105,24 @@ class ApplicationTest(unittest.TestCase):
         self.assertEqual(self.device.flash[boot_start:], boot)
         self.restore()
         self.assertEqual(self.device.flash, original_flash)
+
+    def test_upgrade_from_released_1_3_0_preserves_identity_and_boot(self):
+        import release_1_3_0
+        self.key.parent.mkdir(mode=0o700)
+        key = usb_application.read_key(self.key, create=True)
+        uid = "ba" * 16
+        prior, metadata = release_1_3_0.build_application(self.original, key, uid, "brew.lan")
+        limit = usb_layout.MAX_APPLICATION
+        boot = bytes(range(256)) * 4
+        flash = prior.ljust(limit, b"\xff") + boot
+        self.assertEqual(usb_layout.identify(flash), metadata)
+        self.assertEqual(metadata["firmware_version"], "1.3.0")
+        target, current = usb_application.install_pages(flash, self.original, metadata, self.key, None, limit=limit)
+        self.assertEqual(current["firmware_version"], build.VERSION)
+        self.assertEqual((current["uid"], current["hub_host"]), (uid, "brew.lan"))
+        new_flash = target + flash[len(target):]
+        self.assertEqual(usb_layout.identify(new_flash), current)
+        self.assertEqual(new_flash[limit:], boot)
 
     def restore(self):
         self.perform("restore", ["RESTORE ZYMATIC", "WRITE 1.1.14"])

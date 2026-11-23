@@ -290,7 +290,7 @@ def _service(request, stream, emit, entries, action, model, port, display, data,
 
 
 def self_test():
-    import build as zymatic_build
+    import zymatic_build
     import cc_service
     import esp_usb
     import esp_provisioning
@@ -327,6 +327,7 @@ def self_test():
         import usb_layout
 
         usb_layout.for_version("1.2.0").template()
+        usb_layout.for_version("1.3.0").template()
     for model in ("z-series", "picostill", "picoferm"):
         _, parts = esp_usb.reference(model)
         profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"

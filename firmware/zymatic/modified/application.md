@@ -2,7 +2,7 @@
 
 Both versions use the brewing controller from PicoBrew 1.1.14. The Hub chooses the version that fits the verified application space on each brewer. **About Zymatic** shows the installed version. [Flash layout and compatibility evidence](flash-layout.md)
 
-| Feature | 1.2.0 | 1.3.0 |
+| Feature | 1.2.0 | 1.3.x |
 | --- | --- | --- |
 | Stock recipe menu and physical dial | Yes | Yes |
 | Sync recipes and sessions with a configured Hub over Ethernet or Wi-Fi | Yes | Yes |
@@ -18,7 +18,7 @@ History records the measurements the Zymatic actually supplies. Interrupted sess
 
 ## Pair a brewer
 
-Connect the Zymatic to Ethernet and enter its address in **Add machine**. With 1.3.0, compare the code in the Hub with the one on the brewer’s **About Zymatic** screen and approve it at the physical dial. The Hub stores the key. A paired owner can use **Manage machine → Open machine website**. Stock Wi-Fi supports outbound recipe and session traffic. The custom incoming API and device website use the wired W5100. [Original network protocols](../reverse-engineered/network/README.md)
+Connect the Zymatic to Ethernet and enter its address in **Add machine**. With 1.3.x, compare the code in the Hub with the one on the brewer’s **About Zymatic** screen and approve it at the physical dial. The Hub stores the key. A paired owner can use **Manage machine → Open machine website**. Stock Wi-Fi supports outbound recipe and session traffic. The custom incoming API and device website use the wired W5100. [Original network protocols](../reverse-engineered/network/README.md)
 
 ## Installation and recovery
 
@@ -26,6 +26,8 @@ First-time USB setup uses 1.2.0, which fits below every supported boot boundary.
 
 To qualify an expanded application window, capture the configured fuse and lock bits through the external programmer on the same provisioned brewer. The installer checks the prior paired UID and compares the live boot bytes against the independent capture before choosing an image. Both the private API key and identity carry forward. Stock restoration clears the recognized custom application extent and verifies the full flash after writing. [Boot evidence and recovery](recovery.md) · [USB setup](README.md)
 
-The private reference package builder defaults to 1.2.0. To compose a 1.3.0 image for simulator testing, use `tools/package.py --firmware-version 1.3.0`. Its manifest reports the required boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
+The private reference package builder defaults to 1.2.0. To compose a 1.3.1 image for simulator testing, use `tools/package.py --firmware-version 1.3.1`. Its manifest reports the required boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
 
 CI compares the reconstructed OEM control paths and executes the overlay, screen handling, EEPROM recorder and packed OEM assets in an AVR simulator. Physical brewing, power-loss recovery on a real unit and installation of an expanded application still need hardware trials. Network firmware installation remains unavailable. [1.2.0 build and memory details](application-1.2.md) · [Offline recipe format](offline-recipe.md)
+
+The 1.3.1 Ethernet website serves `/favicon.ico` from the Zymatic itself. The file contains the original 16×16 frame of [PicoBrew’s favicon](https://picobrew.com/favicon.ico), with its original colors and transparency. The versioned installer can still recognize and restore 1.3.0 and 1.2.0 machines.

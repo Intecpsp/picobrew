@@ -1,4 +1,3 @@
-// A fresh ticket identifies only this browser. The physical dial approves it.
 async function pairDevice(nonce) {
   pair.disabled=true;
   try {

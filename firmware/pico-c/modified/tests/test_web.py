@@ -5,8 +5,8 @@ The local HTTP harness supplies authentication and static assets; production
 HTTP framing/auth and SimpleLink bindings have their own sanitizer suites.
 No physical brewing, Wi-Fi or flash behavior is exercised here.
 """
-import gzip
 import importlib.util
+import base64
 import json
 import os
 from pathlib import Path
@@ -49,13 +49,13 @@ class Handler(BaseHTTPRequestHandler):
                 code, payload, mime = 404, b"", "text/plain"
             else:
                 name, mime = assets[self.path]
-                payload = gzip.compress((ROOT / "web" / name).read_bytes(), mtime=0)
+                payload = (ROOT / "firmware/web" / (name + ".gz")).read_bytes()
                 encoding, code = "gzip", 200
         self.send_response(code)
         self.send_header("Content-Type", mime)
         self.send_header("Content-Length", str(len(payload)))
         self.send_header("Cache-Control", "no-store")
-        self.send_header("Content-Security-Policy", "default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'")
+        self.send_header("Content-Security-Policy", "default-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'")
         if encoding:
             self.send_header("Content-Encoding", encoding)
         self.end_headers()
@@ -107,6 +107,18 @@ class BrowserWorkflow(unittest.TestCase):
         self.page.locator("#submitConnect").click()
         expect(self.page.locator("#connectionText")).to_have_text("Connected")
         expect(self.page.locator("#connectDialog")).not_to_be_visible()
+
+    def test_offline_favicon_uses_the_original_icon(self):
+        href = self.page.locator('link[rel="icon"]').get_attribute("href")
+        self.assertEqual(href, "data:image/x-icon;base64," + base64.b64encode(
+            (ROOT / "web/favicon.ico").read_bytes()).decode("ascii"))
+        # Decoding an image exercises the same img-src policy used for the tab icon.
+        self.assertTrue(self.page.evaluate("""async (href) => {
+            const icon = new Image();
+            icon.src = href;
+            await icon.decode();
+            return icon.naturalWidth > 0;
+        }""", href))
 
     def test_pair_using_dial_without_entering_a_key(self):
         requests = []

@@ -209,7 +209,7 @@ static void prepare_response(PicoHttpServer *s, uint32_t now)
     int count = snprintf(s->line, sizeof(s->line),
         "HTTP/1.1 %u %s\r\nContent-Type: %s\r\nContent-Length: %lu\r\n"
         "Connection: close\r\nCache-Control: no-store\r\nX-Content-Type-Options: nosniff\r\n"
-        "Content-Security-Policy: default-src 'self'; object-src 'none'; frame-ancestors 'none'; base-uri 'none'\r\n"
+        "Content-Security-Policy: default-src 'self'; img-src 'self' data:; object-src 'none'; frame-ancestors 'none'; base-uri 'none'\r\n"
         "%s%s%s%s\r\n",
         r->status, reason(r->status), r->content_type, (unsigned long)r->body_length,
         r->content_encoding ? "Content-Encoding: " : "",
@@ -242,8 +242,8 @@ static void asset_unavailable(PicoHttpServer *s, uint32_t now)
             "<!doctype html><html lang=\"en\"><meta charset=\"utf-8\">"
             "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">"
             "<title>Pico Local</title><h1>Pico Local</h1>"
-            "<p>The browser files are missing or do not match this firmware. "
-            "Install the matching web files with the firmware installer.</p>"
+            "<p>The browser files are missing or outdated. "
+            "Use the firmware installer to restore the matching files.</p>"
             "<p>The local API remains available. <a href=\"/api/v1/health\">Device health</a></p></html>";
         s->response = (PicoHttpResponse){503, "text/html; charset=utf-8",
                                         (const uint8_t *)fallback, sizeof(fallback) - 1, NULL};

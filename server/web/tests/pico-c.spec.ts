@@ -34,6 +34,11 @@ for (const viewport of [
       let rejectObservation = true
       const observations: unknown[] = []
       const commands: unknown[] = []
+      let waitingForFrame = false
+      let releaseFrame!: () => void
+      const nextFrame = new Promise<void>((resolve) => {
+        releaseFrame = resolve
+      })
       const identity = {
         model: 'pico-c',
         model_name: 'Pico C',
@@ -152,8 +157,13 @@ for (const viewport of [
         const path = new URL(request.url()).pathname
         let result: unknown
         if (path === '/api/v1/devices') result = [machine]
-        else if (path.endsWith('/display')) result = frame
-        else if (path.endsWith('/recipes')) result = []
+        else if (path.endsWith('/display')) {
+          if (commands.length) {
+            waitingForFrame = true
+            await nextFrame
+          }
+          result = frame
+        } else if (path.endsWith('/recipes')) result = []
         else if (path.endsWith('/ai-monitor'))
           result = { enabled: false, state: 'off', configured: false }
         else if (path.endsWith('/firmware/hardware')) {
@@ -232,11 +242,27 @@ for (const viewport of [
         await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)
       ).toBe(true)
       // Ordinary front-panel control does not require firmware hardware inventory.
+      const panelLayout = () =>
+        frontPanel.evaluate((panel) => {
+          const oled = panel.querySelector('.oled')!.getBoundingClientRect()
+          const dial = panel.querySelector('.dial-controls')!.getBoundingClientRect()
+          return { height: oled.height, dialOffset: dial.top - oled.top }
+        })
+      const layoutBefore = await panelLayout()
+      const pixelsBefore = await canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL())
       const encoderReply = page.waitForResponse((response) =>
         response.url().endsWith(`/devices/${machine.id}/commands`)
       )
       await frontPanel.getByRole('button', { name: 'Press dial', exact: true }).click()
       await encoderReply
+      try {
+        await expect.poll(() => waitingForFrame).toBe(true)
+        await expect(canvas).toBeVisible()
+        expect(await canvas.evaluate((c: HTMLCanvasElement) => c.toDataURL())).toBe(pixelsBefore)
+        expect(await panelLayout()).toEqual(layoutBefore)
+      } finally {
+        releaseFrame()
+      }
       await expect(
         frontPanel.getByRole('button', { name: 'Press dial', exact: true })
       ).toBeEnabled()

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useLayoutEffect, useRef, useState } from 'react'
 import type { Display } from '../types'
 import { decodeDisplay } from '../lib/display'
 export default function OLED({
@@ -12,7 +12,7 @@ export default function OLED({
 }) {
   const ref = useRef<HTMLCanvasElement>(null)
   const [invalid, setInvalid] = useState('')
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!display || !ref.current || error) return
     try {
       const pixels = decodeDisplay(display)
@@ -35,20 +35,24 @@ export default function OLED({
   const live = !!display && !invalid && !error
   return (
     <div className="oled">
-      <canvas
-        ref={ref}
-        hidden={!live}
-        width={display?.width}
-        height={display?.height}
-        aria-label={simulated ? 'Simulated Pico OLED display' : 'Live Pico OLED display'}
-      />
-      {live ? (
-        <span>
-          {simulated ? 'SIMULATED OLED' : 'LIVE OLED'} · {display.width} × {display.height}
-        </span>
-      ) : (
-        <div className="oled-placeholder">{error || invalid || 'Waiting for the front panel…'}</div>
-      )}
+      <div className="oled-screen">
+        <canvas
+          ref={ref}
+          hidden={!live}
+          width={display?.width ?? 128}
+          height={display?.height ?? 64}
+          aria-label={simulated ? 'Simulated Pico OLED display' : 'Live Pico OLED display'}
+        />
+        {!live && (
+          <div className="oled-placeholder">
+            {error || invalid || 'Waiting for the front panel…'}
+          </div>
+        )}
+      </div>
+      <span>
+        {live &&
+          `${simulated ? 'SIMULATED OLED' : 'LIVE OLED'} · ${display.width} × ${display.height}`}
+      </span>
     </div>
   )
 }

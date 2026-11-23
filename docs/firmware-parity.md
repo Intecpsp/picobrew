@@ -35,7 +35,7 @@ PicoFerm's longer default interval is intentional for fermentation recording.
 | --- | --- |
 | Programs | Both versions retain the OEM brew controller, outbound Hub recipe sync and a provisioned offline recipe. |
 | Wired device website and Hub | 1.2.0 supports read-only monitoring. 1.3.0 adds dial pairing, authenticated input against the current OLED frame and on-device session history. |
-| Firmware service | Rear USB backup, application installation and return to stock 1.1.14. First conversion uses 1.2.0. Subsequent 1.3.0 installs require independently measured boot space. |
+| Firmware service | Rear USB backup, application installation and return to stock 1.1.14. First conversion uses 1.2.0. Subsequent 1.3.x installs require independently measured boot space. |
 | Remaining limits | The inbound API uses Ethernet. Firmware updates require USB. Raw actuator control and dedicated network recovery are unavailable. Physical installation, recovery, sensor and brewing trials remain outstanding. |
 
 See the [firmware architecture and verification](../firmware/zymatic/modified/application.md).

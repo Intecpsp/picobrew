@@ -16,3 +16,4 @@ def embed(source, symbol, section):
 if __name__ == "__main__":
     (SITE / "zymatic_site.h").write_text(embed(SITE / "index.html", "zymatic_site", "ZYMATIC_SITE_SECTION"))
     (SITE / "zymatic_pair_js.h").write_text(embed(SITE / "pair.js", "zymatic_pair_js", "PROGMEM"))
+    (SITE / "zymatic_favicon.h").write_text(embed(SITE / "favicon.ico", "zymatic_favicon", "PROGMEM"))
