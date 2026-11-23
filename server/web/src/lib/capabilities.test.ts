@@ -35,6 +35,12 @@ describe('family capabilities and named measurements', () => {
     expect(supports(caps, 'pressure')).toBe(true)
     expect(isAccessory({ model: 'picostill', capabilities: caps })).toBe(true)
   })
+  it('recognizes physical dial pairing from firmware discovery', () => {
+    const actual = { ...legacy, model: 'pico-s', front_panel: true, pairing_v1: true }
+    expect(supports(actual, 'pairing_v1')).toBe(true)
+    expect(supports({ ...actual, capabilities: { pairing_v1: false } }, 'pairing_v1')).toBe(false)
+    expect(supports(legacy, 'pairing_v1')).toBe(false)
+  })
   it('retains older S/Pro discovery without assigning unsupported features', () => {
     const caps = legacy
     expect(supports(caps, 'brewing')).toBe(true)

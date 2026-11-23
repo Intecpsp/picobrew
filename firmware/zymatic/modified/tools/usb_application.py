@@ -51,8 +51,11 @@ def install_pages(before, original, installed, key_file, host, offline_program=N
         raise ValueError("Verify this unit’s configured boot region before changing its installed application")
     if before[previous_end:limit].strip(b"\xff"):
         raise ValueError("Occupied flash above the installed application prevents standalone setup")
-    key = read_key(key_file, create=not installed)
     uid = installed["uid"] if installed else secrets.token_hex(16)
+    # The Hub selects a distinct key by application UID even for different
+    # stock machines connected to the same physical USB port.
+    path = key_file(uid) if callable(key_file) else key_file
+    key = read_key(path, create=not installed)
     if installed:
         prior_release = usb_layout.for_version(installed["firmware_version"])
         prior, _ = prior_release.build_application(original, key, uid, installed["hub_host"], installed["offline_program"])

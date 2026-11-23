@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "firmware/z-series/modified/tools"))
 import private_files
+import esp_provisioning
 import esp_stock_partitions
 import usb_profile as z_profile
 
@@ -113,7 +114,7 @@ def reference(model):
     return version, components
 
 
-def install_target(flash, model):
+def install_target(flash, model, *, api_key=None):
     if model in Z_STACKS:
         raise ValueError("This physical Z model has no independently mapped installation package")
     version, parts = reference(model)
@@ -147,6 +148,9 @@ def install_target(flash, model):
             raise ValueError("The stock ESP32 bootloader flash mode differs from the reference")
         if not same_loader and not existing_layout:
             raise ValueError("The stock bootloader has no verified match for this factory layout")
+    if api_key is not None:
+        profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
+        parts["spiffs.bin"] = esp_provisioning.stage(parts["spiffs.bin"], profile, api_key)
     desired = bytearray(flash)
     for name, data in parts.items():
         start, _ = layout[name]
@@ -225,7 +229,9 @@ def changed_ranges(current, desired, boot_sector):
         yield boot_sector, desired[boot]
 
 
-def operation(action, model, device, root, ask=input):
+def operation(action, model, device, root, ask=input, *, api_key=None):
+    if api_key is not None and action != "install":
+        raise ValueError("Key provisioning is available only during initial installation")
     ident = device.identity
     ident.check(model)
     path = backup_path(root, ident)
@@ -241,7 +247,20 @@ def operation(action, model, device, root, ask=input):
     if len(current) != ident.size:
         raise ValueError("Short physical flash read")
     if action in ("install", "backup"):
-        version = stock_version(current, model)
+        try:
+            version = stock_version(current, model)
+        except ValueError:
+            # A lost browser reply may follow a verified write. Confirm the
+            # exact intended target against this MAC's original and stable key.
+            # A used/changed filesystem must never be reset on a retry.
+            if action != "install" or api_key is None or original is None:
+                raise
+            _, wanted = install_target(original, model, api_key=api_key)
+            if current != wanted or device.read() != wanted:
+                raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None
+            device.verify_identity()
+            print("The installed image and private key were verified. No further write is needed.")
+            return
         print(f"Identified active OEM firmware {version}. Verifying with a second full read…", flush=True)
         if device.read() != current:
             raise ValueError("The full-device reads disagree; capture failed")
@@ -264,7 +283,7 @@ def operation(action, model, device, root, ask=input):
         print(f"Verified original for this device: {path}")
         if action == "backup":
             return
-        version, target = install_target(current, model)
+        version, target = install_target(current, model, api_key=api_key)
         print(f"USB setup will install {model} {version} and initialize the machine filesystem. "
               "This reference build still needs operating trials on physical hardware.")
     else:

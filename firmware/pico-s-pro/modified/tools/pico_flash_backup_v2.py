@@ -18,7 +18,7 @@ The SRAM helper is rbtl3100s.dll, 49,588 bytes, SHA-256 pinned below.
 """
 
 import argparse
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 import ctypes
 from datetime import datetime, timezone
 import hashlib
@@ -796,7 +796,17 @@ def load_dependencies():
     return probe_module, cc, helper, version
 
 
-def main(argv=None):
+def receive_channel(raw):
+    """The native serial class queues input in its OS driver. Direct libusb
+    requires the reviewed asynchronous bulk receive queue."""
+    from pico_uart_probe import SerialTransport
+    if isinstance(raw, SerialTransport):
+        return nullcontext(raw)
+    return QueuedUSBReceive(raw)
+
+
+def main(argv=None, *, transport_factory=None, progress=None):
+    emit = progress or report
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", required=True, help="Absolute path for verified .bin backup")
     parser.add_argument("--power-wait", type=float, default=60,
@@ -810,9 +820,9 @@ def main(argv=None):
     try:
         probe_module, cc, helper, version = load_dependencies()
         files = BackupFiles(args.output, sudo_owner())
-        report("BACKUP v2: queued direct CH340 USB; flash writes and erases blocked")
-        report(f"SRAM HELPER: verified {HELPER_NAME}, {len(helper):,} bytes")
-        report(f"OUTPUT: {files.output}")
+        emit("BACKUP v2: CH340 USB; flash writes and erases blocked")
+        emit(f"SRAM HELPER: verified {HELPER_NAME}, {len(helper):,} bytes")
+        emit(f"OUTPUT: {files.output}")
         details = {
             "backup_revision": BACKUP_REVISION,
             "started_utc": datetime.now(timezone.utc).isoformat(),
@@ -824,17 +834,17 @@ def main(argv=None):
             "warnings": [],
         }
         with files:
-            transport = probe_module.CH340USBTransport()
+            transport = (transport_factory or probe_module.CH340USBTransport)()
             reads_verified = False
             try:
                 with USBSession(transport) as raw:
-                    report("TRANSPORT: " + raw.description)
+                    emit("TRANSPORT: " + raw.description)
                     phase = "initial connection"
 
                     def connection_report(line):
                         if line == "No Pico flash was read or written.":
                             return
-                        report(line.replace("SUCCESS: complete GET_VERSION", "CONNECTION: complete GET_VERSION"))
+                        emit(line.replace("SUCCESS: complete GET_VERSION", "CONNECTION: complete GET_VERSION"))
 
                     payload = probe_module.probe(raw, args.power_wait, report=connection_report)
                     port = USBSerialPort(raw)
@@ -845,22 +855,22 @@ def main(argv=None):
                     details["bootloader_version"] = list(connection.vinfo.bootloader)
                     details["initial_version_payload"] = payload.hex()
                     phase = "RAM loader setup"
-                    report("LOADER: switching UART and loading the temporary helper into SRAM")
+                    emit("LOADER: switching UART and loading the temporary helper into SRAM")
                     connection.switch_to_nwp_bootloader()
                     if not connection.helper_executed:
                         raise BackupError("The expected SRAM helper was not executed")
                     details["apps_version"] = repr(connection.vinfo_apps)
                     phase = "queuing USB receive buffers"
-                    with QueuedUSBReceive(raw) as receiver:
+                    with receive_channel(raw) as receiver:
                         port.transport = receiver
-                        report("USB RX: 8 transfers of 4096 bytes queued before flash queries")
+                        emit("USB RX: receive channel ready for flash queries")
                         phase = "flash capacity detection"
                         details["flash"] = detect_flash(connection)
                         total = details["flash"]["size_bytes"]
                         phase = "first flash read"
-                        first = read_pass(connection, files.first, total, 1)
+                        first = read_pass(connection, files.first, total, 1, progress=emit)
                         phase = "second flash read and comparison"
-                        second = read_pass(connection, files.second, total, 2, files.first)
+                        second = read_pass(connection, files.second, total, 2, files.first, progress=emit)
                         if first["sha256"] != second["sha256"]:
                             raise BackupError("The complete flash-read hashes differ")
                         details["reads"] = [first, second]
@@ -876,32 +886,32 @@ def main(argv=None):
             phase = "on-disk verification and publication"
             details["completed_utc"] = datetime.now(timezone.utc).isoformat()
             files.publish(details)
-        report("VERIFIED: both complete flash reads match byte-for-byte")
-        report("BACKUP: " + str(files.output))
-        report("BYTES: " + str(details["flash"]["size_bytes"]))
-        report("SHA256: " + details["reads"][0]["sha256"])
-        report("DETAILS: " + str(files.manifest))
-        report("No Pico flash was written or erased. The helper runs only in RAM.")
+        emit("VERIFIED: both complete flash reads match byte-for-byte")
+        emit("BACKUP: " + str(files.output))
+        emit("BYTES: " + str(details["flash"]["size_bytes"]))
+        emit("SHA256: " + details["reads"][0]["sha256"])
+        emit("DETAILS: " + str(files.manifest))
+        emit("No Pico flash was written or erased. The helper runs only in RAM.")
         if transport.details.get("cleanup_errors"):
-            report("USB CLEANUP: backup is verified; disconnect/reconnect USB before further use")
+            emit("USB CLEANUP: backup is verified; disconnect/reconnect USB before further use")
             for message in transport.details["cleanup_errors"]:
-                report("  " + message)
+                emit("  " + message)
         return 0
     except KeyboardInterrupt:
-        report(f"STOPPED during {phase}: interrupted; any partial files are retained")
+        emit(f"STOPPED during {phase}: interrupted; any partial files are retained")
         if files is not None and files.published:
-            report("The verified binary was saved: " + str(files.output))
+            emit("The verified binary was saved: " + str(files.output))
         return 130
     except Exception as exc:
-        report(f"STOPPED during {phase}: {type(exc).__name__}: {exc}")
+        emit(f"STOPPED during {phase}: {type(exc).__name__}: {exc}")
         if files is not None and files.published:
-            report("The verified binary was saved, but a later output step failed: " + str(files.output))
+            emit("The verified binary was saved, but a later output step failed: " + str(files.output))
         elif files is not None:
-            report("No verified backup was published. Any .partial files are retained.")
+            emit("No verified backup was published. Any .partial files are retained.")
         return 1
     finally:
         if transport is not None:
-            report("USB DETAILS: " + json.dumps(transport.details, sort_keys=True))
+            emit("USB DETAILS: " + json.dumps(transport.details, sort_keys=True))
 
 
 if __name__ == "__main__":

@@ -156,21 +156,20 @@ for (const viewport of [
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth + 1)).toBe(
       true
     )
-    await dialog.getByRole('button', { name: 'Restore original firmware via USB' }).click()
-    let restore = page.getByRole('dialog', { name: 'Restore original PicoBrew firmware?' })
-    await expect(restore.getByRole('button', { name: 'Review USB requirements' })).toBeDisabled()
-    await restore.getByRole('checkbox').check()
-    await restore.getByRole('button', { name: 'Review USB requirements' }).click()
-    restore = page.getByRole('dialog', { name: 'Confirm your USB setup' })
-    await expect(
-      restore.getByRole('button', { name: 'Show USB restore instructions' })
-    ).toBeDisabled()
-    await restore.getByRole('checkbox').check()
-    await restore.getByRole('button', { name: 'Show USB restore instructions' }).click()
-    restore = page.getByRole('dialog', { name: 'Restore using your computer' })
-    await expect(restore.locator('pre')).toHaveText(
-      './picobrew-hub usb-restore --model pico-s --data ./data --checkout ..'
+    await page.route('**/api/v1/usb/devices', (route) =>
+      route.fulfill({
+        json: {
+          available: true,
+          devices: [{ port: 'test-adapter', label: 'Brewer USB', models: ['pico-s', 'pico-pro'] }],
+        },
+      })
     )
+    await dialog.getByRole('button', { name: 'Restore original firmware via USB' }).click()
+    const restore = page.getByRole('dialog', { name: 'Restore original firmware', exact: true })
+    await expect(restore.getByText('Returning to stock removes', { exact: false })).toBeVisible()
+    await expect(
+      restore.getByRole('button', { name: 'Restore original firmware', exact: true })
+    ).toBeEnabled()
     expect(await restore.evaluate((d) => d.scrollWidth <= d.clientWidth + 1)).toBe(true)
     await restore.getByRole('button', { name: 'Back to machine firmware' }).click()
     await expect(dialog).toBeVisible()

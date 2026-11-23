@@ -45,7 +45,9 @@ def hex_bytes(data):
 
 
 class SerialTransport:
-    def __init__(self, port, baud):
+    def __init__(self, port, baud, *, exclusive=False):
+        self.exclusive = exclusive
+        self.details = {"requested_baud": baud, "cleanup_errors": [], "transport": "serial"}
         self.port_name = port
         self.baud = baud
         self.serial = None
@@ -73,6 +75,7 @@ class SerialTransport:
         # connected: pySerial timeout setters reconfigure the macOS serial port.
         self.serial = serial.Serial(
             port=None, baudrate=self.baud, timeout=0.05, write_timeout=2,
+            **({"exclusive": True} if self.exclusive and os.name == "posix" else {}),
             bytesize=serial.EIGHTBITS, parity=serial.PARITY_NONE,
             stopbits=serial.STOPBITS_ONE, xonxoff=False,
             rtscts=False, dsrdtr=False,
@@ -243,7 +246,8 @@ class CH340USBTransport:
     EFFECTIVE_BAUD = 48000000 / (4 * 13)
     LINE_CONTROL = 0xC3  # RX enabled, TX enabled, 8 data bits, no parity, 1 stop.
 
-    def __init__(self):
+    def __init__(self, *, match=None):
+        self.match = match
         self.details = {
             "stage": "not opened",
             "usb_id": "1a86:7523",
@@ -275,12 +279,6 @@ class CH340USBTransport:
             raise CH340USBError("This transport is already open.")
         if sys.platform not in ("darwin", "linux", "win32"):
             raise CH340USBError("This diagnostic supports Windows, macOS and Linux only.")
-        if sys.platform == "darwin" and os.geteuid() != 0:
-            raise CH340USBError(
-                "Direct USB capture on macOS requires root. Run this reviewed "
-                "diagnostic with sudo and the absolute path to the venv Python. "
-                "Do not uninstall drivers or change SIP."
-            )
         try:
             import usb.backend.libusb1
             import usb.core
@@ -331,6 +329,8 @@ class CH340USBTransport:
                 find_all=True, idVendor=self.VID, idProduct=self.PID,
                 backend=self._backend,
             ))
+            if self.match is not None:
+                devices = [dev for dev in devices if self.match(dev)]
             if not devices:
                 raise CH340USBError("No USB adapter with VID:PID 1a86:7523 was found.")
             if len(devices) != 1:

@@ -1557,7 +1557,8 @@ def _load_hub_recovery():
     return payload
 
 
-def main(argv=None):
+def main(argv=None, *, transport_factory=None, progress=None):
+    emit = progress or report
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest="mode", required=True)
     prepare = commands.add_parser("prepare-install", help="Verify the backup and local installation files offline")
@@ -1631,9 +1632,9 @@ def main(argv=None):
             if stock_profile is None:
                 backup.load_dependencies()
         except Exception as exc:
-            report("STOPPED: " + _safe_error(exc))
+            emit("STOPPED: " + _safe_error(exc))
             return 1
-        report("Verified the stock backup, standalone image, browser files and USB dependencies offline.")
+        emit("Verified the stock backup, standalone image, browser files and USB dependencies offline.")
         return 0
     if not 1 <= args.power_wait <= 300:
         parser.error("--power-wait must be between 1 and 300 seconds")
@@ -1687,31 +1688,31 @@ def main(argv=None):
             payloads[APP_NAME] = candidate
             payloads.update(web_payloads)
         if "oem_images" in details:
-            report("LOCAL OEM IMAGES: original application and recovery verified")
+            emit("LOCAL OEM IMAGES: original application and recovery verified")
         else:
-            report("LOCAL BACKUP: exact original full-flash backup and stock image verified")
-        report("OPERATION: " + args.mode)
-        report("REPORT: " + str(files.output))
-        report("JOURNAL: " + str(files.journal_path))
+            emit("LOCAL BACKUP: exact original full-flash backup and stock image verified")
+        emit("OPERATION: " + args.mode)
+        emit("REPORT: " + str(files.output))
+        emit("JOURNAL: " + str(files.journal_path))
         result = 1
         with files:
             source = ({"backup_sha256": details["backup"]["sha256"]} if "backup" in details
                       else {"oem_images": details["oem_images"]})
             files.record("session-start", mode=args.mode, **source)
             try:
-                transport = probe_module.CH340USBTransport()
+                transport = (transport_factory or probe_module.CH340USBTransport)()
                 try:
                     with backup.USBSession(transport) as raw:
                         try:
-                            report("TRANSPORT: " + raw.description)
+                            emit("TRANSPORT: " + raw.description)
                             phase = "initial connection"
 
                             def connection_report(line):
                                 if line.startswith(("BREAK asserted.", "Listening for ",
                                                     "Bootloader version:")):
-                                    report(line)
+                                    emit(line)
                                 elif line.startswith("SUCCESS: complete GET_VERSION"):
-                                    report("CONNECTION: ROM version response verified")
+                                    emit("CONNECTION: ROM version response verified")
 
                             payload = probe_module.probe(raw, args.power_wait, report=connection_report)
                             port = backup.USBSerialPort(raw)
@@ -1725,16 +1726,16 @@ def main(argv=None):
                                 raise InstallError("Unexpected device or ROM-loader version")
                             details["bootloader_version"] = list(connection.vinfo.bootloader)
                             phase = "RAM loader setup"
-                            report("LOADER: loading only the pinned temporary SRAM helper")
+                            emit("LOADER: loading only the pinned temporary SRAM helper")
                             connection.switch_to_nwp_bootloader()
                             if not connection.helper_executed:
                                 raise InstallError("The pinned RAM helper did not execute")
                             phase = "queued filesystem operation"
-                            with backup.QueuedUSBReceive(raw) as receiver:
+                            with backup.receive_channel(raw) as receiver:
                                 port.transport = receiver
-                                report("USB RX: 8 transfers queued before filesystem operations")
+                                emit("USB RX: receive channel ready for filesystem operations")
                                 run_operation(connection, args.mode, key, candidate, original, files,
-                                              details=details)
+                                              progress=emit, details=details)
                             port.transport = raw
                         except BaseException as exc:
                             if isinstance(exc, KeyboardInterrupt):
@@ -1773,33 +1774,33 @@ def main(argv=None):
             files.publish(details)
         if details["success"]:
             if model in C_STOCK and args.mode == "restore-stock":
-                report("SUCCESS: Pico C stock application verified and recovery matches the original backup")
+                emit("SUCCESS: Pico C stock application verified and recovery matches the original backup")
             else:
-                report(SUCCESS_MARKERS[args.mode])
+                emit(SUCCESS_MARKERS[args.mode])
         else:
             error = details.get("error", {})
-            report("STOPPED during " + error.get("phase", phase) + ": "
+            emit("STOPPED during " + error.get("phase", phase) + ": "
                    + error.get("message", "The operation did not verify"))
             if not details["persistent_write_attempted"]:
-                report("No Pico flash or file write was attempted")
+                emit("No Pico flash or file write was attempted")
             if args.mode == "restore-stock" and details.get("persistent_write_attempted"):
-                report("Keep the restore source and report. Retry restore-stock in a fresh USB session before booting.")
+                emit("Keep the restore source and report. Retry restore-stock in a fresh USB session before booting.")
             elif details.get("application_write_attempted") and not details.get("application_readback_verified"):
-                report("APPLICATION: image2 may be incomplete; use a fresh restore session with the original backup")
-            report("No retries or automatic recovery writes were attempted")
-        report("REPORT: " + str(files.output))
-        report("JOURNAL: " + str(files.journal_path))
-        report("The application was not started; no boot-information, erase, delete, or format command was sent")
+                emit("APPLICATION: image2 may be incomplete; use a fresh restore session with the original backup")
+            emit("No retries or automatic recovery writes were attempted")
+        emit("REPORT: " + str(files.output))
+        emit("JOURNAL: " + str(files.journal_path))
+        emit("The application was not started; no boot-information, erase, delete, or format command was sent")
         if transport is not None and transport.details.get("cleanup_errors"):
-            report("USB CLEANUP: reconnect USB before further use")
+            emit("USB CLEANUP: reconnect USB before further use")
         return result
     except KeyboardInterrupt:
-        report("STOPPED: interrupted")
+        emit("STOPPED: interrupted")
         return 130
     except Exception as exc:
-        report("STOPPED: " + _safe_error(exc))
+        emit("STOPPED: " + _safe_error(exc))
         if files is not None:
-            report("Keep the private journal and any partial report for recovery")
+            emit("Keep the private journal and any partial report for recovery")
         return 1
 
 

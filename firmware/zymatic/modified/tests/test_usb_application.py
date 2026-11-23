@@ -71,7 +71,7 @@ class ApplicationTest(unittest.TestCase):
 
     def perform(self, action, answers, **options):
         confirmations = iter(answers)
-        avr.service(self.data, "virtual", action, confirm=lambda _: next(confirmations), **options)
+        return avr.service(self.data, "virtual", action, confirm=lambda _: next(confirmations), **options)
 
     def install(self, **options):
         self.perform("install", ["INSTALL ZYMATIC", "WRITE " + usb_layout.release_1_2.VERSION], key_file=self.key, **options)
@@ -123,6 +123,22 @@ class ApplicationTest(unittest.TestCase):
         self.assertEqual(usb_layout.identify(self.device.flash)["uid"], identity["uid"])
         self.assertEqual(usb_layout.identify(self.device.flash)["offline_program"]["name"], "My recipe")
         self.restore()
+        self.assertEqual(self.device.flash, self.before)
+
+    def test_hub_uses_each_brewers_uid_for_pairing_and_checks_it_before_restore(self):
+        def key_file(uid):
+            return self.data / ("usb-key-" + uid)
+
+        uid = self.perform("install", ["INSTALL ZYMATIC", "WRITE 1.2.0"], key_file=key_file)
+        self.assertRegex(uid, "^[0-9a-f]{32}$")
+        self.assertEqual(usb_layout.identify(self.device.flash)["uid"], uid)
+        self.assertTrue(key_file(uid).is_file())
+        self.assertEqual(self.perform("install", [], key_file=key_file, expected_uid=uid), uid)
+        before, writes = self.device.flash, self.device.writes
+        with self.assertRaisesRegex(ValueError, "differs from the registered brewer"):
+            self.perform("restore", [], expected_uid="0"*32)
+        self.assertEqual((self.device.flash, self.device.writes), (before, writes))
+        self.perform("restore", ["RESTORE ZYMATIC", "WRITE 1.1.14"], expected_uid=uid)
         self.assertEqual(self.device.flash, self.before)
 
     def test_rejects_occupied_or_unknown_stock_and_unconfirmed_install(self):

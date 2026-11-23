@@ -12,6 +12,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/catalog"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/usbservice"
 )
 
 type endpoint struct {
@@ -20,6 +21,11 @@ type endpoint struct {
 }
 
 var endpoints = []endpoint{
+	{"GET", "/usb/devices", "List compatible USB adapters attached to the Hub computer and the latest firmware job", nil},
+	{"POST", "/usb/jobs", "Begin an attended USB backup, installation or stock restoration", map[string]any{"action": "backup", "model": "pico-s", "port": "adapter identifier from /usb/devices"}},
+	{"GET", "/usb/jobs/{id}", "Read physical firmware job progress and the current confirmation prompt", nil},
+	{"POST", "/usb/jobs/{id}/confirm", "Accept this job’s current physical operation", map[string]any{"confirm": "current prompt identifier"}},
+	{"POST", "/usb/jobs/{id}/cancel", "Cancel an unanswered physical operation", map[string]any{"confirm": "current prompt identifier"}},
 	{"POST", "/stock-zymatics/preview", "Compile saved recipe revisions for offline Zymatic USB setup", map[string]any{"recipes": []map[string]any{{"recipe_id": "saved-recipe", "revision": 1}}}},
 	{"GET", "/stock-zymatics/{machine}/recipes", "Read stock Zymatic sync menu and last request", nil},
 	{"POST", "/stock-zymatics/{machine}/recipes", "Preview or publish saved recipe revisions to one stock Zymatic menu", map[string]any{"recipes": []map[string]any{{"recipe_id": "saved-recipe", "revision": 1}}, "publish": false}},
@@ -199,7 +205,7 @@ func (r *schemaRegistry) properties(name string) schemaMap {
 
 func buildSchemas() schemaMap {
 	r := &schemaRegistry{values: schemaMap{}}
-	for _, value := range []any{ConditioningInput{}, domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, ai.SubscriptionStatus{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
+	for _, value := range []any{usbservice.USBDevices{}, usbservice.USBInput{}, usbservice.USBAnswer{}, ConditioningInput{}, domain.Device{}, domain.DeviceView{}, domain.Capabilities{}, domain.Status{}, domain.Display{}, domain.Recipe{}, domain.MachineRecipe{}, domain.Profile{}, domain.Adapted{}, domain.Brew{}, domain.BrewDetail{}, domain.Sample{}, domain.History{}, domain.Command{}, commandReceipt{}, ai.Config{}, ai.Request{}, ai.Result{}, adviceRecord{}, aiMonitorStatus{}, aiModelList{}, ai.SubscriptionStatus{}, BulkDeployment{}, DeploymentInput{}, MachineRecipeUpdate{}, catalog.Page{}, catalog.Detail{}, catalog.References{}} {
 		r.describe(reflect.TypeOf(value))
 	}
 	// Preserve the previously published schema name while sharing this record
@@ -484,6 +490,10 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "AIModelsInput"
 	case "/ai/assist":
 		name = "Request"
+	case "/usb/jobs":
+		name = "USBInput"
+	case "/usb/jobs/{id}/confirm", "/usb/jobs/{id}/cancel":
+		name = "USBAnswer"
 	case "/firmware/settings":
 		name = "FirmwareSettingsInput"
 	case "/firmware/github/import":
@@ -504,6 +514,13 @@ func successResponses(e endpoint) schemaMap {
 	code := "200"
 	description := "Successful response"
 	switch e.path {
+	case "/usb/devices":
+		schema = schemaRef("USBDevices")
+	case "/usb/jobs":
+		code = "202"
+		schema = schemaRef("USBJob")
+	case "/usb/jobs/{id}", "/usb/jobs/{id}/confirm", "/usb/jobs/{id}/cancel":
+		schema = schemaRef("USBJob")
 	case "/auth/session":
 		schema = schemaRef("AuthSession")
 	case "/auth/setup", "/auth/login":
@@ -744,6 +761,12 @@ func operationResponses(e endpoint, public, requiresJSON bool) schemaMap {
 	}
 	if e.path == "/telemetry" {
 		statuses[403] = "Device UID has not been registered and discovered."
+	}
+	if strings.HasPrefix(e.path, "/usb/") {
+		statuses[400] = "Unknown or unsupported USB option."
+		statuses[404] = "USB job or registered machine does not exist."
+		statuses[409] = "Another job is active, the machine identity could not be verified or the current confirmation changed."
+		statuses[503] = "The Hub has no USB worker for this platform."
 	}
 	if strings.HasPrefix(e.path, "/firmware/") {
 		statuses[400] = "Invalid source, model, commit, archive, or package metadata."

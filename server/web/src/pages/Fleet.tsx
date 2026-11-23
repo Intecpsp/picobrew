@@ -35,7 +35,13 @@ import {
   duration,
   temperature,
 } from '../lib/utils'
-export default function Fleet({ addMachine = false }: { addMachine?: boolean }) {
+export default function Fleet({
+  addMachine = false,
+  usbJobId,
+}: {
+  addMachine?: boolean
+  usbJobId?: string
+}) {
   const hub = useHub()
   const { devices, brews, unit, navigate, loading } = hub
   const [editing, setEditing] = useState<Device | 'new' | null>(addMachine ? 'new' : null)
@@ -206,7 +212,14 @@ export default function Fleet({ addMachine = false }: { addMachine?: boolean }) 
         </section>
       </div>
       {editing && (
-        <DeviceDialog device={editing === 'new' ? undefined : editing} onClose={closeEditor} />
+        <DeviceDialog
+          key={editing === 'new' ? usbJobId || 'new' : editing.id}
+          usbJobId={
+            editing === 'new' && usbJobId && /^[a-f0-9]{32}$/.test(usbJobId) ? usbJobId : undefined
+          }
+          device={editing === 'new' ? undefined : editing}
+          onClose={closeEditor}
+        />
       )}
       {removing && <RemoveDeviceDialog device={removing} onClose={() => setRemoving(null)} />}
     </>
