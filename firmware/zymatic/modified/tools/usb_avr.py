@@ -39,7 +39,9 @@ def programmer():
     if not path:
         raise ValueError("Install AVRDUDE 8.1 and put avrdude on PATH, or use PicoFlash")
     result = subprocess.run([path, "--version"], capture_output=True, text=True, timeout=10)
-    if result.returncode or "Avrdude version 8.1" not in (result.stdout + result.stderr).splitlines():
+    # Windows PATHEXT may preserve the uppercase .EXE spelling in argv[0].
+    accepted = {"avrdude version 8.1", "avrdude.exe version 8.1"}
+    if result.returncode or accepted.isdisjoint(line.strip().lower() for line in (result.stdout + result.stderr).splitlines()):
         raise ValueError("Use the tested AVRDUDE version 8.1, or prepare the HEX for PicoFlash")
     return os.path.abspath(path)
 

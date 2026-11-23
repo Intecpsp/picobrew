@@ -228,6 +228,10 @@ def build(args):
         work = Path(d)
         avr = work / "native"
         native(work / "archive", avr, key, args.cache.resolve())
+        # Check the exact packaged upstream executable before freezing Python.
+        exe = avr / "bin" / ("avrdude.exe" if key.startswith("windows") else "avrdude")
+        banner = subprocess.run([str(exe), "--version"], capture_output=True, text=True, timeout=30)
+        print("Bundled programmer:", banner.returncode, (banner.stdout + banner.stderr).splitlines()[:2], flush=True)
         paths = project_files()
         cmd = [
             sys.executable,
