@@ -221,6 +221,14 @@ func supportedProfile(id string) (domain.Profile, bool) {
 	return domain.Profile{}, false
 }
 
+func kettleFermentable(kind string) bool {
+	switch strings.ToLower(strings.TrimSpace(kind)) {
+	case "extract", "dry extract", "sugar":
+		return true
+	}
+	return false
+}
+
 // Count the measured mass that the loading sheet assigns to the mash basket.
 func mashLoadKG(in domain.Ingredient) float64 {
 	use := strings.ToLower(strings.TrimSpace(in.Use))
@@ -233,7 +241,7 @@ func mashLoadKG(in domain.Ingredient) float64 {
 	if use == "mash" {
 		return in.Amount
 	}
-	if use == "boil" || strings.EqualFold(in.Type, "Extract") || strings.EqualFold(in.Type, "Dry Extract") || strings.EqualFold(in.Type, "Sugar") {
+	if use == "boil" || kettleFermentable(in.Type) {
 		return 0
 	}
 	// Older recipes without placement metadata used grain type to identify basket loads.
@@ -400,7 +408,7 @@ func compileMachineRecipe(r domain.Recipe, warnings *[]string) (*domain.MachineR
 	}
 	machine.Name = label(r.Name, 31, "Recipe", warnings)
 	for i, step := range r.Steps {
-		if step.InfuseLiters > 0 || step.RampMinutes > 0 || step.Type != "" && !strings.EqualFold(step.Type, "Temperature") {
+		if step.InfuseLiters > 0 || step.RampMinutes > 0 || step.Type != "" && !strings.EqualFold(strings.TrimSpace(step.Type), "Temperature") {
 			blockers = append(blockers, fmt.Sprintf("Step %d has infusion, decoction or timed-ramp instructions with no verified native mapping; prepare an explicit machine program first.", i+1))
 		}
 		if step.Kind == "cool" || step.Kind == "fermentation" {

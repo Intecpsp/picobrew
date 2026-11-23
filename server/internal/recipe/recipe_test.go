@@ -442,3 +442,82 @@ func TestCrossModelBoilPreheatUsesBrewerTemperature(t *testing.T) {
 		}
 	}
 }
+
+func TestMashOperationsKeepTheirMeaningAcrossBrewers(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		for _, operation := range []string{"decoction", " DECOCTION ", "infusion", " Infusion "} {
+			r := source()
+			r.Steps[0].Location, r.Steps[1].Location = 0, 0
+			r.Steps[0].Type = operation
+			plan, err := recipe.Translate(r, p, 0)
+			if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), "mash operation") {
+				t.Fatalf("%s converted %q to a temperature hold: %+v %v", p.ID, operation, plan, err)
+			}
+		}
+		for _, loc := range []int{0, 2} {
+			r := source()
+			r.Steps[0].Type = " temperature "
+			if loc == 0 {
+				r.Steps[0].Location, r.Steps[1].Location = 0, 0
+			}
+			plan, err := recipe.Translate(r, p, 0)
+			if err != nil || plan.MachineRecipe == nil {
+				t.Fatalf("%s rejected temperature hold at location %d: %v %v", p.ID, loc, plan.DeploymentBlockers, err)
+			}
+		}
+	}
+}
+
+func TestEveryRoutedMashStageReachesTheLoadedBasket(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		mashOut := domain.RecipeStep{Name: "Mash out", Kind: "mash-out", TargetC: 76, Minutes: 7, Location: 1}
+		r.Steps = []domain.RecipeStep{r.Steps[0], mashOut, r.Steps[1]}
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), "grain basket") {
+			t.Fatalf("%s accepted a mash-out through the keg: %v %v", p.ID, plan, err)
+		}
+	}
+}
+
+func TestUnmappedKettleExtractProgram(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.Type = "Extract"
+		r.Ingredients[0].Name, r.Ingredients[0].Type, r.Ingredients[0].Use = "Liquid malt extract", "Extract", "boil"
+		r.Steps = []domain.RecipeStep{{Name: "Boil", Kind: "boil", TargetC: 100, Minutes: 60}}
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil || plan.HopSlotsByMinute[30] != 1 || len(plan.MachineRecipe.Steps) != 3 {
+			t.Fatalf("%s did not compile extract heat-up, boil and timed hops: %+v %v", p.ID, plan, err)
+		}
+		for _, s := range plan.Recipe.Steps {
+			if s.Location == 2 {
+				t.Fatalf("%s added a grain basket step to a kettle-extract recipe", p.ID)
+			}
+		}
+		r.Ingredients[0].Type = "Grain"
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil {
+			t.Fatalf("%s accepted a boil-only conversion with grain: %+v %v", p.ID, plan, err)
+		}
+	}
+}
+
+func TestTimedBoilCannotHideAnInterveningHold(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.Steps[1].Minutes = 20
+		pause := domain.RecipeStep{Name: "Extra hold", Kind: "hold", TargetC: 60, Minutes: 30, Location: 1}
+		finish := domain.RecipeStep{Name: "Finishing hops", Kind: "hop", TargetC: 95, Minutes: 10, Location: 4}
+		r.Steps = append(r.Steps, pause, finish)
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), "interrupts the timed boil") {
+			t.Fatalf("%s omitted a 30-minute hold from hop exposure: %+v %v", p.ID, plan, err)
+		}
+		r.Steps[2], r.Steps[3] = finish, pause
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil {
+			t.Fatalf("%s rejected a separate post-boil hold: %v %v", p.ID, plan.DeploymentBlockers, err)
+		}
+	}
+}
