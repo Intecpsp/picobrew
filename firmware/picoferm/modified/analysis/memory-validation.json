@@ -26,7 +26,7 @@
   "target_heap_start": "0x3fff5040",
   "target_heap_end": "0x3fffc000",
   "target_heap_bytes": 28608,
-  "elf_sha256": "35882c5a4027d7c3a424c120244b9dda1f546a017ec71f897e80d2f316efcdb7",
+  "elf_sha256": "a37aa1efddb1046d17fe8482516b46548a0c2262ae84c1ab73098f2ac8fbe27f",
   "build_source_entries_verified": 113,
   "native_type_bytes": {
     "engine_impl": 2508,
@@ -95,7 +95,7 @@
   "application_peak_excluding_sdk_reservation": 10648,
   "source_sha256": {
     "picoferm/modified/tests/memory_native.cpp": "5462a4d87c606ba97c0f7d5fc39b64e7f9fe719ac36ae171df9631fcdaca4ce7",
-    "picoferm/modified/src/standalone.cpp": "64e3d0050da316e33545e4a193844868cf726cc73a0f8661d7bbb019252d45c6",
+    "picoferm/modified/src/standalone.cpp": "0eeaec06893cbf2e85e7544e0d5df6d1ca635a5031c496188ce5bfa6efd5c4e8",
     "picoferm/modified/src/calibration_store.cpp": "076a142139079bb3b63e9b84c49f3805d6fc8b1674fc941dd6267dc931ccbab6",
     "picoferm/modified/src/bounded_acquisition.cpp": "6352f8485047de417ebc069ee318fdd3e67e446a61b1bf4677a9d0e8324fbae9",
     "picoferm/reverse-engineered/src/hardware.cpp": "21229e08540302786909e7b34c5654c2dc6f789fa18e790e22456a2708b84a30",
