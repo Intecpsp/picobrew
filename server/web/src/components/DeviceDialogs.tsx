@@ -1,4 +1,4 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { KeyRound, Loader2, Plus, RefreshCw, Save, Trash2 } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
@@ -27,7 +27,15 @@ export function HubConnectionStatus({ device }: { device: Device }) {
   )
 }
 
-export function DeviceDialog({ device, onClose }: { device?: Device; onClose: () => void }) {
+export function DeviceDialog({
+  device,
+  usbJobId,
+  onClose,
+}: {
+  device?: Device
+  usbJobId?: string
+  onClose: () => void
+}) {
   const hub = useHub()
   const live = hub.devices.find((item) => item.id === device?.id) || device
   const [observed, setObserved] = useState<Device | null>(null)
@@ -46,6 +54,10 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
   const [identifying, setIdentifying] = useState(false)
   const [error, setError] = useState('')
   const [usbSetup, setUSBSetup] = useState(false)
+  const [manualKey, setManualKey] = useState(false)
+  const [pairCode, setPairCode] = useState('')
+  const request = useRef<AbortController | null>(null)
+  useEffect(() => () => request.current?.abort(), [])
   const locked = busy || identifying
   const physical = form.adapter === 'pico-standalone'
   const invalidIdentity = ['invalid_model', 'unsupported_model'].includes(
@@ -62,10 +74,33 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
     setBusy(true)
     setError('')
     try {
-      await api<Device>(device ? `/devices/${device.id}` : '/devices', {
-        method: device ? 'PUT' : 'POST',
-        body: { ...form, model: physical && !manualModel ? '' : form.model },
-      })
+      const controller = new AbortController()
+      request.current = controller
+      const body = { ...form, model: physical && !manualModel ? '' : form.model }
+      if (!device && physical && !manualKey && !usbJobId) {
+        const start = await api<{ pairing_id: string; code: string }>('/devices/pair', {
+          method: 'POST',
+          body: { base_url: form.base_url },
+          signal: controller.signal,
+        })
+        setPairCode(start.code)
+        for (;;) {
+          if (controller.signal.aborted) return
+          const result = await api<Device | { pairing: 'pending' }>('/devices', {
+            method: 'POST',
+            body: { ...body, pairing_id: start.pairing_id },
+            signal: controller.signal,
+          })
+          if (!('pairing' in result)) break
+          await new Promise((resolve) => setTimeout(resolve, 1500))
+        }
+      } else {
+        await api<Device>(device ? `/devices/${device.id}` : '/devices', {
+          method: device ? 'PUT' : 'POST',
+          body: { ...body, ...(physical && !device && usbJobId ? { usb_job_id: usbJobId } : {}) },
+          signal: controller.signal,
+        })
+      }
       await hub.refresh()
       hub.notify(
         device
@@ -76,8 +111,9 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
       )
       onClose()
     } catch (error) {
-      setError(errorMessage(error))
+      if (!request.current?.signal.aborted) setError(errorMessage(error))
     } finally {
+      setPairCode('')
       setBusy(false)
     }
   }
@@ -119,11 +155,11 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
     <Modal
       title={device ? 'Edit machine connection' : 'Add machine'}
       onClose={() => {
-        if (!locked) onClose()
+        if (!locked || pairCode) onClose()
       }}
       actions={
         <>
-          <Button variant="secondary" onClick={onClose} disabled={locked}>
+          <Button variant="secondary" onClick={onClose} disabled={locked && !pairCode}>
             Cancel
           </Button>
           <Button form="device-form" type="submit" disabled={locked}>
@@ -244,24 +280,85 @@ export function DeviceDialog({ device, onClose }: { device?: Device; onClose: ()
                 placeholder="http://picobrew.local"
               />
             </Field>
-            <Field
-              label="Machine API key"
-              hint={
-                device?.key_configured
-                  ? 'Leave empty to keep the existing key. To replace it, enter the key already installed on this brewer.'
-                  : 'Enter the key already provisioned on this brewer. Each physical machine should have its own key.'
-              }
-            >
-              <input
-                type="password"
-                autoComplete="new-password"
-                maxLength={1024}
-                disabled={locked}
-                required={!device?.key_configured}
-                value={form.api_key}
-                onChange={(event) => setForm({ ...form, api_key: event.target.value })}
-              />
-            </Field>
+            {usbJobId ? (
+              <p className="help-text">
+                The Hub will use the key it saved during USB setup and check the machine’s identity.
+              </p>
+            ) : (
+              <>
+                <p className="help-text" role="status">
+                  {pairCode ? (
+                    <>
+                      On the brewer, open <strong>About → Pair with Hub</strong>. Confirm{' '}
+                      <strong>{pairCode}</strong> with the dial.
+                    </>
+                  ) : device?.key_configured ? (
+                    'Paired. The Hub has this machine’s API key for its controls and local website.'
+                  ) : (
+                    'The Hub saves the device API key when you confirm pairing on the brewer.'
+                  )}
+                </p>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  disabled={locked}
+                  aria-expanded={manualKey}
+                  onClick={() => {
+                    setManualKey(!manualKey)
+                    setForm({ ...form, api_key: '' })
+                  }}
+                >
+                  {manualKey
+                    ? 'Cancel key entry'
+                    : device?.key_configured
+                      ? 'Replace saved key'
+                      : 'Use an existing key instead'}
+                </Button>
+                {manualKey && (
+                  <>
+                    <Field
+                      label="USB setup key file"
+                      hint="For older firmware, select the api.key file saved during setup."
+                    >
+                      <input
+                        type="file"
+                        disabled={locked}
+                        onChange={async (event) => {
+                          const file = event.target.files?.[0]
+                          if (!file) return
+                          if (file.size > 128) {
+                            setError('Choose the small api.key file from USB setup.')
+                            return
+                          }
+                          try {
+                            const value = (await file.text()).trim()
+                            if (!/^[0-9a-f]{64}$/i.test(value)) {
+                              setError('This file does not contain a device API key.')
+                              return
+                            }
+                            setError('')
+                            setForm((v) => ({ ...v, api_key: value }))
+                          } catch {
+                            setError('The browser could not read the key file.')
+                          }
+                        }}
+                      />
+                    </Field>
+                    <Field label="Machine API key">
+                      <input
+                        type="password"
+                        autoComplete="new-password"
+                        maxLength={1024}
+                        disabled={locked}
+                        required={!device?.key_configured}
+                        value={form.api_key}
+                        onChange={(event) => setForm({ ...form, api_key: event.target.value })}
+                      />
+                    </Field>
+                  </>
+                )}
+              </>
+            )}
             {device?.key_reused && <DeviceKeyNotice />}
             {current?.model_error && (
               <p className="help-text" role="status">

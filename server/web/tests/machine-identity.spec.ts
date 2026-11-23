@@ -127,6 +127,7 @@ for (const viewport of [
     await expect(dialog.getByLabel('Machine name')).toHaveValue('Automatically connected Pico S')
     expect(registrations).toBe(0)
     await dialog.getByLabel('Machine URL').fill('http://192.168.1.42')
+    await dialog.getByRole('button', { name: 'Use an existing key instead' }).click()
     await dialog.getByLabel('Machine API key').fill('isolated-browser-key')
     await dialog.getByRole('button', { name: 'Add machine', exact: true }).click()
     await expect(dialog).not.toBeVisible()

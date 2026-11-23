@@ -41,12 +41,20 @@ func NewPico(baseURL, key string) (Adapter, error) { return newPico(baseURL, key
 // allowLoopback is private and exists only for local protocol tests. Real device
 // registration must use NewPico; the simulator needs no HTTP endpoint.
 func newPico(baseURL, key string, allowLoopback bool) (*pico, error) {
+	if !apiKey.MatchString(key) {
+		return nil, invalid("Device API key must contain exactly 64 hexadecimal characters")
+	}
+	p, err := newPicoTransport(baseURL, allowLoopback)
+	if err == nil {
+		p.key = key
+	}
+	return p, err
+}
+
+func newPicoTransport(baseURL string, allowLoopback bool) (*pico, error) {
 	base, err := url.Parse(baseURL)
 	if err != nil || base == nil || (base.Scheme != "http" && base.Scheme != "https") || base.Host == "" || base.Hostname() == "" || base.User != nil || base.RawQuery != "" || base.ForceQuery || base.Fragment != "" || base.Opaque != "" || (base.Path != "" && base.Path != "/") || base.RawPath != "" {
 		return nil, invalid("Device URL must contain only an HTTP(S) scheme, hostname and optional port")
-	}
-	if !apiKey.MatchString(key) {
-		return nil, invalid("Device API key must contain exactly 64 hexadecimal characters")
 	}
 	host := strings.TrimSuffix(strings.ToLower(base.Hostname()), ".")
 	if strings.ContainsAny(host, "% \\") || (!allowLoopback && (host == "localhost" || strings.HasSuffix(host, ".localhost"))) {
@@ -89,7 +97,7 @@ func newPico(baseURL, key string, allowLoopback bool) (*pico, error) {
 		}
 		return nil, errors.New("device connection failed")
 	}
-	return &pico{base: base, key: key, gate: make(chan struct{}, 1), client: &http.Client{Transport: transport, Timeout: 3 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, nil
+	return &pico{base: base, gate: make(chan struct{}, 1), client: &http.Client{Transport: transport, Timeout: 3 * time.Second, CheckRedirect: func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }}}, nil
 }
 
 func prohibitedIP(ip net.IP, allowLoopback bool) bool {
@@ -136,7 +144,9 @@ func (p *pico) request(ctx context.Context, method, path string, value, destinat
 	if err != nil {
 		return invalid("Device request could not be prepared")
 	}
-	request.Header.Set("Authorization", "Bearer "+p.key)
+	if p.key != "" {
+		request.Header.Set("Authorization", "Bearer "+p.key)
+	}
 	request.Header.Set("Accept", "application/json")
 	request.Close = true
 	if write {

@@ -55,6 +55,8 @@ type runtimeDevice struct {
 	telemetryReconnect bool // Guarded by mu; set by a verified reconnect or uptime rollback.
 }
 type Server struct {
+	pairings                  map[string]*machinePairing // guarded by deviceMu
+	newPairingClient          func(string) (registrationPairer, error)
 	cfg                       Config
 	db                        *store.Store
 	usb                       *usbservice.Manager
@@ -261,6 +263,9 @@ func (s *Server) routes() http.Handler {
 			r.Post("/usb/jobs/{id}/cancel", s.usbAnswer)
 			r.Get("/devices", s.listDevices)
 			r.Post("/devices", s.saveDevice)
+			r.Post("/devices/pair", s.startMachinePairing)
+			r.Post("/devices/{id}/key", s.machineKey)
+			r.Post("/devices/{id}/website", s.machineWebsite)
 			r.Get("/devices/{id}", s.getDevice)
 			r.Put("/devices/{id}", s.saveDevice)
 			r.Delete("/devices/{id}", s.deleteDevice)
