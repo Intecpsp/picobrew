@@ -285,6 +285,15 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	native := *a.MachineRecipe
+	caps, e := d.adapter.Discover(r.Context())
+	if e != nil {
+		s.deviceError(w, e)
+		return
+	}
+	if issue := recipeCapabilityIssue(caps, native); issue != "" {
+		s.fail(w, 422, "unsupported_recipe", issue)
+		return
+	}
 	existing, e := d.adapter.Recipes(r.Context())
 	if e != nil {
 		s.deviceError(w, e)
@@ -312,6 +321,10 @@ func (s *Server) deploy(w http.ResponseWriter, r *http.Request) {
 	}
 	if !found && in.ReplaceExpected != nil {
 		s.fail(w, 409, "recipe_changed", "The installed recipe was removed since the preview. Preview again.")
+		return
+	}
+	if !found && len(existing) >= caps.RecipeCapacity {
+		s.fail(w, 409, "recipe_capacity", "No recipe slots remain on the machine")
 		return
 	}
 	recordID := randomID()

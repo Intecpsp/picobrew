@@ -124,6 +124,20 @@ func hasZeroMinuteSteps(v domain.MachineRecipe) bool {
 	return false
 }
 
+func recipeCapabilityIssue(caps domain.Capabilities, recipe domain.MachineRecipe) string {
+	switch {
+	case !caps.Supports("recipes") || caps.RecipeCapacity < 1:
+		return "This firmware does not advertise recipe storage"
+	case recipe.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker):
+		return "This brewer does not support Z Program Maker programs"
+	case recipe.StepCount() > caps.StepCapacity:
+		return "Recipe exceeds the machine's step capacity"
+	case hasZeroMinuteSteps(recipe) && !caps.ZeroMinuteSteps:
+		return "Update the machine firmware to support zero-minute heating steps"
+	}
+	return ""
+}
+
 func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 	d, ok := s.runtime(w, r)
 	if !ok {
@@ -226,15 +240,12 @@ func (s *Server) planDeployment(w http.ResponseWriter, r *http.Request) {
 				native := *adapted.MachineRecipe
 				item.Native, item.Warnings = &native, adapted.Warnings
 				previous, exists := byID[native.ID]
+				issue := recipeCapabilityIssue(caps, native)
 				switch {
 				case seen[native.ID]:
 					item.Reason = "Another selected recipe uses this machine recipe ID"
-				case native.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker):
-					item.Reason = "This brewer does not support Z Program Maker programs"
-				case native.StepCount() > caps.StepCapacity:
-					item.Reason = "Recipe exceeds the machine's step capacity"
-				case hasZeroMinuteSteps(native) && !caps.ZeroMinuteSteps:
-					item.Reason = "Update the machine firmware to support zero-minute heating steps"
+				case issue != "":
+					item.Reason = issue
 				case exists && reflect.DeepEqual(previous, native):
 					item.Reason = "The same recipe is already on this machine"
 				case exists && !in.OverwriteExisting:
@@ -349,7 +360,7 @@ func (s *Server) executeDeployment(w http.ResponseWriter, r *http.Request) {
 		if item.Status != "ready" {
 			continue
 		}
-		if item.Native == nil || item.Native.StepCount() > caps.StepCapacity || item.Native.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker) || hasZeroMinuteSteps(*item.Native) && !caps.ZeroMinuteSteps {
+		if item.Native == nil || recipeCapabilityIssue(caps, *item.Native) != "" {
 			s.fail(w, 409, "capabilities_changed", "The machine's step capabilities changed after this preview; prepare it again")
 			return
 		}
@@ -386,6 +397,16 @@ func (s *Server) executeDeployment(w http.ResponseWriter, r *http.Request) {
 			item.Reason = "The machine is no longer confirmed ready; the remaining transfer was stopped"
 			plan.State = "partial"
 			break
+		}
+		// A brewer-side edit to a later slot can happen after the inventory check.
+		if item.Update {
+			current, readErr := d.adapter.Recipe(r.Context(), item.Native.ID)
+			if readErr != nil || item.Previous == nil || !reflect.DeepEqual(current, *item.Previous) {
+				item.Status = "not_sent"
+				item.Reason = "The installed recipe could not be confirmed against the preview. Refresh the inventory before replacing it."
+				plan.State = "partial"
+				break
+			}
 		}
 		item.Status = "sending"
 		version, err = s.db.Put("batch-deployment", plan.ID, plan, version)

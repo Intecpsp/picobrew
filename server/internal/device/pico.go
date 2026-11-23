@@ -285,23 +285,43 @@ func (p *pico) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 	}
 	result := make([]domain.MachineRecipe, 0, len(list.Recipes))
 	for _, summary := range list.Recipes {
-		if !recipeID.MatchString(summary.ID) {
-			return nil, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe ID"}
-		}
-		var recipe domain.MachineRecipe
-		if err := p.request(ctx, http.MethodGet, "/api/v1/recipes/"+summary.ID, nil, &recipe, 200); err != nil {
+		recipe, err := p.readRecipe(ctx, summary.ID)
+		if err != nil {
 			return nil, err
-		}
-		if recipe.ZProgram != nil {
-			recipe.Name = recipe.ZProgram.Name
-		}
-		if recipe.ID != summary.ID || validateRecipe(recipe) != nil {
-			return nil, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe"}
 		}
 		result = append(result, recipe)
 	}
 	return result, nil
 }
+func (p *pico) Recipe(ctx context.Context, id string) (domain.MachineRecipe, error) {
+	if err := p.lock(ctx); err != nil {
+		return domain.MachineRecipe{}, err
+	}
+	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
+		return domain.MachineRecipe{}, unsupportedCapability("recipes")
+	}
+	return p.readRecipe(ctx, id)
+}
+
+// readRecipe reads one slot while the caller holds the adapter lock.
+func (p *pico) readRecipe(ctx context.Context, id string) (domain.MachineRecipe, error) {
+	if !recipeID.MatchString(id) {
+		return domain.MachineRecipe{}, &Error{Code: "invalid_response", Message: "Invalid machine recipe ID"}
+	}
+	var recipe domain.MachineRecipe
+	if err := p.request(ctx, http.MethodGet, "/api/v1/recipes/"+id, nil, &recipe, 200); err != nil {
+		return domain.MachineRecipe{}, err
+	}
+	if recipe.ZProgram != nil {
+		recipe.Name = recipe.ZProgram.Name
+	}
+	if recipe.ID != id || validateRecipe(recipe) != nil {
+		return domain.MachineRecipe{}, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe"}
+	}
+	return recipe, nil
+}
+
 func (p *pico) CreateRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
 	return p.writeRecipe(ctx, recipe, true)
 }
