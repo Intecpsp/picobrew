@@ -64,3 +64,29 @@ func TestExportIngredientProgramUsesCompiledZRoutes(t *testing.T) {
 	}
 	t.Fatal("lost the mash route or timing", p)
 }
+
+func TestStockZExportPreservesUnheatedMeaning(t *testing.T) {
+	p, _ := supportedProfile("z")
+	rinse := domain.RecipeStep{Name: "Rinse", Kind: "unheated", Location: 1, Minutes: 5}
+	mash := domain.RecipeStep{Name: "Mash", Kind: "mash", Location: 2, TargetC: 65, Minutes: 60}
+	r := domain.Recipe{Name: "Test", BatchLiters: 5, Efficiency: 55, Steps: []domain.RecipeStep{rinse, mash}}
+	data, err := ExportZProgram(r, p)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var prog domain.ZProgram
+	if err := json.Unmarshal(data, &prog); err != nil {
+		t.Fatal(err)
+	}
+	if string(prog.Steps[0].Temp) != "null" {
+		t.Fatal("unheated step became a numeric temperature", string(data))
+	}
+	r.Steps = []domain.RecipeStep{mash, rinse}
+	if _, err := ExportZProgram(r, p); err == nil || !strings.Contains(err.Error(), "turn off") {
+		t.Fatal("converted heater-off command into the stock target carryover", err)
+	}
+	plan, err := Translate(r, p, 0)
+	if err != nil || !plan.CanDeploy || plan.MachineRecipe.Steps[1].TargetF != 0 {
+		t.Fatal("standalone Z lost unheated circulation", err)
+	}
+}

@@ -258,12 +258,13 @@ func buildSchemas() schemaMap {
 	r.properties("MachineRecipe")["id"] = schemaMap{"type": "string", "pattern": "^[A-Za-z0-9_-]{1,20}$"}
 	r.properties("MachineRecipe")["name"] = schemaMap{"type": "string", "minLength": 1, "maxLength": 31, "pattern": "^[ -~]+$"}
 	r.properties("MachineRecipe")["steps"] = schemaMap{"type": "array", "minItems": 1, "maxItems": 15, "items": schemaRef("MachineStep")}
+	r.values["MachineStep"].(schemaMap)["required"] = []string{"name", "location", "target_f", "minutes"}
 	r.properties("MachineStep")["name"] = schemaMap{"type": "string", "minLength": 1, "maxLength": 21, "pattern": "^[ -~]+$"}
 	r.properties("MachineStep")["location"] = schemaMap{"type": "integer", "minimum": 1, "maximum": 6}
 	r.properties("MachineStep")["target_f"] = schemaMap{"oneOf": []any{schemaMap{"type": "integer", "enum": []int{0}}, schemaMap{"type": "integer", "minimum": 60, "maximum": 212}}}
 	r.properties("MachineStep")["minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 599, "description": "Zero advances after the target is reached; requires firmware zero_minute_steps capability."}
 	r.properties("MachineStep")["drain_minutes"] = schemaMap{"type": "integer", "minimum": 0, "maximum": 120}
-	r.values["NativeSourceStep"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 512}, "location": schemaMap{"type": "integer", "minimum": 0, "maximum": 6}, "target_f": schemaMap{"type": "integer", "minimum": 0, "maximum": 212}, "minutes": schemaMap{"type": "integer", "minimum": 0, "maximum": 43200}, "drain_minutes": schemaMap{"type": "integer", "minimum": 0, "maximum": 1440}}, "name", "location", "target_f", "minutes", "drain_minutes")
+	r.values["NativeSourceStep"] = schemaObject(schemaMap{"name": schemaMap{"type": "string", "minLength": 1, "maxLength": 512}, "location": schemaMap{"type": "integer", "minimum": 0, "maximum": 6}, "target_f": schemaMap{"type": "integer", "minimum": 0, "maximum": 212}, "minutes": schemaMap{"type": "integer", "minimum": 0, "maximum": 43200}, "drain_minutes": schemaMap{"type": "integer", "minimum": 0, "maximum": 1440}}, "name", "location", "target_f", "minutes")
 	r.values["NativeSourceProgram"] = schemaObject(schemaMap{"id": schemaMap{"type": "string", "pattern": "^[A-Za-z0-9_-]{1,20}$"}, "name": schemaMap{"type": "string", "minLength": 1, "maxLength": 512}, "steps": schemaMap{"type": "array", "minItems": 1, "maxItems": 256, "items": schemaRef("NativeSourceStep")}}, "id", "name", "steps")
 	r.properties("Recipe")["native_program"] = schemaMap{"allOf": []any{schemaRef("NativeSourceProgram")}, "nullable": true, "description": "Exact archived source schedule, which can exceed a target brewer's limits. Adaptation validates the selected machine before deployment."}
 	r.properties("Recipe")["kind"] = schemaMap{"type": "string", "enum": []string{"", "recipe", "native-program", "maintenance"}}

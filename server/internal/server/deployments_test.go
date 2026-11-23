@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"sort"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -271,6 +272,15 @@ func TestInstalledProgramEditingChecksStaleAndBusyState(t *testing.T) {
 	edited.Steps[1].Minutes = 45
 	url := fmt.Sprintf("%s/api/v1/devices/bulk/recipes/one", h.URL)
 	in := MachineRecipeUpdate{Recipe: edited, Expected: expected}
+	// An omitted hold must not become a command to advance immediately.
+	wire, err := json.Marshal(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	malformed := strings.Replace(string(wire), `"minutes":45,`, "", 1)
+	if code, body := request(t, c, "PUT", url, csrf, json.RawMessage(malformed), nil); code != 400 || a.writes != 0 {
+		t.Fatalf("incomplete slot edit: %d %s (writes %d)", code, body, a.writes)
+	}
 	a.busy = true
 	code, body := request(t, c, "PUT", url, csrf, in, nil)
 	if code != 409 || a.writes != 0 {

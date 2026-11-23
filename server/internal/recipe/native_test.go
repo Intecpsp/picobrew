@@ -18,6 +18,38 @@ func archivedProgram() domain.Recipe {
 		}}, Provenance: &domain.RecipeProvenance{CatalogID: "pico-64", Warnings: []string{"No ingredient bill is present in this source"}}}
 }
 
+func TestNativeImportRequiresExplicitTargetAndTiming(t *testing.T) {
+	source, err := recipe.Export(archivedProgram(), "json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	wire, err := json.Marshal(json.RawMessage(source))
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, edit := range [][2]string{
+		{`"target_f":152,`, ""}, {`"target_f":152`, `"target_f":null`},
+		{`"minutes":0,`, ""}, {`"minutes":0`, `"minutes":null`},
+		{`"drain_minutes":0`, `"drain_minutes":null`},
+		{`"location":1`, `"Location":1`},
+		{`"minutes":0`, `"minutes":60,"minutes":0`},
+	} {
+		malformed := strings.Replace(string(wire), edit[0], edit[1], 1)
+		if _, err := recipe.Import([]byte(malformed), "json"); err == nil {
+			t.Fatalf("accepted %q replaced by %q", edit[0], edit[1])
+		}
+	}
+	unheated := strings.Replace(string(wire), `"target_f":152`, `"target_f":0`, 1)
+	unheated = strings.Replace(unheated, `,"drain_minutes":0`, "", 1)
+	imported, err := recipe.Import([]byte(unheated), "json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	if step := imported[0].NativeProgram.Steps[0]; step.TargetF != 0 || step.Minutes != 0 || step.DrainMinutes != 0 {
+		t.Fatalf("explicit zero or default drain changed: %+v", step)
+	}
+}
+
 func TestNativeProgramRetainsExactScheduleAndIndependentProvenance(t *testing.T) {
 	r := archivedProgram()
 	before, _ := json.Marshal(r)

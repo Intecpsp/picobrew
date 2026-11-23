@@ -1,12 +1,10 @@
 package domain
 
 import (
-	"bytes"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"math"
-	"slices"
 	"strings"
 )
 
@@ -29,50 +27,15 @@ type ZProgramStep struct {
 	Drain    *int            `json:"Drain,omitempty"`
 }
 
-// Field names are case-sensitive on the original appliance. Reject duplicates,
-// omitted required fields, and unexpected fields before decoding Go values.
-func zFields(b []byte, required, optional string) error {
-	d := json.NewDecoder(bytes.NewReader(b))
-	t, err := d.Token()
-	if err != nil || t != json.Delim('{') {
-		return errors.New("expected a Z Program Maker object")
-	}
-	fields := strings.Fields(required + " " + optional)
-	seen := map[string]bool{}
-	for d.More() {
-		t, err := d.Token()
-		if err != nil {
-			return err
-		}
-		key, ok := t.(string)
-		if !ok || seen[key] || !slices.Contains(fields, key) {
-			return fmt.Errorf("unexpected or repeated Z program field %q", key)
-		}
-		seen[key] = true
-		var raw json.RawMessage
-		if err := d.Decode(&raw); err != nil {
-			return err
-		}
-		if bytes.Equal(raw, []byte("null")) && key != "Temp" {
-			return fmt.Errorf("%s cannot be null", key)
-		}
-	}
-	for _, key := range strings.Fields(required) {
-		if !seen[key] {
-			return fmt.Errorf("missing Z program field %s", key)
-		}
-	}
-	return nil
-}
 func (p *ZProgram) UnmarshalJSON(b []byte) error {
-	if err := zFields(b, "Name IsBeer UsePicoPakMode Steps", "IsMetric"); err != nil {
+	if err := recipeFields(b, "Z program", "Name IsBeer UsePicoPakMode Steps", "IsMetric", ""); err != nil {
 		return err
 	}
 	type plain ZProgram
 	return json.Unmarshal(b, (*plain)(p))
 }
 func (s *ZProgramStep) UnmarshalJSON(b []byte) error {
-	if err := zFields(b, "Name StepType", "Time Location Temp Drain"); err != nil {
+	if err := recipeFields(b, "Z program step", "Name StepType", "Time Location Temp Drain", "Temp"); err != nil {
 		return err
 	}
 	type plain ZProgramStep

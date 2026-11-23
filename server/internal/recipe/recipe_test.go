@@ -521,3 +521,21 @@ func TestTimedBoilCannotHideAnInterveningHold(t *testing.T) {
 		}
 	}
 }
+
+func TestFinalBoilDrainCannotRunBetweenTimedHopSteps(t *testing.T) {
+	for _, p := range recipe.Profiles() {
+		r := source()
+		r.Steps[1].Minutes = 20
+		r.Steps[1].DrainMinutes = 5
+		r.Steps = append(r.Steps, domain.RecipeStep{Name: "Finishing hops", Kind: "hop", TargetC: 95, Minutes: 10, Location: 4})
+		plan, err := recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe != nil || !strings.Contains(strings.Join(plan.DeploymentBlockers, " "), "interrupts hop circulation") {
+			t.Fatalf("%s omitted an intermediate drain from the hop schedule: %+v %v", p.ID, plan, err)
+		}
+		r.Steps[1].DrainMinutes, r.Steps[2].DrainMinutes = 0, 5
+		plan, err = recipe.Translate(r, p, 0)
+		if err != nil || plan.MachineRecipe == nil {
+			t.Fatalf("%s rejected a final drain: %+v %v", p.ID, plan.DeploymentBlockers, err)
+		}
+	}
+}
