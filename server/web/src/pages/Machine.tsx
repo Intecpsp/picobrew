@@ -1,3 +1,4 @@
+import { MachineCare } from '../components/MachineCare'
 import { MachineManagement } from '../components/MachineManagement'
 import { useEffect, useState } from 'react'
 import {
@@ -49,6 +50,7 @@ const programNames: Record<string, string> = {
   manual: 'Manual brew',
   rinse: 'Rinse',
   'first-rinse': 'First rinse',
+  'deep-clean': 'Deep Clean',
   descale: 'Descale',
   circulate: 'Circulate',
   'drain-reservoir': 'Drain reservoir',
@@ -217,6 +219,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
         )
       setConfirm(null)
       if (command === 'brew' || command === 'manual') setMonitorNextBrew(false)
+      if (command === 'restore-starter-recipes') native.reload()
       monitor.reload()
       display.reload()
       await hub.refresh()
@@ -289,6 +292,8 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
       ? `Step ${live.current_step + 1} of ${live.step_count}`
       : ''
   const allowed = (name: string) => device.online && commands.includes(name)
+  const cc3200 = ['pico-s', 'pico-pro', 'pico-c'].includes(device.model) && !simulated
+  const controlsReady = !cc3200 || !!live?.ready
   const recovery = status?.recovery
   const interrupted = !!recovery && (recovery.available || !recovery.valid)
   const state = live?.stopped ? 'Outputs locked' : deviceState(device)
@@ -348,7 +353,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
             {commands.includes('stop') && (
               <Button
                 variant="danger"
-                disabled={!allowed('stop') || pending === 'stop' || !!live?.stopped}
+                disabled={
+                  !controlsReady || !allowed('stop') || pending === 'stop' || !!live?.stopped
+                }
                 onClick={() => void command('stop')}
                 title={lockDescription}
               >
@@ -403,6 +410,8 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                 disabled={
                   !allowed('resume-interrupted') ||
                   !recovery.available ||
+                  (device.model === 'z-series' &&
+                    (!status?.ready || status.filter_inserted === false)) ||
                   !!status?.busy ||
                   !!status?.stopped ||
                   !!pending
@@ -449,13 +458,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               <Button
                 variant="secondary"
                 aria-label="Move selection up"
-                disabled={!allowed('encoder') || !!pending || !turnEnabled}
+                disabled={!controlsReady || !allowed('encoder') || !!pending || !turnEnabled}
                 onClick={() => void command('encoder', { delta: -1 })}
               >
                 <ArrowUp size={16} /> Up
               </Button>
               <Button
-                disabled={!allowed('encoder') || !!pending || !pressEnabled}
+                disabled={!controlsReady || !allowed('encoder') || !!pending || !pressEnabled}
                 onClick={() => void command('encoder', { click: true })}
               >
                 Press dial
@@ -463,7 +472,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               <Button
                 variant="secondary"
                 aria-label="Move selection down"
-                disabled={!allowed('encoder') || !!pending || !turnEnabled}
+                disabled={!controlsReady || !allowed('encoder') || !!pending || !turnEnabled}
                 onClick={() => void command('encoder', { delta: 1 })}
               >
                 Down <ArrowDown size={16} />
@@ -535,7 +544,12 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
             <Button
               variant="secondary"
               className="full-width"
-              disabled={!allowed('clear-stop') || !!pending}
+              disabled={
+                !allowed('clear-stop') ||
+                live.busy ||
+                (cc3200 && (!live.ready || live.phase !== 4)) ||
+                !!pending
+              }
               onClick={() => requestStart({ command: 'clear-stop', label: 'unlock outputs' })}
             >
               Unlock outputs
@@ -549,7 +563,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   <Button
                     key={name}
                     variant="secondary"
-                    disabled={!allowed(name) || !status?.busy || !!status?.stopped || !!pending}
+                    disabled={
+                      !allowed(name) ||
+                      !live.busy ||
+                      live.stopped ||
+                      (device.model === 'z-series' && live.state?.toLowerCase() !== 'running') ||
+                      !!pending
+                    }
                     onClick={() => void command(name, { confirm: true })}
                   >
                     {name === 'pause' ? 'Pause session' : 'Resume session'}
@@ -641,6 +661,20 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                     <ArrowUpRight size={14} />
                   </button>
                   <ErrorBanner message={native.error} retry={native.reload} />
+                  {commands.includes('restore-starter-recipes') && (
+                    <Button
+                      variant="secondary"
+                      disabled={!live.ready || !!pending}
+                      onClick={() =>
+                        requestStart({
+                          command: 'restore-starter-recipes',
+                          label: 'starter recipes',
+                        })
+                      }
+                    >
+                      Restore missing starter recipes
+                    </Button>
+                  )}
                   {native.data && !native.error && (
                     <div className="native-library">
                       <small>
@@ -651,6 +685,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                         variant="ghost"
                         disabled={
                           !recipeID ||
+                          !live.ready ||
                           !device.online ||
                           !status?.ready ||
                           !!status?.busy ||
@@ -669,6 +704,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                         className="danger-text"
                         disabled={
                           !recipeID ||
+                          !live.ready ||
                           !device.online ||
                           !!status?.busy ||
                           !!status?.stopped ||
@@ -697,7 +733,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   <Button
                     variant="secondary"
                     className="full-width"
-                    disabled={!allowed(program) || !!pending || !!status?.busy || interrupted}
+                    disabled={
+                      !allowed(program) || !live.ready || !!pending || !!status?.busy || interrupted
+                    }
                     onClick={() =>
                       requestStart({ command: program, label: programNames[program] || program })
                     }
@@ -814,6 +852,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           />
         )}
       </section>
+      <MachineCare model={device.model} />
       <BrewAIMonitor
         deviceID={id}
         deviceName={device.name}
@@ -825,31 +864,37 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
       {confirm && (
         <Confirm
           title={
-            confirm.command === 'clear-stop'
-              ? 'Unlock outputs?'
-              : confirm.command === 'resume-interrupted'
-                ? `Resume ${confirm.label}?`
-                : confirm.command === 'discard-interrupted'
-                  ? 'Discard the interrupted checkpoint?'
-                  : `Start ${confirm.label}?`
+            confirm.command === 'restore-starter-recipes'
+              ? 'Restore missing starter recipes?'
+              : confirm.command === 'clear-stop'
+                ? 'Unlock outputs?'
+                : confirm.command === 'resume-interrupted'
+                  ? `Resume ${confirm.label}?`
+                  : confirm.command === 'discard-interrupted'
+                    ? 'Discard the interrupted checkpoint?'
+                    : `Start ${confirm.label}?`
           }
           description={
-            confirm.command === 'clear-stop'
-              ? 'Unlocking allows the brewer to heat and pump again. Confirm the operation has ended and the brewer is ready.'
-              : confirm.command === 'resume-interrupted'
-                ? 'Verify the water, vessel and filter before resuming. Saved progress can be up to 30 seconds behind the interruption. The brewer resumes with its saved remaining step time and may return to preparation prompts.'
-                : confirm.command === 'discard-interrupted'
-                  ? 'This saved operation cannot be resumed afterward. Discard its checkpoint?'
-                  : `This sends a command to ${device.name}. Confirm the brewer is prepared.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
+            confirm.command === 'restore-starter-recipes'
+              ? 'Add the firmware’s missing starter recipes to the brewer. Existing recipes are preserved.'
+              : confirm.command === 'clear-stop'
+                ? 'Unlocking allows the brewer to heat and pump again. Confirm the operation has ended and the brewer is ready.'
+                : confirm.command === 'resume-interrupted'
+                  ? 'Verify the water, vessel and filter before resuming. Saved progress can be up to 30 seconds behind the interruption. The brewer resumes with its saved remaining step time and may return to preparation prompts.'
+                  : confirm.command === 'discard-interrupted'
+                    ? 'This saved operation cannot be resumed afterward. Discard its checkpoint?'
+                    : `This sends a command to ${device.name}. Confirm the brewer is prepared.${monitorNextBrew && ['brew', 'manual'].includes(confirm.command) ? ' AI monitoring is requested for this brew.' : ''}`
           }
           label={
-            confirm.command === 'clear-stop'
-              ? 'Unlock outputs'
-              : confirm.command === 'resume-interrupted'
-                ? 'Resume brew'
-                : confirm.command === 'discard-interrupted'
-                  ? 'Discard checkpoint'
-                  : 'Start program'
+            confirm.command === 'restore-starter-recipes'
+              ? 'Restore recipes'
+              : confirm.command === 'clear-stop'
+                ? 'Unlock outputs'
+                : confirm.command === 'resume-interrupted'
+                  ? 'Resume brew'
+                  : confirm.command === 'discard-interrupted'
+                    ? 'Discard checkpoint'
+                    : 'Start program'
           }
           danger={confirm.command === 'discard-interrupted'}
           busy={!!pending}

@@ -25,9 +25,12 @@ and fermentation schedules do not change when the batch is scaled.
 
 ## Profiles and native programs
 
-Profiles are configurable planning defaults. Pico Pro and S control support
-requires the standalone REST firmware. C and generic Z also have standalone adapters. Zymatic provides planning/export only. Changing a profile flag cannot create a missing protocol
-adapter. The Z profile represents a single brewing module.
+The Hub transfers recipes to standalone Pico S, Pro, C and generic Z brewers over
+their local REST APIs. A stock or modified Zymatic fetches its recipe menu from
+the Hub. Its records allow up to 25 steps, 207 °F, and 255 minutes per hold or
+drain, all within a 511-byte record. Its valve numbers and operator pauses use a
+separate encoder. The Z profile represents one brewing module. PicoStill and
+PicoFerm have no hot-side recipe programs.
 
 C/S/Pro defaults use 5 L and approximately 50% efficiency from Small Brew
 Companion's recipe-scaling guide. PicoBrew's C/Pro specifications also establish
@@ -40,13 +43,14 @@ the requested batch in the preview.
 
 Automatic machine versions use the smaller of grain capacity divided by total grain weight and hop slot capacity divided by the heaviest combined timed addition. A saved usable batch limit also applies. Every measured ingredient uses the same multiplier, including water, extract, dry hops and yeast. The source batch volume times that multiplier gives a recipe-equivalent yield estimate. The actual working fill, absorption, boil-off and yeast pitch require equipment-specific judgment. For a bill with no bounded grain or timed hops, the profile batch volume is the fallback. An explicit batch request uses the requested volume divided by the source volume.
 
-Native generation requires explicit `location` values 1–6 for every step. Zero
-means **unmapped** and blocks deployment. Locations have no invented names such
-as "grain chamber" in this package. Infusion, decoction, timed ramps, cooling,
-and fermentation have no verified mapping to this firmware's step schema and
-cannot silently become temperature holds. The caller must prepare a reviewed,
-explicit machine program. Fermentation and carbonation remain separate planning
-metadata; the hot-side program does not control them.
+Standalone machine steps use direct routes 1–6. For an ingredient recipe with
+fully unmapped steps, the Hub can translate a supported mash, boil and timed
+adjunct schedule. A boil-only extract recipe can skip the basket when all its
+fermentables are soluble kettle additions. Partially mapped routes require
+review. Every scheduled mash stage for a loaded grain basket must heat through
+that basket before the boil. Decoction, infusion-volume and timed-ramp
+instructions require review. Fermentation and carbonation are tracked in the
+brew journal.
 
 The native validator implements the actual firmware limits:
 
@@ -57,7 +61,7 @@ The native validator implements the actual firmware limits:
 | Steps | 1–15 |
 | Location | 1–6, explicitly provided |
 | Temperature | Integer 0 (unheated), or 60–212°F |
-| Active / drain duration | 1–599 / 0–120 minutes |
+| Active / drain duration | 0–599 / 0–120 minutes. Zero-minute steps require the firmware capability. |
 | Serialized JSON request | At most 4095 bytes |
 
 Celsius values become integer Fahrenheit targets with explicit rounding warnings.
@@ -94,14 +98,14 @@ volume. Case-insensitive recognized types emit standard BeerXML casing.
 A `HUB_STEPS` extension stores the canonical step array as escaped JSON, retaining
 explicit locations and drain times on a hub round-trip. Other BeerXML applications
 may ignore/remove that extension. Standard BeerXML imported without it starts
-with unmapped locations and therefore cannot be deployed immediately. Native
+with unmapped locations and goes through the same recipe translation before transfer. Native
 firmware JSON is a distinct schema; it is not silently treated as a complete
 canonical recipe because it lacks batch size and efficiency.
 
 ## Source contracts
 
-- [Standalone firmware API: recipe bounds and location semantics](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/blob/feature/standalone-rest-api/docs/standalone-api.md#recipes-sixteen-records-fifteen-steps-each)
-- [Standalone request parser](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/blob/feature/standalone-rest-api/src/local_api.c)
+- [Standalone firmware API: recipe bounds and location semantics](../../../firmware/pico-s-pro/modified/docs/standalone-api.md#recipes-sixteen-records-fifteen-steps-each)
+- [Standalone request parser](../../../firmware/pico-s-pro/modified/src/local_api.c)
 - [BeerXML 1 specification](https://www.beerxml.com/beerxml.htm)
 - [Pico Pro product specification](https://picobrew.com/store/products/pico)
 - [Pico C product specification](https://picobrew.com/store/products/picoc)

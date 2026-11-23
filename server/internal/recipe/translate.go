@@ -173,7 +173,18 @@ func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
 	}
 	remaining := duration
 	mashRest := false
+	mashLoad, additions := ingredientLoads(r)
+	var firstAddition float64
+	for minute := range additions {
+		firstAddition = max(firstAddition, minute)
+	}
 	for i, step := range r.Steps {
+		if mashLoad > 0 && (step.Kind == "mash" || step.Kind == "mash-out") && (remaining != duration || step.Location != 2 || step.TargetC == 0) {
+			return fmt.Sprintf("The mash step %q must heat through the grain basket before the boil.", step.Name)
+		}
+		if float64(remaining) < firstAddition && remaining > 0 && step.Kind != "boil" && step.Kind != "hop" {
+			return fmt.Sprintf("The step %q interrupts the timed boil and changes hop exposure. Keep the boil and hop stages together.", step.Name)
+		}
 		if remaining == duration && step.Location == 2 && step.TargetC > 0 && step.Minutes > 0 && (step.Kind == "mash" || step.Kind == "hold") {
 			mashRest = true
 		}
@@ -192,7 +203,7 @@ func checkRoutedIngredients(r domain.Recipe, first map[int]int) string {
 	}
 	for _, in := range r.Ingredients {
 		use := strings.ToLower(strings.TrimSpace(in.Use))
-		if !mashRest && in.Kind == "fermentable" && mashLoadKG(in) > 0 {
+		if !mashRest && mashLoadKG(in) > 0 {
 			return "Add a heated, timed mash rest through the grain basket for " + in.Name + " before the boil."
 		}
 		firstWort := use == "first-wort" || use == "first wort"
@@ -256,16 +267,17 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 	var rests []domain.RecipeStep
 	var boil domain.RecipeStep
 	for _, s := range r.Steps {
+		operation := strings.ToLower(strings.TrimSpace(s.Type))
 		switch s.Kind {
 		case "mash", "mash-out":
-			if boil.Minutes > 0 || s.InfuseLiters != 0 || s.RampMinutes != 0 || (s.Type == "Decoction" || s.Type == "Infusion" && (r.Provenance == nil || r.Provenance.SourceID != "public-recipes")) || s.Minutes <= 0 || s.TargetC <= 0 {
+			if boil.Minutes > 0 || s.InfuseLiters != 0 || s.RampMinutes != 0 || (operation == "decoction" || operation == "infusion" && (r.Provenance == nil || r.Provenance.SourceID != "public-recipes")) || s.Minutes <= 0 || s.TargetC <= 0 {
 				return nil, "Review the source mash operation and its equipment requirements."
 			}
 			s.Type = "Temperature"
 			s.Location = 2
 			rests = append(rests, s)
 		case "boil":
-			if boil.Minutes != 0 || s.TargetC < minBoilTargetC || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || s.Type != "" && s.Type != "Temperature" {
+			if boil.Minutes != 0 || s.TargetC < minBoilTargetC || s.DrainMinutes != 0 || s.RampMinutes != 0 || s.InfuseLiters != 0 || operation != "" && operation != "temperature" {
 				return nil, "Review the source boil stages and temperatures."
 			}
 			boil = s
@@ -276,7 +288,14 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 	if r.BoilMinutes != 0 && float64(boil.Minutes) != r.BoilMinutes {
 		return nil, "The declared boil duration and scheduled boil disagree. Choose the intended duration."
 	}
-	if len(rests) == 0 || boil.Minutes <= 0 {
+	// Keg extract recipes need only the boil. Verify the ingredients so a
+	// mislabeled grain recipe cannot lose its mash during conversion.
+	extract := strings.EqualFold(strings.TrimSpace(r.Type), "Extract") &&
+		slices.ContainsFunc(r.Ingredients, func(in domain.Ingredient) bool { return in.Kind == "fermentable" }) &&
+		!slices.ContainsFunc(r.Ingredients, func(in domain.Ingredient) bool {
+			return mashLoadKG(in) > 0 || in.Kind == "fermentable" && !kettleFermentable(in.Type)
+		})
+	if boil.Minutes <= 0 || len(rests) == 0 && !extract {
 		return nil, "Supply a timed mash and boil before preparing a machine program."
 	}
 	if r.Provenance != nil {
@@ -323,11 +342,14 @@ func routeIngredientSteps(r domain.Recipe, p domain.Profile) ([]domain.RecipeSte
 	if p.ID == "z" {
 		keg = math.Min(keg, (202.0-32)/1.8)
 	}
-	steps := []domain.RecipeStep{{Name: "Heat water", Kind: "heat", Location: 1, TargetC: rests[0].TargetC}}
-	if rests[len(rests)-1].DrainMinutes == 0 {
-		rests[len(rests)-1].DrainMinutes = mashDrain
+	var steps []domain.RecipeStep
+	if len(rests) > 0 {
+		steps = append(steps, domain.RecipeStep{Name: "Heat water", Kind: "heat", Location: 1, TargetC: rests[0].TargetC})
+		if rests[len(rests)-1].DrainMinutes == 0 {
+			rests[len(rests)-1].DrainMinutes = mashDrain
+		}
+		steps = append(steps, rests...)
 	}
-	steps = append(steps, rests...)
 	heat := domain.RecipeStep{Name: "Heat to boil", Kind: "heat", Location: 1, TargetC: keg}
 	if firstWort {
 		for _, in := range r.Ingredients {

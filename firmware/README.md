@@ -6,12 +6,12 @@ general repository tools live at root `tools/`.
 
 | Directory | OEM material | Source status |
 | --- | --- | --- |
-| [`pico-s-pro/`](pico-s-pro/README.md) | Verified device application image plus 1 upstream update envelope | Frozen pre-v1 OEM reconstruction, modified 1.2.0 brewing firmware and separate experimental recovery candidate |
-| [`pico-c/`](pico-c/README.md) | 2 upstream update envelopes, including the alternate 0.1.34 image | Recovered C application and standalone 1.2.0 builds for explicit SSD1325/SSD1309 controllers |
+| [`pico-s-pro/`](pico-s-pro/README.md) | Verified device application image plus 1 upstream update envelope | Frozen pre-v1 OEM reconstruction, standalone brewing firmware with Hub OTA on provisioned units and a separately preserved recovery prototype |
+| [`pico-c/`](pico-c/README.md) | 2 upstream update envelopes, including the alternate 0.1.34 image | Recovered C application and standalone builds for explicit SSD1325/SSD1309 controllers |
 | [`z1/`](z1/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Uses shared development under z-series; no model-specific image claim |
 | [`z2/`](z2/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Uses shared development under z-series; no model-specific image claim |
 | [`z-series/`](z-series/README.md) | 2 unchanged upstream Z-series images | Recovered Core/Head application and standalone ESP32 source/image build, local recipes, explicit restart recovery and common API/browser |
-| [`zymatic/`](zymatic/README.md) | Verified 1.1.14 HEX from a separate pinned support archive | Reconstructed AVR control paths and source-built 1.2.0 extension for offline brewing and wired monitoring |
+| [`zymatic/`](zymatic/README.md) | Verified 1.1.14 HEX from a separate pinned support archive | Reconstructed AVR control paths and conservative 1.2.0 USB conversion for offline brewing and wired monitoring, plus 1.3.x dial pairing and session history on units with a verified boot window |
 | [`picoferm/`](picoferm/README.md) | 16 unchanged upstream images | Recovered ESP8266 application and standalone sensor/recording firmware with bounded acquisition, calibration and common API/browser |
 | [`picostill/`](picostill/README.md) | 6 unchanged upstream images | Recovered ESP32 application and standalone accessory controller with native pump/fan interlocks and common API/browser |
 

@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "source_sha256": "02a345bf25b3cad412b27367497dc09857aa74c23252b18755c020ac4119ce33",
+  "source_sha256": "39e7a78e2dce47f6de022760629a9f9c5f220c2214419eb32d52024494f0b8d7",
   "headers": {
     "include/picobrew/common_web.h": "a32e78944bc9c6f470f03afaac681ecc8f040ada75e7fd0364696af3f2a5172b",
     "include/picobrew/http_server.h": "0a301db4544a62250f9ba64e6e1947f8aaa3ed16be1fcd7c14322b380f03cb38"
@@ -27,15 +27,15 @@
         "-U__STRICT_ANSI__",
         "-DESP8266"
       ],
-      "object_bytes": 39968,
-      "object_sha256": "4f1792508c34ae62038843d5eb17592018607a7d975be89f5b5f1db52035b9e3",
+      "object_bytes": 40860,
+      "object_sha256": "8c1d315d809cf2e4b7684b6e9227a4fdb5ab2d45e397269586c3f6ca85d211af",
       "asset_sections": [
-        "000074dd l     O .irom.text\t00001374 _ZN12_GLOBAL__N_1L7asset_0E",
-        "00006ae6 l     O .irom.text\t000009f7 _ZN12_GLOBAL__N_1L7asset_1E",
-        "00003982 l     O .irom.text\t00003164 _ZN12_GLOBAL__N_1L7asset_2E",
-        "00002936 l     O .irom.text\t0000104c _ZN12_GLOBAL__N_1L7asset_3E",
-        "000013d7 l     O .irom.text\t0000155f _ZN12_GLOBAL__N_1L7asset_4E",
-        "00000482 l     O .irom.text\t00000f55 _ZN12_GLOBAL__N_1L7asset_5E",
+        "000077b7 l     O .irom.text\t00001419 _ZN12_GLOBAL__N_1L7asset_0E",
+        "00006dc0 l     O .irom.text\t000009f7 _ZN12_GLOBAL__N_1L7asset_1E",
+        "00003996 l     O .irom.text\t0000342a _ZN12_GLOBAL__N_1L7asset_2E",
+        "0000294a l     O .irom.text\t0000104c _ZN12_GLOBAL__N_1L7asset_3E",
+        "000013eb l     O .irom.text\t0000155f _ZN12_GLOBAL__N_1L7asset_4E",
+        "00000482 l     O .irom.text\t00000f69 _ZN12_GLOBAL__N_1L7asset_5E",
         "00000000 l     O .irom.text\t00000482 _ZN12_GLOBAL__N_1L7asset_6E"
       ],
       "sdk_headers": {
@@ -59,15 +59,15 @@
         "-ffunction-sections",
         "-fdata-sections"
       ],
-      "object_bytes": 40636,
-      "object_sha256": "312e78f5f01b257f29c6483fb52449b243fcb44e035ada0fcf5bf710b6aeb9fc",
+      "object_bytes": 41532,
+      "object_sha256": "0d8fbcf2e56328d712dee37f26d33c563a02865530e5ebda58ecc7cb5b07d28d",
       "asset_sections": [
-        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_0E\t00001374 _ZN12_GLOBAL__N_1L7asset_0E",
+        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_0E\t00001419 _ZN12_GLOBAL__N_1L7asset_0E",
         "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_1E\t000009f7 _ZN12_GLOBAL__N_1L7asset_1E",
-        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_2E\t00003164 _ZN12_GLOBAL__N_1L7asset_2E",
+        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_2E\t0000342a _ZN12_GLOBAL__N_1L7asset_2E",
         "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_3E\t0000104c _ZN12_GLOBAL__N_1L7asset_3E",
         "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_4E\t0000155f _ZN12_GLOBAL__N_1L7asset_4E",
-        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_5E\t00000f55 _ZN12_GLOBAL__N_1L7asset_5E",
+        "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_5E\t00000f69 _ZN12_GLOBAL__N_1L7asset_5E",
         "00000000 l     O .rodata._ZN12_GLOBAL__N_1L7asset_6E\t00000482 _ZN12_GLOBAL__N_1L7asset_6E"
       ],
       "sdk_headers": {}

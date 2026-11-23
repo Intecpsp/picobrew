@@ -139,7 +139,7 @@ steps without S/Pro's final timed drain.
 ## Commands and cancellation
 
 Discovery advertises `brew`, `sous-vide`, `cold-brew`, `manual`, `rinse`,
-`first-rinse`, `descale`, `circulate`, `drain-reservoir`, `drain-filter`,
+`first-rinse`, `deep-clean`, `descale`, `circulate`, `drain-reservoir`, `drain-filter`,
 `rack-beer`, `utilities`, `settings`, `stop`, `clear-stop` and `encoder`.
 Programs are queued only from the main-menu boundary and dispatch after the
 HTTP call returns. An explicit pending-command check prevents the C menu's

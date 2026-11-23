@@ -3,7 +3,7 @@
     {
       "model": "picoferm",
       "viewport": 1280,
-      "requests": 15,
+      "requests": 17,
       "commands": [
         {
           "command": "calibrate",
@@ -19,7 +19,7 @@
     {
       "model": "picoferm",
       "viewport": 390,
-      "requests": 15,
+      "requests": 18,
       "commands": [
         {
           "command": "calibrate",
@@ -35,7 +35,7 @@
     {
       "model": "picostill",
       "viewport": 1280,
-      "requests": 15,
+      "requests": 19,
       "commands": [
         {
           "command": "set-pump",
@@ -45,6 +45,12 @@
           "command": "set-fan",
           "channel": 2,
           "level": 35,
+          "enabled": true
+        },
+        {
+          "command": "set-fan",
+          "channel": 2,
+          "level": 61,
           "enabled": true
         }
       ],
@@ -53,7 +59,7 @@
     {
       "model": "picostill",
       "viewport": 390,
-      "requests": 15,
+      "requests": 20,
       "commands": [
         {
           "command": "set-pump",
@@ -64,6 +70,12 @@
           "channel": 2,
           "level": 35,
           "enabled": true
+        },
+        {
+          "command": "set-fan",
+          "channel": 2,
+          "level": 61,
+          "enabled": true
         }
       ],
       "errors": []
@@ -71,7 +83,7 @@
     {
       "model": "z-series",
       "viewport": 1280,
-      "requests": 30,
+      "requests": 53,
       "commands": [
         {
           "command": "resume-interrupted",
@@ -86,7 +98,7 @@
     {
       "model": "z-series",
       "viewport": 390,
-      "requests": 30,
+      "requests": 51,
       "commands": [
         {
           "command": "resume-interrupted",
@@ -103,20 +115,23 @@
   "schema_version": 1,
   "scope": "Actual common browser source served by local HTTP with authenticated API fixtures; no OEM execution or hardware qualification is claimed.",
   "source_sha256": {
-    "tests/test_web.py": "088dc1214ad51faf5c303895e10bd0090293d553a67ef3fd930e6ea9e8934a8c",
-    "tests/web.test.cjs": "e4e00542dc4cd3c4fcb9bf5ca8b3c8f5e843033622d01046a45901708cd6e389",
-    "tests/web_assets.cpp": "817105462d9f07a08f4adc04c9c0f8eca43fd027c0fe5e6ae99af5b217d95580",
-    "tests/web_browser.py": "27ef739e33431f5303c315e632a7e816c9cf1b80a0266553798d733580aed70b",
-    "web/api-explorer.js": "86a25f6772233d7f9bec7a96d2e3aba8cd1488f56b2e7c25d84336e6be16d321",
-    "web/app.js": "2dc815b945a2d9b58426e854bde2b5a2ace1308f011f9e8ea1dd48c7dc41bc2c",
-    "web/device.js": "c0f911f816561ad5547e1ac6ad7f463142406fa88623002aeff61aa8b0c4313f",
-    "web/history.js": "0900eb9d5f3678e386f0c515134a74986d35865de30933f27fca85aa36dd6669",
-    "web/index.html": "92bf9b99b2d699f22e9a8efe588abacc088fa5f8f0551d49fc5ee6411282569a",
-    "web/style.css": "dd8c011d949dffa23027397b625db67a4fca74d3239268ab41f28de07c0d61c2"
+    "tests/test_web.py": "1176e70d6e055655e952230acb48066e4e67a3f337ad719f048260529cbb05ba",
+    "tests/web.test.cjs": "94a6f45aa30b6b10f1e54b7702c42eda830ee3d1bd4aeec88e4bfd0de93e94cb",
+    "tests/web_assets.cpp": "1052ca438b07cfea385c64034a9aaf59205185b2f55272846c87a430d487aaa3",
+    "tests/web_browser.py": "4f0a07291ad283dc2d743315ef40a1061e95006f33057a987f461666c0dbcbc0",
+    "web/api-explorer.js": "1284b4fd8a26693769e28af5936d4ad91e946736915ca15aa2ea631dcc26870e",
+    "web/app.js": "cf2c0773af327c8fc97e17c96d53200e1b7efe6591783427415a9fd38beb72d3",
+    "web/device.js": "871ca76d80fcc2d97cad36b7f39c52dc5962f18f8f6927ab62a52b1dbeba7bbf",
+    "web/history.js": "1925dcc59ff96b3a7ce400359df8c3113d58aea372bab20d882c063c3ef1744c",
+    "web/index.html": "9d7fea1d27b09814fda54005cba0b4da67372a382da7712dc6ad2e05cf8889a5",
+    "web/style.css": "93bec79b33ab3498494191b7941f570e716e533022ba9e785fb23e12d4768aad",
+    "web/favicon.ico": "63cb852c23c1b1bda83e133dcb7e070aabb3e594531196ddeab8e23d32baa4ea"
   },
-  "browser": "Chrome for Testing Headless Shell 158.0.8127.36",
+  "browser": "Google Chrome for Testing 159.0.8154.6 (Headless Shell)",
   "native_asset_stream": "Every compressed byte for all seven descriptors read through bounded callbacks and matched to deterministic gzip assets",
-  "protocol_cases": 6,
+  "protocol_cases": 8,
   "recovery_checks": "Both viewport sizes: preparation checkpoint visibility, no automatic command, explicit resume cancellation/confirmation, invalid available:false checkpoint discard, new-program inhibition, Stop while not ready and no recovery-panel overflow.",
-  "history_cadence_export": "Each of six browser cases downloads selected older session1 at60000ms while the newest inventory session2 is300000ms; JSON retains the older interval and named sensor schema."
+  "history_cadence_export": "Each of six browser cases downloads selected older session1 at60000ms while the newest inventory session2 is300000ms; JSON retains the older interval and named sensor schema.",
+  "maintenance_and_controls": "Each model displays its own care guidance and manual. PicoStill fan 2 blocks disabling or speeds under 61% while pumping. PicoFerm displays its configured sampling interval. Z program names and identifiers are checked before saving.",
+  "z_controls": "Both viewport sizes check that native Starting and Stopping disable pause/resume, Running enables them, and a new exported Program Maker file records an explicitly selected unit."
 }

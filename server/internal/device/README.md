@@ -45,6 +45,8 @@ server certificate through the normal system trust store.
 | Recipes | `GET /api/v1/recipes`, then each full recipe; this happens only on an explicit inventory request |
 | PutRecipe | `PUT /api/v1/recipes/{id}`, followed by exact GET readback under the same serialization lock |
 | DeleteRecipe | `DELETE /api/v1/recipes/{id}`; succeeds on 204, with the firmware enforcing idle-state rules |
+| Restart brewer | Confirmed Hub command `restart` sends an empty JSON object to `POST /api/v1/system/restart` when discovery advertises `system_restart`. |
+| Restore starter recipes | Confirmed Hub command `restore-starter-recipes` sends an empty-body `POST /api/v1/recipes/restore-defaults` when discovery advertises `restore_default_recipes`. User recipes are preserved. |
 | Command | `POST /api/v1/commands`; requires a valid payload, advertised support and a matching 202 acceptance response |
 | Settings / UpdateSettings | `GET` / `PATCH /api/v1/settings` |
 | Telemetry / UpdateTelemetry | `GET` / `PUT /api/v1/telemetry`; the latter requires all three configuration fields |

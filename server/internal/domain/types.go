@@ -91,30 +91,33 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
-	StockRestoreOTAV1     bool                     `json:"stock_restore_ota_v1,omitempty"`
-	PairingV1             bool                     `json:"pairing_v1,omitempty"`
-	ZProgramMaker         bool                     `json:"z_program_maker,omitempty"`
-	HubOTAV1              bool                     `json:"hub_ota_v1,omitempty"`
-	APIVersion            int                      `json:"api_version"`
-	FirmwareVersion       string                   `json:"firmware_version"`
-	Model                 string                   `json:"model,omitempty"`
-	ModelName             string                   `json:"model_name,omitempty"`
-	ModelFamily           string                   `json:"model_family,omitempty"`
-	DisplayVariant        string                   `json:"display_variant,omitempty"`
-	Commands              []string                 `json:"commands"`
-	RecipeCapacity        int                      `json:"recipe_capacity"`
-	StepCapacity          int                      `json:"step_capacity"`
-	FrontPanel            bool                     `json:"front_panel"`
-	HistoryPersistent     bool                     `json:"history_persistent"`
-	TelemetryForwarding   bool                     `json:"telemetry_forwarding"`
-	DedicatedPauseResume  bool                     `json:"dedicated_pause_resume"`
-	RecipeCreateOnly      bool                     `json:"recipe_create_only"`
-	ZeroMinuteSteps       bool                     `json:"zero_minute_steps"`
-	RestoreDefaultRecipes bool                     `json:"restore_default_recipes"`
-	StarterRecipeCount    int                      `json:"starter_recipe_count"`
-	Features              map[string]bool          `json:"capabilities,omitempty"`
-	SettingsFields        []string                 `json:"settings_fields"`
-	CommandFields         map[string]CommandFields `json:"command_fields,omitempty"`
+	EventsPersistent        *bool                    `json:"events_persistent,omitempty"`
+	SystemRestart           bool                     `json:"system_restart,omitempty"`
+	HistorySampleIntervalMS uint32                   `json:"history_sample_interval_ms,omitempty"`
+	StockRestoreOTAV1       bool                     `json:"stock_restore_ota_v1,omitempty"`
+	PairingV1               bool                     `json:"pairing_v1,omitempty"`
+	ZProgramMaker           bool                     `json:"z_program_maker,omitempty"`
+	HubOTAV1                bool                     `json:"hub_ota_v1,omitempty"`
+	APIVersion              int                      `json:"api_version"`
+	FirmwareVersion         string                   `json:"firmware_version"`
+	Model                   string                   `json:"model,omitempty"`
+	ModelName               string                   `json:"model_name,omitempty"`
+	ModelFamily             string                   `json:"model_family,omitempty"`
+	DisplayVariant          string                   `json:"display_variant,omitempty"`
+	Commands                []string                 `json:"commands"`
+	RecipeCapacity          int                      `json:"recipe_capacity"`
+	StepCapacity            int                      `json:"step_capacity"`
+	FrontPanel              bool                     `json:"front_panel"`
+	HistoryPersistent       bool                     `json:"history_persistent"`
+	TelemetryForwarding     bool                     `json:"telemetry_forwarding"`
+	DedicatedPauseResume    bool                     `json:"dedicated_pause_resume"`
+	RecipeCreateOnly        bool                     `json:"recipe_create_only"`
+	ZeroMinuteSteps         bool                     `json:"zero_minute_steps"`
+	RestoreDefaultRecipes   bool                     `json:"restore_default_recipes"`
+	StarterRecipeCount      int                      `json:"starter_recipe_count"`
+	Features                map[string]bool          `json:"capabilities,omitempty"`
+	SettingsFields          []string                 `json:"settings_fields"`
+	CommandFields           map[string]CommandFields `json:"command_fields,omitempty"`
 }
 
 // New firmware reports explicit capabilities. Older brewing firmware keeps

@@ -271,6 +271,7 @@ func (s *Server) routes() http.Handler {
 			r.Delete("/devices/{id}", s.deleteDevice)
 			r.Post("/devices/{id}/test", s.testDevice)
 			r.Get("/devices/{id}/display", s.display)
+			r.Get("/devices/{id}/events", s.deviceEvents)
 			r.Post("/devices/{id}/commands", s.command)
 			r.Get("/devices/{id}/recipes", s.machineRecipes)
 			r.Put("/devices/{id}/recipes/{recipe_id}", s.updateMachineRecipe)

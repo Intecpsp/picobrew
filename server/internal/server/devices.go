@@ -741,9 +741,26 @@ func (s *Server) command(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	if view.Adapter == "pico-standalone" {
-		if _, e := s.verifiedStatus(r.Context(), d); e != nil {
-			s.deviceError(w, e)
+		status, err := s.verifiedStatus(r.Context(), d)
+		if err != nil {
+			s.deviceError(w, err)
 			return
+		}
+		switch in.Command.Command {
+		case "restart", "restore-starter-recipes":
+			if status.Busy || status.Stopped || !status.Ready || (in.Command.Command == "restart" && status.Phase != 4) {
+				s.fail(w, 409, "machine_not_idle", "Return to the main menu and unlock the idle brewer first")
+				return
+			}
+		case "set-fan":
+			if view.Model == "picostill" && in.Channel != nil && *in.Channel == 2 && in.Level != nil && (*in.Level < 61 || (in.Enabled != nil && !*in.Enabled)) {
+				for _, actuator := range status.Actuators {
+					if actuator.ID == "pump" && actuator.Enabled != nil && *actuator.Enabled {
+						s.fail(w, 409, "pump_requires_fan", "Keep Fan 2 enabled at 61% or higher while the pump is running")
+						return
+					}
+				}
+			}
 		}
 	}
 	var monitor aiMonitorRecord

@@ -9,6 +9,8 @@
   <link rel="stylesheet" href="/style.css">
   <script src="/api-explorer.js" defer></script>
   <script src="/history.js" defer></script>
+  <script src="/controls.js" defer></script>
+  <script src="/recipes.js" defer></script>
   <script src="/app.js" defer></script>
 </head>
 <body>
@@ -51,6 +53,9 @@
             <label for="brewRecipe">Saved recipe</label><div class="input-action"><select id="brewRecipe" disabled><option value="">Choose a recipe</option></select><button id="startRecipe" class="button primary" disabled>Start</button></div>
             <p class="hint">The brewer will guide you through its preparation prompts on the front panel.</p>
             <div class="divider"></div><label for="program">Other programs</label><div class="input-action"><select id="program" disabled></select><button id="runProgram" class="button" disabled>Open</button></div>
+            <h3>Cleaning and maintenance</h3>
+            <p>Rinse after every brew. Run Deep Clean every three brews. If you use reservoir water other than distilled or reverse osmosis water, descale every 20 brews.</p>
+            <a id="careManual" href="https://picobrewcontent.blob.core.windows.net/content/picoc/PicoC_Manual.pdf#page=109" target="_blank" rel="noopener noreferrer">PicoBrew cleaning instructions</a>
             <div class="stop-area"><div><strong>Stop outputs</strong><p class="hint">Latches heating and pumping off. Clear the stop only after the operation has ended.</p></div><button id="stopButton" class="button danger" disabled>Stop</button></div>
             <button id="clearStop" class="button full" hidden disabled>Clear stopped state</button>
           </article>
@@ -60,7 +65,7 @@
         <div class="page-heading"><div><p class="eyebrow">ON-DEVICE COLLECTION</p><h1>Your recipes.</h1><p class="muted">Recipes stay on the Pico and are available without a server. Starter PicoPak programs supply brewing steps; use the matching ingredients and water setup.</p></div><div><button id="restoreRecipes" class="button" disabled>Restore starter recipes</button> <button id="newRecipe" class="button primary" disabled>+ New recipe</button></div></div>
         <div class="recipe-grid"><article class="card recipe-list-card"><div class="card-heading"><h2>Saved recipes</h2><span id="recipeCapacity" class="badge neutral">0 / 16</span></div><div id="recipeList" class="recipe-list"><p class="empty">Connect to load your collection.</p></div></article>
           <article class="card editor"><div class="card-heading"><h2 id="editorHeading">Recipe editor</h2><div class="button-group"><button id="importRecipe" class="button small">Import JSON</button><button id="exportRecipe" class="button small">Export</button></div></div>
-            <form id="recipeForm"><div class="form-grid"><div><label for="recipeName">Recipe name</label><input id="recipeName" maxlength="31" required placeholder="My house pale ale"></div><div><label for="recipeId">Recipe ID</label><input id="recipeId" maxlength="20" pattern="[A-Za-z0-9_-]+" required placeholder="house-pale"></div></div>
+            <form id="recipeForm"><div class="form-grid"><div><label for="recipeName">Recipe name</label><input id="recipeName" maxlength="31" pattern="[ -~]+" title="Use printable ASCII characters" required placeholder="My house pale ale"></div><div><label for="recipeId">Recipe ID</label><input id="recipeId" maxlength="20" pattern="[A-Za-z0-9_\-]+" required placeholder="house-pale"></div></div>
               <div class="steps-heading"><label>Brewing steps</label><button id="addStep" type="button" class="button small">+ Add step</button></div><div class="table-scroll"><table class="steps-table"><thead><tr><th>Step</th><th>Compartment</th><th>Target °F</th><th>Minutes</th><th>Drain min</th><th><span class="sr-only">Remove</span></th></tr></thead><tbody id="steps"></tbody></table></div>
               <p class="hint">Up to 15 steps. A target of 0 means unheated circulation. Changes can be saved while the brewer is idle.</p>
               <div class="editor-actions"><button id="deleteRecipe" type="button" class="button text-danger" disabled>Delete recipe</button><button id="saveRecipe" type="submit" class="button primary" disabled>Save to Pico</button></div>
@@ -99,7 +104,7 @@
             <p id="hubDestination" class="hint">No Hub connection loaded.</p>
             <p id="telemetryStatus" class="hint" role="status" aria-live="polite">Connect to see Hub connection status.</p>
           </section>
-          <section class="settings-section settings-access" aria-labelledby="accessHeading"><div class="settings-section-heading"><h2 id="accessHeading">Browser access</h2><p class="muted">Your key is kept in this browser tab’s session. Disconnect to remove it.</p></div><button id="disconnectButton" class="button">Disconnect</button></section>
+          <section class="settings-section settings-access" aria-labelledby="accessHeading"><div class="settings-section-heading"><h2 id="accessHeading">Browser access</h2><p class="muted">Your key is kept in this browser tab’s session. Disconnect to remove it.</p></div><button id="restartBrewer" class="button" hidden disabled>Restart brewer</button> <button id="disconnectButton" class="button">Disconnect</button></section>
         </div>
       </section>
       <section id="api" class="tab-panel" hidden>

@@ -35,6 +35,7 @@ extern "C" void pico_recipe_run_cooking_program(PicoRecipeRuntime*,uint32_t) {un
 extern "C" void pico_recipe_manual_program(PicoRecipeRuntime*) {unexpected();}
 extern "C" void pico_recipe_rinse(PicoRecipeRuntime*) {unexpected();}
 extern "C" void pico_recipe_first_rinse(PicoRecipeRuntime*) {unexpected();}
+extern "C" void pico_recipe_circulation_program(PicoRecipeRuntime*) {unexpected();}
 extern "C" void pico_recipe_descale(PicoRecipeRuntime*) {unexpected();}
 extern "C" void pico_recipe_circulate(PicoRecipeRuntime*) {unexpected();}
 extern "C" void pico_recipe_drain_reservoir(PicoRecipeRuntime*) {unexpected();}

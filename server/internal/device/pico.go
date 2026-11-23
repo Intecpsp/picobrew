@@ -235,6 +235,14 @@ func (p *pico) discover(ctx context.Context) (domain.Capabilities, error) {
 	p.capabilities = &capabilities
 	result := capabilities
 	result.Commands = append([]string(nil), capabilities.Commands...)
+	// The Hub exposes these dedicated device resources through its confirmed,
+	// idempotent command endpoint. Keep the cached wire contract intact.
+	if capabilities.SystemRestart {
+		result.Commands = append(result.Commands, "restart")
+	}
+	if capabilities.RestoreDefaultRecipes {
+		result.Commands = append(result.Commands, "restore-starter-recipes")
+	}
 	return result, nil
 }
 func (p *pico) Discover(ctx context.Context) (domain.Capabilities, error) {
@@ -402,6 +410,38 @@ func (p *pico) Command(ctx context.Context, command domain.Command) error {
 		if _, err := p.discover(ctx); err != nil {
 			return err
 		}
+	}
+	switch command.Command {
+	case "restart", "restore-starter-recipes":
+		if command != (domain.Command{Command: command.Command}) {
+			return invalid("This operation takes no device arguments")
+		}
+		if command.Command == "restart" {
+			if !p.capabilities.SystemRestart {
+				return unsupportedCapability("system_restart")
+			}
+			var reply struct {
+				Accepted bool `json:"accepted"`
+			}
+			if err := p.request(ctx, http.MethodPost, "/api/v1/system/restart", struct{}{}, &reply, 202); err != nil {
+				return err
+			}
+			if !reply.Accepted {
+				return &Error{Code: "invalid_response", Message: "Restart acknowledgement missing", UnknownOutcome: true}
+			}
+		} else {
+			if !p.capabilities.RestoreDefaultRecipes {
+				return unsupportedCapability("restore_default_recipes")
+			}
+			var reply struct{ Added, Preserved, Capacity *int }
+			if err := p.request(ctx, http.MethodPost, "/api/v1/recipes/restore-defaults", nil, &reply, 200); err != nil {
+				return err
+			}
+			if reply.Added == nil || reply.Preserved == nil || reply.Capacity == nil || *reply.Capacity != p.capabilities.RecipeCapacity || *reply.Added < 0 || *reply.Preserved < 0 || *reply.Added > *reply.Capacity || *reply.Preserved > *reply.Capacity-*reply.Added {
+				return &Error{Code: "invalid_response", Message: "Starter recipe restoration could not be verified", UnknownOutcome: true}
+			}
+		}
+		return nil
 	}
 	allowed := false
 	for _, value := range p.capabilities.Commands {

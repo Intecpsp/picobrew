@@ -87,7 +87,7 @@ func invalid(message string) error {
 }
 
 var recipeID = regexp.MustCompile(`^[A-Za-z0-9_-]{1,20}$`)
-var commands = []string{"brew", "sous-vide", "cold-brew", "manual", "rinse", "first-rinse", "descale", "circulate", "drain-reservoir", "drain-filter", "rack-beer", "utilities", "settings", "stop", "clear-stop", "encoder"}
+var commands = []string{"brew", "sous-vide", "cold-brew", "manual", "rinse", "first-rinse", "deep-clean", "descale", "circulate", "drain-reservoir", "drain-filter", "rack-beer", "utilities", "settings", "stop", "clear-stop", "encoder"}
 
 func validLabel(value string, max int) bool {
 	if len(value) == 0 || len(value) > max {

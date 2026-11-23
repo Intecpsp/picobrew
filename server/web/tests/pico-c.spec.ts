@@ -267,6 +267,31 @@ for (const viewport of [
         frontPanel.getByRole('button', { name: 'Press dial', exact: true })
       ).toBeEnabled()
       expect(commands).toEqual([{ command: 'encoder', click: true }])
+      machine.status!.ready = false
+      machine.capabilities!.commands.push('restart')
+      await page.reload()
+      await expect(
+        frontPanel.getByRole('button', { name: 'Press dial', exact: true })
+      ).toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Stop and lock outputs', exact: true })
+      ).toBeDisabled()
+      machine.status!.ready = true
+      machine.last_seen = new Date().toISOString()
+      await page.reload()
+      await page.getByRole('button', { name: 'Manage machine' }).click()
+      await expect(page.getByRole('button', { name: 'Restart brewer' })).toBeDisabled()
+      machine.status!.phase = 4
+      await page.reload()
+      await page.getByRole('button', { name: 'Manage machine' }).click()
+      await page.getByRole('button', { name: 'Restart brewer' }).click()
+      await page
+        .getByRole('dialog', { name: 'Restart brewer?' })
+        .getByRole('button', { name: 'Restart brewer' })
+        .click()
+      await expect(page.getByRole('dialog')).toContainText('Restart acknowledged')
+      expect(commands.at(-1)).toEqual({ command: 'restart', confirm: true })
+      await page.getByRole('button', { name: 'Close dialog', exact: true }).click()
 
       await page.getByRole('button', { name: 'Firmware 1.2.0', exact: true }).click()
       const dialog = page.getByRole('dialog', { name: 'Machine firmware', exact: true })
@@ -310,7 +335,10 @@ for (const viewport of [
       expect(observations).toEqual(
         [other, other, controller].map((display_variant) => ({ device_uid: uid, display_variant }))
       )
-      expect(commands).toHaveLength(1)
+      expect(commands).toEqual([
+        { command: 'encoder', click: true },
+        { command: 'restart', confirm: true },
+      ])
       await dialog.screenshot({
         path: test.info().outputPath(`c-verified-${controller}-${viewport.name}.png`),
       })
@@ -325,7 +353,10 @@ for (const viewport of [
       await expect(matching.locator('option')).toHaveCount(1)
       await expect(select).not.toBeVisible()
       expect(observations).toHaveLength(3)
-      expect(commands).toHaveLength(1)
+      expect(commands).toEqual([
+        { command: 'encoder', click: true },
+        { command: 'restart', confirm: true },
+      ])
       expect(errors).toEqual([])
     })
   }

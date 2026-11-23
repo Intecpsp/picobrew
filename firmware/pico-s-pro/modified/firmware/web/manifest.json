@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6151,
+      "length": 6431,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "cb34be8aace2567cd196bea9269f3ee0325d284496b5a268406a8c1e5dcf6312",
-      "source_length": 59774,
-      "source_sha256": "65becb1774f29de14002cf4c4e415aea80636157ebd5d1e4d92d1c59f873596d"
+      "sha256": "33ca180575a2ed0bfb0bb76b8edc14659f0a85c4efcb1c51d668b4dbddecd33a",
+      "source_length": 60339,
+      "source_sha256": "f7361ae0ed17069c14f16433f6b34312f2b888285c166d7cda7a340158afe8ae"
     },
     {
       "source": "app.js",
@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 7481,
+      "length": 6506,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "8e262f6650679632f7b6320a9d9e692793bbf517d23bb469794c027d9a2ca366",
-      "source_length": 23638,
-      "source_sha256": "a7fea3c8b94dad2c668c007c241c559bf1072045901f80565053a5c5384c6259"
+      "sha256": "88a048965e682b029355a6fda94d87866c19dde689f8b8e77477bb5feaed6da5",
+      "source_length": 20021,
+      "source_sha256": "d39c85c736d89e55f766c19e6fb2b0cc9213bb66ec4d7257262089c9b9f80e9d"
     },
     {
       "source": "api-explorer.js",
@@ -36,12 +36,12 @@
       "payload": "api-explorer.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 3538,
+      "length": 3548,
       "max_size": 3584,
       "allocation_blocks": 1,
-      "sha256": "148f1e58569176ff0c61c80ee7377e5853982100f54fefb80dff8d1652e9434b",
-      "source_length": 9366,
-      "source_sha256": "1d9032cd46f152fe704d35c2ada08ba753adebea7e079c1285c2bddbed745962"
+      "sha256": "49d7787ebd6452ab04a9ac3062726bd5b5ecb692fb0e986802cdc83e8f234b5e",
+      "source_length": 9406,
+      "source_sha256": "b330e1f0efa4aad1bb6577cdfad39545a78e08a33f6a2939ec0108db1351ad1b"
     },
     {
       "source": "history.js",
@@ -49,12 +49,12 @@
       "payload": "history.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 4709,
+      "length": 6955,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "1c9fa25ba59808aedefc38c1c1928ff10fd79e7576b84c28bed7395f67c7cfbd",
-      "source_length": 13594,
-      "source_sha256": "088b032b5c52e6fca5331d8ddd72140324962fe3ecf951c86c58c58c80ef045d"
+      "sha256": "5f412597fa5f06d5b3814aca02a98de67df39fe29b9f83a1c50cfee47f37f2bf",
+      "source_length": 21293,
+      "source_sha256": "a7bd1f87e95c241e4bd25d5c12cba18443de6d4978049cf956648cd8844267fa"
     },
     {
       "source": "style.css",

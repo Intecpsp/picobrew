@@ -1,0 +1,8 @@
+{
+  "name": "zymatic-site-build",
+  "private": true,
+  "devDependencies": {
+    "@gfx/zopfli": "1.0.15",
+    "terser": "5.44.1"
+  }
+}
