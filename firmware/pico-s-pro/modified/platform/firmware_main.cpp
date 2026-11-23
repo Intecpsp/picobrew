@@ -192,6 +192,9 @@ void setup()
         local_api.ota_trial = trial;
         local_api.ota_inspect = ota_inspect;
         local_api.ota_commit = ota_commit;
+        bool slot_absent;
+        if (stock_layout_matches(application.state.device_uid, true, &slot_absent))
+            local_api.stock_prepare = stock_prepare;
     }
 #endif
 }

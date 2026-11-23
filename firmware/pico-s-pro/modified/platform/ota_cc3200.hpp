@@ -101,3 +101,63 @@ static bool ota_commit(bool confirm)
     }
     return true;
 }
+
+// The original loader can run a third image independently of both OEM slots.
+// This model/UID profile is shared with the USB installer's verified S/Pro backup.
+static const _u8 stock_worker_file[] = "/sys/mcuimg3.bin";
+static const uint32_t stock_worker_capacity = 49152;
+static const uint8_t stock_reservation[] = "PicoBrew stock restore v1";
+
+static bool stock_slot_available(bool *absent)
+{
+    SlFsFileInfo_t info = {};
+    int rc = sl_FsGetInfo(stock_worker_file, 0, &info);
+    *absent = rc == SL_FS_ERR_FILE_NOT_EXISTS;
+    if (*absent) return true;
+    if (rc != 0 || info.AllocatedLen < stock_worker_capacity ||
+        info.FileLen != sizeof stock_reservation)
+        return false;
+    _i32 handle = -1;
+    if (sl_FsOpen(stock_worker_file, FS_MODE_OPEN_READ, NULL, &handle) != 0)
+        return false;
+    uint8_t bytes[sizeof stock_reservation];
+    int n = sl_FsRead(handle, 0, bytes, sizeof bytes);
+    return sl_FsClose(handle, NULL, NULL, 0) == 0 &&
+           n == sizeof bytes && memcmp(bytes, stock_reservation, sizeof bytes) == 0;
+}
+
+static bool stock_layout_matches(const char *uid, bool allow_trial, bool *absent)
+{
+    static const uint8_t profile_hash[] = {
+        0x72, 0x90, 0x67, 0x46, 0x10, 0xec, 0xa1, 0xcf, 0x26, 0x58, 0x17, 0x79, 0xa7, 0x1c, 0x7f, 0x41,
+        0xa9, 0xc2, 0xfc, 0x36, 0x7e, 0xb7, 0x18, 0x9d, 0x0e, 0x93, 0x91, 0x83, 0x19, 0x96, 0x4b, 0xc7
+    };
+    if (!uid || strnlen(uid, 33) != 32) return false;
+    PicoRecoverySha256 sha;
+    uint8_t digest[32], record[8];
+    pico_recovery_sha256_init(&sha);
+    pico_recovery_sha256_update(&sha, reinterpret_cast<const uint8_t *>(uid), 32);
+    pico_recovery_sha256_final(&sha, digest);
+    if (memcmp(digest, profile_hash, sizeof digest) != 0 || !ota_record(record) ||
+        memcmp(record + 1, "\x3d\x00\x20", 3) != 0 ||
+        !(ota_boot_state(record, false) || (allow_trial && ota_boot_state(record, true))))
+        return false;
+    SlFsFileInfo_t app = {}, recovery = {};
+    return sl_FsGetInfo(reinterpret_cast<const _u8 *>("/sys/mcuimg2.bin"), 0, &app) == 0 &&
+           app.AllocatedLen >= 162792 &&
+           sl_FsGetInfo(reinterpret_cast<const _u8 *>("/sys/mcuimg1.bin"), 0, &recovery) == 0 &&
+           recovery.AllocatedLen >= 50504 && stock_slot_available(absent);
+}
+
+static bool stock_prepare(const char *uid)
+{
+    bool absent;
+    if (!stock_layout_matches(uid, false, &absent)) return false;
+    if (!absent) return true; // Retry after reserving, before entering recovery.
+    _i32 handle = -1;
+    if (sl_FsOpen(stock_worker_file, FS_MODE_OPEN_CREATE(stock_worker_capacity, 0), NULL, &handle) != 0)
+        return false;
+    int n = sl_FsWrite(handle, 0, const_cast<uint8_t *>(stock_reservation), sizeof stock_reservation);
+    int closed = sl_FsClose(handle, NULL, NULL, 0);
+    return closed == 0 && n == sizeof stock_reservation && stock_slot_available(&absent) && !absent;
+}

@@ -205,6 +205,7 @@ static int discovery(PicoLocalApi *api, Writer *w)
             "\"telemetry_forwarding\":true,\"system_restart\":true,"
             "\"recipe_labels\":\"printable ASCII\",");
     format(w, "\"hub_ota_v1\":%s,", api->ota_inspect ? "true" : "false");
+    format(w, "\"stock_restore_ota_v1\":%s,", api->stock_prepare ? "true" : "false");
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
     return 200;
 }
@@ -636,12 +637,26 @@ static int telemetry(Writer *w, const char *method, const char *body, size_t len
 bad:
     return error(w, 400, "invalid_telemetry", "Use enabled, an IPv4 address or hostname, and port 1-65535");
 }
+static bool outputs_idle(const PicoApplication *a)
+{
+    if (!pico_local_control_is_ready() || a->state.control_signals.enabled ||
+        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
+        return false;
+    static const uint8_t pins[] = {
+        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
+    };
+    for (unsigned i = 0; i < sizeof pins; ++i)
+        if (a->hardware->digital_read(a->hardware_context, pins[i]))
+            return false;
+    return true;
+}
 static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *path,
                const char *body, size_t length)
 {
     bool inspect = !strcmp(path, "/api/v1/ota");
     bool confirm = !strcmp(path, "/api/v1/ota/confirm");
-    if (!inspect && !confirm && strcmp(path, "/api/v1/ota/enter"))
+    bool stock = !strcmp(path, "/api/v1/ota/stock/prepare");
+    if (!stock && !inspect && !confirm && strcmp(path, "/api/v1/ota/enter"))
         return error(w, 404, "not_found", "Unknown firmware operation");
     if (strcmp(method, inspect ? "GET" : "POST"))
         return error(w, 405, "method_not_allowed", "Invalid firmware operation method");
@@ -671,7 +686,12 @@ static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *pat
     if (!api->ota_inspect(&trial, digest, &size))
         return error(w, 409, "recovery_unavailable", "Install the matching recovery image and verify the boot layout over USB");
     if (!inspect) {
-        if (trial != confirm || strcmp(expected, digest) || !api->ota_commit(confirm))
+        if (trial != confirm || strcmp(expected, digest))
+            return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
+        if (stock && (!api->stock_prepare || !outputs_idle(api->application) ||
+                      !api->stock_prepare(api->application->state.device_uid)))
+            return error(w, 409, "stock_unavailable", "Could not reserve the restore helper on this idle brewer");
+        if (!api->ota_commit(confirm))
             return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
         if (confirm) api->ota_trial = false;
         else api->restart_pending = true;
@@ -690,17 +710,9 @@ static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
     Json j = {body, body + length, true};
     if (!token(&j, '{') || !token(&j, '}') || !done(&j))
         return error(w, 400, "invalid_request", "Send an empty JSON object");
-    PicoApplication *a = api->application;
-    if (api->restart_pending || api->ota_trial || !pico_local_control_is_ready() || pico_local_control_busy() ||
-        pico_local_control_stopped() || a->state.control_signals.enabled ||
-        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
-        return error(w, 409, "busy", "Wait until the brewer is idle");
-    static const uint8_t outputs[] = {
-        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
-    };
-    for (unsigned i = 0; i < sizeof outputs; ++i)
-        if (a->hardware->digital_read(a->hardware_context, outputs[i]))
-            return error(w, 409, "busy", "An output is active");
+    if (api->restart_pending || api->ota_trial || pico_local_control_busy() ||
+        pico_local_control_stopped() || !outputs_idle(api->application))
+        return error(w, 409, "busy", "Wait until the brewer is idle and its outputs are off");
     text(w, "{\"accepted\":true}");
     if (w->ok) api->restart_pending = true;
     return 202;
