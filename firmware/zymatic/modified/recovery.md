@@ -1,6 +1,6 @@
 # Zymatic recovery and bootloader identification
 
-The original Zymatic updater uses the rear USB port and the Arduino serial programming protocol. The public 1.1.14 HEX supplies application bytes up to 0x1bbca. The standalone installer preserves flash from 0x1e000 onward, where the ATmega1284P can place its boot section. Neither the HEX nor the updater supplies the original board-specific boot image or fuse settings. [Original package and updater evidence](../oem/README.md)
+The original Zymatic updater uses the rear USB port and the Arduino serial programming protocol. The public 1.1.14 HEX supplies application bytes up to 0x1bbca. Initial conversion preserves flash from 0x1e000 onward, the earliest possible ATmega1284P boot section. To select a larger application, the USB installer checks an existing provisioned UID, matching full external and USB captures, boot bytes, lock bits and boot fuses. If the MCU has been reprogrammed externally since inspection, repeat the measurement before using USB. Neither the HEX nor the updater supplies the original board-specific boot image or fuse settings. [Original package and updater evidence](../oem/README.md)
 
 ## Inspect a backup
 
