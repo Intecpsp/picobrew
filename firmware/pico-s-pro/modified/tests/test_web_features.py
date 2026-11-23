@@ -224,7 +224,7 @@ class WebFeatures(unittest.TestCase):
         self.page.evaluate('releaseHistoryQueue()')
         self.page.wait_for_timeout(100)
         self.assertEqual(self.history_requests, [])
-        self.page.locator('[data-tab="history"]').click()
+        expect(self.page.locator('[data-tab="history"]')).to_be_hidden()
         expect(self.page.locator('#historyExportJson')).to_be_disabled()
         expect(self.page.locator('#historyValues')).to_have_text('')
 
