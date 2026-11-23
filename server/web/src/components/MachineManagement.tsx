@@ -1,9 +1,9 @@
 import { useState } from 'react'
 import { Settings2, RefreshCw, Pencil, Trash2, SlidersHorizontal } from 'lucide-react'
-import { isAccessory, supports } from '../lib/capabilities'
+import { brewerOutputsIdle, isAccessory, supports } from '../lib/capabilities'
 import { api, copyText, errorMessage } from '../lib/api'
 import type { Device } from '../types'
-import { Button, Modal } from './ui'
+import { Button, Confirm, Modal } from './ui'
 
 export function MachineManagement({
   device,
@@ -23,6 +23,7 @@ export function MachineManagement({
   remove: () => void
 }) {
   const [open, setOpen] = useState(false)
+  const [restart, setRestart] = useState(false)
   const [working, setWorking] = useState(false)
   const [notice, setNotice] = useState('')
   async function accessMachine(action: 'copy' | 'open') {
@@ -45,6 +46,31 @@ export function MachineManagement({
       setNotice(errorMessage(e))
     } finally {
       setWorking(false)
+    }
+  }
+  const restartReady = device.status?.phase === 4 && brewerOutputsIdle(device, 0)
+  async function restartBrewer() {
+    if (working) return
+    if (!device.capabilities?.commands?.includes('restart') || !restartReady) {
+      setNotice('Restart is unavailable. Check that the brewer is connected and idle.')
+      setRestart(false)
+      setOpen(true)
+      return
+    }
+    setWorking(true)
+    try {
+      await api(`/devices/${device.id}/commands`, {
+        method: 'POST',
+        command: true,
+        body: { command: 'restart', confirm: true },
+      })
+      setNotice('Restart acknowledged. The Hub will reconnect when the brewer is ready.')
+    } catch (error) {
+      setNotice(errorMessage(error))
+    } finally {
+      setWorking(false)
+      setRestart(false)
+      setOpen(true)
     }
   }
   function choose(action: () => void) {
@@ -82,6 +108,15 @@ export function MachineManagement({
               <SlidersHorizontal size={16} />
               {isAccessory(device) ? 'Device preferences' : 'Brewer preferences'}
             </Button>
+            {device.capabilities?.commands?.includes('restart') && (
+              <Button
+                variant="secondary"
+                disabled={working || testing || !restartReady}
+                onClick={() => choose(() => setRestart(true))}
+              >
+                Restart brewer
+              </Button>
+            )}
             <Button variant="danger" onClick={() => choose(remove)}>
               <Trash2 size={16} />
               Remove machine
@@ -106,10 +141,23 @@ export function MachineManagement({
               <Button variant="ghost" disabled={working} onClick={() => void accessMachine('copy')}>
                 Copy device API key
               </Button>
-              {notice && <p role="status">{notice}</p>}
             </section>
           )}
+          {notice && <p role="status">{notice}</p>}
         </Modal>
+      )}
+      {restart && (
+        <Confirm
+          title="Restart brewer?"
+          description={`Restart ${device.name} and reconnect after it boots.`}
+          label="Restart brewer"
+          busy={working}
+          onConfirm={() => void restartBrewer()}
+          onClose={() => {
+            setRestart(false)
+            setOpen(true)
+          }}
+        />
       )}
     </>
   )

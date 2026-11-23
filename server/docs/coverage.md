@@ -15,7 +15,7 @@ model scope.
 | Generic Z-series | Standalone API adapter, four-page grayscale display, native commands, canonical local recipes with direct valves 1–6, named sensor history | Generic identity does not establish a Z1/Z2 mapping; archived Z/Zymatic program grammar remains blocked pending explicit conversion; physical validation unperformed |
 | PicoStill | Capability-driven native mode, pump and fan controls; named temperature/pressure readings and history | Requires reconstructed standalone firmware; no invented heater, recipe catalog or front panel; physical validation unperformed |
 | PicoFerm | Fermentation sessions, samples, sampling interval, confirmed calibration, temperature/pressure/battery readings and history | Native pressure units remain unestablished and are labeled raw; no recipes, heater or front panel; physical validation unperformed |
-| Zymatic | Planning, adaptation, export and [stock 1.1.14 recipe sync](stock-zymatic.md) over Wi-Fi or Ethernet | 1.2.0 adds wired read-only status/OLED, local website and one offline recipe. Local dial operates the brewer. Hardware qualification pending |
+| Zymatic | Planning, adaptation, export and [stock 1.1.14 recipe sync](stock-zymatic.md) over Wi-Fi or Ethernet | 1.2.0 provides wired monitoring and one offline recipe. Qualified 1.3.x installs also support screen-revision-checked dial commands and retained history. USB installation and physical brew trials remain model-specific |
 | Recipe library | CRUD, revision conflict protection, archived revisions, ingredient plans and distinct native-program editor | Program-only records have no inferred ingredients, batch volume or efficiency; ingredient and historical style references are available in the [Beer Crafter workflow](beer-crafter.md) |
 | Community catalog | Recipes → Browse all: 5,216 curated entries, rounded display quantities, expandable sources/credits, 88 bundled image/text assets, rendered guides and independent library copies | Original measurements and records are preserved; optional PDF manuals require local installation |
 | Brewing details | Water chemistry, fermentation/carbonation metadata, mash and boil attributes | Metadata does not imply a connected fermenter or automatic addition hardware |
@@ -33,6 +33,12 @@ model scope.
 | Data | SQLite persistence, encrypted credentials, portable nonsecret ZIP, full-directory recovery instructions | No browser upload/restore of a full encrypted data directory |
 | API | Authenticated REST endpoints, OpenAPI schemas/catalog, in-app explorer, SSE | Hub authentication differs from the appliance's bearer-key API |
 | Packaging | Source, pinned dependencies, Dockerfile, Compose, Go/frontend/browser CI | No managed hosting or app-store package |
+
+## Machine controls and care
+
+Machine pages use firmware discovery to choose controls. On Pico S, Pro and C, Deep Clean opens the same preparation prompts as the Utilities menu. Firmware with the corresponding dedicated endpoints also offers **Restart brewer** in Manage machine and **Restore missing starter recipes** in the saved recipe view. The Hub sends both through its confirmed, idempotent commands API. The brewer checks its live state again before acting.
+
+The machine pages and completed brew journal show the manufacturer's care instructions for that model. Intervals describe the manufacturer's schedule. Device history can omit rinses and manual cleaning, so a session count alone cannot establish that a particular machine is overdue.
 
 ## Prior projects considered
 

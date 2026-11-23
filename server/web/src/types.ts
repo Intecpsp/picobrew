@@ -71,6 +71,7 @@ export interface FieldMetadata {
   kind: string
 }
 export interface Capabilities {
+  history_sample_interval_ms?: number
   pairing_v1?: boolean
   capabilities?: Record<string, boolean>
   settings_fields?: string[] | null

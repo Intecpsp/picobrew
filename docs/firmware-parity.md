@@ -9,7 +9,7 @@ their own recovered control and hardware code.
 This comparison concerns implemented source and software evidence. It does not
 turn a generic Z image into a verified Z1/Z2 image or establish physical
 installation, sensor accuracy, operating safety or a completed brewing trial.
-Zymatic 1.2.0 and 1.3.0 retain the original 1.1.14 brew controller. The table below describes both versions.
+Both the conservative 1.2.0 Zymatic install and the qualified 1.3.x installs retain the original 1.1.14 brew controller.
 
 ## Common behavior
 
@@ -34,7 +34,7 @@ PicoFerm's longer default interval is intentional for fermentation recording.
 | Function | Availability |
 | --- | --- |
 | Programs | Both versions retain the OEM brew controller, outbound Hub recipe sync and a provisioned offline recipe. |
-| Wired device website and Hub | 1.2.0 supports read-only monitoring. 1.3.0 adds dial pairing, authenticated input against the current OLED frame and on-device session history. |
+| Wired device website and Hub | 1.2.0 supports read-only monitoring. 1.3.x adds dial pairing, authenticated input against the current OLED frame and on-device session history. The 1.3.2 local site reads the retained sessions and samples. |
 | Firmware service | Rear USB backup, application installation and return to stock 1.1.14. First conversion uses 1.2.0. Subsequent 1.3.x installs require independently measured boot space. |
 | Remaining limits | The inbound API uses Ethernet. Firmware updates require USB. Raw actuator control and dedicated network recovery are unavailable. Physical installation, recovery, sensor and brewing trials remain outstanding. |
 
@@ -62,6 +62,12 @@ use the recovered ADC-to-voltage conversion and are reported in volts.
 The modified Z profile uses Wi-Fi for its local API. Its recovered OEM source
 also retains the original W5500 Ethernet and vendor protocols. Modified
 firmware does not expose those cloud settings as required setup steps.
+
+## Recipe checks and manufacturer care
+
+The Hub checks ingredient recipes against the Pico S, Pro, C, generic Z and Zymatic brewing profiles. A recipe can remain in the planning library when the selected brewer cannot run it. During transfer the Hub applies the target’s limits and rejects unsupported mash methods, mash routes that bypass the grain, and schedules that would change timed hop contact. PicoFerm and PicoStill have their own session controls and do not accept beer recipes.
+
+The local sites and Hub machine pages show the applicable care schedule. On Pico S, Pro and C, rinse after each brew and run Deep Clean after three. The 20-brew descaling interval applies when using reservoir water other than distilled or reverse osmosis water. On generic Z, rinse after each brew and clean after three brews or before extended storage. On Zymatic, clean the inline filter and rinse after each brew, then deep clean every three to four brews and rinse again. The PicoStill and PicoFerm pages cover condenser care and fermentation seal handling respectively. Opening the guidance does not start hardware. [Pico S manual](https://picobrewcontent.blob.core.windows.net/content/pico/Pico_Manual.pdf#page=127) · [Pico Pro manual](https://picobrewcontent.blob.core.windows.net/content/picopro/PicoPro_Manual.pdf#page=129) · [Pico C manual](https://picobrewcontent.blob.core.windows.net/content/picoc/PicoC_Manual.pdf#page=109) · [Z manual](https://picobrewcontent.blob.core.windows.net/content/z/Z_Manual.pdf#page=36) · [Zymatic manual](https://picodevblob.blob.core.windows.net/content/zymatic/Zymatic_Manual.pdf#page=23) · [PicoStill manual](https://picobrewcontent.blob.core.windows.net/content/picostill/PicoStill_Manual.pdf#page=58) · [PicoFerm manual](https://picobrewcontent.blob.core.windows.net/content/picoferm/PicoFerm_Manual.pdf#page=5)
 
 ## Verification and entry points
 

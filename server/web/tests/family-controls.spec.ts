@@ -16,6 +16,7 @@ for (const width of [1280, 390]) {
         model,
         model_family: model,
         api_version: 1,
+        history_sample_interval_ms: ferm ? 720000 : 15000,
         firmware_version: '1.2.0-fixture',
         commands: brewing
           ? [
@@ -384,7 +385,7 @@ for (const width of [1280, 390]) {
         ).toHaveCount(0)
         Object.assign(status, {
           busy: true,
-          state: 'brewing',
+          state: 'Starting',
           step_name: 'Mash',
           step_seconds: 120,
           current_step: 0,
@@ -393,6 +394,10 @@ for (const width of [1280, 390]) {
         await page.getByRole('button', { name: 'Manage machine' }).click()
         await page.getByRole('button', { name: 'Test connection', exact: true }).click()
         await expect(page.getByRole('heading', { name: 'Current session' })).toBeVisible()
+        await expect(page.getByRole('button', { name: 'Pause session' })).toBeDisabled()
+        await expect(page.getByRole('button', { name: 'Resume session' })).toBeDisabled()
+        status.state = 'Running'
+        await page.reload()
         await expect(page.getByRole('button', { name: 'Pause session' })).toBeEnabled()
         await expect(page.getByRole('button', { name: 'Resume session' })).toBeEnabled()
         await expect(page.getByRole('button', { name: 'Open program' })).toHaveCount(0)
@@ -439,7 +444,13 @@ for (const width of [1280, 390]) {
         await expect(page.getByRole('button', { name: 'Press dial', exact: true })).toHaveCount(0)
         await expect(page.getByText('Thermoblock', { exact: true })).toHaveCount(0)
         await expect(page.getByRole('button', { name: 'Start recipe', exact: true })).toHaveCount(0)
+        await expect(page.getByRole('region', { name: 'Cleaning and maintenance' })).toContainText(
+          ferm ? 'gray fermentation seal' : 'condenser'
+        )
         if (ferm) {
+          await expect(page.getByLabel('Sampling interval (seconds)', { exact: true })).toHaveValue(
+            '720'
+          )
           await page.getByRole('button', { name: 'Calibrate pressure', exact: true }).click()
           let dialog = page.getByRole('dialog', { name: 'Calibrate pressure?' })
           await expect(dialog).toContainText('GRAY seal')
@@ -509,6 +520,16 @@ for (const width of [1280, 390]) {
             enabled: true,
             confirm: true,
           })
+          status.actuators!.find((item) => item.id === 'pump')!.enabled = true
+          await page.reload()
+          await page.getByLabel('Fan', { exact: true }).selectOption('2')
+          const level = page.getByLabel('Output level (%)', { exact: true })
+          await expect(level).toHaveAttribute('min', '61')
+          await level.fill('60')
+          await expect(page.getByRole('button', { name: 'Set fan', exact: true })).toBeDisabled()
+          await level.fill('61')
+          await expect(page.getByRole('button', { name: 'Set fan', exact: true })).toBeEnabled()
+          await expect(page.getByLabel('Fan enabled', { exact: true })).toBeDisabled()
         }
         expect(reads.some((path) => /\/(display|recipes|ai-monitor)$/.test(path))).toBe(false)
       }

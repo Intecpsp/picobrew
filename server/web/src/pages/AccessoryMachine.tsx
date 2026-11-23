@@ -1,3 +1,4 @@
+import { MachineCare } from '../components/MachineCare'
 import { MachineManagement } from '../components/MachineManagement'
 import { useState } from 'react'
 import { ArrowUpRight, RefreshCw, Square } from 'lucide-react'
@@ -32,6 +33,8 @@ export default function AccessoryMachine({ device }: { device: Device }) {
     [error, setError] = useState('')
   const [fanChannel, setFanChannel] = useState(1)
   const selectedFan = status?.actuators?.find((a) => a.id === 'fan' + fanChannel)
+  const pumpRunning = status?.actuators?.find((actuator) => actuator.id === 'pump')?.enabled
+  const intervalMs = device.capabilities?.history_sample_interval_ms
   const [accepted, setAccepted] = useState<Record<string, number>>({})
   const [editing, setEditing] = useState(false),
     [removing, setRemoving] = useState(false),
@@ -78,8 +81,21 @@ export default function AccessoryMachine({ device }: { device: Device }) {
     setError('')
     setConfirm({ command, values, label: label(command) })
   }
+  function coolingRequired(command: string, values: Record<string, unknown>) {
+    return (
+      device.model === 'picostill' &&
+      command === 'set-fan' &&
+      values.channel === 2 &&
+      pumpRunning !== false &&
+      (values.enabled === false || Number(values.level) < 61)
+    )
+  }
   async function send(command: string, values: Record<string, unknown> = {}) {
-    if (!allowed(command)) return
+    if (!allowed(command) || coolingRequired(command, values)) {
+      setConfirm(null)
+      setError('The device state changed. Review its controls before trying again.')
+      return
+    }
     setPending(command)
     setError('')
     try {
@@ -278,6 +294,9 @@ export default function AccessoryMachine({ device }: { device: Device }) {
               command="set-fan"
               enabled={allowed('set-fan')}
               selectChannel={setFanChannel}
+              minimumFanLevel={
+                device.model === 'picostill' && fanChannel === 2 && pumpRunning !== false ? 61 : 0
+              }
               initial={{
                 channel: fanChannel,
                 level: Math.round(selectedFan?.level ?? 0),
@@ -290,7 +309,8 @@ export default function AccessoryMachine({ device }: { device: Device }) {
             <ParameterControl
               command="set-sampling-interval"
               enabled={allowed('set-sampling-interval')}
-              initial={{ value: 300 }}
+              key={[id, accepted['set-sampling-interval']].join('-')}
+              initial={{ value: intervalMs ? intervalMs / 1000 : 300 }}
               submit={request}
             />
           )}
@@ -336,6 +356,7 @@ export default function AccessoryMachine({ device }: { device: Device }) {
           />
         )}
       </section>
+      <MachineCare model={device.model} />
       <div className="machine-footnotes">
         <button className="firmware-link" onClick={() => setFirmwareOpen(true)}>
           Firmware {device.capabilities?.firmware_version || '—'}
@@ -385,22 +406,26 @@ function ParameterControl({
   enabled,
   initial,
   selectChannel,
+  minimumFanLevel = 0,
   submit,
 }: {
   command: string
   enabled: boolean
   initial: Record<string, number | boolean>
   selectChannel?: (channel: number) => void
+  minimumFanLevel?: number
   submit: (command: string, values: Record<string, unknown>) => void
 }) {
   const [edited, setValues] = useState<typeof initial | null>(null)
   const values = edited ?? initial
+  const insufficientCooling =
+    minimumFanLevel > 0 && (values.enabled !== true || Number(values.level) < minimumFanLevel)
   return (
     <form
       className="accessory-parameter"
       onSubmit={(event) => {
         event.preventDefault()
-        if (enabled) submit(command, values)
+        if (enabled && !insufficientCooling) submit(command, values)
       }}
     >
       {command === 'set-fan' && (
@@ -415,10 +440,17 @@ function ParameterControl({
               <option value={2}>Fan 2</option>
             </select>
           </Field>
-          <Field label="Output level (%)">
+          <Field
+            label="Output level (%)"
+            hint={
+              minimumFanLevel
+                ? 'Keep Fan 2 at 61% or higher until the pump is confirmed off.'
+                : undefined
+            }
+          >
             <input
               type="number"
-              min={0}
+              min={minimumFanLevel}
               max={100}
               step={1}
               required
@@ -433,10 +465,7 @@ function ParameterControl({
         </>
       )}
       {command === 'set-sampling-interval' ? (
-        <Field
-          label="Sampling interval (seconds)"
-          hint="60–86,400 seconds. The initial value shown is the default, 300 seconds."
-        >
+        <Field label="Sampling interval (seconds)" hint="60–86,400 seconds.">
           <input
             type="number"
             required
@@ -453,13 +482,13 @@ function ParameterControl({
           <input
             type="checkbox"
             checked={values.enabled === true}
-            disabled={!enabled}
+            disabled={!enabled || (minimumFanLevel > 0 && values.enabled === true)}
             onChange={(event) => setValues({ ...values, enabled: event.target.checked })}
           />
           {command === 'set-pump' ? 'Pump enabled' : 'Fan enabled'}
         </label>
       )}
-      <Button variant="secondary" type="submit" disabled={!enabled}>
+      <Button variant="secondary" type="submit" disabled={!enabled || insufficientCooling}>
         {commandLabels[command]}
       </Button>
     </form>

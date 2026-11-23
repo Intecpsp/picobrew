@@ -506,3 +506,56 @@ func TestZProgramWriteRequiresLiveCapabilityAndExactReadback(t *testing.T) {
 		}
 	}
 }
+
+func TestDedicatedBrewerServiceOperations(t *testing.T) {
+	for _, tc := range []struct {
+		name, flag, path, body, response string
+		code                             int
+	}{
+		{"restart", "system_restart", "/api/v1/system/restart", "{}", `{"accepted":true}`, 202},
+		{"restore-starter-recipes", "restore_default_recipes", "/api/v1/recipes/restore-defaults", "", `{"added":2,"preserved":3,"capacity":16}`, 200},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			supported, validReply, calls := false, true, 0
+			p := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/api/v1" {
+					replyJSON(w, 200, map[string]any{"api_version": 1, "mode": "standalone", "model": "pico-s", "commands": []string{"encoder"}, "recipe_capacity": 16, tc.flag: supported})
+					return
+				}
+				body, _ := io.ReadAll(r.Body)
+				if r.Method != "POST" || r.URL.Path != tc.path || string(body) != tc.body {
+					t.Fatalf("unexpected device request %s %s %q", r.Method, r.URL.Path, body)
+				}
+				calls++
+				w.WriteHeader(tc.code)
+				if validReply {
+					fmt.Fprint(w, tc.response)
+				} else {
+					fmt.Fprint(w, "{}")
+				}
+			})
+			ctx := context.Background()
+			request := domain.Command{Command: tc.name}
+			for _, enabled := range []bool{false, true} {
+				supported = enabled
+				caps, err := p.Discover(ctx)
+				if err != nil || includes(caps.Commands, tc.name) != enabled {
+					t.Fatalf("discovery: %v %v", caps, err)
+				}
+				if err := p.Command(ctx, request); (err == nil) != enabled {
+					t.Fatalf("command: %v", err)
+				}
+			}
+			if err := p.Command(ctx, domain.Command{Command: tc.name, Click: true}); err == nil {
+				t.Fatal("accepted unrelated arguments")
+			}
+			validReply = false
+			if err := p.Command(ctx, request); err == nil || !deviceFailure(t, err).UnknownOutcome {
+				t.Fatalf("unconfirmed reply: %v", err)
+			}
+			if calls != 2 {
+				t.Fatalf("issued %d writes", calls)
+			}
+		})
+	}
+}

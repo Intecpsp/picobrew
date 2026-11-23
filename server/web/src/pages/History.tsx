@@ -1,3 +1,4 @@
+import { MachineCare } from '../components/MachineCare'
 import { ConditioningJournal } from '../components/ConditioningJournal'
 import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useState } from 'react'
@@ -339,6 +340,9 @@ function BrewPage({ id, analyze }: { id: string; analyze: boolean }) {
           />
         )}
       </section>
+      {brew.state === 'completed' && (accessory || ['brew', 'manual'].includes(brew.command)) && (
+        <MachineCare model={brew.model} />
+      )}
       {brew.command === 'brew' && (
         <ConditioningJournal
           brew={brew}
