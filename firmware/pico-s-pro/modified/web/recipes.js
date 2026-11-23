@@ -1,5 +1,22 @@
 'use strict';
 
+function readRecipeFile(text) {
+  const recipe=JSON.parse(text);
+  // JSON.parse keeps the last repeated property. The firmware rejects ambiguous
+  // objects. Track keys in each object after the browser has checked the syntax.
+  const keys=[];
+  for(const match of text.matchAll(/("(?:\\.|[^"\\])*")\s*:|"(?:\\.|[^"\\])*"|[{}]/g)) {
+    if(match[0]==='{')keys.push(new Set());
+    else if(match[0]==='}')keys.pop();
+    else if(match[1]) {
+      const key=JSON.parse(match[1]), current=keys[keys.length-1];
+      if(current.has(key))throw new Error('The recipe contains a repeated field: '+key+'.');
+      current.add(key);
+    }
+  }
+  return recipe;
+}
+
 function recipeIssue(recipe) {
   const integer = (value,low,high) => Number.isInteger(value) && value>=low && value<=high;
   const label = (value,limit) => typeof value==='string' && value.length>0 && value.length<=limit && !/[^ -~]/.test(value);

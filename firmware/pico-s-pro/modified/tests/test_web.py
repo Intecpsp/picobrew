@@ -240,6 +240,11 @@ class BrowserWorkflow(unittest.TestCase):
                 "name": "invalid.json", "mimeType": "application/json", "buffer": json.dumps(body).encode()})
             expect(self.page.locator('#notice')).to_contain_text('Step 1')
             expect(title).to_have_value('Keep these edits')
+        wire = json.dumps(recipe).replace('"minutes":', r'"min\u0075tes": 0, "minutes":', 1)
+        self.page.locator('#importFile').set_input_files({
+            "name": "repeated.json", "mimeType": "application/json", "buffer": wire.encode()})
+        expect(self.page.locator('#notice')).to_contain_text('repeated field: minutes')
+        expect(title).to_have_value('Keep these edits')
         self.page.once('dialog', lambda dialog: dialog.accept())
         body = dict(recipe, steps=[{k:v for k,v in step.items() if k != 'drain_minutes'}])
         self.page.locator('#importFile').set_input_files({
