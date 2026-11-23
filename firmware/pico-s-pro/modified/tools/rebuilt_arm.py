@@ -46,7 +46,14 @@ class RebuiltArm(ArmFirmware):
         try:
             return self.symbols[symbol]
         except KeyError as error:
-            raise ValueError('Missing ELF symbol: ' + symbol) from error
+            # ARM GCC LTO may promote a file-local symbol to a unique
+            # numbered private name without changing its calling convention.
+            prefix = symbol + '.lto_priv.'
+            candidates = [value for name, value in self.symbols.items()
+                          if name.startswith(prefix) and name[len(prefix):].isdigit()]
+            if len(candidates) == 1:
+                return candidates[0]
+            raise ValueError('Missing or ambiguous ELF symbol: ' + symbol) from error
 
     def call_symbol(self, symbol, args=(), **options):
         return self.call(self.address(symbol) & ~1, args=args, **options)
