@@ -3,7 +3,7 @@ from functools import partial
 
 import zymatic_build as build
 
-VERSION = build.PREVIOUS_VERSION
+VERSION = "1.3.0"
 template = partial(build.template, version=VERSION)
 build_application = partial(build.build_application, version=VERSION)
 recognize_private_application = partial(build.recognize_private_application, version=VERSION)

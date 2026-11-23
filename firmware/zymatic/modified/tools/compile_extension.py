@@ -25,7 +25,7 @@ def compile_extension(toolchain, destination):
         sources = sorted(src.glob("*.c")) + sorted(src.glob("*.S")) + sorted(build.ROOT.glob("zymatic_api*.c"))
         flags = ["-mmcu=atmega1284p", "-Os", "-std=gnu11", "-Wall", "-Wextra", "-Werror",
                  "-ffunction-sections", "-fdata-sections", "-fno-jump-tables",
-                 "-fno-tree-switch-conversion", "-finline-limit=10", "-fno-tree-dominator-opts", "-mcall-prologues", "-flto"]
+                 "-fno-tree-switch-conversion", "-fmerge-all-constants", "-finline-limit=10", "-fno-tree-dominator-opts", "-mcall-prologues", "-flto"]
         for path in sources:
             invoke("avr-gcc", *flags, "-I", build.ROOT, "-c", path, "-o", path.stem + ".o", cwd=work)
         entry_points = [*build.OFFLINE, "zymatic_factory_compare", "zymatic_factory_stamp", "zymatic_after_loop",
@@ -34,7 +34,7 @@ def compile_extension(toolchain, destination):
                         "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
                         "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
         invoke("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-flto",
-               "-finline-limit=10", "-fno-tree-dominator-opts", "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
+               "-fmerge-all-constants", "-finline-limit=10", "-fno-tree-dominator-opts", "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
                *[f"-Wl,--undefined={symbol}" for symbol in entry_points],
                "-Wl,-T," + str(src / "overlay.ld"),
                *[p.stem + ".o" for p in sources], "-Wl,--start-group", "-lc", "-lgcc", "-Wl,--end-group",

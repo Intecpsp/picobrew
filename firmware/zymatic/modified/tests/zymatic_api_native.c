@@ -6,8 +6,14 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define PROGMEM
+#define ZYMATIC_SITE_SECTION
+#include "site/zymatic_site.h"
+#include "site/zymatic_pair_js.h"
+#include "site/zymatic_favicon.h"
+
 static uint8_t regs[0x8000], selected, drop_write, program_active;
-static unsigned ops, writes, sends;
+static unsigned ops, writes, sends, sent_length;
 static uint32_t clock_offset;
 _Alignas(int16_t) uint8_t zymatic_test_encoder[24];
 uint8_t zymatic_test_fault;
@@ -54,10 +60,11 @@ uint8_t zymatic_test_register(uint8_t write, uint16_t addr, uint8_t *v)
     case 32: {
         unsigned p=get16(0x722), end=get16(0x724);
         unsigned length=(uint16_t)(end-p);
-        unsigned base = (unsigned)strlen(sent);
+        unsigned base = sent_length;
         assert(base + length < sizeof(sent));
         for (unsigned i=0; i<length; ++i) sent[base+i]=(char)regs[0x5800+((p+i)&2047)];
-        sent[base+length]=0;
+        sent_length = base+length;
+        sent[sent_length]=0;
         put16(0x722,end);
         regs[0x702] |= 16;
         ++sends;
@@ -74,7 +81,7 @@ static void setup(ZymaticNetwork *n)
     memset(regs,0,sizeof(regs));
     selected=1;
     program_active=0;
-    ops=writes=sends=drop_write=0;
+    ops=writes=sends=sent_length=drop_write=0;
     sent[0]=0;
     regs[0x1a]=regs[0x1b]=0x55;
     put16(0x720, 2048);
@@ -140,6 +147,21 @@ static void http_matrix(void)
         snprintf(input,sizeof(input),"%s\r\nHost: brewer\r\n%s%s\r\n",cases[i].line,cases[i].auth,cases[i].extra);
         req(&n,input);
         assert(strstr(sent,cases[i].expected));
+    }
+    const struct { const char *path; const uint8_t *bytes; size_t length; } assets[] = {
+        {"/", zymatic_site, sizeof(zymatic_site)},
+        {"/pair.js", zymatic_pair_js, sizeof(zymatic_pair_js)},
+        {"/favicon.ico", zymatic_favicon, sizeof(zymatic_favicon)},
+    };
+    for (unsigned i=0; i<sizeof(assets)/sizeof(*assets); ++i) {
+        setup(&n);
+        snprintf(input,sizeof(input),"GET %s HTTP/1.0\r\n\r\n",assets[i].path);
+        req(&n,input);
+        const char *body=strstr(sent,"\r\n\r\n");
+        assert(body);
+        body+=4;
+        assert(sent_length == (size_t)(body-sent) + assets[i].length);
+        assert(!memcmp(body,assets[i].bytes,assets[i].length));
     }
     setup(&n); req(&n,"GET /api/v1 HTTP/1.1\r\n\r\n"); assert(strstr(sent,"400 Bad Request"));
     setup(&n);

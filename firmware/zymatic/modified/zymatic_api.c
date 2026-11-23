@@ -9,18 +9,18 @@
 #include <avr/pgmspace.h>
 #include <util/atomic.h>
 /* All response literals live in the second 64 KiB flash bank. The separate
- * website occupies the packed OEM table's low-flash hole. */
+ * website script occupies the packed OEM table's low-flash hole. */
 typedef const __flash1 char *FlashAddress;
 #define CONSTANT(s) (__extension__({ static const __flash1 char v[] = s; v; }))
 #define READ(s) ((uint8_t)*(s))
-#define SITE_BYTE(i) pgm_read_byte_near(zymatic_site+(i))
+#define SCRIPT_BYTE(i) pgm_read_byte_near(zymatic_pair_js+(i))
 #else
 typedef uintptr_t FlashAddress;
 #define PROGMEM
 #define ADDRESS(s) ((uintptr_t)(s))
 #define CONSTANT(s) ADDRESS(s)
 #define READ(s) (*(const uint8_t *)(s))
-#define SITE_BYTE(i) zymatic_site[(i)]
+#define SCRIPT_BYTE(i) zymatic_pair_js[(i)]
 #endif
 
 #ifdef __AVR__
@@ -79,7 +79,7 @@ extern uint8_t zymatic_test_read_oem_serial(char *);
 #endif
 
 #ifdef __AVR__
-__attribute__((used, externally_visible))
+__attribute__((used, externally_visible, section(".low_functions")))
 #endif
 uint8_t zymatic_read_stock_serial(char *out)
 {
@@ -667,7 +667,7 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
         append_temperature(n, 1);
         append(n, '}');
     }
-    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.1\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
+    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.2\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
     else if (n->route == DISPLAY) {
         literal(n, CONSTANT("{\"width\":128,\"height\":64,\"format\":\"page-lsb-hex\",\"total_bytes\":1024,\"offset\":"));
         number(n, n->display_offset);
@@ -710,13 +710,13 @@ uint8_t zymatic_api_reply_byte(const ZymaticNetwork *n, uint16_t offset)
     if (offset >= n->response_bytes) return 0;
     if (n->line_used && offset >= n->line_used) {
         offset -= n->line_used;
-        if (n->route == INDEX) return SITE_BYTE(offset);
-        if (n->route == PAIR_SCRIPT || n->route == FAVICON) {
+        if (n->route == PAIR_SCRIPT) return SCRIPT_BYTE(offset);
+        if (n->route == INDEX || n->route == FAVICON) {
 #ifdef __AVR__
-            uint32_t start = n->route == FAVICON ? pgm_get_far_address(zymatic_favicon) : pgm_get_far_address(zymatic_pair_js);
+            uint32_t start = n->route == FAVICON ? pgm_get_far_address(zymatic_favicon) : pgm_get_far_address(zymatic_site);
             return pgm_read_byte_far(start + offset);
 #else
-            return (n->route == FAVICON ? zymatic_favicon : zymatic_pair_js)[offset];
+            return (n->route == FAVICON ? zymatic_favicon : zymatic_site)[offset];
 #endif
         }
         if (offset >= PAGE * 2) return offset == PAGE * 2 ? '"' : '}';

@@ -99,7 +99,7 @@ On a successful installation, choose **Add machine** and enter the brewer’s ne
 
 
 
-USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.1** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
+USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.2** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
 
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |

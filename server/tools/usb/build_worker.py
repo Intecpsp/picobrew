@@ -245,10 +245,12 @@ def project_files():
             )
         )
     if (zymatic / "tools/release_1_3_0.py").is_file():
-        patterns.extend(
-            f"firmware/zymatic/modified/{resource}"
-            for resource in ("extension/1.3.0/*.bin", "extension/1.3.0/extension.json", "tools/release_1_3_0.py")
-        )
+        patterns.append("firmware/zymatic/modified/tools/release_1_3_0.py")
+    # Include each published 1.3.x overlay so later workers can recognize and upgrade it.
+    for manifest in sorted((zymatic / "extension").glob("1.3.*/extension.json")):
+        archive = manifest.parent.name
+        patterns.extend(f"firmware/zymatic/modified/extension/{archive}/{name}"
+                        for name in ("extension.json", "extension.bin", "low.bin", "crc-hole.bin"))
     files = set(extra)
     for pattern in patterns:
         matches = list(ROOT.glob(pattern))
