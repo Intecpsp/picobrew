@@ -4,6 +4,7 @@
 import argparse
 import ast
 import hashlib
+from importlib.metadata import distribution
 import json
 import os
 from pathlib import Path, PurePosixPath
@@ -12,6 +13,7 @@ import shutil
 import struct
 import subprocess
 import sys
+import sysconfig
 import tarfile
 import tempfile
 import urllib.request
@@ -236,6 +238,51 @@ def project_files():
     return sorted(files)
 
 
+def notices(key, output, avr):
+    from packaging.requirements import Requirement
+    from packaging.utils import canonicalize_name
+
+    # Collect only distributions used by this worker. The machine doing the
+    # build can have unrelated Python environments and private project tools.
+    todo = ["pyinstaller", "cc3200tool", "esptool", "pyserial", "pyusb", "libusb-package"]
+    versions = {}
+    with zipfile.ZipFile(output / f"usb-notices-{key}.zip", "w", zipfile.ZIP_DEFLATED) as archive:
+        archive.write(ROOT / "LICENSES.md", "PicoBrew-LICENSES.md")
+        archive.write(avr / "AVRDUDE-LICENSE.txt", "AVRDUDE-LICENSE.txt")
+        for path in (
+            Path(sysconfig.get_path("stdlib")) / "LICENSE.txt",
+            Path(sys.base_prefix) / "LICENSE.txt",
+            Path(
+                f"/usr/share/doc/libpython{sys.version_info.major}.{sys.version_info.minor}-stdlib/copyright"
+            ),
+        ):
+            if path.is_file():
+                archive.write(path, "Python-LICENSE.txt")
+                break
+        while todo:
+            name = canonicalize_name(todo.pop())
+            if name in versions:
+                continue
+            package = distribution(name)
+            versions[name] = package.version
+            for f in package.files or ():
+                keep = any(
+                    word in f.name.upper() for word in ("LICENSE", "COPYING", "COPYRIGHT", "NOTICE")
+                )
+                if keep and not f.is_absolute() and ".." not in f.parts:
+                    path = Path(package.locate_file(f))
+                    if path.is_file():
+                        archive.write(path, f"{name}/{f.as_posix()}")
+            for item in package.requires or ():
+                req = Requirement(item)
+                if not req.marker or req.marker.evaluate():
+                    todo.append(req.name)
+        archive.writestr(
+            "versions.json",
+            json.dumps({"python": sys.version.split()[0], "packages": versions}, indent=2),
+        )
+
+
 def build(args):
     key = target()
     with tempfile.TemporaryDirectory(prefix="picobrew-usb-") as d:
@@ -245,7 +292,12 @@ def build(args):
         # Check the exact packaged upstream executable before freezing Python.
         exe = avr / "bin" / ("avrdude.exe" if key.startswith("windows") else "avrdude")
         banner = subprocess.run([str(exe), "--version"], capture_output=True, text=True, timeout=30)
-        print("Bundled programmer:", banner.returncode, (banner.stdout + banner.stderr).splitlines()[:2], flush=True)
+        print(
+            "Bundled programmer:",
+            banner.returncode,
+            (banner.stdout + banner.stderr).splitlines()[:2],
+            flush=True,
+        )
         paths = project_files()
         cmd = [
             sys.executable,
@@ -306,6 +358,7 @@ def build(args):
         shutil.copy2(built, file)
         meta = {"platform": key, "name": file.name, "bytes": file.stat().st_size, "sha256": sha(file)}
         (args.output / (key + ".json")).write_text(json.dumps(meta, indent=2) + "\n")
+        notices(key, args.output, avr)
         print(json.dumps(meta))
 
 
