@@ -102,7 +102,10 @@ function useBrewerDisplay(path: string | null, interval: number) {
   return {
     data: frame?.path === path ? frame.data : null,
     error: frame?.path === path ? frame.error : '',
-    reload: () => setVersion((n) => n + 1),
+    reload: () => {
+      setFrame(null)
+      setVersion((n) => n + 1)
+    },
   }
 }
 
@@ -128,6 +131,11 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
     device?.online && (hasPanel || hasMirror) && !pausedMirror ? `/devices/${id}/display` : null,
     readOnly ? 5000 : 2500
   )
+  const guardedDial = supports(device?.capabilities, 'panel_revision')
+  const turnEnabled =
+    !guardedDial || (display.data?.revision != null && display.data.dial === 'menu')
+  const pressEnabled =
+    turnEnabled || (display.data?.revision != null && display.data.dial === 'press')
   const native = useResource<MachineRecipe[] | { recipes: MachineRecipe[] }>(
     device?.online && supports(device.capabilities, 'recipes') ? `/devices/${id}/recipes` : null
   )
@@ -179,7 +187,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
     try {
       const receipt = await api<{ at?: string }>(`/devices/${id}/commands`, {
         method: 'POST',
-        body: { command, ...extra },
+        body: {
+          command,
+          ...extra,
+          ...(command === 'encoder' && guardedDial
+            ? { display_revision: display.data?.revision }
+            : {}),
+        },
         command: true,
       })
       awaitStatusAfter(receipt?.at)
@@ -197,6 +211,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
       display.reload()
       await hub.refresh()
     } catch (error) {
+      if (command === 'encoder' && guardedDial) display.reload()
       setError(
         error instanceof APIError
           ? errorMessage(error)
@@ -424,13 +439,13 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               <Button
                 variant="secondary"
                 aria-label="Move selection up"
-                disabled={!allowed('encoder') || !!pending}
+                disabled={!allowed('encoder') || !!pending || !turnEnabled}
                 onClick={() => void command('encoder', { delta: -1 })}
               >
                 <ArrowUp size={16} /> Up
               </Button>
               <Button
-                disabled={!allowed('encoder') || !!pending}
+                disabled={!allowed('encoder') || !!pending || !pressEnabled}
                 onClick={() => void command('encoder', { click: true })}
               >
                 Press dial
@@ -438,7 +453,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               <Button
                 variant="secondary"
                 aria-label="Move selection down"
-                disabled={!allowed('encoder') || !!pending}
+                disabled={!allowed('encoder') || !!pending || !turnEnabled}
                 onClick={() => void command('encoder', { delta: 1 })}
               >
                 Down <ArrowDown size={16} />

@@ -142,6 +142,7 @@ export function transitions(samples: Sample[]) {
       i === 0 ||
       sample.phase !== samples[i - 1].phase ||
       sample.current_step !== samples[i - 1].current_step ||
+      (sample.zymatic_history && sample.compartment !== samples[i - 1].compartment) ||
       sample.flags !== samples[i - 1].flags ||
       sample.device_state !== samples[i - 1].device_state
   )

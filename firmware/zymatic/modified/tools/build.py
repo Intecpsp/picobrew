@@ -11,13 +11,14 @@ import zlib
 
 import offline_program as recipes
 import usb_stock as stock
+import oem_tables as tables
 
 ROOT = Path(__file__).resolve().parents[1]
 TEMPLATE = ROOT / "extension"
-START = 0x1bc00
-LIMIT = 0x1e000
+START = tables.HIGH_START
+LIMIT = 0x1fc00
 BSS = 0x2c8a
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 FIELDS = {"provision_key": 32, "provision_uid": 33, "provision_host": 64, "provision_recipe": recipes.SIZE}
 
 SERIAL_READS = (
@@ -46,8 +47,8 @@ def sha(data):
 
 def sources_sha():
     digest = hashlib.sha256()
-    paths = [*(ROOT / "src").iterdir(), *ROOT.glob("zymatic_api*"), *(ROOT / "site").glob("*.h")]
-    for path in sorted(paths):
+    paths = [*(ROOT / "src").iterdir(), *ROOT.glob("zymatic_api*"), *(ROOT / "site").glob("*.h"), *ROOT.glob("zymatic_*.h")]
+    for path in sorted(set(paths)):
         if path.suffix in (".c", ".h", ".S", ".ld"):
             digest.update(path.relative_to(ROOT).as_posix().encode("ascii") + b"\0" + path.read_bytes() + b"\0")
     return digest.hexdigest()
@@ -59,6 +60,13 @@ def template():
     if (record["source_sha256"] != sources_sha() or record["extension_sha256"] != sha(code)
             or len(code) != record["extension_bytes"] or not 0 < len(code) <= LIMIT - START):
         raise ValueError("The AVR extension differs from its recorded sources or binary; rebuild the template")
+    low = (TEMPLATE / "low.bin").read_bytes()
+    if len(low) != record["low_bytes"] or sha(low) != record["low_sha256"] or not (
+            0 < len(low) <= tables.POOL_END - tables.PACKED_END):
+        raise ValueError("Invalid low-flash extension")
+    crc_code = (TEMPLATE / "crc-hole.bin").read_bytes()
+    if len(crc_code) != record["crc_hole_bytes"] or sha(crc_code) != record["crc_hole_sha256"] or not 0 < len(crc_code) <= 254:
+        raise ValueError("Invalid CRC-table region")
     for name, size in (FIELDS | DERIVED).items():
         offset = record["symbols"][name] - START
         if not 0 <= offset <= len(code) - size or code[offset:offset+size] != bytes(size):
@@ -77,7 +85,7 @@ def load_pointer(register, address):
 
 
 def call(address):
-    if not START <= address < LIMIT or address % 2:
+    if not (START <= address < LIMIT or tables.PACKED_END <= address < tables.POOL_END or tables.CRC_TABLE < address < tables.CRC_TABLE+256) or address % 2:
         raise ValueError("AVR extension entry falls outside application flash")
     return b"\x0e\x94" + struct.pack("<H", address // 2)
 
@@ -95,6 +103,16 @@ def patch_list(symbols, port=80):
     patches = [
         ("setup", 0x1a7c4, bytes.fromhex("0e94b488"), call(symbols["zymatic_setup"])),
         ("foreground", 0x1a7d4, bytes.fromhex("0e94e3d0"), call(symbols["zymatic_after_loop"])),
+        ("startup-initializer", 0x2316, bytes.fromhex("1ae0a0e0"), b"\x0c\x94"+call(symbols["zymatic_crt_data"])[2:]),
+        ("sensor-crc", 0x194da, bytes.fromhex("e4916150"), call(symbols["zymatic_sensor_crc"])),
+        ("pgm-copy", 0x2662, bytes.fromhex("05900d92"), call(symbols["zymatic_pgm_copy"])),
+        ("pgm-wifi-print", 0x11cd8, bytes.fromhex("84918823"), call(symbols["zymatic_pgm_wifi_print"])),
+        ("pgm-serial-print", 0x1a870, bytes.fromhex("64916623"), call(symbols["zymatic_pgm_serial_print"])),
+        ("pgm-bitmap", 0x15954, bytes.fromhex("e4912e2f"), call(symbols["zymatic_pgm_bitmap"])),
+        ("dialog-button", 0x807c, bytes.fromhex("0e941689"), call(symbols["zymatic_dialog_button"])),
+        ("selected-row", 0x832c, bytes.fromhex("0e94e788"), call(symbols["zymatic_menu_selection"])),
+        ("brew-session", 0xffea, bytes.fromhex("0e947f7b"), call(symbols["zymatic_run_program"])),
+        ("about-pairing", 0x855a, bytes.fromhex("0e947d22"), call(symbols["zymatic_about_wait"])),
         ("menu-button", 0x831e, bytes.fromhex("0e941689"), call(symbols["zymatic_menu_button"])),
         ("brew-button", 0xf488, bytes.fromhex("0e941689"), call(symbols["zymatic_brew_button"])),
         ("factory-stamp", 0x4a78, bytes.fromhex("7a836983"), call(symbols["zymatic_factory_stamp"])),
@@ -121,8 +139,8 @@ def patch_list(symbols, port=80):
             patches.append((label, pc, load_pointer(register, 80), load_pointer(register, port)))
     # About Zymatic and the startup banner both convert three literal unsigned
     # components with base-10 itoa. The stock wire protocol remains 1.1.14.
-    for label, pc, old, new in [("about-minor", 0x8428, 1, 2), ("about-patch", 0x844c, 14, 0),
-                                ("boot-minor", 0xa444, 1, 2), ("boot-patch", 0xa468, 14, 0)]:
+    for label, pc, old, new in [("about-minor", 0x8428, 1, 3), ("about-patch", 0x844c, 14, 0),
+                                ("boot-minor", 0xa444, 1, 3), ("boot-patch", 0xa468, 14, 0)]:
         patches.append((label, pc, immediate(0xe000, 24, old), immediate(0xe000, 24, new)))
     for symbol, sites in OFFLINE.items():
         for pc, before in sites:
@@ -155,9 +173,9 @@ def provisioning(key, uid, hub_host):
 def build_application(original, key, uid, hub_host="picobrew.com", offline_program=None):
     if not stock.is_original_app(original):
         raise ValueError("Use the verified, decoded application from the Zymatic 1.1.14 archive")
-    image = bytearray(original + b"\xff"*(START - len(original)))
+    tables.verify_library(original)
+    image = bytearray(original)
     code, record = template()
-    image.extend(code)
     symbols = record["symbols"]
     _, port = hub_origin(hub_host)
     patches = patch_list(symbols, port)
@@ -165,6 +183,17 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
         if image[pc:pc+len(before)] != before:
             raise ValueError(f"Original 1.1.14 bytes differ at {name}")
         image[pc:pc+len(after)] = after
+    low = (TEMPLATE / "low.bin").read_bytes()
+    if image[tables.CRC_TABLE:tables.CRC_TABLE+256] != tables.sensor_crc_table():
+        raise ValueError("Unexpected 1.1.14 sensor CRC table")
+    crc_code = (TEMPLATE / "crc-hole.bin").read_bytes()
+    image[tables.CRC_TABLE:tables.CRC_TABLE+256] = (b"\xff" + crc_code).ljust(256, b"\xff")
+    packed = tables.pack_pool(bytes(image[tables.POOL:tables.POOL_END]))
+    image[tables.POOL:tables.POOL_END] = (packed + low).ljust(tables.POOL_END - tables.POOL, b"\xff")
+    initializer = tables.pack_crt(bytes(image[tables.CRT:tables.CRT + tables.CRT_SIZE]))
+    image[tables.CRT:] = initializer.ljust(START - tables.CRT, b"\xff") + code
+    if len(image) != START + len(code) or len(image) > LIMIT:
+        raise ValueError("Composed application exceeds available flash")
     fields = provisioning(key, uid, hub_host)
     fields["provision_recipe"] = recipes.pack_program(offline_program)
     for name, raw in fields.items():
@@ -179,7 +208,9 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
         "application_bytes": len(image), "uid": uid, "hub_host": hub_host, "hub_port": port,
         "offline_program": recipes.unpack_program(fields["provision_recipe"]),
         "extension_start": START, "extension_sha256": record["extension_sha256"],
-        "compiler": record["compiler"], "first_possible_bootloader": LIMIT,
+        "compiler": record["compiler"], "first_possible_bootloader": 0x1e000,
+        "minimum_boot_start": next(bound for bound in (0x1e000, 0x1f000, 0x1f800, LIMIT) if len(image) <= bound),
+        "low_extension_start": tables.PACKED_END, "low_extension_sha256": record["low_sha256"],
         "sram_reserved_bytes": symbols["__extension_bss_end"] - 0x800000 - BSS,
         "config": {name: {"address": symbols[name], "bytes": size} for name, size in FIELDS.items()},
         "patches": [{"name": name, "address": pc, "bytes": len(before)}
@@ -204,7 +235,14 @@ def recognize_private_application(flash):
         recipe = recipes.unpack_program(values["provision_recipe"])
     except ValueError:
         return None
-    recovered = bytearray(application[:stock.APP_SIZE])
+    try:
+        raw_pool = tables.unpack_pool(bytes(application[tables.POOL:tables.PACKED_END]))
+        initializer = tables.unpack_crt(application[tables.CRT:START])
+    except ValueError:
+        return None
+    recovered = bytearray(application[:tables.CRT] + initializer)
+    recovered[tables.POOL:tables.POOL_END] = raw_pool
+    recovered[tables.CRC_TABLE:tables.CRC_TABLE+256] = tables.sensor_crc_table()
     for name, pc, before, after in patch_list(symbols, port):
         if recovered[pc:pc+len(after)] != after:
             return None

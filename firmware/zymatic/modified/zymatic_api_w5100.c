@@ -66,7 +66,7 @@ extern uint8_t zymatic_test_register(uint8_t, uint16_t, uint8_t *);
 enum { SOCK = 0x0700, MODE = SOCK, COMMAND = SOCK+1, IRQ = SOCK+2, STATUS = SOCK+3, PORT = SOCK+4,
        TX_FREE = SOCK+0x20, TX_WRITE = SOCK+0x24, RX_SIZE = SOCK+0x26, RX_READ = SOCK+0x28,
        RX_BASE = 0x7800, TX_BASE = 0x5800, RING = 2048, MAX_PER_POLL = 16 };
-enum { FREE, OPENING, LISTENING, READING, FILLING, SENDING, CLOSING, ABANDON };
+enum { FREE, OPENING, LISTENING, READING, RESPONDING, FILLING, SENDING, CLOSING, ABANDON };
 enum { CLOSED = 0, INIT = 0x13, LISTEN = 0x14, ESTABLISHED = 0x17, CLOSE_WAIT = 0x1c };
 enum { OPEN = 1, LISTEN_CMD = 2, DISCON = 8, CLOSE = 16, SEND = 32, RECV = 64 };
 
@@ -126,11 +126,14 @@ static uint8_t service(ZymaticNetwork *n, uint8_t status, const uint8_t *key, co
             done = zymatic_api_feed(n, b, key);
         } while (!done && --length);
         if (!put_word(RX_READ,ptr) || !put(COMMAND,RECV)) return 0;
-        if (done) {
-            zymatic_api_reply(n, uid, now, program_active);
-            if (n->response_bytes > RING) return 0;
-            n->phase = FILLING;
-        }
+        if (done) n->phase = RESPONDING;
+        return 1;
+    }
+    if (n->phase == RESPONDING) {
+        /* Separate preparation from RX transactions to bound active-brew latency. */
+        zymatic_api_reply(n, key, uid, now, program_active);
+        if (n->response_bytes > RING) return 0;
+        n->phase = FILLING;
         return 1;
     }
     if (n->phase == FILLING) {
@@ -152,6 +155,13 @@ static uint8_t service(ZymaticNetwork *n, uint8_t status, const uint8_t *key, co
         if (!reg_io(0, IRQ, &irq)) return 0;
         if (irq & 8) n->phase = ABANDON;
         else if (irq & 16) {
+            int8_t more = zymatic_api_more(n);
+            if (more < 0) return 1;
+            if (more > 0) {
+                if (!put(IRQ, 16)) return 0;
+                n->phase = FILLING;
+                return 1;
+            }
             if (!put(COMMAND, DISCON)) return 0;
             n->phase = CLOSING;
         }

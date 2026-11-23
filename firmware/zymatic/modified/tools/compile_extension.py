@@ -25,18 +25,23 @@ def compile_extension(toolchain, destination):
         sources = sorted(src.glob("*.c")) + sorted(src.glob("*.S")) + sorted(build.ROOT.glob("zymatic_api*.c"))
         flags = ["-mmcu=atmega1284p", "-Os", "-std=gnu11", "-Wall", "-Wextra", "-Werror",
                  "-ffunction-sections", "-fdata-sections", "-fno-jump-tables",
-                 "-fno-tree-switch-conversion", "-mcall-prologues", "-flto"]
+                 "-fno-tree-switch-conversion", "-finline-limit=10", "-fno-tree-dominator-opts", "-mcall-prologues", "-flto"]
         for path in sources:
             invoke("avr-gcc", *flags, "-I", build.ROOT, "-c", path, "-o", path.stem + ".o", cwd=work)
         entry_points = [*build.OFFLINE, "zymatic_factory_compare", "zymatic_factory_stamp", "zymatic_after_loop",
+                        "zymatic_sensor_crc", "zymatic_pgm_copy", "zymatic_pgm_bitmap", "zymatic_original_byte",
+                        "zymatic_pgm_wifi_print", "zymatic_pgm_serial_print", "zymatic_crt_data",
+                        "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
                         "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
         invoke("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-flto",
-               "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
+               "-finline-limit=10", "-fno-tree-dominator-opts", "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
                *[f"-Wl,--undefined={symbol}" for symbol in entry_points],
                "-Wl,-T," + str(src / "overlay.ld"),
                *[p.stem + ".o" for p in sources], "-Wl,--start-group", "-lc", "-lgcc", "-Wl,--end-group",
                "-o", "extension.elf", cwd=work)
         invoke("avr-objcopy", "-j", ".text", "-O", "binary", "extension.elf", "extension.bin", cwd=work)
+        invoke("avr-objcopy", "-j", ".low", "-O", "binary", "extension.elf", "low.bin", cwd=work)
+        invoke("avr-objcopy", "-j", ".crc_hole", "-O", "binary", "extension.elf", "crc-hole.bin", cwd=work)
         symbols = {}
         wanted = set(entry_points) | set(build.FIELDS) | set(build.DERIVED) | {
             "zymatic_image_invalid", "__extension_bss_end", "zymatic_setup",
@@ -52,11 +57,15 @@ def compile_extension(toolchain, destination):
             raise ValueError("Missing AVR integration symbols")
         build.patch_list(symbols)
         output = (work / "extension.bin").read_bytes()
-        record = {"compiler": "Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7",
+        low = (work / "low.bin").read_bytes()
+        crc_code = (work / "crc-hole.bin").read_bytes()
+        record = {"crc_hole_bytes":len(crc_code), "crc_hole_sha256":build.sha(crc_code), "low_bytes": len(low), "low_sha256": build.sha(low), "compiler": "Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7",
                   "source_sha256": build.sources_sha(), "extension_sha256": build.sha(output),
                   "extension_bytes": len(output), "symbols": symbols}
         destination.mkdir(parents=True, exist_ok=True)
         (destination / "extension.bin").write_bytes(output)
+        (destination / "low.bin").write_bytes(low)
+        (destination / "crc-hole.bin").write_bytes(crc_code)
         (destination / "extension.json").write_text(json.dumps(record, indent=2, sort_keys=True) + "\n")
         print(f"Compiled {len(output)} bytes of code/config and {symbols['__extension_bss_end']-0x800000-build.BSS} bytes of SRAM")
 

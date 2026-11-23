@@ -231,7 +231,7 @@ func (s *Server) pullHistorySession(ctx context.Context, d *runtimeDevice, devic
 	if readErr != nil || mergeErr != nil {
 		return errors.Join(readErr, mergeErr)
 	}
-	if len(final.SampleFields) > 11 && count == h.RecordCount {
+	if len(final.SampleFields) != 0 && count == h.RecordCount {
 		if _, err = s.db.Put("history-progress", id, historyImport{Session: h, SampleCount: final.SampleCount, WindowCount: count}, -1); err != nil {
 			return err
 		}
@@ -272,7 +272,7 @@ func (s *Server) readHistoryPages(ctx context.Context, d *runtimeDevice, h domai
 	// New small-memory devices return only a few records per page. Reuse an
 	// already verified append-only prefix; a changed ring origin, count or local
 	// storage falls back to a full read. The catalog is checked again below.
-	if len(b.SampleFields) > 11 {
+	if len(b.SampleFields) != 0 {
 		var previous historyImport
 		_, err := s.db.Get("history-progress", b.ID, &previous)
 		if err != nil && !errors.Is(err, store.ErrNotFound) {
@@ -511,6 +511,10 @@ func (s *Server) exportBrew(w http.ResponseWriter, r *http.Request) {
 		out := csv.NewWriter(w)
 		defer out.Flush()
 		columns := []string{"elapsed_ms", "observed_at", "wort_f", "thermoblock_f", "target_f", "step_seconds", "phase", "controller_status", "compartment", "current_step", "flags", "device_state", "source"}
+		zymatic := domain.IsZymaticHistory(b.SampleFields)
+		if zymatic {
+			columns = []string{"elapsed_ms", "observed_at", "wort_f", "thermoblock_f", "target_f", "compartment", "current_step", "source"}
+		}
 		extra := []string{}
 		if len(b.SampleFields) > 11 {
 			extra = b.SampleFields[11:]
@@ -521,7 +525,19 @@ func (s *Server) exportBrew(w http.ResponseWriter, r *http.Request) {
 			if v.ObservedAt != nil {
 				at = v.ObservedAt.Format(time.RFC3339Nano)
 			}
-			row := []string{strconv.FormatInt(v.ElapsedMS, 10), at, number(v.WortF), number(v.ThermoblockF), number(v.TargetF), strconv.Itoa(v.StepSeconds), strconv.Itoa(v.Phase), strconv.Itoa(v.ControllerStatus), strconv.Itoa(v.Compartment), strconv.Itoa(v.CurrentStep), strconv.Itoa(v.Flags), strconv.Itoa(v.DeviceState), v.Source}
+			row := []string{strconv.FormatInt(v.ElapsedMS, 10), at, number(v.WortF), number(v.ThermoblockF), number(v.TargetF)}
+			if zymatic {
+				for _, value := range []int{v.Compartment, v.CurrentStep} {
+					field := ""
+					if value >= 0 {
+						field = strconv.Itoa(value)
+					}
+					row = append(row, field)
+				}
+				row = append(row, v.Source)
+			} else {
+				row = append(row, strconv.Itoa(v.StepSeconds), strconv.Itoa(v.Phase), strconv.Itoa(v.ControllerStatus), strconv.Itoa(v.Compartment), strconv.Itoa(v.CurrentStep), strconv.Itoa(v.Flags), strconv.Itoa(v.DeviceState), v.Source)
+			}
 			for _, field := range extra {
 				value := ""
 				if reading := additionalSampleValue(v, field); reading != nil {

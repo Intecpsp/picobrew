@@ -1,0 +1,95 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width">
+<title>PicoBrew Zymatic</title>
+<style>
+:root{color-scheme:light dark;font:1em system-ui}body{max-width:36em;margin:2em auto;padding:0 1em}
+canvas{display:block;width:min(100%,384px);image-rendering:pixelated}button,input{padding:.55em;margin:.2em}
+</style>
+<h1>PicoBrew Zymatic</h1>
+<p><output id="info" aria-live="polite">Reading brewer status…</output></p>
+<button id="pair">Pair using dial</button>
+<form id="form">
+  <label>Device key <input id="key" type="password" required autocomplete="off" spellcheck="false"></label>
+  <button>Show front panel</button>
+</form>
+<div id="owner" hidden>
+  <button id="copy">Copy device key</button>
+  <button id="forget">Forget key</button>
+</div>
+<p><output id="message" aria-live="polite"></output></p>
+<section id="panel" hidden>
+  <canvas id="oled" width="128" height="64" aria-label="Brewer display"></canvas>
+  <button id="up">Up</button> <button id="press">Press dial</button> <button id="down">Down</button>
+</section>
+<script>
+const fragment=location.hash;
+if(fragment.startsWith('#pair='))history.replaceState(null,'',location.pathname+location.search);
+const hubTicket=/^#pair=[0-9a-f]{64}$/.test(fragment)?fragment.slice(6):'';
+let revision, busy=false;
+const storageKey='pico-api-key';
+
+async function api(path,body,publicRead=false){
+  const headers=publicRead?{}:{Authorization:'Bearer '+key.value};
+  if(body)headers['Content-Type']='application/json';
+  const response=await fetch('/api/v1/'+path,{method:body?'POST':'GET',headers,
+    body:body&&JSON.stringify(body),cache:'no-store',credentials:'omit',redirect:'error'});
+  if(!response.ok)throw response.status;
+  return response.json();
+}
+async function overview(){
+  try{
+    const status=await api('overview',null,true);
+    info.value=(status.busy?'Program running':'Monitoring')+(status.wort_f?' / '+status.wort_f+' °F':'');
+  }catch{info.value='Brewer unavailable.'}
+}
+async function show(action){
+  if(busy)return;
+  busy=true;panel.hidden=true;owner.hidden=true;key.readOnly=true;
+  try{
+    if(action)await api('commands',{command:'encoder',display_revision:revision,...action});
+    const ctx=oled.getContext('2d');
+    for(let offset=0;offset<1024;offset+=128){
+      const page=await api('display'+(offset?'/'+offset+'?revision='+revision:''));
+      if(!offset){
+        revision=page.revision;
+        up.disabled=down.disabled=page.dial!=='menu';
+        press.disabled=page.dial==='off';
+      }
+      for(let x=0;x<128;x++){
+        const bits=parseInt(page.data.slice(x*2,x*2+2),16);
+        for(let y=0;y<8;y++){
+          ctx.fillStyle=bits&(1<<y)?'white':'black';
+          ctx.fillRect(x,offset/16+y,1,1);
+        }
+      }
+    }
+    try{sessionStorage.setItem(storageKey,key.value)}catch{}
+    owner.hidden=false;panel.hidden=false;message.value='';
+  }catch(e){
+    message.value=e===401?'Check the device key.':e===409?'Screen changed. Refresh the front panel.':'Front panel unavailable.';
+  }finally{busy=false;key.readOnly=false}
+}
+key.oninput=()=>{panel.hidden=owner.hidden=true};
+form.onsubmit=e=>{e.preventDefault();show()};
+up.onclick=()=>show({delta:-1});
+down.onclick=()=>show({delta:1});
+press.onclick=()=>show({click:true});
+copy.onclick=async()=>{
+  try{await navigator.clipboard.writeText(key.value);message.value='Device key copied.'}
+  catch{
+    key.type='text';key.focus();key.select();
+    message.value='Press Ctrl+C or Command+C to copy the selected key.';
+    key.onblur=()=>{key.type='password'};
+  }
+};
+forget.onclick=()=>{
+  try{sessionStorage.removeItem(storageKey)}catch{}
+  key.value='';key.type='password';panel.hidden=owner.hidden=true;message.value='';
+};
+overview();
+setInterval(()=>{if(!document.hidden&&!busy)overview()},15000);
+try{key.value=sessionStorage.getItem(storageKey)||''}catch{}
+if(key.value&&!hubTicket)show();
+</script>
+<script src="/pair.js"></script>
