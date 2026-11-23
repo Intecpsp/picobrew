@@ -164,6 +164,10 @@ def main():
                             assert field.evaluate('(input)=>input.validity.patternMismatch')
                             field.fill(valid)
                             assert field.evaluate('(input)=>input.checkValidity()')
+                        page.locator('#zUnits').select_option('C')
+                        with page.expect_download() as created:
+                            page.locator('#exportRecipe').click()
+                        assert json.loads(created.value.path().read_text())['IsMetric'] is True
                         page.once('dialog',lambda dialog:dialog.accept())
                         page.locator('#zSample').click()
                         expect(page.locator('#steps tr')).to_have_count(7)
@@ -192,8 +196,18 @@ def main():
                         expect(page.locator('#runProgram')).to_be_disabled()
                         expect(page.locator('#stopButton')).to_be_enabled()
                         expect(page.locator('#operationTitle')).to_have_text('Waiting for the brewer.')
-                        status.update(ready=True,busy=True,phase=3)
+                        pause_button=page.locator('#pauseSession')
+                        resume_button=page.locator('#resumeSession')
+                        status.update(ready=True,busy=True,state='Starting',phase=3)
                         expect(page.locator('#phaseName')).to_have_text('Holding temperature')
+                        expect(pause_button).to_be_disabled()
+                        expect(resume_button).to_be_disabled()
+                        status['state']='Running'
+                        expect(pause_button).to_be_enabled()
+                        expect(resume_button).to_be_enabled()
+                        status['state']='Stopping'
+                        expect(pause_button).to_be_disabled()
+                        expect(resume_button).to_be_disabled()
                     else:
                         expect(page.locator('#recoveryPanel')).to_be_hidden()
                         expect(page.locator('[data-tab="recipes"]')).to_be_hidden()

@@ -83,7 +83,7 @@
     {
       "model": "z-series",
       "viewport": 1280,
-      "requests": 43,
+      "requests": 53,
       "commands": [
         {
           "command": "resume-interrupted",
@@ -98,7 +98,7 @@
     {
       "model": "z-series",
       "viewport": 390,
-      "requests": 41,
+      "requests": 51,
       "commands": [
         {
           "command": "resume-interrupted",
@@ -118,9 +118,9 @@
     "tests/test_web.py": "1176e70d6e055655e952230acb48066e4e67a3f337ad719f048260529cbb05ba",
     "tests/web.test.cjs": "94a6f45aa30b6b10f1e54b7702c42eda830ee3d1bd4aeec88e4bfd0de93e94cb",
     "tests/web_assets.cpp": "1052ca438b07cfea385c64034a9aaf59205185b2f55272846c87a430d487aaa3",
-    "tests/web_browser.py": "9e283b324509d0810218b5c289905762b5bfc6f4939446585f868fb769f4cc09",
+    "tests/web_browser.py": "4f0a07291ad283dc2d743315ef40a1061e95006f33057a987f461666c0dbcbc0",
     "web/api-explorer.js": "1284b4fd8a26693769e28af5936d4ad91e946736915ca15aa2ea631dcc26870e",
-    "web/app.js": "b2d5da8216763193e0c3a82bb544b684748a3dcbe64b869aac41f070c56441a4",
+    "web/app.js": "cf2c0773af327c8fc97e17c96d53200e1b7efe6591783427415a9fd38beb72d3",
     "web/device.js": "871ca76d80fcc2d97cad36b7f39c52dc5962f18f8f6927ab62a52b1dbeba7bbf",
     "web/history.js": "1925dcc59ff96b3a7ce400359df8c3113d58aea372bab20d882c063c3ef1744c",
     "web/index.html": "9d7fea1d27b09814fda54005cba0b4da67372a382da7712dc6ad2e05cf8889a5",
@@ -132,5 +132,6 @@
   "protocol_cases": 8,
   "recovery_checks": "Both viewport sizes: preparation checkpoint visibility, no automatic command, explicit resume cancellation/confirmation, invalid available:false checkpoint discard, new-program inhibition, Stop while not ready and no recovery-panel overflow.",
   "history_cadence_export": "Each of six browser cases downloads selected older session1 at60000ms while the newest inventory session2 is300000ms; JSON retains the older interval and named sensor schema.",
-  "maintenance_and_controls": "Each model displays its own care guidance and manual. PicoStill fan 2 blocks disabling or speeds under 61% while pumping. PicoFerm displays its configured sampling interval. Z program names and identifiers are checked before saving."
+  "maintenance_and_controls": "Each model displays its own care guidance and manual. PicoStill fan 2 blocks disabling or speeds under 61% while pumping. PicoFerm displays its configured sampling interval. Z program names and identifiers are checked before saving.",
+  "z_controls": "Both viewport sizes check that native Starting and Stopping disable pause/resume, Running enables them, and a new exported Program Maker file records an explicitly selected unit."
 }
