@@ -109,7 +109,7 @@
   "source_sha256": {
     "tests/esp8266_capacity_test.cpp": "d006df4231932153f2e571b6a63f737f8999ac2f686b2a9aac2af67ed7277121",
     "tests/esp8266_storage_test.cpp": "626280f34747180f75ca9e3921732413f66172dae4027ce3b800e0e6aa7dff74",
-    "tests/engine_bridge.cpp": "1ae1afae3823de79607d8b513d58a44a42351cc4431e246bf143b870d035dba1",
+    "tests/engine_bridge.cpp": "27ffc8382b3333ef50917a0a751e3e6b898f9fd4e8231663bf134a4c89f56e66",
     "tests/esp8266_adapters_native.py": "5d5ca8d5b476f15f298dd570aa93bc1848748c20f91136581e7099a2c26e0a4f",
     "platform/esp8266/storage.cpp": "5b6762c959f9101116c059be820c5c18261f1e8c9e312209fe2b0f0a71fb90c4",
     "platform/esp8266/storage.hpp": "b5ce6a38661ce1e3416fd0ce8ae87243c7e241678a74501acd1e4ff3d277efca",
