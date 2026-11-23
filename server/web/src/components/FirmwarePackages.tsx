@@ -53,12 +53,66 @@ export function MachineFirmwareDialog({
   const [chosen, setChosen] = useState('')
   const [activity, setActivity] = useState('')
   const [restoreUID, setRestoreUID] = useState('')
+  const [wirelessReview, setWirelessReview] = useState<{ uid: string; reviewed: boolean } | null>(
+    null
+  )
+  const [restoreAcknowledged, setRestoreAcknowledged] = useState(false)
   const machine = firmware.data
   const restoreTarget = machine?.stock_restore_guide
     ? machine.usb_restore_target || { model: machine.model, device_uid: machine.device_uid }
     : undefined
   const eligibleRestoreUID =
     restoreTarget && usbModels.includes(restoreTarget.model) ? restoreTarget.device_uid : undefined
+  const pendingStock = machine?.last_stock_restore
+  const resumeStock =
+    !!pendingStock?.stage && ['running', 'interrupted'].includes(pendingStock.state)
+  const wirelessUID = machine?.stock_restore_wireless
+    ? resumeStock
+      ? pendingStock?.device_uid
+      : machine.device_uid
+    : undefined
+  async function confirmStockStartup() {
+    if (!pendingStock || !machine?.can_confirm_stock_startup || !!activity) return
+    setActivity('Saving startup confirmation…')
+    setVerificationError('')
+    try {
+      await api(`/devices/${encodeURIComponent(deviceID)}/firmware/stock-started`, {
+        method: 'POST',
+        body: { device_uid: pendingStock.device_uid, started: pendingStock.started },
+      })
+      firmware.reload()
+    } catch (error) {
+      setVerificationError(errorMessage(error))
+    } finally {
+      setActivity('')
+    }
+  }
+  async function restoreWireless() {
+    if (
+      !wirelessUID ||
+      wirelessUID !== wirelessReview?.uid ||
+      !wirelessReview.reviewed ||
+      !restoreAcknowledged ||
+      activity
+    )
+      return
+    setActivity('Requesting stock restoration…')
+    setVerificationError('')
+    try {
+      await api(`/devices/${encodeURIComponent(deviceID)}/firmware/restore-stock`, {
+        method: 'POST',
+        body: { device_uid: wirelessUID, acknowledge_loss_of_hub: true, confirm_restore: true },
+      })
+      setWirelessReview(null)
+      setRestoreAcknowledged(false)
+      firmware.reload()
+      hub.notify('Stock restoration requested.')
+    } catch (error) {
+      setVerificationError(errorMessage(error))
+    } finally {
+      setActivity('')
+    }
+  }
   const items = new Map<string, FirmwareCandidate & { remote: boolean }>()
   for (const item of updates.data?.releases || []) {
     if (item.kind === 'standalone' && matchesWirelessPackage(item, machine)) {
@@ -146,6 +200,57 @@ export function MachineFirmwareDialog({
     } finally {
       setSaving(false)
     }
+  }
+  if (wirelessUID && wirelessReview?.uid === wirelessUID) {
+    const close = () => {
+      setWirelessReview(null)
+      setRestoreAcknowledged(false)
+      setVerificationError('')
+    }
+    return (
+      <Modal
+        title={
+          wirelessReview.reviewed
+            ? 'Confirm wireless stock restoration'
+            : 'Restore original PicoBrew firmware?'
+        }
+        onClose={close}
+      >
+        <p>
+          {wirelessReview.reviewed
+            ? 'The Hub will verify both original images, write them over Wi-Fi, and restart this brewer. Keep the brewer powered on.'
+            : 'Returning to original firmware removes standalone controls, the local website, and Hub wireless updates. Returning to custom firmware requires USB.'}
+        </p>
+        {!wirelessReview.reviewed && (
+          <label className="check-label">
+            <input
+              type="checkbox"
+              checked={restoreAcknowledged}
+              onChange={(e) => setRestoreAcknowledged(e.target.checked)}
+            />{' '}
+            I understand that Hub controls and wireless updates will end.
+          </label>
+        )}
+        <ErrorBanner message={verificationError} />
+        <div className="modal-actions">
+          <Button variant="secondary" disabled={!!activity} onClick={close}>
+            Cancel
+          </Button>
+          {wirelessReview.reviewed ? (
+            <Button variant="danger" disabled={!!activity} onClick={() => void restoreWireless()}>
+              {resumeStock ? 'Resume stock restoration' : 'Restore and restart brewer'}
+            </Button>
+          ) : (
+            <Button
+              disabled={!restoreAcknowledged}
+              onClick={() => setWirelessReview({ uid: wirelessUID, reviewed: true })}
+            >
+              Review restoration
+            </Button>
+          )}
+        </div>
+      </Modal>
+    )
   }
   if (machine && restoreTarget && eligibleRestoreUID && restoreUID === eligibleRestoreUID) {
     return (
@@ -274,6 +379,37 @@ export function MachineFirmwareDialog({
               </p>
             )}
             <ErrorBanner message={updates.error} />
+            {pendingStock && <p role="status">Stock restoration: {pendingStock.message}</p>}
+            {machine?.can_confirm_stock_startup && (
+              <Button
+                variant="secondary"
+                disabled={!!activity || saving}
+                onClick={() => void confirmStockStartup()}
+              >
+                I see the original PicoBrew startup screen
+              </Button>
+            )}
+            {wirelessUID && (
+              <Button
+                variant="secondary"
+                disabled={!!activity || saving}
+                onClick={() => {
+                  setRestoreAcknowledged(false)
+                  setVerificationError('')
+                  setWirelessReview({ uid: wirelessUID, reviewed: false })
+                }}
+              >
+                {resumeStock
+                  ? 'Resume wireless stock restoration'
+                  : 'Restore original firmware over Wi-Fi'}
+              </Button>
+            )}
+            {machine?.stock_restore_upgrade && (
+              <p className="help-text">
+                Update the custom firmware to a version with wireless stock restoration to return
+                this brewer to stock over Wi-Fi.
+              </p>
+            )}
             {eligibleRestoreUID && (
               <section className="stock-restore-entry">
                 <Button

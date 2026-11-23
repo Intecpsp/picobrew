@@ -139,9 +139,15 @@ def main():
                         help='Use the complete recovered entry and Pico linker (called by build_firmware.py)')
     parser.add_argument('--standalone', action='store_true',
                         help='Local API profile; retain reachable production code, not every legacy export')
+    parser.add_argument('--stock-worker', action='store_true',
+                        help='Independent stock restore application with only setup and loop rooted')
     add_model_argument(parser)
     parser.add_argument('--jobs', type=int, default=min(8, os.cpu_count() or 1))
     args = parser.parse_args()
+    reachable = args.standalone or args.stock_worker
+    if args.stock_worker and (args.appliance_image or args.standalone or args.adapter_lib or args.application_lib
+                              or args.entry.resolve() != project / 'platform/stock_restore/native.cpp'):
+        parser.error('--stock-worker requires its independent entry without brewing code')
     if not args.standalone and args.model != 'pico-pro':
         parser.error('Model selection is available only for --standalone')
     if args.appliance_image and (args.entry.resolve() != project / 'platform/firmware_main.cpp' or
@@ -195,8 +201,15 @@ def main():
               '-DENERGIA_ARCH_CC3200', '-Dprintf=iprintf', model_flag(args.model)]
     if args.standalone:
         common.append('-DPICO_STANDALONE=1')
+    if args.stock_worker:
+        common.append('-DPICO_RECOVERY=1')
     includes = {cpp: ['-I' + str(p) for p in sdk_include_dirs(sdk, project, args.include, cxx=cpp)]
                 for cpp in (False, True)}
+    if args.stock_worker:
+        # The pinned recovery server embeds its fixed HTTP arena; the brewing
+        # application uses a different server structure and allocation policy.
+        for dirs in includes.values():
+            dirs.insert(0, '-I' + str(project / 'recovery/include'))
     upstream = sort_sources([p for directory in [core, *libraries] for p in directory.rglob('*')
                        if p.suffix in ('.c', '.cpp', '.S') and 'examples' not in p.parts])
     application = [args.entry.resolve(), args.runtime_compat.resolve(),
@@ -213,7 +226,7 @@ def main():
         obj.parent.mkdir(parents=True, exist_ok=True)
         cpp = source.suffix == '.cpp'
         command = [str(cxx if cpp else cc), *common, *includes[cpp],
-                   *(['-flto'] if args.standalone and source != args.runtime_compat.resolve()
+                   *(['-flto'] if reachable and source != args.runtime_compat.resolve()
                      and source.name != 'startup_gcc.c' else []),
                    *(['-std=gnu++11', '-fno-rtti', '-fno-exceptions', '-fno-threadsafe-statics']
                      if cpp else ['-std=gnu11']), '-c', str(source), '-o', str(obj)]
@@ -233,7 +246,7 @@ def main():
         return 1
     archive = out / 'energia_cc3200.a'
     archive.unlink(missing_ok=True)
-    subprocess.run([prefix + ('gcc-ar' if args.standalone else 'ar'), 'rcs', str(archive),
+    subprocess.run([prefix + ('gcc-ar' if reachable else 'ar'), 'rcs', str(archive),
                     *[x['object'] for x in compiled[:len(upstream)]]], check=True)
     # --whole-archive alone still allows --gc-sections to discard unreferenced
     # functions. Root every public definition from the supplied application
@@ -254,7 +267,8 @@ def main():
                        'pico_application_initialize', 'pico_application_bind_services',
                        'pico_recipe_run_step', 'pico_temperature_control_timer_isr',
                        'pico_heater_pump_timer_isr')
-    retained = (['-Wl,--undefined=' + name for name in appliance_roots] if args.standalone else
+    roots = ('setup', 'loop') if args.stock_worker else appliance_roots
+    retained = (['-Wl,--undefined=' + name for name in roots] if reachable else
                 ['-Wl,--undefined=' + name for name in sorted(exported_symbols)])
     archive_args = (['-Wl,--whole-archive', *map(str, selected_archives),
                      '-Wl,--no-whole-archive'] if selected_archives else [])
@@ -263,7 +277,7 @@ def main():
     map_path = out / 'sdk_validation.map'
     linker = (args.linker or core / 'cc3200.ld').resolve()
     link = [str(cxx), '-mcpu=cortex-m4', '-mthumb', '-mfloat-abi=soft', '-mabi=aapcs',
-            *(['-flto', '-ffunction-sections', '-fdata-sections'] if args.standalone else []),
+            *(['-flto', '-ffunction-sections', '-fdata-sections'] if reachable else []),
             '-nostartfiles', '-nostdlib', '--specs=nano.specs', '-Os', '-Wl,--gc-sections', '-T', str(linker),
             '-Wl,-Map,' + str(map_path), '-Wl,--check-sections', '-Wl,--cref',
             '-Wl,--entry=ResetISR', '-Wl,--unresolved-symbols=report-all', '-Wl,--warn-common',
@@ -363,7 +377,7 @@ def main():
               'dependency_lock_sha256': hashlib.sha256(args.lock.read_bytes()).hexdigest(),
               'selected_archives': [{'path': str(p), 'sha256': hashlib.sha256(p.read_bytes()).hexdigest()}
                                     for p in selected_archives],
-              'profile': 'standalone' if args.standalone else 'legacy', 'model': args.model,
+              'profile': 'stock-worker' if args.stock_worker else 'standalone' if args.standalone else 'legacy', 'model': args.model,
               'retained_application_symbols': sorted(exported_symbols & linked_definitions),
               'discarded_application_symbols': discarded_application_symbols,
               'missing_application_symbols': missing_application_symbols,

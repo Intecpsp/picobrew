@@ -11,6 +11,7 @@
 #endif
 #define PICO_MODEL_ID "pico-c"
 #define PICO_MODEL_NAME "Pico C"
+#define PICO_MODEL_HEADING "PICO C"
 #define PICO_MODEL_FAMILY "pico-c"
 
 /* The firmware build requires an explicit display variant. The default below

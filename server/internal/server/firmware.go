@@ -19,6 +19,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/stockfirmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
@@ -583,6 +584,9 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 	}
 	retryEnabled := d.view.Enabled && !d.view.KeyReused && d.view.Adapter == "pico-standalone" && (!d.identityMismatch || d.awaitingIdentity) && (!d.view.Online || out.InstallSupported)
 	active := d.updatingFirmware
+	stockCapable := d.view.Capabilities != nil && d.view.Capabilities.StockRestoreOTAV1
+	stockRetry := !s.cfg.Demo && d.view.Adapter == "pico-standalone" && d.view.Enabled && !d.view.KeyReused && (!d.identityMismatch || d.awaitingIdentity)
+
 	// A previously identified offline machine can still use its local USB guide.
 	// The guide never enables a wireless install or initiates a hardware write.
 	restoreModel := out.Model
@@ -628,6 +632,46 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 	} else if !errors.Is(err, store.ErrNotFound) {
 		s.storeError(w, err)
 		return
+	}
+	stock, _, err := s.stockReceipt(out.DeviceID)
+	if err != nil {
+		s.storeError(w, err)
+		return
+	}
+	if stock != nil {
+		if stock.State == "running" && !active {
+			stock.State = "interrupted"
+			stock.Message = stockIssue(stock.Stage, "The Hub restarted before it recorded the result.")
+		}
+		out.LastStockRestore = stock
+		if canObserveStock(stock) && !active && stockRetry {
+			match, err := s.savedFirmwareIdentity(out.DeviceID, stock.UID)
+			if err != nil {
+				s.storeError(w, err)
+				return
+			}
+			out.CanConfirmStockStartup = match && (out.DeviceUID == "" || out.DeviceUID == stock.UID)
+		}
+	}
+	if out.USBRestoreTarget != nil && stockfirmware.WirelessProfile(out.USBRestoreTarget.Model, out.USBRestoreTarget.UID) {
+		out.StockRestoreWireless = out.InstallSupported && stockCapable && out.RetryPackageID == "" && !active
+		out.StockRestoreUpgrade = out.InstallSupported && !stockCapable && stockUpgradeAvailable(out.CurrentVersion) && out.RetryPackageID == "" && !active
+	}
+	if stockPending(stock) {
+		// The brewer can remain on custom firmware after a failed preflight,
+		// or return to it through USB. A new installation checks the live boot.
+		out.InstallSupported = out.InstallSupported && out.Model == stock.Model && out.DeviceUID == stock.UID
+		out.RetryPackageID = ""
+		out.StockRestoreWireless = false
+		out.StockRestoreUpgrade = false
+		if stockRetry && !active && (out.DeviceUID == "" || out.DeviceUID == stock.UID) {
+			match, err := s.savedFirmwareIdentity(out.DeviceID, stock.UID)
+			if err != nil {
+				s.storeError(w, err)
+				return
+			}
+			out.StockRestoreWireless = match && stockfirmware.WirelessProfile(stock.Model, stock.UID)
+		}
 	}
 	if active {
 		out.InstallSupported = false

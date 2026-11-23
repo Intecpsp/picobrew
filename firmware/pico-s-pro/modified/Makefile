@@ -32,6 +32,7 @@ standalone-test:
 	"$(PYTHON)" tests/test_local_telemetry.py
 	"$(PYTHON)" tests/test_telemetry_receiver.py
 	"$(PYTHON)" tests/test_standalone_control.py
+	"$(PYTHON)" tests/test_stock_restore.py
 
 standalone-arm-test:
 	"$(PYTHON)" tests/test_standalone_control_arm.py

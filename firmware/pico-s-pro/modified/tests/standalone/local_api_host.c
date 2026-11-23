@@ -186,6 +186,8 @@ static bool fake_ota_inspect(bool *trial, char digest[65], uint32_t *size)
     return true;
 }
 static bool fake_ota_commit(bool confirm) { return confirm == ota_trial; }
+static bool fake_stock_prepare(const char *uid) { return !strcmp(uid, appliance.state.device_uid); }
+void test_stock_enable(void) { api.stock_prepare = fake_stock_prepare; }
 void test_ota_enable(int trial) {
     ota_trial = trial != 0; api.ota_trial = ota_trial; api.ota_inspect = fake_ota_inspect; api.ota_commit = fake_ota_commit;
 }

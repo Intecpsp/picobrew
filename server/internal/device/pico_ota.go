@@ -113,34 +113,8 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 	}
 	if !before.Trial {
 		if err := awaitBoot(ctx, func(c context.Context) bool {
-			var identity struct {
-				UID      string `json:"device_uid"`
-				Protocol int    `json:"hub_ota_protocol"`
-			}
-			if remote.request(c, "GET", "/api/v1/recovery/identity", nil, &identity, 200) != nil || identity.UID != uid || identity.Protocol != 1 {
-				return false
-			}
-			var inventory struct {
-				Profile, Version string
-				Boot             struct {
-					Valid            bool
-					RecoverySelected bool `json:"recovery_selected"`
-				}
-				Slots []struct {
-					Slot, Allocated int
-					Present         bool
-				}
-				Upload struct{ Active bool }
-			}
-			if remote.request(c, "GET", "/api/v1/recovery", nil, &inventory, 200) != nil || inventory.Profile != "recovery" || inventory.Version != "0.1.0" || !inventory.Boot.Valid || !inventory.Boot.RecoverySelected || inventory.Upload.Active {
-				return false
-			}
-			for _, slot := range inventory.Slots {
-				if slot.Slot == 2 && slot.Present && slot.Allocated >= pkg.BinaryBytes {
-					return true
-				}
-			}
-			return false
+			info, ready := remote.readRecovery(c, uid, 2, pkg.BinaryBytes)
+			return ready && !info.Upload.Active
 		}); err != nil {
 			return err
 		}
@@ -192,44 +166,8 @@ func (p *pico) transferFirmware(ctx context.Context, pkg firmware.UpdatePayload,
 		return err
 	}
 	for target, data := range pkg.Files {
-		args := map[string]any{"target": target}
-		checked, err := p.recoveryPost(ctx, "verify", session.ID, args)
-		if err == nil {
-			if checked.Mask&(1<<target) == 0 {
-				return otaFailure("Recovery did not acknowledge file verification")
-			}
-			continue
-		}
-		// A content/size mismatch or absent file is expected for a new version.
-		// Transport, session and storage failures have uncertain outcomes.
-		if err != nil {
-			var problem *Error
-			if !errors.As(err, &problem) || (problem.Code != "checksum" && problem.Code != "content" && problem.Code != "incomplete" && problem.Code != "not_found") {
-				return err
-			}
-		}
-		if start, err := p.recoveryPost(ctx, "begin", session.ID, args); err != nil {
+		if err := p.transferRecoveryFile(ctx, session.ID, target, data); err != nil {
 			return err
-		} else if start.Offset != 0 {
-			return otaFailure("Recovery did not open the file at offset zero")
-		}
-		for offset := 0; offset < len(data); {
-			end := min(offset+1024, len(data))
-			ack, err := p.recoveryPost(ctx, "chunk", session.ID, map[string]any{"offset": offset, "data": hex.EncodeToString(data[offset:end])})
-			if err != nil {
-				return err
-			}
-			if ack.Offset != end {
-				return otaFailure("Recovery acknowledged an unexpected file offset")
-			}
-			offset = end
-		}
-		ack, err := p.recoveryPost(ctx, "finish", session.ID, map[string]any{})
-		if err != nil {
-			return err
-		}
-		if ack.Mask&(1<<target) == 0 {
-			return otaFailure("Recovery did not verify the uploaded file")
 		}
 	}
 	if err := checkpoint("selecting"); err != nil {
@@ -241,6 +179,96 @@ func (p *pico) transferFirmware(ctx context.Context, pkg firmware.UpdatePayload,
 	}
 	if !ack.Boot || ack.Mask != 63 {
 		return otaFailure("Recovery did not confirm the complete package and trial selection")
+	}
+	return nil
+}
+
+type recoveryInventory struct {
+	Profile, Version string
+	Boot             struct {
+		Valid            bool
+		RecoverySelected bool `json:"recovery_selected"`
+	}
+	Slots []struct {
+		Slot, Allocated int
+		Present         bool
+	}
+	Upload struct {
+		Active bool
+		ID     uint32
+		Target int
+	}
+	Plan struct {
+		Active  bool
+		ID      uint32
+		Slot    int
+		Version string
+		Files   []struct {
+			Target, Size int
+			SHA256       string
+		}
+	}
+}
+
+func (remote *pico) readRecovery(c context.Context, uid string, slot, size int) (recoveryInventory, bool) {
+	var identity struct {
+		UID      string `json:"device_uid"`
+		Protocol int    `json:"hub_ota_protocol"`
+	}
+	var info recoveryInventory
+	if remote.request(c, "GET", "/api/v1/recovery/identity", nil, &identity, 200) != nil || identity.UID != uid || identity.Protocol != 1 {
+		return info, false
+	}
+	if remote.request(c, "GET", "/api/v1/recovery", nil, &info, 200) != nil || info.Profile != "recovery" || info.Version != "0.1.0" || !info.Boot.Valid || !info.Boot.RecoverySelected {
+		return info, false
+	}
+	for _, s := range info.Slots {
+		if s.Slot == slot && s.Present && s.Allocated >= size {
+			return info, true
+		}
+	}
+	return info, false
+}
+
+func (p *pico) transferRecoveryFile(ctx context.Context, sessionID uint32, target int, data []byte) error {
+	args := map[string]any{"target": target}
+	checked, err := p.recoveryPost(ctx, "verify", sessionID, args)
+	if err == nil {
+		if checked.Mask&(1<<target) == 0 {
+			return otaFailure("Recovery did not acknowledge file verification")
+		}
+		return nil
+	}
+	// A content/size mismatch or absent file is expected for a new version.
+	// Transport, session and storage failures have uncertain outcomes.
+	if err != nil {
+		var problem *Error
+		if !errors.As(err, &problem) || (problem.Code != "checksum" && problem.Code != "content" && problem.Code != "incomplete" && problem.Code != "not_found") {
+			return err
+		}
+	}
+	if start, err := p.recoveryPost(ctx, "begin", sessionID, args); err != nil {
+		return err
+	} else if start.Offset != 0 {
+		return otaFailure("Recovery did not open the file at offset zero")
+	}
+	for offset := 0; offset < len(data); {
+		end := min(offset+1024, len(data))
+		ack, err := p.recoveryPost(ctx, "chunk", sessionID, map[string]any{"offset": offset, "data": hex.EncodeToString(data[offset:end])})
+		if err != nil {
+			return err
+		}
+		if ack.Offset != end {
+			return otaFailure("Recovery acknowledged an unexpected file offset")
+		}
+		offset = end
+	}
+	ack, err := p.recoveryPost(ctx, "finish", sessionID, map[string]any{})
+	if err != nil {
+		return err
+	}
+	if ack.Mask&(1<<target) == 0 {
+		return otaFailure("Recovery did not verify the uploaded file")
 	}
 	return nil
 }

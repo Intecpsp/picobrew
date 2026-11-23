@@ -27,6 +27,7 @@ typedef struct PicoLocalApi {
      * recognized boot record. commit preserves and verifies the boot record. */
     bool (*ota_inspect)(bool *trial, char digest[65], uint32_t *size);
     bool (*ota_commit)(bool confirm);
+    bool (*stock_prepare)(const char *uid);
     bool restart_pending;
     bool ota_trial;
 } PicoLocalApi;

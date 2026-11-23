@@ -422,6 +422,50 @@
       "archive_sha256": "6e3ff6508f137497e2fd5dc969aee7612039f33d710d087a351f42078fa6ebac",
       "binary_sha256": "12b3a2f197a9f54b07a3d9dc4980e77e7017a663d4f5bed3683b12f16250af0f",
       "binary_bytes": 392224
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.5",
+      "kind": "standalone",
+      "source_commit": "9bbdfd768d75a0579a5b84c34be75d7e6a199b35",
+      "display_variant": "ssd1309",
+      "archive_sha256": "6dd74da097d37259a0b62745bd2f4f351a41adab79889c31256ec67367ea5fe0",
+      "binary_sha256": "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7",
+      "binary_bytes": 164112
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.5",
+      "kind": "standalone",
+      "source_commit": "9bbdfd768d75a0579a5b84c34be75d7e6a199b35",
+      "display_variant": "ssd1325",
+      "archive_sha256": "af194a7d800cb862464374aa78953703d9e35e4d136bcdcf4ab35eb37ddf55a1",
+      "binary_sha256": "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b",
+      "binary_bytes": 164200
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.6",
+      "kind": "standalone",
+      "source_commit": "99f2add28104f83eff120e22c5c66d872efb0017",
+      "archive_sha256": "de00e2cfdbdf80627098f0b828fd87a1d0d99bff529f9eea24e95ffeb09a2096",
+      "binary_sha256": "a36e5873ace849af2f7617610c4232edb63c6a4ac5b3668ece14301d97ba085b",
+      "binary_bytes": 169584,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.6",
+      "kind": "standalone",
+      "source_commit": "99f2add28104f83eff120e22c5c66d872efb0017",
+      "archive_sha256": "7a31c16b40bd4698fa7c0177cda1a3113ad37de1fc7997f1f52404302fc2d869",
+      "binary_sha256": "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540",
+      "binary_bytes": 169568,
+      "hub_ota_protocol": 1
     }
   ]
 }

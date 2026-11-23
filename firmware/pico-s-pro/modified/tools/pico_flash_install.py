@@ -50,7 +50,7 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 16
+INSTALL_REVISION = 17
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
@@ -60,8 +60,12 @@ UID_BLOCK = 106
 PROFILE_UID_SHA256 = "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 168400
-CANDIDATE_SHA256 = "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c"
+CANDIDATE_SIZE = 169584
+CANDIDATE_SHA256 = "a36e5873ace849af2f7617610c4232edb63c6a4ac5b3668ece14301d97ba085b"
+RELEASED_1_3_5 = {
+    "pico-pro": (168400, "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c"),
+    "pico-s": (168392, "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b"),
+}
 RELEASED_1_3_4 = {
     "pico-pro": (166496, "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"),
     "pico-s": (166488, "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94"),
@@ -113,7 +117,7 @@ APPLICATION_ALLOCATION_BLOCKS = 48
 APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-# Shared by the Pico S and Pico Pro 1.3.5 packages.
+# Shared by the Pico S and Pico Pro 1.3.6 packages.
 WEB_MANIFEST_SHA256 = "56b9b1ee801a5a9185d1dbddd4eca154eee0373756140c30e8cf2cc798e871a8"
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 C_FIRMWARE = Path(__file__).resolve().parents[3] / "pico-c/modified/firmware"
@@ -125,9 +129,13 @@ C_RELEASED_1_2_3 = {
     "pico-c-ssd1325": (162304, "ffe1fe5ba2e28504de897d2829343a003e684e8c4f92b14eda6c2d0fb711b174"),
     "pico-c-ssd1309": (162224, "32bd24c118c18cabd29720894ad10647f465050f6786cd548dce874064a7f1df"),
 }
-C_STANDALONE = {
+C_RELEASED_1_2_4 = {
     "pico-c-ssd1325": (164192, "b5b14f098652d1bd42396b22410028af86b8c5cd0d5bf8ac0a50533b40422f9f"),
     "pico-c-ssd1309": (164088, "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424"),
+}
+C_STANDALONE = {
+    "pico-c-ssd1325": (164200, "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b"),
+    "pico-c-ssd1309": (164112, "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7"),
 }
 C_WEB_MANIFEST_SHA256 = "4e355164a463306616a5ec1cb4c0391536c22d41123497d79dcfed7d1fd12b69"
 UID_NAME = "/sys/uid.txt"
@@ -337,7 +345,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 168392, "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b"
+        return 169568, "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540"
     if model in C_STANDALONE:
         return C_STANDALONE[model]
     raise InstallError("Unknown target model")
@@ -418,7 +426,7 @@ def _approved_current_applications(mode, model="pico-pro"):
     if model in C_STOCK:
         identities = [C_STOCK[model]]
         if mode == "install":
-            identities.extend((C_RELEASED_1_2_3[model], candidate_identity(model)))
+            identities.extend((C_RELEASED_1_2_3[model], C_RELEASED_1_2_4[model], candidate_identity(model)))
         return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
     identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
     if mode == "install":
@@ -427,9 +435,13 @@ def _approved_current_applications(mode, model="pico-pro"):
                            (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                            (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
                            (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
-                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], RELEASED_1_3_4[model], candidate_identity(model)))
+                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
+                           RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model],
+                           candidate_identity(model)))
     if mode == "install-recovery":
-        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model], RELEASED_1_3_3[model], RELEASED_1_3_4[model], candidate_identity(model)]
+        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
+                      RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model],
+                      candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 

@@ -3,7 +3,7 @@
   "profile": "standalone",
   "model": "pico-c",
   "model_family": "pico-c",
-  "firmware_version": "1.2.4",
+  "firmware_version": "1.2.5",
   "display_variant": "ssd1309",
   "reference_version": "0.1.34",
   "source_reconstruction": true,
@@ -106,9 +106,9 @@
     "load_address": "0x20004000",
     "ram_end": "0x20040000",
     "initial_stack_pointer": "0x20034800",
-    "reset_vector": "0x2001ba5d",
-    "entry": "0x2001ba5d",
-    "binary_bytes": 164088,
+    "reset_vector": "0x2001ba65",
+    "entry": "0x2001ba65",
+    "binary_bytes": 164112,
     "bss_bytes": 42712,
     "heap_bytes": 32768,
     "sdk_stack_bytes": 32768,
@@ -116,22 +116,22 @@
     "load_segments": [
       {
         "start": "0x20004000",
-        "memory_bytes": 164088,
-        "file_bytes": 164088
+        "memory_bytes": 164112,
+        "file_bytes": 164112
       }
     ],
     "undefined_symbols": [],
     "test_symbols": [],
     "required_entry_symbols": {
-      "ResetISR": "0x2001ba5d",
-      "main": "0x20019d3d",
-      "setup": "0x2000bce1",
-      "loop": "0x200083b9",
-      "pico_application_setup": "0x2000b001",
+      "ResetISR": "0x2001ba65",
+      "main": "0x20019d45",
+      "setup": "0x2000bce9",
+      "loop": "0x200083c1",
+      "pico_application_setup": "0x2000b009",
       "pico_application_loop": "0x20008111",
-      "pico_application_initialize": "0x200101d1",
+      "pico_application_initialize": "0x200101d9",
       "pico_application_bind_services": "0x200058d9",
-      "pico_recipe_run_step": "0x2000e2f1",
+      "pico_recipe_run_step": "0x2000e2f9",
       "pico_temperature_control_timer_isr": "0x20005299",
       "pico_heater_pump_timer_isr": "0x200045b1",
       "g_pfnVectors": "0x20004000",
@@ -141,15 +141,15 @@
       "_ebss": "0x20036ad8"
     }
   },
-  "elf_sha256": "1cbcee468b6757bb73d84df060ab821b3fb50e04b78ab48a59e614df4da73b00",
-  "binary_sha256": "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424",
-  "update_body_sha256": "107d37e7cd713a478fd4f138b2f2b8dfc24d87e60965d8e913dd5b5d12ac9dc3",
-  "update_body_bytes": 328218,
+  "elf_sha256": "9eb65d0fa5630a9c0f1ff3b1b00faf4bac2b9ee124f6a8ce5260e1a14c444422",
+  "binary_sha256": "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7",
+  "update_body_sha256": "b739744126deb8816a878c427a6e1bd7b4698aa36ea0c9fbf2797231a4d08cd6",
+  "update_body_bytes": 328266,
   "sdk_link_passed": true,
   "sdk_source_files": 53,
   "app_sources_sha256": {
     "src/actuators.c": "0cf7d70ae6052a3fbaafa2fff25e9c83133f430efc8bb0da8ef857fd4b72bc6b",
-    "src/application.c": "269294749fc0be5dfac331cc4f4e670ae3a2e9a0816f26a5a63f2196308d1099",
+    "src/application.c": "ca455dd4c8f935665046ebbe19719aac519643d5380977949eed88ca81e9da9c",
     "src/control.c": "a5bca05e99d27a230bcaa730c5d85721b9cad118aeba55ede8075825349a0f77",
     "src/device.c": "52d2ec9831259b357ada46607b167697f863dec7900defab8187cbd532c0aeb3",
     "src/encoder.c": "63511492b2c214bcddc0c449ab3c9684362fc6346778cf54594d408cb9145cae",
@@ -225,7 +225,7 @@
     "include/pico_c/local_history.h": "fe031c9f6363587d94554e8013c62f64b14c2761a154594f2d5531b6b42056d8",
     "include/pico_c/local_store.h": "a605dc5a563a86f332c0dd3a63c697f1a2581d273c17f62e49016cc180cd3961",
     "include/pico_c/local_telemetry.h": "696537b3f42a4573223d37e96296bc757178e59b5553f9c36025d2ff933970d9",
-    "include/pico_c/model.h": "283ba3c435c5daea7d0e3fe279097a0a809f305736ebebe5c0e684db16fea1d8",
+    "include/pico_c/model.h": "7c1e914bad2add4dbc4a1342057c51a25e7566b9b3ed150ea6940179bbdc8e05",
     "include/pico_c/network.h": "1f04de41ff7f28679d406db2b4fbd7dd1a14bdd46b18e9e91266f9aa2ff302f2",
     "include/pico_c/phase.h": "66d7b528cce1dc7c854fd7e6507a6c3f79d424a8e64f4822c18a5f1e94efe789",
     "include/pico_c/pico_http_client.h": "72565dcac21f83955eb3fa1bf45b768bb6cc988c0e25d343b9506ccf833d3eca",
@@ -237,7 +237,7 @@
     "include/pico_c/state.h": "b01d913717e85d0a0b01d22851e42b6b853fc63eaf074184e203ff93a60e6727",
     "include/pico_c/text.h": "4591094fac916ae38d1a4687693af60cda838f8bdba280fd4f0e9eb7581051fd",
     "include/pico_c/ui.h": "a342bf822458bb0da37407c5581c9f7063a2dadb6c326030272e77814a56bff5",
-    "include/pico_c/version.h": "5b36b0f0b7c57bf5bd29b96ad2b6a0bc0b0dd73900abc2665393d9326e583d5c",
+    "include/pico_c/version.h": "cfdfdb5d688fdc20d3c721de347a0d9298a4ce76dbb8ad9a02e71a332e8f061c",
     "include/pico_c/web_assets.h": "2df2291a1941e65969b48af9b4e17005c32508bcb431dce86b43a531636c9d21",
     "platform/energia_cc3200.cpp": "722afafe17019c350bde5700f839e3ff4c74233d80671fa1c82950f9c6a9ea26",
     "platform/energia_history.cpp": "2b48f900f2fb97262878c84eb444d2da948883c9d7379b5cac6d551e8b8a1d87",
@@ -493,19 +493,19 @@
       "device_io": "No POSIX descriptor retargeting to Serial, WiFi, or SLFS is supplied"
     },
     "sbrk_linked": true,
-    "sbrk_provider": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/energia_cc3200.a(startup_gcc.c.o)",
+    "sbrk_provider": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/energia_cc3200.a(startup_gcc.c.o)",
     "sdk_heap_provider_verified": true,
-    "bounded_heap_adapter_provider": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/objects/application/energia_runtime_compat_509423ae88.o",
+    "bounded_heap_adapter_provider": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/objects/application/energia_runtime_compat_37cd4965c9.o",
     "bounded_heap_adapter_verified": true,
     "allocation_providers": {
-      "malloc": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
-      "free": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
-      "calloc": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-calloc.o",
-      "realloc": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-realloc.o",
-      "_malloc_r": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallocr.o",
-      "_free_r": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-freer.o",
-      "_calloc_r": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-callocr.o",
-      "_realloc_r": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocr.o"
+      "malloc": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
+      "free": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
+      "calloc": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-calloc.o",
+      "realloc": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-realloc.o",
+      "_malloc_r": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallocr.o",
+      "_free_r": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-freer.o",
+      "_calloc_r": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-callocr.o",
+      "_realloc_r": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocr.o"
     },
     "allocator_provider_verified": true,
     "allocator": {
@@ -514,102 +514,102 @@
       "objects": [
         {
           "member": "lib_a-malloc.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloc.o",
           "sha256": "113ee69ac2a688f414304ccc041a4c58e6e17eb6facddcff869c4040bed6d214"
         },
         {
           "member": "lib_a-calloc.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-calloc.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-calloc.o",
           "sha256": "1668a05cf54a08584287282ae565b08292f1c284db2286d516cbfcf3f4ef7807"
         },
         {
           "member": "lib_a-realloc.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-realloc.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-realloc.o",
           "sha256": "a45bbc29b8b07f3e69539999dff7f338a243d28f717755a3d8b0462401198f24"
         },
         {
           "member": "lib_a-mallocr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallocr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallocr.o",
           "sha256": "53abd33a50b9b862f75d0decb839b0befe636453040dcf7ff0146864f6bc85b8"
         },
         {
           "member": "lib_a-callocr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-callocr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-callocr.o",
           "sha256": "f649e3d0ec5d88cabb0a77af783b718f6d2b4de5123fbe33ab6f557cd67d2a92"
         },
         {
           "member": "lib_a-freer.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-freer.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-freer.o",
           "sha256": "dc86b88c9da292570403ead78b81df42c8369b94e790e543794ae7b295e15d63"
         },
         {
           "member": "lib_a-reallocr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocr.o",
           "sha256": "564982180b55017bd569b04604342a382790ae677fc6f77dfb82c4e62c938134"
         },
         {
           "member": "lib_a-msizer.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-msizer.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-msizer.o",
           "sha256": "eed0cc2193b1ba21157bf7053d212b642e1137def1c066ee973b9b2cb14cdc37"
         },
         {
           "member": "lib_a-aligned_alloc.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-aligned_alloc.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-aligned_alloc.o",
           "sha256": "87827b49bb967aecf1369bf1b2cdd7c91e80a33210859dc096d617eb9ed5e45d"
         },
         {
           "member": "lib_a-malign.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malign.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malign.o",
           "sha256": "e042f8e01999d3e349fc262ea92ae9335bda190bcfd0e85558e79d2a0b193301"
         },
         {
           "member": "lib_a-malignr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malignr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malignr.o",
           "sha256": "bc64106b822e6e649670bbcce95bd3071a16394d245fbb147a17a2bb5c8c43be"
         },
         {
           "member": "lib_a-valloc.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-valloc.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-valloc.o",
           "sha256": "69f47583da07c1b7ff18e30617841535a61908e91e7b74f68efc0417413456f8"
         },
         {
           "member": "lib_a-vallocr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-vallocr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-vallocr.o",
           "sha256": "33838c0a38c3b472572c9fb6dacb3eac81b7340aff3b10b9c18daf1227cdbd0a"
         },
         {
           "member": "lib_a-pvallocr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-pvallocr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-pvallocr.o",
           "sha256": "9d055c3d7864eba259058129cd834149fc10a98ebade44c308aefca3a7b90a49"
         },
         {
           "member": "lib_a-cfreer.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-cfreer.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-cfreer.o",
           "sha256": "f14d11be306904aeae041e28089f5f38d1b600eeabc7aa2259a1ac44d5596449"
         },
         {
           "member": "lib_a-mallinfor.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallinfor.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallinfor.o",
           "sha256": "3b8a3a60379fa09c3366fadc5694561763d4ab9f0e3e09cb7da037728eb78db4"
         },
         {
           "member": "lib_a-malloptr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloptr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-malloptr.o",
           "sha256": "67ee21f04e0e5486b44c644c4b0748ed296e803f9111ff72adaa41205714034f"
         },
         {
           "member": "lib_a-mallstatsr.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallstatsr.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-mallstatsr.o",
           "sha256": "6ecac1a9dde946fd109afede8d928a8b103e9174d74e4be242df85b3c59050f2"
         },
         {
           "member": "lib_a-reallocarray.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocarray.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocarray.o",
           "sha256": "aca86ee1a0ca9a6ff04df1bd5d55e55a4ceca64c19ed5ae10c0887499f2bd504"
         },
         {
           "member": "lib_a-reallocf.o",
-          "path": "/private/tmp/pico-device-local-site/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocf.o",
+          "path": "/private/tmp/pico-hub-stock-ota/firmware/pico-c/modified/build/standalone/pico-c/ssd1309/firmware/native/runtime-allocator/lib_a-reallocf.o",
           "sha256": "80af8b4558c8eed8a94238c4c2ad3ae314a3b8a8ec49c5640dd8bb20c8b0bb42"
         }
       ],

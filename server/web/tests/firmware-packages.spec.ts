@@ -103,8 +103,39 @@ for (const viewport of [
       }
       await route.fulfill({ json: result })
     })
+    let supportsWirelessRestore = false
+    let stockRequests = 0
+    const lostSelectionReply = viewport.name === 'mobile'
+    const observedState = lostSelectionReply ? 'owner_reported' : 'owner_confirmed'
+    const observedMessage = lostSelectionReply
+      ? 'You reported stock startup. The Hub did not confirm the boot selection.'
+      : 'You confirmed stock startup.'
+    const interruptedMessage = lostSelectionReply
+      ? 'Both original images were verified. The Hub could not confirm the stock boot selection.'
+      : 'Both original images and the boot selection were verified.'
+    let selectedStock = false
+    let confirmedStock = false
+    const started = '2026-01-01T00:00:00Z'
     await page.route('**/api/v1/devices**', async (route) => {
       const path = new URL(route.request().url()).pathname
+      if (path.endsWith('/firmware/stock-started')) {
+        expect(route.request().postDataJSON()).toEqual({ device_uid: 'pinned-pico-s', started })
+        confirmedStock = true
+        await route.fulfill({ json: { state: observedState } })
+        return
+      }
+      if (path.endsWith('/firmware/restore-stock')) {
+        expect(route.request().method()).toBe('POST')
+        expect(route.request().headers()['x-csrf-token']).toBeTruthy()
+        expect(route.request().postDataJSON()).toEqual({
+          device_uid: 'pinned-pico-s',
+          acknowledge_loss_of_hub: true,
+          confirm_restore: true,
+        })
+        stockRequests++
+        await route.fulfill({ status: 202, json: { state: 'running' } })
+        return
+      }
       const result =
         path === '/api/v1/devices'
           ? [machine]
@@ -114,6 +145,29 @@ for (const viewport of [
                 model: 'pico-s',
                 device_uid: 'pinned-pico-s',
                 stock_restore_guide: true,
+                stock_restore_wireless: supportsWirelessRestore && !stockRequests,
+                can_confirm_stock_startup: selectedStock && !confirmedStock,
+                last_stock_restore: stockRequests
+                  ? {
+                      device_uid: 'pinned-pico-s',
+                      started,
+                      state: confirmedStock
+                        ? observedState
+                        : selectedStock
+                          ? 'interrupted'
+                          : 'running',
+                      stage: selectedStock
+                        ? lostSelectionReply
+                          ? 'committing'
+                          : 'rebooting'
+                        : 'recovery',
+                      message: confirmedStock
+                        ? observedMessage
+                        : selectedStock
+                          ? interruptedMessage
+                          : 'Restoring the original recovery image.',
+                    }
+                  : undefined,
                 current_version: '1.0.0',
                 install_supported: false,
                 reason:
@@ -173,6 +227,31 @@ for (const viewport of [
     expect(await restore.evaluate((d) => d.scrollWidth <= d.clientWidth + 1)).toBe(true)
     await restore.getByRole('button', { name: 'Back to machine firmware' }).click()
     await expect(dialog).toBeVisible()
+    supportsWirelessRestore = true
+    await dialog.getByRole('button', { name: 'Close' }).click()
+    await page.getByRole('button', { name: /^Firmware / }).click()
+    await dialog.getByRole('button', { name: 'Restore original firmware over Wi-Fi' }).click()
+    const first = page.getByRole('dialog', { name: 'Restore original PicoBrew firmware?' })
+    await expect(first.getByRole('button', { name: 'Review restoration' })).toBeDisabled()
+    await first.getByRole('checkbox').check()
+    await first.getByRole('button', { name: 'Review restoration' }).click()
+    const final = page.getByRole('dialog', { name: 'Confirm wireless stock restoration' })
+    expect(stockRequests).toBe(0)
+    await final.getByRole('button', { name: 'Restore and restart brewer' }).click()
+    await expect(
+      dialog.getByText('Stock restoration: Restoring the original recovery image.')
+    ).toBeVisible()
+    expect(stockRequests).toBe(1)
+    await expect(
+      dialog.getByRole('button', { name: 'I see the original PicoBrew startup screen' })
+    ).toHaveCount(0)
+    selectedStock = true
+    await dialog.getByRole('button', { name: 'Close dialog' }).click()
+    await page.getByRole('button', { name: /^Firmware / }).click()
+    await expect(dialog.getByText(`Stock restoration: ${interruptedMessage}`)).toBeVisible()
+    await dialog.getByRole('button', { name: 'I see the original PicoBrew startup screen' }).click()
+    await expect(dialog.getByText(`Stock restoration: ${observedMessage}`)).toBeVisible()
+    expect(stockRequests).toBe(1)
     expect(errors).toEqual([])
   })
 }

@@ -74,6 +74,34 @@ class LocalApi(unittest.TestCase):
         self.assertEqual(request("POST", path + "/enter", identity)[0], 200)
         self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
 
+    def test_stock_restore_requires_qualified_idle_brewer_and_current_identity(self):
+        LIB.test_ota_enable(0)
+        _, current = request("GET", "/api/v1/ota")
+        identity = {k: current[k] for k in ("device_uid", "model", "sha256")}
+        path = "/api/v1/ota/stock/prepare"
+        LIB.test_restart_state(4, False, -1)
+        self.assertFalse(request("GET", "/api/v1")[1]["stock_restore_ota_v1"])
+        self.assertEqual(request("POST", path, identity)[0], 409)
+        LIB.test_stock_enable()
+        self.assertTrue(request("GET", "/api/v1")[1]["stock_restore_ota_v1"])
+        self.assertEqual(request("GET", path)[0], 405)
+        for field in identity:
+            self.assertEqual(request("POST", path, {**identity, field: "wrong"})[0], 409)
+        LIB.test_ota_enable(1)
+        self.assertEqual(request("POST", path, identity)[0], 409)
+        LIB.test_ota_enable(0)
+        LIB.test_busy(1)
+        self.assertEqual(request("POST", path, identity)[0], 409)
+        LIB.test_busy(0)
+        for state in [(0, False, -1), (4, True, -1), *((4, False, p) for p in (5, 8, 24, 27))]:
+            LIB.test_restart_state(*state)
+            self.assertEqual(request("POST", path, identity)[0], 409)
+        self.assertFalse(LIB.test_restart_pending())
+        LIB.test_restart_state(4, False, -1)
+        self.assertEqual(request("POST", path, identity)[0], 200)
+        self.assertTrue(LIB.test_restart_pending())
+        self.assertEqual(request("POST", path, identity)[0], 409)
+
     def test_authenticated_restart_through_http(self):
         path = "/api/v1/system/restart"
         key = "ab" * 32
@@ -139,7 +167,7 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["recipe_create_only"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.3.5")
+        self.assertEqual(data["firmware_version"], "1.3.6")
         self.assertIn("encoder", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])
         health = request("GET", "/api/v1/health")[1]

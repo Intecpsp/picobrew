@@ -463,9 +463,30 @@ static void test_network_status_failure(void)
     assert(!sim.begins && !sim.disconnects && sim.address_reads==1 && !memcmp(expected,app.ui.display.framebuffer,sizeof expected));
     puts("PASS: network status distinguishes association and DHCP without starting a connection");
 }
+static void test_model_menu_heading(void)
+{
+    uint8_t menu[PICO_FRAMEBUFFER_SIZE];
+    initialize();
+    pico_display_construct();
+    pico_display_initialize();
+    ready();
+    /* Return from the actual main menu with its first choice displayed. */
+    assert(pico_local_control_command("stop", NULL) == PICO_LOCAL_CONTROL_OK);
+    sim.click_on_clock = true;
+    pico_application_loop(&app);
+    memcpy(menu, app.ui.display.framebuffer, sizeof menu);
+
+    pico_display_clear_row(0);
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) != 0);
+    pico_display_center_text(0, "PICO C");
+    assert(memcmp(menu, app.ui.display.framebuffer, sizeof menu) == 0);
+    puts("PASS: main menu displays this brewer's model");
+}
+
 int main(void)
 {
     setvbuf(stdout,NULL,_IOLBF,0);
+    test_model_menu_heading();
     test_boot_and_offline_adapters(); test_guards_and_queue();
     test_checkpoint_restore_is_explicit_and_recipe_bound();
     test_stop_unwinds_workflows(); test_c_menu_and_marquee_cancellation();

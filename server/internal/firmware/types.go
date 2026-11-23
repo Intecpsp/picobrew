@@ -80,7 +80,21 @@ type USBRestoreTarget struct {
 	UID   string `json:"device_uid"`
 }
 
+type StockReceipt struct {
+	UID     string    `json:"device_uid"`
+	Model   string    `json:"model"`
+	Started time.Time `json:"started"`
+	Stage   string    `json:"stage"`
+	State   string    `json:"state"`
+	Message string    `json:"message"`
+}
+
 type MachineFirmware struct {
+	CanConfirmStockStartup bool          `json:"can_confirm_stock_startup,omitempty"`
+	StockRestoreWireless   bool          `json:"stock_restore_wireless,omitempty"`
+	StockRestoreUpgrade    bool          `json:"stock_restore_upgrade,omitempty"`
+	LastStockRestore       *StockReceipt `json:"last_stock_restore,omitempty"`
+
 	StockRestoreGuide            bool              `json:"stock_restore_guide,omitempty"`
 	USBRestoreTarget             *USBRestoreTarget `json:"usb_restore_target,omitempty"`
 	RetryPackageID               string            `json:"retry_package_id,omitempty"`

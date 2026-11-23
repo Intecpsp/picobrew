@@ -83,6 +83,14 @@ match compares declared package and machine model information.
 
 An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
+### Restore the original Pico S/Pro firmware over Wi-Fi
+
+Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. On that brewer, update standalone 1.3.5 to **1.3.6** over Wi-Fi first. Keep it powered on throughout the restore.
+
+The Hub asks you to acknowledge the loss of standalone controls and wireless updates, then confirm the restore. It prefers this brewer’s saved original. If needed, it obtains and verifies the two pinned OEM images from GitHub. A temporary installer runs in a third flash slot, so it can independently write and read back both the original **0.1.34 application** and **0.0.3 recovery**. It preserves the loader, network settings and brewer identity.
+
+After restart, check the brewer’s display. Choose **I see the original PicoBrew startup screen** to record your observation when prompted. If the final acknowledgement was interrupted, the receipt distinguishes what you saw from the last step the Hub verified. If power or Wi-Fi dropped during boot selection after both images were verified, the receipt records that you saw stock startup and that the Hub could not verify the boot selection. An acknowledged boot selection is recorded separately. The original application cannot confirm startup to the Hub. Returning to custom firmware requires USB. Other brewers can use the USB procedure below. The wireless path has been exercised against simulated storage, the original loader and compiled ARM code. Physical restore and power-interruption trials are still pending.
+
 ### USB setup, backup and stock restoration
 
 Connect the idle machine or its USB service adapter to the computer running the Hub. Open **Add machine → USB setup and recovery**, select the detected port, physical model and operation, and follow the power or reset prompts. When restoring a paired machine, its **Firmware → Restore original firmware via USB** action also checks its registered identity before a write. The dialog reports the current stage and resumes after a browser reload.
@@ -170,8 +178,10 @@ executes code from a package.
 | POST | `/api/v1/firmware/packages` | Upload a ZIP as multipart field `file` |
 | GET / DELETE | `/api/v1/firmware/packages/{packageID}` | Read metadata or remove a package |
 | GET | `/api/v1/firmware/packages/{packageID}/download` | Download the cached ZIP after checking its hash |
-| GET | `/api/v1/devices/{id}/firmware` | Read OTA packages for the identified model, installation availability, and stock restore guide eligibility |
+| GET | `/api/v1/devices/{id}/firmware` | Read compatible OTA packages, USB and wireless stock restore availability, and the last restoration receipt |
 | POST | `/api/v1/devices/{id}/firmware/install` | Confirm the package and brewer with `package_id`, `device_uid` and `confirm: true`. HTTP 202 starts a tracked update. |
+| POST | `/api/v1/devices/{id}/firmware/restore-stock` | Start or resume the wireless stock restore with `device_uid`, `acknowledge_loss_of_hub: true` and `confirm_restore: true`. Returns HTTP 202. |
+| POST | `/api/v1/devices/{id}/firmware/stock-started` | Record the owner's observation of the stock startup screen with `device_uid` and the restoration receipt’s `started` timestamp. Requires verified application and recovery images and a boot selection attempt. A lost selection acknowledgment produces `owner_reported`. A verified selection produces `owner_confirmed`. |
 
 New imports return HTTP 201; an identical saved archive returns HTTP 200.
 Changing the repository after browsing invalidates an import request for the

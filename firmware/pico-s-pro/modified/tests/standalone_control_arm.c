@@ -10,6 +10,8 @@ volatile uint32_t arm_telemetry_polls;
 void pico_history_poll(void) { ++arm_history_polls; }
 void pico_telemetry_poll(void) { ++arm_telemetry_polls; }
 void pico_history_finish(bool interrupted) { (void)interrupted; }
+void pico_display_clear_row(short row) { (void)row; __builtin_trap(); }
+void pico_display_flush(void) { __builtin_trap(); }
 static uint32_t tick;
 static bool missing;
 static uint32_t millis(void *c) { (void)c; tick+=10; return tick; }

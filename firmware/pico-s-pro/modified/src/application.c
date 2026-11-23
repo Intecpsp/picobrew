@@ -1095,7 +1095,14 @@ void pico_application_loop(PicoApplication *a)
 {
     static const uint32_t actions[] = {12, 13, 14, 15, 16, 17};
     pico_display_clear();
+#if PICO_STANDALONE
+    pico_graphics_text_scale(&a->ui.display, 2);
+    pico_display_center_text(1, PICO_MODEL_HEADING);
+    pico_graphics_text_scale(&a->ui.display, 1);
+    pico_graphics_line(&a->ui.display, 24, 23, 103, 23, 1);
+#else
     pico_display_logo();
+#endif
     pico_menu_populate_action_labels(actions, 6, a->settings.language, a->settings.detailed_status);
 #if PICO_STANDALONE
     if (pico_local_control_stopped()) {

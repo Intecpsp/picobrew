@@ -74,6 +74,8 @@ var endpoints = []endpoint{
 	{"GET", "/firmware/packages/{packageID}", "Read saved package metadata and acquisition provenance", nil},
 	{"DELETE", "/firmware/packages/{packageID}", "Remove a firmware package from the Hub", nil},
 	{"GET", "/firmware/packages/{packageID}/download", "Download the package after verifying its cached archive hash", nil},
+	{"POST", "/devices/{id}/firmware/stock-started", "Record owner observation of OEM startup after both original firmware images were verified", map[string]any{"device_uid": "authenticated-device-uid", "started": "2026-01-01T00:00:00Z"}},
+	{"POST", "/devices/{id}/firmware/restore-stock", "Restore verified original firmware over Wi-Fi on a qualified Pico S/Pro", map[string]any{"device_uid": "authenticated-device-uid", "acknowledge_loss_of_hub": true, "confirm_restore": true}},
 	{"POST", "/devices/{id}/firmware/install", "Install a validated OTA package on an idle, recovery-equipped Pico S/Pro", map[string]any{"device_uid": "authenticated-device-uid", "package_id": strings.Repeat("a", 64), "confirm": true}},
 	{"GET", "/devices/{id}/firmware", "Read model-scoped firmware packages and installation availability", nil},
 	{"PUT", "/devices/{id}/firmware/hardware", "Record an independently verified C display controller for this pinned appliance", map[string]any{"device_uid": "authenticated-device-uid", "display_variant": "ssd1325"}},
@@ -325,6 +327,9 @@ func addFirmwareSchemas(values schemaMap) {
 	}
 	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
 	values["FirmwareSettingsInput"] = schemaObject(sourceProperties, "repository")
+	values["FirmwareStockObservation"] = schemaObject(schemaMap{"device_uid": stringSchema(), "started": stringSchema()}, "device_uid", "started")
+	values["FirmwareStockInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "acknowledge_loss_of_hub": schemaMap{"type": "boolean", "enum": []bool{true}}, "confirm_restore": schemaMap{"type": "boolean", "enum": []bool{true}}}, "device_uid", "acknowledge_loss_of_hub", "confirm_restore")
+	values["FirmwareStockReceipt"] = schemaObject(schemaMap{"device_uid": stringSchema(), "model": stringSchema(), "stage": stringSchema(), "state": stringSchema(), "started": stringSchema(), "message": stringSchema()}, "device_uid", "model", "stage", "state", "started", "message")
 	values["FirmwareInstallInput"] = schemaObject(schemaMap{"device_uid": stringSchema(), "package_id": hash, "confirm": schemaMap{"type": "boolean", "enum": []bool{true}}}, "device_uid", "package_id", "confirm")
 	values["FirmwareInstallReceipt"] = schemaObject(schemaMap{"device_uid": stringSchema(), "model": stringSchema(), "package_id": hash, "started": stringSchema(), "stage": stringSchema(), "state": stringSchema(), "message": stringSchema()}, "device_uid", "model", "package_id", "started", "state", "message")
 	values["FirmwareImportInput"] = schemaObject(schemaMap{"repository": stringSchema(), "commit": commit, "model": model, "display_variant": displayVariant}, "repository", "commit", "model")
@@ -378,11 +383,12 @@ func addFirmwareSchemas(values schemaMap) {
 		"device_uid":                     stringSchema(),
 		"hardware_verification_required": boolSchema(),
 		"stock_restore_guide":            boolSchema(),
-		"install_supported":              boolSchema(),
-		"retry_package_id":               hash,
-		"last_install":                   schemaRef("FirmwareInstallReceipt"),
-		"reason":                         stringSchema(),
-		"packages":                       schemaArray(schemaRef("FirmwarePackage")),
+		"can_confirm_stock_startup":      boolSchema(), "stock_restore_wireless": boolSchema(), "stock_restore_upgrade": boolSchema(), "last_stock_restore": schemaRef("FirmwareStockReceipt"),
+		"install_supported": boolSchema(),
+		"retry_package_id":  hash,
+		"last_install":      schemaRef("FirmwareInstallReceipt"),
+		"reason":            stringSchema(),
+		"packages":          schemaArray(schemaRef("FirmwarePackage")),
 	}, "device_id", "model", "current_version", "install_supported", "reason", "packages")
 }
 
@@ -498,6 +504,10 @@ func requestSchema(e endpoint) (schemaMap, bool) {
 		name = "FirmwareSettingsInput"
 	case "/firmware/github/import":
 		name = "FirmwareImportInput"
+	case "/devices/{id}/firmware/stock-started":
+		name = "FirmwareStockObservation"
+	case "/devices/{id}/firmware/restore-stock":
+		name = "FirmwareStockInput"
 	case "/devices/{id}/firmware/install":
 		name = "FirmwareInstallInput"
 	case "/devices/{id}/firmware/hardware":
@@ -658,6 +668,10 @@ func successResponses(e endpoint) schemaMap {
 		} else {
 			schema = schemaRef("FirmwarePackage")
 		}
+	case "/devices/{id}/firmware/stock-started":
+		schema = schemaRef("FirmwareStockReceipt")
+	case "/devices/{id}/firmware/restore-stock":
+		code, schema = "202", schemaRef("FirmwareStockReceipt")
 	case "/devices/{id}/firmware/install":
 		code, schema = "202", schemaRef("FirmwareInstallReceipt")
 	case "/devices/{id}/firmware":
