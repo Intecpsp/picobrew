@@ -29,7 +29,6 @@ jobs:
           python tools/compile_extension.py --toolchain "$RUNNER_TEMP/avr/bin" --out-dir "$RUNNER_TEMP/extension"
           cmp extension/extension.bin "$RUNNER_TEMP/extension/extension.bin"
           cmp extension/crc-hole.bin "$RUNNER_TEMP/extension/crc-hole.bin"
-          cmp extension/crc-hole.bin "$RUNNER_TEMP/extension/crc-hole.bin"
           cmp extension/low.bin "$RUNNER_TEMP/extension/low.bin"
           cmp extension/extension.json "$RUNNER_TEMP/extension/extension.json"
       - name: Prepare the original and compose a temporary test application
