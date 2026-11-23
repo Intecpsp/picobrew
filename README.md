@@ -17,8 +17,8 @@ modified v1.x source. The self-contained Go/React Hub lives in `server/`.
 
 The populated S/Pro source folders are under
 [`firmware/pico-s-pro/`](firmware/pico-s-pro/README.md). Its pre-v1 reconstruction
-is an exact 396-file snapshot of commit `ea887709`; its modified source is
-version 1.3.0 with [Hub OTA support](firmware/pico-s-pro/modified/docs/hub-ota.md). Both retain their own build tools, dependency manifests, tests,
+is an exact 396-file snapshot of commit `ea887709`. Current S/Pro builds support
+[updates through the Hub](firmware/pico-s-pro/modified/docs/hub-ota.md). Both retain their own build tools, dependency manifests, tests,
 reference fixtures and documentation. The OEM reconstruction's documented
 repairs and validation limits remain attached to that source.
 
@@ -171,7 +171,7 @@ the Hub is optional. S/Pro, C, generic Z, PicoStill and PicoFerm have implemente
 standalone source builds and Hub adapters. Hardware-specific capabilities
 prevent the accessory profiles from offering brewer-only controls. The latest
 model builds still need physical installation and operating qualification;
-generic Z source does not establish a Z1/Z2 mapping. Zymatic 1.2.0 retains the original brew controller and adds an offline recipe, Hub menu sync, and Ethernet status and OLED monitoring. Physical qualification is pending. [Zymatic firmware and USB guide](firmware/zymatic/modified/README.md)
+generic Z source does not establish a Z1/Z2 mapping. Zymatic 1.2.0 provides offline brewing, Hub menu sync and wired monitoring. On a unit with a verified boot window, 1.3.2 adds paired dial control and a local history viewer. Physical Zymatic qualification is pending. [Zymatic firmware and USB guide](firmware/zymatic/modified/README.md)
 
 The Hub includes the previously requested offline recipe catalogue and assets.
 No historical Python Zymatic server or unrelated community application is
