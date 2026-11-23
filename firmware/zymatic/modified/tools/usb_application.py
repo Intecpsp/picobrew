@@ -49,8 +49,11 @@ def install_pages(before, original, installed, key_file, host, offline_program=N
     previous_end = stock.APP_SIZE if not installed else installed["application_bytes"]
     if before[previous_end:EXTENSION_LIMIT].strip(b"\xff"):
         raise ValueError("Occupied flash above the installed application prevents standalone setup")
-    key = read_key(key_file, create=not installed)
     uid = installed["uid"] if installed else secrets.token_hex(16)
+    # The Hub selects a distinct key by application UID even for different
+    # stock machines connected to the same physical USB port.
+    path = key_file(uid) if callable(key_file) else key_file
+    key = read_key(path, create=not installed)
     if installed:
         prior, _ = build.build_application(original, key, uid, installed["hub_host"], installed["offline_program"])
         if before[:len(prior)] != prior:

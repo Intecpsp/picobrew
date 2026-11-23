@@ -151,7 +151,7 @@ export function MachineFirmwareDialog({
     return (
       <StockRestoreGuide
         model={restoreTarget.model}
-        uid={eligibleRestoreUID}
+        deviceID={deviceID}
         display={machine.verified_display_variant}
         onClose={() => setRestoreUID('')}
       />

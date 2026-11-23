@@ -178,7 +178,11 @@ def run(request, stream, emit, discover=devices):
         stable = identity[1] or identity[2]
         if action == "install" and not stable:
             raise UserError("The Zymatic USB port needs a stable hardware identity for installation.")
-        key = key_store / (hashlib.sha256(str(stable).encode()).hexdigest() + ".key")
+        def key_path(uid):
+            if not isinstance(uid, str) or not re.fullmatch(r"[0-9a-f]{32}", uid):
+                raise UserError("The Zymatic image has an invalid pairing identity.")
+            return key_store / (uid + ".key")
+
         confirm("Keep the idle Zymatic powered and connected while its original flash is read twice.")
         progress("Reading the Zymatic and comparing both flash captures.")
 
@@ -209,7 +213,7 @@ def run(request, stream, emit, discover=devices):
             entries[port]["path"],
             action,
             confirm=avr_confirm,
-            key_file=key if action == "install" else None,
+            key_file=key_path if action == "install" else None,
             hub_host=request.get("hub_host") or None,
             expected_uid=expected,
         )
@@ -221,7 +225,7 @@ def run(request, stream, emit, discover=devices):
                     "The Zymatic image was verified but its pairing identity was unavailable."
                 )
             usb_stock.save_private(job_dir / "device-uid", uid.encode("ascii"))
-            usb_stock.save_private(job_key, private_files.read_regular(key, 128, private=True))
+            usb_stock.save_private(job_key, private_files.read_regular(key_path(uid), 128, private=True))
     else:
         import esp_usb
 

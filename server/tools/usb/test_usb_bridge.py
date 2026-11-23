@@ -70,7 +70,8 @@ class WorkerTests(unittest.TestCase):
                 def complete(data, port, action, *, confirm, key_file, hub_host, expected_uid):
                     self.assertEqual(confirm("Type INSTALL ZYMATIC: "), "INSTALL ZYMATIC")
                     self.assertEqual(confirm("Type WRITE 1.2.0: "), "WRITE 1.2.0")
-                    usb_stock.save_private(key_file, b"a" * 64)
+                    self.assertNotEqual(key_file("b" * 32), key_file("c" * 32))
+                    usb_stock.save_private(key_file("b" * 32), b"a" * 64)
                     return "b" * 32
 
                 service.side_effect = complete

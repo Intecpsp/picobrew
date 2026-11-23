@@ -102,20 +102,25 @@ for (const viewport of [
     await expect(dialog.getByLabel('Machine model')).toHaveValue('Detect automatically')
     await expect(dialog.getByRole('combobox', { name: 'Machine model' })).toHaveCount(0)
     await dialog.getByLabel('Machine name').fill('Automatically connected Pico S')
+    await page.route('**/api/v1/usb/devices', (route) =>
+      route.fulfill({
+        json: {
+          available: true,
+          devices: [
+            { port: 'test-adapter', label: 'Brewer USB', models: ['pico-s', 'pico-pro', 'pico-c'] },
+          ],
+        },
+      })
+    )
     await dialog.getByRole('button', { name: 'USB setup and recovery' }).click()
     const setup = page.getByRole('dialog', { name: 'USB setup and recovery' })
     await setup.getByLabel('Machine model').selectOption('pico-s')
-    await expect(setup.locator('pre')).toContainText('./picobrew-hub usb-install --model pico-s')
+    await expect(setup.getByRole('button', { name: 'Install standalone firmware' })).toBeEnabled()
     await setup.getByLabel('Machine model').selectOption('pico-c')
-    await expect(setup.locator('pre')).toHaveCount(0)
+    await expect(setup.getByRole('button', { name: 'Install standalone firmware' })).toBeDisabled()
     await setup.getByLabel('Physical Pico C display controller').selectOption('ssd1309')
-    await expect(setup.locator('pre')).toContainText('--model pico-c --display ssd1309')
     await setup.getByLabel('USB operation').selectOption('backup')
-    await expect(setup.locator('pre')).toContainText('usb-backup --model pico-c --display ssd1309')
-    await setup.getByLabel('Machine model').selectOption('z-series')
-    await expect(setup.locator('pre')).toContainText(
-      'usb-install --model z-series --port SERIAL_PORT'
-    )
+    await expect(setup.getByRole('button', { name: 'Back up original firmware' })).toBeEnabled()
     await expect(setup.locator('input[type=file], input[type=password]')).toHaveCount(0)
     expect(await setup.evaluate((d) => d.scrollWidth <= d.clientWidth + 1)).toBe(true)
     await setup.getByRole('button', { name: 'Back to Add machine' }).click()

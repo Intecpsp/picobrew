@@ -296,85 +296,61 @@ describe('Hub firmware packages', () => {
     ).toHaveLength(0)
     expect(screen.queryByRole('button', { name: /install firmware/i })).toBeNull()
   })
-  it('requires both acknowledgments before showing the local USB restore command', async () => {
-    fetchMock.mockImplementation(async (url, opts) => {
-      if (String(url).endsWith('/devices/s/firmware'))
-        return json({
-          model: 'pico-s',
-          device_uid: '12345678901234567890123456789012',
-          current_version: '1.3.4',
-          stock_restore_guide: true,
-          packages: [],
-        })
-      return response(url, opts)
-    })
-    show(createElement(MachineFirmwareDialog, { deviceID: 's', onClose: close }))
-    const user = userEvent.setup()
-    const restore = () => screen.findByRole('button', { name: 'Restore original firmware via USB' })
-    await user.click(await restore())
-    expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
-    const review = screen.getByRole('button', {
-      name: 'Review USB requirements',
-    }) as HTMLButtonElement
-    expect(review.disabled).toBe(true)
-    await user.click(screen.getByRole('checkbox', { name: /effect of restoring/ }))
-    await user.click(review)
-    expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
-    const guide = screen.getByRole('button', {
-      name: 'Show USB restore instructions',
-    }) as HTMLButtonElement
-    expect(guide.disabled).toBe(true)
-    await user.click(screen.getByRole('checkbox', { name: /can connect this machine by USB/ }))
-    await user.click(guide)
-    expect(
-      screen.getByText(
-        './picobrew-hub usb-restore --model pico-s --device 12345678901234567890123456789012 --data ./data --checkout ..'
-      )
-    ).toBeTruthy()
-    expect(screen.getByText(/pinned GitHub fallback/)).toBeTruthy()
-    expect(
-      screen.getByRole('link', { name: /macOS USB instructions/ }).getAttribute('href')
-    ).toContain('macos-usb-installation.md')
-    await user.click(screen.getByRole('button', { name: 'Back to machine firmware' }))
-    await user.click(await restore())
-    expect((screen.getByRole('checkbox') as HTMLInputElement).checked).toBe(false)
-    expect(fetchMock.mock.calls.every(([, opts]) => (opts?.method || 'GET') === 'GET')).toBe(true)
-  })
-  it.each(['pico-c', 'picoferm', 'picostill', 'z-series'])(
-    'offers %s restoration after an offline Hub restart',
+  it.each(['pico-s', 'pico-c', 'picoferm', 'picostill', 'z-series'])(
+    'starts a restore bound to the registered %s and awaits hardware verification',
     async (model) => {
-      fetchMock.mockImplementation(async (url, opts) =>
-        String(url).endsWith('/devices/m/firmware')
-          ? json({
-              model: '',
-              stock_restore_guide: true,
-              usb_restore_target: { model, device_uid: 'saved' },
-              packages: [],
-            })
-          : response(url, opts)
-      )
-      show(createElement(MachineFirmwareDialog, { deviceID: 'm', onClose: close }))
       const user = userEvent.setup()
+      fetchMock.mockImplementation(async (url, options) => {
+        if (String(url).endsWith('/devices/s/firmware'))
+          return json({
+            packages: [],
+            stock_restore_guide: true,
+            usb_restore_target: { model, device_uid: 'saved-device' },
+          })
+        if (String(url).endsWith('/usb/devices'))
+          return json({
+            available: true,
+            devices: [{ port: 'port-1', label: 'Brewer USB', models: [model] }],
+          })
+        if (String(url).endsWith('/usb/jobs'))
+          return json(
+            {
+              id: 'job-1',
+              model,
+              port: 'port-1',
+              action: 'restore',
+              state: 'waiting',
+              message: 'Verify the brewer is idle and connected.',
+              confirmation: 'hardware-1',
+            },
+            202
+          )
+        return response(url, options)
+      })
+      show(createElement(MachineFirmwareDialog, { deviceID: 's', onClose: close }))
       await user.click(
         await screen.findByRole('button', { name: 'Restore original firmware via USB' })
       )
-      await user.click(screen.getByRole('checkbox'))
-      await user.click(screen.getByRole('button', { name: 'Review USB requirements' }))
-      await user.click(screen.getByRole('checkbox'))
-      await user.click(screen.getByRole('button', { name: 'Show USB restore instructions' }))
+      const start = await screen.findByRole('button', { name: 'Restore original firmware' })
       if (model === 'pico-c') {
-        expect(screen.queryByText(/picobrew-hub usb-restore/)).toBeNull()
+        expect((start as HTMLButtonElement).disabled).toBe(true)
         await user.selectOptions(
           screen.getByLabelText('Physical Pico C display controller'),
           'ssd1325'
         )
       }
-      const command = screen.getByText(/picobrew-hub usb-restore/).textContent
-      expect(command).toContain(
-        '--model ' + model + (model === 'pico-c' ? ' --display ssd1325' : ' --port SERIAL_PORT')
-      )
-      expect(command).not.toContain('saved')
-      expect(fetchMock.mock.calls.every(([, opts]) => (opts?.method || 'GET') === 'GET')).toBe(true)
+      expect(calls('/usb/jobs', 'POST')).toHaveLength(0)
+      await user.click(start)
+      expect(await screen.findByRole('button', { name: 'Continue' })).toBeTruthy()
+      const [, options] = calls('/usb/jobs', 'POST')[0]
+      expect(JSON.parse(String(options?.body))).toEqual({
+        action: 'restore',
+        model,
+        port: 'port-1',
+        device_id: 's',
+        ...(model === 'pico-c' ? { display: 'ssd1325' } : {}),
+      })
+      expect(calls('/confirm', 'POST')).toHaveLength(0)
     }
   )
   it.each([

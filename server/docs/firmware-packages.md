@@ -85,18 +85,25 @@ An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalo
 
 ### USB setup, backup and stock restoration
 
-Open **Add machine → USB setup and recovery** to select a machine and action. You can also open the stock restore guide from a paired machine's firmware panel. Run the displayed command in a local terminal on the attached computer, from the full checkout’s `server/` directory. Point `--data` at the persistent Hub data directory. When the USB computer and Hub are separate, setup writes the backup on the USB computer. Copy its private `stock-firmware/` directory (Zymatic uses `usb-stock/`) into the Hub’s persistent data and retain a second private copy. To restore from a different USB computer, copy the saved directory back and use its parent for `--data`. For Docker Compose, the persistent Hub data is the volume mounted at `/data`; give the Hub service user access and preserve private permissions. A checkout’s `./data` points to a separate location unless you mounted it explicitly. The running Hub needs neither USB permission nor a special startup mode.
+Connect the idle machine or its USB service adapter to the computer running the Hub. Open **Add machine → USB setup and recovery**, select the detected port, physical model and operation, and follow the power or reset prompts. When restoring a paired machine, its **Firmware → Restore original firmware via USB** action also checks its registered identity before a write. The dialog reports the current stage and resumes after a browser reload.
+
+On a successful installation, choose **Add machine** and enter the brewer’s network address. The Hub pairs its saved key with the identity verified over USB. Machine-specific Wi-Fi setup may still be needed. Keep power and the cable connected until readback completes. The Hub stores the original and the private pairing files under its persistent data directory. Keep a private backup of that directory. USB setup is available on a normal Hub with access to the port. In a Linux container, map the selected serial device into the container and allow the Hub user to access it.
+
 
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
-| Pico S and Pico Pro | On macOS, the CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |
+| Pico S and Pico Pro | The CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |
 | Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application and website. | Restore the original application and verify the retained recovery against this brewer’s backup. A separate authenticated OEM recovery image for Pico C is unavailable. |
 | PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
 | PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
 | Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
 | Zymatic | Install a private 1.2.0 application over rear USB from verified 1.1.14. Configure the Hub address and optional offline recipe. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
 
-#### Pico S, Pro and C
+#### Command-line workflows from a firmware checkout
+
+The browser uses the programmer bundled with the Hub. The following commands are optional developer tools for a separate USB computer with the full repository and its toolchain. Use that computer’s own data directory, then privately copy its saved originals and keys when moving to a different host.
+
+##### Pico S, Pro and C
 
 Prepare the Python environment and CH340 dependencies in the [macOS USB procedure](../../firmware/pico-s-pro/modified/docs/macos-usb-installation.md). For example:
 
@@ -120,7 +127,7 @@ Use a verified USB-to-serial service connection and put the *idle* appliance int
 
 Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. On a normal boot after conversion, provision the device key and Wi-Fi over its serial console. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
 
-#### Zymatic
+##### Zymatic
 
 Connect the idle, powered Zymatic through its rear USB port. Install the AVRDUDE and Python dependencies in the [Zymatic USB guide](../../firmware/zymatic/modified/README.md), and substitute the machine’s actual local serial port:
 
