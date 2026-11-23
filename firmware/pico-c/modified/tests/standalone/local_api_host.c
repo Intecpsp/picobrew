@@ -202,6 +202,7 @@ void test_reset(int clear_files)
     last_command[0] = last_recipe[0] = 0;
     now_ms = 123456;
     pico_local_api_initialize(&api, &appliance);
+    api.auth_configured = true; /* The direct API/browser fixture represents a provisioned device. */
     pico_local_store_bind(&appliance.network, stat_file, NULL);
     pico_local_store_set_reader(read_block);
     pico_history_bind(&appliance, &history_storage, NULL);
