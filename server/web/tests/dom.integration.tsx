@@ -364,7 +364,6 @@ describe('community catalog and local recipe slots', () => {
         screen.getByLabelText('Recipe on this machine', { exact: true }),
         original.native_program.id
       )
-      await user.click(screen.getByText('Manage saved recipes', { exact: true }))
       await user.click(screen.getByRole('button', { name: 'Edit saved program' }))
       dialog = await screen.findByRole('dialog', {
         name: 'Edit the machine’s saved program',

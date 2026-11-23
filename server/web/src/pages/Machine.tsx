@@ -631,48 +631,45 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                     <ArrowUpRight size={14} />
                   </button>
                   <ErrorBanner message={native.error} retry={native.reload} />
-                  {recipes.length > 0 && (
-                    <details className="stored-recipes">
-                      <summary>Manage saved recipes</summary>
-                      <div className="native-library">
-                        <small>
-                          {recipes.length} / {device.capabilities?.recipe_capacity || '—'} recipe
-                          slots used
-                        </small>
-                        <Button
-                          variant="ghost"
-                          disabled={
-                            !recipeID ||
-                            !device.online ||
-                            !status?.ready ||
-                            !!status?.busy ||
-                            !!status?.stopped ||
-                            !!pending
-                          }
-                          onClick={() =>
-                            setEditRecipe(recipes.find((recipe) => recipe.id === recipeID) || null)
-                          }
-                        >
-                          <Pencil size={13} />
-                          Edit saved program
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          className="danger-text"
-                          disabled={
-                            !recipeID ||
-                            !device.online ||
-                            !!status?.busy ||
-                            !!status?.stopped ||
-                            !!pending
-                          }
-                          onClick={() => setRemoveRecipe(true)}
-                        >
-                          <Trash2 size={13} />
-                          Remove selected copy
-                        </Button>
-                      </div>
-                    </details>
+                  {native.data && !native.error && (
+                    <div className="native-library">
+                      <small>
+                        {recipes.length} / {device.capabilities?.recipe_capacity || '—'} recipe
+                        slots used
+                      </small>
+                      <Button
+                        variant="ghost"
+                        disabled={
+                          !recipeID ||
+                          !device.online ||
+                          !status?.ready ||
+                          !!status?.busy ||
+                          !!status?.stopped ||
+                          !!pending
+                        }
+                        onClick={() =>
+                          setEditRecipe(recipes.find((recipe) => recipe.id === recipeID) || null)
+                        }
+                      >
+                        <Pencil size={13} />
+                        Edit saved program
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        className="danger-text"
+                        disabled={
+                          !recipeID ||
+                          !device.online ||
+                          !!status?.busy ||
+                          !!status?.stopped ||
+                          !!pending
+                        }
+                        onClick={() => setRemoveRecipe(true)}
+                      >
+                        <Trash2 size={13} />
+                        Remove selected copy
+                      </Button>
+                    </div>
                   )}
                 </>
               )}

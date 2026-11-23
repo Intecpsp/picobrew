@@ -98,7 +98,7 @@ export function sessionState(
     const unknown = raw & ~bits.reduce((mask, [bit]) => mask | bit, 0)
     if (unknown) labels.push('Unknown bits ' + hex(unknown))
     const value = labels.join(' · ') || 'No flags set'
-    return detail ? value + ' (' + hex(raw) + ')' : value
+    return value
   }
   if (field === 'current_step') {
     if (raw < 0 || raw === 255) return 'No step'

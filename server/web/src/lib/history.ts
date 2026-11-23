@@ -42,3 +42,8 @@ export function historyChannels(
         stable[field] || { label: field.replaceAll('_', ' '), unit: 'raw', kind: 'other' },
     }))
 }
+
+// Small Pico brew programs use zero as the unheated target sentinel.
+export function unheatedTarget(model: string, target: number | null) {
+  return target === 0 && ['pico-s', 'pico-pro', 'pico-c'].includes(model)
+}

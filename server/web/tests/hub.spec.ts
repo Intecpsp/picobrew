@@ -396,7 +396,7 @@ test('community catalog preserves source schedules through copy, bulk transfer a
     await page
       .getByLabel('Recipe on this machine', { exact: true })
       .selectOption(original.native_program.id)
-    await page.getByText('Manage saved recipes', { exact: true }).click()
+    await expect(page.getByText(/recipe slots used/)).toBeVisible()
     await page.getByRole('button', { name: 'Edit saved program', exact: true }).click()
     dialog = page.getByRole('dialog', { name: 'Edit the machine’s saved program', exact: true })
     await dialog.getByLabel('Saved program name', { exact: true }).fill('Pico Pale bench edit')
@@ -590,7 +590,7 @@ test('journal readings and state lanes share one time cursor and note timestamp'
   await expect(cursor).toHaveAttribute('aria-valuenow', '2')
   await expect(cursor).toHaveAttribute(
     'aria-valuetext',
-    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags Controller ready .+Machine busy .+Step filter inserted .+Compartment .+Device state/
+    /0:15, Wort .+Thermoblock .+Target .+Phase .+Step .+Controller .+Flags Controller ready .+Machine busy .+Step filter inserted, Compartment .+Device state/
   )
   await page.getByRole('button', { name: 'Note at 0:15', exact: true }).click()
   await expect(page.getByLabel('Brew notes', { exact: true })).toHaveValue(/\[0:15\] $/)

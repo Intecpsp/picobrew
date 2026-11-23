@@ -57,7 +57,7 @@ export function MachineManagement({
               <SlidersHorizontal size={16} />
               {isAccessory(device) ? 'Device preferences' : 'Brewer preferences'}
             </Button>
-            <Button variant="ghost" onClick={() => choose(remove)}>
+            <Button variant="danger" onClick={() => choose(remove)}>
               <Trash2 size={16} />
               Remove machine
             </Button>

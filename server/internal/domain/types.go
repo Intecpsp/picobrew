@@ -377,30 +377,31 @@ type Conditioning struct {
 	Stages         []ConditioningStage `json:"stages"`
 }
 type Brew struct {
-	Conditioning     *Conditioning            `json:"conditioning,omitempty"`
-	StepNames        map[int]string           `json:"step_names,omitempty"`
-	ID               string                   `json:"id"`
-	DeviceID         string                   `json:"device_id"`
-	DeviceName       string                   `json:"device_name"`
-	Model            string                   `json:"model"`
-	RecipeName       string                   `json:"recipe_name"`
-	RecipeID         string                   `json:"recipe_id,omitempty"`
-	RecipeRevision   int64                    `json:"recipe_revision,omitempty"`
-	State            string                   `json:"state"`
-	Command          string                   `json:"command"`
-	StartedAt        *time.Time               `json:"started_at"`
-	ObservedAt       time.Time                `json:"observed_at"`
-	DurationMS       int64                    `json:"duration_ms"`
-	DeviceHistoryID  uint64                   `json:"device_history_id"`
-	GapCount         int                      `json:"gap_count"`
-	Truncated        bool                     `json:"truncated"`
-	Notes            string                   `json:"notes"`
-	Rating           int                      `json:"rating"`
-	SampleCount      int                      `json:"sample_count"`
-	Source           string                   `json:"source"`
-	SampleFields     []string                 `json:"sample_fields,omitempty"`
-	SampleIntervalMS int64                    `json:"sample_interval_ms,omitempty"`
-	FieldMetadata    map[string]FieldMetadata `json:"field_metadata,omitempty"`
+	Conditioning          *Conditioning            `json:"conditioning,omitempty"`
+	StepNames             map[int]string           `json:"step_names,omitempty"`
+	ID                    string                   `json:"id"`
+	DeviceID              string                   `json:"device_id"`
+	DeviceName            string                   `json:"device_name"`
+	Model                 string                   `json:"model"`
+	RecipeName            string                   `json:"recipe_name"`
+	RecipeID              string                   `json:"recipe_id,omitempty"`
+	RecipeRevision        int64                    `json:"recipe_revision,omitempty"`
+	State                 string                   `json:"state"`
+	Command               string                   `json:"command"`
+	StartedAt             *time.Time               `json:"started_at"`
+	ObservedAt            time.Time                `json:"observed_at"`
+	DurationMS            int64                    `json:"duration_ms"`
+	RecoveredAfterRestart bool                     `json:"recovered_after_restart,omitempty"`
+	DeviceHistoryID       uint64                   `json:"device_history_id"`
+	GapCount              int                      `json:"gap_count"`
+	Truncated             bool                     `json:"truncated"`
+	Notes                 string                   `json:"notes"`
+	Rating                int                      `json:"rating"`
+	SampleCount           int                      `json:"sample_count"`
+	Source                string                   `json:"source"`
+	SampleFields          []string                 `json:"sample_fields,omitempty"`
+	SampleIntervalMS      int64                    `json:"sample_interval_ms,omitempty"`
+	FieldMetadata         map[string]FieldMetadata `json:"field_metadata,omitempty"`
 }
 type BrewDetail struct {
 	Brew
