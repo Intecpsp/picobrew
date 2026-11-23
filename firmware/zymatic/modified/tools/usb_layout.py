@@ -1,5 +1,8 @@
 """Select a Zymatic application using the boot window verified for this unit."""
 
+from functools import partial
+from types import SimpleNamespace
+
 import hashlib
 import json
 import re
@@ -7,7 +10,6 @@ import re
 import boot_evidence
 import zymatic_build as build
 import release_1_2
-import release_1_3_0
 import usb_stock as stock
 
 CONSERVATIVE = 0x1e000
@@ -20,14 +22,22 @@ def identify(flash):
     legacy = release_1_2.recognize_private_application(flash)
     if legacy or build.VERSION == release_1_2.VERSION:
         return legacy
-    return build.recognize_private_application(flash) or release_1_3_0.recognize_private_application(flash)
+    for version in (build.VERSION, *reversed(build.ARCHIVED_MANIFESTS)):
+        installed = build.recognize_private_application(flash, version=version)
+        if installed:
+            return installed
+    return None
 
 
 def for_version(version):
     if version == release_1_2.VERSION:
         return release_1_2
-    if version == release_1_3_0.VERSION:
-        return release_1_3_0
+    if version in build.ARCHIVED_MANIFESTS:
+        return SimpleNamespace(
+            VERSION=version, template=partial(build.template, version=version),
+            build_application=partial(build.build_application, version=version),
+            recognize_private_application=partial(build.recognize_private_application, version=version),
+        )
     if version == build.VERSION:
         return build
     raise ValueError("Unknown Zymatic application version")

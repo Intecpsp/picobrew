@@ -18,8 +18,11 @@ TEMPLATE = ROOT / "extension"
 START = tables.HIGH_START
 LIMIT = 0x1fc00
 BSS = 0x2c8a
-VERSION = "1.3.1"
-PREVIOUS_VERSION = "1.3.0"
+VERSION = "1.3.2"
+ARCHIVED_MANIFESTS = {
+    "1.3.0": "cc70f6d3ea0d137def6b669533b8b12fba25110b33220be4f0dbb3798f55f9e1",
+    "1.3.1": "e8187c77d7bbca5934130d3028c20de1448c1f9671460426d982473fb5da3fb3",
+}
 FIELDS = {"provision_key": 32, "provision_uid": 33, "provision_host": 64, "provision_recipe": recipes.SIZE}
 
 SERIAL_READS = (
@@ -58,8 +61,8 @@ def sources_sha():
 def template_directory(version):
     if version == VERSION:
         return TEMPLATE
-    if version == PREVIOUS_VERSION:
-        return TEMPLATE / PREVIOUS_VERSION
+    if version in ARCHIVED_MANIFESTS:
+        return TEMPLATE / version
     raise ValueError("Unknown Zymatic extension version")
 
 
@@ -67,9 +70,9 @@ def template(version=VERSION):
     directory = template_directory(version)
     metadata = (directory / "extension.json").read_bytes()
     record = json.loads(metadata)
-    if version == PREVIOUS_VERSION:
-        if sha(metadata) != "cc70f6d3ea0d137def6b669533b8b12fba25110b33220be4f0dbb3798f55f9e1":
-            raise ValueError("Zymatic 1.3.0 extension metadata differs from the released manifest")
+    if version in ARCHIVED_MANIFESTS:
+        if sha(metadata) != ARCHIVED_MANIFESTS[version]:
+            raise ValueError(f"Zymatic {version} extension metadata differs from the released manifest")
     elif record["source_sha256"] != sources_sha():
         raise ValueError("The AVR extension differs from its recorded sources; rebuild the template")
     code = (directory / "extension.bin").read_bytes()
