@@ -70,6 +70,7 @@ jobs:
         with: {platforms: arm}
       - name: Package worker in 32-bit Debian Bookworm
         run: |
+          mkdir -p artifacts
           docker run --rm --platform linux/arm/v7 -v "$GITHUB_WORKSPACE:/src" -w /src debian:bookworm-slim bash server/tools/usb/build_pi32.sh
       - uses: actions/setup-go@v5
         with:
