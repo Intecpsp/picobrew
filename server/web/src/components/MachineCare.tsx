@@ -1,14 +1,21 @@
 import { SectionHeading } from './ui'
 
 const manualRoot = 'https://picobrewcontent.blob.core.windows.net/content/'
-const picoCare = [
-  'Rinse after each brew. Run Deep Clean every three brews.',
-  'If you use reservoir water other than distilled or reverse osmosis water, descale every 20 brews.',
-]
+function picoCare(tabletLocation: string) {
+  return [
+    'Rinse after each brew.',
+    `Run Deep Clean every three brews. Put the cleaning tablet in ${tabletLocation}.`,
+    'If you use reservoir water other than distilled or reverse osmosis water, descale every 20 brews. Run Deep Clean after descaling.',
+  ]
+}
+const kegCare = picoCare('the brewing keg')
 const care: Record<string, { manual: string; reminders: string[] }> = {
-  'pico-s': { manual: manualRoot + 'pico/Pico_Manual.pdf#page=127', reminders: picoCare },
-  'pico-pro': { manual: manualRoot + 'picopro/PicoPro_Manual.pdf#page=129', reminders: picoCare },
-  'pico-c': { manual: manualRoot + 'picoc/PicoC_Manual.pdf#page=109', reminders: picoCare },
+  'pico-s': { manual: manualRoot + 'pico/Pico_Manual.pdf#page=127', reminders: kegCare },
+  'pico-pro': { manual: manualRoot + 'picopro/PicoPro_Manual.pdf#page=129', reminders: kegCare },
+  'pico-c': {
+    manual: manualRoot + 'picoc/PicoC_Manual.pdf#page=109',
+    reminders: picoCare('the center of the step filter'),
+  },
   'z-series': {
     manual: manualRoot + 'z/Z_Manual.pdf#page=36',
     reminders: [

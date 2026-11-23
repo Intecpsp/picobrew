@@ -116,7 +116,7 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["recipe_create_only"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.2.7")
+        self.assertEqual(data["firmware_version"], "1.2.8")
         self.assertIn("encoder", data["commands"])
         self.assertIn("deep-clean", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])

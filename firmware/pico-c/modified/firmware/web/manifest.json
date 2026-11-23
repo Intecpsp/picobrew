@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6428,
+      "length": 6462,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "f52174d7e4b47c07dccbf953e7a83ce42e0e06dab9ad9bc2259dda78dd556afb",
-      "source_length": 60335,
-      "source_sha256": "fb31302f8bc7ea277840fbac875a06c6c8562496af5965d97ab3e01ee00aa56f"
+      "sha256": "e7db304a314514d63a0ac2a5d7b7ad9c6c2d436442b66a4302ae6dfe305ff5e6",
+      "source_length": 60444,
+      "source_sha256": "59078072df407a0a65cf536549dc543741e2315fe312d9542de31d720eb4565c"
     },
     {
       "source": "app.js",
