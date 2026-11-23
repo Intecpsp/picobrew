@@ -3585,7 +3585,9 @@ hr,
   justify-content: space-between;
   align-items: center;
   gap: 10px;
-  margin-top: 12px;
+  margin-top: 16px;
+  padding-top: 12px;
+  border-top: 1px solid var(--hub-line);
 }
 .native-library small {
   font-size: $text-small;
@@ -4265,14 +4267,6 @@ hr,
   }
   span {
     color: var(--hub-muted);
-  }
-}
-.stored-recipes {
-  margin-top: 16px;
-  border-top: 1px solid var(--hub-line);
-  summary {
-    cursor: pointer;
-    padding: 12px 0;
   }
 }
 .front-panel .dial-controls > .button {

@@ -1,7 +1,7 @@
 import { sessionState } from '../lib/sessionState'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { BrewDetail, Sample, Unit } from '../types'
-import { historyChannels, sampleReading } from '../lib/history'
+import { historyChannels, sampleReading, unheatedTarget } from '../lib/history'
 import { annotations, clockTime, convertTemp } from '../lib/utils'
 import { Field } from './ui'
 import './session-chart.scss'
@@ -93,12 +93,14 @@ export function SessionChart({
           ...c,
           color: 'var(--hub-' + (temperatureColors[c.field] || colors[i % colors.length]) + ')',
           values: samples.map((s) =>
-            axisUnit === 'F'
-              ? convertTemp(sampleReading(s, c.field), unit)
-              : sampleReading(s, c.field)
+            c.field === 'target_f' && unheatedTarget(brew.model, s.target_f)
+              ? null
+              : axisUnit === 'F'
+                ? convertTemp(sampleReading(s, c.field), unit)
+                : sampleReading(s, c.field)
           ),
         })),
-    [samples, channels, axisUnit, unit]
+    [samples, channels, axisUnit, unit, brew.model]
   )
   const accessory = ['picostill', 'picoferm'].includes(brew.model)
   const gapLimit =
@@ -233,9 +235,13 @@ export function SessionChart({
     v == null
       ? '—'
       : v.toLocaleString(undefined, { maximumFractionDigits: axisUnit === 'F' ? 1 : 3 })
+  const channelValue = (field: string, value: number | null) =>
+    field === 'target_f' && unheatedTarget(brew.model, sample.target_f)
+      ? 'Unheated'
+      : fmt(value) + (value === null ? '' : suffix)
   const readout = [
     clockTime(sample.elapsed_ms),
-    ...series.map((c) => c.metadata.label + ' ' + fmt(c.values[active]) + ' ' + displayUnit),
+    ...series.map((c) => c.metadata.label + ' ' + channelValue(c.field, c.values[active])),
     ...lanes.map(
       (l) =>
         l.label + ' ' + sessionState(brew, l.key, sampleReading(sample, l.key), sample.source, true)
@@ -274,11 +280,7 @@ export function SessionChart({
                   borderStyle: c.field === 'target_f' ? 'dashed' : 'solid',
                 }}
               />
-              {c.metadata.label}{' '}
-              <strong>
-                {fmt(c.values[active])}
-                {c.values[active] != null && suffix}
-              </strong>
+              {c.metadata.label} <strong>{channelValue(c.field, c.values[active])}</strong>
             </button>
           ))}
         </div>
