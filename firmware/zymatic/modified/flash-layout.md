@@ -10,7 +10,7 @@ This build composes a 130,028-byte ATmega1284P application from the recognized P
 | `0x1b920–0x1fbec` | End of the startup data and unused application space | 17,100 bytes of AVR code, website asset, private provisioning fields and image CRC |
 | `0x1fc00–0x20000` | Terminal 1 KiB | Reserved for the verified bootloader |
 
-Addresses are flash **byte** addresses. The bootloader reads and writes 256-byte pages. The linker reserves 768 bytes for custom static state at SRAM address `0x2c8a`. The builder checks the actual linked lengths, bounds, hashes and provisioning fields before producing the private image. Exact opcodes and both before/after instruction encodings for each patch are in [the composition code](tools/build.py). The layout, dictionary and five reused AVR library function hashes are defined in [the packer](tools/oem_tables.py) and [linker script](src/overlay.ld).
+Addresses are flash **byte** addresses. The bootloader reads and writes 256-byte pages. The linker reserves 768 bytes for custom static state at SRAM address `0x2c8a`. The builder checks the actual linked lengths, bounds, hashes and provisioning fields before producing the private image. Exact opcodes and both before/after instruction encodings for each patch are in [the composition code](tools/zymatic_build.py). The layout, dictionary and five reused AVR library function hashes are defined in [the packer](tools/oem_tables.py) and [linker script](src/overlay.ld).
 
 ## Original controller reads
 

@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import secrets
 
-import build
+import zymatic_build as build
 import offline_program
 import usb_layout
 from usb_application import read_key

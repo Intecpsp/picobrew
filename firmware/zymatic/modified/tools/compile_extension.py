@@ -7,7 +7,7 @@ import shutil
 import subprocess
 import tempfile
 
-import build
+import zymatic_build as build
 
 
 def compile_extension(toolchain, destination):

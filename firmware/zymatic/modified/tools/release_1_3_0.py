@@ -1,7 +1,7 @@
 """Use the original 1.3.0 overlay to identify and reproduce previously provisioned brewers."""
 from functools import partial
 
-import build
+import zymatic_build as build
 
 VERSION = build.PREVIOUS_VERSION
 template = partial(build.template, version=VERSION)

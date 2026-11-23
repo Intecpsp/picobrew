@@ -10,7 +10,7 @@ import unittest
 from unittest.mock import patch
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-import build
+import zymatic_build as build
 import usb_layout
 import usb_application
 import usb_avr as avr

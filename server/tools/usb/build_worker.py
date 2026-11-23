@@ -214,7 +214,7 @@ def project_files():
     )
     patterns.extend(
         "firmware/zymatic/modified/tools/" + n + ".py"
-        for n in ("usb_stock", "usb_avr", "usb_application", "build", "offline_program")
+        for n in ("usb_stock", "usb_avr", "usb_application", "zymatic_build", "offline_program")
     )
     release_index = json.loads((ROOT / "firmware/releases.json").read_text())["releases"]
     for model in ("picostill", "picoferm", "z-series"):

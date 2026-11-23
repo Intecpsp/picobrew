@@ -5,7 +5,7 @@ import json
 import re
 
 import boot_evidence
-import build
+import zymatic_build as build
 import release_1_2
 import release_1_3_0
 import usb_stock as stock

@@ -7,7 +7,7 @@ import unittest
 import zlib
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "tools"))
-import build
+import zymatic_build as build
 import usb_stock as stock
 
 TEST_KEY = bytes(range(32))
