@@ -5,6 +5,8 @@ import { EventSource as NodeEventSource } from 'eventsource'
 import App from '../src/App'
 
 const origin = 'http://127.0.0.1:18081'
+// Page transitions can include a lazy module and a round trip to the isolated Go server.
+const pageTransitionWait = { timeout: 5000 }
 const originalFetch = globalThis.fetch
 let user: ReturnType<typeof userEvent.setup>
 let csrfToken = ''
@@ -95,7 +97,7 @@ async function simulationMutation(path: string, body: unknown = {}) {
 describe('UI interactions against the real isolated Go simulator', () => {
   it('loads fleet data, streams updates and exposes simulator controls with an OLED', async () => {
     await open('/overview')
-    await screen.findByRole('heading', { name: 'Brewery' })
+    await screen.findByRole('heading', { name: 'Brewery' }, pageTransitionWait)
     await waitFor(() => expect(document.querySelectorAll('.machine-card').length).toBe(3))
     await user.click(screen.getAllByRole('link', { name: /^Open .+ controls$/ })[0])
     await screen.findByRole('heading', { name: 'Simulator controls' })
@@ -219,7 +221,7 @@ describe('UI interactions against the real isolated Go simulator', () => {
     expect(use.value).toBe('mash')
     await user.selectOptions(use, 'boil')
     await user.click(screen.getByRole('button', { name: 'Save recipe' }))
-    await screen.findByRole('heading', { name: 'DOM test porter', level: 1 })
+    await screen.findByRole('heading', { name: 'DOM test porter', level: 1 }, pageTransitionWait)
     const recipes = await (await originalFetch(origin + '/api/v1/recipes')).json()
     const saved = recipes.find((recipe: any) => recipe.name === 'DOM test porter')
     expect(saved.tags).toEqual(['dom', 'porter'])

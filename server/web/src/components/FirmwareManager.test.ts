@@ -14,7 +14,7 @@ const notify = vi.fn()
 const navigate = vi.fn()
 const close = vi.fn()
 const originalShowModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal')
-const defaultRepository = 'jeffreydwalter/picobrew-pico-pro-firmware'
+const defaultRepository = 'jeffreydwalter/picobrew'
 const commit = 'a'.repeat(40)
 const candidate = {
   model: 'pico-s',

@@ -286,7 +286,9 @@ func ValidateCapacity(r domain.Recipe, profile domain.Profile) error {
 // A valid ingredient plan remains available when native compilation is blocked;
 // deployment always requires CanDeploy and a non-nil MachineRecipe.
 func Adapt(r domain.Recipe, profile domain.Profile, batchLiters float64) (domain.Adapted, error) {
-	return adapt(r, profile, batchLiters, false)
+	plan, err := adapt(r, profile, batchLiters, false)
+	blockReviewedProgram(&plan)
+	return plan, err
 }
 
 func adapt(r domain.Recipe, profile domain.Profile, batchLiters float64, planning bool) (domain.Adapted, error) {

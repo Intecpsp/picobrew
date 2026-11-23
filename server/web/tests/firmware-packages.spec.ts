@@ -12,7 +12,7 @@ for (const viewport of [
     const errors: string[] = []
     page.on('pageerror', (error) => errors.push(error.message))
     let source: FirmwareSettings = {
-      repository: 'jeffreydwalter/picobrew-pico-pro-firmware',
+      repository: 'jeffreydwalter/picobrew',
       ref: '',
     }
     const commit = 'a'.repeat(40)

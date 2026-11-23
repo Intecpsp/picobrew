@@ -205,7 +205,7 @@ def _public_slots(data, uid, model):
     for name, blob in PUBLIC_BLOBS.items():
         metadata = install._expected_public(name)
         request = urllib.request.Request(
-            "https://api.github.com/repos/jeffreydwalter/picobrew-pico-pro-firmware/git/blobs/" + blob,
+            "https://api.github.com/repos/jeffreydwalter/picobrew/git/blobs/" + blob,
             headers={"Accept": "application/vnd.github.raw+json", "User-Agent": "PicoBrew-Hub"})
         with urllib.request.urlopen(request, timeout=30) as response:
             payload = response.read(metadata["size_bytes"] + 1)

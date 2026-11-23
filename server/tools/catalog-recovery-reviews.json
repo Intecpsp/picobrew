@@ -2,8 +2,25 @@
   "public-00fef07983ee4de88278dde9bf3ad255": {
     "source_sha256": "0ccf61a4e8b6f541748f529f9f4b4a6867c56ca18df7401baa613e09cc7ae108"
   },
+  "public-023fc70102b04952b99e90621aeffbbd": {
+    "blocker": "Confirm the measurement for Coriander Seed (0.5 at 5 minutes), Bitter Orange Peel (0.5 at 5 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "8eb9ac354c0e6a94c59466f40258fe4cb281e06edf424eabcdf815f1d6e89549"
+  },
   "public-0612cd2907ac447cbccbf170e46c0bf1": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.4 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "b5521bfb320fef5bd856eafc12df20caaf0aae6f4d08c9920cedfbab9642cb23"
+  },
+  "public-081f703f9bd54f66963626aa522421ab": {
+    "blocker": "Confirm the measurement for Sweet Orange Peel (0.2 at 10 minutes), Coriander Seed (0.2 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "6efa446877d6ab497eb2ebb8219f931beb26a8bce319b4cdac247afcb2fdabad"
+  },
+  "public-085ee53b06104032952b3777ec6e10ab": {
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 5 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "4f91431a95d77b3281397b0c1753a092d7051fbcd9b69ea0d2a6adf40f87b369"
+  },
+  "public-08b14283f87d48b78d7a08fd2ac8ed97": {
+    "blocker": "Confirm the measurement for Ginger Root (1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "da644670de2de0e7921b0941d1150c6abeb3a7108c4030b613eeb61be8fb0f41"
   },
   "public-0c8263346d6544628f3b7e03ee0e178b": {
     "additions": [
@@ -38,6 +55,10 @@
   "public-0db975dfd30048998b91e9eb1f75cc00": {
     "source_sha256": "31ffe0c1c731b8d560636f4be5f38189a5b256de84035099bd3cfd4f9387e6b4"
   },
+  "public-106b6fc3e0004657868d387cf550b041": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "8e9ab0880baf3247f3e4c9420e80133c5e435e9e53ab9198ba6f761c18382730"
+  },
   "public-11178f18c5b145838cc276d383d19006": {
     "additions": [
       {
@@ -51,6 +72,14 @@
       }
     ],
     "source_sha256": "b735ba18096a23be164e020a56fad2e7a33788f0c55caeb14b64522e4d2deb7a"
+  },
+  "public-1452aeaa124847db9a75234a0beeb869": {
+    "blocker": "Confirm the measurement for Irish Moss (1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "c1a64e35e695fdc29d81fa741267bbe48a7cfad0b4f6273305e4722deb6376bd"
+  },
+  "public-156224a29d6347afa24d28bc0e5c0d35": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.5 at 5 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "82c64a1591985320bdea6472f215ad032e997f2a924e1863d41efecd74a7f2d3"
   },
   "public-18ca88411d574fec9e971a76ec5d3622": {
     "additions": [
@@ -68,6 +97,7 @@
     "source_sha256": "67a870da3e53b71527678eea0f47ef3bc7823deb69bae2aa82fb96b125665886"
   },
   "public-1bec7f4c65484491b87a08e3487667e4": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "d99c1a136ec89237cb3eceb33cade4cc98bd6ff51a69f3f4cc2f15b627f91160"
   },
   "public-1c0cb358effc4f20a260e26f5a3e79ab": {
@@ -92,6 +122,7 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "cff2c1dc4af3daf6f6b85c6246004af8599328383407b91dcf36325bb46a4ecd"
   },
   "public-20e8c7b28c33450096add48c5acf609c": {
@@ -108,6 +139,10 @@
     ],
     "blocker": "The author specifies a manual addition to the keg at the start of the boil.",
     "source_sha256": "5f4ab0ea22df0ff53b018700590d164d8e21dabcd3ce43544e034869e96593c3"
+  },
+  "public-218d80c3be8845a5870012e250d71473": {
+    "blocker": "Confirm the measurement for Irish Moss (0.8 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "873f4ff5e187446cf9ceb5d1a10e4058652f9ea4ea7c0a290c928b024e141991"
   },
   "public-25809d63f7c545febf5accafffdda647": {
     "source_sha256": "19ea5e879cf852099480b6f6e8fe8cf2240b516a495e955baa318e5173156736"
@@ -126,7 +161,16 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "d4f10e2776254265a7657fe10103fdd0422f8ac6caf004bd233f596f6ba1a87b"
+  },
+  "public-39572e3a508f4c0985c312988909908a": {
+    "blocker": "Confirm the measurement for Irish Moss (0.5 at 30 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "075d729b16a5b5dc5f7d906573ba2915a702f9246825ae263e36abf42596f1e0"
+  },
+  "public-3c6e343f58744694b5be9a1c43c654e5": {
+    "blocker": "Confirm the measurement for Irish Moss (0.5 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "3c3999cdb4a1fa51e9b0ce16c57fe3da4d42400a0ee6bf049a53172ec8361f26"
   },
   "public-3e7287b4f91544edb1e87d7cbf76a4d5": {
     "additions": [
@@ -147,10 +191,16 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "8024b5320f28f860b597a5622ad48c9901abce4743d16d8cd1d66f9c50c9bfbd"
   },
   "public-3e7ccbc9d38449b5b6bc8e42bee4791a": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.2 at 10 minutes), Yeast Nutrient (0.2 at 5 minutes). The original field has no unit and Beer Crafter displays ounces by default. The linked BeerCo recipe does not include either addition.",
     "source_sha256": "b3c301fe115cc5e5c8d283153a2b20870e7a2eaaaa81911f67a02eab449b9d77"
+  },
+  "public-3fbadd3d8d96466796171d0ad54f9c94": {
+    "blocker": "Confirm the measurement for Lemon Peel, Granules (1 at 60 minutes), Peppercorns (1 at 20 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "77c3e3fe462f26810649b9cb754e8bef508c27ef411069cc9fb665eb2a65686e"
   },
   "public-3ff9cb6b414145aa937aa8ee28a48e60": {
     "additions": [
@@ -173,6 +223,7 @@
         "use": "mash"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 20 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "5e15ca3380e75511e6b495cbc89063d5fee13f129b0856f852aadf1d523e7ad2"
   },
   "public-402298151b874c8a8cd0b1981d5c17ac": {
@@ -221,7 +272,16 @@
     "blocker": "Prepare the separate yeast starter using the DME and water specified in the author’s notes.",
     "source_sha256": "b8f5646df4065bd73a639eebc368cbc5387adfdff7726e95bac0cced06d8e9a2"
   },
+  "public-40c1b97a4826497699dae43e44fd83c2": {
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "e8d7d2c69e5307eb7e95125f178373cc85266df33233d99f3996cd32f199a422"
+  },
+  "public-41a63c9fe37642b5820abc75a1a13f00": {
+    "blocker": "Confirm the measurement for Irish Moss (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "b8196e9fec3188bcb180aadaded6d3b51f628e83e03547c245fa05f5593f0e4f"
+  },
   "public-4c8881c1508746deac12aa9f3c30eec3": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 17 minutes), Yeast Nutrient (0.1 at 17 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "0fb75b711762277f8d243e9f1672fb96483927405172f8a752c43ecbf5c9b7a0"
   },
   "public-550aa50d19e94c409c3120504e684474": {
@@ -234,12 +294,27 @@
         "type": "Other",
         "unit": "g",
         "use": "secondary"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Sumatran coffee",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
       }
     ],
+    "blocker": "Confirm the unit for the 2-unit chocolate addition at five minutes. The author gives the Sumatran and Kona coffee amounts in ounces but does not mention the chocolate.",
     "source_sha256": "20d82d3b06447c6822d0ad2e45a157e1361cad45d75683d861a4efdb5e26875a"
   },
   "public-6c0382b5c4a24a5795fa002c1f9a152d": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "d96f08159a69a712651ad25ae7266ccff4d5dcdbb22602a7919a6884e35f2752"
+  },
+  "public-6d5939b5d7974885a5a3d76e3380a052": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "abee2b258562c2287e24e50e9dcbda3b0ca0fea2c664805ba7ebf2a02e9f5df7"
   },
   "public-72a70dbd68654ae6a4987b2948af94d5": {
     "additions": [
@@ -291,6 +366,14 @@
     ],
     "blocker": "The two water salts have no recorded units. Confirm their doses before brewing.",
     "source_sha256": "54ad0d47a1d9b4abbd0e767aa75e9ac02c826cf1ebb6dc055752b6edab1a395c"
+  },
+  "public-7b8813a147cd45c4b9c2d56d64242afb": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.3 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "aa02aaedea0ba8d87c167aae2505034475fd081ffd71100327b91d634293a22f"
+  },
+  "public-7daac07c526746638e0b65adb34c353f": {
+    "blocker": "Confirm the measurement for Cacao Nibs (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "23fd022891dc3700f00074046fe2895b9058bc21178dd7cc18a8f17008b94e9e"
   },
   "public-8334eb09ed3e46adb9c1d59b5beff499": {
     "additions": [
@@ -385,6 +468,7 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "97d8e9a6876674a68004c3c72817bb81e09f6f6bb2f5216dfcf277cd0e0ac877"
   },
   "public-88bf8def40bf483d8ffaa9d802ecdfb1": {
@@ -435,6 +519,7 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "ffdd065a5986f3545b5f132331b33d0bd41ce16c01d8c1398adaf46b659f8cdc"
   },
   "public-8a7fd120f5144eb69d64a490be997151": {
@@ -480,6 +565,7 @@
     "source_sha256": "ed45efd069d94c6816861af0da12c2ff27687d1012332f400fe6298fe73a81f8"
   },
   "public-97174ee6c51a49bdb72117bacd1cae1c": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "f318431726953172cf4f443785685c47ad08a77c07044895af530c3c3e44f405"
   },
   "public-98457ba682f44db28bb1748643f4920f": {
@@ -535,8 +621,25 @@
     ],
     "source_sha256": "6af204baaaaac80c28190076bcbe1c147519f73661734bd0659befcf22822144"
   },
+  "public-a0d8979594d3451d8dc17630be79e1e3": {
+    "blocker": "Confirm the measurement for Irish Moss (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "40a72300bd24b9be857ccd768df5de5882211c10f6b981bb37e2dad286b28703"
+  },
+  "public-a37ad562c49046709edf4be9cc6a4ac0": {
+    "blocker": "Confirm the measurement for French Oak (0.8 at 60 minutes), Rose Hips (1 at 60 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "605d80fb9ebe07fd2a93678971205b89a080dd840a45aa2a6c1d3def5082424c"
+  },
+  "public-a3c65757fb284c14ba6fb8f924b3f879": {
+    "blocker": "Confirm the measurement for French Oak (0.6 at 60 minutes), Spruce Tips (0.8 at 60 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "f4200f90468b790cd4f4036662a10e05294d76113bbac13425233eb606bf3a81"
+  },
   "public-a7be5d95992c43e7b23440cb52f1de63": {
+    "blocker": "Confirm the measurement for Coriander Seed (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "40ccc1cf46fda6b38b430ecddad83d918ca00cf8e24ecb9ab0f86b939e478d8b"
+  },
+  "public-aca50b3f480e481183b69d9ccc0979ad": {
+    "blocker": "Confirm the measurement for Ginger Root (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "7bc23723944a33127e704b34fe56b8737a859b5d8777e87182c5b8b43b2ed721"
   },
   "public-ad4c64e9d3cf43fbabfb9dba19f9b164": {
     "source_sha256": "d677da93893503a586232ee1b62a1dfef37af5f30a5068d44a4d24de13e2c319"
@@ -652,6 +755,14 @@
   "public-bd89a0a284b24287983f1ff49d586742": {
     "source_sha256": "b322c9a7d446b9d8b82485190871ccd03de9ce2befe97a420844250006019095"
   },
+  "public-be7103ede7e44821845fa80dec8ec230": {
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "2b0599ec42e44273ab74abb6039a1e898a94ea5b899a612b2f304d6d83a6a0c4"
+  },
+  "public-bfba4c38af8e4f74ac4f7813eb7c7cfa": {
+    "blocker": "Confirm the measurement for Lemon Peel, Granules (1 at 60 minutes), Peppercorns (1 at 20 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "6ab0935c93ffe17d96b18eba58f905fe0d7f8edd91dddd62a95341d971bb2fb4"
+  },
   "public-c6eb105f6bfd4775b4bf15d3aad65995": {
     "additions": [
       {
@@ -719,6 +830,7 @@
     "source_sha256": "afcba1a7508cc91edeaff0071f5af141c95ae3c131bf7f73673ada112d26211a"
   },
   "public-cbbb448615264d6db4804f38b03e69ac": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "18f9821c8b176406016264759c1886a80db6dc3c7c7fea2db361d02e012ff791"
   },
   "public-cca60d1ec10d4ece8ce458861d9cb34e": {
@@ -751,8 +863,21 @@
     ],
     "source_sha256": "960ec4765c0f7af97c8140b51f782eb78423a3255410f236e2ffd917b05de028"
   },
+  "public-cdbd7933375741c4be866675c4ba308f": {
+    "blocker": "Confirm the measurement for Lemon Peel, Granules (1 at 60 minutes), Peppercorns (1 at 20 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "66cfcabca2e2f6280800628248567d953e5b8bcb77a8663c400342424c77f9f4"
+  },
+  "public-d350d64a90434a90b33168ec7a89ff81": {
+    "blocker": "Confirm the measurement for Coriander Seed (0.4 at 10 minutes), Orange Zest (1.3 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "9078c58ce75273d6c6d7b10c4fb222ad18688a0b2bc98280df0e4185f82a5cdf"
+  },
   "public-d642bd5ba504417183c628c18bb70220": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.1 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "554821a01e365f3f4d1593f2fe4a3549900eca9b46c494f2365938880c6f64ef"
+  },
+  "public-d8927232320d493386596f7ebb042687": {
+    "blocker": "Confirm the measurement for Irish Moss (0.2 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "7ece266b50a1c6527c05c8da1fdf9381ed408bc9f7a8b74989a8fa2ccd09edde"
   },
   "public-d9e954a684fe42f39408f0c7fb2e89b9": {
     "additions": [
@@ -775,10 +900,20 @@
         "use": "mash"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (1 at 20 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "0eb45c4d48d12ac648ff2961b0ad94ddb36b87176a036af859309c3c1f7e335a"
   },
   "public-db90a856c4af4b1f87d55eaa1e3b4e2d": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes), Vanilla (0.2 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default. The linked 5-gallon recipe uses a teaspoon of Irish moss and two vanilla beans at flameout. This 2.5-gallon version changes the doses and timing.",
     "source_sha256": "5203719cce77308287a5224f1f9a315e88e9e3d8e5745ed13ec3d302999b8e27"
+  },
+  "public-e41692e1009a4a38b0684748d96719d0": {
+    "blocker": "Confirm the measurement for Spruce Tips (1.5 at 20 minutes), Irish Moss (0.2 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "05da9de0565bcfc525175803e9cc03fe6522de0a1d3372f6d1c0e36fdb4c0bb4"
+  },
+  "public-e4e6fe929d21496c82de103f0ab09c69": {
+    "blocker": "Confirm the measurement for Coriander Seed (0.3 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "3474b3397c0df59346373f9cea6adc440e3274b95e2026a0d2ec5cfbc8051893"
   },
   "public-e97ea1017d01475e8b5cfa9846ecc947": {
     "additions": [
@@ -837,7 +972,16 @@
         "use": "mash"
       }
     ],
+    "blocker": "Confirm the measurement for Whirlfloc (0.5 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "af0a7a2c91f40475e22cf10c9b6c523d02c79e91cc77b295ced387383166fa1c"
+  },
+  "public-ed2cd8fad7ad4f15a3fe3b9a76547325": {
+    "blocker": "Confirm the measurement for Whirlfloc (0.2 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "84dae1d7e4805f1e9e039ab4d13dfcee86230c1bb52fcf001146edc6b9842bf1"
+  },
+  "public-ee2514862eb744f18c43d102f95fb9cd": {
+    "blocker": "Confirm the measurement for Irish Moss (0.2 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "dce0aef45a1a8166b4f55c3aeb317af1fdfcc9e0cb2f39cd4b141f2b6c870b1e"
   },
   "public-ef106ac3bbb84411ae9098744531f960": {
     "additions": [
@@ -850,9 +994,11 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "85fd91abe72ef7fd240b6bff68bb60d9c2f056da0c313927489c68d54ddc60cc"
   },
   "public-f2343c895d664436aa653292606298de": {
+    "blocker": "Confirm the measurement for Irish Moss (0.1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "9b9fed8210c192a89373fa7d5068d0ce310436ce054e70e21cd183a9ff1af672"
   },
   "public-fc271203438e4264ba3472b3abf76b82": {
@@ -883,10 +1029,15 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Irish Moss (0.6 at 10 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "7e0ad95d22f5129b35d6439a8a962a150dd33eb992659ce2f8d2a318cd8a8959"
   },
   "public-fd2527301a3e4244b6c89af7ad65d174": {
     "source_sha256": "6db9c1af400cddfe5b9a0a1a9aa8630f0aaf0bc52b9acb49fbd2e2816e3655ec"
+  },
+  "public-fe18b56e24614fd496f31109fa121121": {
+    "blocker": "Confirm the measurement for Ginger Root (0.5 at 2 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
+    "source_sha256": "d091f184b89ff0509a112e8db701f8bbfad801ab6c0b6017552fc8a9ce019dd9"
   },
   "public-fe7445b15b0f493ebfcc09716d107518": {
     "additions": [
@@ -907,6 +1058,7 @@
         "use": "dry-hop"
       }
     ],
+    "blocker": "Confirm the measurement for Coriander Seed (1 at 15 minutes). The original field has no unit and Beer Crafter displays ounces by default.",
     "source_sha256": "61792fcf7a89166581acff30bd7646a50a3d8edc7ee24fc280d4059b0149acf1"
   }
 }

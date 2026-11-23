@@ -233,3 +233,18 @@ test('recipe detail presents readable quantities and credits without losing cata
   await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Alpine')
   await expect(page.getByLabel('Archive record type')).toHaveValue('archive')
 })
+
+test('reviewed source recipes show the evidence and keep filters on return', async ({ page }) => {
+  await page.goto('/#/catalog?kind=reviewed&q=Chill+Cycle&model=zymatic&source=public-recipes')
+  await expect(page.getByRole('heading', { name: 'Source archive' })).toBeVisible()
+  await expect(page.getByLabel('Archive record type')).toHaveValue('reviewed')
+  await page.getByRole('button', { name: 'Chill Cycle', exact: true }).first().click()
+  const review = page.getByRole('region', { name: 'Source review' })
+  await expect(review).toContainText('circulates at 69°F')
+  await expect(review).toContainText('chiller utility with placeholder beer ingredients')
+  await page.getByRole('button', { name: 'Back', exact: true }).click()
+  await expect(page.getByLabel('Archive record type')).toHaveValue('reviewed')
+  await expect(page.getByLabel('Source machine')).toHaveValue('zymatic')
+  await expect(page.getByLabel('Source archive', { exact: true })).toHaveValue('public-recipes')
+  await expect(page.getByPlaceholder('Search community recipes')).toHaveValue('Chill Cycle')
+})

@@ -1,0 +1,3422 @@
+{
+  "public-02a538894b06404da7793ff10fe99788": {
+    "blocker": "This is a chiller utility with placeholder beer ingredients. A brewing schedule cannot be recovered from this record.",
+    "evidence": "The entire saved cycle connects a chiller and circulates at 69°F for ten minutes. There is no mash, boil or hop flow.",
+    "source_sha256": "68a3ff0969bdb3b8fe3794bfebc7dbb45350cc0fe38c14f558dc52f49bc838b6"
+  },
+  "public-093364df216645d49f8847b62f8ef0ec": {
+    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Tettnanger in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Irish Moss.",
+    "source_sha256": "cb727c9e1f95ddae9abd5a98c9d6403f4758519bf04f3ffec733bb90f0582a8b"
+  },
+  "public-1021bd555de04b0a82463322480c6390": {
+    "blocker": "Confirm the cage and exposure for Fuggles. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Fuggles in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Whirlfloc.",
+    "source_sha256": "2cb1b4868ea600ef7a12500b1c08d105a0c11d52d99db08506c0d62e8b5f92d0"
+  },
+  "public-103c339d154e4e089fdc05a2e6b91347": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Centennial/Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program. The dissolved corn sugar needs a manual boil addition.",
+    "edits": [
+      {
+        "from": 3.18,
+        "path": "/H2O",
+        "to": 3.5
+      }
+    ],
+    "evidence": "The loading sheet puts Centennial/Citra in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss. The author dissolves the corn sugar into the boil, uses 3.5 US gal starting water and adds three dry hops at one week.",
+    "source_sha256": "68d174e9a92c0c234d8362cfb0ec873bc960ded2d4df0965df0631afe006428b"
+  },
+  "public-121022c460cd476dba8af6d7fac04f1f": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Maltodextrin",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 566.9904625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Dried Zante currants",
+        "unit": "g",
+        "use": "secondary"
+      }
+    ],
+    "blocker": "The saved final Saaz/Styrian sequence drops the temperature target to zero and the native mash uses 140/158°F instead of the declared 152/154°F. The calcium carbonate unit is missing.",
+    "evidence": "The author specifies 1 oz maltodextrin in cage 3 for the last five minutes, oak soaked in Cabernet for 24 hours and 1.25 lb dried Zante currants for secondary.",
+    "source_sha256": "8bfc4ecaa775b8eb71f8a340068a694021f019fef74690c002edc882f31d4041"
+  },
+  "public-196ebf6b19314380a49ed530c05e1038": {
+    "additions": [
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra Cryo (serving keg)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic Cryo (serving keg)",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The operator must add Irish moss and carry out the post-boil whirlpool. The dry-hop note does not say whether 0.75 oz applies to the whole blend or to each variety. The brew salts lack units.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.63,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 22.0907974,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 15.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 14.2,
+            "Amount": 0.75,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.10772324,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 0.75,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 86,
+            "IBU": 1.55852771,
+            "Location": 3,
+            "Name": "Mosaic",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.63,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 22.0907974,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 15.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 14.2,
+            "Amount": 0.75,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.10772324,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 30
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 0.75,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 86,
+            "IBU": 1.55852771,
+            "Location": 3,
+            "Name": "Mosaic",
+            "Time": 30
+          }
+        ]
+      }
+    ],
+    "evidence": "The author assigns Citra and Mosaic to a 30-minute, 180°F whirlpool. The native program confirms that hold in cage 2 and pauses for Irish moss. The notes also specify day-three dry hops and a separate serving-keg charge.",
+    "source_sha256": "da88e4acfc9f8b28bee0d689e98f327a8f9d6052e34a47aaa0aea12897582178"
+  },
+  "public-19739320917441f786679b0b32a4939d": {
+    "additions": [
+      {
+        "amount": 2.57,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The quoted parent batch and the saved Pico program specify different Hallertau charges and mash rests. Confirm the intended scaled hop split and mash schedule.",
+    "evidence": "The native first-wort ramp passes through cage 1, containing Magnum. Hallertau first receives direct flow with ten minutes left. The author specifies 2.57 g calcium chloride in this recipe and quotes a separate 5.5-gallon parent batch.",
+    "source_sha256": "cb007e15a951be0916fdb0e7be613bed148c6256c50ee19149d142bce0ee9ff6"
+  },
+  "public-1e6200a087014a7da345c475878563ed": {
+    "blocker": "The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
+    "edits": [
+      {
+        "from": 60.0,
+        "path": "/Hops/0/Time",
+        "to": 70
+      },
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger.",
+    "first_wort_hops": [
+      "Tettnanger"
+    ],
+    "source_sha256": "d5e62647dd8e9d0cb487925d0d3e5d5bd69479e3e79ecc4e2f0813a1bdd09900"
+  },
+  "public-2297547543314ebcb0de8fffdb0c57bc": {
+    "additions": [
+      {
+        "amount": 4.928921594,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Dried orange peel",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "A later Lemon Drop charge reuses cage 1 in a second round. Its reload and the author’s variable stalk and spice amounts cannot be reproduced by an unattended four-cage program.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author confirms cage 1 for first-wort hops and puts spices, fining and nutrient in cage 2. Use 2–3 fresh lemongrass stalks, about 1 tsp dried orange peel and ½–1 tsp dried coriander. Hold 70°F four days, then 75–80°F five days before cold-crashing. The later cold crash is two to three days. See the notes for the warm stage’s temperature range.",
+    "fermentation": [
+      {
+        "days": 4,
+        "name": "Primary at 70°F",
+        "target_c": 21.11111111111111
+      }
+    ],
+    "first_wort_hops": [
+      "Styrian Goldings"
+    ],
+    "source_sha256": "948fc3e910981b836435e7f8b1e2a6be6fb8a94d95db3ebcf4d56ab3ec41bfdc"
+  },
+  "public-24487fcf73894dec8568b5d5b11fe671": {
+    "blocker": "The original is a no-boil whirlpool recipe. The sheet places Simcoe in cage 1 but the program selects cage 4. Confirm the intended hop loading.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45.0
+          }
+        ],
+        "path": "/Hops",
+        "to": []
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.9,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 69.05944,
+            "Location": 2,
+            "Name": "Simcoe",
+            "Time": 45
+          }
+        ]
+      }
+    ],
+    "evidence": "The author expressly omits the boil. The saved program goes from mash to a 45-minute hold at 185°F with direct flow to cage 4. There are three separate 1 oz Simcoe lines in the loading data.",
+    "source_sha256": "70f104aaccd94af53b8f35c4c5128416e360838f79adfb530af4df6862a64e29"
+  },
+  "public-25860150f0ef4798b4667e249cc7b945": {
+    "blocker": "The post-boil step uses the cascade across three late hop cages. Dry-hop amounts and the calcium chloride unit are absent.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.2,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 11.9729414,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 30.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 9.511785,
+            "Location": 3,
+            "Name": "Columbus",
+            "Time": 2.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 3.30753922,
+            "Location": 4,
+            "Name": "Centennial",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 4.095049,
+            "Location": 4,
+            "Name": "Simcoe",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.2,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 11.9729414,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 30.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 9.511785,
+            "Location": 3,
+            "Name": "Columbus",
+            "Time": 45
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 3.30753922,
+            "Location": 4,
+            "Name": "Centennial",
+            "Time": 45
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 1.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 4.095049,
+            "Location": 4,
+            "Name": "Simcoe",
+            "Time": 45
+          }
+        ]
+      }
+    ],
+    "evidence": "The author loads Warrior, Columbus, Centennial and Simcoe into cages 1 through 4 respectively. After Warrior's boil, the program holds 185°F for 45 minutes through the last cage. Dry-hop with Simcoe, Columbus and Centennial for 5–7 days.",
+    "source_sha256": "5e8a95d4b27a7f161de8f1dc54ae073e8f6ceb41b143b9c8b8fe18b5ad044ef8"
+  },
+  "public-27f1d394ce69470796e31241c75742e1": {
+    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Citra in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Whirlfloc. The author lists alternative yeast strains. No note settles the Whirlfloc and Citra routing.",
+    "source_sha256": "ea367d7850b67531384fe29e49489efe31d68ab5dd91b3b7d4a620bdcaea3fd4"
+  },
+  "public-31629479e90b4bc7ab358314f66c8d94": {
+    "blocker": "Confirm the cage and exposure for Liberty. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Liberty in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Irish Moss.",
+    "source_sha256": "bf2f030a84ceaf4c81d988ca06d8cf3348dc5869efa92517204d982bbec392bd"
+  },
+  "public-37948960239240a7b7cbcb8f59b58a7d": {
+    "blocker": "The ingredient editor lists this Citra at one minute. Confirm that the 30-minute post-boil program is intended and provide a controlled cooling step.",
+    "evidence": "The fourth printed charge is 0.33 oz Citra. The native program leaves boiling temperature after the third cage and holds cage 4 at 170°F for 30 minutes.",
+    "source_sha256": "6ca52665e2cd97c92f28fb6a36355a79bcd1c0181abcbf108da1b5e89c96ad3c"
+  },
+  "public-380453ce6a3d41aab9cedd7ea7b8dcfa": {
+    "blocker": "Koppafloc, calcium and yeast nutrient go in cage 2 with 20 minutes remaining. The operator must add the flameout charge and pause for the no-chill procedure.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 11.6,
+            "Amount": 0.7,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 113,
+            "IBU": 37.4502373,
+            "Location": 2,
+            "Name": "Nelson Sauvin",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 4.5,
+            "Amount": 1.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 121,
+            "IBU": 10.5387831,
+            "Location": 3,
+            "Name": "Riwaka",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 8.6,
+            "Amount": 1.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 112,
+            "IBU": 20.1407852,
+            "Location": 3,
+            "Name": "Motueka",
+            "Time": 10.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 11.6,
+            "Amount": 0.7,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 113,
+            "IBU": 37.4502373,
+            "Location": 2,
+            "Name": "Nelson Sauvin",
+            "Time": 60.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 4.5,
+            "Amount": 1.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 121,
+            "IBU": 10.5387831,
+            "Location": 3,
+            "Name": "Riwaka",
+            "Time": 20
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 8.6,
+            "Amount": 1.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 112,
+            "IBU": 20.1407852,
+            "Location": 3,
+            "Name": "Motueka",
+            "Time": 20
+          }
+        ]
+      },
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author explicitly identifies the 10-minute Riwaka and Motueka entry as an IBU estimate, directs a 20-minute flameout addition and a first-wort charge, and specifies a hot mash and dilution to five gallons.",
+    "first_wort_hops": [
+      "Nelson Sauvin"
+    ],
+    "source_sha256": "aa3f78c2779cae1809e3bd6c4bc04de128602ec5143863918d78ef31050d3545"
+  },
+  "public-3914f58fd072465bbd6e289a102b16d9": {
+    "blocker": "A timed honey addition and the hop-cage discrepancy need operator handling. Keep the author’s one-to-two-orange range.",
+    "carbonation": {
+      "method": "forced"
+    },
+    "edits": [
+      {
+        "from": "Honey",
+        "path": "/Fermentables/5/Name",
+        "to": "Orange blossom honey"
+      }
+    ],
+    "evidence": "The author specifies the existing pound of orange blossom honey at ten minutes before the end of the boil and the zest of one to two Valencia oranges at racking for three days. The native kettle hold selects cage 2 although the sheet loads both hops in cage 1.",
+    "source_sha256": "b58b2435254c52ed1efd65f95117f7432b76decec0efc9247637ab5a9f2bc52c"
+  },
+  "public-396b27899902497d830205639b8f84cb": {
+    "additions": [
+      {
+        "amount": 0.3,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Phosphoric acid",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Goldings. Loading the sheet as printed would leave the final hop charge dry in the saved program. The calcium chloride dose has no unit.",
+    "evidence": "The loading sheet puts Goldings in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Irish Moss. The author specifies 0.3 mL phosphoric acid in RO water.",
+    "source_sha256": "8aa6a4e6f73f18757e8268bef0b3a12096bb9f85174a90ab204f2b0ee6028d6b"
+  },
+  "public-39dde1b369904cbb9874b014c9fcc64c": {
+    "blocker": "Confirm the post-boil 20-minute exposure in place of the one-minute boil entry and arrange the chiller changeover.",
+    "evidence": "The native program pauses for the chiller after boiling and then selects cage 3 at 170°F for 20 minutes. The load sheet identifies that charge as 0.79 oz Czech Saaz.",
+    "source_sha256": "02bf33dd021cfd9085d2214235676b37a07f947dee61da65d65ccf4897ec9dbd"
+  },
+  "public-3b53a045d4b84f2f8f1599334ffdd753": {
+    "additions": [
+      {
+        "amount": 7.087380781,
+        "kind": "hop",
+        "minutes": 60,
+        "name": "Ahtanum",
+        "unit": "g",
+        "use": "first-wort"
+      },
+      {
+        "amount": 7.087380781,
+        "kind": "hop",
+        "minutes": 60,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "first-wort"
+      },
+      {
+        "amount": 7.087380781,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Ahtanum",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.087380781,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 17.718451953,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The saved program holds cages 2 and 3 for 60 and 15 successive minutes, giving the first cage 75 minutes or longer. Confirm whether to preserve that or the recorded 60-minute boil and specify the Irish moss operation.",
+    "evidence": "The author puts extra Ahtanum and Columbus in cage 1 for first-wort, 60-minute hops in cage 2 and 15-minute hops in cage 3. The first two measured additions are ¼ oz each. The author adds ¼ oz Ahtanum, ¼ oz Amarillo and ⅝ oz Cascade with yeast.",
+    "source_sha256": "3a775dd2544878255ce913883c938f30a2ed4b97cfe727b3afd5e554b2529671"
+  },
+  "public-3bc7fd9b025a48509eb0d7c3769c8ce7": {
+    "blocker": "Confirm the cage and exposure for Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. Both Whirlfloc and yeast nutrient have zero recorded quantities.",
+    "carbonation": {
+      "volumes": 2.8
+    },
+    "evidence": "The loading sheet puts Saaz in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Whirlfloc, Yeast Nutrient. The author specifies a 67°F pitch and a rise during fermentation, with original water ion targets. The fining quantities are absent.",
+    "source_sha256": "f9cb98c8031a6755ccb645578cdaa3d5db9310ed79561b777ae8619dac154d37"
+  },
+  "public-3eaa338511974151922bfa8b2a042076": {
+    "blocker": "The separate steep, extract addition and Irish moss addition at 15 minutes need operator handling. The salt dose lacks a unit.",
+    "edits": [
+      {
+        "from": 45.0,
+        "path": "/Hops/0/Time",
+        "to": 60
+      },
+      {
+        "from": 45.0,
+        "path": "/Hops/1/Time",
+        "to": 60
+      },
+      {
+        "from": 4,
+        "path": "/Hops/2/BoilUse",
+        "to": 0
+      },
+      {
+        "from": 20.0,
+        "path": "/MashSteps/0/Time",
+        "to": 30
+      }
+    ],
+    "evidence": "The author steeps 2 oz chocolate malt, 4 oz Carapils and 4 oz crystal in 1.5 gal for 30 minutes at 154°F, adds extracts and sugar, then adds Styrian and Saaz for the full 60-minute boil. The final 0.12 oz Saaz goes in for five minutes.",
+    "source_sha256": "84a6a9900b97ae07464f69b734027584431b970793fb1036a69a36290532d5d6"
+  },
+  "public-4102ee640da94a32bbf310f00c9b6947": {
+    "blocker": "This is a temperature-sweep program with an unidentified placeholder hop. Treat it as a program rather than an ingredient beer recipe.",
+    "evidence": "The native program holds successive temperatures from 135 to 145°F for four hours each through the keg. There is no grain or hop cage step.",
+    "source_sha256": "bd5e9bfa8885b1023e27490f5b4c9320d55142503dad6bc9c7a78117432e3baa"
+  },
+  "public-417dcd5ac69a49afb4c9a8a12e866fe6": {
+    "additions": [
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "Connecting the chiller and preserving flow through the final hop cage during cooling require operator intervention.",
+    "evidence": "The author confirms chilling through cage 4. Its native 67°F circulation lasts ten minutes, while the ingredient table labels its 1 oz Hallertau as a one-minute addition. The author permits ½ tsp gypsum in the mash water or on the grain.",
+    "source_sha256": "cadc7f99b53b24f7fd9aa73cb1bf6ab21e17379ea8cca66b74bdc3cb29392e02"
+  },
+  "public-484c860e7b29410b9129b5c5b57ea37f": {
+    "blocker": "The lavender is measured by filling a cage, without a weighed amount. The native mash holds and the declared mash also differ.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author fills a hop cage with lavender buds for the last ten minutes and describes dry-hopping as optional. The native schedule heats from the mash into the first Sorachi Ace cage, then switches cages for the final ten minutes.",
+    "first_wort_hops": [
+      {
+        "minutes": 60,
+        "name": "Sorachi Ace"
+      }
+    ],
+    "source_sha256": "69b14e661415803f7b82123b36391ad67516580c27c1864baf2753d7ffdef544"
+  },
+  "public-48ff6bf57b144f5ba15b743f1053588e": {
+    "blocker": "The native boil only selects the keg. The sheet calls for sweet gale and an unidentified herb mixture in cage 1 for 30 minutes. The individual rosemary and yarrow quantities are unspecified.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      },
+      {
+        "from": "Other (See Notes)",
+        "path": "/Adjuncts/1/Name",
+        "to": "Wild rosemary and yarrow"
+      }
+    ],
+    "evidence": "The author identifies the two herbs as wild rosemary and yarrow. There are no hops in the ingredient table, load sheet or native boil.",
+    "source_sha256": "8d13212a0d1247e972cd98992ffb9879ca698159735f1c1c3da8c0648896bf14"
+  },
+  "public-5885ac352ee546c1b42e106e7970c2f0": {
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The grain bill and loading sheet contain no hop charges, and all five minutes of the native boil use the keg. The four declared mash rests agree with the native program. The first-wort checkbox has no ingredient to act on.",
+    "source_sha256": "a24e2bdeefcf8d390276d9bccecb8b0131b19d320482a8d0b98cc997a4b9d2fb"
+  },
+  "public-5b12451c7c9d473bbbff3ef6f9ad1658": {
+    "additions": [
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Centennial. Loading the sheet as printed would leave the final hop charge dry in the saved program. The saved 152°F mash and mash-out differ from the four declared rests, and the Whirlfloc quantity is zero.",
+    "evidence": "The loading sheet puts Centennial in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Whirlfloc. The author puts another ½ oz Centennial in secondary one to two weeks before bottling.",
+    "source_sha256": "859d6c2532f5b9114fe3a1a743b987697ccbc163812bea65e1c601d62306cb0b"
+  },
+  "public-5b779376cb834a8bbfc3dd9bbcaafa75": {
+    "blocker": "The native mash uses 152°F for 90 minutes plus a 175°F mash-out, but the declared mash has four different rests. The calcium sulfate amount lacks a unit.",
+    "edits": [
+      {
+        "from": 60.0,
+        "path": "/Hops/0/Time",
+        "to": 70
+      },
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The saved program heats through cage 1, then spends ten additional minutes there before the 60-minute Tettnanger segment. Cage 1 stays exposed for the full 70-minute boil. The sheet identifies its contents as Tettnanger.",
+    "first_wort_hops": [
+      "Tettnanger"
+    ],
+    "source_sha256": "1f88d4fdffd65b587731a0a53019b3a071966ae593dcaf6b703241988d3e8818"
+  },
+  "public-5c460b41f7de42a984266c3fdac60d8b": {
+    "additions": [
+      {
+        "amount": 0.085048569,
+        "kind": "fermentable",
+        "minutes": 0,
+        "name": "Acidulated malt",
+        "unit": "kg",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The hop charge must be physically transferred. The saved native stand starts at 180°F for 25 minutes rather than the author’s 160°F for 20 minutes.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 0.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 30.2955875,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 11.0,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.66247749,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 86,
+            "IBU": 2.541456,
+            "Location": 3,
+            "Name": "Mosaic",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 84,
+            "IBU": 3.26758623,
+            "Location": 3,
+            "Name": "Galaxy",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 0.4,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 30.2955875,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 11.0,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.66247749,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 20
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 86,
+            "IBU": 2.541456,
+            "Location": 3,
+            "Name": "Mosaic",
+            "Time": 20
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 84,
+            "IBU": 3.26758623,
+            "Location": 3,
+            "Name": "Galaxy",
+            "Time": 20
+          }
+        ]
+      }
+    ],
+    "evidence": "The author specifies an ounce each of Galaxy, Citra and Mosaic for a 20-minute stand at 160°F, then moves the same hops into the keg for another 30 minutes. The notes also specify 3 oz acidulated malt and equal parts well and RO water.",
+    "source_sha256": "751c2484edfc52d2bdc185c3cb1fdcf80fd00bb2d754976ecefb78b13169b9e8"
+  },
+  "public-5cbcad2bf58740f4ba162567ac6811f3": {
+    "additions": [
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Amarillo. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Amarillo in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes. The author adds ½ tsp each of calcium chloride and gypsum to RO water and dry-hops one ounce each of Simcoe and Amarillo for seven days.",
+    "source_sha256": "43f50e86ca314f3276e893604314834f173e980a2362aac8de6d4207ef6dab5a"
+  },
+  "public-5cd2399a5e684c87a3fcb07158ea06a4": {
+    "blocker": "This is a temperature-sweep program with an unidentified placeholder hop. Treat it as a program rather than an ingredient beer recipe.",
+    "evidence": "The native program holds successive temperatures from 140 to 150°F for four hours each through the keg. There is no grain or hop cage step.",
+    "source_sha256": "aa293aff3d2c95e503e81ef5c5e67ac16a7d07ad7db6b7e5352859f4e566560f"
+  },
+  "public-5ceb72c514794fdeac23a9b56b7962d7": {
+    "additions": [
+      {
+        "amount": 5.669904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Hallertau",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The required transfer, souring and pH measurement need an operator. The archived hot-side recipe is only the first part of the process.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author puts 0.2 oz Hallertau or another low-alpha hop directly in the mash, with no later hop addition. Kettle souring is performed in separate equipment after the mash and chill.",
+    "fermentation": [
+      {
+        "days": 14,
+        "name": "Primary",
+        "target_c": 18.333333333333332
+      }
+    ],
+    "source_sha256": "efe914e280348c3764e5878382bf02924a2885fdea3b925cb68ef55594aae5c0"
+  },
+  "public-656ae4312f5746f793646ecd26a9972c": {
+    "additions": [
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The whirlpool and chiller changeover must be preserved as post-boil operations.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.7,
+            "Amount": 0.25,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 13,
+            "IBU": 11.3981676,
+            "Location": 2,
+            "Name": "Cluster",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.7,
+            "Amount": 0.35,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 13,
+            "IBU": 9.666519,
+            "Location": 3,
+            "Name": "Cluster",
+            "Time": 20.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.1,
+            "Amount": 0.5,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 25,
+            "IBU": 3.32879758,
+            "Location": 4,
+            "Name": "Hallertau",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.1,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 25,
+            "IBU": 0.791906059,
+            "Location": 5,
+            "Name": "Hallertau",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.7,
+            "Amount": 0.25,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 13,
+            "IBU": 11.3981676,
+            "Location": 2,
+            "Name": "Cluster",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.7,
+            "Amount": 0.35,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 13,
+            "IBU": 9.666519,
+            "Location": 3,
+            "Name": "Cluster",
+            "Time": 20.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.1,
+            "Amount": 0.5,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 25,
+            "IBU": 3.32879758,
+            "Location": 4,
+            "Name": "Hallertau",
+            "Time": 10.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.1,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 25,
+            "IBU": 0.791906059,
+            "Location": 5,
+            "Name": "Hallertau",
+            "Time": 20
+          }
+        ]
+      }
+    ],
+    "evidence": "The author specifies a 20-minute whirlpool with the 1 oz Hallertau addition and ½ tsp gypsum in the mash. The native schedule confirms a 170°F, 20-minute hold in cage 4 after the chiller prompt. The author waits for fermentation to slow, then allows seven days in secondary.",
+    "source_sha256": "c8bcfe5fd4a02aba550f4f58e7a59ee9b1b073cc39a062ebc831952aa6038f4e"
+  },
+  "public-685685cee74449a6a3dc2445ea49be08": {
+    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The corn sugar must be added during the boil.",
+    "edits": [
+      {
+        "from": 3.72,
+        "path": "/H2O",
+        "to": 4
+      }
+    ],
+    "evidence": "The loading sheet puts Tettnanger in cage 3 for the 8-minute addition. The saved boil ends in cage 2 for 8 minutes, where the sheet places Irish Moss. The author specifies 4 US gal starting water and dissolved corn sugar in the final 30 minutes.",
+    "source_sha256": "346b3c6a9e5a0153499a01a1b3c9a50d54cf191df5e6899a3f51e99a75895e4c"
+  },
+  "public-68a8c857c67b4baaa12953811da183f8": {
+    "additions": [
+      {
+        "amount": 6,
+        "kind": "misc",
+        "minutes": 12,
+        "name": "Cocoa nibs",
+        "unit": "g",
+        "use": "whirlpool"
+      }
+    ],
+    "blocker": "The mid-program cage replacement and manual sugar addition cannot be automated. Several spice and tea quantities are open-ended.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.2,
+            "Amount": 0.24,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 14.97514,
+            "Location": 2,
+            "Name": "Magnum",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.2,
+            "Amount": 0.12,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 6.42648649,
+            "Location": 3,
+            "Name": "Magnum",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 2.5,
+            "Amount": 0.14,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 26,
+            "IBU": 1.41999388,
+            "Location": 3,
+            "Name": "Hallertau Hersbruck",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.3,
+            "Amount": 0.44,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 9,
+            "IBU": 5.1485014,
+            "Location": 4,
+            "Name": "Cascade",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.8,
+            "Amount": 0.17,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 2.12544,
+            "Location": 4,
+            "Name": "Amarillo",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.8,
+            "Amount": 0.34,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 0.5056327,
+            "Location": 5,
+            "Name": "Amarillo",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.2,
+            "Amount": 0.24,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 14.97514,
+            "Location": 2,
+            "Name": "Magnum",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.2,
+            "Amount": 0.12,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 6.42648649,
+            "Location": 3,
+            "Name": "Magnum",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 2.5,
+            "Amount": 0.14,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 26,
+            "IBU": 1.41999388,
+            "Location": 3,
+            "Name": "Hallertau Hersbruck",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.3,
+            "Amount": 0.44,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 9,
+            "IBU": 5.1485014,
+            "Location": 4,
+            "Name": "Cascade",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.8,
+            "Amount": 0.17,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 2.12544,
+            "Location": 4,
+            "Name": "Amarillo",
+            "Time": 10.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/DryHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.8,
+            "Amount": 0.34,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 0.5056327,
+            "Location": 5,
+            "Name": "Amarillo",
+            "Time": 0
+          }
+        ]
+      }
+    ],
+    "evidence": "The author makes the last 0.34 oz Amarillo a dry hop. Cage 4 holds the tea, peels, nutrient, molasses, cocoa nibs and Irish moss at 180°F for 12 minutes, after removing earlier loads. The author used Imperial B63 Monastic.",
+    "source_sha256": "a264e45349eff340f5cfe8b3c2158040c15de4a5ce6c76eb93466e00af48cf23",
+    "source_yeast": "Imperial B63 Monastic"
+  },
+  "public-6fcead2ee5da4b0db1a394de2bf971e7": {
+    "blocker": "Confirm the cage and exposure for Galaxy. Loading the sheet as printed would leave the final hop charge dry in the saved program. Irish moss has a zero quantity.",
+    "evidence": "The loading sheet puts Galaxy in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss.",
+    "source_sha256": "b202471d443d07f5a5b790c9a3a84eb2594f018bbd3978caac79a4eb196e7e89"
+  },
+  "public-71caf643b0ab4077afacaa0f436c1d5e": {
+    "additions": [
+      {
+        "amount": 453.59237,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Roasted pumpkin",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 4.928921594,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Irish moss",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The structured hops and adjuncts occupy four different cages at 50, 20, 15 and 10 minutes. Confirm the flow and total slot weights for the whole spices and volume-measured moss.",
+    "edits": [
+      {
+        "from": "Cinnamon",
+        "path": "/Adjuncts/0/Name",
+        "to": "Cinnamon sticks"
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "count"
+      },
+      {
+        "from": "All-Spice",
+        "path": "/Adjuncts/1/Name",
+        "to": "Cloves"
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/1/Units",
+        "to": "oz"
+      }
+    ],
+    "evidence": "The author specifies 1 lb roasted pumpkin in the grain bin, three cinnamon sticks, 1 oz cloves in place of allspice, and 1 tsp Irish moss in the clove cage. The saved boil only opens two cages.",
+    "source_sha256": "a95050ddf7b3b6bdc2230f4ba3a98ab5c991b0f88eaa65c210181f4be1c3f515"
+  },
+  "public-7326b43b162843e5a76692a5192ed985": {
+    "additions": [
+      {
+        "amount": 1.5,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 0.5,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lactic acid",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The final hop is unidentified. The timing and dose of the finings and the coffee amount for dry-beaning need confirmation.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author uses 1.5 g calcium chloride, 0.5 mL lactic acid and a five-day whole-bean coffee addition. Whirlfloc and yeast nutrient go in cage 2. The native first-wort ramp runs through the Fuggles cage.",
+    "first_wort_hops": [
+      "Fuggles"
+    ],
+    "source_sha256": "5287544a06baa7b62847b7885e14be2f203433100c05a5a63cb2fcda17ed2ecc"
+  },
+  "public-7407dc49028a491b94d29e37d6fdda71": {
+    "blocker": "Confirm the cage and exposure for Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. The timed grain addition requires the brewer’s intervention.",
+    "evidence": "The loading sheet puts Saaz in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes, where the sheet places Whirlfloc, Yeast Nutrient. The author pauses the mash before mash-out to add roasted barley.",
+    "source_sha256": "6c6582105f71f122f9dee1ead9bb8165b8362d9923d39708940489081efec3be"
+  },
+  "public-7a038c0f0f6b481cbe94517413c47ec1": {
+    "blocker": "Confirm the cage and exposure for Falconer's Flight. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "edits": [
+      {
+        "from": "Black Tea",
+        "path": "/Adjuncts/0/Name",
+        "to": "Earl Grey black tea"
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      }
+    ],
+    "evidence": "The loading sheet puts Falconer's Flight in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Black Tea. The author names Earl Grey tea. The structured black tea charge is 1.5 oz in cage 2 at 20 minutes.",
+    "source_sha256": "82cb6d16de14dd061dfd4b459034a71da8cbc891dec1f1dce81061730c1c4a85"
+  },
+  "public-7e4d6360e049409d819f2ce9f200a050": {
+    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Cascade in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Irish Moss. The note identifies the recipe's origin. It gives no alternate cage layout.",
+    "source_sha256": "4615c52eb1b9b59e542f51139ea04b2574395285ea6fa336108892419b40c8a7"
+  },
+  "public-8027f387724342e79e2aee924a998dd8": {
+    "additions": [
+      {
+        "amount": 41.673798994,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 22.6796185,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 22.6796185,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The sugar addition and chiller connection or cooling bath require an operator. The post-boil Centennial and Simcoe must retain their whirlpool exposure.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 77.57878,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 12,
+            "IBU": 58.184082,
+            "Location": 2,
+            "Name": "Chinook",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 27.050108,
+            "Location": 3,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 26.82971,
+            "Location": 4,
+            "Name": "Columbus",
+            "Time": 30.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 19.1817989,
+            "Location": 5,
+            "Name": "Centennial",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 10.6870022,
+            "Location": 5,
+            "Name": "Simcoe",
+            "Time": 10.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 77.57878,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 12,
+            "IBU": 58.184082,
+            "Location": 2,
+            "Name": "Chinook",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 27.050108,
+            "Location": 3,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 26.82971,
+            "Location": 4,
+            "Name": "Columbus",
+            "Time": 30.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 19.1817989,
+            "Location": 5,
+            "Name": "Centennial",
+            "Time": 30
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 10.6870022,
+            "Location": 5,
+            "Name": "Simcoe",
+            "Time": 30
+          }
+        ]
+      }
+    ],
+    "evidence": "The author adds dissolved corn sugar for the last ten minutes, calls for two stages of 15 minutes at 170°F and 15 minutes at 120°F, and specifies 1.47 oz Columbus, 0.8 oz Centennial and 0.8 oz Simcoe dry in secondary for 12–14 days.",
+    "source_sha256": "acd591a1e74245607cd6ab8edd409febfbebd96ce71e09ae91d843e38573ccf7"
+  },
+  "public-80b66944a67e4e67b616b23dd10798dd": {
+    "additions": [
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The cage must remain wet during the manual cooling stage. The saved native mash also differs from the ingredient editor.",
+    "evidence": "The author confirms chilling through cage 4. The native program uses it for ten minutes at 67°F. The source sheet labels its 1 oz Hallertau as a one-minute boil addition. The author also uses ½ tsp gypsum.",
+    "source_sha256": "c434c307fb9a7320be1e08e01e10f343242413e25aa4826005ba2e1f18c3eecc"
+  },
+  "public-813f449fff494beeb2b4e4ec9453176e": {
+    "blocker": "This is a temperature-sweep program with an unidentified placeholder hop. Treat it as a program rather than an ingredient beer recipe.",
+    "evidence": "The native program holds successive temperatures from 145 to 155°F for four hours each through the keg. There is no grain or hop cage step.",
+    "source_sha256": "e29d3dc0bbb39aa2e22b2f213b182f30fd6639687a85d87b9aa3dc43d364f379"
+  },
+  "public-81eea5a09e084af68b8103c32c1d82b0": {
+    "blocker": "These are distinct exposures. The record does not say whether to use the 60-minute ingredient schedule or the much shorter native program.",
+    "evidence": "The native program boils in the keg for ten minutes, then selects cage 1 at 170°F for just two minutes. The ingredient sheet records a 60-minute 007 Golden Hop charge.",
+    "source_sha256": "9ebac6884e3c92a95acc8f3518f94c09be7ba0c8fe5c62c006a63993bd25aa06"
+  },
+  "public-83641b3d0666419f9e58b11bb03936c1": {
+    "additions": [
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra (primary)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra (secondary or keg)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe (primary)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe (secondary or keg)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo (primary)",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841042,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo (secondary or keg)",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The published 10- and 5-minute hop charges conflict with the un-hopped keg-only boil. Resolve which charges are hot-side before making a program.",
+    "evidence": "The author specifies ⅓ oz each of Citra, Simcoe and Amarillo in primary for 3–5 days and another ⅓ oz of each in secondary or the keg for 5–7 days. No cage is visited during the native boil.",
+    "source_sha256": "401d05face92d7c8f1b2e80e09d1cf95c4992a4c2a5af8f26493d8373646aa00"
+  },
+  "public-84ec3b97096f4835900b617f5415a942": {
+    "blocker": "Confirm the fourth addition as a whirlpool and provide for the chiller connection.",
+    "evidence": "The printed 1.5 oz fourth Centennial charge is listed at one minute. Its only sustained native exposure is a 20-minute, 175°F whirlpool following a chiller prompt. The author describes chocolate malt as optional.",
+    "source_sha256": "0e1da22bed7b7223733cfbe6fd8398f3620ce5343a1400a92b018baed08586fe"
+  },
+  "public-8719115cfe924add93bf1c9a678d1e88": {
+    "blocker": "This is a temperature-sweep program with an unidentified placeholder hop. Treat it as a program rather than an ingredient beer recipe.",
+    "evidence": "The native program holds successive temperatures from 130 to 140°F for four hours each through the keg. There is no grain or hop cage step.",
+    "source_sha256": "581cb1eb7b4b58fa5c567d068bc823419a8122ab280d43b12174c550f11a7d1c"
+  },
+  "public-8a2e6a8577414caebf6241d66ee884ac": {
+    "blocker": "The intended additions and their exposure cannot be determined reliably, and the author explicitly discourages brewing this version.",
+    "evidence": "The author advises against brewing this record. The table calls for a 70-minute boil with lemongrass and two later hops. The saved boil lasts only 60 minutes and never reaches the printed Amarillo cage.",
+    "source_sha256": "f5eb8a2fdc7ffe3e81eb9c18dd266174a5a383804817ca0df4db3c837c80ce06"
+  },
+  "public-8f24c459c0684762aee9d83690c9c41d": {
+    "additions": [
+      {
+        "amount": 566.9904625,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Raspberry purée",
+        "unit": "g",
+        "use": "primary"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Chinook. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Chinook in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Cocoa powder. The author specifies 1 lb 4 oz raspberry purée in primary after five days.",
+    "source_sha256": "67b553dd3715fa5ad6f970887b3d7093469b9dd01a0e24f4938836b25e899e7e"
+  },
+  "public-91a660ea11ac45bea3eb30fef6e00e8c": {
+    "additions": [
+      {
+        "amount": 0.1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 1.2,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lactic acid",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Liberty. Loading the sheet as printed would leave the final hop charge dry in the saved program. The native mash differs from the declared 152°F rest.",
+    "evidence": "The loading sheet puts Liberty in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Irish Moss. The author used Imperial Cablecar L05 and specifies 0.1 g gypsum and 1.2 mL lactic acid.",
+    "source_sha256": "49f0701dc88070efad5341a17618889ae46a7f727aea60644379449ed21a6afb",
+    "source_yeast": "Imperial L05 Cablecar"
+  },
+  "public-922379b17eb446bea5485bd7e81373e9": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Crystal",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Sterling",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Ahtanum",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "El Dorado",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Sterling",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Mosaic/El Dorado. Loading the sheet as printed would leave the final hop charge dry in the saved program. The whirlpool has no specified temperature or duration.",
+    "evidence": "The loading sheet puts Mosaic/El Dorado in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes. The author adds Crystal, Mosaic, Citra and Sterling at 1 oz each plus Ahtanum and Cascade at ½ oz each in a whirlpool, then ½ oz each of Citra, El Dorado, Mosaic and Sterling on fermentation day seven.",
+    "source_sha256": "b92895bde265f1c4953ca7bfff5f1b71ca390b7a84bee2e3c7f146c03f608cf5"
+  },
+  "public-9647af89f15240e088e4314837b15bc2": {
+    "blocker": "This does not establish which Belma charge was intended as a first-wort addition or explain the extra half hour of boiling.",
+    "evidence": "The sheet loads three Belma charges at 60, 20 and 5 minutes. The original heat-up and the first 30 minutes of boiling both pass through the keg. It then selects cage 2 before cage 3. The author only discusses optional grain substitutions.",
+    "source_sha256": "5eb0406b63afc7c832460c32954d286d74837e9a91acee63a6a5b3cb41e021de"
+  },
+  "public-982a789d0b624aeeba7d918ef1102e0f": {
+    "blocker": "Confirm the intended 180°F hop exposure and division between the final two cages. The recorded mash also differs between the two schedules.",
+    "evidence": "The native program holds 203°F for 20 minutes through cage 1, then 180°F for ten minutes in each of cages 2 and 3. The declared boil is 60 minutes at 190°F and both late hops are printed in cage 2.",
+    "source_sha256": "52304f0e1f4d6f596abe75a067b0d2a67faaa058cbc6d373a0e3a8956d45c044"
+  },
+  "public-99d0865668424a149ad4387a46e6798c": {
+    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Citra in cage 4 for the 3-minute addition. The saved boil ends in cage 3 for 3 minutes. The native five- and three-minute switches precede the corresponding printed hop cages by one cage.",
+    "source_sha256": "e01e26565c7846211c45c1ba88f952bd7439c4e74e0e58fc3f5a1a1620622236"
+  },
+  "public-9b7ffd57968b41e28e8de72c7221433a": {
+    "blocker": "The remaining Amarillo and Falconer’s Flight charges are assigned to the same cage as the dry-hop placeholders. Confirm their intended whirlpool exposure and the operator's cooling procedure.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.5,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 35.41608,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.38904226,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 87,
+            "IBU": 2.08356333,
+            "Location": 3,
+            "Name": "Falconer's Flight",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.38904226,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 14.2,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.81777143,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 84,
+            "IBU": 2.67886734,
+            "Location": 3,
+            "Name": "Galaxy",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.5,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 35.41608,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.38904226,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 87,
+            "IBU": 2.08356333,
+            "Location": 3,
+            "Name": "Falconer's Flight",
+            "Time": 1.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/DryHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.38904226,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 5760
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 14.2,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 88,
+            "IBU": 2.81777143,
+            "Location": 3,
+            "Name": "Citra",
+            "Time": 5760
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 84,
+            "IBU": 2.67886734,
+            "Location": 3,
+            "Name": "Galaxy",
+            "Time": 5760
+          }
+        ]
+      }
+    ],
+    "evidence": "The author explicitly moves one ounce each of Amarillo, Citra and Galaxy from the one-minute boil entries to a four-day dry hop. The saved program includes a 25-minute hold at 160°F in cage 2.",
+    "source_sha256": "505d5a45bd9967553e4c1790a3ffdbb506b6707f8f4eb0f3032eeaadd33b8e6a"
+  },
+  "public-9c051402c81041878199ce16f5a57532": {
+    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Cascade in cage 3 for the 10-minute addition. The saved boil ends in cage 2 for 10 minutes, where the sheet places Whirlfloc. The author describes the base recipe and color change without specifying a different final cage.",
+    "source_sha256": "6d752883317806391c6c39fda8ab96048d5ba2a4fa8f567f371a0eaad47ea73e"
+  },
+  "public-9c2bfff398d44806a65304793c5adf3b": {
+    "blocker": "This is a cleaning utility. Never use its displayed ingredients to generate a beer recipe.",
+    "evidence": "The author's recipe and native valve sequence describe a cleaning-tablet wash, an operator stop, and a separate flush. The grain and hop fields are placeholders.",
+    "source_sha256": "5f11ad12151c957068d1e90997367f5cc363b2b76399613362df67fad99a9b4d"
+  },
+  "public-a1871ddec9864cc7abb805079cb9a927": {
+    "blocker": "Confirm the cage and exposure for Tettnanger. Loading the sheet as printed would leave the final hop charge dry in the saved program. The yeast nutrient quantity is zero.",
+    "evidence": "The loading sheet puts Tettnanger in cage 4 for the 10-minute addition. The saved boil ends in cage 3 for 10 minutes. The author's gram and ounce equivalents confirm the measured hop weights.",
+    "source_sha256": "70a0f56ac401a4a0a2364c1f8014d7b09931ade589acd5cdd0a394d7ff7ecd3d"
+  },
+  "public-a46c7c74072544ebaf1ead2569c3dc7b": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Nelson Sauvin",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 21.262142344,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.174761563,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Mosaic/Nelson Sauvin. Loading the sheet as printed would leave the final hop charge dry in the saved program. The native mash uses 104, 152 and 168°F rather than the four declared rests.",
+    "evidence": "The loading sheet puts Mosaic/Nelson Sauvin in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes. The author dry-hops 1 oz Nelson Sauvin, 0.75 oz Simcoe and 0.50 oz Mosaic for seven days.",
+    "source_sha256": "37add7bf624443b341d91a0c9b22f97b92ec0e8e7f3718ce0113cc4187559f1c"
+  },
+  "public-a48dafac01df40679cb4b27b6aeba263": {
+    "blocker": "Confirm the cage and exposure for Cascade. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "edits": [
+      {
+        "from": "Chocolate",
+        "path": "/Fermentables/5/Name",
+        "to": "Rice hulls"
+      }
+    ],
+    "evidence": "The loading sheet puts Cascade in cage 4 for the 5-minute addition. The saved boil ends in cage 3 for 5 minutes, where the sheet places Irish Moss. The author identifies the ½ lb placeholder in the mash as rice hulls.",
+    "ingredient_edits": [
+      {
+        "name": "Rice hulls",
+        "set": {
+          "amount": 226.796185,
+          "color": 0,
+          "kind": "misc",
+          "type": "Other",
+          "unit": "g",
+          "yield": 0
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "0f2facb5de2152646dfa9a6b6389d1367e7d82fcb995e7e11a7a81ce40da7d42"
+  },
+  "public-a8973fe5bc944025a4fdf1b7460f8b9e": {
+    "blocker": "Confirm the cage and exposure for Herkules. Loading the sheet as printed would leave the final hop charge dry in the saved program. The pepper amount is zero in the structured record and the notes give no amount.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/DryAdjuncts/0/Name",
+        "to": "Gochu pepper"
+      }
+    ],
+    "evidence": "The loading sheet puts Herkules in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes. The author identifies the secondary addition as Korean gochu pepper.",
+    "source_sha256": "825010c2a4f4cf62a58b2acb69c08e0d66f285c614fd6000d3de302372ad7c94"
+  },
+  "public-a8f3c408a315499baa5a151a5c97f5c9": {
+    "additions": [
+      {
+        "amount": 41.673798994,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 22.6796185,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 22.6796185,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The sugar addition and chiller connection or cooling bath require an operator. The post-boil Centennial and Simcoe must retain their whirlpool exposure.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 69.33526,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 12,
+            "IBU": 52.001442,
+            "Location": 2,
+            "Name": "Chinook",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 24.1757641,
+            "Location": 3,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 23.9787846,
+            "Location": 4,
+            "Name": "Columbus",
+            "Time": 30.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 17.1435413,
+            "Location": 5,
+            "Name": "Centennial",
+            "Time": 10.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 9.551401,
+            "Location": 5,
+            "Name": "Simcoe",
+            "Time": 10.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 16.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 74,
+            "IBU": 69.33526,
+            "Location": 2,
+            "Name": "Warrior",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.9,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 12,
+            "IBU": 52.001442,
+            "Location": 2,
+            "Name": "Chinook",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 24.1757641,
+            "Location": 3,
+            "Name": "Simcoe",
+            "Time": 45.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.45,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 23.9787846,
+            "Location": 4,
+            "Name": "Columbus",
+            "Time": 30.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 10.5,
+            "Amount": 1.0,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 17.1435413,
+            "Location": 5,
+            "Name": "Centennial",
+            "Time": 30
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 13.0,
+            "Amount": 0.45,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 58,
+            "IBU": 9.551401,
+            "Location": 5,
+            "Name": "Simcoe",
+            "Time": 30
+          }
+        ]
+      }
+    ],
+    "evidence": "The author adds dissolved corn sugar for the last ten minutes, calls for a whirlpool at 170°F; the native hold is 30 minutes, and specifies 1.47 oz Columbus, 0.8 oz Centennial and 0.8 oz Simcoe dry in secondary for 12–14 days.",
+    "source_sha256": "e268bdb47afc7cf38c053c9257394bbaf380590748c04c4c5561e81be0231576"
+  },
+  "public-a9b2e7f18fb64704949d962ebc83a693": {
+    "additions": [
+      {
+        "amount": 11.33980925,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Crystal/Simcoe. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Crystal/Simcoe in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes. The author dry-hops 0.4 oz Amarillo for seven days and prefers whole rather than pellet hops.",
+    "source_sha256": "b2344f7dc7d1aa271cdb651aceaccdb0bec6c563054285545090fdbef96ead4a"
+  },
+  "public-b0b8996eb0ae446a91b89942e087c3df": {
+    "blocker": "The saved program only selects cage 1 for 60 minutes. Confirm the full boil duration and the exposure of the two loads.",
+    "evidence": "The author confirms 1.5 oz cacao nibs, two weeks of fermentation and 1 oz liquid BrewCraft hazelnut flavor before final kegging or bottling. The sheet puts the cacao in cage 1 at 90 minutes and Tettnanger in cage 2 at 60 minutes. The author bottle-ages the beer for two months.",
+    "fermentation": [
+      {
+        "days": 14,
+        "name": "Primary",
+        "target_c": 18.333333333333332
+      }
+    ],
+    "source_sha256": "7e925e12be7dcd0b80328574b9665fd685352efdff041425fb7c73fdace4127c"
+  },
+  "public-b10ffeb17d734945b60a6cd832c6e09e": {
+    "blocker": "Confirm the cage and exposure for Czech Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. The water-treatment amounts have no unit.",
+    "evidence": "The loading sheet puts Czech Saaz in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes, where the sheet places Yeast Nutrient, Whirlfloc. No author note settles the flow to the fining cage.",
+    "source_sha256": "c38a6aa3470e28afbce0949d3ac333853d0a541b6b89ad0d62417e815b53f6b7"
+  },
+  "public-b23b99d1c7174f3c9d181a8cf84fe045": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 20,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 20,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "aroma"
+      }
+    ],
+    "blocker": "There is a chiller prompt and the whirlpool runs through the keg. Preserve the separate addition and controlled cooling rather than generating a boil-only program.",
+    "evidence": "The native program heats through cage 1 containing Centennial for the 60-minute first-wort addition. The author specifies 1 oz each of Amarillo and Cascade for a 20-minute whirlpool, confirmed at 180°F in the native program.",
+    "source_sha256": "93315e1d76694e20e03602bd3d2a61c7266189ce704c2a62a6a85fda2d67be02"
+  },
+  "public-b76ff250e0d24aa693f8dabb91182ebb": {
+    "blocker": "Confirm the duplicated late load and whether it is a whirlpool addition. A fractional pre-flameout time cannot be rounded to a whole-minute boil.",
+    "evidence": "The sheet includes two separate 1.5 oz Amarillo entries at 0.1 minute. The native program instead pauses before a 20-minute hold at 180°F through cage 4.",
+    "source_sha256": "7ae70bb2e13ca4979b9191abbbffaaec036e4c3356bce8e4ebb94ce8aef5939f"
+  },
+  "public-c8573006423547a8b66bf4eadca1e1ff": {
+    "blocker": "This is a rinse utility created in the advanced editor. The grain and Admiral additions in the recipe form are placeholders.",
+    "evidence": "The author describes a ten-minute rinse at 80°F with a five-minute drain. The original program confirms both and contains no hop steps.",
+    "source_sha256": "80ce3d3e52bf10c54a9bb0800351247623d396f65f9b7274b09176aebd539409"
+  },
+  "public-caf4155411ac4027974789c0d27791eb": {
+    "carbonation": {
+      "method": "natural",
+      "volumes": 3
+    },
+    "edits": [
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Dough In",
+            "Style": "Infusion",
+            "Temp": 102.0,
+            "Time": 20.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 152.0,
+            "Time": 30.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154.0,
+            "Time": 60.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 175.0,
+            "Time": 10.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Dough in",
+            "Style": "Infusion",
+            "Temp": 102,
+            "Time": 20
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 148,
+            "Time": 60
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154,
+            "Time": 30
+          },
+          {
+            "Errors": [],
+            "Name": "Mash out",
+            "Style": "Infusion",
+            "Temp": 175,
+            "Time": 15
+          }
+        ]
+      },
+      {
+        "from": 15,
+        "path": "/Adjuncts/0/Time",
+        "to": 10
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      },
+      {
+        "from": 15,
+        "path": "/Adjuncts/1/Time",
+        "to": 10
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/1/Units",
+        "to": "oz"
+      },
+      {
+        "from": 4,
+        "path": "/Hops/1/BoilUse",
+        "to": 0
+      },
+      {
+        "from": 4,
+        "path": "/Hops/2/BoilUse",
+        "to": 0
+      }
+    ],
+    "evidence": "The author's final recipe specifies 148°F for 60 minutes then 154°F for 30. It replaces the earlier whirlpool with 1 oz Styrian Goldings and ½ oz Saaz at ten minutes, together with Whirlfloc and yeast nutrient. The original load sheet measures 0.1 oz of each fining. Use the native dough-in and mash-out around the corrected rests and retain all four late ingredients at the same exposure. Pitch Wyeast 3711 near 70°F, allow a four-day rise to 77°F, hold seven days, then crash to 34°F. Bottle condition to three volumes of CO₂.",
+    "fermentation": [
+      {
+        "days": 4,
+        "name": "Pitch near 70°F and allow a free rise to 77°F",
+        "target_c": 25.0
+      },
+      {
+        "days": 7,
+        "name": "Hold at 77°F",
+        "target_c": 25.0
+      },
+      {
+        "days": 0,
+        "name": "Cold crash to 34°F",
+        "target_c": 1.1111111111111112
+      }
+    ],
+    "slot_additions": [
+      "Whirlfloc",
+      "Yeast Nutrient"
+    ],
+    "source_sha256": "d003305b7357911cb49f7dd84b4995f7c4e314eaff7e716032caa1f0aaebadbe"
+  },
+  "public-cb4320ef48424f71a65bb720b139c0c6": {
+    "edits": [
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Single Step Infusion Mash",
+            "Style": "Infusion",
+            "Temp": 152.0,
+            "Time": 90.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 122,
+            "Time": 20
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 140,
+            "Time": 120
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 3",
+            "Style": "Infusion",
+            "Temp": 158,
+            "Time": 15
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 168,
+            "Time": 15
+          }
+        ]
+      },
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author calls for a longer mash. The native schedule holds at 122, 140, 158 and 168°F for 20, 120, 15 and 15 minutes respectively. It ramps from the mash into cage 1 for the 60-minute Hallertau first-wort charge, then switches to the second Hallertau charge with 20 minutes remaining. The author extends primary fermentation to about one month and lagering to six weeks. The stage temperatures come from the fermentation schedule.",
+    "fermentation": [
+      {
+        "days": 30,
+        "name": "Primary (about one month)",
+        "target_c": 13.333333333333334
+      },
+      {
+        "days": 42,
+        "name": "Lager for six weeks",
+        "target_c": 1.6666666666666667
+      }
+    ],
+    "first_wort_hops": [
+      {
+        "minutes": 60,
+        "name": "Hallertau"
+      }
+    ],
+    "source_sha256": "ede89f0309dc965ed48a0afc1a185b414797aa1901292e4351766f6fd5d2335a"
+  },
+  "public-cb6f1e9ad95f4091922f34ed1007cd90": {
+    "blocker": "Confirm the cage and exposure for Citra. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "evidence": "The loading sheet puts Citra in cage 4 for the 3-minute addition. The saved boil ends in cage 3 for 3 minutes. The native five- and three-minute switches precede the corresponding printed hop cages by one cage.",
+    "source_sha256": "1081a192be2ac997f35abece0f34300d0e436fbee47d3d8d845cd6ce3ef135f2"
+  },
+  "public-cda18131d3d54bacbb353a6b5e28a502": {
+    "blocker": "Confirm the cage and exposure for Cascade/Centennial. Loading the sheet as printed would leave the final hop charge dry in the saved program. Duplicate Cascade entries in the final cage could be intentional separate weights or a duplicate ingredient.",
+    "evidence": "The loading sheet puts Cascade/Centennial in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes, where the sheet places Bitter Orange Peel, Coriander Seed.",
+    "source_sha256": "4acfcfbafbfa075a76d23a70521e61c954b41644d297ed42c6c21e13d95062d5"
+  },
+  "public-cdad65932eb44b6983e64e1801f94559": {
+    "additions": [
+      {
+        "amount": 5.669904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Hallertau",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The required transfer, souring and pH measurement need an operator. The archived hot-side recipe is only the first part of the process.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author puts 0.2 oz Hallertau or another low-alpha hop directly in the mash, with no later hop addition. Kettle souring is performed in separate equipment after the mash and chill.",
+    "source_sha256": "7f7e48319af65b32a988e2594cd0e31d78427b44e4573bd65076acd4bb6f46c8"
+  },
+  "public-d2637e545a6a47eeb793256931796f71": {
+    "blocker": "Confirm whether the late Centennial should receive the full 15 minutes and when the vanilla is intended to enter the wort.",
+    "evidence": "The loading sheet places vanilla in cage 2 at 40 minutes and Centennial in cage 3 at 15 minutes. The native program holds cage 2 for the final 15 minutes, then touches cage 3 at zero target and duration.",
+    "source_sha256": "bcd7b7d7d92eeeefebbf413a336707cbb66ce66e6b0f210dc22f6ed9c4c63f2e"
+  },
+  "public-d2c8aaf7c90e4051851540df301ae8ad": {
+    "additions": [
+      {
+        "amount": 42.524284687,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 42.524284687,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 42.524284687,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 1.7,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 3.8,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 4.8,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Phosphoric acid (85%)",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The original program's named six-minute hop step serves cage 3, where the loading sheet puts a separate ten-minute nutrient charge. The author does not specify how to handle the nutrient.",
+    "edits": [
+      {
+        "from": 4,
+        "path": "/Hops/6/BoilUse",
+        "to": 0
+      },
+      {
+        "from": 4,
+        "path": "/Hops/7/BoilUse",
+        "to": 0
+      },
+      {
+        "from": 4,
+        "path": "/Hops/8/BoilUse",
+        "to": 0
+      },
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Single Step Infusion Mash",
+            "Style": "Infusion",
+            "Temp": 154.0,
+            "Time": 90.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Mash",
+            "Style": "Infusion",
+            "Temp": 154,
+            "Time": 90
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 170,
+            "Time": 25
+          }
+        ]
+      }
+    ],
+    "evidence": "The author and native program agree on 18-, 12- and 6-minute hop charges and a 25-minute mash-out at 170°F. The notes specify each of the three hops at 1.5 oz dry, plus measured gypsum, calcium chloride and phosphoric acid.",
+    "source_sha256": "32fca0f286dcb14560b23fe2ba208310d51e56c419efa4e3da87a1a2e367bad2"
+  },
+  "public-d65f9ab1b4be470e953e4119e56b1480": {
+    "blocker": "The structured and native boil durations differ from the author's 90 minutes. The final half-ounce hop is unnamed and its cage is never selected by the saved program.",
+    "carbonation": {
+      "method": "natural",
+      "temperature_c": 22.22222222222222
+    },
+    "edits": [
+      {
+        "from": "Belgian Candi Sugar Amber",
+        "path": "/Fermentables/3/Name",
+        "to": "D-45 candi syrup"
+      },
+      {
+        "from": "Belgian Candi Sugar Amber",
+        "path": "/Fermentables/4/Name",
+        "to": "D-90 candi syrup"
+      },
+      {
+        "from": 60,
+        "path": "/BoilTime",
+        "to": 90
+      },
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Dough In",
+            "Style": "Infusion",
+            "Temp": 102.0,
+            "Time": 20.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 152.0,
+            "Time": 30.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154.0,
+            "Time": 60.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 175.0,
+            "Time": 10.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 150,
+            "Time": 60
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 168,
+            "Time": 30
+          }
+        ]
+      }
+    ],
+    "evidence": "The author identifies the two half-pound candi syrups as D-45 and D-90, specifies a 150°F mash for 60 minutes and 168°F mash-out for 30, and describes a 90-minute boil. The native program has a sugar-addition pause. For bottle conditioning, the author specifies 34 g of priming syrup per US gallon at 72°F for ten days.",
+    "source_sha256": "a42777fcd0e3d76b190792111fe454dff1a28830b3186900681bf0486a59aae8"
+  },
+  "public-da396eba352e45afa467940436580d05": {
+    "additions": [
+      {
+        "amount": 85.048569375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "El Dorado",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 3.543690391,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Amyloglucosidase",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for El Dorado. Loading the sheet as printed would leave the final hop charge dry in the saved program. The pitch-time enzyme lacks a dose.",
+    "evidence": "The loading sheet puts El Dorado in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Whirlfloc. The author specifies 3 oz El Dorado and 1 oz Mosaic dry, 0.125 oz amyloglucosidase during mash and Ultra-Ferm with yeast.",
+    "source_sha256": "6ddb2e9009e833107c646ef98c0e054fe13f8f8c1809683e3a907a629095dcbc"
+  },
+  "public-dcca36059c9741418012cf6e5c4bd804": {
+    "blocker": "The operator must cool to the 185°F stand. This earlier whirlpool version must stay distinct from the author's later ten-minute boiled-hop edition.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.6,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 36.064518,
+            "Location": 2,
+            "Name": "Magnum",
+            "Time": 90.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 5.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 64,
+            "IBU": 1.1111846,
+            "Location": 4,
+            "Name": "Styrian Goldings",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.5,
+            "Amount": 0.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 55,
+            "IBU": 0.353558719,
+            "Location": 4,
+            "Name": "Saaz",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 12.0,
+            "Amount": 0.6,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 36,
+            "IBU": 36.064518,
+            "Location": 2,
+            "Name": "Magnum",
+            "Time": 90.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 5.5,
+            "Amount": 1.0,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 64,
+            "IBU": 1.1111846,
+            "Location": 4,
+            "Name": "Styrian Goldings",
+            "Time": 10
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 3.5,
+            "Amount": 0.5,
+            "BoilUse": 4,
+            "Errors": [],
+            "HopID": 55,
+            "IBU": 0.353558719,
+            "Location": 4,
+            "Name": "Saaz",
+            "Time": 10
+          }
+        ]
+      },
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Dough In",
+            "Style": "Infusion",
+            "Temp": 102.0,
+            "Time": 20.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 152.0,
+            "Time": 30.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154.0,
+            "Time": 60.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 175.0,
+            "Time": 10.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Dough in",
+            "Style": "Infusion",
+            "Temp": 102,
+            "Time": 20
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 148,
+            "Time": 60
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154,
+            "Time": 30
+          },
+          {
+            "Errors": [],
+            "Name": "Mash out",
+            "Style": "Infusion",
+            "Temp": 175,
+            "Time": 10
+          }
+        ]
+      }
+    ],
+    "evidence": "This version's author explicitly whirlpools 1 oz Styrian Goldings and ½ oz Czech Saaz for ten minutes at 185°F, following 148°F for 60 minutes and 154°F for 30. The native program instead sends a one-minute near-boiling charge.",
+    "fermentation": [
+      {
+        "days": 4,
+        "name": "Pitch near 70°F and allow a rise to 77°F",
+        "target_c": 25.0
+      },
+      {
+        "days": 7,
+        "name": "Hold at 77°F",
+        "target_c": 25.0
+      }
+    ],
+    "source_sha256": "30649889e9e0b94e19c80cb37b41e881fd7fbb4ff398f83ffabcda71550fc568"
+  },
+  "public-dd877a925a134bc38d7bd137c0d4f33f": {
+    "carbonation": {
+      "method": "natural",
+      "volumes": 3
+    },
+    "edits": [
+      {
+        "from": [
+          {
+            "Errors": [],
+            "Name": "Dough In",
+            "Style": "Infusion",
+            "Temp": 102.0,
+            "Time": 20.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 152.0,
+            "Time": 30.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154.0,
+            "Time": 60.0
+          },
+          {
+            "Errors": [],
+            "Name": "Mash Out",
+            "Style": "Infusion",
+            "Temp": 175.0,
+            "Time": 10.0
+          }
+        ],
+        "path": "/MashSteps",
+        "to": [
+          {
+            "Errors": [],
+            "Name": "Dough in",
+            "Style": "Infusion",
+            "Temp": 102,
+            "Time": 20
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 1",
+            "Style": "Infusion",
+            "Temp": 148,
+            "Time": 60
+          },
+          {
+            "Errors": [],
+            "Name": "Mash 2",
+            "Style": "Infusion",
+            "Temp": 154,
+            "Time": 30
+          },
+          {
+            "Errors": [],
+            "Name": "Mash out",
+            "Style": "Infusion",
+            "Temp": 175,
+            "Time": 15
+          }
+        ]
+      },
+      {
+        "from": 15,
+        "path": "/Adjuncts/0/Time",
+        "to": 10
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      },
+      {
+        "from": 15,
+        "path": "/Adjuncts/1/Time",
+        "to": 10
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/1/Units",
+        "to": "oz"
+      },
+      {
+        "from": 4,
+        "path": "/Hops/1/BoilUse",
+        "to": 0
+      },
+      {
+        "from": 4,
+        "path": "/Hops/2/BoilUse",
+        "to": 0
+      }
+    ],
+    "evidence": "The author's final recipe specifies 148°F for 60 minutes then 154°F for 30. It replaces the earlier whirlpool with 1 oz Styrian Goldings and ½ oz Saaz at ten minutes, together with Whirlfloc and yeast nutrient. The original load sheet measures 0.1 oz of each fining. Use the native dough-in and mash-out around the corrected rests and retain all four late ingredients at the same exposure. Pitch Wyeast 3711 near 70°F, allow a four-day rise to 77°F, hold seven days, then crash to 34°F. Bottle condition to three volumes of CO₂.",
+    "fermentation": [
+      {
+        "days": 4,
+        "name": "Pitch near 70°F and allow a free rise to 77°F",
+        "target_c": 25.0
+      },
+      {
+        "days": 7,
+        "name": "Hold at 77°F",
+        "target_c": 25.0
+      },
+      {
+        "days": 0,
+        "name": "Cold crash to 34°F",
+        "target_c": 1.1111111111111112
+      }
+    ],
+    "slot_additions": [
+      "Whirlfloc",
+      "Yeast Nutrient"
+    ],
+    "source_sha256": "af50253eb064140ce210d9f2c381c4be25ef67b07adea8a457b675852828ff00"
+  },
+  "public-e7c4ee96b5aa4f1291d65b635d0e171a": {
+    "blocker": "Confirm the cage and exposure for Northern Brewer. Loading the sheet as printed would leave the final hop charge dry in the saved program.",
+    "edits": [
+      {
+        "from": "Maris Otter Ale Malt",
+        "path": "/Fermentables/0/Name",
+        "to": "Skagit Valley Copeland"
+      },
+      {
+        "from": 1.0,
+        "path": "/Adjuncts/0/Amount",
+        "to": 2
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      }
+    ],
+    "evidence": "The loading sheet puts Northern Brewer in cage 3 for the 5-minute addition. The saved boil ends in cage 2 for 5 minutes, where the sheet places Spruce Tips, Juniper Berries. The author corrects the grain to Skagit Valley Copeland and specifies 2 oz fresh spruce tips in cage 2, with optional additional tips in the mash.",
+    "source_sha256": "58b1192d17ca8f6226b6ebb1cc4749ef181f2e098c928537fdf7a882c90024ef"
+  },
+  "public-e92dc7b85f4d42a4b2845b8783e00100": {
+    "blocker": "This maintenance program uses ingredient placeholders and must remain outside the beer catalog.",
+    "evidence": "The author describes a 3-gallon hot-water rinse, and the original program runs ten minutes each through the mash and last hop cage. There is no beer boil.",
+    "source_sha256": "be3bb7b28579cee3a6bcbfc2e36cce2580f14885afa721826d825bdb6be9b645"
+  },
+  "public-ea212985c39249fd8027585fa8bc78d4": {
+    "blocker": "This is a partial mash program. The second-stage recipe is not identified in the record.",
+    "evidence": "The author explicitly specifies wort preparation with no hops or boil. The native program ends after the grain rests, confirming it is only the first part of a two-brew process.",
+    "source_sha256": "f9a1cac88756d22cca332b9487fc6b2928f73c8bb6c8c4606ade2a1a11da2689"
+  },
+  "public-eb6c219ac3d34ffbb117f12eef50d2d7": {
+    "additions": [
+      {
+        "amount": 78.8627455,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Molasses/maple/balsamic blend at pitch",
+        "unit": "mL",
+        "use": "primary"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Fuggles. Loading the sheet as printed would leave the final hop charge dry in the saved program. The Irish moss is recorded with zero amount.",
+    "evidence": "The loading sheet puts Fuggles in cage 4 for the 10-minute addition. The saved boil ends in cage 3 for 10 minutes, where the sheet places Irish Moss, Spruce Tips. The author uses an equal-parts molasses, maple syrup and balsamic blend, with another ⅓ cup of blend at pitching. Raw field corn requires separate cereal cooking; the archived grain bill lists flaked corn.",
+    "source_sha256": "d2de8a05d26295e545183abe5de3780258e108710c6d66ad07ead8e11d753329"
+  },
+  "public-f0089b75c7bd4970a3ce6fe66bcab384": {
+    "additions": [
+      {
+        "amount": 5.669904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Hallertau",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The required transfer, souring and pH measurement need an operator. The archived hot-side recipe is only the first part of the process.",
+    "edits": [
+      {
+        "from": true,
+        "path": "/IsFirstWort",
+        "to": false
+      }
+    ],
+    "evidence": "The author puts 0.2 oz Hallertau or another low-alpha hop directly in the mash, with no later hop addition. Kettle souring is performed in separate equipment after the mash and chill.",
+    "fermentation": [
+      {
+        "days": 14,
+        "name": "Primary",
+        "target_c": 18.333333333333332
+      }
+    ],
+    "source_sha256": "b743c87e89857d97e11979c6fa819d0202fc8c9c82b995c23a35a50ff8f7ac70"
+  },
+  "public-f049ad426760438298734d24142f8eaa": {
+    "blocker": "Confirm the cage and exposure for Saaz. Loading the sheet as printed would leave the final hop charge dry in the saved program. This grain addition needs an operator pause.",
+    "evidence": "The loading sheet puts Saaz in cage 4 for the 1-minute addition. The saved boil ends in cage 3 for 1 minutes, where the sheet places Whirlfloc, Yeast Nutrient. The author instructs the brewer to add roasted barley at minute 50 of the second mash.",
+    "source_sha256": "1e7c924fb25375f1fd4185d8fee5f645949229636e61b919136a61cdc9a90e35"
+  },
+  "public-f1980bfb3a664b2580ba4b7bfaed0877": {
+    "blocker": "Confirm the cage and exposure for Crystal/Willamette. Loading the sheet as printed would leave the final hop charge dry in the saved program. The salt units and separate yeast nutrient timing also need confirmation.",
+    "evidence": "The loading sheet puts Crystal/Willamette in cage 4 for the 10-minute addition. The saved boil ends in cage 3 for 10 minutes, where the sheet places Yeast Nutrient. The author directs a second pass through the mill for the wheat. The native program has three direct hop holds while the sheet assigns four different addition times.",
+    "source_sha256": "15f4dd2dcca49c1670dc3b280c3dfbff685f7fbcf5496f09dd9a9f6f3c9cdd1d"
+  },
+  "public-f90257bc929c48eebdc455703068f472": {
+    "additions": [
+      {
+        "amount": 113.3980925,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Rice hulls",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Lemondrop",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Denali",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The chiller must be connected between the boil and the cage-3 whirlpool. The one-minute entries for the final Centennial and Amarillo are post-boil additions.",
+    "edits": [
+      {
+        "from": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.31,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 29.8335838,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 9.3,
+            "Amount": 0.68,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 7.881748,
+            "Location": 3,
+            "Name": "Centennial",
+            "Time": 5.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 0.68,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 5.93249846,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 5.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 9.3,
+            "Amount": 0.68,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 1.70499277,
+            "Location": 4,
+            "Name": "Centennial",
+            "Time": 1.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 0.68,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.28332794,
+            "Location": 4,
+            "Name": "Amarillo",
+            "Time": 1.0
+          }
+        ],
+        "path": "/Hops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 15.4,
+            "Amount": 0.31,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 14,
+            "IBU": 29.8335838,
+            "Location": 2,
+            "Name": "Columbus",
+            "Time": 60.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 9.3,
+            "Amount": 0.68,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 7.881748,
+            "Location": 3,
+            "Name": "Centennial",
+            "Time": 5.0
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 0.68,
+            "BoilUse": 0,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 5.93249846,
+            "Location": 3,
+            "Name": "Amarillo",
+            "Time": 5.0
+          }
+        ]
+      },
+      {
+        "from": [],
+        "path": "/WhirlpoolHops",
+        "to": [
+          {
+            "AdjunctRound": 1,
+            "Alpha": 9.3,
+            "Amount": 0.68,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 10,
+            "IBU": 1.70499277,
+            "Location": 4,
+            "Name": "Centennial",
+            "Time": 30
+          },
+          {
+            "AdjunctRound": 1,
+            "Alpha": 7.0,
+            "Amount": 0.68,
+            "BoilUse": 2,
+            "Errors": [],
+            "HopID": 2,
+            "IBU": 1.28332794,
+            "Location": 4,
+            "Name": "Amarillo",
+            "Time": 30
+          }
+        ]
+      }
+    ],
+    "evidence": "The author specifies ¼ lb rice hulls in the mash and a 30-minute, 180°F whirlpool through cage 3. The original program confirms the 180°F hold. Dry-hop for seven days with 2 oz each of Lemondrop and Denali.",
+    "source_sha256": "837ddc521234866d9428b095999828556d7ef827b63733d26df8447acd778ef8"
+  },
+  "public-fa1bed4e90dd405fb3030269abadd5d8": {
+    "additions": [
+      {
+        "amount": 226.796185,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Canned pumpkin",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Rice hulls",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 2.464460797,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Cinnamon",
+        "unit": "mL",
+        "use": "unspecified"
+      },
+      {
+        "amount": 1.232230398,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Ginger",
+        "unit": "mL",
+        "use": "unspecified"
+      },
+      {
+        "amount": 0.616115199,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Nutmeg",
+        "unit": "mL",
+        "use": "unspecified"
+      },
+      {
+        "amount": 0.616115199,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Allspice",
+        "unit": "mL",
+        "use": "unspecified"
+      }
+    ],
+    "blocker": "Confirm the cage and exposure for Cluster. Loading the sheet as printed would leave the final hop charge dry in the saved program. The archive does not give the complete spice blend's addition method and weighed loading, while the native boil omits the last hop cage.",
+    "edits": [
+      {
+        "from": "Brown Sugar",
+        "path": "/Fermentables/4/Name",
+        "to": "Dark muscovado sugar"
+      },
+      {
+        "from": [
+          {
+            "AdjunctID": 49,
+            "AdjunctRound": 1,
+            "AdjunctType": "Spice",
+            "Amount": 0.1,
+            "BoilUse": 0,
+            "Errors": [],
+            "Location": 3,
+            "Name": "Cinnamon",
+            "Time": 5,
+            "Units": null,
+            "Use": "Spice"
+          },
+          {
+            "AdjunctID": 66,
+            "AdjunctRound": 1,
+            "AdjunctType": "Other",
+            "Amount": 0.1,
+            "BoilUse": 0,
+            "Errors": [],
+            "Location": 3,
+            "Name": "Pumpkin Puree",
+            "Time": 5,
+            "Units": null,
+            "Use": "Other"
+          }
+        ],
+        "path": "/Adjuncts",
+        "to": []
+      }
+    ],
+    "evidence": "The loading sheet puts Cluster in cage 3 for the 1-minute addition. The saved boil ends in cage 2 for 1 minutes, where the sheet places Cinnamon, Pumpkin Puree. The author specifies 8 oz canned pumpkin and 1 oz rice hulls in the mash, dark muscovado sugar, and a blend of ½ tsp cinnamon, ¼ tsp ginger, ⅛ tsp nutmeg and ⅛ tsp allspice.",
+    "source_sha256": "58216ca0dfa98b112bea0c2a9483109fa4df7924b4b1422a7961bb6933bf42da"
+  }
+}

@@ -5,7 +5,7 @@ import type { FirmwareSettings } from '../types'
 import { Button, ErrorBanner, Field } from './ui'
 
 const defaultSource: FirmwareSettings = {
-  repository: 'jeffreydwalter/picobrew-pico-pro-firmware',
+  repository: 'jeffreydwalter/picobrew',
   ref: '',
 }
 

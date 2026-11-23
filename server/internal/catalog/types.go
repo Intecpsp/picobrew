@@ -80,7 +80,13 @@ type BrewSheet struct {
 	SourceSHA256    string              `json:"source_sha256"`
 }
 
+type SourceReview struct {
+	Evidence string `json:"evidence"`
+	Blocker  string `json:"blocker,omitempty"`
+}
+
 type Detail struct {
+	SourceReview *SourceReview           `json:"source_review,omitempty"`
 	BrewSheet    *BrewSheet              `json:"brew_sheet,omitempty"`
 	StockProgram *domain.MachineRecipe   `json:"stock_program,omitempty"`
 	Marketplace  *MarketplaceIngredients `json:"marketplace,omitempty"`

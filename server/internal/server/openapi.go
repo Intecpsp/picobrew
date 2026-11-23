@@ -67,9 +67,9 @@ var endpoints = []endpoint{
 	{"POST", "/firmware/updates", "Refresh firmware version metadata now", nil},
 	{"POST", "/firmware/releases/{packageID}/stage", "Download and verify a selected release or reuse its cached archive", nil},
 	{"GET", "/firmware/settings", "Read the saved GitHub firmware source", nil},
-	{"PUT", "/firmware/settings", "Save the public GitHub repository and optional revision", map[string]any{"repository": "jeffreydwalter/picobrew-pico-pro-firmware", "ref": ""}},
+	{"PUT", "/firmware/settings", "Save the public GitHub repository and optional revision", map[string]any{"repository": "jeffreydwalter/picobrew", "ref": ""}},
 	{"GET", "/firmware/github", "Inspect available firmware packages at one resolved GitHub commit", nil},
-	{"POST", "/firmware/github/import", "Fetch and validate a model package from a pinned GitHub commit", map[string]any{"repository": "jeffreydwalter/picobrew-pico-pro-firmware", "commit": "2bab80ef8f88daf0c450fa1b6c4684a8c2d08669", "model": "pico-s"}},
+	{"POST", "/firmware/github/import", "Fetch and validate a model package from a pinned GitHub commit", map[string]any{"repository": "jeffreydwalter/picobrew", "commit": "2bab80ef8f88daf0c450fa1b6c4684a8c2d08669", "model": "pico-s"}},
 	{"GET", "/firmware/packages", "List validated firmware packages saved in the Hub", nil},
 	{"POST", "/firmware/packages", "Upload and validate a complete firmware ZIP", nil},
 	{"GET", "/firmware/packages/{packageID}", "Read saved package metadata and acquisition provenance", nil},
@@ -324,7 +324,7 @@ func addFirmwareSchemas(values schemaMap) {
 	model := schemaMap{"type": "string", "enum": []string{"pico-s", "pico-pro", "pico-c"}}
 	displayVariant := schemaMap{"type": "string", "enum": []string{"ssd1325", "ssd1309"}, "description": "Required for C firmware. A compiled display identity is not physical hardware detection."}
 	sourceProperties := schemaMap{
-		"repository": schemaMap{"type": "string", "maxLength": 300, "description": "Public GitHub owner/repository; an exact GitHub repository HTTPS URL is also accepted on save. Defaults to jeffreydwalter/picobrew-pico-pro-firmware."},
+		"repository": schemaMap{"type": "string", "maxLength": 300, "description": "Public GitHub owner/repository; an exact GitHub repository HTTPS URL is also accepted on save. Defaults to jeffreydwalter/picobrew."},
 		"ref":        schemaMap{"type": "string", "maxLength": 200, "default": "", "description": "Branch, tag, or commit; empty uses the repository's default branch."},
 	}
 	values["FirmwareSettings"] = schemaObject(sourceProperties, "repository", "ref")
@@ -412,9 +412,10 @@ func operationParameters(e endpoint) []any {
 		query("challenge", "A random 16-byte challenge encoded as 32 hexadecimal characters.", schemaMap{"type": "string", "pattern": "^[0-9a-fA-F]{32}$"})
 		params[len(params)-1].(schemaMap)["required"] = true
 	case "/catalog":
-		for _, name := range []string{"q", "source", "kind", "model", "style"} {
+		for _, name := range []string{"q", "source", "model", "style"} {
 			query(name, "Catalog filter.", stringSchema())
 		}
+		query("kind", "Select a catalog collection. The reviewed collection includes author records with unresolved instructions.", schemaMap{"type": "string", "default": "all-brewers", "enum": []string{"all-brewers", "archive", "reviewed", "brew-ready", "brewing", "recipe", "native-program", "maintenance"}})
 		query("offset", "Zero-based result offset.", schemaMap{"type": "integer", "minimum": 0, "default": 0})
 		query("limit", "Results per page.", schemaMap{"type": "integer", "minimum": 1, "maximum": 100, "default": 24})
 	case "/catalog/references":

@@ -1,0 +1,2332 @@
+{
+  "public-00d4e885fc5448ac9fb8166aebdc6422": {
+    "source_sha256": "8e5b0ed90eae62225daf96dd2904fe29b9647cb350a6ca7d160903ccd7932385",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 15 min."
+  },
+  "public-0255db68e6244a11ab6ce9e0979be3df": {
+    "source_sha256": "f24423252969dc15df0b5f5df3d918cb0b5ff47e47aa4a7ae0a7ecdc5aebdb02",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 155°F for 60 min, 170°F for 30 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min."
+  },
+  "public-0634f86113ac4989b750957f0c6a049f": {
+    "source_sha256": "820474f332107468baa7b307624bf28210eb3d3f264cd814fb45813e7af545e2",
+    "blocker": "The additional spice doses and individual cage assignments are unspecified. The two archived Citra entries at three minutes do not resolve them.",
+    "evidence": "The author calls for star anise, clove, juniper and cedar in the cages, and makes 1.5 oz of Citra dry hops optional."
+  },
+  "public-064a7889efc74c37bae94afbd4941793": {
+    "source_sha256": "29641938159353a770169f94e233b71f115198f4bd7af3cc55dd1f0c7a933129",
+    "ingredient_edits": [
+      {
+        "name": "Other (See Notes)",
+        "use": "boil",
+        "set": {
+          "name": "Peppermint"
+        }
+      },
+      {
+        "name": "Other (See Notes)",
+        "use": "fermentation",
+        "set": {
+          "name": "Peppermint extract"
+        }
+      },
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "amount": 0.1133980925,
+          "use": "priming"
+        }
+      }
+    ],
+    "fermentation": [
+      {
+        "name": "Primary",
+        "target_c": 20.555555555555557,
+        "days": 21
+      }
+    ],
+    "blocker": "The timed peppermint and Irish moss are measured in teaspoons. The cage weights needed for automatic scaling are unknown.",
+    "evidence": "Use peppermint with two minutes left, peppermint extract after the first week of primary, and reserve four ounces of corn sugar for priming. Primary is 21 days at 69°F followed by 14 days of carbonation and aging."
+  },
+  "public-0dc4f5418fad45fe915e6a8fcd7cb00c": {
+    "source_sha256": "1d0e36cd2a918e6573c0045452ce4126889785331ec5d57e33a7b611d6e2c473",
+    "edits": [
+      {
+        "path": "/Hops/0/Amount",
+        "from": 0.5,
+        "to": 0.75
+      },
+      {
+        "path": "/Hops/6",
+        "from": {
+          "Location": 4,
+          "Amount": 0.25,
+          "IBU": 0.9318287,
+          "Time": 2.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "HopID": 10,
+          "Name": "Centennial",
+          "Alpha": 8.6
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/5",
+        "from": {
+          "Location": 4,
+          "Amount": 0.5,
+          "IBU": 1.58194172,
+          "Time": 2.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "HopID": 9,
+          "Name": "Cascade",
+          "Alpha": 7.3
+        },
+        "remove": true
+      }
+    ],
+    "additions": [
+      {
+        "name": "Cascade",
+        "kind": "hop",
+        "amount": 7.08738078125,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Centennial",
+        "kind": "hop",
+        "amount": 7.08738078125,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Cascade",
+        "kind": "hop",
+        "amount": 7.08738078125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Centennial",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Grapefruit zest (fruit equivalents)",
+        "kind": "misc",
+        "amount": 3,
+        "unit": "count",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The author leaves whirlpool duration and chilling to the brewer. The saved boil and original stage times also disagree.",
+    "evidence": "The author assigns Warrior to cage 1, Cascade and Amarillo to cage 2, Centennial and Amarillo to cage 3, and Cascade and Centennial to the whirlpool in cage 4. Add zest with the dry hops and juice to taste."
+  },
+  "public-141cd183917a43ce95e75ff5cdbec8c8": {
+    "source_sha256": "ec60af8fe1dc30972d9396acc2ab83b76e8692481a7bdfff91c586591e2ecdaf",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 1 min. After chilling, the author takes a gravity reading and oxygenates the wort for five minutes before pitching."
+  },
+  "public-14a02ce90d1f49b7b5a75b1713344825": {
+    "source_sha256": "178ac5a276cfedc06cf26b2d67cdc0e68e679f2db4f883694b200a159e024284",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 120°F for 30 min, 154°F for 75 min. The recipe form lists 152°F for 90 min."
+  },
+  "public-165d88fa581b45e6b0cdab08a00413bb": {
+    "source_sha256": "eaf8955559d70b957e9fa0eb03b05f0e2bd3a76ae3c0a576f8afb4f7d1b552fa",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "Waimea",
+        "use": "dry-hop",
+        "set": {
+          "amount": 7.5126236281250005,
+          "minutes": 0
+        }
+      },
+      {
+        "name": "Motueka",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15.025247256250001,
+          "minutes": 0
+        }
+      },
+      {
+        "name": "Wai-iti",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15.025247256250001,
+          "minutes": 0
+        }
+      },
+      {
+        "name": "Riwaka",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15.025247256250001,
+          "minutes": 0
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Waimea",
+        "kind": "hop",
+        "amount": 7.5126236281250005,
+        "unit": "g",
+        "use": "packaging",
+        "minutes": 0,
+        "alpha": 15.0
+      },
+      {
+        "name": "Motueka",
+        "kind": "hop",
+        "amount": 15.025247256250001,
+        "unit": "g",
+        "use": "packaging",
+        "minutes": 0,
+        "alpha": 7.0
+      },
+      {
+        "name": "Wai-iti",
+        "kind": "hop",
+        "amount": 15.025247256250001,
+        "unit": "g",
+        "use": "packaging",
+        "minutes": 0,
+        "alpha": 3.0
+      },
+      {
+        "name": "Riwaka",
+        "kind": "hop",
+        "amount": 15.025247256250001,
+        "unit": "g",
+        "use": "packaging",
+        "minutes": 0,
+        "alpha": 6.0
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 170°F for 5 min, then cage 3 at 170°F for 1 min, then cage 4 at 170°F for 34 min. The author specifies distilled water and two equal dry-hop charges, one at high kräusen and one in the serving keg."
+  },
+  "public-1741169bcb154883a906f26bcec648a2": {
+    "source_sha256": "727607bb11806c3602f3423b9ae3a52f485bfa4e9d1770fa21be00e201a6eb80",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Dried cranberries",
+        "kind": "misc",
+        "amount": 141.747615625,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 10
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 1 at 175°F for 10 min. The author places five ounces of dried cranberries with the mulling spices for ten minutes. The amount for the spices has no explicit unit."
+  },
+  "public-1866d9417dfe4474aa1db6a5f919e772": {
+    "source_sha256": "c52d2de6644323e7a17c7251d060534d29906e9bcc75bf537b030198618dbd8d",
+    "slot_additions": [
+      "Cacao Nibs"
+    ],
+    "evidence": "The ingredient record explicitly specifies 0.53 g of cacao nibs at 11 minutes. Cage 3 receives its first flow at 11 minutes alongside the Galena and Cascade."
+  },
+  "public-18ca88411d574fec9e971a76ec5d3622": {
+    "source_sha256": "67a870da3e53b71527678eea0f47ef3bc7823deb69bae2aa82fb96b125665886",
+    "blocker": "The separate steep has no stated time or temperature. It cannot be substituted with a mash rest.",
+    "ingredient_edits": [
+      {
+        "name": "American Chocolate",
+        "use": "mash",
+        "set": {
+          "use": "steep"
+        }
+      },
+      {
+        "name": "American Victory",
+        "use": "mash",
+        "set": {
+          "use": "steep"
+        }
+      },
+      {
+        "name": "American Roasted Barley",
+        "use": "mash",
+        "set": {
+          "use": "steep"
+        }
+      }
+    ],
+    "evidence": "Steep the three specialty malts separately before mashing the oats with the extract. Condition with three split Madagascar vanilla beans. The earlier recovery already includes those beans."
+  },
+  "public-193eb1dae0904681bf2d57a4748c174d": {
+    "source_sha256": "c9d46a4485a808bdeeee27ca17182b8cb8524f6dedf0df474e5b0534f5d804d0",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 174°F for 20 min."
+  },
+  "public-1aa8be761bf84f748fb6b758afdf67aa": {
+    "source_sha256": "32e7d112aa5c9d80e9c5fc3da0174f7d741bad054e7affeae68544142805db4c",
+    "steps": [
+      {
+        "name": "Mash",
+        "kind": "mash",
+        "minutes": 60,
+        "target_c": 68.88888888888889,
+        "location": 0,
+        "drain_minutes": 0
+      },
+      {
+        "name": "Boil",
+        "kind": "boil",
+        "minutes": 60,
+        "target_c": 97.22222222222223,
+        "location": 0,
+        "drain_minutes": 0
+      }
+    ],
+    "additions": [
+      {
+        "name": "Cherry juice",
+        "kind": "misc",
+        "amount": 3785.411784,
+        "unit": "mL",
+        "use": "secondary",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The author also specifies a separate sparge and lauter to collect 4.5 US gallons. The machine program does not represent that operation.",
+    "evidence": "The author specifies a one-hour mash at 156°F and a one-hour boil. Rack four US gallons of finished beer onto one gallon of cherry juice for secondary fermentation. Oak chips are optional. The stated cold-side plan is 65°F through primary and one week of secondary on cherry juice, followed by four to six weeks near freezing. Use the original optional oak only during the last week."
+  },
+  "public-1af60eddd81e4784aba8e8ce16524d12": {
+    "source_sha256": "3be7e967570d75e0606ea82ce032004de551c5004e4172c23c895b42a6790fd8",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "edits": [
+      {
+        "path": "/MashSteps/0/Time",
+        "from": 90.0,
+        "to": 60
+      },
+      {
+        "path": "/FermentationSteps/0/Temp",
+        "from": 73.0,
+        "to": 68
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Columbus",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      },
+      {
+        "name": "Centennial",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      },
+      {
+        "name": "Simcoe",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 15 min. The author specifies a 60-minute mash at 150–152°F, even though the saved native infusion is 90 minutes. Ferment at 68°F. Start the five-day dry hop two weeks after primary activity slows."
+  },
+  "public-1f62c37aa94c4d18a93db65745818fc2": {
+    "source_sha256": "805a0652c3dc7ca2467efcce675ff2a43e5fa9c9f610ac26099a0cfddae4175e",
+    "ingredient_edits": [
+      {
+        "name": "Simcoe",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 45
+        },
+        "minutes": 1
+      },
+      {
+        "name": "Warrior",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 45
+        },
+        "minutes": 1
+      },
+      {
+        "name": "Amarillo",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 45
+        },
+        "minutes": 1
+      },
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "use": "boil"
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Fermentis S-04",
+        "kind": "yeast",
+        "amount": 2,
+        "unit": "count",
+        "use": "primary",
+        "minutes": 0
+      },
+      {
+        "name": "White Labs WLP099",
+        "kind": "yeast",
+        "amount": 2,
+        "unit": "count",
+        "use": "fermentation",
+        "minutes": 0
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "blocker": "An operator must exchange cages, connect the chiller and feed sugar manually. Six 8 oz fermentation feeds total 3 lb, while the author also gives a 4 lb total.",
+    "evidence": "Reserve the second pair of loaded cages for the 185°F, 45-minute whirlpool, hydrate and feed the boil sugar separately, then pitch S-04 followed by WLP099. The notes also specify two dry-hop rounds and name a four-pound total fermentation feed."
+  },
+  "public-1f7a26056fd2405c9e0973eaee055e7e": {
+    "source_sha256": "52332cc0e310cebf58eeea87accebe912350ee1319be307173ce57353d787390",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Irish Moss in cage 2 at 10 min. The original boil visits cage 1 at 60 min."
+  },
+  "public-20e8c7b28c33450096add48c5acf609c": {
+    "source_sha256": "5f4ab0ea22df0ff53b018700590d164d8e21dabcd3ce43544e034869e96593c3",
+    "edits": [
+      {
+        "path": "/Adjuncts/0",
+        "from": {
+          "Location": 2,
+          "Amount": 1.0,
+          "Time": 60,
+          "Units": null,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "AdjunctID": 29,
+          "Name": "Sweet Orange Peel",
+          "Use": "Spice",
+          "AdjunctType": "Spice"
+        },
+        "remove": true
+      }
+    ],
+    "blocker": "The author requires a manual keg addition at boil start.",
+    "evidence": "Use the peel from one fresh orange, remove its pith, and put it directly in the keg when the boil begins. The earlier author review supplies the counted peel."
+  },
+  "public-28c289d575e348fd9dae06ad0cec70ab": {
+    "source_sha256": "e1d83c07af41fea7f8daeeceb2a7ae0624fb93c4a9445d251ad7b91922d74630",
+    "additions": [
+      {
+        "name": "Goldings",
+        "kind": "hop",
+        "amount": 4,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The intended boil temperature is unconfirmed. 97°F cannot be treated as 97°C.",
+    "evidence": "The author specifies 4 g of Goldings for dry hopping. All three original boil stages and the recipe header say 97°F."
+  },
+  "public-294b8ed52b9542019652446f54b2a684": {
+    "source_sha256": "050889d6d237d63692f3bea62f082769125db83fe2ba8ff4763f6211efbf5500",
+    "edits": [
+      {
+        "path": "/BoilTime",
+        "from": 0,
+        "to": 60
+      }
+    ],
+    "additions": [
+      {
+        "name": "Columbus",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 5
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 5
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 5
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 6.236895087500001,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 5.669904625000001,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 5760
+      },
+      {
+        "name": "HopShot",
+        "kind": "misc",
+        "amount": 1,
+        "unit": "mL",
+        "use": "boil",
+        "minutes": 60
+      }
+    ],
+    "blocker": "The two manual post-boil charges and HopShot addition have no equivalent in the saved machine sequence.",
+    "evidence": "The native boil totals 60 minutes. The author gives 10- and 5-minute loads, separate additions at flameout and 30 minutes later, and two successive four-day dry hops. The 1 mL HopShot goes directly in the keg at boil start."
+  },
+  "public-2b6bfc44fe584a4694de45718fbc9316": {
+    "source_sha256": "786bb0bfc7af81ceb1cfd185b04221363fc1391884d3f3d20d42eeb157d44dea",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Irish Moss in cage 4 at 5 min. The original boil visits cage 1 at 45 min, cage 2 at 30 min, cage 3 at 10 min."
+  },
+  "public-2f9294f6443745e4b03b2a6c7d7f4b7e": {
+    "source_sha256": "1473cd25a1fa7d072f4d6b73792e6bf49c30944e482fdd3d8a58b04778629693",
+    "blocker": "The original whole-minute program cannot represent a 30-second timed addition. Rounding would change hop contact.",
+    "evidence": "The source specifies a half-minute final hop addition. The corresponding timed native cage segment is zero minutes."
+  },
+  "public-31887bc472794ef89425df654425bb4a": {
+    "source_sha256": "8145cc6ae4ce12f696a01e26102d1cbc8f66fbffe19b1d6f275fda3a145f5573",
+    "blocker": "The two adjunct records omit units, and the intermediate drain interrupts contact during the boil.",
+    "evidence": "Coriander and the two hop varieties are loaded at 60 minutes. Orange zest is assigned at 10 minutes. The native boil changes from 203 to 207°F after an eight-minute drain."
+  },
+  "public-3368e5dea8004327b1d2c8de61bac265": {
+    "source_sha256": "c15cfa91c00352f760a44d6fc2cc4614d449eea07dbd2695ad8552f04feb05b2",
+    "blocker": "This is a reach-temperature-only process. A timed boil cannot be recovered from the source.",
+    "evidence": "The saved program holds the grain mash, reaches 207°F and then goes straight to the chiller. The declared boil is zero minutes."
+  },
+  "public-33ededa2c6634281bd1ab01a0ce60883": {
+    "source_sha256": "36b272dd11082522b3e61e1dbeb5aa40f1c215ba5381d28b5d006c359573ec4b",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Lactic acid",
+        "kind": "misc",
+        "amount": 1.5,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "FermCap (drops)",
+        "kind": "misc",
+        "amount": 5,
+        "unit": "count",
+        "use": "pre-boil",
+        "minutes": 0
+      },
+      {
+        "name": "Yeast nutrient",
+        "kind": "misc",
+        "amount": 0.98578431875,
+        "unit": "mL",
+        "use": "boil",
+        "minutes": 15
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Mosaic",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 2880
+        }
+      },
+      {
+        "name": "Sabro HBC 438",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 2880
+        }
+      },
+      {
+        "name": "Centennial",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 2880
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 15 min, then cage 3 at 175°F for 15 min, then cage 4 at 175°F for 15 min. Use the stated mash salts and acid, five drops of antifoam before boiling, and yeast nutrient with 15 minutes left. Dry hop for two days during fermentation. Ferment at 66°F for the first three days and allow a rise to 70°F, as in the structured fermentation plan."
+  },
+  "public-37e83f6f48444446a13d9d3bdef457b9": {
+    "source_sha256": "c30350497db06556d9baa0f349a19201f8b567e321accf59698b16379196856c",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "edits": [
+      {
+        "path": "/Hops/0/Amount",
+        "from": 0.4,
+        "to": 0.5
+      },
+      {
+        "path": "/Hops/1/Amount",
+        "from": 0.4,
+        "to": 0.5
+      },
+      {
+        "path": "/WhirlpoolHops/0/Amount",
+        "from": 0.15,
+        "to": 0.18749999999999997
+      },
+      {
+        "path": "/WhirlpoolHops/1/Amount",
+        "from": 0.15,
+        "to": 0.18749999999999997
+      },
+      {
+        "path": "/WhirlpoolHops/2/Amount",
+        "from": 0.33,
+        "to": 0.4125
+      },
+      {
+        "path": "/WhirlpoolHops/3/Amount",
+        "from": 0.33,
+        "to": 0.4125
+      },
+      {
+        "path": "/WhirlpoolHops/4/Amount",
+        "from": 0.45,
+        "to": 0.5625
+      },
+      {
+        "path": "/WhirlpoolHops/5/Amount",
+        "from": 0.45,
+        "to": 0.5625
+      },
+      {
+        "path": "/DryHops/0/Amount",
+        "from": 0.8,
+        "to": 1.0
+      },
+      {
+        "path": "/DryHops/1/Amount",
+        "from": 0.8,
+        "to": 1.0
+      },
+      {
+        "path": "/DryHops/2/Amount",
+        "from": 0.8,
+        "to": 1.0
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Mosaic",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Amarillo",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "boil",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 60.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "boil",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 60.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 40.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 40.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 30.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 30.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 20.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 20.0
+      }
+    ],
+    "additions": [
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 14.2,
+        "form": "Whole cone"
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 10.5,
+        "form": "Whole cone"
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 7.0,
+        "form": "Whole cone"
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 10 min, then cage 3 at 175°F for 10 min, then cage 4 at 175°F for 20 min. Use whole-cone hops. The author directs division of each listed hop weight by 0.8. Split dry hops into two equal charges on days 4 and 8."
+  },
+  "public-3a3c57db59cf400ea88c37887746786c": {
+    "source_sha256": "051d3c198d20766fbbbe6c64ba43fa97185a6c9fd630bff0f3e01536f3409e70",
+    "additions": [
+      {
+        "name": "Cocoa powder",
+        "kind": "misc",
+        "amount": 56.69904625,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The source leaves the total flaked oats and the extra protein rest unresolved.",
+    "evidence": "The author puts two ounces of cocoa powder in the mash. Two identical half-pound oat entries are flagged, and only the native mash has the extra 20 minutes at 125°F."
+  },
+  "public-3adef2acff2e4209bce92c30f71e80e4": {
+    "source_sha256": "0c3d6636a56e8e631bdad916adc3c74a4a1decd9ae869299726ed6e49103bdcd",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 20 min."
+  },
+  "public-3cd96d347d104c3c818c0bbad277e479": {
+    "source_sha256": "1c652a2438b256f5859c55bd0eb869387f66fa74b1309a5046f866a997a3f59e",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "source_yeast": "Imperial Juice",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 5 min. Pitch Imperial Juice, the yeast explicitly named by the author."
+  },
+  "public-3dc8168b2e8a4145b90aa7c611bd5d1e": {
+    "source_sha256": "cc71ea7b9c637f9f8bdfecd15df6d368f8c2b5649e4d6d5599b82aacad832a15",
+    "blocker": "The original author calls the batch scale uncertain. No corrected yield is given.",
+    "evidence": "The author questions the scaling, and the stored yield is 4.2 US gallons. The preserved boil has four cage visits at 30, 15, 10 and 5 minutes."
+  },
+  "public-3f7d55adf84343e3ae765ac47fc168b3": {
+    "source_sha256": "c0c5d8e50757311fa66ea1ae33b3bc55fb96b4b9bb8039163a20bb6f34c88ac4",
+    "ingredient_edits": [
+      {
+        "name": "Hallertau",
+        "use": "boil",
+        "set": {
+          "use": "mash",
+          "minutes": 0
+        }
+      }
+    ],
+    "blocker": "The 19-minute stage is recorded at 180°F in both records. The author gives no conventional boil target. The Hub cannot run it as a timed boil.",
+    "evidence": "Put 0.65 oz of Hallertauer with the mash grain. The author explicitly corrects the archived boil placement and calls for WLP645 after souring. The author specifies at least 90°F for souring, while the archived first stage is limited to 85°F. Pitch WLP645 when sufficiently sour, around days four to five."
+  },
+  "public-402298151b874c8a8cd0b1981d5c17ac": {
+    "source_sha256": "b8f5646df4065bd73a639eebc368cbc5387adfdff7726e95bac0cced06d8e9a2",
+    "additions": [
+      {
+        "name": "Light dry malt extract (starter)",
+        "kind": "fermentable",
+        "amount": 0.053,
+        "unit": "kg",
+        "use": "starter",
+        "minutes": 0
+      },
+      {
+        "name": "Starter water",
+        "kind": "water",
+        "amount": 0.5,
+        "unit": "L",
+        "use": "starter",
+        "minutes": 0
+      }
+    ],
+    "blocker": "Keep the starter separate from the mash. The mass of the timed Whirlfloc load cannot be confirmed.",
+    "evidence": "Prepare a separate 0.5 L starter with 53 g of light DME. Use the four dry-hop rounds in the author’s sequence. The fining line in the boil has no independently recorded unit."
+  },
+  "public-47cffe7de6584540b81700c935b38428": {
+    "source_sha256": "35ac0e7f6fe1f7b9e2ca7d93d50cc4f514cff806a2273963e4d6a4a7e6b9c823",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 1 at 30 min. The native valve schedule confirms the visit."
+  },
+  "public-4b2c99c18f4543daaaff2cfd0d08d806": {
+    "source_sha256": "79178dadc649b5c0127c07a00c10f628531658ae154185dffb6a7d712734ec14",
+    "blocker": "The archived function is water heating and does not describe a beer.",
+    "evidence": "This is a water-temperature utility. The native program steps the bypass from 75 to 102°F and pauses."
+  },
+  "public-4c7b81d408f04525930f98a9ab978b4b": {
+    "source_sha256": "3491a57e94e521b680bf72ba771e6ad333492f2235f923a37c74110131208399",
+    "blocker": "This record makes starter wort. The source does not supply a complete beer schedule.",
+    "evidence": "The starter-wort program has a 90-minute mash at 150°F, a ramp to 207°F and a chiller connection. It has no timed boil."
+  },
+  "public-5404deb3b91a471c93b437bbc560b89d": {
+    "source_sha256": "1215a1f6690e311055b96ec8c53cc04039b29eeedf2d0a6b904711b8dfed6869",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 102°F for 20 min, 152°F for 30 min, 154°F for 75 min, 175°F for 10 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. Dry hopping is an optional choice of 1–1.5 oz total from the recipe varieties. There is no mandatory blend."
+  },
+  "public-5c441d8d8d504c9281aced42daa176bf": {
+    "source_sha256": "4b3182acb5558e8dae91cea010e1bf119b8b16d53e6bc92106918729e3398ece",
+    "edits": [
+      {
+        "path": "/Hops/0",
+        "from": {
+          "Location": 2,
+          "Amount": 0.35,
+          "IBU": 4.87466526,
+          "Time": 60.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "HopID": 25,
+          "Name": "Hallertau",
+          "Alpha": 3.1
+        },
+        "remove": true
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Hull Melon",
+        "use": "boil",
+        "set": {
+          "amount": 28
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Hull Melon",
+        "kind": "hop",
+        "amount": 14,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "evidence": "The native 60-minute boil gives 40 minutes to the first cage and the last 20 minutes to the second. After the author removes Hallertau, the initial 40 minutes have no hop charge. The Chinese author note specifies only Hüll Melon: 28 g at 20 minutes and 14 g dry. This supersedes the separate Hallertau boil row. The old size error is handled by batch adaptation."
+  },
+  "public-5d71c3241d004506b7981fbd6e2b9400": {
+    "source_sha256": "e1abbaad097c0cf5480d07be935db8b7d42bf16c5f74dcece0f10e14a53fe5b6",
+    "blocker": "There is no independent amount in the author notes to distinguish two equal charges from one entry entered twice.",
+    "evidence": "The original lists two Cascade charges, 0.5 and 0.5 oz, in the same cage with 5 minutes left. Its own error flags the repeated ingredient."
+  },
+  "public-5ed4394ab8a846ddad044c912751fd6d": {
+    "source_sha256": "9d45e4797fd92eff5926941b2109ea9d525a4b81635a2d7a74ee84ae9cdf039e",
+    "ingredient_edits": [
+      {
+        "name": "Other (See Notes)",
+        "use": "boil",
+        "set": {
+          "amount": 10.631071171875
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 10.631071171875,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 15
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 56.69904625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The remaining 0.375 oz boil hop and the remainder of that variety for dry hopping are unidentified.",
+    "evidence": "The author identifies half the unknown boil addition as Mosaic and gives four dry-hop weights. The other variety remains unnamed."
+  },
+  "public-66407b7ed5344500a44a08e3333e2aa2": {
+    "source_sha256": "79b4602b25fe41ed9391adbbc5d54e09fd5b10349b5f3987ba60130fd5722486",
+    "ingredient_edits": [
+      {
+        "name": "Cinnamon",
+        "use": "boil",
+        "set": {
+          "name": "Cinnamon stick piece",
+          "unit": "count",
+          "amount": 1,
+          "minutes": 5
+        }
+      },
+      {
+        "name": "Ginger Root",
+        "use": "boil",
+        "set": {
+          "name": "Ginger piece (about 1 cm)",
+          "unit": "count",
+          "amount": 1,
+          "minutes": 5
+        }
+      }
+    ],
+    "blocker": "The third spice is described ambiguously. A mass and cage placement for the counted pieces cannot be verified.",
+    "evidence": "The author calls for one piece each of cinnamon and ginger, plus a pinch of another spice, with five minutes left. The original 15-minute gram rows are superseded. When bottle conditioning with brown sugar, the author gives 6 g per liter of beer."
+  },
+  "public-665a92cc10a84bdfab702b2586ab5359": {
+    "source_sha256": "1eaee91242a3c40b58b3fa3db5bb8cd44c1497c9103f9f79fc6dfbb332457f5b",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 30 min."
+  },
+  "public-66f8d49d68f348e997d8ff0da66758f5": {
+    "source_sha256": "ebb472fdf2d8da6e5cb384c299b5b8281476ed32a5ad7f4ad9b9d578abe25b18",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "amount": 0.45359237,
+          "use": "boil",
+          "minutes": 30
+        }
+      },
+      {
+        "name": "Centennial",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 0
+        },
+        "minutes": 1
+      },
+      {
+        "name": "Cascade",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 0
+        },
+        "minutes": 1
+      }
+    ],
+    "blocker": "The author does not distinguish a total dry-hop weight from five individual doses. The manual sugar and knockout additions also require a separate procedure.",
+    "evidence": "Dissolve one pound of dextrose and add it to the keg with 30 minutes left. Centennial and Cascade go in at knockout. The dry-hop line lists ¾ oz followed by Simcoe, Centennial, Bravo, Amarillo and Citra, without assigning the amount to each hop."
+  },
+  "public-6701decda7e64d248d9bcdf1d8dc6fc0": {
+    "source_sha256": "04d36730ea555b06465dfbac67fc00ce00b67051dfdb05170af7e686625427ef",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 185°F for 10 min."
+  },
+  "public-676a62af977c4efbb6fce3dcdb953e69": {
+    "source_sha256": "4302f55d9203b5dc07ae538a0e04e47d77cc8a932e3a068203923b67c84c8e12",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Campden tablet",
+        "kind": "misc",
+        "amount": 1,
+        "unit": "count",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 3 at 165°F for 5 min, then cage 4 at 165°F for 30 min. The author adds one Campden tablet to the mash and specifies ten days each in primary and secondary. The first stage is 71°F for ten days. The author asks for ten more days in secondary and does not state a separate secondary temperature."
+  },
+  "public-69ffe3c01de343dd8698c6ed15574efa": {
+    "source_sha256": "b8b8fdf6b32930853a7eaa8fc23e57e257dfdf4705a4e91686f6379c60370adb",
+    "blocker": "The source flags the repeated hop. The two masses differ, but neither the notes nor the timed valve visit establishes whether both were intended in the same cage.",
+    "evidence": "The original lists two Amarillo charges, 0.446114 and 0.892229 oz, in the same cage with 30 minutes left. Its own error flags the repeated ingredient."
+  },
+  "public-7316b6235fad4f909c34fa858bdecbed": {
+    "source_sha256": "55f00051cf10902057ddb92f472477f52550343c50a9ebf9c7faa5286cf59ac9",
+    "evidence": "The author specifies 4 kg of malt, Perle in cage 1 and Saphir in cage 2. The three measured malt amounts total 4.00 kg to the shown precision, and native first flow matches the hop order."
+  },
+  "public-7462ae29eff04c6c97052fd87c21d7b7": {
+    "source_sha256": "516871c38e8b2638f75521b4e1362f76ca93ae525cc999a6b3718d53e7ea2471",
+    "blocker": "Neither the selected mash-hop weight nor the additional native dough-in rest is confirmed.",
+    "evidence": "The author describes an optional mash addition of up to two ounces of Cascade and an optional dry hop over five to seven days."
+  },
+  "public-75b67a1165a74f9abb58aad407012234": {
+    "source_sha256": "6098f9f5cfa362a189cbc6d503c4a923c21d29a2811c6c17f8134d2b3f6c9929",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 174°F for 5 min."
+  },
+  "public-771d2fbf1da94c8592af2b901972dbe8": {
+    "source_sha256": "22f6255746ee575941cf0718d3ae3dcd2f8751dca6bb76ec8accc35fe1bcdbc9",
+    "blocker": "This is the first half of a two-program mash. The second program is not part of this record.",
+    "evidence": "The author describes the pre-brew half of Malted Bliss: no mash-out or boil, then chill to 102°F before the following brew."
+  },
+  "public-77b224b1e37a478ba4e2f0a72737bd9b": {
+    "source_sha256": "c523a35d0fd59a02603aae04f5aa71a4c7728cf95bf38ded4a8a22a4a2d44056",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 170°F for 20 min."
+  },
+  "public-78801bc7ce6a455f9dd5f14dfa220634": {
+    "source_sha256": "945ff0de4241c7b912844ab70096d5136496d2dd59de51418bfb7b73d0ac07fb",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 10 min."
+  },
+  "public-823b71d5482840c18854cab4635568a9": {
+    "source_sha256": "462556ebd4c4164b3ceb7f3629418fe0ee93cd1b5ca502a1a9ac8b75589f9f92",
+    "additions": [
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Cascade",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The author gives a per-hop upper limit for the three dry hops, but the one-ounce working dose could refer to the blend or to each variety.",
+    "evidence": "Place 1 oz Amarillo and ½ oz Cascade in the grain basket. For dry hopping the author writes 1 oz of Columbus, Centennial and Chinook, then offers up to 1.5 oz each for 5–7 days. The original Spock the Melder gives an upper bound per variety as well."
+  },
+  "public-82ac9762a9954f7196fb6799cd5215a0": {
+    "source_sha256": "03dc90fc7c17bbedf26a4ab33199bbe99a224e3f0f445cc9631f963c54ffa9f9",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 182°F for 1 min, then cage 3 at 182°F for 20 min."
+  },
+  "public-82e4ef0aa6954af5848a861c062b280b": {
+    "source_sha256": "2f3b9227904ee907a30fc398c61e423165afc9c6114e9f0daca97ffac83463bb",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 5 min. Pitch at 67°F, ferment 7–10 days and dry hop for 5–7 days according to the author."
+  },
+  "public-8331a7959e084cc8a755b829a77e1848": {
+    "source_sha256": "cbc6f511fb662c26de8023ad859f8b1bc8e4ecb534908154ac537f5eccde5d9f",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 1 min, then cage 3 at 175°F for 19 min."
+  },
+  "public-834af9e5c5644d4ba6efb256e4e1e150": {
+    "source_sha256": "a804ff8b26bf4d67e566e0bb36c158c7596f592726ba1e2b50dc8ed6f088e5c1",
+    "ingredient_edits": [
+      {
+        "name": "Hallertau",
+        "use": "boil",
+        "set": {
+          "use": "mash",
+          "minutes": 0
+        }
+      }
+    ],
+    "blocker": "The 19-minute stage is recorded at 180°F in both records. The author gives no conventional boil target. The Hub cannot run it as a timed boil.",
+    "fermentation": [
+      {
+        "name": "Souring",
+        "target_c": 37.77777777777778,
+        "days": 4
+      },
+      {
+        "name": "Brett fermentation",
+        "target_c": 21.11111111111111,
+        "days": 30
+      }
+    ],
+    "evidence": "Put 0.65 oz of Hallertauer with the mash grain. The author explicitly corrects the archived boil placement and calls for WLP645 after souring."
+  },
+  "public-839485208a0d4ec78ac7e96377960613": {
+    "source_sha256": "19f5c08c1c1042ba1d8da90fa85e38aae3b5e86d2f9cd71e65876574c2d349fe",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 2 at 15 min. The native valve schedule confirms the visit."
+  },
+  "public-8c76bb1960ba4e639e43e7fc3d9d2300": {
+    "source_sha256": "04b80b0057cf6c012ca99d72a6d8651372ad0fda8562ec38473fac14cea38b02",
+    "edits": [
+      {
+        "path": "/Adjuncts/0/Name",
+        "from": "Other (See Notes)",
+        "to": "Dark candi sugar"
+      }
+    ],
+    "slot_additions": [
+      "Dark candi sugar"
+    ],
+    "evidence": "The author identifies “Other” as dark candi sugar in the third cage. The source measures eight ounces and the original first wets cage 3 with five minutes left. The weight is included in that cage when scaling. Ferment for three weeks and bottle condition for five weeks, both recorded at 63°F."
+  },
+  "public-8da1a958f6c845b68e9bf96031aa93cc": {
+    "source_sha256": "0406061fcbeaf8154c8277b8bf4f7c74ea8dae3df43c528d4b56f5d82527be15",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Whirlfloc in cage 3 at 10 min. The original boil visits cage 1 at 60 min, cage 2 at 15 min."
+  },
+  "public-8ddef4aab5bf495da66b9b20b392ddf9": {
+    "source_sha256": "4a3c83f580d2f646c4ec66f533de1c960722c29514d63acf887f288a718c6728",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Grains of Paradise in cage 2 at 5 min. The original boil visits cage 1 at 60 min."
+  },
+  "public-8e9c9b32c7404f309158810d8e3dfccb": {
+    "source_sha256": "d7986e5b1e463cc2b7d3eb44a15754e3398210b7c5155a2eff33087f2d7717b5",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 10 min."
+  },
+  "public-8f423354f63f49fdba338b58fde39ef5": {
+    "source_sha256": "83809a9a555b22399d7910269c3f3607b8a868fcab851861dfbb4a0513c54ebc",
+    "blocker": "The original pauses for a cage swap between its 10- and 50-minute post-boil stages. Sending a single unattended cage sequence would change the brew.",
+    "evidence": "The original post-boil program uses cage 4 at 174°F for 10 min, then cage 1 at 175°F for 50 min."
+  },
+  "public-93a98b3c7b3f4adfa0118337acdbd768": {
+    "source_sha256": "925e540565762d45ca5924b96a5155303399b5591d23f4cbc88bb3be782e62c7",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Irish Moss in cage 3 at 15 min. The original boil visits cage 1 at 60 min, cage 2 at 30 min, cage 3 at 10 min, cage 4 at 5 min."
+  },
+  "public-9713c2a170d346beb7206475f766acca": {
+    "source_sha256": "7fe35ee4b8f2d48053debe78ad90757c649fd6db5f33c714b7c3e5eee6275762",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 185°F for 5 min, then cage 4 at 165°F for 20 min."
+  },
+  "public-98457ba682f44db28bb1748643f4920f": {
+    "source_sha256": "9f040150d4daf347e1d0e882af491c194e3b40af547cc2655fdb80f0d7ee94c7",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 152°F for 60 min. The recipe form lists 152°F for 90 min. The author specifies 5.3 mL lactic acid, 3.0 g calcium chloride and 1.5 g gypsum in the keg water. Those units are retained."
+  },
+  "public-988ff2d9a29a4040b464a3e401a3e9de": {
+    "source_sha256": "54ac58a6c0bbec619b27080b23e2466f19aa995f2af11c26c5fd3aa11e2facdb",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Irish Moss in cage 2 at 10 min. The original boil visits cage 1 at 45 min."
+  },
+  "public-98904fef31054176a1cab1373cc0d355": {
+    "source_sha256": "356eb8c206d6129ae8659c77882b4b79be385c80a2039b50a8f7ffa929429302",
+    "blocker": "The source flags the duplicated dark extract. It does not say whether both weights belong in the same bill.",
+    "evidence": "Dark DME appears twice, as 3.0 and 0.5 lb. The program visits the Nugget/Perle cage with 30 minutes left."
+  },
+  "public-9bc444236fb44dce9b62aed4f80f1e23": {
+    "source_sha256": "ee7ccac43f3721ce52f42cfc202d29404b2c37083047d52569455c0046512dd7",
+    "blocker": "The mass of the tablespoon of Whirlfloc is not recorded for validating cage capacity.",
+    "evidence": "The original visits cage 2 for 10 oz of grapefruit peel at 30 minutes and cage 3 for a tablespoon of Whirlfloc at five minutes. Take original gravity and oxygenate for five minutes before pitching."
+  },
+  "public-9c1f40a7c8844100b9ac039f39576742": {
+    "source_sha256": "6952171f44ba0f26581bc49d0e4c47272e17e4a2ce39c808ebc66f4b381065a3",
+    "blocker": "The additional spice doses and individual cage assignments are unspecified. The two archived Citra entries at three minutes do not resolve them.",
+    "evidence": "The author calls for star anise, clove, juniper and cedar in the cages, and makes 1.5 oz of Citra dry hops optional."
+  },
+  "public-9d963d3c59e5412fa404d3f3409dd6a5": {
+    "source_sha256": "7856a5c79437bfe243a5069dc60644631b058974c731af126e1d797047c82f2a",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Whirlfloc in cage 4 at 10 min. The original boil visits cage 1 at 60 min, cage 2 at 30 min, cage 3 at 15 min."
+  },
+  "public-9dc796b03fb348cab536bb7582338ff3": {
+    "source_sha256": "dfa2929d7710da0d0d52d2aa194a78a01f20413ecdf6b47cec3133d2362c7a6d",
+    "blocker": "The original whole-minute program cannot represent a 30-second timed addition. Rounding would change hop contact.",
+    "evidence": "The source specifies a half-minute final hop addition. The corresponding timed native cage segment is zero minutes."
+  },
+  "public-9e88477a24cd4348a0939d84ea24d204": {
+    "source_sha256": "24d087a163acbbec1139bc57477c0425973880421262309fc165b5febe48d7d9",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 1 at 175°F for 15 min."
+  },
+  "public-9fe7e5e06263437b92ff5cd7f796fcc9": {
+    "source_sha256": "6af204baaaaac80c28190076bcbe1c147519f73661734bd0659befcf22822144",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 104°F for 20 min, 140°F for 30 min, 148°F for 60 min, 165°F for 20 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. The author specifies Nelson Sauvin and Galaxy, 1.25 oz each, with two alternative cold-side contact schedules."
+  },
+  "public-a88a0b1894984356af439b5a9cfb01be": {
+    "source_sha256": "f09da655bc7b5c779e13ad20a2f6aa4f4ecd0e9a67bd5ba09a3db24fb26c80ea",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 5 min."
+  },
+  "public-aada2ef128de4884a41b65e731666e8a": {
+    "source_sha256": "48c5b5cca8831db2fe3eecba1af9dd7149aeed5e28178ec2f9c3b5d3be6775dc",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Lactic acid",
+        "kind": "misc",
+        "amount": 2.5,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 4320,
+        "alpha": 7.0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 21.26214234375,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 4320,
+        "alpha": 14.2
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 4320,
+        "alpha": 10.5
+      }
+    ],
+    "source_yeast": "White Labs WLP066 London Fog Ale",
+    "ingredient_edits": [
+      {
+        "name": "Amarillo",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.1747615625,
+          "minutes": 4320
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "set": {
+          "amount": 21.26214234375,
+          "minutes": 4320
+        }
+      },
+      {
+        "name": "Mosaic",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.1747615625,
+          "minutes": 4320
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 170°F for 15 min. Use the author’s WLP066 and 2.5 mL lactic acid in the mash. Split each variety into two dry-hop charges starting on days 3 and 7."
+  },
+  "public-ae0861021ea04a008025b0171220d14f": {
+    "source_sha256": "4b98844c2b43b52860beff7a775050e637ecd4577c984dd5a13973abb7771d6e",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "Cascade",
+        "use": "aroma",
+        "set": {
+          "form": "Cryo"
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Cryo"
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 170°F for 20 min. The author identifies both whirlpool hops, Citra and Cascade, as YCH Cryo."
+  },
+  "public-ae62001dc2134b88bdaad3d1c3053aa2": {
+    "source_sha256": "1254eadce5406f8d4c7c16af6ba8a20a19061bd08567edaf98d2bcae125cd7e1",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 15 min."
+  },
+  "public-b235219ca8f54d00bb78124688ea558b": {
+    "source_sha256": "44cde2b4e1cd84044b7663ce15db31e48b67641bfb1f75697520daa69aa46914",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "additions": [
+      {
+        "name": "Mash pH stabilizer",
+        "kind": "misc",
+        "amount": 9.8578431875,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Burton water salts",
+        "kind": "misc",
+        "amount": 14.78676478125,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 3 at 15 min. The native valve schedule confirms the visit. The author gives two teaspoons of pH stabilizer and three teaspoons of Burton salts in the mash."
+  },
+  "public-b5a59eb89a2f4046b55a4a5b8d89a0b7": {
+    "source_sha256": "0e88b622f16a94fee819945e3680287caaa32c74275df3376a0c112928aebd31",
+    "additions": [
+      {
+        "name": "Celery seed",
+        "kind": "misc",
+        "amount": 1.1339809250000001,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "White peppercorn",
+        "kind": "misc",
+        "amount": 2.2679618500000003,
+        "unit": "g",
+        "use": "boil",
+        "minutes": 10
+      },
+      {
+        "name": "Fresh lemon zest",
+        "kind": "misc",
+        "amount": 7.08738078125,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Fresh tarragon",
+        "kind": "misc",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The half-minute El Dorado contact and flameout additions cannot be reproduced by rounding to a whole minute.",
+    "evidence": "The author specifies celery seed and peppercorn at ten minutes and fresh lemon zest and tarragon at flameout."
+  },
+  "public-b6dc5f9b01a64e858bbeb0489b9f2344": {
+    "source_sha256": "1781beb1cb9ede17ee008206dcb1345cb0150baa0a46edfd982bcfb47d6551b1",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit."
+  },
+  "public-b7fcd1612c4f4b17b3bf4d1e1f38f2bb": {
+    "source_sha256": "8632ac1bb4b6f93203aabf8d38aa532e1e27216f01f575c6977a1bada8ab95f5",
+    "slot_additions": [
+      "Whirlfloc",
+      "Yeast Nutrient"
+    ],
+    "evidence": "Both 0.04 g doses are explicitly measured. The deposit of Whirlfloc and yeast nutrient shares cage 2 with the ten-minute hops and the original program confirms the timing."
+  },
+  "public-b7fdc86539c242bdb77693f5e53264d3": {
+    "source_sha256": "5d07bf5efc8a09f9f1f99ad24a417021fc4ddab1d879601db5288e1cc32eccc7",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "Rolled Oats",
+        "use": "mash",
+        "set": {
+          "name": "Oat malt",
+          "yield": 0,
+          "color": 0
+        }
+      },
+      {
+        "name": "Mosaic",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      },
+      {
+        "name": "Simcoe",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 7200
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 30 min. Use oat malt for the rolled-oat row. The original does not give analytical values for that substitution. The author specifies a five-day dry hop."
+  },
+  "public-b9b6ec58a37644869975dfa000cd9be3": {
+    "source_sha256": "0e865a956a92e45f86edeccaf65f1d45aa979350b9033da96d85089c6b973485",
+    "blocker": "There is no independent amount in the author notes to distinguish two equal charges from one entry entered twice.",
+    "evidence": "The original lists two Hallertau charges, 0.75 and 0.75 oz, in the same cage with 5 minutes left. Its own error flags the repeated ingredient."
+  },
+  "public-bae663da1511468f8353f082fa0b7bbc": {
+    "source_sha256": "40f1f1b98e9edb2df941b43b9a5fa3acec9ad8c2f7e2673b0461dd4e563c9f5c",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Grains of Paradise in cage 4 at 3 min. The original boil visits cage 1 at 60 min, cage 2 at 30 min, cage 3 at 10 min."
+  },
+  "public-bb6fc1e8ab6e4966b2f60b3684c32079": {
+    "source_sha256": "228dc70ffc7f4ec1ff05f0e750acce0ad447a53567aefa26b97ef44c651ebd77",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 180°F for 5 min, then cage 4 at 180°F for 30 min. The author repeats 1 oz each of Simcoe and Cascade in primary and secondary. Keep both rounds. The second goes in for the final 5–7 days of aging. The author calls for 65–68°F fermentation, followed by three to four weeks in keg or secondary. The generic 70°F primary in the recipe form conflicts with that range."
+  },
+  "public-bf97ecb83b5e412ea67106f88990fa9a": {
+    "source_sha256": "aa1ab5720d639c08b1b0e15cadff133517d0852df05f79908212f4fa1aefb660",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "El Dorado",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 4320
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 5 min, then cage 3 at 175°F for 10 min. The author adds the hops on fermentation day two and removes them after three days."
+  },
+  "public-c0d51ffc171040b79b38c950af8ebbaa": {
+    "source_sha256": "06b6626b3d2ea11b298557b800a5154174aaec77d178219866f1e58ca5cede97",
+    "blocker": "The two raw doses lack units. The printed ounces are defaults for missing measures.",
+    "evidence": "The original program holds the boil at 206°F and visits the salt and moss cages with 60 and 15 minutes left."
+  },
+  "public-c4af4c1c8e81475393974f6e6071a526": {
+    "source_sha256": "f075cb9ac2a3b7c24c942b99276b37738e557227f9dc690ab3e4c03fe0e5e2f5",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 122°F for 20 min, 153°F for 60 min, 165°F for 15 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min."
+  },
+  "public-c64a25fbe0ca4e4fae0ce08668c83235": {
+    "source_sha256": "c9f373c154231ac3e02c300dd44bd1e8561880b7ec23049641b6770133370b6d",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "additions": [
+      {
+        "name": "Mash pH stabilizer",
+        "kind": "misc",
+        "amount": 9.8578431875,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Burton water salts",
+        "kind": "misc",
+        "amount": 14.78676478125,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The recipe specifies 1 tsp of Whirlfloc in cage 3 at 15 min. The native valve schedule confirms the visit. The author gives two teaspoons of pH stabilizer and three teaspoons of Burton salts in the mash."
+  },
+  "public-c74ba5c52d43482bb799a77447cf0e46": {
+    "source_sha256": "e99e73f470b60f0285180f27424e82e27f9ea1302befe920eab24056870ba7a8",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Rice hulls",
+        "kind": "misc",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "use": "boil"
+        }
+      },
+      {
+        "name": "Galaxy",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 10080
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 10080
+        }
+      }
+    ],
+    "source_yeast": "White Labs WLP066 London Fog Ale",
+    "edits": [
+      {
+        "path": "/FermentationSteps/0/Days",
+        "from": 10.0,
+        "to": 14
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 20 min. Add 1 oz rice hulls to the mash. The sugar is used in the last 10–15 minutes of the boil. The author names WLP066, Amarillo on fermentation day seven, and Galaxy and Citra at stable gravity."
+  },
+  "public-c7b28aeaac3347b8ad58b11589b78e17": {
+    "source_sha256": "d04892e3c40dd7eea11067791391234f1461d208fbdb542ae5a54cb2398f72c0",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 180°F for 15 min."
+  },
+  "public-c8e10be4ede04b1481c4ac590ef41000": {
+    "source_sha256": "541332996cc063d2ab087fe827c7ea276e6af00f86e273e96254ff29bb6fc4ea",
+    "blocker": "Confirm which hop and dose the author intended to replace with Laurel before transferring the whirlpool schedule.",
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 20 min. The author corrects Eukanot to Laurel. The archived bill has no Eukanot row, so it provides no weight to assign to Laurel."
+  },
+  "public-c8fc5d58f0c545c89409d3ecf4cdecde": {
+    "source_sha256": "afcba1a7508cc91edeaff0071f5af141c95ae3c131bf7f73673ada112d26211a",
+    "blocker": "The saved mash schedules differ. The author did not select between these rests in the notes.",
+    "evidence": "The original machine ran 131°F for 10 min, 147°F for 30 min, 154°F for 60 min, 175°F for 10 min. The recipe form lists 102°F for 20 min, 152°F for 30 min, 154°F for 60 min, 175°F for 10 min. The author specifies four quarter-ounce dry additions and one eighth-ounce Centennial addition, all for three days."
+  },
+  "public-c9ac8f204ef14a0187cb509e6a51c57f": {
+    "source_sha256": "e8cec01303d3b6c706554a4cfcccd2a02ad5ef3cda58a4d2aa88077b4c2e3e37",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "edits": [
+      {
+        "path": "/FermentationSteps/0/Days",
+        "from": 10.0,
+        "to": 30
+      }
+    ],
+    "evidence": "The recipe specifies 0.5 tsp of Irish Moss in cage 2 at 15 min. The native valve schedule confirms the visit. Flaked maize may replace the flaked rice at equal weight. After 30 days of fermentation, hold three days at room temperature, crash to 32°F, rack and lager four to six weeks before carbonating."
+  },
+  "public-c9d1b58a0e8143ee85b05d261712e63b": {
+    "source_sha256": "9b4377a2d0d7180f41c025471b9914a65e7c510fbc38030132ef4dde5b517478",
+    "slot_additions": [
+      "Lactose"
+    ],
+    "blocker": "The recipe includes an additional hot cage visit and drain after the timed boil. The simplified schedule would drop that operation.",
+    "evidence": "The lactose is explicitly ½ lb in cage 2 with 15 minutes left. A subsequent zero-minute visit to an additional cage occurs after the boil."
+  },
+  "public-cdb58076049e4e26afb2700640292db3": {
+    "source_sha256": "cd13b7252b6a67f8b05537d8afdf26722375accf85759b9da662103a009e600e",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 3 at 175°F for 15 min."
+  },
+  "public-d035a7ece72f468bacc947fb0c720c51": {
+    "source_sha256": "60e42642325ed7e7aba74fb91b1249fd64a5e00ee577882e430d89a0a8b875a6",
+    "blocker": "The original timed program does not confirm the stated pre-boil contact. The four dry-hop charges are not individually measured.",
+    "additions": [
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 30
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 3 at 185°F for 30 min. The author adds an ounce of Citra to the whirlpool and states that the one-ounce Columbus charge goes in 15 minutes before the boil. The dry-hop notes describe four additions with no weight split."
+  },
+  "public-d18b62c569f0455ba3fc3e46a8e874ea": {
+    "source_sha256": "14bd75860e22ccd94ce8438456bc2b23dcc6743a24f851ca2e41fbf6fa1d7e33",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Whirlfloc in cage 3 at 5 min. The original boil visits cage 1 at 60 min, cage 2 at 15 min."
+  },
+  "public-d1c265bc15e04a88a27df8a3a21f5bab": {
+    "source_sha256": "db0dc558d3015bd9a43c1c6989d749dd8a4dcfce88af35e2fa3ce1e853fffdf0",
+    "blocker": "172°F is below the supported boil temperature. There is no evidence for substituting a higher target.",
+    "evidence": "The source header and its original two 30-minute stages target 172°F. The hop capacity error can be addressed only after the intended hot-side operation is known."
+  },
+  "public-d25e16a52ee14d648eb8981f6a4a5000": {
+    "source_sha256": "a152ef21ac5a4e9c2700ed83316d7f4209be168f808b25b717a109e9a97614e8",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 9 min."
+  },
+  "public-d2b53116aafa42098e3d88b7f5509034": {
+    "source_sha256": "faed8ac070dad1bfd24ffa7b4c51a6dc0276431d7c9d0c629e0f599f87944162",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "use": "mash",
+        "set": {
+          "use": "boil"
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Nelson Sauvin",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Nelson Sauvin",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "blocker": "The manual sugar addition has no exact time. The remaining Pacific Jade charge has no measured amount.",
+    "evidence": "Place ½ oz Nelson in the mash, hydrate the corn sugar for addition directly to the keg, and dry hop with 1 oz Nelson plus the remaining Pacific Jade."
+  },
+  "public-d46d2263af82491ab22e6d02d83d8570": {
+    "source_sha256": "3e659d29f242bc9cf81fe48bedad14d9c1db891352cc6350943438bbdc78beb3",
+    "edits": [
+      {
+        "path": "/BoilTemp",
+        "from": 0,
+        "to": 207
+      }
+    ],
+    "evidence": "The headline boil temperature is zero. The native program reaches 207°F and holds that temperature for 75, 8 and 7 minutes. Its three first cage visits match the declared 90-, 15- and 7-minute hop additions."
+  },
+  "public-d5c9d9f324d74aa2854963efcd3f99e3": {
+    "source_sha256": "009d82ca00e437e5279b312d8ef2a5157761805cae2a9854a0cabf56a5b635f1",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "edits": [
+      {
+        "path": "/Amendments/0/Units",
+        "from": "mg",
+        "to": "g"
+      },
+      {
+        "path": "/Amendments/0/Amount",
+        "from": 10,
+        "to": 1.0
+      }
+    ],
+    "additions": [
+      {
+        "name": "Salt (author’s description)",
+        "kind": "misc",
+        "amount": 3,
+        "unit": "g",
+        "use": "mash",
+        "minutes": 0
+      },
+      {
+        "name": "Lactic acid",
+        "kind": "misc",
+        "amount": 2.2,
+        "unit": "mL",
+        "use": "mash",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 3 at 170°F for 20 min. The author specifies 1 g of gypsum, 3 g of salt and 2.2 mL lactic acid. This corrects the conflicting 10 mg gypsum row. The specific salt is not named."
+  },
+  "public-db4f2527b57847e0822778bef1839b58": {
+    "source_sha256": "719979021285f5aa072931d80fa0a167118a2ba6375d01c022aeaa25f6eabfc5",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "Cascade",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 4320
+        }
+      },
+      {
+        "name": "Centennial",
+        "use": "dry-hop",
+        "set": {
+          "minutes": 4320
+        }
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 45 min. The recorded 90- and 30-minute hops are already Magnum, matching the author’s substitution. Dry hop for three days."
+  },
+  "public-de361f9fb99040909d653793a7dd4662": {
+    "source_sha256": "e6e19e39fdd475088e9404d5c3b432363b7fb3957d3ee9c8fe82340b935709e9",
+    "blocker": "The source flags the repeated hop. The two masses differ, but neither the notes nor the timed valve visit establishes whether both were intended in the same cage.",
+    "evidence": "The original lists two Cascade charges, 0.34 and 1.08 oz, in the same cage with 10 minutes left. Its own error flags the repeated ingredient."
+  },
+  "public-dfe0ae359a054a9eaccc66fb108b65dd": {
+    "source_sha256": "5e2a51bbde0ecbedddaebc33c0e8f6b8427c65bab19cba501046bac59cfcf691",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Vanilla Bean in cage 2 at 15 min, Irish Moss in cage 3 at 10 min. The original boil visits cage 1 at 30 min."
+  },
+  "public-e094e22321794eef854389d42b0f36c4": {
+    "source_sha256": "4ccf392bb993f80d8bc1aa00a4e3ce1fd6df7a8eed269582660afb9ea072c72f",
+    "blocker": "The cage dose is measured by volume. Its weight is unknown for scaling against the destination cage capacity.",
+    "evidence": "The recipe specifies 1 tsp of Irish Moss in cage 3 at 15 min. The native valve schedule confirms the visit."
+  },
+  "public-e5a3b2fee8b84f7c9fd1f38f66bcfbea": {
+    "source_sha256": "e8d6826ab31a029b771262f8a71ba4485bbdabc8966a69bbf4a07270cd24600f",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "edits": [
+      {
+        "path": "/Hops/0/Amount",
+        "from": 1.33,
+        "to": 1.6625
+      },
+      {
+        "path": "/Hops/1/Amount",
+        "from": 1.33,
+        "to": 1.6625
+      },
+      {
+        "path": "/WhirlpoolHops/0/Amount",
+        "from": 0.15,
+        "to": 0.18749999999999997
+      },
+      {
+        "path": "/WhirlpoolHops/1/Amount",
+        "from": 0.15,
+        "to": 0.18749999999999997
+      },
+      {
+        "path": "/WhirlpoolHops/2/Amount",
+        "from": 0.33,
+        "to": 0.4125
+      },
+      {
+        "path": "/WhirlpoolHops/3/Amount",
+        "from": 0.33,
+        "to": 0.4125
+      },
+      {
+        "path": "/WhirlpoolHops/4/Amount",
+        "from": 0.45,
+        "to": 0.5625
+      },
+      {
+        "path": "/WhirlpoolHops/5/Amount",
+        "from": 0.45,
+        "to": 0.5625
+      },
+      {
+        "path": "/DryHops/0/Amount",
+        "from": 0.8,
+        "to": 1.0
+      },
+      {
+        "path": "/DryHops/1/Amount",
+        "from": 0.8,
+        "to": 1.0
+      },
+      {
+        "path": "/DryHops/2/Amount",
+        "from": 0.8,
+        "to": 1.0
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Citra",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Mosaic",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Amarillo",
+        "use": "dry-hop",
+        "set": {
+          "amount": 14.174761562500002,
+          "minutes": 0,
+          "form": "Whole cone"
+        }
+      },
+      {
+        "name": "Citra",
+        "use": "boil",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 60.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "boil",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 60.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 40.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 40.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 30.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 30.0
+      },
+      {
+        "name": "Citra",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 20.0
+      },
+      {
+        "name": "Mosaic",
+        "use": "aroma",
+        "set": {
+          "form": "Whole cone"
+        },
+        "minutes": 20.0
+      }
+    ],
+    "additions": [
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 14.2,
+        "form": "Whole cone"
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 10.5,
+        "form": "Whole cone"
+      },
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 14.174761562500002,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0,
+        "alpha": 7.0,
+        "form": "Whole cone"
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 175°F for 10 min, then cage 3 at 175°F for 10 min, then cage 4 at 175°F for 20 min. Use whole-cone hops. The author directs division of each listed hop weight by 0.8. Split dry hops into two equal charges on days 4 and 8."
+  },
+  "public-e5fe6d043b294c988048a0dccd556a46": {
+    "source_sha256": "5ded799f82341f569f872eb24af6a7855bd709a0fe04af54edb3abc617dc3652",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "evidence": "The original post-boil program uses cage 4 at 175°F for 5 min."
+  },
+  "public-e7b300a81a5c48f7a4a3cf20e2e53384": {
+    "source_sha256": "7b3dbafd54b397b15ff80e85ef70da72206e14d68ab1cb957af63a6533de73cc",
+    "blocker": "The timed cage instructions and original valve visits disagree. The adjunct amount also lacks an independently recorded unit.",
+    "evidence": "The ingredient rows call for Orange Zest in cage 3 at 5 min, Grains of Paradise in cage 3 at 5 min. The original boil visits cage 1 at 60 min, cage 2 at 10 min."
+  },
+  "public-e84cb3f3b4da4167b04631019645d323": {
+    "source_sha256": "d4a1d20792fcd3c5c20a193d3da386b60b3e60b86d183fe4d9d0c9ba5b154481",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "additions": [
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 21.26214234375,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Mosaic",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 21.26214234375,
+        "unit": "g",
+        "use": "aroma",
+        "minutes": 0
+      },
+      {
+        "name": "Citra",
+        "kind": "hop",
+        "amount": 14.1747615625,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 4 at 170°F for 5 min. The author assigns ¾ oz each Mosaic and Citra to whirlpool cages 3 and 4 and ½ oz each for dry hopping. The listed water chemistry is a target in ppm, not masses of salts."
+  },
+  "public-ebb3c1dde06e4a49b502a832e589aa89": {
+    "source_sha256": "67608901739637f33a1f1cb618dba029bb83e3b8872018ca84d167c405169f96",
+    "blocker": "The post-boil cage loading, cooling and hold must be followed separately. The five-brewer transfer cannot verify the post-boil cage load and contact time.",
+    "ingredient_edits": [
+      {
+        "name": "Waimea",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15
+        }
+      },
+      {
+        "name": "Motueka",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15
+        }
+      },
+      {
+        "name": "Wai-iti",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15
+        }
+      },
+      {
+        "name": "Riwaka",
+        "use": "dry-hop",
+        "set": {
+          "amount": 15
+        }
+      }
+    ],
+    "additions": [
+      {
+        "name": "Motueka",
+        "kind": "hop",
+        "amount": 30,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      },
+      {
+        "name": "Wai-iti",
+        "kind": "hop",
+        "amount": 30,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 0
+      }
+    ],
+    "evidence": "The original post-boil program uses cage 2 at 174°F for 5 min, then cage 3 at 174°F for 1 min, then cage 4 at 174°F for 34 min. Use distilled water. The author specifies 15 g of each variety at high kräusen, and a separate secondary addition of 30 g each of Motueka and Wai-iti."
+  },
+  "public-f13e5aac36494473a1fc9bb7de075d42": {
+    "source_sha256": "8adaeeace27c0317bb67f78a40b59b4e7dddf5dfdc1cbccb5e75b3bf61031f51",
+    "edits": [
+      {
+        "path": "/BoilTime",
+        "from": 20,
+        "to": 60
+      },
+      {
+        "path": "/Hops/3",
+        "from": {
+          "Location": 3,
+          "Amount": 1.5,
+          "IBU": 4.120868,
+          "Time": 1.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "HopID": 84,
+          "Name": "Galaxy",
+          "Alpha": 13.5
+        },
+        "remove": true
+      },
+      {
+        "path": "/Hops/2",
+        "from": {
+          "Location": 3,
+          "Amount": 1.5,
+          "IBU": 4.120868,
+          "Time": 1.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "AdjunctRound": 1,
+          "HopID": 84,
+          "Name": "Galaxy",
+          "Alpha": 13.5
+        },
+        "remove": true
+      }
+    ],
+    "ingredient_edits": [
+      {
+        "name": "Apollo",
+        "use": "boil",
+        "set": {
+          "use": "aroma",
+          "minutes": 60
+        },
+        "minutes": 1
+      }
+    ],
+    "blocker": "The notes neither confirm both Galaxy charges nor allocate each load between the two whirlpool cages. The raw totals would put 4.5 oz into a pair of 1.5 oz cages, and the operator must connect the chiller.",
+    "steps": [
+      {
+        "drain_minutes": 8,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Dough In",
+        "target_c": 38.888888888888886,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash 1",
+        "target_c": 66.66666666666667,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 8,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash 2",
+        "target_c": 67.77777777777777,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 6,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash Out",
+        "target_c": 79.44444444444444,
+        "type": "Infusion"
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222223
+      },
+      {
+        "name": "Whirlpool through cage four",
+        "kind": "hold",
+        "location": 0,
+        "target_c": 79.44444444444444,
+        "minutes": 60,
+        "drain_minutes": 5
+      }
+    ],
+    "evidence": "The author and native program specify an empty first cage for 40 minutes, the second cage for the 20-minute Apollo addition, and a 175°F, 60-minute whirlpool flowing through cages four and three. The remaining hops include Galaxy. The two 1.5 oz Galaxy rows are identical."
+  },
+  "public-f36def21fd7946eaa1ccb3a5ebd1d96a": {
+    "source_sha256": "3655a1752ece191e3199849c53baadc7c4a82d98d816f3fa76551e72d4f01e9b",
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "additions": [
+      {
+        "name": "Amarillo",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 10080
+      },
+      {
+        "name": "Simcoe",
+        "kind": "hop",
+        "amount": 28.349523125,
+        "unit": "g",
+        "use": "dry-hop",
+        "minutes": 10080
+      }
+    ],
+    "evidence": "The only source error concerns the ten-minute combined cage. Its displayed loads are 0.8, 0.4 and 0.3 oz, and their combined mass is checked when fitting the destination brewer. The author gives a seven-day dry hop with one ounce each Amarillo and Simcoe. The original tenth-minute cage contains three measured varieties. Scale the combined load together."
+  }
+}

@@ -1,0 +1,3392 @@
+{
+  "public-0069af6cd5754c46b70b7f97723a5b4b": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 20,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The required cage change and 180°F hop stand need an operator. The water-treatment quantity has no recorded unit: Calcium Sulfate (1), Calcium Chloride (1).",
+    "evidence": "The authored half-ounce Mosaic stand is 20 minutes at 180°F. The native program pauses for a cage change. Dry hop for three days with a fresh half ounce at least twice.",
+    "source_sha256": "e4b1d0052132db41899336802a7dafe7f3e9a7015bdb5656ec050598683894b1"
+  },
+  "public-01011fdb54bf40da8547a0169a87dfdd": {
+    "additions": [
+      {
+        "amount": 1360.77711,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Frozen strawberries",
+        "unit": "g",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "The machine starts the peppercorn cage for 10 minutes after the earlier hop stages have already consumed the declared boil. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "carbonation": {
+      "volumes": 3
+    },
+    "evidence": "The author adds three pounds of frozen strawberries just after high kräusen and suggests an optional three-day quarter-ounce Styrian Goldings dry hop. The target is three volumes of carbonation.",
+    "source_sha256": "48ca09fa5707b7bca36ddab0f61a3d9a85ebc5248ab89178d7c600d21f7c6b5a"
+  },
+  "public-0120b0343b6e47dc8e1d8528513ae7aa": {
+    "blocker": "Neither the rice hulls nor the bark has a recorded weight. The native and declared hop countdowns also disagree.",
+    "evidence": "The author calls for rice hulls with oak-smoked wheat and white willow bark in cage three. The original program has four mash rests at 100, 122, 148 and 175°F.",
+    "source_sha256": "ed8baf81fbfbf72adf7de0beb3ab89c1c6ab08af77fd3b45cfc4194b6d1bbd75",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash rest 1",
+        "target_c": 37.77777777777778
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 2",
+        "target_c": 50.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 3",
+        "target_c": 64.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash out",
+        "target_c": 79.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-01bdd4d4bcd04a448f25fc209b4cd6e3": {
+    "additions": [
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Chinook",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The dissolved sugars need a manual addition during the boil.",
+    "evidence": "The author dissolves the sugars five minutes into the boil and dry hops with two ounces of Amarillo and one each of Cascade and Chinook.",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "set": {
+          "minutes": 55,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "3efa5e104265def0c8baeaf0382f863bfa94ade8dfe6d4cd27bcd309bf84243b"
+  },
+  "public-02b9549a9fb34fffa6f91320fae942b9": {
+    "additions": [
+      {
+        "amount": 170.09713875,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Lingonberries",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 170.09713875,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Lingonberries",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 170.09713875,
+        "kind": "misc",
+        "minutes": 8,
+        "name": "Lingonberries",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 170.09713875,
+        "kind": "misc",
+        "minutes": 6,
+        "name": "Lingonberries",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "edits": [
+      {
+        "from": {
+          "AdjunctID": 31,
+          "AdjunctRound": 1,
+          "AdjunctType": "Other",
+          "Amount": 1.5,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Time must be greater than 0.",
+              "Type": 1
+            }
+          ],
+          "Location": 0,
+          "Name": "Other (See Notes)",
+          "Time": 0,
+          "Units": null,
+          "Use": "Other"
+        },
+        "path": "/DryAdjuncts/0",
+        "remove": true
+      }
+    ],
+    "evidence": "The author identifies the placeholder as 1.5 pounds of lingonberries split evenly across four hop cages. The original cycle visits them with 15, 10, 8 and 6 minutes left.",
+    "source_sha256": "90f98ef694adcb50474474c7b31178430d510c50454352a822fc6c60986916d9"
+  },
+  "public-067f3aef2e1845b5b8adc27336f893d9": {
+    "additions": [
+      {
+        "amount": 59.147059125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Scharffen Berger chocolate",
+        "unit": "mL",
+        "use": "packaging"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Carbonate (0.5).",
+    "carbonation": {
+      "volumes": 2.5
+    },
+    "evidence": "The author mixes a quarter cup of Scharffen Berger with cooled water at packaging and targets 2.5 volumes of CO₂.",
+    "source_sha256": "6673194185eb834714f11e7b06781ce27a190f171d9ee179e78935681bca8b63"
+  },
+  "public-07077d253e51486ab5d450421517d8ea": {
+    "additions": [
+      {
+        "amount": 0.5,
+        "kind": "misc",
+        "minutes": 30,
+        "name": "Whirlfloc tablet",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Columbus",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The bagged flameout hops stay in the keg until racking. The tablet weight for the 30-minute addition is also unknown.",
+    "edits": [
+      {
+        "from": "Calcium Carbonate",
+        "path": "/Amendments/0/Name",
+        "to": "Burton salts"
+      },
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "tsp"
+      },
+      {
+        "from": 3.76,
+        "path": "/H2O",
+        "to": 3.7625
+      }
+    ],
+    "evidence": "The author specifies three teaspoons of Burton salts in distilled water, half a Whirlfloc tablet at 30 minutes, a keg-bag flameout addition, and seven days of dry hopping. The starting fill is 3.5 gallons plus 4.2 cups.",
+    "source_sha256": "61ee5129db284cea3b57191b7f18060046f15afb9ae552186f9c637cafaf0094"
+  },
+  "public-072acbd4bbe94039911350d18ed8f181": {
+    "additions": [
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm the Whirlfloc dose: the sheet prints one ounce, while the raw ingredient has no unit. The original heat-to-boil route also bypasses the first-wort hops.",
+    "evidence": "The author explicitly designates the first Citra charge as a first-wort addition, followed by 1.5 ounces of Citra during secondary for five to seven days.",
+    "first_wort_hops": [
+      {
+        "minutes": 60,
+        "name": "Citra"
+      }
+    ],
+    "source_sha256": "84de7483bc5b52ff16a9a5915e6da159921df9cd4e7d118c60749e3875b4a7c2"
+  },
+  "public-09a0b1eb842849bba0d0133901af05e1": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1).",
+    "evidence": "The original program heats the first Tettnanger charge through cage one and then holds at the declared 70-, 30- and 14-minute additions.",
+    "source_sha256": "204741b998f941650762e851e3b8af4ec49c00fd233a67c143e2227891b31972"
+  },
+  "public-0ab811c0a44d4fb6b4fec0e531d3af3c": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 40,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 40,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 40,
+        "name": "Citra",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The original program cools and pauses for a separate whirlpool charge. The gypsum dose cannot be recovered from the target mineral profile alone.",
+    "evidence": "The author specifies a 40-minute 180°F whirlpool and later a dry hop of Centennial, Mosaic and Citra. The dry-keg gypsum amount has no unit.",
+    "source_sha256": "ae3ebe4fe01c35a0e2ea5055a5d087307c9363af20ca4206f2e1f57e54c682d7"
+  },
+  "public-0acb7a63e0fc4ab783408c1425a89e13": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "evidence": "The third cage contains the Irish moss alongside the ten-minute Columbus charge. The two water amendments only have numeric amounts.",
+    "source_sha256": "ffcef122ddebce113366a5f94a5bcb0f53efa54f92b89f53e4a71a0be20066b3"
+  },
+  "public-0bf3a8804a044a018ecb7d2db1e51475": {
+    "blocker": "The native cycle finishes after the second cage and never visits the third. Confirm the dose as well: the printed sheet lists one ounce of Whirlfloc.",
+    "evidence": "The author identifies pitch temperature as the chiller endpoint. The loading sheet places Whirlfloc in cage three at ten minutes.",
+    "source_sha256": "220c9482bf11f9b531a58ba835dcefd1b695a0af6db89d3cb551f73c6821e052"
+  },
+  "public-0c8263346d6544628f3b7e03ee0e178b": {
+    "blocker": "The keg bag requires an operator before the hop stand. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.25), Calcium Chloride (0.25).",
+    "evidence": "The author calls for two ounces of Mosaic in a keg bag for the hop stand, then two one-ounce dry-hop rounds, seven and five days. The program specifies a 35-minute stand at 185°F.",
+    "source_sha256": "089bc92aed4d87d332054a5cf1e8f8fefc654c6a06f8e5a23c368e0a1120460d"
+  },
+  "public-0c8473fc91f4427c86ab2f28fa5b0464": {
+    "blocker": "The lactose weight is missing. The tiny nominal Satus hop weight cannot serve as a lactose amount.",
+    "edits": [
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 13.0,
+          "Amount": 0.001,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 57,
+          "IBU": 0.06788896,
+          "Location": 3,
+          "Name": "Satus",
+          "Time": 30.0
+        },
+        "path": "/Hops/2",
+        "remove": true
+      }
+    ],
+    "evidence": "The author identifies the Satus hop record as a lactose placeholder. The lactose field itself is zero.",
+    "source_sha256": "7ed8f0025172952ef0003579f4359fdd02b4d23eb912d532cccfe4dc6fa01094"
+  },
+  "public-0ce60a9604c944b38f937ed80c5e04fd": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1.5).",
+    "evidence": "The ingredient record includes calcium sulfate without a unit. The archived loading instructions give only general salt-handling guidance.",
+    "source_sha256": "63a76b04078e160c7e7b072cb0446d6babbed4b86f206cb5b83c28e8cc61febd"
+  },
+  "public-0ce9ccf2f68940a3b81e4933b0987c6b": {
+    "blocker": "The native boil reaches only the first and second cages. Confirm how the salt is meant to enter at 29 minutes. The author did not specify a unit for the pink Himalayan salt.",
+    "edits": [
+      {
+        "from": "Sea Salt",
+        "path": "/Adjuncts/0/Name",
+        "to": "Pink Himalayan salt"
+      }
+    ],
+    "evidence": "The author used pink Himalayan salt. The original salt row and loading sheet give 0.4 in cage three with 29 minutes left.",
+    "source_sha256": "bfa2d411ebfbd1c8fc3fff1c5fc7af7d8a09b4f1eb31b88adff2d55e00c8ba8e"
+  },
+  "public-0d7cf8efb3e44f339d199e33213f1e7b": {
+    "additions": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Zest of Navel orange",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Zest of Lemon",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Zest of Red grapefruit",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 85.048569375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Orange marmalade",
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The author gives no timing or delivery method for the citrus and marmalade.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/Fermentables/6/Name",
+        "to": "Rice hulls"
+      }
+    ],
+    "evidence": "The half-pound unnamed grain is rice hulls. The author also specifies the zest of an orange, lemon and red grapefruit and three ounces of orange marmalade for the boil.",
+    "source_sha256": "1e6b6389256a7501b470d4d22920b3216afe7e5c41fdd5e8c50bb8a2d102782b"
+  },
+  "public-0db8f8b293464f3cbd727e40f6d4987a": {
+    "blocker": "The dry-hop blend has no quantity or split. The raw KICK dosage lacks a unit.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/Adjuncts/0/Name",
+        "to": "KICK carrageenan"
+      }
+    ],
+    "evidence": "The unnamed five-minute fining is KICK carrageenan. The author also calls for dry hopping with a blend of Northern Brewer and Simcoe.",
+    "source_sha256": "4b62310333a768f8e170412bf34d91db2f921f349944f0d1965cf061d5fdd7f9"
+  },
+  "public-0db975dfd30048998b91e9eb1f75cc00": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.5).",
+    "edits": [
+      {
+        "from": "Crisp 15L",
+        "path": "/Fermentables/1/Name",
+        "to": "Skagit Valley 15L"
+      },
+      {
+        "from": "American Crystal 80L",
+        "path": "/Fermentables/2/Name",
+        "to": "Skagit Valley 80L"
+      }
+    ],
+    "evidence": "The author identifies the source of the base, 15L and 80L malts as Skagit Valley. The native mash rests are 102, 149, 154 and 168°F.",
+    "source_sha256": "31ffe0c1c731b8d560636f4be5f38189a5b256de84035099bd3cfd4f9387e6b4",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash rest 1",
+        "target_c": 38.888888888888886
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 90,
+        "name": "Mash rest 2",
+        "target_c": 65.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash rest 3",
+        "target_c": 67.77777777777777
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 12,
+        "name": "Mash out",
+        "target_c": 75.55555555555556
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 75,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-0e613211f4bb421eb0b16d524e98c0bf": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.3), Calcium Chloride (0.4).",
+    "evidence": "The author specifies one ounce each of Simcoe and Mosaic for dry hopping.",
+    "source_sha256": "059a0a378998e9ba4624deea55f51f3dc0da3aa2cbb94821607212fbea816d03"
+  },
+  "public-0f70396d9e26492e84f4cc365a6800c4": {
+    "additions": [
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The author questions the whirlpool implementation and the archived schedule does not establish its exposure. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.25).",
+    "evidence": "The author calls for a 30-minute recirculating whirlpool after cage two, targets 100 ppm calcium and 250 ppm sulfate, and dry hops with Mosaic and Cascade.",
+    "source_sha256": "1aad2be012657b259f5aad889b23b6c01ab913ab349a26371ab76a22348ba1d5"
+  },
+  "public-1093a3b1f034422380bedb147e4735a1": {
+    "blocker": "The rice hulls and bark have no measured amounts, and native hop contact times differ from the ingredient sheet.",
+    "evidence": "The author used Sigmund’s Voss Kveik, rice hulls in the mash and white willow bark in the third hopper.",
+    "source_sha256": "4c8cb6f81259506fa3e47e6f134c32918adb6f08a02095577ef6822877f5c5da",
+    "source_yeast": "The Yeast Bay / Sigmund’s Voss Kveik",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash rest 1",
+        "target_c": 37.77777777777778
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 2",
+        "target_c": 50.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 3",
+        "target_c": 64.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 15,
+        "name": "Mash out",
+        "target_c": 79.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-110bca80f77f424489460b76cb705c22": {
+    "blocker": "The ingredient sheet calls for moss and nutrient in cage two at 15 minutes. The native program instead returns to the keg. Dilution and vinegar finishing are manual.",
+    "evidence": "The author starts with 27.79 pounds of water and dilutes after brewing to 3.75 gallons and OG 1.059–1.060. This is a malt vinegar base.",
+    "source_sha256": "86829f51755deccaab08aa1219f6563d87ed087a6971eaf4edf66c2adc525ffe",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash rest 1",
+        "target_c": 40.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 45,
+        "name": "Mash rest 2",
+        "target_c": 60.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 3",
+        "target_c": 70.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash out",
+        "target_c": 79.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 90,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-13934c9eab7c47968bfc41a690dcfde3": {
+    "additions": [
+      {
+        "amount": 14.78676478125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "pH 5.2 stabilizer",
+        "unit": "mL",
+        "use": "mash"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Campden tablet",
+        "unit": "count",
+        "use": "mash"
+      },
+      {
+        "amount": 17.009713875,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 17.009713875,
+        "kind": "hop",
+        "minutes": 4320,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "Confirm whether the 0.3-ounce mash charge replaces or supplements the identical 60-minute Amarillo row. The original program loads the latter in a hop cage.",
+    "evidence": "The author locates 0.3 ounce of Amarillo in the grain, prescribes one tablespoon of pH 5.2 and a Campden tablet in the water, and dry hops for three days with equal 0.6-ounce Mosaic and Simcoe additions.",
+    "ingredient_edits": [
+      {
+        "minutes": 60,
+        "name": "Amarillo",
+        "set": {
+          "minutes": 0,
+          "use": "mash"
+        },
+        "use": "boil"
+      }
+    ],
+    "source_sha256": "2b49e12bbc884c3da1185c2c461670c317f149332f53f216901be5c5184a51dc"
+  },
+  "public-15e287774d754dec85e993b595a63df1": {
+    "blocker": "The author measures the timed addition by volume or count. Its weight for the hop-slot capacity check is unknown.",
+    "edits": [
+      {
+        "from": 0.2,
+        "path": "/Adjuncts/0/Amount",
+        "to": 1
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "tsp"
+      }
+    ],
+    "evidence": "The author specifies one teaspoon of Irish moss. It goes in the second cage at ten minutes with Saaz; the generic ounce printing is superseded.",
+    "source_sha256": "714e9c075a188225fbbcab1a421564c06d0fa71946dfaff7f1cda0a4f05e6483"
+  },
+  "public-16ade8dac6874f33866bc5b414d9c91f": {
+    "additions": [
+      {
+        "amount": 850.48569375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Pumpkin purée",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 10,
+        "kind": "misc",
+        "minutes": 60,
+        "name": "Whole cloves",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 10,
+        "kind": "misc",
+        "minutes": 30,
+        "name": "Whole cloves",
+        "unit": "count",
+        "use": "boil"
+      }
+    ],
+    "blocker": "Cloves and cinnamon have no weight for slot sizing. The native cinnamon and Whirlfloc cage times differ from the declared 60-minute boil.",
+    "edits": [
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "tbsp"
+      }
+    ],
+    "evidence": "The author adds 1 lb 14 oz of pumpkin to the mash, ten cloves in each of the first two cages, and a tablespoon of cinnamon in the second cage.",
+    "source_sha256": "101487df96ed0f4351cc654a4f66f581cd921cc90afd42de452aa28d1d7aa45d"
+  },
+  "public-18876c309fc4471995f5e74e99a5980e": {
+    "additions": [
+      {
+        "amount": 4,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Coriander seed",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 5,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Bitter orange peel",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 5,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Grapefruit peel",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 5,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Sweet orange peel",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 7,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Crystallized ginger",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 2,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Dried lemongrass",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 118.29411825,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Dark raw honey",
+        "unit": "mL",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "The native schedule never visits the five-minute spice cage. Its single boil charge runs for 40 minutes without a subsequent spice stage.",
+    "edits": [
+      {
+        "from": "Rice",
+        "path": "/Fermentables/5/Name",
+        "to": "Rice hulls"
+      },
+      {
+        "from": {
+          "AdjunctID": 31,
+          "AdjunctRound": 1,
+          "AdjunctType": "Other",
+          "Amount": 1.0,
+          "BoilUse": 4,
+          "Errors": [],
+          "Location": 3,
+          "Name": "Other (See Notes)",
+          "Time": 5,
+          "Units": null,
+          "Use": "Other"
+        },
+        "path": "/Adjuncts/0",
+        "remove": true
+      }
+    ],
+    "evidence": "The author identifies the half-pound rice as rice hulls and enumerates six measured spices for the unnamed five-minute charge. A half cup of dark raw honey goes into the carboy before transfer.",
+    "source_sha256": "3baa9c328b61d8cb909b4a70804f7015086208f545be2281493d167817a5b11a"
+  },
+  "public-18ba00dc956a44309668d5e4c14cd939": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.2), Calcium Chloride (0.33), Magnesium Sulfate (0.15).",
+    "evidence": "The author specifies an IBU goal of 22 and a maximum of 5% honey malt. The loading sheet identifies the grains and timed hop charges.",
+    "source_sha256": "e8659c3e15734a57a808c01f754937882c815bcc1bbc5640c71cd9a18aeb4248"
+  },
+  "public-18eaeb74371a4a91be2bb0c27e3e580a": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The timed hot-keg sugar and honey additions require an operator.",
+    "evidence": "The author dissolves turbinado in two cups of water 30 minutes into the boil and adds honey at 45 minutes. At one week, add half an ounce each of Centennial and Citra for five to seven days.",
+    "ingredient_edits": [
+      {
+        "name": "Honey",
+        "set": {
+          "minutes": 15,
+          "use": "boil"
+        },
+        "use": "mash"
+      },
+      {
+        "name": "Turbindao Sugar",
+        "set": {
+          "minutes": 30,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "446b84e58c628ea608b47a666f93865ae0dc1d030cebe509222e8888f7131b01"
+  },
+  "public-19d6e5c595b04bdeba536e6761e193b2": {
+    "blocker": "The author did not specify a unit for the Irish moss.",
+    "edits": [
+      {
+        "from": 3.48,
+        "path": "/H2O",
+        "to": 3.71
+      }
+    ],
+    "evidence": "The author specifies a 3.71-US-gallon starting fill. The loading sheet’s 3.48 gallons is superseded. The second cage contains Irish moss and Hallertau with 15 minutes left.",
+    "source_sha256": "c4bf08cf69da3627136699819b7eec6a44e248ba14ebfa02085c72bceab9d0dc"
+  },
+  "public-19dc0d66888947deb025e2e3c238ad6f": {
+    "additions": [
+      {
+        "amount": 9.92233309375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.92233309375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.92233309375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Warrior",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The Irish moss entry calls for a 20-minute addition while the native boil uses 60-, 15-, 10- and 5-minute cage starts.",
+    "evidence": "The author dry hops for three to four days with 0.35 ounce each of Simcoe, Amarillo and Warrior.",
+    "source_sha256": "5c510318a0806293e0528cff67d0a73a722ef385582db7c7d5b6af6ba7868f96"
+  },
+  "public-1ad83a4b7a1d494189ca1b68a6e9d976": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.7).",
+    "evidence": "The recorded calcium sulfate amount has no corresponding unit or preparation instruction in the author field.",
+    "source_sha256": "c62d0f3e38b8893efc569ab05a7f3c1731d401dfd2f1aa039344d338f1be78b5"
+  },
+  "public-1b986f61f8354cc4aa6c0018cdd1b99e": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Chinook",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 21.26214234375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 21.26214234375,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Zythos",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.5).",
+    "evidence": "The author gives a first dry hop of Chinook, Simcoe and Amarillo and a second addition of Centennial and Zythos.",
+    "source_sha256": "34771e4d7bd0796fd6735020de4b303aba1cfd7fa3d863952466f6d0ccbb436c"
+  },
+  "public-1f75a689687b494eaa032d12b182a488": {
+    "blocker": "The mid-mash grain addition and the ten-minute keg bag both require hands-on steps.",
+    "evidence": "The author pauses after the first mash to add acidulated malt for a second 45-minute rest, then adds salt and bagged crushed coriander to the keg for the last ten minutes.",
+    "source_sha256": "19d85561b6a15d0481a1dfdfac10c67277a8dc47d49a6b95dc16edcde5e55366",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 1",
+        "target_c": 65.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 45,
+        "name": "Mash rest 2",
+        "target_c": 65.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-1f768e5c114447d4b0340f7f17e65452": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Dried candy cap mushrooms",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The author also requires rice hulls without specifying the amount, and calls for the syrup to be added during the boil.",
+    "evidence": "The author rehydrates and chops one ounce of dried candy cap mushrooms for the mash and adds dark candi syrup with ten minutes left in the boil.",
+    "ingredient_edits": [
+      {
+        "name": "Belgian Dark Candi Syrup",
+        "set": {
+          "minutes": 10,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "f151429c196776803e06a7da80d74e871f680614c1baafc4f20472f1ed2359b3"
+  },
+  "public-214f5bfebcc24ae3887b666e111a4a06": {
+    "blocker": "The author gives a total tip weight without specifying each cage’s share, and allows the fining in either cage.",
+    "edits": [
+      {
+        "from": "Spruce Tips",
+        "path": "/Adjuncts/0/Name",
+        "to": "Douglas fir tips"
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      }
+    ],
+    "evidence": "The author used 1.5 ounces of Douglas fir tips, split between the third and fourth cages. The native program starts those cages at 15 and 14 minutes.",
+    "source_sha256": "d90350c8f0c7b2dfe573e77cd3b79d7ef515e9913b59b724bbe4ffe671686fde",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash rest 1",
+        "target_c": 38.888888888888886
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 90,
+        "name": "Mash rest 2",
+        "target_c": 65.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash rest 3",
+        "target_c": 70.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash out",
+        "target_c": 75.55555555555556
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-2496fe07e9f74e26b2715ab95d14d423": {
+    "blocker": "The external souring, reheat and cool sequence requires a separately managed operation after mashing.",
+    "evidence": "The author specifies an advanced mash, a separate four-day souring stage at 106°F, reheating to 205°F for 20 minutes and a subsequent yeast fermentation.",
+    "fermentation": [
+      {
+        "days": 4,
+        "name": "Warm wort souring",
+        "target_c": 41.11111111111111
+      },
+      {
+        "days": 10,
+        "name": "Fermentation",
+        "target_c": 26.666666666666664
+      },
+      {
+        "days": 8,
+        "name": "Finish fermentation",
+        "target_c": 23.88888888888889
+      }
+    ],
+    "source_sha256": "00dc6bef96a3a1f2743f39d71022113d929607cb6653868448496ca0161ef973",
+    "source_yeast": "WLP677 for souring, then WLP644 for fermentation"
+  },
+  "public-27550c8d64e04c88af21f2b83805d2c9": {
+    "additions": [
+      {
+        "amount": 118.29411825,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Bourbon",
+        "unit": "mL",
+        "use": "fermentation"
+      },
+      {
+        "amount": 4.535923700000001,
+        "kind": "hop",
+        "minutes": 60,
+        "name": "Nugget",
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The original includes two unnamed 40-minute hop rows. The author specifies Magnum and Nugget for bittering and sugar cage loads, but the unnamed rows do not establish independent hop doses.",
+    "edits": [
+      {
+        "from": null,
+        "path": "/DryAdjuncts/0/Units",
+        "to": "count"
+      },
+      {
+        "from": 0.36,
+        "path": "/Hops/0/Amount",
+        "to": 0.2
+      }
+    ],
+    "evidence": "The author splits two vanilla beans, soaks them in half a cup of bourbon and adds them after fermentation, with up to 40 days of secondary contact. The two pounds of clear candi sugar belong in the hop cages.",
+    "ingredient_edits": [
+      {
+        "name": "Belgian Candi Sugar Clear",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "243199de1842209f92241962c1002434c383a75664634233c5fcab70ef752a16"
+  },
+  "public-27f474386c1942f8a3a7ef11ba813d29": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The original gives no time for the dissolved sugar addition.",
+    "edits": [
+      {
+        "from": 3.28,
+        "path": "/H2O",
+        "to": 3.6
+      }
+    ],
+    "evidence": "The author specifies 3.6 gallons of starting water, dissolved sugar during the boil and half an ounce each of Centennial and Citra one week into fermentation.",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      },
+      {
+        "name": "Turbindao Sugar",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "4bf376f7917b26248de88e67c88c49eff52e9517421176e64838c2e48fb43600"
+  },
+  "public-28905144aafe496482c3349eab989767": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 40,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 40,
+        "name": "Azacca",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Azacca",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 5760,
+        "name": "Azacca",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "An operator must fit the chiller and replace the fourth cage load before the whirlpool. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "evidence": "The author changes out the hop cages at the pause and loads half an ounce each of Mosaic and Azacca in cage four for a 40-minute whirlpool, followed by two dry-hop rounds.",
+    "source_sha256": "68dc25295118ba1265d53cd75f0b48e311671efca9bfd8c347bd7db518ff1419"
+  },
+  "public-28f1f445bd494cd7bce74f81067158ad": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Whole Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (1).",
+    "edits": [
+      {
+        "from": "Weyermann Bohemian Pilsner Malt",
+        "path": "/Fermentables/0/Name",
+        "to": "Weyermann floor-malted Pilsner"
+      },
+      {
+        "from": "Belgian Candi Sugar Clear",
+        "path": "/Fermentables/2/Name",
+        "to": "Belgian clear candi syrup"
+      }
+    ],
+    "evidence": "The author identifies Weyermann floor-malted Pilsner malt, Belgian clear candi syrup and one ounce of whole Citra in the dry hop.",
+    "source_sha256": "399cb44bd253cdc6f80722b7b224d784c002e0d5ec8f332fa4d20c5a1252be22"
+  },
+  "public-29ddf6a6669a4bf08b3ae7ecb0b8a545": {
+    "additions": [
+      {
+        "amount": 0.8798125044843751,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Phosphoric acid",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The author omits phosphoric acid concentration. The five-gallon treatment specifies volume but cannot establish an equivalent dose for an arbitrary product.",
+    "edits": [
+      {
+        "from": 0.7,
+        "path": "/Amendments/0/Amount",
+        "to": 0.714
+      },
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "tsp"
+      }
+    ],
+    "evidence": "The author treats five US gallons of water with one teaspoon of calcium chloride and a quarter teaspoon of phosphoric acid. Quantities here apply proportionally to the archived 3.57-gallon starting fill.",
+    "source_sha256": "f1a9201aa3da9696ae875b6df150b8adfa6ef72d7a450005b24f2864d68f1be5"
+  },
+  "public-2ab67da295bc4bdba33a50878a60c710": {
+    "blocker": "The 10-minute sumac cage appears in the loading sheet but the original program never visits it.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/Adjuncts/0/Name",
+        "to": "Ground wild sumac"
+      },
+      {
+        "from": 3.4,
+        "path": "/Adjuncts/0/Amount",
+        "to": 96
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "g"
+      },
+      {
+        "from": "Flaked Wheat",
+        "path": "/Fermentables/1/Name",
+        "to": "Unmalted wheat grains"
+      }
+    ],
+    "evidence": "The author identifies the 10-minute addition as 96 g ground wild sumac and the four pounds of flaked wheat as unmalted wheat grains.",
+    "source_sha256": "4e58763b982ddee977e4618c4511d0ed8d73be00cdc636c7ed98a47a7113af0d"
+  },
+  "public-2cfa47f016ab4b80a66b6cc8d9f1889c": {
+    "blocker": "The tequila barrel chip quantity is missing. The advanced mash also differs from the declared mash.",
+    "evidence": "The author adds tequila barrel chips after fermentation and evaluates whether additional lime zest is needed. The program uses a one-minute lime addition.",
+    "source_sha256": "a8c5389fc08f5b255aa3dc2c773af42664dfbf930580a913dbab88a8ecbb0a6e",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash rest 1",
+        "target_c": 40.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 40,
+        "name": "Mash rest 2",
+        "target_c": 62.77777777777778
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 80,
+        "name": "Mash rest 3",
+        "target_c": 71.66666666666667
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash out",
+        "target_c": 79.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-2d93044e2564417fb9470b89e79569fb": {
+    "blocker": "The original machine skips the 15-minute cage, and the authored beet sugar quantity has no unit independent of its unnamed loading-sheet entry.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/Adjuncts/0/Name",
+        "to": "Beet sugar"
+      },
+      {
+        "from": 102.0,
+        "path": "/MashSteps/0/Temp",
+        "to": 135
+      },
+      {
+        "from": 20.0,
+        "path": "/MashSteps/0/Time",
+        "to": 15
+      },
+      {
+        "from": 152.0,
+        "path": "/MashSteps/1/Temp",
+        "to": 145
+      },
+      {
+        "from": 30.0,
+        "path": "/MashSteps/1/Time",
+        "to": 35
+      },
+      {
+        "from": 154.0,
+        "path": "/MashSteps/2/Temp",
+        "to": 165
+      },
+      {
+        "from": 60.0,
+        "path": "/MashSteps/2/Time",
+        "to": 25
+      },
+      {
+        "from": 175.0,
+        "path": "/MashSteps/3/Temp",
+        "to": 172
+      },
+      {
+        "from": 10.0,
+        "path": "/MashSteps/3/Time",
+        "to": 5
+      }
+    ],
+    "evidence": "The author lists four mash rests at 135, 145, 165 and 172°F and identifies the 15-minute unnamed item as beet sugar. Hop timings are 60 and 20 minutes.",
+    "source_sha256": "edfe9de81182e6de72d28896a024248561251f77c0250322b0d6c4dced09739d",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 15,
+        "name": "Mash rest 1",
+        "target_c": 57.22222222222222
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 35,
+        "name": "Mash rest 2",
+        "target_c": 62.77777777777778
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 25,
+        "name": "Mash rest 3",
+        "target_c": 73.88888888888889
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 5,
+        "name": "Mash out",
+        "target_c": 77.77777777777777
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 60,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-2e70e3ba7c634183ba0a4611ba4c1747": {
+    "additions": [
+      {
+        "amount": 4.92892159375,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Irish moss",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The original gives no weight split for the peel across the two cages. Honey requires a manual addition during the boil.",
+    "evidence": "The author loads coriander and orange peel with the second Saaz addition and more orange peel plus a teaspoon of Irish moss with the third. Honey goes directly into the keg at ten minutes.",
+    "ingredient_edits": [
+      {
+        "name": "Honey",
+        "set": {
+          "minutes": 10,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "77dade6ba5582305baa81fa82b9c5ce65c99ec2eeaa3a2df50a6c7118019fe53"
+  },
+  "public-2e97be2b5df64dac977bf87e02ed89d0": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 20160,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The author measures the timed addition by volume or count. Its weight for the hop-slot capacity check is unknown.",
+    "edits": [
+      {
+        "from": 0.0,
+        "path": "/Adjuncts/0/Amount",
+        "to": 0.5
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "tsp"
+      }
+    ],
+    "evidence": "The author specifies half a teaspoon of Irish moss in the second cage at 15 minutes and half an ounce of Cascade for 14 days in secondary. The raw zero moss amount is superseded.",
+    "source_sha256": "87e88682e889ce85eb57b47a2260c8087be19a31fa3510fee3fd59c7320feefd"
+  },
+  "public-2f368b81a72845249b93fe4e36fd113a": {
+    "edits": [
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "tsp"
+      },
+      {
+        "from": null,
+        "path": "/Amendments/1/Units",
+        "to": "tsp"
+      }
+    ],
+    "evidence": "The author used RO water with 0.4 teaspoon of gypsum and 0.8 teaspoon of calcium chloride, retaining acid malt for that water. The optional tap-water version omits the mineral additions and acid malt.",
+    "source_sha256": "e2f9e5ab5391cc16ca90bbcb774270edca1e53c6f00ee44444aedf68f64b224e"
+  },
+  "public-30f6160e139c4e78b3ba646c38fec4a4": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 2,
+        "kind": "yeast",
+        "minutes": 0,
+        "name": "Fermentis S-04",
+        "unit": "count",
+        "use": "fermentation"
+      },
+      {
+        "amount": 2,
+        "kind": "yeast",
+        "minutes": 0,
+        "name": "WLP099",
+        "unit": "count",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "Manual sugar feeds, staged yeast pitches and differences between the stated total dextrose and individual feedings require a brewer decision. The water-treatment quantity has no recorded unit: Calcium Carbonate (0.5).",
+    "evidence": "The author describes hand-fed kettle sugars, then two packages of S-04 followed by two tubes of WLP099 in fermentation, further dextrose feedings, and two hop rounds with Simcoe and Amarillo.",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      },
+      {
+        "name": "Light Dry Malt Extract",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "118f75600d74152b8e92fb3524b4474133340b4776f394093e5ecfa321b486a3",
+    "source_yeast": "Fermentis S-04 followed by White Labs WLP099"
+  },
+  "public-313b4b6f1e3d4fdb9b698001467c776b": {
+    "additions": [
+      {
+        "amount": 11.339809250000002,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Crushed coriander",
+        "unit": "g",
+        "use": "fermentation"
+      },
+      {
+        "amount": 21.26214234375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Sweet orange peel",
+        "unit": "g",
+        "use": "fermentation"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lemon zest",
+        "unit": "g",
+        "use": "fermentation"
+      },
+      {
+        "amount": 7.08738078125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Lime zest",
+        "unit": "g",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "The original hop placeholders stand for a tablet and honey. The recipe requires a ramekin and the fining tablet has no recorded gram weight.",
+    "edits": [
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "count"
+      },
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 0.1,
+          "Amount": 0.1,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 82,
+          "IBU": 0.0125193587,
+          "Location": 4,
+          "Name": "Other (See Notes)",
+          "Time": 5.0
+        },
+        "path": "/Hops/2",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 0.1,
+          "Amount": 0.1,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 82,
+          "IBU": 0.0227680486,
+          "Location": 3,
+          "Name": "Other (See Notes)",
+          "Time": 10.0
+        },
+        "path": "/Hops/1",
+        "remove": true
+      }
+    ],
+    "evidence": "The author assigns the fining tablet to cage two and honey in a ramekin to cage three. The four cold-side spice weights are specified for secondary or the keg.",
+    "ingredient_edits": [
+      {
+        "name": "Honey",
+        "set": {
+          "minutes": 5,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "0c91391b818a02c146eb31dac4e611aa77383a0c7e70342e12f9cbfeabf57322"
+  },
+  "public-319226ace28d4a5e82b503e8eede3acb": {
+    "blocker": "The form places Irish moss in the fermentation keg while the author only gives an amount. Confirm its intended addition stage and time.",
+    "edits": [
+      {
+        "from": 0.2,
+        "path": "/DryAdjuncts/0/Amount",
+        "to": 0.5
+      },
+      {
+        "from": null,
+        "path": "/DryAdjuncts/0/Units",
+        "to": "tsp"
+      },
+      {
+        "from": "Galena",
+        "path": "/Hops/2/Name",
+        "to": "Brewers Gold"
+      }
+    ],
+    "evidence": "The author specifies half a teaspoon of Irish moss, four pounds of light DME and Brewers Gold in place of Galena.",
+    "source_sha256": "09cef0723ffe75f7d94358d1015ee2167183e34b0d27db8f63d0e94b58b1bbc9"
+  },
+  "public-32f1177de3ce46158d0302b5c6ea185b": {
+    "additions": [
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Ground coriander",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 2.464460796875,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Irish moss",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Ground coriander",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 2.464460796875,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Sweet orange peel",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The transition requires adding candi sugar. The volume-measured spices also have no mass for the cage limit.",
+    "edits": [
+      {
+        "from": {
+          "AdjunctID": 31,
+          "AdjunctRound": 1,
+          "AdjunctType": "Other",
+          "Amount": 0.0,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "Location": 4,
+          "Name": "Other (See Notes)",
+          "Time": 5,
+          "Units": null,
+          "Use": "Other"
+        },
+        "path": "/Adjuncts/1",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctID": 31,
+          "AdjunctRound": 1,
+          "AdjunctType": "Other",
+          "Amount": 0.0,
+          "BoilUse": 0,
+          "Errors": [
+            {
+              "Error": "Amount must be greater than 0.",
+              "Type": 0
+            }
+          ],
+          "Location": 3,
+          "Name": "Other (See Notes)",
+          "Time": 15,
+          "Units": null,
+          "Use": "Other"
+        },
+        "path": "/Adjuncts/0",
+        "remove": true
+      }
+    ],
+    "evidence": "The author calls for clear candi sugar between mash and boil. Cage two at 15 minutes contains coriander and Irish moss; cage three at five minutes contains coriander and sweet orange peel.",
+    "ingredient_edits": [
+      {
+        "name": "Belgian Candi Sugar Clear",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "ac7d9d7d4899a0a9ed3c607932fec48c05eacc662898603b2ab607d23fa4ef30"
+  },
+  "public-337cbf77433d46e09e81e6a591e858aa": {
+    "blocker": "The dry-hop entry says 1.25 without a unit. Confirm the quantity and the fining dose before transfer.",
+    "evidence": "The author specifies a Nelson Sauvin dry hop for seven to ten days. The native mash uses 104, 152 and 168°F.",
+    "source_sha256": "8f89b90d23a33f45b5107cceda71ad9b159e74d9ac3b6d276bc645a8c7341b01",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash rest 1",
+        "target_c": 40.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 90,
+        "name": "Mash rest 2",
+        "target_c": 66.66666666666667
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 20,
+        "name": "Mash out",
+        "target_c": 75.55555555555556
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 90,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-337d812ab36c4b1c976e4fb7c247afea": {
+    "blocker": "The Irish moss dose is zero and the original does not quantify the mixed fermentation addition.",
+    "evidence": "The author describes adding a lambic blend and bottle dregs to fermentation.",
+    "source_sha256": "8bc3ad92e9ad4f7a01223a063f72850ebfa82a4a919bd807c0fed36f5c6ccba8"
+  },
+  "public-355f083b8907405bb4945b1e30045a7e": {
+    "blocker": "Both the coconut and the lime zest have zero recorded quantities.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/DryAdjuncts/1/Name",
+        "to": "Coconut"
+      }
+    ],
+    "evidence": "The author identifies the second fermentation adjunct as coconut.",
+    "source_sha256": "a89aa4944fe5ac4a90f1b8423f4c856fd03ef95bbbd48cb52b6b740278638dfe"
+  },
+  "public-36b11e26e42c41a8907c757e9787df7e": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Sorachi Ace",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.3), Calcium Chloride (0.4).",
+    "evidence": "The author plans dry hops of one ounce each of Citra and Sorachi Ace.",
+    "source_sha256": "3c10c84c2dd45b89bc0613e382551624a4583ad01d5baaf6ef9679fd0b609cd3"
+  },
+  "public-37bb2fdd371f4ad18cf40146e067101b": {
+    "blocker": "The ten-minute Irish moss dose is zero. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.25).",
+    "evidence": "The author combines Tettnanger and Northern Brewer at the same addition time in cage two.",
+    "source_sha256": "65c59d5edad24d0f9c3346a02dbfd98d335ba79a4934c1a93752df6cd1b0d145"
+  },
+  "public-37fb314893de4e0a8411d24c11a28bb0": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1).",
+    "evidence": "The author identifies the yeast as Wyeast 3191 Berliner-Weisse.",
+    "source_sha256": "e2f10e96e3e3f116cd943df470bfa96a455913025c58c0c2e301c1953fb0a5a6",
+    "source_yeast": "Wyeast 3191 Berliner-Weisse"
+  },
+  "public-38d991e911bf4e10b12f94d166d1c819": {
+    "additions": [
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 9.449841041666666,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1), Calcium Chloride (2).",
+    "evidence": "The author specifies two successive dry hops of one third ounce each of Cascade, Citra and Galaxy. First contact lasts three to five days and the next five to seven. Optional hop substitutions are separate alternatives.",
+    "source_sha256": "6a3fe63d3c2d18622faaf71a306d29419de6a4137e1b8e3b0ac4b12008747c0e"
+  },
+  "public-3bbb01dffcc7493b8665980a3aa340a9": {
+    "additions": [
+      {
+        "amount": 17.009713875,
+        "kind": "hop",
+        "minutes": 30,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 17.009713875,
+        "kind": "hop",
+        "minutes": 30,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 29.76699928125,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Falconer's Flight",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 17.009713875,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Cascade",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "A manual flameout bag and later removal are required, and the published program omits the authored advanced mash.",
+    "edits": [
+      {
+        "from": 0.5,
+        "path": "/Adjuncts/0/Amount",
+        "to": 1
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "tsp"
+      },
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "tsp"
+      }
+    ],
+    "evidence": "The author gives half a teaspoon of gypsum and one teaspoon of Irish moss. At flameout, steep 0.6 ounce each of Centennial and Cascade in a keg bag for 30 minutes, then dry hop for seven days.",
+    "source_sha256": "fb5102cdf751b4a4169e36b508a9fb44c5db34b23e3a8a236f6e28388bde369a",
+    "source_yeast": "Danstar Nottingham (preferred)"
+  },
+  "public-3c3179063ec74bd7bc996070988ca003": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "UK Kent Goldings",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.3), Calcium Chloride (0.4).",
+    "evidence": "The author dry hops with half an ounce of UK Kent Goldings, adds a Brettanomyces bruxellensis culture in secondary and ages for six months.",
+    "source_sha256": "0249a7f667903aacf586bbd82e1ae6607c80b061ba42b1a4a51939224c6c52c2"
+  },
+  "public-3ca03fe82261486e818bac7a4f8a8eb2": {
+    "additions": [
+      {
+        "amount": 8,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Juiced lemons, halved",
+        "unit": "count",
+        "use": "mash"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 20,
+        "name": "Lemon rind",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Lemon rind",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 113.3980925,
+        "kind": "misc",
+        "minutes": 20,
+        "name": "Sliced ginger root",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 113.3980925,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Sliced ginger root",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 236.5882365,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Lemon peel",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 473.176473,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Light brown sugar",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The mash ginger amount is not stated independently of its molasses placeholder. The volume and count additions have no cage-weight measurements.",
+    "edits": [
+      {
+        "from": {
+          "Amount": 1.5,
+          "Color": 9.9,
+          "ColorPts": 5.900662251655629,
+          "Errors": [],
+          "FermentableID": 120,
+          "FermentableType": "Sugar",
+          "Name": "Molasses",
+          "PotentialGravity": 14.094194565578304,
+          "Yield": 37.675
+        },
+        "path": "/Fermentables/1",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 13.6,
+          "Amount": 1.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 92,
+          "IBU": 50.9385643,
+          "Location": 3,
+          "Name": "Admiral",
+          "Time": 10.0
+        },
+        "path": "/Hops/1",
+        "remove": true
+      },
+      {
+        "from": {
+          "Amount": 0.25,
+          "Color": 1.0,
+          "ColorPts": 0.09933774834437085,
+          "Errors": [],
+          "FermentableID": 146,
+          "FermentableType": "Sugar",
+          "Name": "Turbindao Sugar",
+          "PotentialGravity": 2.805745434421696,
+          "Yield": 45.0
+        },
+        "path": "/Fermentables/0",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 13.6,
+          "Amount": 1.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 92,
+          "IBU": 85.07507,
+          "Location": 2,
+          "Name": "Admiral",
+          "Time": 20.0
+        },
+        "path": "/Hops/0",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctID": 38,
+          "AdjunctRound": 1,
+          "AdjunctType": "Spice",
+          "Amount": 1.0,
+          "BoilUse": 0,
+          "Errors": [],
+          "Location": 3,
+          "Name": "Lemon Peel, Granules",
+          "Time": 10,
+          "Units": null,
+          "Use": "Spice"
+        },
+        "path": "/Adjuncts/0",
+        "remove": true
+      }
+    ],
+    "evidence": "The author substitutes eight juiced lemons for the turbinado placeholder, shredded ginger for molasses, and lemon rind plus four ounces of sliced ginger in each of the first two cages. The second addition also lists one cup lemon peel and two cups light brown sugar.",
+    "source_sha256": "bf37973880822c0832b96ca8ac88e1edb715f038ddb959214b8f1a888c06a87d",
+    "source_yeast": "Homemade ginger bug"
+  },
+  "public-3ca20e4b185b44b18f930d26d924300f": {
+    "blocker": "A 0.75-pound fermentable is listed only as Other (See Notes). The author left no notes identifying it.",
+    "evidence": "The loading sheet specifies the 5-minute grapefruit peel and coriander and the native cycle uses the fourth route for that charge.",
+    "source_sha256": "e613f88f25d55cc5035be8859313b4f6f012d0887058ae52c353ea15b0cc9d33"
+  },
+  "public-3cecaa77c4274ecea6cc81d9576521e6": {
+    "additions": [
+      {
+        "amount": 9.449841041666668,
+        "kind": "misc",
+        "minutes": 9,
+        "name": "Dried sweet woodruff leaves",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The native program never visits the fourth hopper; it stops after ten minutes in cage three. Confirm the intended flow for the woodruff, moss and nutrient.",
+    "evidence": "The author specifies one third ounce of dried sweet woodruff leaves in the fourth hopper at nine minutes.",
+    "source_sha256": "f80ea2a2030ae38320bbb1c3c03a81b06c072e49e0b35b0103ed6213d397b679"
+  },
+  "public-3e7f0f110e164dfaa058d6a7e623bcd6": {
+    "blocker": "Fresh hop and blueberry cage weights are unavailable. The recorded pellet equivalents cannot verify the physical cage loads.",
+    "evidence": "The author used fresh Cascade in place of pellet equivalents, blueberries in the fourth cage, and one to two pounds of blueberries after primary fermentation.",
+    "source_sha256": "29e1e34de20faa6776aea47834c5ea28973bdf2997e4c57f2a44240624927088"
+  },
+  "public-3e8db975b72c49f68eef95a0b58c114f": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Carbonate (1), Calcium Chloride (1).",
+    "evidence": "The author reports OG 1.073 and FG 1.018. Its earlier Rauch Doppelbock version also leaves the water-treatment units empty.",
+    "source_sha256": "d426a31078253e1df1b5b466d105a4eec0a24e42b06e1dd2be3d542e5d0b08d8"
+  },
+  "public-3f11bbe3a0504abbbeb5eafebc79ace5": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Sweet orange peel",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The archived program never visits the spice cage scheduled for ten minutes.",
+    "evidence": "The author specifies an additional half ounce of sweet orange at ten minutes. The sheet also lists bitter orange and coriander.",
+    "source_sha256": "eff8292457bfd985f6d7afa46448ec6b9a43b6f8957bff48e0f00fe4b7c9f6fc"
+  },
+  "public-3f646033e60546cfb6f703c5274f4a96": {
+    "blocker": "The author did not specify a unit for the bitter orange peel.",
+    "evidence": "The printed first cage has bitter orange peel with Chinook. The complete native sequence gives 60, 20, 10 and 5 minutes of contact. The final cage contains 1.5 ounces each of Galaxy and Citra, so the combined original load must scale down. Four ounces of Galaxy are a separate dry hop with unspecified contact time.",
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "source_sha256": "99eefe70600dc63ec33a562b3eb98761c861f3bf5a30271390478aec212b49a1"
+  },
+  "public-3f9abc1e270048c681f5de0e28a0b40e": {
+    "additions": [
+      {
+        "amount": 36.854380062500006,
+        "kind": "hop",
+        "minutes": 30,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "aroma"
+      }
+    ],
+    "blocker": "The post-boil cooling and keg-bag steep require an operator and the two mineral amounts have no units. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.75), Calcium Chloride (0.75).",
+    "evidence": "The author adds 1.3 ounces of Mosaic in a keg bag below 180°F for a 30-minute steep. With the stated RO water profile the grain bill includes acid malt.",
+    "source_sha256": "1fcf1d6f7995c9bf31b080fb1e682538d01e1e13405aef5cb972519ef594c3b3"
+  },
+  "public-416cc100acb840329f5e8ccaf9eb81bc": {
+    "additions": [
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Nutmeg",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 0.5,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Cinnamon stick",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 0.5,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Vanilla bean",
+        "unit": "count",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The lactose is added manually during the boil and the cage additions are measured by volume and count. The water-treatment quantity has no recorded unit: Calcium Chloride (1).",
+    "evidence": "The author dissolves the lactose in about a pint of hot water and adds it to the keg at 15 minutes. Cage three contains nutmeg, half a cinnamon stick and half a split vanilla bean.",
+    "ingredient_edits": [
+      {
+        "name": "Lactose Milk Sugar",
+        "set": {
+          "minutes": 15,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "c179916ad34d26339e52192ab8119437bcbca0c0541e1d83439096f191d8ee64"
+  },
+  "public-41ba55705470422f8978a4c75e2a42e4": {
+    "blocker": "No positive coriander quantity is given in the ingredient list, loading sheet or notes.",
+    "evidence": "Cage three contains Irish moss at 15 minutes. Coriander seed shares that cage but its recorded amount is zero.",
+    "source_sha256": "31e85beb3aa09f139e8effa111d541121a284d17fa38c7106ce2f894a14c98f5"
+  },
+  "public-41e3d4fa991a42c4a01ac0f8c169e139": {
+    "additions": [
+      {
+        "amount": 2.5,
+        "kind": "water",
+        "minutes": 0,
+        "name": "Post-mash sparge water",
+        "unit": "L",
+        "use": "sparge"
+      }
+    ],
+    "blocker": "The sparge requires an operator. The source also records a batch-size error.",
+    "evidence": "The author specifies a 2.5-liter sparge after the mash. The printed loading sheet places the chocolate in cage two for ten minutes.",
+    "source_sha256": "e026678d6ce51b070e7717a3465d03fa174533cdbf5a58249b9f343210e84895"
+  },
+  "public-422bfd2711c34c189d48cd8c4a33d39c": {
+    "blocker": "The dry-hop variety is unspecified, and the native program never visits the nine-minute Whirlfloc cage.",
+    "evidence": "The author specifies a two-ounce dry hop. Centennial is the only variety in the boil, but the note does not name the dry-hop variety.",
+    "source_sha256": "e38bf2a77d6db8af4f4926298506735e1e69acf9bb338cd80b7ad79f23140c75"
+  },
+  "public-42bded3ee8b94880875f6537b9794c94": {
+    "additions": [
+      {
+        "amount": 226.796185,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Crushed toasted hemp seeds",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The 15-minute Whirlfloc entry has zero quantity.",
+    "evidence": "The author adds half a pound of crushed toasted hemp seeds to the mash. Special Roast and Carafa Special II substitutions are optional.",
+    "source_sha256": "4574f02ae391e772b1a21e8fbcf8e40fc65b025a099aebc89a357666a5df00de"
+  },
+  "public-43845fe661024d5a9149a8559ce4bd43": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "evidence": "The source records equal numbers for calcium sulfate and calcium chloride; the printed instructions supply no unit for either.",
+    "source_sha256": "0aaf6b5c717feae3f360c4e9da7d742fafab0a9b6a8bcfbc88d7ec9660e0d7c9"
+  },
+  "public-44033afea3ba4267be91c68f391c4a7a": {
+    "blocker": "The author gives about 2.5 ounces across three hop varieties but no split or definitive division between whirlpool and fermentation.",
+    "evidence": "The author dilutes to five gallons before whirlpooling, offers a half-size alternative and names Citra, Mosaic and Lemon Drop. The original program pauses and then holds 15 minutes at 190°F.",
+    "source_sha256": "43d82ad27e59d1eaa12c2c876fb5c2abca35bdb4d6e6927d86a8887430b3aab2",
+    "source_yeast": "BSI A72 (reported)"
+  },
+  "public-44778802005e4bea8a5b46709cf1c537": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.5).",
+    "evidence": "The author offers half an ounce of Saphir as an optional dry hop. It stays optional in the instructions.",
+    "source_sha256": "9f07dd6abcaf46e95b1e000eb74d67cd51bc99835020ab9bfa90844afc69f6f9"
+  },
+  "public-45d8f25e29204fe5a450ec139454b941": {
+    "additions": [
+      {
+        "amount": 8.5,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Magnum",
+        "unit": "g",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The fermentation nutrient has zero quantity and its intended dose is unknown. The water-treatment quantity has no recorded unit: Calcium Sulfate (1).",
+    "edits": [
+      {
+        "from": 7.14,
+        "path": "/Fermentables/0/Amount",
+        "to": 6.9
+      }
+    ],
+    "evidence": "The author corrects the two-row charge to 6.9 pounds and incorporates 8.5 g of Magnum in the grain bed.",
+    "source_sha256": "e74dc069e104d7a10795d67e4457c1dd3715e971e3c5f3df9cd7a56702731180"
+  },
+  "public-46e3a8fb5b3841d0840ed51652d0e8f0": {
+    "blocker": "The author did not specify a unit for the licorice root.",
+    "evidence": "The sheet and machine program agree on licorice root alongside Magnum in the first cage for 60 minutes. The author offers US-05 or White Labs California Ale yeast as alternatives.",
+    "source_sha256": "4b6fed483c8a050e0646afcf80d1a75f3680b32f7d368d8e411c136e5eb7133a"
+  },
+  "public-4858288ac5984ccfb19f185be4a0f276": {
+    "edits": [
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.0,
+        "path": "/Amendments/0/Amount",
+        "to": 1
+      },
+      {
+        "from": null,
+        "path": "/Amendments/1/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.0,
+        "path": "/Amendments/1/Amount",
+        "to": 4
+      },
+      {
+        "from": null,
+        "path": "/Amendments/2/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.0,
+        "path": "/Amendments/2/Amount",
+        "to": 2
+      }
+    ],
+    "evidence": "The author specifies the water treatments for RO water before starting the machine: 1 g gypsum, 4 g calcium chloride and 2 g Epsom salt. These measured amounts replace three empty doses.",
+    "source_sha256": "510673ef902fe73740f97aa88a3464e0ff0c3e5210666e117e1afecc653543aa"
+  },
+  "public-489a2f22f8904e92b59db332e6151834": {
+    "blocker": "The water-treatment quantity has no recorded unit: Magnesium Sulfate (4.16).",
+    "evidence": "The author credits a previous porter but gives no measurement unit for the 4.16 magnesium sulfate entry.",
+    "source_sha256": "813461bff25cdca478f8e581e4588297d515794d040c7ee4bfa724c426fdc06e"
+  },
+  "public-48e0814969ad42629054ae627a51f294": {
+    "blocker": "The Irish moss amount is zero. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "evidence": "The records list Irish moss in the ten-minute charge and two water amendments. The author field is empty.",
+    "source_sha256": "4c10da2d98f3885af054f8517d4fafd6a2b2c37f0385e33a355d089521398931"
+  },
+  "public-49d69b299a62471ab66f777c40bf5130": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.5).",
+    "evidence": "The author specifies five days of contact for the two ounces of Nelson Sauvin already listed in the dry-hop section.",
+    "ingredient_edits": [
+      {
+        "name": "Nelson Sauvin",
+        "set": {
+          "minutes": 7200
+        },
+        "use": "dry-hop"
+      }
+    ],
+    "source_sha256": "5175ef1bd7cc6bc54ff8b61349fe1cc7ecc2396058b614882ecb34e192c64264"
+  },
+  "public-4c6878d28b5b49fbb66ce2c55d91077a": {
+    "additions": [
+      {
+        "amount": 3,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Split vanilla beans",
+        "unit": "count",
+        "use": "conditioning"
+      }
+    ],
+    "blocker": "The author did not specify a unit for the Irish moss.",
+    "evidence": "The author specifies three split vanilla beans during conditioning. The two 60-minute Cascade rows have distinct masses (0.55 and 0.15 oz), appear separately in cage one, and run together for the full boil. The moss is in cage three for the last 15 minutes.",
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "source_sha256": "3958da5bb5e03e778d7929b4e5860082c2df4c5629ccfd19bf360cf0cd8145a9"
+  },
+  "public-4e7a7862485d460dab4e257127260f02": {
+    "additions": [
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 2.8,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Gypsum",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 0.9,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Calcium chloride",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 5.1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "85% phosphoric acid",
+        "unit": "mL",
+        "use": "mash"
+      }
+    ],
+    "blocker": "The 10-minute cage already holds the two 0.75-ounce hop charges before the addition of Whirlfloc. Confirm whether the sheet’s half ounce of Whirlfloc was intended or a half tablet.",
+    "evidence": "The author and machine agree on a Hochkurz mash at 145°F for 60 minutes, 158°F for 30 and 170°F for 25. The notes give both dry hop weights and the stated gypsum, calcium chloride and 85% phosphoric acid additions.",
+    "source_sha256": "346b0ef212c4a061d6c3c0819ec7d83038c37789a9b22d0aafa40ee038f72a27",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 60,
+        "name": "Mash rest 1",
+        "target_c": 62.77777777777778
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash rest 2",
+        "target_c": 70.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 25,
+        "name": "Mash out",
+        "target_c": 76.66666666666667
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 20,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-4f2d349da1154f6eb59ad4d2d91f879a": {
+    "additions": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Ripe pineapple, chopped",
+        "unit": "count",
+        "use": "fermentation"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Pineapple juice, 32 oz can",
+        "unit": "count",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "The author did not specify a unit for the coriander seed and orange peel.",
+    "evidence": "The author adds one chopped pineapple and a 32-ounce can of preservative-free pineapple juice during secondary fermentation. The original boil program and load sheet agree on the coriander and orange peel cage.",
+    "source_sha256": "8580a8abf46cb461a66b124df71c8af69ef282e791338ec4a09f6f1e9e85b13e"
+  },
+  "public-538a29bc3fca4fdabafa10cd0e081669": {
+    "blocker": "There is no cinnamon dose, and neither the ingredients nor the notes identify the apricot component named in the title.",
+    "evidence": "The original lists a ten-minute lactose addition. Cinnamon appears separately in fermentation at zero amount.",
+    "source_sha256": "940ca555881140df992543ccba1ddb208e96ae363e0d2958cf286ccc725b8c58"
+  },
+  "public-53e34b452d404a27b20bc5c00cfbde0b": {
+    "additions": [
+      {
+        "amount": 425.242846875,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Roasted pumpkin",
+        "unit": "g",
+        "use": "mash"
+      },
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Nutmeg",
+        "unit": "mL",
+        "use": "fermentation"
+      },
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Powdered ginger",
+        "unit": "mL",
+        "use": "fermentation"
+      },
+      {
+        "amount": 1.2322303984375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Allspice",
+        "unit": "mL",
+        "use": "fermentation"
+      },
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Cinnamon stick",
+        "unit": "count",
+        "use": "fermentation"
+      },
+      {
+        "amount": 4.92892159375,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Vanilla extract",
+        "unit": "mL",
+        "use": "fermentation"
+      }
+    ],
+    "blocker": "The additional unnamed 5-minute item cannot be identified from the notes, which place the spices in fermentation.",
+    "evidence": "The author roasts one 15-ounce can of pumpkin and loads it with the grain. About three days into fermentation, add nutmeg, ginger, allspice, a cinnamon stick and vanilla extract.",
+    "source_sha256": "084678a366030ba6ecc2f42f6688a20be93eb833de6adaf4fd3164129cfe8804"
+  },
+  "public-53e50d73fbd84c8c8968a66c1ee39370": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Carbonate (0.8), Calcium Chloride (0.5).",
+    "evidence": "The author names the supplier only. The source specifies calcium carbonate and calcium chloride without dosage units.",
+    "source_sha256": "8e365adf4e24ae7c5fed4c4c3535ef4ba0b82cb1c2346b43a7bf1de20896c997"
+  },
+  "public-5448ee98d38b4bb1981587ac1c3bff5b": {
+    "blocker": "The form instead records a 5-minute star anise charge in an unvisited cage. The author’s 10-minute directions do not confirm whether the 0.2-ounce charge is the same.",
+    "edits": [
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 7.7,
+          "Amount": 0.1,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 13,
+          "IBU": 1.9624002,
+          "Location": 4,
+          "Name": "Cluster",
+          "Time": 10.0
+        },
+        "path": "/Hops/2",
+        "remove": true
+      },
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 7.7,
+          "Amount": 0.1,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 13,
+          "IBU": 4.15882158,
+          "Location": 3,
+          "Name": "Cluster",
+          "Time": 30.0
+        },
+        "path": "/Hops/1",
+        "remove": true
+      }
+    ],
+    "evidence": "The author replaces the 30-minute hop with anise and the 10-minute hop with star anise and brown sugar. The 204°F setpoint reflects the author’s altitude.",
+    "ingredient_edits": [
+      {
+        "name": "Brown Sugar",
+        "set": {
+          "minutes": 10,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "8000db828c8fec24048ae941910ad0c17c39c44fcdd437b651c9dd14350ccd8c"
+  },
+  "public-57a63a460ec64150b3e1ead53011460f": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1), Calcium Chloride (1).",
+    "evidence": "The source records both calcium sulfate and calcium chloride. Neither the empty author field nor the machine record provides dosing units.",
+    "source_sha256": "235e28fe492cda552c98c4bc2b949c95e7e164022fb11726599d92c75235419c"
+  },
+  "public-5a740f9224ad4546b30f96c12051f003": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (0.85), Calcium Chloride (0.85).",
+    "evidence": "The loading sheet and machine cycle agree on the timed hop cages. Calcium sulfate and calcium chloride both have the same numerical amount without a unit.",
+    "source_sha256": "c9450b590d172f3c52be465e6df2a2cb45ecc3e08e1b11b6e9918034d167cf33"
+  },
+  "public-5b4b558eb4d94e079bb738266d05857a": {
+    "blocker": "It is unclear whether the 7.35-pound two-row entry already includes the author’s extra 0.77 pound.",
+    "edits": [
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.375,
+        "path": "/Amendments/0/Amount",
+        "to": 1.5
+      }
+    ],
+    "evidence": "The author records 1.5 g of gypsum in the mash water and reports accidentally weighing an extra 0.77 pound of two-row. The archived load sheet lists 7.35 pounds of two-row.",
+    "source_sha256": "ca8bd6bbcbe52184770fb08ec39bf330554830cdbe1d7185dea22d2a27dcebbc"
+  },
+  "public-5b9c8c530c5741c5827857039ba2092a": {
+    "blocker": "The truffle juice is given as 12 ounces without a mass or volume basis. The calcium chloride entry is zero, and the native program has no stage for the 20-minute finings. The water-treatment quantity has no recorded unit: Calcium Chloride (0).",
+    "evidence": "The author specifies black truffle juice after fermentation begins, with a cold pitch and lagering sequence. The printed source lists Irish moss and yeast nutrient for the second stage.",
+    "source_sha256": "ab383408d397f74e1a23f6f9abcfed84ed51ee98ccb9043743e61285957ce63e"
+  },
+  "public-5bb105fbc8fa4ebfb93b5ae04d682979": {
+    "additions": [
+      {
+        "amount": 12.19029494375,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Lime zest",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 12.19029494375,
+        "kind": "misc",
+        "minutes": 5,
+        "name": "Sweet orange peel",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      },
+      {
+        "amount": 1.15,
+        "kind": "misc",
+        "minutes": 15,
+        "name": "Yeast nutrient blend",
+        "slot_addition": true,
+        "unit": "g",
+        "use": "boil"
+      }
+    ],
+    "edits": [
+      {
+        "from": {
+          "AdjunctRound": 1,
+          "Alpha": 0.1,
+          "Amount": 0.01,
+          "BoilUse": 0,
+          "Errors": [],
+          "HopID": 17,
+          "IBU": 0.00120231439,
+          "Location": 4,
+          "Name": "Czech Saaz",
+          "Time": 5.0
+        },
+        "path": "/Hops/2",
+        "remove": true
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/0/Units",
+        "to": "oz"
+      },
+      {
+        "from": null,
+        "path": "/Adjuncts/1/Units",
+        "to": "oz"
+      }
+    ],
+    "evidence": "The author replaces the five-minute Saaz placeholder with lime zest, sweet orange peel, ginger and coriander, with 1.15 g of yeast nutrient at 15 minutes. The native cage times match.",
+    "slot_additions": [
+      "Ginger Root",
+      "Coriander Seed"
+    ],
+    "source_sha256": "8282864073a13bc6801200a225c69e1e749148426ad3e2a7796f57f2115db0a9"
+  },
+  "public-5bd5ad49870740c5afa4ee4bd7a18ca8": {
+    "blocker": "Irish moss is entered in the fermentation additions without a unit or contact time. No original instruction confirms its dose or use.",
+    "evidence": "The author identifies Mangrove Jack’s Bavarian Wheat M20 as the yeast actually used.",
+    "source_sha256": "a19420b6d5aea4525080ec6372c98222d277a68e320fd59990a2dfa748a1d44e",
+    "source_yeast": "Mangrove Jack’s Bavarian Wheat M20"
+  },
+  "public-5bdcb4a9e2be42ef838f7d10cada2fdb": {
+    "additions": [
+      {
+        "amount": 236.5882365,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Brown sugar for caramel",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 118.29411825,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Half-and-half",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 59.147059125,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Butter",
+        "unit": "mL",
+        "use": "boil"
+      },
+      {
+        "amount": 14.78676478125,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Vanilla extract",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "A manual ten-minute keg addition is required and the printed sea salt row does not agree with a measured hot-side dose in the instructions.",
+    "evidence": "The author makes caramel with brown sugar, half-and-half, butter, a pinch of salt and vanilla. Dissolve the DME and lactose in cold water and add with the caramel in the final ten minutes.",
+    "ingredient_edits": [
+      {
+        "name": "Light Dry Malt Extract",
+        "set": {
+          "minutes": 10,
+          "use": "boil"
+        },
+        "use": "mash"
+      },
+      {
+        "name": "Lactose Milk Sugar",
+        "set": {
+          "minutes": 10,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "0ac5e1ca57eda8fecc5654864e7f9e8447861b62162946ad4e83a0cedd9dcc7d"
+  },
+  "public-5be33ab250674b85b9d04261bf553121": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (10).",
+    "evidence": "The Whirlfloc load is in the five-minute cage. The water treatment field contains calcium sulfate with amount ten but no unit.",
+    "source_sha256": "42e5900ef667cd2d099ad18f507e5a46f762f596e3da5bec78dd0201cf98bd31"
+  },
+  "public-5cf5c28aa15e4670892a1288a15495f5": {
+    "blocker": "The intended amounts of mint and raspberry purée and their combined cage weight are unknown.",
+    "edits": [
+      {
+        "from": "Other (See Notes)",
+        "path": "/Adjuncts/1/Name",
+        "to": "Mint leaves"
+      }
+    ],
+    "evidence": "The author identifies the unnamed ten-minute ingredient as mint leaves. The sheet puts it with raspberry purée and Saaz in the same cage. The quantities 10 and 28 have no units.",
+    "source_sha256": "22bb8e2b634b323b5a1125bceeaf713e290b700069f3781e95f2b427c27f7bb0"
+  },
+  "public-5e7a417b2258446f9b6e7dabcae7fa83": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (1).",
+    "evidence": "The author names the supplier. Calcium chloride has a numerical amount but the preparation and ingredient records omit the unit.",
+    "source_sha256": "8f68cd42715c3a4f553691fd71a374cb507f5226732c37f6f6216b1815903527"
+  },
+  "public-5ec428fb7c7545408530e347ec349eb1": {
+    "blocker": "The fermentation stage and dose for Irish moss are unconfirmed.",
+    "evidence": "The only adjunct is Irish moss assigned to the fermentation keg. Its amount is one without a unit, and the author field is empty.",
+    "source_sha256": "bcda780c290b8f99099eaef75731a43e42c41e9982dc95f40dcdbc8572ced498"
+  },
+  "public-62650d2efbd345d7a380ab73e400377c": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.75).",
+    "evidence": "The author used RO water with calcium chloride, records how the wort was chilled, and added one ounce of Citra as a dry hop.",
+    "source_sha256": "18ce099bdb62100e927a9165577c96b0a2a496578cad9c7b4fbe33b25691961f"
+  },
+  "public-62de608ab705440fa78f79f970b9686f": {
+    "blocker": "Positive amounts for Irish moss and coriander are missing.",
+    "evidence": "The third cage is scheduled at 15 minutes for Irish moss and coriander. Both ingredient records and the printed sheet give zero.",
+    "source_sha256": "1ac6010ff37d1c543d2dcad970c142de45a53706bb735be0d6d9eec0f27c550a"
+  },
+  "public-630da4ac80a4439c986123057ff6f0b0": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (0.5).",
+    "evidence": "The source calls for a half-unit of calcium chloride. Its author field and loading instructions do not specify a unit.",
+    "source_sha256": "9ed3d647a2a8b892a8671fe7328b8078d1d33a1ea5fadfa2e2dbdc77948d05d4"
+  },
+  "public-63c15eb2055942bd855c1e700dd9b125": {
+    "blocker": "The chip and bourbon doses for the alternative are missing. The one-unit Whirlfloc record is printed as one ounce without an author-confirmed dose.",
+    "evidence": "The author offers bourbon barrel conditioning or oak chips soaked with bourbon and a vanilla bean for four weeks before secondary.",
+    "source_sha256": "f185019b5bbe939c1610c488d271c6ac3a0cba87fa9ab5667b359aab3dd52c99"
+  },
+  "public-6437803a35d84e5bb7479b03419a3300": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Centennial",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The dissolved corn sugar needs a manual pre-hop boil addition.",
+    "edits": [
+      {
+        "from": 3.35,
+        "path": "/H2O",
+        "to": 4
+      }
+    ],
+    "evidence": "The author starts with four gallons of water, dissolves the corn sugar for the pre-hop boil and adds half an ounce each of Centennial, Mosaic and Galaxy at one week.",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "set": {
+          "minutes": 60,
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "b9d2f8c92a8a950a69b11bfd8f51638938b5ee72b82533d51dcb18c786bea269"
+  },
+  "public-64484760d75642eaaeba6d1b279dfe32": {
+    "blocker": "The syrup timing is unspecified, and the native spice cage opens at a different time than the 12-minute declaration.",
+    "evidence": "The author adds dark candi syrup during the boil, ferments two to three weeks at 69–70°F, then bottle conditions for three weeks.",
+    "ingredient_edits": [
+      {
+        "name": "Belgian Dark Candi Syrup",
+        "set": {
+          "use": "boil"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "8edd1ff583e082e062e2ae7fb0c18ba9efb2887c900286a322bc9232f6672468"
+  },
+  "public-64cc8b44c7134f8d8799148839349864": {
+    "additions": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Cinnamon stick, 3 inch",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 4,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Crushed allspice berries",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 8,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Cardamom seeds",
+        "unit": "count",
+        "use": "boil"
+      },
+      {
+        "amount": 4.92892159375,
+        "kind": "misc",
+        "minutes": 10,
+        "name": "Dried orange zest",
+        "unit": "mL",
+        "use": "boil"
+      }
+    ],
+    "blocker": "The source program does not visit the ten-minute spice cage. The measured counts and volumes also lack weights for cage sizing.",
+    "edits": [
+      {
+        "from": "Belgian Pale Ale",
+        "path": "/Fermentables/3/Name",
+        "to": "LD Carlson German pale ale malt"
+      },
+      {
+        "from": {
+          "AdjunctID": 31,
+          "AdjunctRound": 1,
+          "AdjunctType": "Other",
+          "Amount": 0.5,
+          "BoilUse": 4,
+          "Errors": [],
+          "Location": 3,
+          "Name": "Other (See Notes)",
+          "Time": 10,
+          "Units": null,
+          "Use": "Other"
+        },
+        "path": "/Adjuncts/0",
+        "remove": true
+      }
+    ],
+    "evidence": "The author identifies the spice charge as one 3-inch cinnamon stick, four crushed allspice berries, one teaspoon dried orange zest and eight cardamom seeds. The listed Belgian pale is LD Carlson German pale ale malt.",
+    "source_sha256": "56299679f37866e38ea49d484ccb581ce34cccf5570d35cbbb28f34200e8c172"
+  },
+  "public-6510ccc268a84cadb589976fb149fe91": {
+    "additions": [
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 42.5242846875,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Simcoe",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "edits": [
+      {
+        "from": null,
+        "path": "/Amendments/0/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.0,
+        "path": "/Amendments/0/Amount",
+        "to": 3.6
+      },
+      {
+        "from": null,
+        "path": "/Amendments/1/Units",
+        "to": "g"
+      },
+      {
+        "from": 0.0,
+        "path": "/Amendments/1/Amount",
+        "to": 3.6
+      },
+      {
+        "from": "Belgian Pale Ale",
+        "path": "/Fermentables/0/Name",
+        "to": "Patagonia Pale Malt"
+      }
+    ],
+    "evidence": "The author records 3.6 g each of calcium sulfate and calcium chloride in 3.8 gallons, 1.5 ounces each of Citra and Simcoe dry hops, and Patagonia pale malt. Both one-minute boil hops occupy the second cage. The target brewer scales that shared load.",
+    "resolve_warnings": [
+      "The original source contains errors; these are retained in notes and require review."
+    ],
+    "source_sha256": "0f3f731f7c760bb130f519c3da8cf4091534b0a9ff14076802bdb87ed2c15ad8"
+  },
+  "public-657f09848b5e4adbabb6588a0c878424": {
+    "blocker": "Both herb identities are missing. The original program confirms the timing only.",
+    "evidence": "The original loads two separate 1.5-ounce herb rows in the first cage. Both have a pair of quote marks for the name.",
+    "source_sha256": "08566f93e2f66b9da73d23a04c92f80138af977dfe02b993b61c3aa66fb106bd"
+  },
+  "public-664ee13374154ce6add1202bd123b344": {
+    "additions": [
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Mosaic",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Sulfate (1), Calcium Chloride (1.5).",
+    "evidence": "The author gives half an ounce each of Galaxy and Mosaic for the first dry hop and repeats that amount for the second. The first contact is three to five days and the second five to seven. The kettle-bag method is optional.",
+    "source_sha256": "32f50b404622d7eb8e2fa6ed1308e73ca9c6747c0fc4ede5c963b88413d49c8f"
+  },
+  "public-6811e75e8e12400ba8f23ed25f634016": {
+    "blocker": "The note lists half an ounce with two hop names and does not distinguish equal individual doses from a combined amount. The water-treatment quantity has no recorded unit: Calcium Chloride (0.25).",
+    "evidence": "The author specifies Cascade and Amarillo for dry hopping.",
+    "source_sha256": "f8575966242824f39c7cce8cafd8410d94a0c053136205e7368a9331ebabedcf"
+  },
+  "public-698878b24c484280ac9669432f932c9f": {
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Chloride (1).",
+    "evidence": "The original records one unit of calcium chloride. The previous Dubbel Rouge record has no calcium chloride entry from which to recover its unit.",
+    "source_sha256": "3139d3c8c7d48887e4eb0b1c2c2c4f0649f59a0d0852fb3af292daedcd3eee1f"
+  },
+  "public-69f88a2f3b2c43b294eebf9eeae3f18b": {
+    "additions": [
+      {
+        "amount": 1,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Clarity Ferm",
+        "unit": "count",
+        "use": "fermentation"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 2880,
+        "name": "Amarillo",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "No Whirlfloc dose is stated. The water-treatment quantity has no recorded unit: Calcium Sulfate (1), Magnesium Sulfate (0.5).",
+    "evidence": "The author uses Whirlfloc with 20 minutes left and one vial of Clarity Ferm at pitching. The dry hop is one ounce of Amarillo two days before transfer.",
+    "source_sha256": "a9342f514c0a5a5f17045c9f69b5d380ab08a8b5b1a4d6d37e2439843d2dc35c"
+  },
+  "public-6be871eeebb34214bbaef28b74681685": {
+    "blocker": "The staged acid malt loading requires operator input and must not be combined with the initial grain bill. The author did not specify a unit for the green coriander and sea salt.",
+    "edits": [
+      {
+        "from": "Coriander Seed",
+        "path": "/Adjuncts/0/Name",
+        "to": "Green coriander seeds"
+      }
+    ],
+    "evidence": "The author separates the acid malt until the programmed mash pause, and calls for fresh green coriander. The native program explicitly pauses before its second 149°F mash.",
+    "source_sha256": "f3a30f46263afc96e300875ff0df99536dd8d1962cff255da5670f6d6258c185"
+  },
+  "public-6c8ac8b7ed374c78bacc3a918ce47738": {
+    "additions": [
+      {
+        "amount": 226.796185,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Seedless blackberry purée",
+        "unit": "g",
+        "use": "fermentation"
+      },
+      {
+        "amount": 0.5,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Campden tablet",
+        "unit": "count",
+        "use": "fermentation"
+      },
+      {
+        "amount": 0.2365882365,
+        "kind": "water",
+        "minutes": 0,
+        "name": "Water for corn-sugar syrup",
+        "unit": "L",
+        "use": "fermentation"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 10080,
+        "name": "Citra",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The original boil program ends at chilling without the authored Mosaic stand and the note does not specify the unit of the quarter portion of whole-cone Mosaic.",
+    "evidence": "The author holds at 130°F for 20 minutes, then adds eight ounces of seedless blackberry purée by weight after three to four days, plus a crushed half Campden tablet, two ounces of corn sugar in one cup of water and a secondary Citra dry hop.",
+    "ingredient_edits": [
+      {
+        "name": "Corn Sugar (Dextrose)",
+        "set": {
+          "amount": 0.05669904625,
+          "use": "fermentation"
+        },
+        "use": "mash"
+      }
+    ],
+    "source_sha256": "258c240018a6d94cf862b67d6c9a12951467365c7f1e3d4556e1a36a88b53cb2"
+  },
+  "public-70d6f75242af4420a6c29c52931124df": {
+    "additions": [
+      {
+        "amount": 59.147059125,
+        "kind": "misc",
+        "minutes": 0,
+        "name": "Scharffen Berger chocolate",
+        "unit": "mL",
+        "use": "packaging"
+      }
+    ],
+    "blocker": "The water-treatment quantity has no recorded unit: Calcium Carbonate (0.5).",
+    "carbonation": {
+      "volumes": 2.5
+    },
+    "evidence": "The author specifies a quarter cup of Scharffen Berger at packaging and targets 2.5 volumes of CO₂. Both packaging options use the chocolate mixed with cooled water.",
+    "source_sha256": "79b86717b825f3ca9f871471f9c4ea961356450ce5d28178e9da817c28f89b24"
+  },
+  "public-70f3cc47a1bc4409bb37f0fd87f36799": {
+    "blocker": "The loading sheet declares 15-minute finings but the advanced cycle gives cage two ten minutes. The vinegar finishing process is manual.",
+    "evidence": "The author describes a 3.75-gallon finished vinegar base and a starting fill near five gallons. The original advanced mash rests at 104, 140, 158 and 175°F.",
+    "source_sha256": "12265554eafac0f2b22a5543a86a228e108bcb0520782beb19e01b85887c3a93",
+    "steps": [
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 30,
+        "name": "Mash rest 1",
+        "target_c": 40.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 35,
+        "name": "Mash rest 2",
+        "target_c": 60.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash",
+        "location": 0,
+        "minutes": 35,
+        "name": "Mash rest 3",
+        "target_c": 70.0
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "mash-out",
+        "location": 0,
+        "minutes": 10,
+        "name": "Mash out",
+        "target_c": 79.44444444444444
+      },
+      {
+        "drain_minutes": 0,
+        "kind": "boil",
+        "location": 0,
+        "minutes": 90,
+        "name": "Boil",
+        "target_c": 97.22222222222221
+      }
+    ]
+  },
+  "public-711ea378c38f4d3cb74451b3317480ce": {
+    "additions": [
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Summer",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Nelson",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Enigma",
+        "unit": "g",
+        "use": "aroma"
+      },
+      {
+        "amount": 56.69904625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Galaxy",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 28.349523125,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Summer",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Enigma",
+        "unit": "g",
+        "use": "dry-hop"
+      },
+      {
+        "amount": 14.1747615625,
+        "kind": "hop",
+        "minutes": 0,
+        "name": "Nelson",
+        "unit": "g",
+        "use": "dry-hop"
+      }
+    ],
+    "blocker": "The original native schedule ends with its ten-minute boil addition and has no hop stand. The author gives no stand duration or temperature. The water-treatment quantity has no recorded unit: Calcium Sulfate (0.5), Calcium Chloride (0.5).",
+    "evidence": "The author names Imperial Juice yeast and four one-ounce kettle-stand additions. The dry hop uses twice as much Galaxy as Summer and half-ounce Enigma and Nelson additions.",
+    "source_sha256": "a535df5d0eae2f261a5f9e24afda399af940064c26211b909d4f191ce990f575",
+    "source_yeast": "Imperial Juice"
+  }
+}
