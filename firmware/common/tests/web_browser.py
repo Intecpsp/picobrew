@@ -41,6 +41,7 @@ def main():
                         if name in descriptors: descriptors[name]={'allowed':fields,'required':[] if name=='encoder' else fields[:2] if name=='set-fan' else fields}
                     info = {'api_version':1,'mode':'standalone','model':model,'model_name':{'z-series':'Pico Z','picoferm':'PicoFerm','picostill':'PicoStill'}[model],'model_family':model,'firmware_version':'1.2.0-fixture','commands':allowed,'command_fields':descriptors,'settings_fields':['temperature_unit','language','detailed_status'] if brewing else ['temperature_unit'],'recipe_capacity':16 if brewing else 0,'step_capacity':15 if brewing else 0,'front_panel':brewing,'telemetry_forwarding':True,'capabilities':{'recipes':brewing,'brewing':brewing,'heating':brewing,'front_panel':brewing,'temperature':True,'pressure':not brewing,'battery':model=='picoferm','fermentation':model=='picoferm','pump':model!='picoferm','fans':model=='picostill'}}
                     info['z_program_maker']=brewing
+                    info['history_sample_interval_ms']=720000 if model=='picoferm' else 15000
                     saved_recipes={}
                     sensors = [{'id':'temperature','label':'Temperature','kind':'temperature','unit':'F','value':68.5},{'id':'pressure_native','label':'Pressure','kind':'pressure','unit':'raw','value':532.125},{'id':'battery','label':'Battery','kind':'voltage','unit':'V','value':3.8}] if model=='picoferm' else [{'id':'inlet','label':'Inlet','kind':'temperature','unit':'F','value':152.1},{'id':'outlet','label':'Outlet','kind':'temperature','unit':'F','value':145.2},{'id':'pot','label':'Pot','kind':'temperature','unit':'F','value':170.4},{'id':'ambient','label':'Ambient','kind':'temperature','unit':'F','value':68.1},{'id':'pressure','label':'Pressure','kind':'pressure','unit':'kPa','value':6.89}]
                     actuators=[] if model!='picostill' else [{'id':'pump','label':'Pump','kind':'pump','enabled':False,'level':None,'rpm':None},{'id':'fan1','label':'Fan 1','kind':'fan','enabled':True,'level':25,'rpm':1200},{'id':'fan2','label':'Fan 2','kind':'fan','enabled':False,'level':0,'rpm':0}]
@@ -116,6 +117,9 @@ def main():
                             page.get_by_label('Device API key',exact=True).fill(KEY)
                             page.locator('#submitConnect').click()
                     expect(page.locator('#connectionText')).to_have_text('Connected')
+                    care={'z-series':'every three brews','picoferm':'gray fermentation seal','picostill':'condenser column'}
+                    expect(page.locator('#careAdvice')).to_contain_text(care[model])
+                    expect(page.locator('#careManual')).to_have_attribute('href',re.compile(r'^https://picobrewcontent\.blob\.core\.windows\.net/content/.+\.pdf#page=\d+$'))
                     assert commands==[], 'Connecting caused a mutation'
                     if brewing:
                         expect(page.locator('#displayHint')).to_have_text('LIVE OLED · 128 × 64')
@@ -151,6 +155,16 @@ def main():
                         page.locator('[data-tab="recipes"]').click()
                         page.locator('#newRecipe').click()
                         expect(page.locator('#zProgramOptions')).to_be_visible()
+                        for field, invalid, valid in [
+                            (page.locator('#recipeName'),'Café','Cafe'),
+                            (page.get_by_label('Step name',exact=True).first,'Mäsh','Mash'),
+                            (page.locator('#recipeId'),'bad/id','valid_id-1')
+                        ]:
+                            field.fill(invalid)
+                            assert field.evaluate('(input)=>input.validity.patternMismatch')
+                            field.fill(valid)
+                            assert field.evaluate('(input)=>input.checkValidity()')
+                        page.once('dialog',lambda dialog:dialog.accept())
                         page.locator('#zSample').click()
                         expect(page.locator('#steps tr')).to_have_count(7)
                         original={'Name':'Original hops','IsBeer':False,'UsePicoPakMode':True,'IsMetric':True,
@@ -162,6 +176,7 @@ def main():
                         expect(page.get_by_label('Duration in minutes and seconds').first).to_have_value('90:01')
                         expect(page.get_by_label('Flow path').nth(1)).to_be_disabled()
                         page.locator('#zUnits').select_option('F')
+                        expect(page.locator('#stepTimeHeading')).to_have_text('Hold (min:sec)')
                         expect(page.get_by_label('Target temperature').first).to_have_value('152.78')
                         page.locator('#zUnits').select_option('C')
                         with page.expect_download() as downloaded:
@@ -186,6 +201,7 @@ def main():
                         expect(page.get_by_text('Thermoblock',exact=True)).to_be_hidden()
                         assert not any(path.startswith(('/display','/recipes')) for _,path in requests)
                         if model=='picoferm':
+                            expect(page.get_by_label('Sampling interval (seconds)')).to_have_value('720')
                             dialogs=[]
                             def cancel(dialog):dialogs.append(dialog.message);dialog.dismiss()
                             page.once('dialog',cancel);page.get_by_role('button',name='Calibrate pressure',exact=True).click();assert commands==[]
@@ -215,6 +231,19 @@ def main():
                             expect(page.get_by_label('Fan enabled',exact=True)).to_be_checked()
                             page.get_by_role('button',name='Set fan',exact=True).click()
                             expect(page.locator('#notice')).to_contain_text('accepted');assert commands[-1]=={'command':'set-fan','channel':2,'level':35,'enabled':True}
+                            actuators[0]['enabled']=True
+                            expect(page.locator('#fanCoolingHint')).to_be_visible()
+                            fan_level=page.get_by_label('Fan level (%)',exact=True)
+                            fan_enabled=page.get_by_label('Fan enabled',exact=True)
+                            apply_fan=page.get_by_role('button',name='Set fan',exact=True)
+                            fan_level.fill('60');expect(apply_fan).to_be_disabled()
+                            fan_level.fill('61');expect(apply_fan).to_be_enabled()
+                            fan_enabled.uncheck();expect(apply_fan).to_be_disabled()
+                            fan_enabled.check();apply_fan.click()
+                            expect(page.locator('#notice')).to_contain_text('accepted');assert commands[-1]=={'command':'set-fan','channel':2,'level':61,'enabled':True}
+                            page.get_by_label('Fan channel',exact=True).fill('1')
+                            expect(page.locator('#fanCoolingHint')).to_be_hidden()
+                            expect(apply_fan).to_be_enabled()
                     page.screenshot(path=str(output/f'{model}-{width}.png'),full_page=True)
                     assert page.evaluate('document.documentElement.scrollWidth<=innerWidth+1'), 'Horizontal page overflow'
                     page.locator('[data-tab="history"]').click()

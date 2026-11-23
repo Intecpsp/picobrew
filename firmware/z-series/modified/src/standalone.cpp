@@ -82,7 +82,7 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.5";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.6";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.z_program_maker=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};

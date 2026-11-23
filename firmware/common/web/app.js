@@ -15,6 +15,11 @@ const programLabels = {'sous-vide':'Sous vide', 'cold-brew':'Cold brew', manual:
   rinse:'Rinse', 'first-rinse':'First rinse', descale:'Descale', circulate:'Circulate',
   'drain-reservoir':'Drain reservoir', 'drain-filter':'Drain step filter', 'rack-beer':'Rack beer',
   clean:'Clean',drain:'Drain',chill:'Chill',utilities:'Utilities menu', settings:'Settings menu'};
+const careGuides = {
+  'z-series': ['Rinse after every brew. Run Clean after every three brews or before leaving the brewer unused for more than a couple of weeks.', 'z/Z_Manual.pdf#page=36'],
+  picostill: ['After each use, clean the condenser column and removable parts. Soak the copper parts in the recommended cleaning solution, then rinse thoroughly. Keep the upper electronics dry.', 'picostill/PicoStill_Manual.pdf#page=58'],
+  picoferm: ['Before attaching PicoFerm to a Pico C keg, sanitize the underside of the gray fermentation seal and let it air-dry. Depressurize the keg before removing or replacing PicoFerm.', 'picoferm/PicoFerm_Manual.pdf#page=5']
+};
 
 function notify(message, error=false) {
   $('notice').textContent = message;
@@ -102,7 +107,7 @@ function updateControls() {
   $('saveRecipe').disabled = !ready || busy;
   $('deleteRecipe').disabled = !ready || busy || !state.editorId;
   $('saveSettings').disabled = !ready || busy;
-  document.querySelectorAll('[data-action]').forEach(button=>button.disabled=!state.connected || state.pending || !allowedCommand(button.dataset.action) || !PicoDevice.accessoryActionAllowed(button.dataset.action,state.status));
+  document.querySelectorAll('[data-action]').forEach(button=>button.disabled=!state.connected || state.pending || !allowedCommand(button.dataset.action) || !PicoDevice.accessoryActionAllowed(button.dataset.action,state.status) || !!button.form?.matches(':invalid'));
   $('accessoryStop').disabled=!state.connected || state.pending || !allowedCommand('stop');
   apiExplorer?.update();
   brewHistory?.update();
@@ -116,6 +121,12 @@ function renderIdentity(info) {
 }
 function applyCapabilities(info) {
   state.info=info;
+  const care=Object.hasOwn(careGuides,info.model) ? careGuides[info.model] : null;
+  $('careGuide').hidden=!care;
+  if(care) {
+    $('careAdvice').textContent=care[0];
+    $('careManual').href='https://picobrewcontent.blob.core.windows.net/content/'+care[1];
+  }
   document.body.classList.toggle("accessory",!hasFeature("brewing"));
   $("recipeRoutingHeader").textContent="Flow path";
   document.querySelectorAll('[data-feature]').forEach(node=>node.hidden=!hasFeature(node.dataset.feature));
@@ -147,15 +158,21 @@ function renderActions() {
         if(type==='checkbox')input.checked=!!value;else{input.min=minimum;input.max=maximum;input.step='1';input.value=value;}
         wrapper.append(input);form.append(wrapper);return input;
       };
-      if(name==='set-fan') {add('channel','Fan channel','number',1,2,1);add('level','Fan level (%)','number',0,100,0);add('enabled','Fan enabled','checkbox',0,0,false);}
+      if(name==='set-fan') {
+        add('channel','Fan channel','number',1,2,1);add('level','Fan level (%)','number',0,100,0);add('enabled','Fan enabled','checkbox',0,0,false);
+        const hint=document.createElement('p');hint.id='fanCoolingHint';hint.className='hint';hint.hidden=true;
+        hint.textContent='While the pump is running, keep fan 2 on at 61% or higher.';form.append(hint);
+        form.elements.level.setAttribute('aria-describedby',hint.id);form.elements.enabled.setAttribute('aria-describedby',hint.id);
+      }
       else if(name==='set-pump')add('enabled','Pump enabled','checkbox',0,0,false);
-      else add('value','Sampling interval (seconds)','number',60,86400,300);
+      else add('value','Sampling interval (seconds)','number',60,86400,state.info.history_sample_interval_ms/1000 || '');
       form.addEventListener('input',event=>{
         if(event.target.name==='channel') {delete form.dataset.edited;syncActuatorForm(form);}
         else {
           form.dataset.edited='true';
           if(event.target.name==='level')form.elements.enabled.checked=Number(event.target.value)>0;
         }
+        updateControls();
       });
       const button=document.createElement('button');button.type='submit';button.className='button';button.dataset.action=name;button.textContent=labels[name];form.append(button);
       form.addEventListener('submit',event=>{event.preventDefault();if(!form.reportValidity())return;
@@ -180,6 +197,12 @@ function renderActions() {
 }
 function syncActuatorForm(form) {
   const name=form.dataset.command;
+  if(name==='set-fan') {
+    const coolingRequired=form.elements.channel.value==='2' && state.status?.actuators?.some(item=>item.id==='pump' && item.enabled===true);
+    form.elements.level.min=coolingRequired?61:0;
+    form.elements.enabled.required=!!coolingRequired;
+    $('fanCoolingHint').hidden=!coolingRequired;
+  }
   if(form.dataset.edited || (name!=='set-fan' && name!=='set-pump'))return;
   const id=name==='set-fan'?'fan'+form.elements.channel.value:'pump';
   const reading=state.status?.actuators?.find(item=>item.id===id);
@@ -327,7 +350,7 @@ function addZStep(step={Name:'Mash',StepType:1,Location:2,Temp:65,Time:3600,Drai
     return control;
   }
   const name=field('input','Step name');
-  name.maxLength=20;name.required=true;name.value=step.Name;
+  name.maxLength=20;name.pattern='[ -~]{1,20}';name.title='Use printable ASCII characters.';name.required=true;name.value=step.Name;
   const type=field('select','Step type');
   type.add(new Option('Brew step','1'));type.add(new Option('Pause for operator','2'));
   type.value=String(step.StepType);
@@ -401,7 +424,7 @@ function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_
   for (const [field,type,min,max] of definitions) {
     const cell=document.createElement('td');let input;
     if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
-    else {input=document.createElement('input');input.type=type;if(type==='text')input.maxLength=21;else{input.min=min;input.max=max;input.step=1;}}
+    else {input=document.createElement('input');input.type=type;if(type==='text'){input.maxLength=21;input.pattern='[ -~]{1,21}';input.title='Use printable ASCII characters.';}else{input.min=min;input.max=max;input.step=1;}}
     input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
     input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
   }
@@ -419,7 +442,7 @@ function editRecipe(recipe, existing=false) {
   $('zBeer').checked=program?.IsBeer===true;
   $('recipeName').maxLength=program ? 20 : 31;
   $('stepTarget').textContent='Target °'+(program ? $('zUnits').value : 'F');
-  $('stepTime').textContent=program ? 'Hold (min:sec)' : 'Minutes';
+  $('stepTimeHeading').textContent=program ? 'Hold (min:sec)' : 'Minutes';
   $('stepDrain').textContent=program ? 'Drain (min:sec)' : 'Drain min';
   $('recipeLimits').textContent=program ? 'Up to 15 steps. A pause waits for the operator to continue.' : 'Up to 15 steps. A target of 0 means unheated circulation.';
   $('recipeRoutingHint').textContent=program ? 'Import or export Z Program Maker JSON. Use minutes:seconds for exact timing.' : 'Choose the flow path for each step.';
