@@ -1,7 +1,7 @@
 # Community sources and project scope
 
 All project work lives in
-[`jeffreydwalter/picobrew-pico-pro-firmware`](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware).
+[`jeffreydwalter/picobrew`](https://github.com/jeffreydwalter/picobrew).
 Firmware is organized by machine under `firmware/`, the self-contained Hub
 application is under `server/`, and general repository tools are under
 `tools/`. Other repositories are read-only sources for reverse engineering,
@@ -9,7 +9,7 @@ manuals, recipes and artwork.
 
 | Repository | Role here |
 | --- | --- |
-| [picobrew-pico-pro-firmware](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware) | Canonical home for machine firmware, the Hub server, catalogue and documentation. Each machine has `oem/`, `reverse-engineered/` and `modified/` directories. |
+| [picobrew](https://github.com/jeffreydwalter/picobrew) | Canonical home for machine firmware, the Hub server, catalogue and documentation. Each machine has `oem/`, `reverse-engineered/` and `modified/` directories. |
 | [chiefwigms/picobrew_pico](https://github.com/chiefwigms/picobrew_pico) | Source of the complete pinned `app/firmware` archive: all 27 files across Pico S/Pro, Pico C, PicoFerm, PicoStill and Z-series. |
 | [jeffreydwalter/picobrew_pico](https://github.com/jeffreydwalter/picobrew_pico) | Read-only fork used for protocol/behavioral references, recipes and artwork. Applicable MIT notices remain with reused material. |
 | [picobrew-server](https://github.com/jeffreydwalter/picobrew-server) | Historical source of earlier Hub and catalogue work. Its Tom Herold Python Zymatic application is an external reference, not an installed component here. |

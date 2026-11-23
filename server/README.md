@@ -1,30 +1,19 @@
 # PicoBrew Hub
 
-A shared brewing workspace: a Go server and React/TypeScript console for a fleet of PicoBrew machines, a versioned recipe library, persistent brew history, and optional AI assistance. Each brewer keeps its own local interface and continues to own its control loop.
+The Hub runs on your computer or Raspberry Pi and serves a browser interface for machine controls, recipes, and brew history. For first-time setup, machine compatibility, and your first brew, start with the [PicoBrew owner guide](../README.md).
 
-**Version 0.1.0.** The Hub is the fleet-management component of
-[`picobrew-pico-pro-firmware`](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware).
-The project is reverse engineering Pico C, S/Pro, Z-family and Zymatic firmware
-to provide the same standalone REST contract and local browser experience as
-the custom S/Pro firmware. See the [project roadmap](../docs/project-roadmap.md).
-The standalone adapter supports S/Pro, reconstructed C, generic Z-series,
-PicoStill and PicoFerm. It discovers each device's real controls, sensors,
-settings and display capabilities. C includes explicit SSD1325/SSD1309 display
-geometry and firmware package matching; Z includes its 128 × 64 grayscale
-panel. These source builds and software tests do not establish physical
-installation or brewing. Stock Zymatic firmware can fetch [published recipes over the LAN](docs/stock-zymatic.md). See
-[support and feature coverage](docs/coverage.md).
+Custom Pico S, Pro, C, generic Z-series, PicoStill, and PicoFerm firmware reports its controls and sensors to the Hub. Custom Zymatic firmware offers a wired interface whose capabilities depend on the installed build. An unmodified Zymatic 1.1.14 can fetch recipes from the Hub over its original LAN protocol. Stock Pico S, Pro, C, and Z-series firmware have no equivalent Hub adapter. [Feature coverage](docs/coverage.md) · [Stock Zymatic setup](docs/stock-zymatic.md)
 
 ## Run locally on Windows, macOS or Linux
 
-Install Go **1.26 or newer** and GNU Make. The server includes the compiled
-website and uses a pure-Go SQLite driver. Building and running it does not
-require Node, npm, a C compiler, or a separate SQLite installation.
+For a ready-to-run executable, follow the [owner setup guide](../README.md#set-up-the-hub). To build the current Hub from source, install [Go 1.26 or newer](https://go.dev/doc/install) and Git. The website and SQLite driver are included. From Terminal or PowerShell, get the source and enter the Hub directory.
 
-The application is self-contained in `server/`: its Go module, frontend,
-catalog, tests, Dockerfile and Compose configuration are all in that directory.
-It builds and runs without the sibling firmware trees. From either the repository
-root or `server/`, build and start the Hub with:
+```sh
+git clone https://github.com/jeffreydwalter/picobrew.git
+cd picobrew/server
+```
+
+If GNU Make is installed, run the following command. The equivalent Go commands below work without Make.
 
 ```sh
 make server-start
@@ -58,15 +47,11 @@ choose where that launch stores its database.
 
 Open **http://127.0.0.1:8080**. Authenticated mode listens on the host's network interfaces at port 8080 so machines can report back to the Hub; an explicit `--listen` still overrides that default. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart. Demo mode remains restricted to loopback.
 
-On **Overview**, click **Add machine**, choose **Pico standalone firmware**, and enter the brewer's current URL and the API key provisioned with its firmware. The Hub reads the model from model-aware firmware automatically, verifies the machine's UID, and sets up the machine's reporting connection back to the Hub. Firmware 1.2.0 has separate Pico S and Pico Pro build identities; older firmware can use an explicit model selection when identification is unavailable. The server must be able to reach the brewer's URL. Use the key file saved when that brewer was provisioned; see the [API key provisioning guide](../firmware/pico-s-pro/modified/docs/standalone-provisioning.md). Enter it in the local browser form. The hub encrypts it at rest and does not send it back to the browser.
+On **Brewery → Add machine**, select **Pico standalone firmware**. Enter a name and a **Machine URL** that the Hub host can reach. Click **Add machine** and follow the pairing instructions. On firmware with dial pairing, confirm the displayed code on the brewer. If you just completed USB setup in the Hub, continue from that setup so the Hub can use the key it saved. Older firmware can use **Use an existing key instead**.
 
-The address `http://picobrew.s.local` can be used when the server host resolves it. If a container or remote host cannot resolve that name, use the current IP shown on the brewer. Adding a machine starts capability discovery, status polling and history reads. It does not start a brew.
+The Hub checks the machine identity and discovers its controls. Use the brewer’s current IP if its hostname resolves on your browser’s computer but fails on the Hub host. Open **Manage machine** on the machine page to test the connection, open its local website on pairing-capable firmware, or copy its device key. [Machine connections and API keys](docs/device-connections.md)
 
-Edit or remove a connection from its Overview card or its individual machine page, including while it is offline. **Edit connection** manages the Hub registration; **Brewer preferences** changes settings on an online brewer. Removing a registration retains its archived Hub brew history. Active-operation restrictions still apply. See [machine connections and API keys](docs/device-connections.md).
-
-Use a unique provisioned API key for each physical brewer. The Hub shows **Shared API key** when the same hexadecimal credential is recorded for more than one physical-machine registration, including disabled records. This is an advisory, so existing connections remain usable. Entering a replacement in the Hub updates its saved credential; it does not provision or rotate the key on the brewer.
-
-### Explore the simulator first
+## Explore the simulator first
 
 From `server/`, after building:
 
@@ -80,12 +65,12 @@ This seeds three simulated brewers, two example recipes and three historical bre
 
 ## What you can do
 
-- **Manage a fleet.** See each machine's connection, state, temperature and active recipe. Open several machines in separate tabs while the fleet continues streaming updates.
+- **Manage a fleet.** The **Brewery** page shows each machine’s connection, state, temperature, and active recipe. You can follow simultaneous brews there and open any machine for its controls.
 - **Operate standalone devices.** C/S/Pro and Z expose their physical screen and dial, installed recipes and advertised maintenance programs. PicoStill exposes its actual pump, fans, temperatures, pressure and operating modes. PicoFerm exposes fermentation sessions, samples, its sampling interval and explicitly confirmed pressure calibration. The console exposes only the capabilities reported by that device.
 - **Create a recipe.** Choose a brewer, enter grain weights and hop times, and set the mash rests. Review the bin loading list and schedule before saving. The wizard uses the selected equipment profile, with Z batches sized for one module. Choose **Advanced editor** to carry the draft into the full editor for unusual schedules or detailed planning. Zymatic recipes can be published to the stock brewer’s sync menu.
 - **Curate recipes.** Maintain ingredients, mash/boil steps, water chemistry, fermentation and carbonation details, tags and notes. Every save creates a revision; simultaneous edits are detected. Import/export JSON and BeerXML, and aggregate selected recipes into a shopping list.
-- **Browse the recipe archives.** In **Recipes → Browse all**, search 5,216 curated recipe/program entries and save them to **My recipes**. Source details and credits remain available when needed. Native PicoPak programs retain their exact routing and timings, including zero-minute heating steps; they have no invented ingredient quantities or batch volume. See [catalog contents and provenance](docs/community-catalog.md).
-- **Adapt and deploy.** Save measured model defaults in Settings, preview the proportional ingredient load and estimated yield for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
+- **Browse community recipes.** Open **Recipes → Browse all** for ingredient recipes with machine programs across the supported brewing profiles. **Sources & credits → Browse source archive** also includes original PicoPak schedules and records with unresolved instructions. Copy a recipe to **My recipes** to edit it. [Catalog contents and provenance](docs/community-catalog.md)
+- **Send a recipe.** Save measured model defaults in Settings, preview the proportional ingredient load and estimated yield for the target model, review warnings and compartment routing, then deploy the compiled recipe to one idle machine. Deployment and starting are separate actions. The original library recipe stays intact.
 - **Transfer several programs.** Select library entries and preview what fits on a brewer. Existing recipes are preserved by default; matching updates require an explicit choice. Confirm the reviewed batch to write and verify each program. Receipts identify verified, skipped and unconfirmed entries, including after a Hub restart. The machine page can also edit the installed slots used by the brewer's own interface.
 - **Keep the brew record.** Import retained sessions automatically, preserve their available sensor samples beyond the device's ring buffer, chart temperatures and phase/controller state, add notes and ratings, and export JSON or CSV. Disconnections, truncated data and unknown start times remain visible.
 - **Create recipes with AI.** In the full recipe editor, choose **Ask the brew assistant** to generate a structured draft, optionally using a saved recipe as a starting point. Review the draft in the recipe editor before saving, adapting or deploying it.
@@ -118,11 +103,11 @@ The C/S/Pro profiles use **5 L and approximately 50% efficiency** from Small Bre
 
 ## Brewing workflow
 
-1. Create or import a recipe in the shared library.
-2. Select a target machine or equipment profile. Adaptation starts with that profile's configured batch size; choose another valid volume if needed. Review the scaled ingredients and any deployment blockers. A planning preview remains available before all machine routing is assigned.
-3. Assign the actual physical compartment for every machine step. An imported recipe does not establish plumbing; unknown mappings block deployment. Infusions, decoction and timed ramps that the native protocol cannot represent also block deployment.
-4. Deploy while the machine is ready at its main menu. The server verifies the stored program; it does not start it.
-5. Choose **Open** on the transfer receipt to see the installed recipe selected on the brewer. Choose **Start recipe** and confirm **Start program** to send the REST start command. You can enable AI monitoring in that confirmation. If the brewer displays a preparation question, answer it using the Hub’s mirrored front panel.
+1. Create an ingredient recipe in **Recipes → Add recipe → Create for a brewer**, import one, or save an editable copy from **Browse all**. The brewer chosen in the wizard sets the source batch size, ingredient limits, and hop slots.
+2. Open the saved recipe, choose **Send**, and select the **Target machine**. The Hub uses the target’s profile and scales all measured ingredients in the same proportion to fit the grain basket, hop slots, and applicable batch limits. The resulting volume is an estimated yield.
+3. Review the scaled ingredients, loading instructions, and program. The Hub routes supported mash and boil additions automatically. A source with ambiguous flow paths or an unsupported step carries a deployment blocker. Existing native programs retain their original schedule and model restrictions.
+4. Choose **Send to machine** on a valid preview when the standalone brewer is ready. The Hub reads back the installed program. For an original Zymatic, choose **Stock Zymatic · sync menu** and **Publish to brewer menu**, then select the program on the brewer. [Stock Zymatic setup](docs/stock-zymatic.md)
+5. On a compatible standalone brewer, choose **Open** on the transfer receipt to see the installed recipe selected on the brewer. Choose **Start recipe** and confirm **Start program** to send the REST start command. You can enable AI monitoring in that confirmation. If the brewer displays a preparation question, answer it using the Hub’s mirrored front panel.
 6. Watch progress on the fleet or machine page, where you can also enable or disable monitoring for the current brew. The journal imports available retained samples. Open that brew's journal entry for notes, a rating, exports and optional AI result analysis.
 
 A successful HTTP command response means the firmware accepted the request. It is not evidence that heating or pumping has begun. An uncertain command delivery is recorded and never automatically retried. Dedicated pause/resume appears only when advertised by the device. C/S/Pro retains its existing front-panel workflow; the Hub does not infer unsupported controls. See [family controls and history](docs/family-devices.md) for the Z and accessory behavior.
@@ -153,7 +138,7 @@ A cloud host needs a private route to the machines, such as a site VPN. This rel
 
 ## Firmware packages
 
-Set the GitHub repository and optional branch in **Workspace settings → Firmware**. The Hub checks for newer versions daily and shows notices on Overview. Open a machine's **Firmware** view to **Check for Updates**, select any available version, and choose **Download** or **Install**. The Hub stages the selected package on demand. Installation requires an idle, eligible Pico S or Pro with provisioned recovery. See the [firmware version and package guide](docs/firmware-packages.md).
+Set the GitHub repository and optional branch in **Settings → Firmware**. The Hub checks daily and displays update notices on **Brewery**. On the machine page, open **Firmware**, choose an available version, and select **Install** or **Download**. Installation requires an idle, eligible Pico S or Pro with verified recovery. The Hub fetches the selected package on demand. **Check for Updates** refreshes the list immediately. [Firmware packages and restoration](docs/firmware-packages.md)
 
 ## Live readings and receiver settings
 
@@ -242,7 +227,7 @@ by that variable.
 |---|---|
 | `cmd/picobrew-hub` | Process configuration and graceful shutdown |
 | `internal/server` | HTTP API, owner sessions, encrypted credentials, fleet orchestration, history import, optional AI monitor |
-| `internal/device` | C/S/Pro standalone REST adapter and deterministic, stateful simulator |
+| `internal/device` | Capability-aware standalone device adapters and a stateful simulator |
 | `internal/recipe` | Canonical recipe validation, adaptation, native compilation, JSON/BeerXML exchange |
 | `internal/catalog` | Pinned offline recipes, native programs, original records, illustrations and source provenance |
 | `internal/store` | SQLite migrations, record versions, encrypted blobs, deduplicated telemetry |
