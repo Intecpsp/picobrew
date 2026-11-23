@@ -48,6 +48,23 @@ func digest(path string) (string, int64) {
 	return hex.EncodeToString(hash.Sum(nil)), n
 }
 
+// Publish metadata as one file; simultaneous builds never see a truncated manifest.
+func saveMetadata(path string, data []byte) error {
+	file, err := os.CreateTemp(filepath.Dir(path), ".manifest-")
+	if err != nil {
+		return err
+	}
+	defer os.Remove(file.Name())
+	_, err = file.Write(data)
+	if closeErr := file.Close(); err == nil {
+		err = closeErr
+	}
+	if err != nil {
+		return err
+	}
+	return os.Rename(file.Name(), path)
+}
+
 func stage(local, destination string) error {
 	host := runtime.GOOS + "-" + runtime.GOARCH
 	var index Index
@@ -87,7 +104,7 @@ func stage(local, destination string) error {
 		if raw, err := os.ReadFile(meta); err == nil && string(raw) == string(metaData) {
 			return nil
 		}
-		return os.WriteFile(meta, metaData, 0644)
+		return saveMetadata(meta, metaData)
 	}
 	var src io.ReadCloser
 	if fromRelease {
@@ -139,7 +156,7 @@ func stage(local, destination string) error {
 	if err = os.Rename(temp.Name(), dest); err != nil {
 		return err
 	}
-	return os.WriteFile(meta, metaData, 0644)
+	return saveMetadata(meta, metaData)
 }
 
 func main() {

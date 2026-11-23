@@ -145,9 +145,13 @@ def run(request, stream, emit, discover=devices):
     # and readback. A restarting Hub cannot overlap a surviving worker.
     try:
         with usb_avr.service_lock(directory):
-            return _service(request, stream, emit, entries, action, model, port, display, data, job, expected)
+            return _service(
+                request, stream, emit, entries, action, model, port, display, data, job, expected
+            )
     except usb_avr.ServiceBusy:
-        raise UserError("Another USB operation is still using this Hub. Wait for it to finish.") from None
+        raise UserError(
+            "Another USB operation is still using this Hub. Wait for it to finish."
+        ) from None
 
 
 def _service(request, stream, emit, entries, action, model, port, display, data, job, expected):
@@ -193,6 +197,7 @@ def _service(request, stream, emit, entries, action, model, port, display, data,
         stable = identity[1] or identity[2]
         if action == "install" and not stable:
             raise UserError("The Zymatic USB port needs a stable hardware identity for installation.")
+
         def key_path(uid):
             if not isinstance(uid, str) or not re.fullmatch(r"[0-9a-f]{32}", uid):
                 raise UserError("The Zymatic image has an invalid pairing identity.")
@@ -285,6 +290,7 @@ def _service(request, stream, emit, entries, action, model, port, display, data,
 
 
 def self_test():
+    import build as zymatic_build
     import cc_service
     import esp_usb
     import esp_provisioning
@@ -294,7 +300,6 @@ def self_test():
     import pico_flash_install as cc
     import serial
     import usb_avr
-    import usb_application
     import usb_stock
 
     if (
@@ -317,7 +322,11 @@ def self_test():
         )
         cc.load_web_bundle(cc.C_FIRMWARE / "web", model)
     usb_avr.programmer()
-    usb_application.build.template()
+    zymatic_build.template()
+    if (ZYMATIC / "usb_layout.py").is_file():
+        import usb_layout
+
+        usb_layout.for_version("1.2.0").template()
     for model in ("z-series", "picostill", "picoferm"):
         _, parts = esp_usb.reference(model)
         profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"

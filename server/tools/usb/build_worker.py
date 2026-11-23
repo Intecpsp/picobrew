@@ -229,6 +229,21 @@ def project_files():
         *ROOT.glob("firmware/zymatic/modified/zymatic_history.h"),
         *ROOT.glob("firmware/zymatic/modified/tools/boot_evidence.py"),
     ]
+    zymatic = ROOT / "firmware/zymatic/modified"
+    if (zymatic / "tools/usb_layout.py").is_file():
+        patterns.extend(
+            f"firmware/zymatic/modified/{resource}"
+            for resource in (
+                "extension/low.bin",
+                "extension/crc-hole.bin",
+                "extension/1.2.0/extension.bin",
+                "extension/1.2.0/extension.json",
+                "zymatic_pairing.h",
+                "tools/oem_tables.py",
+                "tools/release_1_2.py",
+                "tools/usb_layout.py",
+            )
+        )
     files = set(extra)
     for pattern in patterns:
         matches = list(ROOT.glob(pattern))
