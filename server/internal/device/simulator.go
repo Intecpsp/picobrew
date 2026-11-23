@@ -270,6 +270,19 @@ func (s *simulator) Recipes(ctx context.Context) ([]domain.MachineRecipe, error)
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result, nil
 }
+func (s *simulator) Recipe(ctx context.Context, id string) (domain.MachineRecipe, error) {
+	if err := simulationContext(ctx); err != nil {
+		return domain.MachineRecipe{}, err
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	recipe, exists := s.recipes[id]
+	if !exists {
+		return domain.MachineRecipe{}, &Error{StatusCode: 404, Code: "recipe_not_found", Message: "Recipe not found"}
+	}
+	return cloneRecipe(recipe), nil
+}
+
 func (s *simulator) CreateRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
 	return s.writeRecipe(ctx, recipe, true)
 }

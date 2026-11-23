@@ -232,6 +232,11 @@ func (p *pico) discover(ctx context.Context) (domain.Capabilities, error) {
 		p.capabilities = nil
 		return domain.Capabilities{}, err
 	}
+	// The AVR overlay has no device-preference endpoint. An omitted list on
+	// early CC3200 firmware, in contrast, means the original three settings.
+	if capabilities.Model == "zymatic" && capabilities.SettingsFields == nil {
+		capabilities.SettingsFields = []string{}
+	}
 	p.capabilities = &capabilities
 	result := capabilities
 	result.Commands = append([]string(nil), capabilities.Commands...)
@@ -285,23 +290,43 @@ func (p *pico) Recipes(ctx context.Context) ([]domain.MachineRecipe, error) {
 	}
 	result := make([]domain.MachineRecipe, 0, len(list.Recipes))
 	for _, summary := range list.Recipes {
-		if !recipeID.MatchString(summary.ID) {
-			return nil, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe ID"}
-		}
-		var recipe domain.MachineRecipe
-		if err := p.request(ctx, http.MethodGet, "/api/v1/recipes/"+summary.ID, nil, &recipe, 200); err != nil {
+		recipe, err := p.readRecipe(ctx, summary.ID)
+		if err != nil {
 			return nil, err
-		}
-		if recipe.ZProgram != nil {
-			recipe.Name = recipe.ZProgram.Name
-		}
-		if recipe.ID != summary.ID || validateRecipe(recipe) != nil {
-			return nil, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe"}
 		}
 		result = append(result, recipe)
 	}
 	return result, nil
 }
+func (p *pico) Recipe(ctx context.Context, id string) (domain.MachineRecipe, error) {
+	if err := p.lock(ctx); err != nil {
+		return domain.MachineRecipe{}, err
+	}
+	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("recipes") {
+		return domain.MachineRecipe{}, unsupportedCapability("recipes")
+	}
+	return p.readRecipe(ctx, id)
+}
+
+// readRecipe reads one slot while the caller holds the adapter lock.
+func (p *pico) readRecipe(ctx context.Context, id string) (domain.MachineRecipe, error) {
+	if !recipeID.MatchString(id) {
+		return domain.MachineRecipe{}, &Error{Code: "invalid_response", Message: "Invalid machine recipe ID"}
+	}
+	var recipe domain.MachineRecipe
+	if err := p.request(ctx, http.MethodGet, "/api/v1/recipes/"+id, nil, &recipe, 200); err != nil {
+		return domain.MachineRecipe{}, err
+	}
+	if recipe.ZProgram != nil {
+		recipe.Name = recipe.ZProgram.Name
+	}
+	if recipe.ID != id || validateRecipe(recipe) != nil {
+		return domain.MachineRecipe{}, &Error{Code: "invalid_response", Message: "Device returned an invalid recipe"}
+	}
+	return recipe, nil
+}
+
 func (p *pico) CreateRecipe(ctx context.Context, recipe domain.MachineRecipe) error {
 	return p.writeRecipe(ctx, recipe, true)
 }
@@ -468,20 +493,32 @@ func (p *pico) Command(ctx context.Context, command domain.Command) error {
 	}
 	return nil
 }
-func (p *pico) readMap(ctx context.Context, path string) (map[string]any, error) {
+func (p *pico) readMap(ctx context.Context, resource string) (map[string]any, error) {
 	if err := p.lock(ctx); err != nil {
 		return nil, err
 	}
 	defer p.unlock()
+	if p.capabilities != nil {
+		switch resource {
+		case "settings":
+			if p.capabilities.SettingsFields != nil && len(p.capabilities.SettingsFields) == 0 {
+				return nil, unsupportedCapability("device preferences")
+			}
+		case "telemetry":
+			if !p.capabilities.Supports("telemetry_forwarding") {
+				return nil, unsupportedCapability("telemetry forwarding")
+			}
+		}
+	}
 	var result map[string]any
-	err := p.request(ctx, http.MethodGet, path, nil, &result, 200)
+	err := p.request(ctx, http.MethodGet, "/api/v1/"+resource, nil, &result, 200)
 	return result, err
 }
 func (p *pico) Settings(ctx context.Context) (map[string]any, error) {
-	return p.readMap(ctx, "/api/v1/settings")
+	return p.readMap(ctx, "settings")
 }
 func (p *pico) Telemetry(ctx context.Context) (map[string]any, error) {
-	return p.readMap(ctx, "/api/v1/telemetry")
+	return p.readMap(ctx, "telemetry")
 }
 func (p *pico) UpdateSettings(ctx context.Context, settings map[string]any) error {
 	if err := validateSettings(settings); err != nil {
@@ -508,5 +545,8 @@ func (p *pico) UpdateTelemetry(ctx context.Context, settings map[string]any) err
 		return err
 	}
 	defer p.unlock()
+	if p.capabilities != nil && !p.capabilities.Supports("telemetry_forwarding") {
+		return unsupportedCapability("telemetry forwarding")
+	}
 	return p.request(ctx, http.MethodPut, "/api/v1/telemetry", settings, nil, 200)
 }

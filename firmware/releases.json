@@ -614,6 +614,80 @@
       "archive_sha256": "546b642238c4b9820fac7cb91a745e4f20a13a33a3eb8cc7cd32dcd5e407b15b",
       "binary_sha256": "d7c8ad7efe11eda6a009a605f1914132eb59436e56fdf9f97e138e74c439bb9f",
       "binary_bytes": 164136
+    },
+    {
+      "model": "pico-pro",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.9",
+      "kind": "standalone",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "archive_sha256": "417d5309a64f71230ae09a0a6b8d204081aa9268eef4128dff40491a21b564b1",
+      "binary_sha256": "56de7a4798a225149b8f334db816ac7ccb575b2d4bc8c2fbaeea70847efdea59",
+      "binary_bytes": 169536,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-s",
+      "model_family": "pico-s-pro",
+      "firmware_version": "1.3.9",
+      "kind": "standalone",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "archive_sha256": "e6d909e879307cc21a7747c8c2152dde4d8c980ea5658c80849a9918d2957980",
+      "binary_sha256": "db924ea93c57a27e7a78539ebf4b76487f100eb0b588bc608ee84bdc8d759e9a",
+      "binary_bytes": 169528,
+      "hub_ota_protocol": 1
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.8",
+      "kind": "standalone",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "display_variant": "ssd1309",
+      "archive_sha256": "b35bf09daa023e7db4c5ad3b4437f0e9f29e14d9da29d5b14c1df7ae62d0b637",
+      "binary_sha256": "293506900d6fe720afe081cc5b8aff42b5b6101e81876d5c9e82dde098559ffb",
+      "binary_bytes": 164056
+    },
+    {
+      "model": "pico-c",
+      "model_family": "pico-c",
+      "firmware_version": "1.2.8",
+      "kind": "standalone",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "display_variant": "ssd1325",
+      "archive_sha256": "31b1f4904c69b645202cfd73d8aa109cca98750d92babc07aeb45d0450578b75",
+      "binary_sha256": "782fa7c5f5cfc9cb3b03df0b1efc564a4c7879ce4fbc1c7a049d3e2a74f51d8a",
+      "binary_bytes": 164136
+    },
+    {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.7",
+      "kind": "reference",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "archive_sha256": "787bdb23d9c6a9cb0d90701533601983f2dc6e8827c76af447f15757cca408ef",
+      "binary_sha256": "4afcbcab43542e2e0cf2e4567c5c3ffb099947d2fad7cd3953170898cdf1ad63",
+      "binary_bytes": 1649936
+    },
+    {
+      "model": "picostill",
+      "model_family": "picostill",
+      "firmware_version": "1.2.5",
+      "kind": "reference",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "archive_sha256": "224cb778bb0bc43fb5519f8989588ea2194cc3f543984184a6e9b3f2b7b8a4f0",
+      "binary_sha256": "7238bb840b1fe81f79f77d7ae749511a3dd5cf32e5b6e65c5fd08e1a3c94a955",
+      "binary_bytes": 808624
+    },
+    {
+      "model": "picoferm",
+      "model_family": "picoferm",
+      "firmware_version": "1.2.5",
+      "kind": "reference",
+      "source_commit": "415821af15657b691bd8618b9d1d739aa9f7eb2d",
+      "archive_sha256": "773f4669bbf0980f6668493a952a949301e2b391a96e07e8616e29578dc97463",
+      "binary_sha256": "74bb0c9f3b053285698142f63a5881269c0ba669fef412ba94e0aae6c0d3e4e9",
+      "binary_bytes": 395072
     }
   ]
 }

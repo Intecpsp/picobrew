@@ -16,6 +16,7 @@ type Adapter interface {
 	Status(context.Context) (domain.Status, error)
 	Display(context.Context) (domain.Display, error)
 	Recipes(context.Context) ([]domain.MachineRecipe, error)
+	Recipe(context.Context, string) (domain.MachineRecipe, error)
 	CreateRecipe(context.Context, domain.MachineRecipe) error
 	PutRecipe(context.Context, domain.MachineRecipe) error
 	DeleteRecipe(context.Context, string) error

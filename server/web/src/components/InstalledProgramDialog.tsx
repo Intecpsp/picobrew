@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { RefreshCw, Save } from 'lucide-react'
 import { useHub } from '../context'
-import { api, errorMessage } from '../lib/api'
+import { api, APIError, errorMessage } from '../lib/api'
 import { copyProgram } from '../lib/programs'
 import type { MachineRecipe } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
@@ -42,7 +42,13 @@ export function InstalledProgramDialog({
       onClose()
     } catch (error) {
       setError(errorMessage(error))
-      setRefreshRequired(true)
+      // These Hub rejections happen before a write. Keep the draft editable.
+      const rejectedBeforeWrite =
+        error instanceof APIError &&
+        ['invalid_json', 'invalid_recipe', 'unsupported_recipe', 'machine_not_idle'].includes(
+          error.code
+        )
+      setRefreshRequired(!rejectedBeforeWrite)
     } finally {
       setBusy('')
     }

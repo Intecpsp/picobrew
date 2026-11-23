@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"reflect"
 	"sort"
+	"strings"
 	"sync"
 	"testing"
 	"time"
@@ -25,6 +26,7 @@ type transferAdapter struct {
 	writes, commands, failAt int
 	busy                     bool
 	arriveDuringCreate       *domain.MachineRecipe
+	afterWrite               func(map[string]domain.MachineRecipe)
 }
 
 func (a *transferAdapter) Discover(context.Context) (domain.Capabilities, error) {
@@ -50,6 +52,16 @@ func (a *transferAdapter) Recipes(context.Context) ([]domain.MachineRecipe, erro
 	sort.Slice(result, func(i, j int) bool { return result[i].ID < result[j].ID })
 	return result, nil
 }
+func (a *transferAdapter) Recipe(_ context.Context, id string) (domain.MachineRecipe, error) {
+	a.mu.Lock()
+	defer a.mu.Unlock()
+	r, found := a.programs[id]
+	if !found {
+		return domain.MachineRecipe{}, &device.Error{StatusCode: 404, Code: "recipe_not_found"}
+	}
+	r.Steps = append([]domain.MachineStep(nil), r.Steps...)
+	return r, nil
+}
 func (a *transferAdapter) PutRecipe(_ context.Context, r domain.MachineRecipe) error {
 	return a.writeRecipe(r, false)
 }
@@ -70,6 +82,9 @@ func (a *transferAdapter) writeRecipe(r domain.MachineRecipe, create bool) error
 	a.writes++
 	r.Steps = append([]domain.MachineStep(nil), r.Steps...)
 	a.programs[r.ID] = r
+	if a.afterWrite != nil {
+		a.afterWrite(a.programs)
+	}
 	if a.failAt == a.writes {
 		return &device.Error{Code: "transport_error", Message: "Response lost after write", UnknownOutcome: true}
 	}
@@ -257,6 +272,15 @@ func TestInstalledProgramEditingChecksStaleAndBusyState(t *testing.T) {
 	edited.Steps[1].Minutes = 45
 	url := fmt.Sprintf("%s/api/v1/devices/bulk/recipes/one", h.URL)
 	in := MachineRecipeUpdate{Recipe: edited, Expected: expected}
+	// An omitted hold must not become a command to advance immediately.
+	wire, err := json.Marshal(in)
+	if err != nil {
+		t.Fatal(err)
+	}
+	malformed := strings.Replace(string(wire), `"minutes":45,`, "", 1)
+	if code, body := request(t, c, "PUT", url, csrf, json.RawMessage(malformed), nil); code != 400 || a.writes != 0 {
+		t.Fatalf("incomplete slot edit: %d %s (writes %d)", code, body, a.writes)
+	}
 	a.busy = true
 	code, body := request(t, c, "PUT", url, csrf, in, nil)
 	if code != 409 || a.writes != 0 {
@@ -346,5 +370,70 @@ func TestNewTransferSlotCannotReplaceAConcurrentArrival(t *testing.T) {
 				t.Fatal("collision overwrote the slot")
 			}
 		})
+	}
+}
+
+func TestBulkTransferPreservesLaterSlotChangedOnBrewer(t *testing.T) {
+	for _, removed := range []bool{false, true} {
+		t.Run(fmt.Sprintf("removed=%t", removed), func(t *testing.T) {
+			s, h, c := newTestServer(t)
+			csrf := signIn(t, c, h.URL)
+			a := newTransferAdapter()
+			installTestDevice(t, s, "bulk", a)
+			first := putTransferSource(t, s, "one")
+			second := putTransferSource(t, s, "two")
+			prior := *second.NativeProgram
+			prior.Name = "Previously installed"
+			a.programs[prior.ID] = prior
+			in := transferInput(first, second)
+			in.OverwriteExisting = true
+			plan := previewTransfer(t, c, h.URL, csrf, in)
+			a.afterWrite = func(programs map[string]domain.MachineRecipe) {
+				if removed {
+					delete(programs, prior.ID)
+				} else {
+					prior.Name = "Edited on brewer"
+					programs[prior.ID] = prior
+				}
+			}
+			code, receipt := executeTransfer(t, c, h.URL, csrf, plan)
+			observed, exists := a.programs[prior.ID]
+			if code != 200 || receipt.State != "partial" || receipt.VerifiedCount != 1 ||
+				receipt.Items[1].Status != "not_sent" || a.writes != 1 || exists == removed ||
+				(exists && !reflect.DeepEqual(observed, prior)) {
+				t.Fatalf("unexpected slot or receipt after concurrent change: %+v, %+v", observed, receipt)
+			}
+		})
+	}
+}
+
+func TestSingleDeployChecksAdvertisedCapabilitiesAndSlotCapacity(t *testing.T) {
+	s, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	a := newTransferAdapter()
+	installTestDevice(t, s, "bulk", a)
+	r := putTransferSource(t, s, "one")
+	url := h.URL + "/api/v1/devices/bulk/deploy"
+	in := map[string]any{"recipe_id": r.ID, "source_revision": r.Revision}
+	a.caps.StepCapacity = 1
+	if code, body := request(t, c, "POST", url, csrf, in, nil); code != 422 || a.writes != 0 {
+		t.Fatalf("accepted unsupported step count: %d %s", code, body)
+	}
+	a.caps.StepCapacity = 15
+	a.caps.ZeroMinuteSteps = false
+	if code, body := request(t, c, "POST", url, csrf, in, nil); code != 422 || a.writes != 0 {
+		t.Fatalf("accepted unsupported heat step: %d %s", code, body)
+	}
+	a.caps.ZeroMinuteSteps = true
+	a.caps.RecipeCapacity = 1
+	other := *r.NativeProgram
+	other.ID = "other"
+	a.programs[other.ID] = other
+	if code, body := request(t, c, "POST", url, csrf, in, nil); code != 409 || a.writes != 0 {
+		t.Fatalf("accepted new slot in full inventory: %d %s", code, body)
+	}
+	delete(a.programs, other.ID)
+	if code, body := request(t, c, "POST", url, csrf, in, nil); code != 200 || a.writes != 1 {
+		t.Fatalf("rejected compatible transfer: %d %s", code, body)
 	}
 }

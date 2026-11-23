@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import {
   deviceAttention,
+  sessionInProgress,
   annotations,
   clockTime,
   convertTemp,
@@ -48,4 +49,18 @@ it('asks for attention only when the connected machine reports an interrupted ch
   expect(attention({ recovery: { ...recovery, valid: false } })?.instruction).toMatch(/unreadable/)
   expect(attention({ recovery, stopped: true })).toBeNull()
   expect(attention({ recovery }, false)).toBeNull()
+})
+
+it('distinguishes PicoFerm sensor work from an active recording', () => {
+  const device = { model: 'picoferm', online: true, status: { busy: true, command: '' } } as Device
+  for (const state of ['sampling', 'calibrating', 'calibration-required']) {
+    expect(sessionInProgress({ ...device, status: { ...device.status!, state } })).toBe(false)
+  }
+  for (const state of ['fermenting', 'pressure-timeout']) {
+    expect(
+      sessionInProgress({ ...device, status: { ...device.status!, command: 'start', state } })
+    ).toBe(true)
+  }
+  expect(sessionInProgress({ ...device, model: 'zymatic' })).toBe(true)
+  expect(sessionInProgress({ ...device, online: false })).toBe(false)
 })

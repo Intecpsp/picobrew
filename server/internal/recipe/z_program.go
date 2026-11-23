@@ -44,13 +44,18 @@ func ExportZProgram(r domain.Recipe, profile domain.Profile) ([]byte, error) {
 	p := native.ZProgram
 	if p == nil {
 		p = &domain.ZProgram{Name: r.Name, IsBeer: true}
+		heated := false
 		for _, s := range native.Steps {
 			hold, drain, location := s.Minutes*60, s.DrainMinutes*60, s.Location
-			var c float64
+			temp := json.RawMessage("null")
 			if s.TargetF > 0 {
-				c = float64(s.TargetF-32) / 1.8
+				heated = true
+				temp, _ = json.Marshal(float64(s.TargetF-32) / 1.8)
+			} else if heated {
+				// The stock local builder skips ReachTarget here and may retain
+				// the previous step's PID. Standalone Z explicitly emits NoTarget.
+				return nil, fmt.Errorf("the stock Z program cannot turn off the previous heating target for %q; send this recipe to standalone Z firmware", s.Name)
 			}
-			temp, _ := json.Marshal(c)
 			p.Steps = append(p.Steps, domain.ZProgramStep{Name: s.Name, Type: 1, Time: &hold, Location: &location, Temp: temp, Drain: &drain})
 		}
 	}

@@ -25,10 +25,10 @@
       "source": "app.js",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 13354,
-      "source_length": 45250,
-      "source_sha256": "cf2c0773af327c8fc97e17c96d53200e1b7efe6591783427415a9fd38beb72d3",
-      "sha256": "3e75878c4e73e1f09ea002b416354fb9b4b7a158f7255d7f9d0d124e2a0fa3c8",
+      "length": 14044,
+      "source_length": 47517,
+      "source_sha256": "97e3186cd1a1667927889e10aeba45354e003b282606d6ec35ca5100e716dc76",
+      "sha256": "999038f225b339349e830b9225205bfdb22448386cf336f43c22458474617d7f",
       "file_path": "/common/web/app.js.gz"
     },
     {

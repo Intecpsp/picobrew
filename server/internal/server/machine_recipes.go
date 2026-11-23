@@ -80,8 +80,8 @@ func (s *Server) updateMachineRecipe(w http.ResponseWriter, r *http.Request) {
 		s.deviceError(w, err)
 		return
 	}
-	if in.Recipe.ZProgram != nil && (caps.Model != "z-series" || !caps.ZProgramMaker) || in.Recipe.StepCount() > caps.StepCapacity || hasZeroMinuteSteps(in.Recipe) && !caps.ZeroMinuteSteps {
-		s.fail(w, 422, "unsupported_recipe", "The edited recipe exceeds this firmware's advertised step capabilities")
+	if issue := recipeCapabilityIssue(caps, in.Recipe); issue != "" {
+		s.fail(w, 422, "unsupported_recipe", issue)
 		return
 	}
 	receiptID := randomID()

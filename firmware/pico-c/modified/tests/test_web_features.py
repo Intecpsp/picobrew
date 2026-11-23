@@ -78,6 +78,12 @@ class WebFeatures(unittest.TestCase):
         self.page.locator('[data-tab="history"]').click()
         expect(self.page.locator('#historyExportJson')).to_be_enabled(timeout=10000)
 
+    def test_cleaning_guidance_matches_brewer(self):
+        self.connect()
+        guide = self.page.locator('article').filter(has=self.page.get_by_role('heading', name='Cleaning and maintenance'))
+        expect(guide).to_contain_text('cleaning tablet in the center of the step filter')
+        expect(guide).to_contain_text('Run Deep Clean after descaling.')
+
     def test_long_device_identity_stays_inside_sidebar_and_version_is_visible(self):
         with base.LOCK:
             _, status = base.backend.request('GET', '/api/v1/status')
@@ -85,7 +91,7 @@ class WebFeatures(unittest.TestCase):
         status['device_uid'] = identity
         self.page.route('**/api/v1/status', lambda route: route.fulfill(json=status))
         self.connect()
-        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.2.7')
+        expect(self.page.locator('#firmwareVersion')).to_have_text('Firmware 1.2.8')
         expect(self.page.locator('#modelName')).to_have_text('Pico C brewing console')
         expect(self.page).to_have_title('Pico C · Pico Local')
         expect(self.page.locator('#deviceId')).to_have_text('Device ' + identity)

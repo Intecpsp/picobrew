@@ -41,6 +41,13 @@ export function deviceAttention(device: Device) {
   }
   return null
 }
+export function sessionInProgress(device: Device): boolean {
+  const status = device.status
+  if (!device.online || !status?.busy || status.stopped) return false
+  // The PicoFerm also reports busy for pressure calibration and for each sensor reading.
+  if (device.model === 'picoferm') return status.command === 'start'
+  return !(status.command === 'front-panel' && status.device_state === 2)
+}
 export function deviceState(device: Device) {
   const attention = deviceAttention(device)
   if (attention) return attention.title
