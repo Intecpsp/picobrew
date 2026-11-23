@@ -1,33 +1,23 @@
 # Standalone firmware parity
 
-The modified S/Pro firmware defines the common operating model: the appliance
-owns local operation, exposes an authenticated API and device website, retains
-its own history, and can connect to the optional Hub. The implemented Pico C,
-generic Z-series, PicoStill and PicoFerm profiles follow that model through
-their own recovered control and hardware code.
+Each standalone brewer build serves a local website and API directly from the machine. The Z-series build targets one module. The Zymatic serves incoming requests over Ethernet, and its available controls depend on the installed version. Both Zymatic versions retain the original 1.1.14 brew controller. PicoStill and PicoFerm also serve their own websites and APIs for accessory-specific functions.
 
-This comparison concerns implemented source and software evidence. It does not
-turn a generic Z image into a verified Z1/Z2 image or establish physical
-installation, sensor accuracy, operating safety or a completed brewing trial.
-Both the conservative 1.2.0 Zymatic install and the qualified 1.3.x installs retain the original 1.1.14 brew controller.
+The table describes the firmware in the repository. The [machine identity guide](machine-identity.md) covers matching an image to an individual machine. Build and simulator results establish software behavior. Installation, sensors and brewing require hardware checks.
 
 ## Common behavior
 
-| Behavior | S/Pro | Pico C | Generic Z | PicoStill | PicoFerm |
-| --- | --- | --- | --- | --- | --- |
-| Local operation without a vendor cloud or Hub | Implemented | Implemented | Implemented | Implemented | Implemented |
-| Authenticated API v1 and device identity | Implemented | Implemented, including display variant | Implemented, family identity | Implemented | Implemented |
-| Device website, settings and API discovery | Implemented | Implemented | Shared browser | Shared browser | Shared browser |
-| Optional Hub connection and live readings | Implemented | Implemented | Implemented | Implemented | Implemented |
-| Persistent history and exports | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples |
-| Default periodic history interval | 15 seconds | 15 seconds | 15 seconds | 15 seconds | 300 seconds; configurable from 60 to 86,400 seconds |
-| Named capabilities for available controls and readings | Brewer profile | Brewer profile | Native Z profile | Accessory profile | Sensor profile |
-| Verified source build and explicit model selection | Pico S and Pico Pro images | SSD1325 and SSD1309 images | `z-series` reference image | ESP32 reference image | ESP8266 reference image |
+| Behavior | S/Pro | Pico C | Generic Z | Zymatic | PicoStill | PicoFerm |
+| --- | --- | --- | --- | --- | --- | --- |
+| Local operation without a vendor cloud or Hub | Implemented | Implemented | Implemented | One USB-provisioned offline recipe | Implemented | Implemented |
+| Authenticated API v1 and device identity | Implemented | Includes display variant | Z family identity | Wired Ethernet | Implemented | Implemented |
+| Device website | Implemented | Implemented | Shared browser | 1.2.0 monitoring, 1.3.x monitoring and paired dial control | Shared browser | Shared browser |
+| Optional Hub connection and live readings | Implemented | Implemented | Implemented | Wired monitoring, outbound recipe sync over Ethernet or Wi-Fi | Implemented | Implemented |
+| Persistent history | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples | 1.3.x retains eight sessions sharing 222 samples. 1.2.0 relies on Hub polling. | Eight sessions sharing 4,224 samples | Eight sessions sharing 4,224 samples |
+| Default periodic history interval | 15 seconds | 15 seconds | 15 seconds | 1.3.x samples about once a minute during a program | 15 seconds | 300 seconds, configurable from 60 to 86,400 seconds |
+| Available controls and readings | Brewer profile | Brewer profile | Native Z profile | 1.2.0 monitoring, 1.3.x eligible dial inputs | Accessory profile | Sensor profile |
+| Firmware target | Pico S and Pico Pro images | SSD1325 and SSD1309 images | Z-series module reference image | OEM 1.1.14 controller with a USB-installed extension sized to the boot layout | ESP32 reference image | ESP8266 reference image |
 
-History capacity is a shared pool, not a guarantee that every retained session
-contains 4,224 samples. Each session preserves its sampling interval and channel
-metadata. Storage exhaustion, interrupted sessions and truncation are reported.
-PicoFerm's longer default interval is intentional for fermentation recording.
+Each session preserves its sampling interval and channel metadata on S/Pro, Pico C, Z, PicoStill and PicoFerm. These builds report storage exhaustion, interrupted sessions and truncation. The Zymatic recorder additionally samples at step changes and can have gaps while the original controller is busy. [Zymatic history](../firmware/zymatic/modified/history.md)
 
 ## Zymatic
 
