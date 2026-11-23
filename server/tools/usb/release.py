@@ -59,6 +59,12 @@ def assemble(tag, directory):
         ):
             raise ValueError("USB artifact does not match its provenance: " + key)
         assets[key] = asset
+        hub = directory / name.replace("picobrew-usb-", "picobrew-hub-", 1)
+        if not hub.is_file() or hub.stat().st_size < worker.stat().st_size:
+            raise ValueError("Missing USB-enabled Hub for " + key)
+        with zipfile.ZipFile(directory / f"usb-notices-{key}.zip") as notices:
+            if notices.testzip() is not None or "versions.json" not in notices.namelist():
+                raise ValueError("Invalid USB notices for " + key)
     (directory / "releases.json").write_text(json.dumps({"tag": tag, "assets": assets}, indent=2) + "\n")
     with zipfile.ZipFile(directory / "usb-programmer-sources.zip", "w") as archive:
         for name, (url, digest) in SOURCES.items():
@@ -67,6 +73,9 @@ def assemble(tag, directory):
             if hashlib.sha256(data).hexdigest() != digest:
                 raise ValueError("Programmer source digest mismatch: " + name)
             archive.writestr(name, data)
+    checksum_file = directory / "SHA256SUMS.txt"
+    products = sorted(path for path in directory.iterdir() if path.is_file() and path != checksum_file)
+    checksum_file.write_text("".join(f"{sha(path)}  {path.name}\n" for path in products), encoding="ascii")
 
 
 if __name__ == "__main__":
