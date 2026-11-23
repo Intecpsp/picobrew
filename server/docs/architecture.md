@@ -3,7 +3,7 @@
 ## Shared firmware contract
 
 This Hub and all custom machine firmware belong to
-`jeffreydwalter/picobrew-pico-pro-firmware`. The project target is to reverse
+`jeffreydwalter/picobrew`. The project target is to reverse
 engineer Pico C, S/Pro, Z-family and Zymatic firmware and give each machine the
 same standalone `/api/v1` contract and local browser workflow established by
 S/Pro. Hardware-specific drivers, brewing routes and physical limits belong in

@@ -24,9 +24,16 @@ Only Go and Make are required; Node and npm are not invoked.
 Both entry points use `server/data` in a full checkout. An
 isolated server copy uses its own `data` directory.
 
-Without Make, run `go build -trimpath ./cmd/picobrew-hub` from `server/`, then
-`./picobrew-hub --data ./data` on macOS/Linux or
-`.\picobrew-hub.exe --data .\data` in Windows PowerShell.
+Without Make, run these commands from `server/` to build the Hub with the USB worker for the host platform.
+
+```sh
+go run ./tools/usb-prepare
+go build -trimpath ./cmd/picobrew-hub
+```
+
+Start `./picobrew-hub --data ./data` on macOS/Linux, or
+`.\picobrew-hub.exe --data .\data` in Windows PowerShell. Release executables already include their worker. [First-time setup](../../README.md)
+
 The SQLite format and schema are unchanged by the pure-Go driver; existing data
 does not require an export/import conversion.
 
@@ -49,12 +56,7 @@ Machine identity is tied to its registration and archived history. Use a new reg
 
 ## Recover a native installation
 
-Firmware source settings, package metadata, and downloaded ZIPs are retained
-inside the Hub data directory. The firmware manager can upload or fetch
-packages from its editable GitHub source and export individual ZIPs. This is
-separate from updating the Hub executable or installing firmware on a machine;
-see [Firmware packages](firmware-packages.md). The normal workspace export does
-not include the firmware cache or its source configuration.
+The Hub data directory holds firmware-source settings, the package cache, and per-machine USB backups saved by the Hub. Keep the complete directory to preserve the original images available for stock restoration. **Settings → Firmware** selects the source. The machine’s **Firmware** view checks versions and fetches a package when you download or install it. Workspace exports omit the firmware cache, source settings, and private USB backups. [Firmware packages and restoration](firmware-packages.md)
 
 For a shell-managed process, stop it first. With the server stopped:
 
@@ -74,7 +76,7 @@ The browser workspace ZIP excludes authentication and provider/device credential
 ## Connection failures
 
 - **Host cannot be resolved:** verify the address from the server's network namespace. A browser on your Mac resolving an mDNS name does not mean a remote server or Linux container resolves it. Use the brewer's current IPv4 address when appropriate.
-- **Unauthorized from brewer:** replace that machine's stored API key with the provisioned key. Owner login and brewer authentication are separate.
+- **Unauthorized from brewer.** Verify the machine URL first. If its device key changed, use **Manage machine → Edit connection → Replace saved key** with the key from that machine’s setup. The Hub owner password signs you into the Hub. [Machine connections and pairing](device-connections.md)
 - **Uncertain command or mutation:** inspect the front panel/current stored recipe before issuing a new action. The hub deliberately records this state rather than retrying a command that may have reached the brewer.
 - **History is partial:** reconnect while the session is still retained. The next sync retries incomplete data, but samples already overwritten on the device cannot be reconstructed.
 - **AI returns an error:** check the selected connection method in Settings. For ChatGPT, check its connection or sign in again. For Claude subscription, verify native Claude Code 2.1.259 or newer is installed and `claude auth login` was completed as the Hub user on the Hub host. For API keys, check the selected provider's key, model permissions, quota and billing. Subscription failures never switch to API-key billing. Advice is optional; device polling/control and local history continue without an AI provider.

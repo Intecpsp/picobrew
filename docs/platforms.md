@@ -20,9 +20,10 @@ The same command works inside `server/`. Both entry points build the native
 server, run in the foreground, and use the same `server/data` directory. Press
 Ctrl-C to stop. Windows uses native console events.
 
-If Make is not installed, run this from `server/`:
+Without Make, run both commands from `server/` to include the native USB worker for your host.
 
 ```sh
+go run ./tools/usb-prepare
 go build -trimpath ./cmd/picobrew-hub
 ```
 
@@ -30,7 +31,7 @@ Then run `./picobrew-hub --data ./data` on macOS/Linux or
 `.\picobrew-hub.exe --data .\data` in Windows PowerShell.
 
 The executable is `server/picobrew-hub.exe` on Windows and
-`server/picobrew-hub` on macOS/Linux. It includes the website and catalogue, so
+`server/picobrew-hub` on macOS/Linux. It includes the website and catalog, so
 there is no separate web-assets directory to deploy. Existing SQLite databases
 keep their schema and format.
 
@@ -58,7 +59,7 @@ requires a Git checkout to verify the recorded executable modes, which its
 filesystem cannot represent as POSIX permission bits. Repository attributes
 preserve the exact archived bytes even when Git normally converts text to CRLF.
 
-The catalogue builder and curation checks remain inside `server/tools/` and do
+The catalog builder and curation checks remain inside `server/tools/` and do
 not require a firmware checkout except for the optional cross-component starter
 comparison described in the [server guide](../server/README.md).
 
@@ -122,7 +123,9 @@ validation. No build or simulation target flashes a brewer.
 
 ## USB tools
 
-The USB backup, preflight and installation commands use PyUSB with the pinned
+Owners can run **Brewery → Add machine → USB setup and recovery** from a browser. Connect the USB cable to the Hub host. Release binaries bundle workers for macOS on Intel and Apple silicon, Windows x64, and Linux on x64, ARM64, and 32-bit ARM, including Raspberry Pi. The Hub checks access to the adapter and the available operations for the selected machine. [Owner guide](../README.md) · [Model-specific USB requirements](../server/docs/firmware-packages.md)
+
+The following details apply to the standalone S/Pro developer tools. Their USB backup, preflight and installation commands use PyUSB with the pinned
 libusb package. On Windows, direct USB access requires **WinUSB already bound
 to the intended CH340 adapter (`1a86:7523`)**. The tools inspect that binding and
 claim the interface before configuring UART. They do not install or replace

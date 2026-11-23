@@ -50,7 +50,7 @@ or a successful remote CI run. See [family controls](family-devices.md).
 
 ## Independent server layout — local checks
 
-The Hub lives in `jeffreydwalter/picobrew-pico-pro-firmware/server` and uses
+The Hub lives in `jeffreydwalter/picobrew/server` and uses
 that Go module path. The directory move and per-machine firmware layout passed:
 
 - Full Go package tests with the race detector, `go vet ./...`, and a production

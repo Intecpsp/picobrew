@@ -3,7 +3,7 @@
 ## Canonical repository
 
 All implementation, branches, pull requests and publishing belong in
-`jeffreydwalter/picobrew-pico-pro-firmware`.
+`jeffreydwalter/picobrew`.
 
 `jeffreydwalter/picobrew-server` and other community forks are read-only
 references. Do not modify their files, commits, branches, pull requests,

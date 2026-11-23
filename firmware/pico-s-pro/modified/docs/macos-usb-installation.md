@@ -34,7 +34,7 @@ your actual locations and keep the same API key throughout provisioning and
 upgrades. Create the component environment if needed:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 cd "$PICO_ROOT"
 python3 -m venv .venv
@@ -87,7 +87,7 @@ Update the checkout and create the local key only
 if it does not already exist:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 cd "$PICO_ROOT"
 git pull --ff-only origin master
@@ -108,7 +108,7 @@ abort. Do not generate a new key to work around a mismatch.
 Choose either entry procedure above and run:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 PICO_BACKUP="$PICO_CHECKOUT/firmware/backups/original-serial-flash.bin"
 PICO_REPORT="$PICO_CHECKOUT/firmware/backups/pico-pro-key-$(date +%Y%m%d-%H%M%S).json"
@@ -169,7 +169,7 @@ even from this branch, requires a reviewed tool/profile update.
 Update this branch first:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 cd "$PICO_ROOT"
 git pull --ff-only origin master
@@ -179,7 +179,7 @@ git pull --ff-only origin master
 With either programming-entry procedure above:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 PICO_REPORT="$PICO_CHECKOUT/firmware/backups/pico-pro-install-$(date +%Y%m%d-%H%M%S).json"
 
@@ -290,7 +290,7 @@ dialog has a **Device API key** field and **Connect** button. On macOS, copy
 the existing key directly to the clipboard without printing it:
 
 ```sh
-tr -d '\r\n' < "/path/to/picobrew-pico-pro-firmware/private/api.key" | pbcopy
+tr -d '\r\n' < "/path/to/picobrew/private/api.key" | pbcopy
 ```
 
 Paste into **Device API key** and click **Connect**. Successful protected
@@ -314,7 +314,7 @@ extracts exactly 162,792 original bytes with SHA-256
 Start a fresh programming session with either entry procedure above:
 
 ```sh
-PICO_CHECKOUT="/path/to/picobrew-pico-pro-firmware"
+PICO_CHECKOUT="/path/to/picobrew"
 PICO_ROOT="$PICO_CHECKOUT/firmware/pico-s-pro/modified"
 PICO_REPORT="$PICO_CHECKOUT/firmware/backups/pico-pro-restore-$(date +%Y%m%d-%H%M%S).json"
 

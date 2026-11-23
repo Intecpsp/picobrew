@@ -1,180 +1,84 @@
-# PicoBrew firmware and Hub
+# PicoBrew
 
-All project development lives in this repository. Firmware is isolated by
-machine, with separate OEM images, reverse-engineered OEM source and our
-modified v1.x source. The self-contained Go/React Hub lives in `server/`.
+Brew with your own recipes and keep your brew history on your own network. This project provides **standalone firmware** for PicoBrew appliances and an optional **PicoBrew Hub** that runs on a Mac, Windows PC, Linux computer, or Raspberry Pi.
 
-## Repository layout
+The firmware keeps the brewer's heating, pumping, and timing on the machine. On supported models it adds a local website, an authenticated API, and saved programs you can brew without PicoBrew's online service. The Hub brings your machines, recipes, and brew journal into one browser.
 
-| Path | Purpose |
+![The Brewery page showing three virtual machines and the progress of simultaneous brews](docs/images/brewery.png)
+
+*The Hub simulator uses virtual machines and example readings. You can try it before connecting a brewer.*
+
+## What you can do
+
+| Feature | How it works |
 | --- | --- |
-| `firmware/<machine>/oem/` | Original device images and unchanged upstream firmware packages, with provenance |
-| `firmware/<machine>/reverse-engineered/` | OEM reconstruction before our custom features |
-| `firmware/<machine>/modified/` | Our custom firmware source, device website, packages and version-specific tools/tests |
-| `server/` | Self-contained Hub backend, website, catalogue, container configuration and tests |
-| `tools/` | General repository tooling shared across machine families |
-| `docs/` | Project scope, source provenance and roadmap |
+| **Build a recipe** | Start from the offline catalog, import BeerXML, or use the wizard. Assign hops to timed additions, then preview the grain bill, hop-slot loads, estimated yield, and steps for your brewer. The Hub keeps ingredient proportions when scaling and explains what prevents a transfer. |
+| **Brew from your browser** | Send a program to an idle, compatible brewer, review it, and start it as a separate action. Follow multiple brews on the Brewery page. Open a machine to read its screen, answer prompts using the virtual dial, and use the controls its firmware reports. |
+| **Keep a brew journal** | Inspect temperature and machine state together, pin a note to a sample, rate the result, and export CSV or JSON. Record fermentation stages and carbonation as part of the brew. |
+| **Look after your machine** | Read the model's cleaning guidance, back up supported stock firmware over USB, and manage compatible firmware versions. A provisioned Pico S or Pro can install an update from the Hub over Wi-Fi. |
+| **Connect other tools** | Explore the Hub and device APIs. Optionally connect a brew assistant to draft a recipe or discuss a brew's recorded measurements. |
 
-The populated S/Pro source folders are under
-[`firmware/pico-s-pro/`](firmware/pico-s-pro/README.md). Its pre-v1 reconstruction
-is an exact 396-file snapshot of commit `ea887709`. Current S/Pro builds support
-[updates through the Hub](firmware/pico-s-pro/modified/docs/hub-ota.md). Both retain their own build tools, dependency manifests, tests,
-reference fixtures and documentation. The OEM reconstruction's documented
-repairs and validation limits remain attached to that source.
+[See the feature tour and screenshots](docs/hub-tour.md) · [Compare firmware features by machine](docs/firmware-parity.md)
 
-The separate [S/Pro web recovery candidate](firmware/pico-s-pro/modified/recovery/README.md)
-is preserved under `modified/recovery/`, with its own pinned source, build tools,
-tests and original image. It is an experimental image1 application; installation
-and physical recovery are not yet supported or validated.
+## Set up the Hub
 
-The [firmware inventory](firmware/README.md) describes every machine directory.
-The complete **27-file** `app/firmware` directory from Chiefwigms is copied at
-commit `36acae3003845b72568ef5f7d6cf168acb6f9b69`, including Pico S/Pro, Pico C,
-PicoFerm, PicoStill and Z-series images. Original filenames and bytes are
-preserved. Z1 and Z2 have separate source locations; shared upstream Z-series
-images remain grouped until compatibility is verified. The Zymatic build uses the separately archived [original 1.1.14 release](firmware/zymatic/oem/README.md).
+### 1. Download the Hub for your computer
 
-## Run the server
+Choose your file below. Put it in a permanent folder called `PicoBrew`. The executable includes the website, recipe catalog, and USB programmer. Use the computer that will stay on your brewery network.
 
-The Hub runs natively on Windows, macOS and Linux. Install Go **1.26 or newer**
-and GNU Make. The compiled website is included in the Go binary; Node and npm
-are not required to build or run the server.
-From either the repository root or `server/`, build and start the Hub with:
-
-```sh
-make server-start
-```
-
-This builds the Go executable with its bundled website and runs the Hub in the foreground at
-[http://127.0.0.1:8080](http://127.0.0.1:8080). Both entry points use the same
-`server/data` directory. Authenticated mode also listens on the host's network
-interfaces so connected machines can report back to it. The owner password and
-first-run setup token are still required. Press **Ctrl-C** to stop.
-
-The [server guide](server/README.md) also has direct Go commands if Make is not
-installed. See [platform setup](docs/platforms.md) for firmware compiler, USB
-and development prerequisites on each operating system.
-
-### Docker
-
-```sh
-git clone https://github.com/jeffreydwalter/picobrew-pico-pro-firmware.git
-cd picobrew-pico-pro-firmware/server
-docker compose up --build -d
-docker compose logs hub
-```
-
-Open [http://127.0.0.1:8080](http://127.0.0.1:8080) and use the setup token from
-the logs to create the owner account. The server builds and runs independently
-of the firmware folders. Its Compose project/service identity remains `hub`,
-so the directory rename retains the previous default data volume. See the
-[server guide](server/README.md) for native development and custom deployments.
-
-## Build and verify firmware
-
-Activate a Python environment and install the dependencies described in the
-[platform setup guide](docs/platforms.md). Run these commands from the repository
-root to fetch the pinned compiler/SDK and build the active firmware:
-
-```sh
-make verify-imports
-make firmware-bootstrap
-make firmware MODEL=pico-pro
-make firmware MODEL=pico-s
-make firmware-test MODEL=pico-s
-```
-
-Pico Pro and Pico S share source but produce separate, model-labelled images in
-`firmware/pico-s-pro/modified/build/standalone/<model>/firmware/`. Each build
-reports its selected model to the Hub and uses it in the device display. The
-legacy family-only command defaults to Pico Pro; select `MODEL=pico-s` for an S.
-
-S/Pro has implemented source builds. Its packaged images are in
-`firmware/pico-s-pro/modified/firmware/standalone/<model>/` and shared browser
-assets are in `firmware/pico-s-pro/modified/firmware/web/`. [Pico C](firmware/pico-c/modified/README.md)
-now has recovered C-based standalone builds for explicit SSD1325/SSD1309 variants:
-`make firmware MODEL=pico-c DISPLAY_VARIANT=ssd1325` (or `ssd1309`). Both C images
-are software-tested; physical installation and brewing remain unverified. The
-[Z](firmware/z-series/modified/README.md),
-[PicoStill](firmware/picostill/modified/README.md) and
-[PicoFerm](firmware/picoferm/modified/README.md) profiles have complete SDK
-source builds and reference packages, using the common authenticated API,
-device browser, history and optional Hub connection. On Linux x86-64:
-
-```sh
-python -m pip install -r firmware/common/requirements-build.txt
-make firmware-bootstrap MODEL=z-series
-make firmware-package MODEL=z-series
-make firmware-test MODEL=z-series
-```
-
-Select `MODEL=picostill` or `MODEL=picoferm` for those models. Bootstrap downloads
-and verifies their pinned dependencies. Packages include explicit reference
-layouts and prepared filesystems; no target connects to or flashes hardware.
-Z1/Z2 compatibility is still unassigned. For the Zymatic, run `make firmware MODEL=zymatic HUB_HOST=brewery.lan:8080` to compose a private 1.2.0 application from verified 1.1.14 and the source-built extension.
-The [model registry and identity contract](docs/machine-identity.md) describes
-those boundaries. Start with the
-[S/Pro guide](firmware/pico-s-pro/README.md) for source, build and installation
-entry points. No build or test target flashes a brewer.
-
-### Preserved OEM reconstruction and recovery candidate
-
-Use the root adapter to build either preserved component on Windows, macOS or
-Linux. Both reuse the compiler and SDK installed by `make firmware-bootstrap`:
-
-```sh
-make oem MACHINE=pico-s-pro
-make recovery MACHINE=pico-s-pro
-```
-
-Without GNU Make, the same operations are available from the repository root:
-
-```sh
-python firmware/pico-s-pro/modified/tools/bootstrap_dependencies.py
-python tools/build_archive.py oem
-python tools/build_archive.py recovery
-```
-
-The Python environment needs `firmware/pico-s-pro/modified/requirements-test.txt`.
-The adapter also accepts `--arm-prefix`, `--sdk-root` and `--output-dir`; use
-`python3` where that is the name of your Python installation. On Windows, build
-these archives from an ordinary local drive path; the pinned compiler adapter
-rejects UNC and extended namespace paths explicitly.
-
-| Build | Default output |
+| Computer | Download |
 | --- | --- |
-| OEM reconstruction | `build/archives/oem/pico-pro-recovered.bin` |
-| Experimental recovery | `build/archives/recovery/pico-web-recovery.bin` |
+| Mac | [Apple silicon](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-darwin-arm64) · [Intel](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-darwin-amd64) |
+| Windows | [64-bit Intel or AMD](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-windows-amd64.exe) |
+| Linux with glibc | [64-bit Intel or AMD](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-linux-amd64) · [64-bit ARM](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-linux-arm64) |
+| Raspberry Pi | [64-bit Raspberry Pi OS](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-linux-arm64) · [32-bit Raspberry Pi OS on ARMv7 or newer](https://github.com/jeffreydwalter/picobrew/releases/download/usb-tools-v1.0.1/picobrew-hub-linux-arm) |
 
-The adapter executes the archived build scripts without rewriting their bytes.
-It gives those scripts consistent path ordering and separators, then checks the
-rebuilt binary, layout and source identities against the preserved package.
-Each output directory includes the original builder's report and a separate
-`portable-build.json` recording the adapter, host and verification results.
-All 396 OEM reconstruction files and 45 pinned recovery files are checked before
-and after the build. Generated OEM application archives also use the component's
-ignored `build/` directory.
+These are the **USB tools 1.0.1** release builds. Newer Hub features pictured here are on `master`. For that version, follow the [source build instructions](server/README.md#run-locally-on-windows-macos-or-linux). The published checksums and included firmware versions are in the [release notes](https://github.com/jeffreydwalter/picobrew/releases/tag/usb-tools-v1.0.1).
 
-Matching the preserved reconstruction does not establish a byte-identical vendor
-firmware rebuild. The recovery image remains an experimental candidate without
-supported installation or physical recovery validation.
+### 2. Start the Hub
 
-## Direction and current support
+**Mac, Linux, or Raspberry Pi.** Rename the downloaded executable to `picobrew-hub`. Open a terminal in your `PicoBrew` folder and run these commands.
 
-The [firmware parity matrix](docs/firmware-parity.md) compares the implemented
-S/Pro, C, Z and accessory behavior and records the remaining device evidence.
+```sh
+chmod +x ./picobrew-hub
+./picobrew-hub --data ./data
+```
 
-The goal is custom standalone firmware for Pico C, S/Pro, Z1, Z2, Zymatic and
-other supported machines, using the S/Pro REST API and browser experience as
-the common contract. Each brewer owns its control loop and local operation;
-the Hub is optional. S/Pro, C, generic Z, PicoStill and PicoFerm have implemented
-standalone source builds and Hub adapters. Hardware-specific capabilities
-prevent the accessory profiles from offering brewer-only controls. The latest
-model builds still need physical installation and operating qualification;
-generic Z source does not establish a Z1/Z2 mapping. Zymatic 1.2.0 provides offline brewing, Hub menu sync and wired monitoring. On a unit with a verified boot window, 1.3.2 adds paired dial control and a local history viewer. Physical Zymatic qualification is pending. [Zymatic firmware and USB guide](firmware/zymatic/modified/README.md)
+**Windows.** Open the `PicoBrew` folder in File Explorer, type `powershell` in the address bar, and press Enter. Run this command.
 
-The Hub includes the previously requested offline recipe catalogue and assets.
-No historical Python Zymatic server or unrelated community application is
-included. Reference repositories are read-only. See [AGENTS.md](AGENTS.md), the
-[roadmap](docs/project-roadmap.md), [source provenance](docs/consolidation.md),
-and [license boundaries](LICENSES.md).
+```powershell
+.\picobrew-hub-windows-amd64.exe --data .\data
+```
+
+Open **[http://127.0.0.1:8080](http://127.0.0.1:8080)** on that computer. For a headless Pi, open `http://<Pi's LAN IP>:8080` on another computer on the same network. Enter the setup token printed in the terminal and choose an owner password. Leave the Hub running while you use it.
+
+To try a virtual brewery first, add `--demo` and use `--data ./demo-data` in place of `--data ./data`. Open the browser on the Hub computer for this loopback-only mode. Press **Ctrl+C** to stop the Hub before switching modes. To keep your real brewery, restart from the same folder and back up the entire `data` directory, including its encryption key, while the Hub is stopped. [Backup and operations](server/docs/operations.md)
+
+### 3. Connect your machine
+
+- **Already running standalone firmware?** Open **Brewery → Add machine**, enter the brewer's network address, and follow the pairing prompt. On firmware with dial pairing, confirm the displayed code under **About → Pair with Hub**. The Hub saves the key. Older firmware can use the key file from USB setup. [Connection and pairing guide](server/docs/device-connections.md)
+- **Still running the original firmware?** Check your model below. For a supported conversion, connect the idle machine or its service adapter by USB to the **computer running the Hub**. Open **Brewery → Add machine → USB setup and recovery**, select the physical model and port, and follow the backup, power, and verification prompts. Keep the original backup. After setup, join the network and finish adding the machine. [USB setup, requirements, and stock restoration](server/docs/firmware-packages.md#usb-setup-backup-and-stock-restoration)
+- **Keeping a stock Zymatic?** The Hub can publish recipes to the original 1.1.14 brewer menu through its LAN protocol. This requires configuring the brewer's DNS and HTTP route. Select the recipe and start it at the machine. [Stock Zymatic setup](server/docs/stock-zymatic.md)
+
+**Using a release binary for firmware updates?** In **Settings → Firmware**, set the GitHub repository to `jeffreydwalter/picobrew` and leave the branch blank to use the default. Earlier Hub builds store the project's former name.
+
+### 4. Send your first recipe
+
+Open **Recipes → Browse all**, choose a recipe, and copy it to your library. Open the saved recipe, choose **Send**, select your brewer, and review the scaled quantities and schedule. After transfer, use the receipt to open the machine. Check the physical load and preparation prompts before choosing **Start recipe** on a compatible machine. [Recipe transfers](server/docs/recipe-transfers.md)
+
+## Which machines work?
+
+| Machine | What to expect |
+| --- | --- |
+| **Pico S and Pico Pro** | Model-specific standalone firmware, local website, mirrored OLED and dial, saved recipes, history, and Hub control. An idle brewer with compatible recovery supports wireless updates. Wireless return to stock has narrower hardware requirements. |
+| **Pico C** | Standalone brewing and Hub integration for the SSD1325 and SSD1309 display variants. USB setup checks the display variant. Physical installation and brewing qualification remain pending. |
+| **Z-series** | A generic Z module build provides programs, display, history, and Hub controls. USB setup requires a qualifying individual module. A Z1 or Z2 label alone does not establish compatibility. |
+| **Zymatic** | Stock 1.1.14 can fetch Hub recipes. Custom 1.2.0 adds an offline recipe and wired monitoring. On a verified boot layout, 1.3.x also adds paired dial control and retained history. Updates use USB. Physical qualification remains pending. |
+| **PicoFerm and PicoStill** | Accessory-specific builds expose fermentation recording and sensors on PicoFerm, and still modes, pump, fans, and sensors on PicoStill. These are software-tested reference builds awaiting hardware qualification. |
+
+## Project guides
+
+- [Hub guide](server/README.md) · [Docker setup](server/README.md#run-with-docker) · [Hardware and feature coverage](server/docs/coverage.md)
+- [Firmware by machine](firmware/README.md) · [Build and verify firmware](docs/platforms.md) · [Firmware updates and recovery](server/docs/firmware-packages.md)
+- [Recipe catalog and original records](server/docs/community-catalog.md) · [Brewer capacities and scaling](server/docs/equipment-profiles.md)
+- [Source provenance](docs/consolidation.md) · [Licenses and third-party notices](LICENSES.md)

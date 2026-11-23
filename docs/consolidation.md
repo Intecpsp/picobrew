@@ -1,7 +1,7 @@
 # Repository layout and source provenance
 
 The canonical project is
-[`jeffreydwalter/picobrew-pico-pro-firmware`](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware).
+[`jeffreydwalter/picobrew`](https://github.com/jeffreydwalter/picobrew).
 This reorganization starts from canonical commit
 `97dd48f905e95ce9122ed3af786ea8ef49b5fd29`. Firmware now lives under
 `firmware/<machine>/`, the self-contained Hub application lives in `server/`,
