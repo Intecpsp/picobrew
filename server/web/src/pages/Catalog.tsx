@@ -84,10 +84,12 @@ function CatalogBrowse() {
     update(value)
   }
   useEffect(() => {
-    const current = new URLSearchParams({ q: debounced, source, kind, model, style })
+    // A pending browse effect can run after the user opens a recipe.
+    if (location.hash.split('?')[0] !== '#/catalog') return
+    const current = new URLSearchParams({ q: query, source, kind, model, style })
     for (const key of [...current.keys()]) if (!current.get(key)) current.delete(key)
     history.replaceState(null, '', `#/catalog${current.size ? '?' + current : ''}`)
-  }, [debounced, source, kind, model, style])
+  }, [query, source, kind, model, style])
   const page = resource.data
   return (
     <>
