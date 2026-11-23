@@ -83,6 +83,14 @@ match compares declared package and machine model information.
 
 An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
+### Restore the original Pico S/Pro firmware over Wi-Fi
+
+Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. On that brewer, update standalone 1.3.5 to **1.3.6** over Wi-Fi first. Keep it powered on throughout the restore.
+
+The Hub asks you to acknowledge the loss of standalone controls and wireless updates, then confirm the restore. It prefers this brewer’s saved original. If needed, it obtains and verifies the two pinned OEM images from GitHub. A temporary installer runs in a third flash slot, so it can independently write and read back both the original **0.1.34 application** and **0.0.3 recovery**. It preserves the loader, network settings and brewer identity.
+
+After the verified stock boot selection and restart, check the brewer’s display. Choose **I see the original PicoBrew startup screen** to record your observation when prompted. The original application cannot confirm startup to the Hub. Returning to custom firmware requires USB. Other brewers can use the USB procedure below. The wireless path has been exercised against simulated storage, the original loader and compiled ARM code. Physical restore and power-interruption trials are still pending.
+
 ### USB setup, backup and stock restoration
 
 Connect the idle machine or its USB service adapter to the computer running the Hub. Open **Add machine → USB setup and recovery**, select the detected port, physical model and operation, and follow the power or reset prompts. When restoring a paired machine, its **Firmware → Restore original firmware via USB** action also checks its registered identity before a write. The dialog reports the current stage and resumes after a browser reload.
