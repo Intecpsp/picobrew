@@ -60,8 +60,8 @@ UID_BLOCK = 106
 PROFILE_UID_SHA256 = "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 169552
-CANDIDATE_SHA256 = "5d369c145694a72bb0cb8c05637d5ca5cd837ebbc36ca16b952404361f773580"
+CANDIDATE_SIZE = 169584
+CANDIDATE_SHA256 = "a36e5873ace849af2f7617610c4232edb63c6a4ac5b3668ece14301d97ba085b"
 RELEASED_1_3_5 = {
     "pico-pro": (168400, "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c"),
     "pico-s": (168392, "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b"),
@@ -345,7 +345,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 169536, "18f71871868c693c103a9b132da9023c3b572ab0666dcd54f24b87c78d9dbc4d"
+        return 169568, "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540"
     if model in C_STANDALONE:
         return C_STANDALONE[model]
     raise InstallError("Unknown target model")
