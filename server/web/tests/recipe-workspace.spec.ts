@@ -434,6 +434,8 @@ test('an archived PicoPak shows the published ingredients and shares an editable
   const style = page.getByRole('combobox', { name: 'Style', exact: true })
   await expect(style).toHaveValue('Helles')
   const id = page.url().split('/recipes/').at(-1)!
+  const exportProgram = page.getByRole('button', { name: 'Export program JSON' })
+  await expect(exportProgram).toBeEnabled()
   try {
     await style.fill('light lager')
     await expect(
@@ -444,8 +446,10 @@ test('an archived PicoPak shows the published ingredients and shares an editable
     await expect(style).toHaveValue(/lager/i)
     await style.fill('My cellar lager')
     await page.getByRole('option', { name: 'Use “My cellar lager”' }).click()
+    await expect(exportProgram).toBeDisabled()
     await page.getByRole('button', { name: 'Save program' }).click()
     await expect(page.getByText('PicoPak saved to your library.')).toBeVisible()
+    await expect(exportProgram).toBeEnabled()
     await page.goto('/#/recipes/new')
     const picker = page.getByRole('combobox', { name: 'Beer style' })
     await picker.fill('cellar')
@@ -641,6 +645,23 @@ test('model-specific authoring preserves Z Program Maker routes, operator pauses
   await expect(page.getByLabel('Temperature units')).toHaveValue('F')
   await expect(page.getByLabel('Use PicoPak adjunct compartments')).toBeChecked()
   await expect(page.getByLabel('Flow path').last()).toHaveValue('6')
+  await page.getByRole('button', { name: 'Import program', exact: true }).click()
+  const { IsMetric: _, ...withoutUnit } = program
+  withoutUnit.Name = 'No unit specified'
+  withoutUnit.Steps[0].Temp = null
+  delete withoutUnit.Steps.at(-1).Time
+  await page.getByLabel('Or paste the recipe').fill(JSON.stringify(withoutUnit))
+  await page.getByRole('button', { name: 'Import recipes', exact: true }).click()
+  await expect(page.getByLabel('Program name', { exact: true })).toHaveValue(withoutUnit.Name)
+  await expect(page.getByLabel('Temperature units')).toHaveValue('')
+  await page.getByLabel('Temperature units').selectOption('F')
+  await page.getByLabel('Temperature units').selectOption('')
+  await page.getByRole('button', { name: 'Save program', exact: true }).click()
+  await expect(page.getByRole('button', { name: 'Export Z program' })).toBeEnabled()
+  const restored = await request.get(
+    '/api/v1/recipes/' + page.url().split('/').pop() + '/export?format=z-program'
+  )
+  expect(await restored.json()).toEqual(withoutUnit)
 })
 
 test('stock Zymatic authoring enforces the brewer temperature limit and creates an operator pause', async ({

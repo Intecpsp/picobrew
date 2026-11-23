@@ -236,6 +236,7 @@ export default function NativeRecipeEditor({
             <div className="editor-tools">
               <Button
                 variant="ghost"
+                disabled={dirty || busy}
                 onClick={async () => {
                   try {
                     await download(
