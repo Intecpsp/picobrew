@@ -100,7 +100,8 @@ function updateControls() {
   }
   $('recoveryPanel').hidden=!state.connected || !interrupted;
   $('resumeInterrupted').hidden=!allowedCommand('resume-interrupted') || recovery?.valid!==true;
-  $('resumeInterrupted').disabled=!state.connected || state.pending || busy || stopped || recovery?.available!==true || recovery?.valid!==true;
+  const resumeBlocked=state.info.model==='z-series' && (!ready || state.status?.filter_inserted===false);
+  $('resumeInterrupted').disabled=!state.connected || state.pending || busy || stopped || resumeBlocked || recovery?.available!==true || recovery?.valid!==true;
   $('discardInterrupted').hidden=!allowedCommand('discard-interrupted');
   $('discardInterrupted').disabled=!state.connected || state.pending || busy || !interrupted;
   $('newRecipe').disabled = !ready || busy;
