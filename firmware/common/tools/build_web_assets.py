@@ -7,6 +7,8 @@ from pathlib import Path
 import subprocess
 import tempfile
 
+from embed_web import ASSETS
+
 ROOT = Path(__file__).resolve().parents[1]
 def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
 
@@ -29,10 +31,10 @@ def main():
             subprocess.run([str(compiler),*flags,*extra,*includes,'-c',str(ROOT/'src/common_web_assets.cpp'),'-o',str(obj)],check=True)
             symbols=subprocess.check_output([str(root/'bin'/f'{prefix}-objdump'),'-t',str(obj)],text=True)
             assets=[line for line in symbols.splitlines() if 'L7asset_' in line and 'O' in line.split()[:3]]
-            assert len(assets)==6,assets
+            assert len(assets)==len(ASSETS),assets
             if name=='esp8266':assert all('.irom.text' in line for line in assets),assets
             report['targets'].append({'target':name,'compiler':subprocess.check_output([str(compiler),'--version'],text=True).splitlines()[0],'compiler_sha256':sha(compiler),'flags':flags+extra,'object_bytes':obj.stat().st_size,'object_sha256':sha(obj),'asset_sections':assets,'sdk_headers':{'cores/esp8266/pgmspace.h':sha(sdk/'cores/esp8266/pgmspace.h')} if sdk else {}})
     args.report.parent.mkdir(parents=True,exist_ok=True);args.report.write_text(json.dumps(report,indent=2)+'\n')
-    print('Common assets compiled for ESP8266 and ESP32; six ESP8266 arrays verified in flash')
+    print('Common assets compiled for ESP8266 and ESP32; all ESP8266 asset arrays verified in flash')
 
 if __name__=='__main__':main()

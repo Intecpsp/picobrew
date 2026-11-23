@@ -1,4 +1,4 @@
-# PicoFerm standalone firmware 1.2.2
+# PicoFerm standalone firmware 1.2.3
 
 This profile contains the complete PicoFerm application owner, sensor acquisition,
 local controls, authenticated API, embedded website, persistent recording and
@@ -15,7 +15,7 @@ has been flashed or operated as part of this verification. See
 
 | Feature | Implemented behavior |
 | --- | --- |
-| Identity | `picoferm` / `PicoFerm`, firmware `1.2.2`, API `/api/v1` |
+| Identity | `picoferm` / `PicoFerm`, firmware `1.2.3`, API `/api/v1` |
 | Sensors | Original temperature conversion, calibrated native pressure scale, battery voltage |
 | Local recording | Explicit start/stop; no automatic session resume after restart |
 | Sampling | Default 300 seconds; configurable integer 60–86400 seconds while idle |

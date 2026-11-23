@@ -25,7 +25,7 @@ void Controller::event(const char* kind,const char* detail){if(engine_)engine_->
 api::DeviceServices Controller::services() noexcept {
     api::DeviceServices out;out.context=this;
     out.identity=[](void* p){auto& self=*static_cast<Controller*>(p);api::Identity id;
-        id.model="picoferm";id.model_name="PicoFerm";id.model_family="picoferm";id.firmware_version="1.2.2";id.device_uid=self.uid_;return id;};
+        id.model="picoferm";id.model_name="PicoFerm";id.model_family="picoferm";id.firmware_version="1.2.3";id.device_uid=self.uid_;return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Temperature|api::Pressure|api::Battery|api::Calibration|api::Fermentation;
         caps.settings=api::TemperatureUnit;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Controller*>(p)->snapshot(value);};

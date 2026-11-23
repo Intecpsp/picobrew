@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.4
+# Pico Z standalone firmware 1.2.5
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller

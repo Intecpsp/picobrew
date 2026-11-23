@@ -40,8 +40,8 @@ new sessions with additional named sensors and actuator channels.
 ## Packaging and bindings
 
 Run `python3 tools/embed_web.py` after source changes, or use `--check` to verify
-the generated output. Gzip headers have no timestamp. The six source assets are
-embedded once and exposed on seven routes (`/` and `/index.html` share bytes).
+the generated output. Gzip headers have no timestamp. The seven source assets are embedded once, with eight routes because `/` and
+`/index.html` share bytes. The brewer serves the original [PicoBrew favicon](https://picobrew.com/favicon.ico) locally at `/favicon.ico`.
 
 Include `picobrew/common_web.h`, initialize `PicoHttpServer` with
 `pico_common_web_assets` and `pico_common_web_assets_count`, then call
@@ -63,7 +63,7 @@ grayscale pixels, history schemas and the API explorer. These are browser and
 transport checks; they do not exercise a physical device.
 
 `tools/build_web_assets.py` compiles the generated asset translation unit with
-the pinned ESP8266 GCC4.8.2 and ESP32 GCC5.2 toolchains and verifies that all six
+the pinned ESP8266 GCC4.8.2 and ESP32 GCC5.2 toolchains and verifies that all seven
 ESP8266 arrays are in the flash section. `analysis/web-target-build.json` records
 the exact source, headers, compiler and object hashes. Whole application links
 and physical installation remain separate evidence.

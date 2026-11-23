@@ -1,4 +1,4 @@
-// Complete PicoStill standalone 1.2.2 owner. The recovered cloud/update/main
+// Complete PicoStill standalone 1.2.3 owner. The recovered cloud/update/main
 // application is not instantiated. The modified task preserves local control
 // independently of Wi-Fi and the optional Hub.
 #include "picostill/standalone.hpp"
@@ -27,7 +27,7 @@ public:
         engine_(device_.services(), storage_.binding(), clock()), socket_io_(listener_.io()) { device_.bind_engine(engine_); }
     void begin() {
         Serial.begin(115200, SERIAL_8N1, -1, -1, false, 20000);
-        Serial.println("PicoStill standalone 1.2.2");
+        Serial.println("PicoStill standalone 1.2.3");
         // NVS failure cannot reach controller initialization. Establish the
         // known output lows even when the rest of startup is unavailable.
         board_.pin_mode(18, 2); board_.digital_write(18, false);
