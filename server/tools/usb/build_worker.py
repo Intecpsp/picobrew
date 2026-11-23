@@ -6,7 +6,7 @@ import ast
 import hashlib
 import json
 import os
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 import platform
 import shutil
 import struct
@@ -89,7 +89,21 @@ def native(work, output, key, cache):
             zipped.extractall(work)
     else:
         with tarfile.open(archive) as tar:
-            tar.extractall(work, filter="data")
+            # Debian Bookworm's system Python predates tarfile's data filter.
+            for member in tar:
+                relative = PurePosixPath(member.name)
+                if relative.is_absolute() or ".." in relative.parts:
+                    raise ValueError("Invalid AVRDUDE archive path")
+                path = work / relative
+                if member.isdir():
+                    path.mkdir(parents=True, exist_ok=True)
+                elif member.isfile():
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    with tar.extractfile(member) as source, path.open("xb") as destination:
+                        shutil.copyfileobj(source, destination)
+                    path.chmod(0o755 if member.mode & 0o111 else 0o644)
+                else:
+                    raise ValueError("Unexpected AVRDUDE archive member")
     (output / "bin").mkdir(parents=True)
     (output / "etc").mkdir()
     if (name, digest) == AVR_SOURCE:
