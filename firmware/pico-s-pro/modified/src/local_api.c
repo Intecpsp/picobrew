@@ -427,9 +427,9 @@ static int command(PicoLocalApi *api, Writer *w, const char *body, size_t length
         result = pico_local_control_command(name, recipe_id);
     }
     if (result == PICO_LOCAL_CONTROL_INVALID) goto bad;
-    if (result == PICO_LOCAL_CONTROL_BUSY) return error(w, 409, "busy", "The appliance is executing another operation");
-    if (result == PICO_LOCAL_CONTROL_STOPPED) return error(w, 409, "stopped", "Stop is latched; clear it at the main menu before starting");
-    if (result == PICO_LOCAL_CONTROL_NOT_READY) return error(w, 503, "not_ready", "The appliance has not completed initialization");
+    if (result == PICO_LOCAL_CONTROL_BUSY) return error(w, 409, "busy", "Wait until the brewer is idle");
+    if (result == PICO_LOCAL_CONTROL_STOPPED) return error(w, 409, "stopped", "Clear the stop at the main menu first");
+    if (result == PICO_LOCAL_CONTROL_NOT_READY) return error(w, 503, "not_ready", "Brewer is starting up");
     pico_local_event(&api->application->network, "command", name);
     text(w, "{\"accepted\":true,\"command\":"); quote(w, name); text(w, "}"); return 202;
 bad:
