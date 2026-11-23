@@ -406,7 +406,14 @@ function CatalogEntry({ id }: { id: string }) {
               <SectionHeading
                 title={entry.edition ? `Hub adaptation · ${entry.edition}` : 'Source review'}
               />
-              <SourceEvidence text={review.evidence} />
+              <SourceEvidence
+                text={review.evidence}
+                scaledBill={
+                  !!entry.edition &&
+                  !!entry.machine_versions?.length &&
+                  !!entry.recipe?.ingredients?.length
+                }
+              />
               {review.blocker && (
                 <p className="warning-note">
                   <strong>Still unresolved.</strong> {review.blocker}

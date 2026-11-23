@@ -260,7 +260,17 @@ test('a Hub adaptation shows its assumptions and keeps the original recipe acces
   await card.getByRole('button', { name: 'Heinielicious', exact: true }).click()
   const review = page.getByRole('region', { name: 'Source review' })
   await expect(review.getByRole('heading', { name: 'Hub adaptation · Unfined' })).toBeVisible()
+  await expect(
+    review.getByText('These notes give quantities for the original batch.')
+  ).toBeVisible()
   await expect(review.getByText(/did not specify a unit/)).toBeVisible()
+  await page.getByLabel('View brewer version').selectOption('pico-s')
+  await expect(
+    page
+      .getByRole('table', { name: 'Scaled ingredient bill' })
+      .getByRole('row')
+      .filter({ hasText: 'Starting keg water' })
+  ).toContainText('5.2 L')
   await page.getByRole('button', { name: 'View original recipe' }).first().click()
   await expect(
     page.getByRole('dialog', { name: 'Original recipe' }).getByText('Irish Moss', { exact: true })

@@ -289,8 +289,11 @@ export function DeviceDialog({
                 <p className="help-text" role="status">
                   {pairCode ? (
                     <>
-                      On the brewer, open <strong>About → Pair with Hub</strong>. Confirm{' '}
-                      <strong>{pairCode}</strong> with the dial.
+                      On a Pico S, Pro, C or Z, open{' '}
+                      <strong>Settings → About → Pair with Hub</strong>. On a Zymatic, open{' '}
+                      <strong>About Zymatic</strong> and wait for the pairing prompt. Compare{' '}
+                      <strong>{pairCode}</strong> with the code on the brewer. If they match, turn
+                      and press the dial to approve.
                     </>
                   ) : device?.key_configured ? (
                     'Paired. The Hub has this machine’s API key for its controls and local website.'

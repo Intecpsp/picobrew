@@ -31,6 +31,10 @@ bag-based Manual Brew program. Its associated brewing-profile guide describes
 PicoPak-style compartment routing. The actual setup, ingredients and process
 still require individual calibration.
 
+## Starting water in the stock keg
+
+When a recipe specifies a starting keg charge, the Hub scales that water with the grain and hops. On a Pico S or Pro the stock fill line corresponds to 1 US gallon plus 6 cups. A Pico C uses its 5.2 L fill mark. For a Z module or a Zymatic with the stock 5-gallon keg, the Hub uses a conservative planning ceiling of 4.27 US gallons from a manufacturer brew sheet. The volume of wort you finish with depends on the grain bill and water losses. [Sources and calculation](../internal/recipe/README.md)
+
 ## Hop slots and working limits
 
 The PicoBrew instruction books illustrate how the Hops Pak fits its cradle and how the lid holes align. The manufacturer describes four compartments for timed additions. [Pico S, p. 42](https://picobrewcontent.blob.core.windows.net/content/pico/Pico_Manual.pdf#page=42) · [Pico Pro, p. 40](https://picobrewcontent.blob.core.windows.net/content/picopro/PicoPro_Manual.pdf#page=40) · [Pico C, p. 40](https://picobrewcontent.blob.core.windows.net/content/picoc/PicoC_Manual.pdf#page=40) · [Pico Pro FAQ](https://picobrew.com/about/faq_picopro)

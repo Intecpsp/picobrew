@@ -1,6 +1,6 @@
 # A brew day with PicoBrew Hub
 
-The screenshots show the current Hub running in simulation. The brewers, recipes in progress, and sensor readings in these examples are virtual.
+The screenshots use the current Hub and Pico Local websites with simulated brewers, readings and a USB adapter. You can explore the brewery, recipe library and journal yourself in the [Hub simulator](../server/README.md#explore-the-simulator-first).
 
 ## See what’s brewing
 
@@ -24,6 +24,10 @@ When you choose **Send**, select the destination and open **Preview recipe**. Ch
 
 ![Hop slot two holding Cascade and Centennial, with a shared addition time and combined weight](images/recipe-builder.png)
 
+To see how a catalog recipe fits your machine before saving it, open **Recipes → Browse all**, choose a recipe and select your brewer under **View brewer version**. Named **Hub adaptations** explain the choices made in reconstructing that version. In *Heinielicious (Unfined)*, the source gives no unit for the Irish moss, so this edition leaves it out. For the Pico S shown below, the loading table calls for **5.2 L of starting water** and estimates **4.07 L of wort**. Use the table for that brewer’s quantities and the timing of its three hop additions. **View original recipe** opens the archived source locally.
+
+![Heinielicious Unfined edition showing its source review and the three hop additions scaled for a Pico S](images/recipe-edition.png)
+
 ## Review the brew and follow fermentation
 
 Open **Brew journal** and select a session. On **Session measurements**, click or tap a reading to pin it. The chart aligns temperatures with machine state so you can see what changed at that moment. Add a timestamped note or use the arrow keys to inspect adjacent samples. **Session timeline** records reported transitions, and **CSV** and **JSON** export the session for comparison.
@@ -34,8 +38,16 @@ Use **Fermentation and carbonation** to track the stages of a planned brew after
 
 ## Firmware, device website, and integrations
 
-Open **Firmware** on a machine to see its installed version and check for updates. An eligible Pico S or Pro offers compatible wireless upgrades and downgrades. For first-time conversion, use **Add machine → USB setup and recovery** on the computer connected to the appliance. The Hub saves the original for that machine. [Firmware installation and recovery](../server/docs/firmware-packages.md)
+For a first-time conversion, connect the idle machine by USB to the computer running the Hub. Open **Brewery → Add machine → USB setup and recovery**, select the connection and model, then choose **Back up original firmware** or **Install standalone firmware**. Follow the model-specific prompts and keep USB connected until verification finishes.
 
-A brewer running standalone firmware can also serve its own website. Use the machine's management dialog to open it with the saved pairing credential where supported. The local site shows that appliance's controls and history. **API explorer** in the Hub documents the endpoints for managing multiple machines and the shared recipe library. [Pairing and the brewer website](../server/docs/device-connections.md)
+![Hub USB setup dialog with a simulated USB adapter, Pico S selected, and Install standalone firmware available](images/usb-setup.png)
+
+For later updates, open **Firmware** on the machine’s front panel in the Hub. An eligible Pico S or Pro offers compatible wireless upgrades and downgrades. [Firmware installation and recovery](../server/docs/firmware-packages.md)
+
+A Pico S or Pro running standalone firmware also serves **Pico Local** at its own network address. Before pairing, you can see the brewer’s state and temperatures. On a paired brewer, **Manage machine → Open machine website** opens the local controls and history using the Hub’s saved pairing. [Pairing and the brewer website](../server/docs/device-connections.md)
+
+![Pico Local showing an idle simulated Pico Pro and its wort and thermoblock temperatures before the browser connects](images/standalone-public.png)
+
+**API explorer** in the Hub documents the endpoints for managing multiple machines and the shared recipe library.
 
 **Settings** includes appearance, equipment preferences, data export, and the optional brew assistant. Once a provider is connected, the assistant can draft a recipe, discuss a live brew you opt into monitoring, or review a finished session. You review the draft and operate the brewer yourself. [Brew assistant setup](../server/README.md#connect-the-brew-assistant)

@@ -86,8 +86,7 @@ recognize a program already present on the brewer.
 The ten chiefwigms Pico base recipes use named locations and a separate `Prime`
 step whose translation is not verified here. Their notes, illustrations and
 original JSON are browsable, but automatic copying/deployment is disabled.
-Z/Zymatic programs and cleaning programs retain their original routing and are
-reference/export records while no live adapter for those models exists.
+Z and Zymatic programs retain their original routing and must pass the target format checks before transfer. A stock Zymatic can retrieve a compatible program from its sync menu. Stock Z 0.0.119 owners can export a compatible recipe and import it through the brewer’s Program Maker website. A standalone Z accepts direct transfer when its firmware advertises support. [Stock Zymatic setup](stock-zymatic.md) · [Supported workflows](coverage.md)
 
 Every entry carries its repository, pinned commit, source path, SHA-256,
 attribution/license notice and conversion warnings. Grouped PicoPak entries expose

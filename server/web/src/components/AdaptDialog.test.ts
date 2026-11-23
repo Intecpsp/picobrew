@@ -388,6 +388,7 @@ it('shows the edition procedure, hop slot, manual stage and contact time before 
   await userEvent.setup().click(screen.getByRole('button', { name: 'Preview recipe' }))
   await screen.findByText('Add the cooled lactose after fermentation.')
   expect(screen.getByRole('heading', { name: 'Hub adaptation · Post-brew lactose' })).toBeTruthy()
+  expect(screen.getByText('These notes give quantities for the original batch.')).toBeTruthy()
   expect(screen.getByRole('link', { name: 'example.org' }).getAttribute('href')).toBe(
     'https://example.org/guide'
   )
