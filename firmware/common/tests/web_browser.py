@@ -41,6 +41,7 @@ def main():
                         if name in descriptors: descriptors[name]={'allowed':fields,'required':[] if name=='encoder' else fields[:2] if name=='set-fan' else fields}
                     info = {'api_version':1,'mode':'standalone','model':model,'model_name':{'z-series':'Pico Z','picoferm':'PicoFerm','picostill':'PicoStill'}[model],'model_family':model,'firmware_version':'1.2.0-fixture','commands':allowed,'command_fields':descriptors,'settings_fields':['temperature_unit','language','detailed_status'] if brewing else ['temperature_unit'],'recipe_capacity':16 if brewing else 0,'step_capacity':15 if brewing else 0,'front_panel':brewing,'telemetry_forwarding':True,'capabilities':{'recipes':brewing,'brewing':brewing,'heating':brewing,'front_panel':brewing,'temperature':True,'pressure':not brewing,'battery':model=='picoferm','fermentation':model=='picoferm','pump':model!='picoferm','fans':model=='picostill'}}
                     info['z_program_maker']=brewing
+                    info['zero_minute_steps']=brewing
                     info['history_sample_interval_ms']=720000 if model=='picoferm' else 15000
                     saved_recipes={}
                     sensors = [{'id':'temperature','label':'Temperature','kind':'temperature','unit':'F','value':68.5},{'id':'pressure_native','label':'Pressure','kind':'pressure','unit':'raw','value':532.125},{'id':'battery','label':'Battery','kind':'voltage','unit':'V','value':3.8}] if model=='picoferm' else [{'id':'inlet','label':'Inlet','kind':'temperature','unit':'F','value':152.1},{'id':'outlet','label':'Outlet','kind':'temperature','unit':'F','value':145.2},{'id':'pot','label':'Pot','kind':'temperature','unit':'F','value':170.4},{'id':'ambient','label':'Ambient','kind':'temperature','unit':'F','value':68.1},{'id':'pressure','label':'Pressure','kind':'pressure','unit':'kPa','value':6.89}]
@@ -186,11 +187,34 @@ def main():
                         with page.expect_download() as downloaded:
                             page.locator('#exportRecipe').click()
                         assert json.loads(downloaded.value.path().read_text()) == original
+                        def import_wire(wire):
+                            page.locator('#importFile').set_input_files({'name':'recipe.json','mimeType':'application/json','buffer':wire.encode()})
+                        base_step={'name':'Mash','location':2,'target_f':152,'minutes':60}
+                        def generic(step):return json.dumps({'id':'test','name':'Test','steps':[step]})
+                        for bad in [
+                            generic(dict(base_step,minutes=None)),
+                            generic(dict(base_step,heating_ramp=10)),
+                            generic({k:v for k,v in base_step.items() if k!='target_f'}),
+                            generic(base_step).replace('"minutes": 60','"minutes": 1,"minutes": 60'),
+                            json.dumps({'id':'wrong','z_program':original,'steps':[base_step]})]:
+                            import_wire(bad)
+                            expect(page.locator('#notice')).to_contain_text(re.compile('unsupported|repeated|conflicting'))
+                            expect(page.locator('#recipeName')).to_have_value(original['Name'])
+                        page.once('dialog',lambda d:d.accept())
+                        import_wire(json.dumps({'id':'native-id','z_program':original}))
+                        expect(page.locator('#recipeId')).to_have_value('native-id')
                         page.locator('#saveRecipe').click()
                         expect(page.locator('#notice')).to_contain_text('Recipe saved')
-                        assert saved_recipes['original-hops']==original
+                        assert saved_recipes['native-id']==original
                         page.locator('#recipeList button').first.click()
                         expect(page.locator('#editorHeading')).to_have_text('Edit recipe')
+                        expect(page.locator('#notice')).to_be_hidden()
+                        import_wire(generic(dict(base_step,target_f=0,minutes=0)))
+                        expect(page.locator('#notice')).to_contain_text('Recipe imported')
+                        with page.expect_download() as native_download:
+                            page.locator('#exportRecipe').click()
+                        exported=json.loads(native_download.value.path().read_text())
+                        assert exported['steps']==[dict(base_step,target_f=0,minutes=0,drain_minutes=0)]
                         page.locator('[data-tab="overview"]').click()
                         status['ready']=False
                         expect(page.locator('#runProgram')).to_be_disabled()

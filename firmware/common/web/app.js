@@ -325,17 +325,20 @@ function programId(name) {
   return name.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'').slice(0,20);
 }
 
+function hasOnlyFields(object, allowed) {
+  return object && typeof object==='object' && !Array.isArray(object) && Object.keys(object).every(key=>allowed.includes(key));
+}
+
 function validZProgram(program) {
-  const fields=(object,allowed)=>object && typeof object==='object' && Object.keys(object).every(key=>allowed.includes(key));
   const name=value=>typeof value==='string' && /^[ -~]{1,20}$/.test(value) && value.trim().length>0;
   const seconds=(value,max)=>Number.isInteger(value) && value>=0 && value<=max;
-  return fields(program,['Name','IsBeer','UsePicoPakMode','Steps','IsMetric']) && name(program.Name) &&
+  return hasOnlyFields(program,['Name','IsBeer','UsePicoPakMode','Steps','IsMetric']) && name(program.Name) &&
     typeof program.IsBeer==='boolean' && typeof program.UsePicoPakMode==='boolean' &&
     (program.IsMetric===undefined || typeof program.IsMetric==='boolean') &&
     Array.isArray(program.Steps) && program.Steps.length>=1 && program.Steps.length<=15 &&
     program.Steps.every(s=>s && name(s.Name) && (s.StepType===2
-      ? fields(s,['Name','StepType','Time']) && (s.Time===undefined || seconds(s.Time,86400))
-      : s.StepType===1 && fields(s,['Name','StepType','Location','Temp','Time','Drain']) &&
+      ? hasOnlyFields(s,['Name','StepType','Time']) && (s.Time===undefined || seconds(s.Time,86400))
+      : s.StepType===1 && hasOnlyFields(s,['Name','StepType','Location','Temp','Time','Drain']) &&
         Number.isInteger(s.Location) && s.Location>=1 && s.Location<=6 &&
         (s.Temp===null || Number.isFinite(s.Temp) && s.Temp>=-29 && s.Temp<=98) &&
         seconds(s.Time,86400) && seconds(s.Drain,7200)));
@@ -426,7 +429,7 @@ function addStep(step={name:'New step',location:1,target_f:152,minutes:20,drain_
     const cell=document.createElement('td');let input;
     if(type==='select') {input=document.createElement('select');flowPaths.forEach((label,index)=>input.add(new Option(label,String(index+1))));}
     else {input=document.createElement('input');input.type=type;if(type==='text'){input.maxLength=21;input.pattern='[ -~]{1,21}';input.title='Use printable ASCII characters.';}else{input.min=min;input.max=max;input.step=1;}}
-    input.dataset.field=field;input.required=true;input.value=step[field] ?? '';
+    input.dataset.field=field;input.required=true;input.value=step[field] ?? (field==='drain_minutes' ? 0 : '');
     input.setAttribute('aria-label',field.replaceAll('_',' '));cell.append(input);row.append(cell);
   }
   const cell=document.createElement('td');const remove=document.createElement('button');remove.type='button';remove.className='remove';remove.textContent='×';remove.setAttribute('aria-label','Remove step');
@@ -475,6 +478,7 @@ function recipeFromForm() {
     const step={};row.querySelectorAll('[data-field]').forEach(input=>step[input.dataset.field]=input.dataset.field==='name'?input.value:Number(input.value));return step;
   });
   if(!steps.length){notify('Add at least one brewing step.',true);return null;}
+  if(state.info.zero_minute_steps!==true && steps.some(step=>step.minutes===0)){notify('This firmware requires at least one minute per step.',true);return null;}
   if(steps.some(step=>step.target_f!==0 && step.target_f<60)){notify('Targets must be 0 for unheated circulation, or between 60 and 212 °F.',true);return null;}
   return {id:$('recipeId').value,name:$('recipeName').value,steps};
 }
@@ -626,16 +630,50 @@ $('deleteRecipe').addEventListener('click',async()=>{
   catch(error){notify(error.message,true);}
 });
 $('importRecipe').addEventListener('click',()=>$('importFile').click());
+function readRecipeFile(text) {
+  const recipe=JSON.parse(text);
+  // JSON.parse keeps the last repeated property. The firmware rejects ambiguous
+  // objects. Track keys in each object after the browser has checked the syntax.
+  const keys=[];
+  for(const match of text.matchAll(/("(?:\\.|[^"\\])*")\s*:|"(?:\\.|[^"\\])*"|[{}]/g)) {
+    if(match[0]==='{')keys.push(new Set());
+    else if(match[0]==='}')keys.pop();
+    else if(match[1]) {
+      const key=JSON.parse(match[1]), current=keys[keys.length-1];
+      if(current.has(key))throw new Error('The recipe contains a repeated field: '+key+'.');
+      current.add(key);
+    }
+  }
+  const validId=id=>typeof id==='string' && id.length>=1 && id.length<=20 && !/[^a-zA-Z0-9_-]/.test(id);
+  if(recipe && (Object.hasOwn(recipe,'Steps') || Object.hasOwn(recipe,'z_program'))) {
+    if(state.info.z_program_maker!==true)throw new Error('This brewer does not support Z Program Maker files.');
+    const wrapped=Object.hasOwn(recipe,'z_program');
+    const program=wrapped ? recipe.z_program : recipe;
+    if(!validZProgram(program))throw new Error('This Z program contains unsupported fields or values.');
+    if(wrapped && (!hasOnlyFields(recipe,['id','z_program','name','steps']) || !validId(recipe.id) ||
+      ('name' in recipe && recipe.name!==program.Name) || ('steps' in recipe && recipe.steps!==null && !(Array.isArray(recipe.steps) && recipe.steps.length===0)))) {
+      throw new Error('The Z program wrapper has conflicting or unsupported fields.');
+    }
+    return {id:wrapped ? recipe.id : programId(program.Name),z_program:program};
+  }
+  const label=(value,max)=>typeof value==='string' && value.length>=1 && value.length<=max && !/[^ -~]/.test(value);
+  const integer=(value,min,max)=>Number.isInteger(value) && value>=min && value<=max;
+  if(!hasOnlyFields(recipe,['id','name','steps']) || !validId(recipe.id) || !label(recipe.name,31) ||
+     !Array.isArray(recipe.steps) || !integer(recipe.steps.length,1,15))throw new Error('Choose a Pico Local recipe with a valid ID, name, and 1–15 steps.');
+  for(const [i,step] of recipe.steps.entries()) {
+    if(!hasOnlyFields(step,['name','location','target_f','minutes','drain_minutes']) || !label(step.name,21) ||
+       !integer(step.location,1,6) || (step.target_f!==0 && !integer(step.target_f,60,212)) ||
+       !integer(step.minutes,state.info.zero_minute_steps===true ? 0 : 1,599) ||
+       ('drain_minutes' in step && !integer(step.drain_minutes,0,120)))throw new Error('Step '+(i+1)+' contains unsupported fields or values.');
+  }
+  return recipe;
+}
+
 async function importRecipeFile(file) {
   if(!file)return;
   try{
     if(file.size>16384)throw new Error('Recipe file is too large.');
-    let recipe=JSON.parse(await file.text());
-    if(recipe && Array.isArray(recipe.Steps)) {
-      if(state.info.z_program_maker!==true)throw new Error('This brewer does not support Z Program Maker files.');
-      if(!validZProgram(recipe))throw new Error('This Z program contains unsupported fields or values. No steps were imported.');
-      recipe={id:programId(recipe.Name),z_program:recipe};
-    } else if(!recipe || !Array.isArray(recipe.steps) || recipe.steps.length<1 || recipe.steps.length>15 || typeof recipe.name!=='string' || typeof recipe.id!=='string' || !/^[A-Za-z0-9_-]{1,20}$/.test(recipe.id) || recipe.steps.some(step=>!step || typeof step!=='object'))throw new Error('Choose a recipe JSON file exported by Pico Local.');
+    const recipe=readRecipeFile(await file.text());
     if(state.dirty && !confirm('Discard the unsaved recipe changes?'))return;
     editRecipe(recipe,false);state.dirty=true;notify('Recipe imported into the editor. Review it, then save to the Pico.');
   }catch(error){notify(error instanceof SyntaxError?'The file is not valid JSON.':error.message,true);}
