@@ -267,6 +267,31 @@ for (const viewport of [
         frontPanel.getByRole('button', { name: 'Press dial', exact: true })
       ).toBeEnabled()
       expect(commands).toEqual([{ command: 'encoder', click: true }])
+      machine.status!.ready = false
+      machine.capabilities!.commands.push('restart')
+      await page.reload()
+      await expect(
+        frontPanel.getByRole('button', { name: 'Press dial', exact: true })
+      ).toBeDisabled()
+      await expect(
+        page.getByRole('button', { name: 'Stop and lock outputs', exact: true })
+      ).toBeDisabled()
+      machine.status!.ready = true
+      machine.last_seen = new Date().toISOString()
+      await page.reload()
+      await page.getByRole('button', { name: 'Manage machine' }).click()
+      await expect(page.getByRole('button', { name: 'Restart brewer' })).toBeDisabled()
+      machine.status!.phase = 4
+      await page.reload()
+      await page.getByRole('button', { name: 'Manage machine' }).click()
+      await page.getByRole('button', { name: 'Restart brewer' }).click()
+      await page
+        .getByRole('dialog', { name: 'Restart brewer?' })
+        .getByRole('button', { name: 'Restart brewer' })
+        .click()
+      await expect(page.getByRole('dialog')).toContainText('Restart acknowledged')
+      expect(commands.at(-1)).toEqual({ command: 'restart', confirm: true })
+      await page.getByRole('button', { name: 'Close', exact: true }).click()
 
       await page.getByRole('button', { name: 'Firmware 1.2.0', exact: true }).click()
       const dialog = page.getByRole('dialog', { name: 'Machine firmware', exact: true })
