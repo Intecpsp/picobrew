@@ -456,7 +456,7 @@ class InstallWireTests(unittest.TestCase):
 
     def test_previous_pico_c_release_retains_its_display_mapping(self):
         for display, other in (("ssd1309", "ssd1325"), ("ssd1325", "ssd1309")):
-            for version in ("1.2.3", "1.2.4", "1.2.5", "1.2.6"):
+            for version in ("1.2.3", "1.2.4", "1.2.5", "1.2.6", "1.2.7"):
                 archive = installer.C_FIRMWARE.parent / "releases" / "pico-c" / display / f"{version}.zip"
                 with zipfile.ZipFile(archive) as bundle:
                     old = bundle.read("pico-c-standalone.bin")
@@ -467,7 +467,7 @@ class InstallWireTests(unittest.TestCase):
 
     def test_previous_ota_release_is_approved_only_for_its_model(self):
         for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4", "1.3.5", "1.3.6", "1.3.7"):
+            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4", "1.3.5", "1.3.6", "1.3.7", "1.3.8"):
                 archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
                 with zipfile.ZipFile(archive) as bundle:
                     old = bundle.read(model + "-standalone.bin")
