@@ -288,6 +288,7 @@ export interface Conditioning {
   }[]
 }
 export interface Brew {
+  recovered_after_restart?: boolean
   conditioning?: Conditioning
   step_names?: Record<number, string>
   sample_fields?: string[]
