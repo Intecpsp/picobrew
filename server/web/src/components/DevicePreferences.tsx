@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useHub, useResource } from '../context'
 import { api, errorMessage } from '../lib/api'
-import { isAccessory } from '../lib/capabilities'
+import { isAccessory, preferenceFields } from '../lib/capabilities'
 import type { DeviceSettings } from '../types'
 import { Button, ErrorBanner, Field, Loading, Modal } from './ui'
 import { HubConnectionSettings } from './HubConnectionSettings'
@@ -9,11 +9,7 @@ import { HubConnectionSettings } from './HubConnectionSettings'
 export function DevicePreferences({ id, onClose }: { id: string; onClose: () => void }) {
   const hub = useHub()
   const device = hub.devices.find((item) => item.id === id)
-  const fields = device?.capabilities?.settings_fields ?? [
-    'temperature_unit',
-    'language',
-    'detailed_status',
-  ]
+  const fields = preferenceFields(device)
   const resource = useResource<Partial<DeviceSettings>>(
     device?.online && fields.length ? `/devices/${id}/settings` : null
   )

@@ -16,6 +16,20 @@ export function supports(info: Capabilities | null | undefined, name: string): b
   )
 }
 
+export function preferenceFields(
+  device?: Pick<Device, 'adapter' | 'model' | 'capabilities'>
+): string[] {
+  const declared = device?.capabilities?.settings_fields
+  if (declared != null) return declared
+  // CC3200 discovery predates the settings_fields list.
+  if (
+    device &&
+    (device.adapter === 'simulator' || ['pico-s', 'pico-pro', 'pico-c'].includes(device.model))
+  )
+    return ['temperature_unit', 'language', 'detailed_status']
+  return []
+}
+
 export function isAccessory(device: Pick<Device, 'model' | 'capabilities'>): boolean {
   return (
     ['picoferm', 'picostill'].includes(device.model) ||

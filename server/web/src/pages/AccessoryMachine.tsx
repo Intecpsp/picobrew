@@ -5,7 +5,7 @@ import { ArrowUpRight, RefreshCw, Square } from 'lucide-react'
 import { useHub, useResource } from '../context'
 import { api, APIError, errorMessage } from '../lib/api'
 import { calibrationPrerequisite, commandLabels, sensorValue, supports } from '../lib/capabilities'
-import { deviceModelLabel, deviceState, duration } from '../lib/utils'
+import { deviceModelLabel, deviceState, duration, sessionInProgress } from '../lib/utils'
 import type { BrewDetail, Device } from '../types'
 import {
   Badge,
@@ -224,9 +224,11 @@ export default function AccessoryMachine({ device }: { device: Device }) {
                 : 'PicoStill session'
             }
             description={
-              status?.busy
+              sessionInProgress(device)
                 ? 'The device is running its current session.'
-                : 'Choose an available device operation.'
+                : status?.busy
+                  ? deviceState(device)
+                  : 'Choose an available device operation.'
             }
           />
           <div className="accessory-actions">
@@ -255,10 +257,11 @@ export default function AccessoryMachine({ device }: { device: Device }) {
               <div>
                 <strong>{status?.stopped ? 'Device stopped' : 'Stop current operation'}</strong>
                 <small>
-                  {status?.stop_reason ||
-                    (supports(device.capabilities, 'pump')
+                  {status?.stop_reason && status.stop_reason !== 'none'
+                    ? status.stop_reason
+                    : supports(device.capabilities, 'pump')
                       ? 'Inhibit outputs and cancel the active operation.'
-                      : 'End the active fermentation session.')}
+                      : 'End the active fermentation session.'}
                 </small>
               </div>
               <Button

@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Settings2, RefreshCw, Pencil, Trash2, SlidersHorizontal } from 'lucide-react'
-import { brewerOutputsIdle, isAccessory, supports } from '../lib/capabilities'
+import { brewerOutputsIdle, isAccessory, preferenceFields, supports } from '../lib/capabilities'
 import { api, copyText, errorMessage } from '../lib/api'
 import type { Device } from '../types'
 import { MachineEvents } from './MachineEvents'
@@ -101,14 +101,17 @@ export function MachineManagement({
               <Pencil size={16} />
               Edit connection
             </Button>
-            <Button
-              variant="secondary"
-              disabled={preferencesDisabled}
-              onClick={() => choose(preferences)}
-            >
-              <SlidersHorizontal size={16} />
-              {isAccessory(device) ? 'Device preferences' : 'Brewer preferences'}
-            </Button>
+            {(preferenceFields(device).length > 0 ||
+              supports(device.capabilities, 'telemetry_forwarding')) && (
+              <Button
+                variant="secondary"
+                disabled={preferencesDisabled}
+                onClick={() => choose(preferences)}
+              >
+                <SlidersHorizontal size={16} />
+                {isAccessory(device) ? 'Device preferences' : 'Brewer preferences'}
+              </Button>
+            )}
             {device.capabilities?.commands?.includes('restart') && (
               <Button
                 variant="secondary"

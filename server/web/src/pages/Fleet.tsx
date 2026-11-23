@@ -32,6 +32,7 @@ import {
   deviceModelLabel,
   deviceAttention,
   deviceState,
+  sessionInProgress,
   duration,
   temperature,
 } from '../lib/utils'
@@ -59,14 +60,7 @@ export default function Fleet({
     if (addMachine) navigate('/overview')
   }
   const attention = devices.filter((device) => deviceAttention(device))
-  const active = devices.filter(
-    (device) =>
-      device.online &&
-      device.status?.busy &&
-      !device.status.stopped &&
-      !deviceAttention(device) &&
-      !(device.status.command === 'front-panel' && device.status.device_state === 2)
-  )
+  const active = devices.filter(sessionInProgress)
   const lastBrew = brews.find((brew) => brew.state === 'completed')
   const trace = useResource<BrewDetail>(lastBrew ? `/brews/${lastBrew.id}` : null)
   const prioritized = new Set([...attention, ...active])
@@ -238,7 +232,7 @@ function MachineCard({
 }) {
   const { unit } = useHub()
   const status = device.online ? device.status : undefined
-  const busy = !!status?.busy && !status.stopped
+  const busy = !!status && sessionInProgress(device)
   const accessory = isAccessory(device)
   const readOnly =
     supports(device.capabilities, 'display') &&
@@ -282,16 +276,23 @@ function MachineCard({
           {attention
             ? status?.recovery?.recipe_name || status?.recipe_name || attention.title
             : busy
-              ? status.recipe_name || status.command || 'Program in progress'
+              ? status.recipe_name ||
+                (device.model === 'picoferm' ? 'Fermentation recording' : status.command) ||
+                'Program in progress'
               : !device.online
                 ? 'Machine offline'
                 : status?.stopped
                   ? 'Outputs stopped'
-                  : status?.ready
-                    ? 'Ready for the next session'
-                    : readOnly && status
-                      ? 'Programs start at the brewer'
-                      : 'Waiting for machine status'}
+                  : status?.busy
+                    ? deviceState(device)
+                    : status?.ready
+                      ? 'Ready for the next session'
+                      : readOnly && status
+                        ? 'Programs start at the brewer'
+                        : status?.state === 'monitoring' &&
+                            supports(device.capabilities, 'front_panel')
+                          ? 'Select a program with the front panel'
+                          : 'Waiting for machine status'}
         </strong>
         {attention && <span>{attention.instruction}</span>}
         {busy && !attention && (

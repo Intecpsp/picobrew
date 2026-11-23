@@ -36,7 +36,6 @@ import { TransferDialog } from '../components/TransferDialog'
 import { InstalledProgramDialog } from '../components/InstalledProgramDialog'
 import { BrewAIMonitor, type AIMonitorState } from '../components/BrewAIMonitor'
 import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components/DeviceDialogs'
-import { HubConnectionSettings } from '../components/HubConnectionSettings'
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 import { TemperatureChart } from '../components/Charts'
 import { dateLabel, deviceModelLabel, deviceState, duration, temperature } from '../lib/utils'
@@ -285,6 +284,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
   const programs = Object.keys(programNames).filter((name) => commands.includes(name))
   const program = programs.includes(chosenProgram) ? chosenProgram : programs[0] || ''
   const hasRecipes = supports(device.capabilities, 'recipes')
+  const hasPrograms = hasRecipes || programs.length > 0
   const showRecipes = hasRecipes && (task === 'recipes' || !programs.length)
   const live = device.online ? status : undefined
   const stepNumber =
@@ -345,9 +345,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
               test={() => void testConnection()}
               edit={() => setEditing(true)}
               preferences={() => setSettings(true)}
-              preferencesDisabled={
-                readOnly || (!device.online && device.adapter !== 'pico-standalone')
-              }
+              preferencesDisabled={!device.online && device.adapter !== 'pico-standalone'}
               remove={() => setRemoving(true)}
             />
             {commands.includes('stop') && (
@@ -503,9 +501,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   : live?.busy
                     ? 'Current session'
                     : live
-                      ? readOnly
-                        ? 'Machine status'
-                        : 'Run a program'
+                      ? hasPrograms
+                        ? 'Run a program'
+                        : 'Machine status'
                       : 'Waiting for machine status'
             }
             description={
@@ -525,7 +523,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           {!device.online && device.last_seen && (
             <p className="help-text">Last connected {dateLabel(device.last_seen)}</p>
           )}
-          {live?.busy && !readOnly && (
+          {live?.busy && (stepNumber || live.step_name || live.step_seconds > 0) && (
             <div className="session-step">
               <span>{stepNumber || 'Current step'}</span>
               <strong>{live.step_name || 'Check the brewer display'}</strong>
@@ -764,7 +762,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
                   accent
                 />
                 <Metric label="Thermoblock" value={temperature(live.thermoblock_f, hub.unit)} />
-                {!readOnly && (
+                {hasPrograms && (
                   <>
                     <Metric
                       label="Target"
@@ -815,7 +813,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           }
           actions={
             <div className="inline-actions">
-              {(!readOnly || supports(device.capabilities, 'history_persistent')) && (
+              {(simulated || supports(device.capabilities, 'history_persistent')) && (
                 <Button
                   variant="ghost"
                   disabled={!device.online || !!pending}
@@ -845,9 +843,9 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
             icon={<Radio size={24} />}
             title="Waiting for brew readings"
             description={
-              readOnly
-                ? 'Recorded temperatures appear here during a program.'
-                : 'Run a program to begin recording temperatures, phases and controller state.'
+              hasPrograms
+                ? 'Run a program to begin recording temperatures, phases and controller state.'
+                : 'Recorded temperatures appear here during a program.'
             }
           />
         )}
