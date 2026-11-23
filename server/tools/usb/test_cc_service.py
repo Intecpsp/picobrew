@@ -73,7 +73,13 @@ class ServiceTests(unittest.TestCase):
             uid=hashlib.sha256(original["sys/uid.txt"]).hexdigest()
             source,=(data/"stock-firmware/pico-s"/uid).glob("*.bin")
             service.private.assert_private(source)
-            service.run("restore","pico-s","test","",data,events.append,events.append)
+            before_wrong=len(devices)
+            with self.assertRaisesRegex(service.CCError,"different identity"):
+                service.run("restore","pico-s","test","",data,events.append,events.append,
+                            expected_uid="cd"*16)
+            self.assertTrue(all(not d.mutations for d in devices[before_wrong:]))
+            service.run("restore","pico-s","test","",data,events.append,events.append,
+                        expected_uid="ab"*16)
             for name in (i.APP_NAME,i.RECOVERY_NAME):
                 self.assertEqual(devices[-1].files[name],original[name])
             data_before=source.read_bytes()

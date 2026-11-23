@@ -216,7 +216,7 @@ def _public_slots(data, uid, model):
     return directory
 
 
-def run(action, model, port, display, data_dir, confirm, progress, *, job_key_path=None):
+def run(action, model, port, display, data_dir, confirm, progress, *, job_key_path=None, expected_uid=None):
     name = _profile_name(model, display)
     if action not in ("backup", "install", "restore"):
         raise CCError("Choose a supported USB operation.")
@@ -253,6 +253,8 @@ def run(action, model, port, display, data_dir, confirm, progress, *, job_key_pa
         failed("The two-pass USB backup")
     image = private.read_regular(capture, install.BACKUP_SIZE, private=True)
     device_uid, application, captured_key = _active_capture(image, cc, read_key=action == "install")
+    if expected_uid is not None and device_uid.decode("ascii") != expected_uid:
+        raise CCError("The connected Pico has a different identity from the selected Hub machine.")
     uid = hashlib.sha256(device_uid).hexdigest()
     source = _original(data, name, uid, capture, cc)
     if action == "backup":
