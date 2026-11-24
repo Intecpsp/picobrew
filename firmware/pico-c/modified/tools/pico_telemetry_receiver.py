@@ -175,10 +175,10 @@ class TelemetryHandler(BaseHTTPRequestHandler):
             self.wfile.write(body)
 
     def _read_body(self, length):
-        deadline = time.monotonic() + READ_TIMEOUT_SECONDS
+        started = time.monotonic()
         chunks = []
         while length:
-            remaining = deadline - time.monotonic()
+            remaining = READ_TIMEOUT_SECONDS - (time.monotonic() - started)
             if remaining <= 0:
                 raise TimeoutError("body deadline exceeded")
             self.connection.settimeout(remaining)

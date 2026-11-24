@@ -46,12 +46,12 @@ func (s *Server) aiModels(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if !validAIProvider(in.Provider) {
-		s.fail(w, http.StatusBadRequest, "provider", "Choose OpenAI or Anthropic")
+		s.fail(w, http.StatusBadRequest, "provider", "Choose OpenAI, Anthropic, or Google Gemini")
 		return
 	}
 	in.AuthMode = ai.NormalizeAuthMode(in.AuthMode)
-	if !validAIAuthMode(in.AuthMode) {
-		s.fail(w, 400, "auth_mode", "Choose subscription or API key")
+	if !validAIAuthMode(in.Provider, in.AuthMode) {
+		s.fail(w, 400, "auth_mode", "Choose a connection method supported by this provider")
 		return
 	}
 	if in.AuthMode == ai.AuthSubscription {

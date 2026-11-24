@@ -179,7 +179,7 @@ describe('contextual AI workflow', () => {
     const user = userEvent.setup()
     mount(createElement(AIWorkbench, { mode: 'recipe' }))
     await screen.findByText('Not configured')
-    expect(await screen.findByText(/Connect a ChatGPT or Claude subscription/)).toBeTruthy()
+    expect(await screen.findByText(/Choose OpenAI, Anthropic, or Google Gemini in Settings/)).toBeTruthy()
     await user.type(screen.getByLabelText('What would you like to explore?'), 'Make a recipe')
     expect(
       (screen.getByRole('button', { name: 'Ask the assistant' }) as HTMLButtonElement).disabled

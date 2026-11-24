@@ -52,6 +52,30 @@ afterEach(() => {
 })
 
 describe('AI provider model discovery', () => {
+  it('uses a Gemini project key when switching from a ChatGPT subscription', async () => {
+    fetchMock.mockImplementation(async (path, options) => {
+      if (String(path) === '/api/v1/ai/settings')
+        return json({ ...initial, auth_mode: 'subscription' })
+      if (String(path).includes('/ai/subscription'))
+        return json({ provider: 'openai', authenticated: false })
+      if (options?.method !== 'POST')
+        return json({ error: { code: 'ai_key_missing', message: 'Enter a key' } }, 409)
+      return json({ provider: 'gemini', models: [{ id: 'gemini-test', name: 'Test model' }] })
+    })
+    const user = userEvent.setup()
+    mount()
+    await user.selectOptions(await screen.findByLabelText('Provider'), 'gemini')
+    expect(screen.queryByRole('option', { name: /subscription/i })).toBeNull()
+    await user.type(screen.getByLabelText('Provider API key'), 'test-google-key')
+    await user.click(screen.getByRole('button', { name: 'Connect and load models' }))
+    await screen.findByRole('option', { name: 'Test model (gemini-test)' })
+    expect(JSON.parse(String(modelCalls().at(-1)?.[1]?.body))).toEqual({
+      provider: 'gemini',
+      auth_mode: 'api_key',
+      api_key: 'test-google-key',
+    })
+  })
+
   it('loads saved credentials automatically, preserves an unlisted model and refreshes on demand', async () => {
     fetchMock.mockImplementation(async (path) =>
       String(path) === '/api/v1/ai/settings'

@@ -8,6 +8,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -30,28 +31,75 @@ const (
 )
 
 type modelPage struct {
-	Data *[]struct {
-		ID          string `json:"id"`
-		DisplayName string `json:"display_name"`
-	} `json:"data"`
-	HasMore *bool  `json:"has_more"`
-	LastID  string `json:"last_id"`
+	Data    *[]listedModel `json:"data"`
+	HasMore *bool          `json:"has_more"`
+	LastID  string         `json:"last_id"`
+	Models  *[]struct {
+		Name        string   `json:"name"`
+		DisplayName string   `json:"displayName"`
+		Methods     []string `json:"supportedGenerationMethods"`
+	} `json:"models"`
+	NextPageToken string `json:"nextPageToken"`
+}
+
+type listedModel struct {
+	ID          string `json:"id"`
+	DisplayName string `json:"display_name"`
+}
+
+func validProviderKey(key string) bool {
+	return strings.TrimSpace(key) != "" && len(key) <= 1024 && !strings.ContainsAny(key, "\r\n")
+}
+
+// Return the normalized page, number of entries charged to the size limit,
+// and opaque cursor. Google also returns models for embeddings and other APIs.
+func (p *modelPage) entries(provider string) ([]listedModel, int, string, error) {
+	if provider == "gemini" {
+		if p.Models == nil {
+			return nil, 0, "", errors.New("Gemini returned an invalid model list")
+		}
+		entries := make([]listedModel, 0, len(*p.Models))
+		for _, m := range *p.Models {
+			if !slices.Contains(m.Methods, "generateContent") {
+				continue
+			}
+			id, ok := strings.CutPrefix(m.Name, "models/")
+			if !ok || !ValidGeminiModelID(id) {
+				return nil, 0, "", errors.New("Gemini returned an invalid model identifier")
+			}
+			entries = append(entries, listedModel{id, m.DisplayName})
+		}
+		return entries, len(*p.Models), p.NextPageToken, nil
+	}
+	if p.Data == nil || (provider == "anthropic" && p.HasMore == nil) {
+		return nil, 0, "", errors.New("the provider returned an invalid model list")
+	}
+	var cursor string
+	if provider == "anthropic" && *p.HasMore {
+		cursor = p.LastID
+		if len(*p.Data) == 0 || cursor == "" || len(cursor) > 512 || cursor != (*p.Data)[len(*p.Data)-1].ID {
+			return nil, 0, "", errors.New("the provider returned invalid model pagination")
+		}
+	}
+	return *p.Data, len(*p.Data), cursor, nil
 }
 
 // ListModels reads the provider's live catalogue using only the supplied key.
 // It never saves configuration, invokes a model or follows a provider redirect.
-// OpenAI's list is unpaginated; Anthropic uses after_id and has_more. Unknown
-// model IDs are retained rather than filtered through a stale version list.
+// Google and Anthropic return paginated catalogs. Google identifies models
+// compatible with generateContent in each entry's supported methods.
 func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model, error) {
 	endpoint := c.OpenAIModelsURL
 	switch provider {
 	case "openai":
 	case "anthropic":
 		endpoint = c.AnthropicModelsURL
+	case "gemini":
+		endpoint = c.GeminiModelsURL
 	default:
 		return nil, errors.New("unsupported AI provider")
 	}
-	if strings.TrimSpace(key) == "" || len(key) > 1024 || strings.ContainsAny(key, "\r\n") {
+	if !validProviderKey(key) {
 		return nil, errors.New("set a valid provider API key before loading models")
 	}
 	u, err := url.Parse(endpoint)
@@ -60,13 +108,7 @@ func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model,
 	}
 	ctx, cancel := context.WithTimeout(ctx, modelListTimeout)
 	defer cancel()
-	client := c.HTTP
-	if client == nil {
-		client = http.DefaultClient
-	}
-	// Keep redirects disabled even when a caller supplies a custom HTTP client.
-	boundedClient := *client
-	boundedClient.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+	boundedClient := c.noRedirectClient()
 
 	models := make([]Model, 0)
 	seenModels := make(map[string]bool)
@@ -82,13 +124,23 @@ func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model,
 				q.Set("after_id", cursor)
 			}
 			u.RawQuery = q.Encode()
+		} else if provider == "gemini" {
+			q := u.Query()
+			q.Set("pageSize", "1000")
+			q.Del("pageToken")
+			if cursor != "" {
+				q.Set("pageToken", cursor)
+			}
+			u.RawQuery = q.Encode()
 		}
 		r, err := http.NewRequestWithContext(ctx, http.MethodGet, u.String(), nil)
 		if err != nil {
 			return nil, errors.New("the model discovery request could not be created")
 		}
 		r.Header.Set("Accept", "application/json")
-		if provider == "anthropic" {
+		if provider == "gemini" {
+			r.Header.Set("x-goog-api-key", key)
+		} else if provider == "anthropic" {
 			r.Header.Set("x-api-key", key)
 			r.Header.Set("anthropic-version", "2023-06-01")
 		} else {
@@ -102,14 +154,15 @@ func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model,
 		if received > modelListMaxBytes {
 			return nil, errors.New("the provider model list exceeded the total size limit")
 		}
-		if wire.Data == nil || (provider == "anthropic" && wire.HasMore == nil) {
-			return nil, errors.New("the provider returned an invalid model list")
+		items, count, next, err := wire.entries(provider)
+		if err != nil {
+			return nil, err
 		}
-		entries += len(*wire.Data)
+		entries += count
 		if entries > modelListMaxResults {
 			return nil, errors.New("the provider model list exceeded the result limit")
 		}
-		for _, item := range *wire.Data {
+		for _, item := range items {
 			id := strings.TrimSpace(item.ID)
 			if id == "" || len(id) > 512 || strings.IndexFunc(id, func(r rune) bool { return unicode.IsSpace(r) || unicode.IsControl(r) }) >= 0 {
 				return nil, errors.New("the provider returned an invalid model identifier")
@@ -124,7 +177,7 @@ func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model,
 			models = append(models, Model{ID: id, Name: name})
 			seenModels[id] = true
 		}
-		if provider == "openai" || !*wire.HasMore {
+		if next == "" {
 			sort.Slice(models, func(i, j int) bool {
 				a, b := strings.ToLower(models[i].Name), strings.ToLower(models[j].Name)
 				if a == b {
@@ -136,8 +189,8 @@ func (c *Client) ListModels(ctx context.Context, provider, key string) ([]Model,
 		}
 		// A malformed/repeated cursor must fail instead of publishing a partial
 		// list. Build the next request ourselves; never follow a response URL.
-		cursor = wire.LastID
-		if len(*wire.Data) == 0 || cursor == "" || len(cursor) > 512 || seenCursors[cursor] || cursor != (*wire.Data)[len(*wire.Data)-1].ID {
+		cursor = next
+		if len(cursor) > 2048 || strings.IndexFunc(cursor, unicode.IsControl) >= 0 || seenCursors[cursor] {
 			return nil, errors.New("the provider returned invalid model pagination")
 		}
 		seenCursors[cursor] = true
