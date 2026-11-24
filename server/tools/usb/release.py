@@ -53,17 +53,12 @@ PINS = ROOT / "server/tools/usb-prepare/releases.json"
 RELEASE_BASE = "https://github.com/jeffreydwalter/picobrew/releases/download/"
 
 
-def next_tag(tags, current):
-    versions = sorted(tuple(map(int, match.groups())) for tag in tags if (match := TAG.fullmatch(tag)))
-    existing = [tag for tag in current if TAG.fullmatch(tag)]
-    if len(existing) > 1:
-        raise ValueError("Several production releases point to this commit")
-    if existing:
-        return existing[0]
-    if not versions:
-        return "v1.0.0"
-    major, minor, patch = versions[-1]
-    return f"v{major}.{minor}.{patch + 1}"
+def source_tag():
+    source = (ROOT / "server/internal/server/server.go").read_text(encoding="utf-8")
+    versions = re.findall(r'^const Version = "([^"]+)"$', source, flags=re.MULTILINE)
+    if len(versions) != 1 or not TAG.fullmatch("v" + versions[0]):
+        raise ValueError("Expected one semantic Hub release version in server.go")
+    return "v" + versions[0]
 
 
 REQUIRED_WORKFLOWS = {
@@ -132,9 +127,13 @@ def workers(directory):
 
 
 def pin(tag, candidate, directory):
-    if not TAG.fullmatch(tag) or not CANDIDATE.fullmatch(candidate):
+    if tag != source_tag() or not CANDIDATE.fullmatch(candidate):
         raise ValueError("Invalid production or candidate release tag")
     pins = {"tag": tag, "candidate_tag": candidate, "assets": workers(directory)}
+    # During a coordinated replacement the old production URL still resolves,
+    # but its worker hashes can differ from the newly reviewed source pins.
+    if PINS.exists() and json.loads(PINS.read_text())["tag"] == tag:
+        pins["prefer_candidate"] = True
     PINS.write_text(json.dumps(pins, indent=2) + "\n", encoding="utf-8")
 
 
@@ -159,15 +158,18 @@ def stage(key, directory, release_tag):
             asset["inputs_sha256"] != worker_inputs()):
         raise ValueError("USB inputs changed. Build and pin new release candidates.")
     directory.mkdir(exist_ok=True, parents=True)
+    tags = [tag]
+    if tag == release_tag:
+        tags = [candidate, tag] if pins.get("prefer_candidate") else [tag, candidate]
     for name, expected in [(expected_name, asset["sha256"]), (f"usb-notices-{key}.zip", asset["notices_sha256"])]:
-        try:
-            response = urllib.request.urlopen(RELEASE_BASE + tag + "/" + name, timeout=180)
-        except urllib.error.HTTPError as e:
-            if e.code != 404:
-                raise
-            if release_tag != tag:
-                raise ValueError(f"The candidate is pinned for {tag}, but the next release is {release_tag}") from e
-            response = urllib.request.urlopen(RELEASE_BASE + candidate + "/" + name, timeout=180)
+        for index, asset_tag in enumerate(tags):
+            try:
+                response = urllib.request.urlopen(RELEASE_BASE + asset_tag + "/" + name, timeout=180)
+                break
+            except urllib.error.HTTPError as error:
+                error.close()
+                if error.code != 404 or index + 1 == len(tags):
+                    raise
         with response, (directory / name).open("wb") as out:
             shutil.copyfileobj(response, out)
         if sha(directory / name) != expected:
@@ -176,7 +178,7 @@ def stage(key, directory, release_tag):
 
 
 def assemble(tag, directory, commit):
-    if not TAG.fullmatch(tag) or not re.fullmatch(r"[0-9a-f]{40}", commit):
+    if tag != source_tag() or not re.fullmatch(r"[0-9a-f]{40}", commit):
         raise ValueError("Invalid production release tag or commit")
     assets = workers(directory)
     if assets != json.loads(PINS.read_text())["assets"]:
@@ -210,7 +212,7 @@ def assemble(tag, directory, commit):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_subparsers(dest="action", required=True)
-    actions.add_parser("next-tag")
+    actions.add_parser("source-tag", aliases=["next-tag"])
     actions.add_parser("current-pins")
     checks = actions.add_parser("check-ci")
     checks.add_argument("commit")
@@ -227,10 +229,8 @@ if __name__ == "__main__":
     publish.add_argument("directory", type=Path)
     publish.add_argument("commit")
     args = parser.parse_args()
-    if args.action == "next-tag":
-        def tags(*opts):
-            return subprocess.check_output(["git", "tag", *opts], text=True).splitlines()
-        print(next_tag(tags("--list", "v*"), tags("--points-at", "HEAD")))
+    if args.action in ("source-tag", "next-tag"):
+        print(source_tag())
     elif args.action == "current-pins":
         print("true" if current_pins() else "false")
     elif args.action == "check-ci":

@@ -87,26 +87,38 @@ func TestCandidateOnlyFillsMissingPinnedProductionWorker(t *testing.T) {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct {
-		name          string
-		stable        int
-		stableData    string
-		candidateData string
-		wantRequests  int
-		shouldSucceed bool
+		name           string
+		candidateFirst bool
+		stable         int
+		stableData     string
+		candidateData  string
+		wantRequests   int
+		shouldSucceed  bool
 	}{
-		{"stable", 200, content, "", 1, true},
-		{"before publication", 404, "", content, 2, true},
-		{"corrupt stable", 200, "wrong", content, 1, false},
-		{"corrupt candidate", 404, "", "wrong", 2, false},
-		{"failed stable download", 503, "", content, 1, false},
+		{"stable", false, 200, content, "", 1, true},
+		{"before publication", false, 404, "", content, 2, true},
+		{"corrupt stable", false, 200, "wrong", content, 1, false},
+		{"corrupt candidate", false, 404, "", "wrong", 2, false},
+		{"failed stable download", false, 503, "", content, 1, false},
+		{"before tag replacement", true, 200, "historical worker", content, 1, true},
+		{"after candidate retirement", true, 200, content, "", 2, true},
+		{"replacement has bad digest", true, 200, content, "wrong", 1, false},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
+			index.PreferCandidate = tc.candidateFirst
+			releases, err = json.Marshal(index)
+			if err != nil {
+				t.Fatal(err)
+			}
 			count := 0
 			http.DefaultTransport = transportFunc(func(r *http.Request) (*http.Response, error) {
 				count++
 				tag, code, data := index.Tag, tc.stable, tc.stableData
-				if count == 2 {
+				if (count == 2) != tc.candidateFirst {
 					tag, code, data = index.CandidateTag, 200, tc.candidateData
+					if data == "" {
+						code = 404
+					}
 				}
 				expected := "/jeffreydwalter/picobrew/releases/download/" + tag + "/" + name
 				if r.URL.Host != "github.com" || r.URL.Path != expected {

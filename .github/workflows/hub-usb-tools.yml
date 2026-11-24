@@ -28,7 +28,8 @@ jobs:
         env:
           PUBLISH: ${{ github.event_name != 'pull_request' && github.ref == 'refs/heads/master' && github.repository == 'jeffreydwalter/picobrew' }}
         run: |
-          echo "tag=$(python3 server/tools/usb/release.py next-tag)" >> "$GITHUB_OUTPUT"
+          tag=$(python3 server/tools/usb/release.py source-tag)
+          echo "tag=$tag" >> "$GITHUB_OUTPUT"
           echo "pinned=$(python3 server/tools/usb/release.py current-pins)" >> "$GITHUB_OUTPUT"
           echo "release=$PUBLISH" >> "$GITHUB_OUTPUT"
   native:
@@ -79,7 +80,7 @@ jobs:
           chmod +x "$worker"
           test "$("$worker" --version | tr -d '\r')" = "1.0.0"
           binary="../artifacts/picobrew-hub-${{ matrix.platform }}${suffix}"
-          go build -buildvcs=true -trimpath -ldflags "-X $(go list ./internal/server).Version=${TAG#v}" -o "$binary" ./cmd/picobrew-hub
+          go build -buildvcs=true -trimpath -o "$binary" ./cmd/picobrew-hub
           go version -m "$binary" | grep -F "vcs.revision=$GITHUB_SHA"
           test "$("$binary" --version | tr -d '\r')" = "${TAG#v}"
       - uses: actions/upload-artifact@v4
@@ -120,7 +121,7 @@ jobs:
           /tmp/picobrew-stage -local ../artifacts
           go test -c -o /tmp/picobrew-usb-test ./internal/usbservice/helper
           docker run --rm --platform linux/arm/v7 -e PICOBREW_REQUIRE_USB_WORKER=1 -v /tmp/picobrew-usb-test:/usb-test:ro debian:bookworm-slim /usb-test -test.run TestEmbedded -test.v
-          go build -buildvcs=true -trimpath -ldflags "-X $(go list ./internal/server).Version=${TAG#v}" -o ../artifacts/picobrew-hub-linux-arm ./cmd/picobrew-hub
+          go build -buildvcs=true -trimpath -o ../artifacts/picobrew-hub-linux-arm ./cmd/picobrew-hub
           go version -m ../artifacts/picobrew-hub-linux-arm | grep -F "vcs.revision=$GITHUB_SHA"
           test "$(../artifacts/picobrew-hub-linux-arm --version)" = "${TAG#v}"
       - uses: actions/upload-artifact@v4
@@ -147,16 +148,36 @@ jobs:
           pattern: usb-*
           merge-multiple: true
           path: artifacts
-      - name: Verify all six builds and publish the current master revision
+      - name: Assemble verified release files for the current master revision
+        id: assemble
         shell: bash
         run: |
           set -euo pipefail
           state=$(python3 server/tools/usb/release.py check-ci "$GITHUB_SHA")
           if [ "$state" != ready ]; then exit 0; fi
           python3 server/tools/usb/release.py assemble "$TAG" artifacts "$GITHUB_SHA"
-          if git ls-remote --exit-code origin "refs/tags/$TAG" > /dev/null; then
+          (cd artifacts && sha256sum --check SHA256SUMS.txt)
+          echo "ready=true" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@v4
+        if: steps.assemble.outputs.ready == 'true'
+        with:
+          name: hub-release-${{ needs.revision.outputs.tag }}-${{ github.sha }}
+          path: artifacts/
+          if-no-files-found: error
+          retention-days: 14
+      - name: Publish an available source version
+        if: steps.assemble.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ref=$(git ls-remote origin "refs/tags/$TAG")
+          if [ -n "$ref" ]; then
             git fetch --depth=1 origin "refs/tags/$TAG:refs/tags/$TAG"
-            test "$(git rev-parse "$TAG^{commit}")" = "$GITHUB_SHA"
+            tagged=$(git rev-parse "$TAG^{commit}")
+            if [ "$tagged" != "$GITHUB_SHA" ]; then
+              echo "$TAG already identifies $tagged. The verified build for $GITHUB_SHA is available in the workflow artifacts." >> "$GITHUB_STEP_SUMMARY"
+              exit 0
+            fi
           fi
           if gh release view "$TAG" --json isDraft,targetCommitish > "$RUNNER_TEMP/release.json" 2>/dev/null; then
             test "$(jq -r .targetCommitish "$RUNNER_TEMP/release.json")" = "$GITHUB_SHA"
@@ -175,4 +196,7 @@ jobs:
             gh release delete "$draft" --yes
             exit 0
           fi
+          # Claim a previously unused tag without force before publishing the
+          # draft. A concurrently published tag may never be moved by this job.
+          if [ -z "$ref" ]; then git push origin "$GITHUB_SHA:refs/tags/$TAG"; fi
           gh release edit "$draft" --tag "$TAG" --draft=false --latest --target "$GITHUB_SHA"

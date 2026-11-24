@@ -4,8 +4,10 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
@@ -107,5 +109,53 @@ func TestInvalidAIRecipeIsNeverSaved(t *testing.T) {
 	records, err := s.db.List("recipe")
 	if err != nil || len(records) != 0 {
 		t.Fatal("AI wrote an unreviewed recipe", err)
+	}
+}
+
+func TestGeminiConnectionAndRecipeValidation(t *testing.T) {
+	s, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	const key = "gemini-project-test-key"
+	provider := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("x-goog-api-key") != key || r.Header.Get("Authorization") != "" {
+			t.Error("request did not use the Gemini project's credential")
+		}
+		switch r.URL.Path {
+		case "/models":
+			_, _ = io.WriteString(w, `{"models":[{"name":"models/gemini-test","displayName":"Test model","supportedGenerationMethods":["generateContent"]}]}`)
+		case "/models/gemini-test:generateContent":
+			_, _ = io.WriteString(w, `{"candidates":[{"finishReason":"STOP","content":{"parts":[{"text":"{\"text\":\"Invalid draft\",\"recipe\":{\"name\":\"Oops\",\"batch_liters\":-1}}"}]}}]}`)
+		default:
+			t.Errorf("unexpected model request %q", r.URL.Path)
+		}
+	}))
+	defer provider.Close()
+	s.aiClient.GeminiModelsURL = provider.URL + "/models"
+	api := h.URL + "/api/v1/ai/"
+	cfg := map[string]any{"provider": "gemini", "auth_mode": "api_key", "model": "gemini-test", "enabled": true, "api_key": key}
+	status, body := request(t, c, "PUT", api+"settings", csrf, cfg, nil)
+	if status != 200 || strings.Contains(string(body), key) {
+		t.Fatalf("saving Gemini returned %d", status)
+	}
+	status, body = request(t, c, "GET", api+"models", csrf, nil, nil)
+	if status != 200 || !strings.Contains(string(body), "gemini-test") {
+		t.Fatalf("listing Gemini models: %d %s", status, body)
+	}
+	status, body = request(t, c, "POST", api+"assist", csrf, map[string]string{"mode": "recipe", "prompt": "Draft a recipe"}, nil)
+	if status != 502 || !strings.Contains(string(body), "generated recipe failed validation") {
+		t.Fatalf("invalid Gemini recipe: %d %s", status, body)
+	}
+	for _, attempt := range []struct {
+		method, path string
+		data         any
+	}{
+		{"GET", "subscription?provider=gemini", nil},
+		{"GET", "models?provider=gemini&auth_mode=subscription", nil},
+		{"PUT", "settings", map[string]any{"provider": "gemini", "auth_mode": "subscription"}},
+	} {
+		status, _ = request(t, c, attempt.method, api+attempt.path, csrf, attempt.data, nil)
+		if status != 400 {
+			t.Errorf("%s %s status %d", attempt.method, attempt.path, status)
+		}
 	}
 }

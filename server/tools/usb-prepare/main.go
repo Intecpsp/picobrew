@@ -30,9 +30,10 @@ type Asset struct {
 	Bytes    int64  `json:"bytes"`
 }
 type Index struct {
-	CandidateTag string           `json:"candidate_tag,omitempty"`
-	Tag          string           `json:"tag"`
-	Assets       map[string]Asset `json:"assets"`
+	CandidateTag    string           `json:"candidate_tag,omitempty"`
+	PreferCandidate bool             `json:"prefer_candidate,omitempty"`
+	Tag             string           `json:"tag"`
+	Assets          map[string]Asset `json:"assets"`
 }
 
 func digest(path string) (string, int64) {
@@ -117,7 +118,11 @@ func stage(local, destination string) error {
 			if !regexp.MustCompile(`^usb-candidate-[1-9][0-9]*-[1-9][0-9]*$`).MatchString(index.CandidateTag) {
 				return errors.New("invalid USB candidate tag")
 			}
-			tags = append(tags, index.CandidateTag)
+			if index.PreferCandidate {
+				tags = []string{index.CandidateTag, index.Tag}
+			} else {
+				tags = append(tags, index.CandidateTag)
+			}
 		}
 		client := http.Client{Timeout: 3 * time.Minute, CheckRedirect: func(req *http.Request, via []*http.Request) error {
 			host := req.URL.Hostname()
