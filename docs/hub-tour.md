@@ -42,7 +42,7 @@ For a first-time conversion, connect the idle machine by USB to the computer run
 
 ![Hub USB setup dialog with a simulated USB adapter, Pico S selected, and Install standalone firmware available](images/usb-setup.png)
 
-For later updates, open **Firmware** on the machine’s front panel in the Hub. A provisioned Pico S, Pro, or C offers compatible wireless upgrades and downgrades. On a Pico C the package must also match the verified display controller. [Firmware installation and recovery](../server/docs/firmware-packages.md)
+For later updates, open **Firmware** on the machine’s front panel in the Hub. The version picker offers compatible wireless upgrades and downgrades on machines provisioned with network recovery. On a Pico C the package must also match the verified display controller. [Firmware installation and recovery](../server/docs/firmware-packages.md)
 
 A Pico S or Pro running standalone firmware also serves **Pico Local** at its own network address. Before pairing, you can see the brewer’s state and temperatures. On a paired brewer, **Manage machine → Open machine website** opens the local controls and history using the Hub’s saved pairing. [Pairing and the brewer website](../server/docs/device-connections.md)
 
