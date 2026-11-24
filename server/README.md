@@ -45,23 +45,11 @@ Then start it with `./picobrew-hub --data ./data` on macOS/Linux, or
 its own website even when launched from another directory; use `--data` to
 choose where that launch stores its database.
 
-Open **http://127.0.0.1:8080**. Authenticated mode listens on the host's network interfaces at port 8080 so machines can report back to the Hub; an explicit `--listen` still overrides that default. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart. Demo mode remains restricted to loopback.
+Open **http://127.0.0.1:8080**. Authenticated mode listens on the host's network interfaces at port 8080 so machines can report back to the Hub; an explicit `--listen` still overrides that default. On first launch the server prints a one-time setup token. Enter it in the browser and choose an owner password of at least 12 characters. Subsequent visits use that password. Sessions expire after 24 hours or a server restart.
 
 On **Brewery → Add machine**, select **Pico standalone firmware**. Enter a name and a **Machine URL** that the Hub host can reach. Click **Add machine** and follow the pairing instructions. On firmware with dial pairing, confirm the displayed code on the brewer. If you just completed USB setup in the Hub, continue from that setup so the Hub can use the key it saved. Older firmware can use **Use an existing key instead**.
 
 The Hub checks the machine identity and discovers its controls. Use the brewer’s current IP if its hostname resolves on your browser’s computer but fails on the Hub host. Open **Manage machine** on the machine page to test the connection, open its local website on pairing-capable firmware, or copy its device key. [Machine connections and API keys](docs/device-connections.md)
-
-## Explore the simulator first
-
-From `server/`, after building:
-
-```sh
-./picobrew-hub --demo --data ./demo-data
-```
-
-On Windows use `.\picobrew-hub.exe --demo --data .\demo-data`.
-
-This seeds three simulated brewers, two example recipes and three historical brew traces. Demo mode is restricted to loopback and rejects hardware adapters, including hardware records found in an existing data directory. Use a different directory from your real workspace. Seed recipes and traces are examples, not measurements from your machines. No provider credentials are included; AI requests are disabled until you explicitly configure them.
 
 ## What you can do
 
@@ -183,7 +171,7 @@ npm --prefix web ci
 npm --prefix web run build
 npm --prefix web test
 
-# Browser integration suite starts and removes its own isolated simulator
+# Browser integration tests
 cd web
 npx playwright install chromium
 npm run test:browser
@@ -207,7 +195,7 @@ These checks use an empty machine registry, temporary data, and a process PATH
 without Node or npm. They require Python only for testing; building the Hub
 requires Go, and the one-command startup also uses Make.
 
-If Chromium is installed separately, set `CHROMIUM_PATH` to its executable. `HUB_TEST_URL` targets an existing **demo** instance instead of starting the suite's isolated server on port 18080. The suite checks demo mode before making any changes.
+If Chromium is installed separately, set `CHROMIUM_PATH` to its executable. The browser suite starts and stops its own isolated Hub.
 
 In a full project checkout, the Python suite also compares catalog starters
 with `../firmware/pico-s-pro/modified/data/starter-recipes.json`. An isolated
@@ -227,7 +215,7 @@ by that variable.
 |---|---|
 | `cmd/picobrew-hub` | Process configuration and graceful shutdown |
 | `internal/server` | HTTP API, owner sessions, encrypted credentials, fleet orchestration, history import, optional AI monitor |
-| `internal/device` | Capability-aware standalone device adapters and a stateful simulator |
+| `internal/device` | Standalone device adapters and capability discovery |
 | `internal/recipe` | Canonical recipe validation, adaptation, native compilation, JSON/BeerXML exchange |
 | `internal/catalog` | Pinned offline recipes, native programs, original records, illustrations and source provenance |
 | `internal/store` | SQLite migrations, record versions, encrypted blobs, deduplicated telemetry |

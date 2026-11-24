@@ -1,6 +1,6 @@
 # A brew day with PicoBrew Hub
 
-The screenshots use the current Hub and Pico Local websites with simulated brewers, readings and a USB adapter. You can explore the brewery, recipe library and journal yourself in the [Hub simulator](../server/README.md#explore-the-simulator-first).
+The screenshots show the Hub and Pico Local interfaces with example machine readings and a USB adapter fixture.
 
 ## See what’s brewing
 
