@@ -124,7 +124,7 @@ upload. Failed allocation is reported without changing brewing controls or
 replacing previously committed history. Other SDK/application allocations
 still use the same heap; the reservation is not all free memory.
 
-See the packaged [firmware report](../firmware/standalone/firmware-report.json)
+See the packaged [firmware report](https://github.com/jeffreydwalter/picobrew/blob/0a7d4991bcdb29871534e08fd73a784637bae79b/firmware/standalone/firmware-report.json)
 for the exact linked image size, static RAM, remaining unallocated SRAM,
 source hashes and matching browser manifest. Build fit does not establish
 physical peak stack/heap usage or timing.
