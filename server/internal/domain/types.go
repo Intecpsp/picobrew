@@ -397,6 +397,9 @@ type Conditioning struct {
 	Stages         []ConditioningStage `json:"stages"`
 }
 type Brew struct {
+	PicoFermID            string                   `json:"picoferm_id,omitempty"`
+	PicoFermName          string                   `json:"picoferm_name,omitempty"`
+	PicoFermRecordingID   string                   `json:"picoferm_recording_id,omitempty"`
 	Conditioning          *Conditioning            `json:"conditioning,omitempty"`
 	StepNames             map[int]string           `json:"step_names,omitempty"`
 	ID                    string                   `json:"id"`

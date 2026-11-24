@@ -13,7 +13,10 @@ import (
 )
 
 type telemetryRecord struct {
+	Trial         *receiverTrial   `json:"receiver_trial,omitempty"`
+	RecoveryAfter time.Time        `json:"recovery_after,omitzero"`
 	SchemaVersion int              `json:"schema_version"`
+	FollowHub     bool             `json:"follow_hub,omitempty"`
 	Desired       *telemetryTarget `json:"desired,omitempty"`
 	Owned         telemetryTarget  `json:"owned"`
 	HubReceiver   *telemetryTarget `json:"hub_receiver,omitempty"`
@@ -75,6 +78,7 @@ func (s *Server) readTelemetryRecord(id string) (telemetryRecord, error) {
 					record.Desired, record.HubReceiver = &target, &target
 				}
 			}
+			record.FollowHub = record.Mode == "automatic" && record.HubReceiver != nil
 			record.SchemaVersion = 2
 			record.Apply = record.Apply || record.Claim || record.Desired != nil
 			record.Mode, record.Manual, record.Claim = "", telemetryTarget{}, false
@@ -190,7 +194,7 @@ func (s *Server) requestTelemetryPairing(d *runtimeDevice, r *http.Request) {
 }
 
 // seedTelemetryDesired chooses a verified default exactly once. It never
-// changes an existing custom receiver, disabled preference, or resolved default.
+// changes an existing preference.
 func (s *Server) seedTelemetryDesired(ctx context.Context, d *runtimeDevice, record *telemetryRecord) (string, error) {
 	if record.Desired != nil {
 		return "", nil
@@ -203,7 +207,7 @@ func (s *Server) seedTelemetryDesired(ctx context.Context, d *runtimeDevice, rec
 		return reason, nil
 	}
 	before := *record
-	record.Desired, record.HubReceiver, record.Apply = &target, &target, true
+	record.Desired, record.HubReceiver, record.Apply, record.FollowHub = &target, &target, true, true
 	return "", s.writeTelemetryRecord(id, before, *record)
 }
 
@@ -245,7 +249,8 @@ func (s *Server) telemetryApplied(d *runtimeDevice, target telemetryTarget) {
 
 // syncTelemetry runs under commandMu. The Hub's saved desired triple is the
 // only configuration source. Polling may observe drift, but only connection
-// events and owner saves authorize applying it again.
+// events and owner saves authorize applying it again. A PicoFerm may also
+// recover a previously verified, automatically selected Hub receiver.
 func (s *Server) syncTelemetry(ctx context.Context, d *runtimeDevice, force bool) {
 	d.mu.Lock()
 	view, reconnected := d.view, d.telemetryReconnect
@@ -294,7 +299,11 @@ func (s *Server) syncTelemetry(ctx context.Context, d *runtimeDevice, force bool
 		s.telemetryState(d, "pending", "Settings are saved and will be sent after the registered machine identity is verified.", desired)
 		return
 	}
-	observed, err := s.observedTelemetry(ctx, d)
+	raw, err := d.adapter.Telemetry(ctx)
+	var observed telemetryTarget
+	if err == nil {
+		observed, err = readTelemetryTarget(raw)
+	}
 	if err != nil {
 		s.telemetryState(d, "pending", "Saved in the Hub. The machine's receiver settings could not be read, so no change was sent.", desired)
 		return
@@ -316,6 +325,43 @@ func (s *Server) syncTelemetry(ctx context.Context, d *runtimeDevice, force bool
 			return
 		}
 	}
+	// On a registered PicoFerm, an automatically chosen address follows the Hub
+	// only after this exact configured receiver has actually failed delivery.
+	// Explicit saves and older preferences without that provenance stay fixed.
+	isManaged := view.IsPicoFerm() && record.FollowHub && desired.Enabled && record.HubReceiver != nil && desired.sameConfig(*record.HubReceiver)
+	if record.Trial != nil {
+		if isManaged && record.Pending == nil {
+			s.checkReceiverTrial(ctx, d, record, status, observed, raw)
+		} else {
+			s.telemetryState(d, "pending", "Save receiver settings to resolve the previous PicoFerm receiver change.", desired)
+		}
+		return
+	}
+
+	if isManaged && !record.RetryPending && (record.Owned.Enabled || observed.Enabled || observed.Host != "") &&
+		!observed.sameConfig(desired) && !observed.sameConfig(record.Owned) {
+		d.telemetryDelivery = deliveryWindow{}
+		s.telemetryState(d, "pending", "The PicoFerm receiver was changed on the machine. Save the receiver settings to apply them again.", desired)
+		return
+	}
+	if isManaged && record.Pending == nil && record.Owned.sameConfig(desired) && observed.sameConfig(desired) {
+		if d.telemetryDelivery.failing(desired, raw, status.UptimeMS) && !time.Now().Before(record.RecoveryAfter) {
+			if status.Busy || status.Stopped || !status.Ready {
+				s.telemetryState(d, "waiting_idle", "The PicoFerm could not reach its saved Hub address. Receiver recovery will run when it is idle.", desired)
+				return
+			}
+			replacement, reason := s.findReceiver(ctx, view.BaseURL, record.Origin, &desired)
+			if reason != "" {
+				s.telemetryState(d, "pending", "The PicoFerm could not reach its saved Hub address. It will keep trying while the Hub looks for a reachable address.", desired)
+				return
+			}
+			s.startReceiverTrial(ctx, d, record, replacement)
+			return
+		}
+	} else {
+		d.telemetryDelivery = deliveryWindow{}
+	}
+
 	if observed.sameConfig(desired) {
 		before := record
 		record.Owned, record.Apply, record.RetryPending = desired, false, false
@@ -443,7 +489,7 @@ func (s *Server) machineTelemetry(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	case "automatic":
-		// Compatibility only: a one-time request to fill the saved fields.
+		// Select this Hub as the receiver. PicoFerm can recover this address if it moves.
 		if in.Enabled != nil || in.Host != nil || in.Port != nil {
 			s.fail(w, 400, "telemetry", "Send only mode to fill in the Hub receiver address")
 			return
@@ -460,7 +506,8 @@ func (s *Server) machineTelemetry(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	before := record
-	record.Desired, record.Apply, record.RetryPending = &desired, true, true
+	record.Trial, record.RecoveryAfter = nil, time.Time{}
+	record.Desired, record.Apply, record.RetryPending, record.FollowHub = &desired, true, true, verifiedHub
 	if verifiedHub {
 		record.HubReceiver = &desired
 	}
@@ -518,7 +565,8 @@ func (s *Server) releaseTelemetry(ctx context.Context, d *runtimeDevice) domain.
 		return result
 	}
 	owned := observed.sameReceiver(record.Owned) || record.Pending != nil && observed.sameReceiver(*record.Pending)
-	if !owned || !observed.sameReceiver(*record.HubReceiver) {
+	trial := record.Trial != nil && observed.sameConfig(record.Trial.Target)
+	if !trial && (!owned || !observed.sameReceiver(*record.HubReceiver)) {
 		return result
 	}
 	if !observed.Enabled {
@@ -527,6 +575,7 @@ func (s *Server) releaseTelemetry(ctx context.Context, d *runtimeDevice) domain.
 	disabled := observed
 	disabled.Enabled = false
 	before := record
+	record.Trial = nil
 	record.Pending, record.Apply, record.RetryPending = &disabled, false, false
 	if err := s.writeTelemetryRecord(view.ID, before, record); err != nil {
 		result.Message = "Monitoring is disabled; the machine receiver could not safely be changed."

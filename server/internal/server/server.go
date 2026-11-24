@@ -51,6 +51,7 @@ type runtimeDevice struct {
 	awaitingIdentity   bool     // No authenticated application identity observed since registration was loaded.
 	keyFingerprint     [32]byte // Private, immutable, and never persisted or returned.
 	hasKeyFingerprint  bool
+	telemetryDelivery  deliveryWindow // guarded by commandMu
 	telemetryNext      time.Time
 	telemetryAttempts  int
 	telemetryReconnect bool // Guarded by mu; set by a verified reconnect or uptime rollback.
@@ -177,7 +178,7 @@ func New(cfg Config) (*Server, error) {
 		loaded = append(loaded, d)
 	}
 	for _, d := range loaded {
-		s.attach(d)
+		s.attach(d, nil)
 	}
 	s.wg.Add(1)
 	go func() { defer s.wg.Done(); s.monitorAI(ctx) }()
@@ -272,6 +273,8 @@ func (s *Server) routes() http.Handler {
 			r.Post("/devices/{id}/key", s.machineKey)
 			r.Post("/devices/{id}/website", s.machineWebsite)
 			r.Get("/devices/{id}", s.getDevice)
+			r.Get("/devices/{id}/picoferms", s.brewerPicoFerms)
+			r.Put("/devices/{id}/picoferms", s.brewerPicoFerms)
 			r.Get("/devices/{id}/brewer", s.picoFermBrewer)
 			r.Put("/devices/{id}/brewer", s.picoFermBrewer)
 			r.Put("/devices/{id}", s.saveDevice)
