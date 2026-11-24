@@ -7,6 +7,10 @@ MEMORY {
   encoder (rx) : ORIGIN = 0x2f72, LENGTH = 0x2b6
   wifi_fields (rx) : ORIGIN = 0x352c, LENGTH = 0xf6
   wired_fields (rx) : ORIGIN = 0xccc2, LENGTH = 0x276
+  oled_copy (rx) : ORIGIN = 0x16016, LENGTH = 0x38
+  oled_zero (rx) : ORIGIN = 0x160ea, LENGTH = 0x154
+  keyboard1 (rx) : ORIGIN = 0xa802, LENGTH = 0xcc
+  keyboard2 (rx) : ORIGIN = 0xa90e, LENGTH = 0x142
   display (rx) : ORIGIN = 0x16240, LENGTH = 0x672
   app (rx) : ORIGIN = 0x1b920, LENGTH = 0x26e0
   globals (rw) : ORIGIN = 0x802c8a, LENGTH = 0x300
@@ -17,6 +21,9 @@ SECTIONS {
     KEEP(wifi_cc3000_board.o(.text .text.*))
     KEEP(wifi_cc3000_spi_bus.o(.text .text.*))
     KEEP(wifi_cc3000_spi.o(.text.zym_spi_close_if_owned .text.zym_spi_stock_selected))
+    KEEP(wifi_cc3000_spi.o(.text.zym_spi_bind))
+    *(.text.zymatic_home_menu)
+    KEEP(wifi_server.o(.text .text.*))
   } > display
   .net_encoder : {
     __net_encoder_start = .;
@@ -24,7 +31,7 @@ SECTIONS {
   } > encoder
   .net_wifi_fields : {
     __net_wifi_fields_start = .;
-    KEEP(wifi_cc3000_spi.o(.text.zym_spi_yield_to_stock .text.zym_spi_resume_from_stock .text.byte_io .text.zym_spi_bind .text.zym_spi_record_irq))
+    KEEP(wifi_cc3000_spi.o(.text.zym_spi_yield_to_stock .text.zym_spi_resume_from_stock .text.byte_io .text.zym_spi_record_irq))
   } > wifi_fields
   .net_reader : {
     __net_reader_start = .;
@@ -34,11 +41,27 @@ SECTIONS {
     KEEP(*(.crc_hole))
     KEEP(wifi_cc3000_broker.o(.text.zym_broker_begin .text.zym_broker_release_oem .text.zym_broker_link_lost))
   } > crc
+  .oled_transfer : {
+    __oled_transfer_start = .;
+    *(.text.zym_wifi_about_info)
+  } > oled_copy
+  .oled_clear : {
+    __oled_clear_start = .;
+    KEEP(wifi_cc3000_broker.o(.text.zym_broker_poll))
+  } > oled_zero
+  .key_one : {
+    __key_one_start = .;
+    *(.text.reg_io)
+  } > keyboard1
+  .key_two : {
+    __key_two_start = .;
+    *(.text.zym_wifi_home_choice)
+  } > keyboard2
   .low : {
     KEEP(*(.low_helpers))
+    KEEP(wifi_cc3000_broker.o(.text.submit))
     KEEP(wifi_cc3000.o(.text .text.*))
     KEEP(wifi_http_session.o(.text .text.*))
-    KEEP(wifi_server.o(.text .text.*))
     KEEP(wifi_cc3000_spi.o(.text.within_budget))
   } > low
   .text : {

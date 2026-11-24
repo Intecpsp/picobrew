@@ -17,6 +17,7 @@
 enum { UNBOUND, ACTIVE, RX_HELD, QUARANTINED, STOCK, STOCK_ONLY };
 static volatile uint8_t link; /* OLED supervisor reads active stock ownership. */
 static volatile uint8_t irq_edge;
+volatile uint8_t zym_spi_station_events;
 struct transaction { uint8_t spcr, spi2x, started, millis; uint16_t polls; };
 
 /* Install this callback instead of the stock 0x12b08 SPI IRQ body. */
@@ -49,7 +50,10 @@ static bool bind_from(uint8_t initial)
     return ok;
 }
 
-bool zym_spi_bind(void) { return bind_from(UNBOUND); }
+bool zym_spi_bind(void)
+{
+    return bind_from(link == STOCK_ONLY ? STOCK_ONLY : UNBOUND);
+}
 
 static void quarantine(void)
 {
@@ -111,7 +115,8 @@ static bool owns_radio(void)
 
 bool zym_spi_yield_to_stock(struct zym_cc3000_broker *b)
 {
-    if (!owns_radio() || link == RX_HELD || !zym_broker_acquire_oem(b)) return false;
+    if (!owns_radio() || link == RX_HELD || (zym_spi_station_events & ZYM_STATION_DROPPED) ||
+        !zym_broker_acquire_oem(b)) return false;
     bool ok;
     ATOMIC_BLOCK(ATOMIC_RESTORESTATE) {
         ok = !irq_edge && (PINB & _BV(PB2)) && (PORTC & _BV(PC4));

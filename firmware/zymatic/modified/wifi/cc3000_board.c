@@ -6,17 +6,15 @@
 #define WLAN_FLAGS (*(volatile uint8_t *)0x24ee)
 #define WLAN_CALLBACK (*(volatile uint16_t *)0x264b)
 #define STOCK_CALLBACK (0x11e48uL / 2)
-enum { DROPPED = 1, DHCP_FAILED = 2 };
-static volatile uint8_t wlan_events;
 
 /* Stock may see a disconnect and finish reconnecting *during* its own
  * synchronous operation. Preserve that boundary for the HTTP session. */
 static void wlan_notify(uint32_t event, uint8_t *data, uint8_t size)
 {
-    if (event == 0x8002) wlan_events |= DROPPED;
+    if (event == 0x8002) zym_spi_station_events |= ZYM_STATION_DROPPED;
     if (event == 0x8010) {
-        if (size == 21 && data && !data[20]) wlan_events &= (uint8_t)~DHCP_FAILED;
-        else wlan_events |= DROPPED | DHCP_FAILED;
+        if (size == 21 && data && !data[20]) zym_spi_station_events &= (uint8_t)~ZYM_DHCP_FAILED;
+        else zym_spi_station_events |= ZYM_STATION_DROPPED | ZYM_DHCP_FAILED;
     }
     void (*const original)(uint32_t, uint8_t *, uint8_t) =
         (void (*)(uint32_t, uint8_t *, uint8_t))STOCK_CALLBACK;
@@ -30,7 +28,7 @@ bool zym_cc3000_board_begin(struct zym_cc3000_broker *broker, struct zym_cc3000 
      * clears both on disconnect. Stock setup owns its callback pointer. */
     if (!port || (WLAN_FLAGS & 6) != 6 || WLAN_CALLBACK != STOCK_CALLBACK ||
         !zym_spi_bind()) return false;
-    wlan_events = 0;
+    zym_spi_station_events = 0;
     WLAN_CALLBACK = (uint16_t)(uintptr_t)wlan_notify;
     zym_broker_begin(broker, zym_spi_submit, NULL);
     zym_cc3000_begin(radio, port);
@@ -87,13 +85,13 @@ void zym_cc3000_board_poll(struct zym_cc3000_broker *broker, struct zym_cc3000 *
                 zym_broker_link_lost(broker);
             if (route != ZYM_RADIO_HOLD_SPI) zym_spi_release_frame();
         }
-        if (wlan_events & DROPPED) {
+        if (zym_spi_station_events & ZYM_STATION_DROPPED) {
             broker->draining = true;
-            wlan_events &= (uint8_t)~DROPPED;
+            zym_spi_station_events &= (uint8_t)~ZYM_STATION_DROPPED;
             memset(http, 0, sizeof(*http));
         }
         if (broker->draining && broker->owner == ZYM_RADIO_FREE && !broker->http_sockets &&
-            !(wlan_events & DHCP_FAILED) && (WLAN_FLAGS & 6) == 6) {
+            !(zym_spi_station_events & ZYM_DHCP_FAILED) && (WLAN_FLAGS & 6) == 6) {
             zym_cc3000_begin(radio, radio->port);
             broker->draining = false;
         }

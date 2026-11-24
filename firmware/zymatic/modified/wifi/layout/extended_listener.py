@@ -1,6 +1,8 @@
 """Link the entire experimental radio into the extended board's real flash windows."""
 
 from pathlib import Path
+import flash_constants
+import json
 import shutil
 import subprocess
 import sys
@@ -8,12 +10,12 @@ import sys
 # Ordinals match the inspected network, display and keyboard regions returned
 # by their ROM composers. Preserve each function's natural AVR instruction alignment.
 SECTIONS = [
-    ("encoder", ("zym_spi_submit", "zymatic_history_row")),
+    ("encoder", ("zym_spi_submit", "byte_io")),
     ("wifi_fields", ("zymatic_api_reply_byte", "zymatic_history_ready")),
     ("wired_fields", ("zymatic_api_more", "zym_spi_request_display", "read_at")),
     ("oled_transfer", ("step_index",)),
     ("oled_clear", ("number", "submit", "zym_spi_bind")),
-    ("oled_init", ("poll_network", "zymatic_image_valid", "zymatic_temperature_tenths")),
+    ("oled_init", ("poll_network", "zym_wifi_network_poll")),
     ("key_one", ("reg_io",)),
     ("key_two", ("bind_from", "zymatic_factory_matches")),
     ("request0", ("unlikely.get32",)),
@@ -25,6 +27,11 @@ SECTIONS = [
     ("request6", ("read_eeprom",)),
     ("request7", ("zym_spi_record_irq",)),
     ("request8", ("append",)),
+    ("socket0", ("forget",)),
+    ("socket1", ("zym_wifi_before_restart",)),
+    ("socket2", ("zym_spi_release_radio",)),
+    ("socket3", ("zym_spi_stock_restart",)),
+    ("socket4", ("expected_live_sum",)),
 ]
 ENTRIES = (
     "candidate_radio", "candidate_broker", "zym_cc3000_board_begin", "zym_cc3000_board_poll",
@@ -32,7 +39,7 @@ ENTRIES = (
 )
 
 
-def link(root, runtime, toolchain, windows, original):
+def link(root, runtime, toolchain, windows, original, fragments):
     wifi = Path(__file__).resolve().parents[1]
     src = runtime / "src"
     for path in sorted(wifi.glob("*.[ch]")):
@@ -40,18 +47,26 @@ def link(root, runtime, toolchain, windows, original):
         source = path.read_text().replace("const uint8_t key[32]", "ZymKey key").replace("const char *uid", "ZymUid uid")
         (src / path.name).write_text(source)
     shutil.copyfile(wifi / "layout/state.c", src / "candidate_state.c")
+    sys.path.insert(0, str(wifi / "integration"))
+    import hooks
+    import pause
+    hooks.stage(runtime)
+    pause.stage(runtime, compact=False)
+    entries = (*pause.COMMANDS, *ENTRIES, *hooks.ENTRIES, "zym_wifi_network_poll")
     linker = src / "overlay.ld"
     script = linker.read_text()
     for (name, functions), (start, end) in zip(SECTIONS, windows, strict=True):
         script = script.replace("MEMORY {", f"MEMORY {{\n  {name} (rx) : ORIGIN = {start:#x}, LENGTH = {end-start:#x}")
         selectors = " ".join(f"*(.text.{func})" for func in functions)
+        if name == "encoder":
+            selectors += " KEEP(*(.low_care))"
         script = script.replace("SECTIONS {", f"SECTIONS {{\n  .{name} : {{ {selectors} }} > {name}")
-    script = script.replace("*(.low_functions)", "*(.low_functions) *(.text.zymatic_history_poll) *(.text.history_value)")
+    script = script.replace("*(.low_functions)", "*(.low_functions) *(.text.zymatic_history_poll) *(.text.json_uint)")
     linker.write_text(script)
     compiler = runtime / "tools/compile_extension.py"
     source = compiler.read_text()
     for old, new in {
-        "entry_points = [": f"entry_points = [{', '.join(map(repr, ENTRIES))}, ",
+        "entry_points = [": f"entry_points = [{', '.join(map(repr, entries))}, ",
         '"-Wl,--gc-sections",': '"-ffunction-sections", "-fdata-sections", "-Wl,--gc-sections",',
         'invoke("avr-objcopy", "-j", ".text",':
             f'shutil.copyfile(work / "extension.elf", {str(root / "linked.elf")!r})\n        invoke("avr-objcopy", "-j", ".text",',
@@ -59,8 +74,20 @@ def link(root, runtime, toolchain, windows, original):
         if source.count(old) != 1:
             raise ValueError("The base AVR compiler interface changed")
         source = source.replace(old, new)
+    map_path = root / "extension.map"
+    source = source.replace('"-Wl,--relax",', f'"-Wl,--relax", "-Wl,-Map={map_path}",')
     compiler.write_text(source)
-    subprocess.run([sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"], check=True)
+    command = [sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"]
+    bins = []
+    if fragments:
+        # The sizing link may cross the application limit before constants
+        # have an address. The final ELF must pass the real linker limits.
+        sizing = subprocess.run(command, capture_output=True, text=True)
+        if sizing.returncode and (not map_path.is_file() or "overflowed by" not in sizing.stderr):
+            raise RuntimeError("Unable to size the AVR application: " + sizing.stderr)
+        bins = flash_constants.assign(map_path.read_text(), fragments)
+        linker.write_text(flash_constants.stage(script, bins))
+    subprocess.run(command, check=True)
 
     packed = bytearray(original)
     for (name, _), (start, end) in zip(SECTIONS, windows, strict=True):
@@ -70,4 +97,7 @@ def link(root, runtime, toolchain, windows, original):
         if not 0 < len(code) <= end - start or packed[start:end] != b"\xff" * (end-start):
             raise ValueError("AVR code overlaps an occupied ROM window " + name)
         packed[start:start+len(code)] = code
-    return bytes(packed)
+    if bins:
+        flash_constants.store(packed, bins, toolchain, root)
+    symbols = json.loads((runtime / "extension/extension.json").read_text())["symbols"]
+    return pause.compose(hooks.compose(bytes(packed), symbols), symbols, compact=False)

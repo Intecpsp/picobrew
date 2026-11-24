@@ -15,6 +15,9 @@ import zlib
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(ROOT / "wifi/integration"))
+import hooks
+import pause
 import compact_build as compact
 import oem_tables as tables
 import usb_stock
@@ -81,6 +84,8 @@ def link_application(directory, toolchain):
             or "2.26.20160125" not in tool("avr-ld", "--version")):
         raise ValueError("Use the Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 toolchain")
     stage_source(directory)
+    hooks.stage(directory, compact=True)
+    pause.stage(directory, compact=True)
     flags = ["-mmcu=atmega1284p", "-Os", "-std=gnu11", "-Wall", "-Wextra", "-Werror",
              "-ffunction-sections", "-fdata-sections", "-fno-jump-tables",
              "-fno-tree-switch-conversion", "-mcall-prologues", "-fno-tree-dominator-opts", "-fmerge-all-constants", "-I", directory]
@@ -99,9 +104,9 @@ def link_application(directory, toolchain):
     tool("avr-gcc", *flags, "-I", ROOT / "wifi", "-c", Path(__file__).with_name("state.c"), "-o", "state.o")
     objects.append("state.o")
     elf = "compact.elf"
-    entries = ["candidate_radio", "candidate_broker", *compact.OFFLINE, "zymatic_crt_data", "zymatic_factory_compare", "zymatic_factory_stamp",
+    entries = [*pause.COMMANDS, pause.COMPACT_BUTTON, *hooks.COMPACT_ENTRIES, "candidate_radio", "candidate_broker", *compact.OFFLINE, "zymatic_crt_data", "zymatic_factory_compare", "zymatic_factory_stamp",
                "zymatic_after_loop", "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
-    tool("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-fno-tree-dominator-opts", "-fmerge-all-constants", "-flto", "-nostartfiles", "-nostdlib",
+    tool("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-fno-tree-dominator-opts", "-fmerge-all-constants", "-ffunction-sections", "-fdata-sections", "-flto", "-nostartfiles", "-nostdlib",
          "-Wl,--gc-sections", "-Wl,--relax", *[f"-Wl,--undefined={name}" for name in entries],
          "-Wl,-T," + str(Path(__file__).with_name("compact.ld")), *objects,
          *[f"-Wl,--defsym,{name}={address:#x}" for name, address, _, _ in tables.LIBRARY],
@@ -112,7 +117,7 @@ def link_application(directory, toolchain):
         if len(parts) == 3:
             symbols[parts[2]] = int(parts[0], 16)
     pieces = {}
-    for section in ("text", "low", "crc_hole", "net_encoder", "net_wifi_fields", "net_reader", "oled_init"):
+    for section in ("text", "low", "crc_hole", "net_encoder", "net_wifi_fields", "net_reader", "oled_transfer", "oled_clear", "oled_init", "key_one", "key_two"):
         filename = section + ".bin"
         tool("avr-objcopy", "-O", "binary", "-j", "." + section, elf, filename)
         pieces[section] = (directory / filename).read_bytes()
@@ -125,19 +130,25 @@ def compact_layout(original, toolchain, directory):
     tables.verify_library(original)
     network, windows = compact_network(original, toolchain, directory)
     network, oled_windows = compact_oled.compose(network)
-    windows.append(oled_windows[-1])
+    windows.extend(oled_windows)
+    network, key_windows = compact_oled.compose_keyboard(network, toolchain, directory)
+    windows.extend(key_windows)
     composed = bytearray(network)
     symbols, pieces = link_application(directory, toolchain)
-    for name, (start, end) in zip(("net_encoder", "net_wifi_fields", "net_reader", "oled_init"), windows, strict=True):
+    for name, (start, end) in zip(("net_encoder", "net_wifi_fields", "net_reader", "oled_transfer", "oled_clear", "oled_init", "key_one", "key_two"), windows, strict=True):
         part = pieces[name]
         if (symbols["__" + name + "_start"] != start or not 0 < len(part) <= end - start
                 or composed[start:end] != b"\xff" * (end - start)):
             raise ValueError("Unexpected network replacement window " + name)
         composed[start:start + len(part)] = part
+    composed = bytearray(pause.compose(hooks.compose(composed, symbols, compact=True), symbols, compact=True))
     _, template = extended.template()
     patches = compact.patch_list(symbols, 8080)
     read_hooks = READ_HOOKS | {"startup-initializer"}
-    additional = [row for row in extended.patch_list(template["symbols"] | symbols) if row[0] in read_hooks]
+    # These are the only extended instructions used in the compact application.
+    read_symbols = {name: symbols[name] for name in ("zymatic_sensor_crc", "zymatic_pgm_copy",
+                    "zymatic_pgm_wifi_print", "zymatic_pgm_serial_print", "zymatic_pgm_bitmap", "zymatic_crt_data")}
+    additional = [row for row in extended.patch_list(template["symbols"] | read_symbols) if row[0] in read_hooks]
     if {row[0] for row in additional} != read_hooks:
         raise ValueError("Missing OEM read or initialization hook")
     for name, address, before, after in patches + additional:
@@ -170,13 +181,16 @@ def compact_layout(original, toolchain, directory):
     return bytes(composed), symbols, low_end
 
 
-def simulate(directory, original, image, symbols):
+def simulate(directory, original, image, symbols, original_hex):
     flags = os.environ.get("SIMAVR_FLAGS")
     if flags is None:
         flags = subprocess.check_output(["pkg-config", "--cflags", "--libs", "simavr"], text=True)
     base, binary = directory / "stock.bin", directory / "synthetic.bin"
     base.write_bytes(original)
     binary.write_bytes(image)
+    stock_hex = directory / "stock.hex"
+    stock_hex.write_bytes(original_hex)
+    subprocess.run(["node", ROOT.parent / "reverse-engineered/tests/stock-controls.cjs", stock_hex, binary], check=True, timeout=60)
     compiler = os.environ.get("CC", "cc")
     for harness in ("simavr_tables", "simavr_overlay"):
         executable = directory / harness
@@ -198,12 +212,13 @@ def main():
     parser.add_argument("--toolchain", required=True, type=Path, help="Directory containing pinned avr-gcc")
     parser.add_argument("--simulate", action="store_true", help="Run OEM table and compact application tests in simavr")
     args = parser.parse_args()
-    original = usb_stock.decode_application(usb_stock.unpack_source(args.oem_file.read_bytes()))
+    original_hex = usb_stock.unpack_source(args.oem_file.read_bytes())
+    original = usb_stock.decode_application(original_hex)
     with tempfile.TemporaryDirectory() as temporary:
         directory = Path(temporary)
         image, symbols, low_end = compact_layout(original, args.toolchain.resolve(), directory)
         if args.simulate:
-            simulate(directory, original, image, symbols)
+            simulate(directory, original, image, symbols, original_hex)
         # AVR instruction alignment rules out the odd final byte of the table.
         aligned_end = tables.POOL_END & ~1
         print(f"Compact application: {len(image)} bytes. Contiguous free low flash "

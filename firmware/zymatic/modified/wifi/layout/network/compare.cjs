@@ -104,6 +104,7 @@ function requestTrace(image, startPC, endPC, seed, callees) {
     const cpu = start(image, startPC);
     cpu.dataView.setUint16(28, 0x3500, true);
     cpu.dataView.setUint16(0x16bc, 0x2400 + seed * 3, true);
+    cpu.dataView.setUint32(0x23a8, (0x1234abcd + seed * 0x01020304) >>> 0, true);
     cpu.data[0x5f] = seed;
     const stack = cpu.SP, calls = [];
     for (let i = 0; i < 1000; i++) {
@@ -140,4 +141,4 @@ for (const range of process.argv.slice(4)) {
         requestCases++;
     }
 }
-console.log(requestCases + ' original Wi-Fi request builder comparisons passed');
+console.log(requestCases + ' original network request builder comparisons passed');

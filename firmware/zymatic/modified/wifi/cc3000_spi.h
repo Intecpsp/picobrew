@@ -4,6 +4,8 @@
 
 /* Bench transport for a fully initialized 1.1.14 radio. A future board
  * integration must route OEM operations through the same broker first. */
+enum { ZYM_STATION_DROPPED = 1, ZYM_DHCP_FAILED = 2 };
+extern volatile uint8_t zym_spi_station_events;
 bool zym_spi_bind(void);
 void zym_spi_record_irq(void);
 enum zym_cc3000_submit_result zym_spi_submit(void *unused, const uint8_t *frame, uint8_t size);

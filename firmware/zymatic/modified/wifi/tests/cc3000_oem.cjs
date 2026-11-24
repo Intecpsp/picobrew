@@ -215,5 +215,31 @@ for (const [entry, stop, level] of [[0x19068,0x19070,1], [0x1909c,0x190a4,0],
     run(cpu, entry, stop);
     assert.equal(cpu.data[0x2b], level ? 0xb5 : 0x35);
 }
+// An ordinary step can reach the stock Wi-Fi client on the very next pass.
+// Exercise the two periodic boundaries and an asynchronous filter removal.
+for (const [elapsed,stop] of [[425000,0xecee],[425001,0x3c68]]) {
+    const c=boot(); c.data[0x230c]=1; c.data[0x089b]=1;
+    c.dataView.setUint16(28,0x3700,true);
+    c.dataView.setUint32(0x3700+87,123,true);
+    run(c,0xf660,stop,{
+        0x19d94:()=>c.dataView.setUint32(22,123+elapsed,true),
+        0x4caa:()=>{}
+    });
+}
+for (const [elapsed,last,hit] of [[60000,1,false],[60001,1,true],[0,0,true]]) {
+    const c=boot(); c.dataView.setUint32(0x23d7,last,true);
+    run(c,0xe34e,hit?0xe3a0:0xe614,{
+        0x19d94:()=>c.dataView.setUint32(22,last+elapsed,true)
+    });
+}
+{
+    const c=boot(); let reads=0;
+    run(c,0xef2a,0xba96,{
+        0x1a066:()=>{assert.equal(c.data[24],23);reads++;c.dataView.setUint16(24,0,true);},
+        0x19db0:()=>{},0x3e7a:()=>{},0x4caa:()=>{},
+    });
+    assert.equal(reads,2); assert.equal(c.dataView.getUint16(22,true),8);
+}
+require('./cc3000_hot_brew.cjs')({boot,run,image});
 console.log('Unmodified 1.1.14 matched five TX routines, nine completion handlers, RX/credit accounting, WLAN shutdown and shared GPIO evidence.');
 require('./cc3000_display.cjs')({ words, boot, run, avrBin });

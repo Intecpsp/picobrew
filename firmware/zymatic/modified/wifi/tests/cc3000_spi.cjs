@@ -234,7 +234,7 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
     assert.equal(concurrent.f.bytes.length,4102);
     assert.equal(concurrent.tx(command),1);
     console.log('Bounded AVR SPI transfers matched OEM writes, handled deferred INT2 and OLED traffic, accounted for credits and quarantined failed transactions.');
-    require('./cc3000_board.cjs')({setup,symbols,recipe: (menu,serve) => syncMenu(menu,run,stop,serve)});
+    require('./cc3000_board.cjs')({setup,symbols,run,recipe: (menu,serve) => syncMenu(menu,run,stop,serve)});
 };
 
 function syncMenu(menu,run,stop,serve) {

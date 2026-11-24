@@ -9,6 +9,8 @@ standalone-test usb-test web-test:
 	"$(PYTHON)" -m unittest discover -s tests
 
 wifi-bench:
+	"$(PYTHON)" wifi/integration/verify_native.py
+	"$(PYTHON)" wifi/integration/verify_avr.py --toolchain "$(ARDUINO_AVR_BIN)" --oem-file "$(ZYMATIC_TEST_HEX)" --recipe-pause
 	"$(PYTHON)" wifi/layout/network/compact.py --toolchain "$(ARDUINO_AVR_BIN)" --oem-file "$(ZYMATIC_TEST_HEX)"
 	"$(PYTHON)" wifi/layout/oled/compact.py --toolchain "$(ARDUINO_AVR_BIN)" --oem-file "$(ZYMATIC_TEST_HEX)"
 	"$(PYTHON)" wifi/layout/compact.py --toolchain "$(ARDUINO_AVR_BIN)" --oem-file "$(ZYMATIC_TEST_HEX)" --simulate

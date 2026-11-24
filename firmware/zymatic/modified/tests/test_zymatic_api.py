@@ -47,6 +47,7 @@ class NetworkTests(unittest.TestCase):
             self.skipTest("Native C compiler is required")
         sys.path.insert(0, str(ROOT / "wifi/layout/http"))
         import literals
+        import routes
         with tempfile.TemporaryDirectory() as directory:
             work = Path(directory)
             source = (ROOT / "zymatic_api.c").read_text()
@@ -56,6 +57,7 @@ class NetworkTests(unittest.TestCase):
             encoded, _ = literals.encode(texts)
             candidate = work / "zymatic_api.c"
             candidate.write_text(source)
+            routes.stage(work)
             literals.stage(work)
             def quoted(data):
                 return '"' + ''.join("\\%03o" % byte for byte in data) + '"'
@@ -63,11 +65,13 @@ class NetworkTests(unittest.TestCase):
                                 for text, tokens in encoded.items())
             with candidate.open("a") as out:
                 out.write('\n#include <assert.h>\nstatic const char *const cases[][2] = {\n' + cases + '\n};\n')
+                original_handler = source[source.index('static void parse_request('):source.index('static void parse_header(')]
+                out.write(original_handler.replace('static void parse_request(', 'static void original_request('))
                 out.write((ROOT / "wifi/tests/literal_bounds.c").read_text())
             runner = work / "runner.c"
             runner.write_text('#define main run_routes\n#include "tests/zymatic_api_native.c"\n'
-                              '#undef main\nvoid test_literal_bounds(void);\n'
-                              'int main(void) { test_literal_bounds(); return run_routes(); }\n')
+                              '#undef main\nvoid test_literal_bounds(void); void test_route_lookup(void);\n'
+                              'int main(void) { test_route_lookup(); test_literal_bounds(); return run_routes(); }\n')
             exe = work / "responses.exe"
             subprocess.run([cc, "-std=c11", "-Wall", "-Wextra", "-Werror", "-D__flash1=",
                             "-I", str(ROOT), candidate, runner,

@@ -14,6 +14,7 @@ import zlib
 
 import extended
 import tail_budget
+import prologues
 from network.compact import compose
 from network import requests
 from oled import compact as oled
@@ -23,7 +24,7 @@ HERE = Path(__file__).resolve().parent
 ASSETS = ("zymatic_pair_js", "zymatic_site", "zymatic_favicon")
 
 
-def arrange(original, toolchain, root, runtime):
+def arrange(original, toolchain, root, runtime, with_listener=False):
     stock = root / "original.bin"
     stock.write_bytes(original)
     network, windows = compose(original, toolchain, root)
@@ -33,18 +34,24 @@ def arrange(original, toolchain, root, runtime):
     windows.extend(keyboard_windows)
     network, request_windows = requests.compose(network)
     windows.extend(request_windows)
+    network, socket_windows = requests.share_socket_addresses(network)
+    windows.extend(socket_windows)
     dis = subprocess.check_output([toolchain / "avr-objdump", "-D", "-z", "-b", "binary",
                                    "-m", "avr:51", stock], text=True)
     # The new network parser uses existing parts of the Wi-Fi routine as well as both holes.
     # Keep all three routines, branch receivers and the timer display hooks out of the allocation.
     excluded = [(0x2ed0, 0x3228), (0x33a0, 0x3622), (0xccba, 0xcf38),
                 (0x5044, 0x504a), (0x8738, 0x873e), (oled.TRANSFER, oled.END), (0xa74c, 0xaa50)]
-    excluded.extend(requests.PROTECTED_RANGES)
+    excluded.extend(requests.PROTECTED_RANGES + requests.SOCKET_RANGES)
     # The simulator models the external device at a few fixed instruction addresses,
     # including the original brew runner's bare RET at 0xfd4c.
     harness = (runtime / "tests/simavr_overlay.c").read_text()
     for pc in re.findall(r"avr->pc\s*=\s*(0x[0-9a-f]+)", harness):
         excluded.append((int(pc, 16), int(pc, 16) + 2))
+    spare = []
+    if with_listener:
+        network, spare, protected = prologues.compose(original, network, dis, excluded)
+        excluded.extend(protected)
     sequences = [(pc, end) for pc, end in tail_budget.return_sequences(original, dis)
                  if all(pc >= high or end <= low for low, high in excluded)]
     tails = tail_budget.shared_tails(original, sequences)
@@ -53,25 +60,56 @@ def arrange(original, toolchain, root, runtime):
     for name in ASSETS:
         header = (runtime / "site" / (name + ".h")).read_text()
         payload += bytes(int(value, 16) for value in re.findall(r"0x([0-9a-f]{2})", header))
+    slots = [(pc+len(branch), end, (pc, end, receiver, branch)) for pc, end, receiver, branch in tails]
+    slots.extend((start, end, None) for start, end in spare)
+    slots.sort(key=lambda slot: (-(slot[1]-slot[0]), slot[0]))
     packed = bytearray(network)
     index = []
     used = []
+    reserved = []
+    # Reserve up to 1,100 bytes for bank-one literals and control stubs. The
+    # original 16-bit website reader indexes at most 255 fragments. More tiny
+    # fragments cost two index bytes apiece before carrying more site data.
+    slack = min(1100, sum(end-start for start, end, _ in slots) - len(payload))
+    def open_slot(start, end, tail):
+        if tail:
+            pc, _, _, branch = tail
+            packed[pc:start] = branch
+            packed[start:end] = b"\xff" * (end-start)
+            used.append(tail)
+        elif packed[start:end] != b"\xff" * (end-start):
+            raise ValueError("Website or constant fragment overlaps a live instruction")
+    # Reserve a small margin so the last website fragment can end halfway
+    # through a run without causing the lookup table to grow needlessly.
+    if with_listener:
+        kept = []
+        def constant_preference(slot):
+            start, end, _ = slot
+            size = end - start
+            return max(0, 20 - size), size, start
+        for start, end, tail in sorted(slots, key=constant_preference):
+            if start >= 0x10000 and slack >= end - start + 16:
+                slack -= end-start
+                reserved.append((start, end))
+                open_slot(start, end, tail)
+            else:
+                kept.append((start, end, tail))
+        slots = sorted(kept, key=lambda slot: (-(slot[1]-slot[0]), slot[0]))
     previous = 0
-    for pc, end, receiver, branch in tails:
-        start = pc + len(branch)
+    for start, end, tail in slots:
         count = min(end - start, len(payload) - previous)
         if not count:
             break
-        packed[pc:start] = branch
+        open_slot(start, end, tail)
         packed[start:start + count] = payload[previous:previous + count]
         previous += count
         index.append((previous, start // 2))
-        used.append((pc, end, receiver, branch))
+
     if previous != len(payload) or b"".join(
             packed[word*2:word*2+end-start] for (end, word), start in zip(index, [0] + [x[0] for x in index])
     ) != payload:
         raise ValueError("Unable to preserve every byte of the compressed website")
-    return bytes(packed), payload, index, used, windows
+    return bytes(packed), payload, index, used, windows, reserved
 
 
 def install_reader(runtime, index):
@@ -109,7 +147,7 @@ def install_reader(runtime, index):
     return len(rows) * 4 + len(index) * 2
 
 
-def simulator(root, runtime, original, packed, asset):
+def simulator(root, runtime, original, packed, asset, original_hex):
     # The unmodified composition code checks its source family, checksummed original and all release fields.
     # Apply the candidate's additional ROM substitutions to its temporary synthetic image.
     command = [sys.executable, "-c",
@@ -129,6 +167,9 @@ def simulator(root, runtime, original, packed, asset):
     struct.pack_into("<I", result, len(result) - 4, zlib.crc32(result[:-4]))
     binary, base = root / "extended.bin", root / "original.bin"
     binary.write_bytes(result)
+    stock_hex = root / "stock.hex"
+    stock_hex.write_bytes(original_hex)
+    subprocess.run(["node", extended.ROOT.parent / "reverse-engineered/tests/stock-controls.cjs", stock_hex, binary], check=True, timeout=60)
     flags = os.environ.get("SIMAVR_FLAGS")
     if not flags:
         flags = subprocess.check_output(["pkg-config", "--cflags", "--libs", "simavr"], text=True)
@@ -155,19 +196,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--toolchain", type=Path, required=True)
     parser.add_argument("--oem-file", type=Path, required=True)
-    parser.add_argument("--with-listener", action="store_true", help="Link and simulate all radio transport components")
+    parser.add_argument("--with-listener", action="store_true", help="Exercise the radio with its normal firmware foreground hooks")
     args = parser.parse_args()
-    original = usb_stock.decode_application(usb_stock.unpack_source(args.oem_file.read_bytes()))
+    original_hex = usb_stock.unpack_source(args.oem_file.read_bytes())
+    original = usb_stock.decode_application(original_hex)
     if not usb_stock.is_original_app(original):
         raise ValueError("Expected original 1.1.14 application")
     toolchain = args.toolchain.resolve()
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         runtime = extended.stage(root)
-        packed, asset, index, tails, windows = arrange(original, toolchain, root, runtime)
+        packed, asset, index, tails, windows, reserved = arrange(original, toolchain, root, runtime, with_listener=args.with_listener)
         index_size = install_reader(runtime, index)
         sys.path.insert(0, str(HERE / "http"))
+        from routes import stage as pack_routes
         from literals import stage as pack_literals
+        pack_routes(runtime)
         pack_literals(runtime)
         compiler = runtime / "tools/compile_extension.py"
         source = compiler.read_text()
@@ -175,11 +219,11 @@ def main():
                                            'entry_points = ["candidate_site_byte", *build.OFFLINE,'))
         if args.with_listener:
             from extended_listener import link
-            packed = link(root, runtime, toolchain, windows, packed)
+            packed = link(root, runtime, toolchain, windows, packed, reserved)
         else:
             subprocess.run([sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"], check=True)
         tail_budget.check(root, root / "original.bin", original, tails)
-        manifest = simulator(root, runtime, original, packed, asset)
+        manifest = simulator(root, runtime, original, packed, asset, original_hex)
         low_free = build.tables.POOL_END - build.tables.SEEK_END - manifest["low_bytes"]
         high_free = build.LIMIT - build.START - manifest["extension_bytes"]
         print(f"{len(asset)} site bytes in {len(index)} fragments with a {index_size}-byte index. "
