@@ -149,8 +149,6 @@ owner, controller, common Engine and test inputs to source hashes. ASan/UBSan
 checks sensor conversions, start/clean/stop and fault transitions, persistence
 failure before actuation, the physical menu, GPIO inhibition, fan/pump
 interlocks and timer rollover including a deadline equal to zero.
-[`analysis/esp32-build.json`](analysis/esp32-build.json) records the complete
-link, retained/forbidden symbols and independently checked image checksum and
-digest. Shared evidence separately proves the full 4,224-record filesystem
+The [1.0.0 package](releases/picostill/1.0.0.zip) contains the release image, ELF, build report and installation manifest. The [1.2.0 link report](analysis/esp32-build.json) records retained symbols and image checks from the earlier single-slot build. Shared evidence separately proves the full 4,224-record filesystem
 capacity, storage transactions, bounded HTTP and telemetry, browser behavior
 and credential provisioning.

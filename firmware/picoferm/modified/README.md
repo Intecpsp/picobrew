@@ -6,10 +6,7 @@ optional Hub forwarding. It builds and links against the pinned ESP8266 Arduino
 2.4.1 SDK and its original startup. The OEM archive and reconstruction remain
 unchanged in their adjacent directories.
 
-The source and integration tests are complete for this profile. The reference
-link is **not a physical installation or battery-life qualification**. No PicoFerm
-has been flashed or operated as part of this verification. See
-[validation](analysis/validation.json) and the [target link report](analysis/esp8266-build.json).
+The [1.0.0 package](releases/picoferm/1.0.0.zip) contains both bank images, their hashes and the permanent bootstrap. The [1.0.0 memory replay](analysis/memory-ab-validation.json) records the tested 32-bit heap budget. Physical installation and battery-life trials remain pending. The [native controller tests](analysis/validation.json) and [1.2.0 single-bank link report](analysis/esp8266-build.json) document earlier engineering work.
 
 The local website and authenticated status remind you to sanitize the gray seal before fitting it. With PicoFerm idle, acknowledge the reminder after sanitizing. The next monitoring session renews it.
 

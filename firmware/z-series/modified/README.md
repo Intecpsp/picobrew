@@ -161,9 +161,7 @@ and encoder interrupt dependencies in internal code and the active owner in
 internal RAM. Compiler stack estimates and object sizes do not replace physical
 heap/stack high-water measurements or brewing qualification.
 
-The checked [standalone build report](analysis/standalone-build.json) records
-the complete linked application's source identities, SDK objects, target memory
-layout and generated image checks. The [reference-package validation](../../common/analysis/reference-package-validation.json)
+The [1.0.0 package](releases/z-series/1.0.0.zip) includes the release build report, both ELFs, and the application and recovery images. The [earlier standalone link report](analysis/standalone-build.json) records historical source identities and target memory measurements. The [reference-package validation](../../common/analysis/reference-package-validation.json)
 binds the Z, PicoStill and PicoFerm packages to their actual ELFs and build
 reports, including deterministic rebuilds, filesystem readback and rejection
 of corrupted images, changed addresses and stale build inputs.
