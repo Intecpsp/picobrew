@@ -357,6 +357,7 @@ export interface FirmwareSettings {
   ref: string
 }
 export interface FirmwareCandidate {
+  ota_protocol?: string
   hub_ota_protocol?: number
   model: string
   model_family: string
@@ -367,7 +368,7 @@ export interface FirmwareCandidate {
 }
 export interface FirmwareRelease extends FirmwareCandidate {
   archive_sha256: string
-  kind: 'historical' | 'standalone' | 'reference'
+  kind: 'historical' | 'standalone' | 'reference' | 'picoferm-ab'
 }
 export interface FirmwareUpdates {
   checked?: string

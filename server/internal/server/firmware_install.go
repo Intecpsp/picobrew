@@ -12,10 +12,22 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
+func reportsWirelessUpdate(c domain.Capabilities) bool {
+	switch c.Model {
+	case "picostill", "z-series":
+		return c.OTAProtocol == firmware.ESP32FactoryProtocol
+	case "picoferm":
+		return c.OTAProtocol == firmware.FermABProtocol
+	default:
+		return c.HubOTAV1 && c.OTAProtocol == "" && firmware.ValidVariant(c.Model, c.DisplayVariant)
+	}
+}
+
 func otaEligible(v domain.DeviceView) bool {
 	return v.Adapter == "pico-standalone" && v.Enabled && v.Online && !v.KeyReused &&
-		v.ModelSource == "firmware" && v.ModelError == "" && v.Capabilities != nil && v.Capabilities.HubOTAV1 &&
-		v.Capabilities.Model == v.Model && firmware.ValidVariant(v.Model, v.Capabilities.DisplayVariant) &&
+		v.ModelSource == "firmware" && v.ModelError == "" && v.Capabilities != nil &&
+		v.Capabilities.Model == v.Model &&
+		reportsWirelessUpdate(*v.Capabilities) &&
 		v.Status != nil && v.Status.Ready && !v.Status.Busy && !v.Status.Stopped && v.Status.DeviceUID != ""
 }
 
@@ -171,7 +183,14 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
-	payload, err := firmware.ReadUpdatePayload(archive)
+	var payload firmware.UpdatePayload
+	if saved.SupportsFermOTA() {
+		payload, err = firmware.ReadPicoFermUpdate(archive, saved.Candidate)
+	} else if saved.SupportsFactoryOTA() {
+		payload, err = firmware.ReadFactoryUpdate(archive, saved.Candidate)
+	} else {
+		payload, err = firmware.ReadUpdatePayload(archive)
+	}
 	if err != nil {
 		s.firmwareError(w, err)
 		return

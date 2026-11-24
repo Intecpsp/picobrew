@@ -103,6 +103,7 @@ type Capabilities struct {
 	StockRestoreOTAV1       bool                     `json:"stock_restore_ota_v1,omitempty"`
 	PairingV1               bool                     `json:"pairing_v1,omitempty"`
 	ZProgramMaker           bool                     `json:"z_program_maker,omitempty"`
+	OTAProtocol             string                   `json:"ota_protocol,omitempty"`
 	HubOTAV1                bool                     `json:"hub_ota_v1,omitempty"`
 	APIVersion              int                      `json:"api_version"`
 	FirmwareVersion         string                   `json:"firmware_version"`

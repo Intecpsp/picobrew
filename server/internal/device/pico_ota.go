@@ -74,6 +74,9 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 	defer p.unlock()
 	// Long flash readbacks need more time than the usual polling deadline.
 	remote := &pico{base: p.base, key: p.key, client: &http.Client{Transport: p.client.Transport, CheckRedirect: p.client.CheckRedirect, Timeout: 30 * time.Second}}
+	if pkg.OTAProtocol != "" {
+		return remote.installESP(ctx, uid, pkg, previousStage, checkpoint)
+	}
 	var before otaState
 	inspectErr := remote.request(ctx, "GET", "/api/v1/ota", nil, &before, 200)
 	if inspectErr != nil && previousStage == "" {

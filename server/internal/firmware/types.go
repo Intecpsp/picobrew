@@ -25,6 +25,7 @@ type Settings struct {
 // Candidate describes a report. The catalog does not assert that the image
 // and browser payloads have been downloaded or validated.
 type Candidate struct {
+	OTAProtocol     string `json:"ota_protocol,omitempty"`
 	HubOTAProtocol  int    `json:"hub_ota_protocol,omitempty"`
 	Model           string `json:"model"`
 	ModelFamily     string `json:"model_family"`
@@ -36,11 +37,50 @@ type Candidate struct {
 
 // SupportsHubOTA identifies packages the Hub recovery protocol can install.
 func (c Candidate) SupportsHubOTA() bool {
-	return c.SupportsCC3200OTA()
+	return c.SupportsCC3200OTA() || c.SupportsFactoryOTA() || c.SupportsFermOTA()
 }
 
 func (c Candidate) SupportsCC3200OTA() bool {
-	return c.HubOTAProtocol == 1 && ValidVariant(c.Model, c.DisplayVariant) && c.ModelFamily == modelFamily(c.Model)
+	return c.OTAProtocol == "" && c.HubOTAProtocol == 1 && ValidVariant(c.Model, c.DisplayVariant) && c.ModelFamily == modelFamily(c.Model)
+}
+
+const ESP32FactoryProtocol = "esp32-factory-v1"
+const StillApplicationLimit = 960 << 10
+
+// ESP32 transmit limits come from the USB-provisioned layout for each model.
+func FactoryApplicationLimit(model string) int {
+	switch model {
+	case "picostill":
+		return StillApplicationLimit
+	case "z-series":
+		return 0x1a1000
+	}
+	return 0
+}
+
+func (c Candidate) SupportsFactoryOTA() bool {
+	return c.OTAProtocol == ESP32FactoryProtocol && c.ModelFamily == c.Model &&
+		c.DisplayVariant == "" && c.HubOTAProtocol == 0 && c.BinaryBytes > 0 && c.BinaryBytes <= FactoryApplicationLimit(c.Model)
+}
+
+const FermABProtocol = "esp8266-ab-v1"
+const FermBankLimit = 0x7d000
+
+func (c Candidate) SupportsFermOTA() bool {
+	return c.OTAProtocol == FermABProtocol && c.Model == "picoferm" && c.ModelFamily == "picoferm" &&
+		c.DisplayVariant == "" && c.HubOTAProtocol == 0 && c.BinaryBytes > 0 && c.BinaryBytes <= FermBankLimit
+}
+
+func (r Release) WirelessPackage() bool {
+	switch r.Kind {
+	case "standalone":
+		return r.SupportsCC3200OTA()
+	case "reference":
+		return r.SupportsFactoryOTA()
+	case "picoferm-ab":
+		return r.SupportsFermOTA()
+	}
+	return false
 }
 
 type Catalog struct {

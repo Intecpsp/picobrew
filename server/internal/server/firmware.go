@@ -571,12 +571,12 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			switch {
 			case s.cfg.Demo:
 				out.Reason = "Firmware installation is unavailable in simulation."
-			case !firmware.ValidModel(out.Model):
+			case !firmware.ValidModel(out.Model) && firmware.FactoryApplicationLimit(out.Model) == 0 && out.Model != "picoferm":
 				out.Reason = "Hub wireless firmware installation is unavailable for this model."
 			case out.InstallSupported:
 				out.Reason = "The Hub can install a matching OTA package after the brewer verifies its recovery image and boot layout."
-			case !d.view.Capabilities.HubOTAV1:
-				out.Reason = "Wireless installation requires firmware with Hub OTA support and the separate recovery image."
+			case !reportsWirelessUpdate(*d.view.Capabilities):
+				out.Reason = "Wireless installation requires a USB setup with compatible firmware and recovery support."
 			default:
 				out.Reason = "Wireless installation requires an enabled, connected, idle brewer with its own device key."
 			}

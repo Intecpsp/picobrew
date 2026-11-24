@@ -198,6 +198,59 @@ describe('Hub firmware packages', () => {
       downgrade.id
     )
   })
+  it.each([
+    ['picostill', 'reference', 'esp32-factory-v1'],
+    ['z-series', 'reference', 'esp32-factory-v1'],
+    ['picoferm', 'picoferm-ab', 'esp8266-ab-v1'],
+  ])(
+    'offers the wireless %s application and hides USB-only packages',
+    async (model, kind, protocol) => {
+      const path = `/devices/${model}/firmware`
+      const release = {
+        ...candidate,
+        model,
+        model_family: model,
+        kind,
+        firmware_version: '1.2.7',
+        archive_sha256: '7'.repeat(64),
+        ota_protocol: protocol,
+      }
+      fetchMock.mockImplementation(async (url, opts) => {
+        if (String(url).endsWith(path))
+          return json({
+            model,
+            current_version: '1.2.6',
+            device_uid: 'machine',
+            install_supported: true,
+            packages: [],
+          })
+        if (String(url).endsWith('/firmware/updates'))
+          return json({
+            releases: [
+              release,
+              {
+                ...release,
+                archive_sha256: '8'.repeat(64),
+                ota_protocol: undefined,
+                firmware_version: '1.2.5',
+              },
+            ],
+            notices: [],
+          })
+        return response(url, opts)
+      })
+      show(createElement(MachineFirmwareDialog, { deviceID: model, onClose: close }))
+      const selection = await screen.findByLabelText('Firmware version')
+      await waitFor(() =>
+        expect(Array.from((selection as HTMLSelectElement).options, (o) => o.text)).toEqual([
+          '1.2.7',
+        ])
+      )
+      expect((screen.getByRole('button', { name: 'Install' }) as HTMLButtonElement).disabled).toBe(
+        false
+      )
+    }
+  )
   it('allows finishing a pinned interrupted update even when the trial app reports the target version', async () => {
     const path = '/devices/pico-s/firmware'
     fetchMock.mockImplementation(async (url, opts) => {
@@ -302,8 +355,7 @@ describe('Hub firmware packages', () => {
       ).toHaveLength(0)
       if (ota)
         expect(
-          (screen.getByRole('button', { name: /^Install$/ }) as HTMLButtonElement)
-            .disabled
+          (screen.getByRole('button', { name: /^Install$/ }) as HTMLButtonElement).disabled
         ).toBe(false)
       else expect(screen.queryByRole('button', { name: /^Install$/ })).toBeNull()
     }

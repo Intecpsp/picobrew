@@ -24,6 +24,17 @@ function firmwareModelName(model: string) {
 }
 
 function matchesWirelessPackage(item: FirmwareCandidate, machine: MachineFirmware | null) {
+  if (item.ota_protocol) {
+    return (
+      ((item.ota_protocol === 'esp32-factory-v1' &&
+        (item.model === 'picostill' || item.model === 'z-series')) ||
+        (item.ota_protocol === 'esp8266-ab-v1' && item.model === 'picoferm')) &&
+      item.model === machine?.model &&
+      item.model_family === item.model &&
+      !item.display_variant &&
+      !item.hub_ota_protocol
+    )
+  }
   return (
     item.model === machine?.model &&
     item.hub_ota_protocol === 1 &&
@@ -119,7 +130,12 @@ export function MachineFirmwareDialog({
   }
   const items = new Map<string, FirmwareCandidate & { remote: boolean }>()
   for (const item of updates.data?.releases || []) {
-    if (item.kind === 'standalone' && matchesWirelessPackage(item, machine)) {
+    if (
+      ((item.kind === 'standalone' && !item.ota_protocol) ||
+        (item.kind === 'reference' && item.ota_protocol === 'esp32-factory-v1') ||
+        (item.kind === 'picoferm-ab' && item.ota_protocol === 'esp8266-ab-v1')) &&
+      matchesWirelessPackage(item, machine)
+    ) {
       items.set(item.archive_sha256, { ...item, remote: true })
     }
   }
