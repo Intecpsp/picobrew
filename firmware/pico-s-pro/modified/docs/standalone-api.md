@@ -39,7 +39,7 @@ The brewer serves HTTP on the local network. Use a trusted LAN.
 
 ## Device identity
 
-Firmware 1.2.0 reports `model`, `model_name`, and `model_family` on
+Stable firmware reports `model`, `model_name`, and `model_family` on
 `GET /api/v1`, `GET /api/v1/health`, and `GET /api/v1/status`. The model is
 `pico-pro` / `Pico Pro` or `pico-s` / `Pico S`; the shared family is always
 `pico-s-pro`. It comes from the compiled image, not a guess from the UID.
@@ -564,7 +564,7 @@ console's bounded request queue and current device key. Selecting an endpoint
 never sends it automatically. The explorer is served from the Pico without a
 CDN or Swagger UI runtime.
 
-Firmware version is **1.2.0**, defined once in `include/picobrew/version.h`. The
+Stable firmware version is **1.0.0**, defined once in `include/picobrew/version.h`. The
 OLED startup label, console footer, health/discovery responses and build report
 use it. REST `api_version` remains 1. The major version marks the standalone
 release; it does not mean physical acceptance testing is complete.

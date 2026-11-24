@@ -231,7 +231,8 @@ func (remote *pico) readRecovery(c context.Context, uid, displayVariant string, 
 	if identity.DisplayVariant != displayVariant || (displayVariant != "" && identity.Model != "pico-c") || (identity.Model == "pico-c" && displayVariant == "") {
 		return info, false
 	}
-	if remote.request(c, "GET", "/api/v1/recovery", nil, &info, 200) != nil || info.Profile != "recovery" || info.Version != "0.1.0" || !info.Boot.Valid || !info.Boot.RecoverySelected {
+	if remote.request(c, "GET", "/api/v1/recovery", nil, &info, 200) != nil || info.Profile != "recovery" ||
+		(info.Version != "1.0.0" && info.Version != "0.1.0") || !info.Boot.Valid || !info.Boot.RecoverySelected {
 		return info, false
 	}
 	for _, s := range info.Slots {

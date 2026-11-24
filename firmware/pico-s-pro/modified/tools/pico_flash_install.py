@@ -50,7 +50,7 @@ import pico_inspect_backup as inspection
 import pico_uart_probe as probe
 
 
-INSTALL_REVISION = 19
+INSTALL_REVISION = 20
 BACKUP_SIZE = 1048576
 BACKUP_SHA256 = "837a728400da02b9da4a7d563e1b67fb24d6a5af03c054963c4b1de60c72343f"
 ORIGINAL_OFFSET = 130 * 4096 + 8
@@ -60,50 +60,64 @@ UID_BLOCK = 106
 PROFILE_UID_SHA256 = "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 170296
-CANDIDATE_SHA256 = "955a408d74fb2fac188b30c922e61807c2ef878fe9314ed16ee43af4b91c0f49"
-RELEASED_1_3_9 = {
-    "pico-pro": (169536, "56de7a4798a225149b8f334db816ac7ccb575b2d4bc8c2fbaeea70847efdea59"),
-    "pico-s": (169528, "db924ea93c57a27e7a78539ebf4b76487f100eb0b588bc608ee84bdc8d759e9a"),
+CANDIDATE_SIZE = 170408
+CANDIDATE_SHA256 = "4e601bfe12e420bc6b50f762de9cda41898ed03d4095e8035cf8be2972f33002"
+# Pre-release applications can be recognized as USB migration sources.
+# Identities were read from the archived release packages at commit 42a22ef.
+LEGACY_APPLICATIONS = {
+    "pico-s": (
+        (165336, "10a19abc15d8dfcc95b753c31548042da2077d4700548648f8fe7e0f9481fa30"),  # 1.2.0
+        (166280, "903873fbaa2c6338956c22689afc911c64635dafbc52c0b913e0613d5eff230b"),  # 1.3.0
+        (166512, "4cc792a016e34becfbebe41a32e752d80358e60be8c0c7571026551619ee0833"),  # 1.3.1
+        (166520, "4b3bc5d6122f696b0866d7e73607bef574208cbcc031009f7a4ccf3df5c858a4"),  # 1.3.2
+        (166336, "3ed5d58c072cbb547f94fcc579730394c15c72e1126961491741fc846f91bfa4"),  # 1.3.3
+        (166488, "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94"),  # 1.3.4
+        (168392, "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b"),  # 1.3.5
+        (169568, "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540"),  # 1.3.6
+        (169576, "95e8b9ff91f3b4bd101f8569c36c5372c062f7be9b9b03cc26664f531e08b1c6"),  # 1.3.7
+        (169528, "c0a96fb35b1927fdafd68557e637cd444fe37b67ef4aac95c532ded0ed73e185"),  # 1.3.8
+        (169528, "db924ea93c57a27e7a78539ebf4b76487f100eb0b588bc608ee84bdc8d759e9a"),  # 1.3.9
+        (170288, "30e10819a9095e0c41494d24a7a290754f78dd198dbc83371264cfaf9c99ec86"),  # 1.3.10
+    ),
+    "pico-pro": (
+        (165344, "8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8"),  # 1.2.0
+        (166288, "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832"),  # 1.3.0
+        (166520, "f887663ff2f6e8e4d5936a9c81b2e02cccb5adee89c45050cb2bea9fb4a1e9be"),  # 1.3.1
+        (166528, "b0cb331a7b9890c61ab7b66e0ef698da8fbedc026ad563082e24c2741a0b1f90"),  # 1.3.2
+        (166344, "3828ec6a147f98bdf2b039ecd4c336bf238d04bf7cec41cdea07a97b9d170f39"),  # 1.3.3
+        (166496, "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"),  # 1.3.4
+        (168400, "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c"),  # 1.3.5
+        (169584, "a36e5873ace849af2f7617610c4232edb63c6a4ac5b3668ece14301d97ba085b"),  # 1.3.6
+        (169584, "7919ff13dfe9fa7dde3100d673a2292241dce0188611ea7afdedfb44e7392b45"),  # 1.3.7
+        (169536, "611e39b7e666a3e3df4dc4062bd179b05b778930296a65c312a30a3824dfdfbd"),  # 1.3.8
+        (169536, "56de7a4798a225149b8f334db816ac7ccb575b2d4bc8c2fbaeea70847efdea59"),  # 1.3.9
+        (170296, "955a408d74fb2fac188b30c922e61807c2ef878fe9314ed16ee43af4b91c0f49"),  # 1.3.10
+    ),
+    "pico-c-ssd1325": (
+        (162152, "6c0d5d86e8ecea3e889ddee1c0a8ef816d2a37ed133a504ab107b82935310753"),  # 1.2.0
+        (162488, "47c7ae5729c0b19c9e7b6005164771bd97d0eec00d11f017b3eea9447b1f01e6"),  # 1.2.1
+        (162488, "c17f98e705e7d6c8ae21c297fe2c00ee987c770ebb29e063b63c84680860d943"),  # 1.2.2
+        (162304, "ffe1fe5ba2e28504de897d2829343a003e684e8c4f92b14eda6c2d0fb711b174"),  # 1.2.3
+        (164192, "b5b14f098652d1bd42396b22410028af86b8c5cd0d5bf8ac0a50533b40422f9f"),  # 1.2.4
+        (164200, "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b"),  # 1.2.5
+        (164200, "7d474e8f7f0803850d654acdf42b2e38fdba7cc5463b6d9c9af5054fe8a57fa6"),  # 1.2.6
+        (164136, "d7c8ad7efe11eda6a009a605f1914132eb59436e56fdf9f97e138e74c439bb9f"),  # 1.2.7
+        (164136, "782fa7c5f5cfc9cb3b03df0b1efc564a4c7879ce4fbc1c7a049d3e2a74f51d8a"),  # 1.2.8
+        (168384, "f1f34b1f64ba5b060a60c30ed0f9b6c9d99a80c068533d6ed0f2e6ba8c8ca0f3"),  # 1.3.0
+    ),
+    "pico-c-ssd1309": (
+        (162064, "0ff778141225f8e0463d2c3cd07113b0c2240c0338734ad37265a243f302cb9b"),  # 1.2.0
+        (162392, "390ab4955ff0489157c9449df6013e205c9f2fd7b11dfdcc99b0dd5c38366641"),  # 1.2.1
+        (162408, "49172d22ae8973748f9639398d13c388a46a311836780fc999f6f20545724632"),  # 1.2.2
+        (162224, "32bd24c118c18cabd29720894ad10647f465050f6786cd548dce874064a7f1df"),  # 1.2.3
+        (164088, "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424"),  # 1.2.4
+        (164112, "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7"),  # 1.2.5
+        (164120, "ee826e15c1146077c78ef76f146174f7f669ae2e82ae8e7cbd0ab98fee22dc2e"),  # 1.2.6
+        (164056, "0bbd93aa290347c436cc50b801df06a3d58111dcfc850f2b0d817eb82999424e"),  # 1.2.7
+        (164056, "293506900d6fe720afe081cc5b8aff42b5b6101e81876d5c9e82dde098559ffb"),  # 1.2.8
+        (168288, "ff2030d4c019b4d7ae3fe6a88036cbacbb5ff04ff35f93ffcac6f7226a0c3930"),  # 1.3.0
+    ),
 }
-RELEASED_1_3_8 = {
-    "pico-pro": (169536, "611e39b7e666a3e3df4dc4062bd179b05b778930296a65c312a30a3824dfdfbd"),
-    "pico-s": (169528, "c0a96fb35b1927fdafd68557e637cd444fe37b67ef4aac95c532ded0ed73e185"),
-}
-RELEASED_1_3_7 = {
-    "pico-pro": (169584, "7919ff13dfe9fa7dde3100d673a2292241dce0188611ea7afdedfb44e7392b45"),
-    "pico-s": (169576, "95e8b9ff91f3b4bd101f8569c36c5372c062f7be9b9b03cc26664f531e08b1c6"),
-}
-RELEASED_1_3_6 = {
-    "pico-pro": (169584, "a36e5873ace849af2f7617610c4232edb63c6a4ac5b3668ece14301d97ba085b"),
-    "pico-s": (169568, "d4d294e6cc58194ecb1b5d66f47d5a2636d64011bbe37131bc46c0b11fb1d540"),
-}
-RELEASED_1_3_5 = {
-    "pico-pro": (168400, "f0445c1fcf84caae1cbd8f013251b270ffa69510dba989b3ffac102303daf81c"),
-    "pico-s": (168392, "c6fc043ea1f638c6a2523170f45d1b3f15c7cf43bb8a0a1f724f0229a63a979b"),
-}
-RELEASED_1_3_4 = {
-    "pico-pro": (166496, "0f0dcdb0c509fab19371967006aeae661a547dcc2f1c1cd1207cee16e8c45b0b"),
-    "pico-s": (166488, "60995c50448305c4265125109931a4ae5fbb0b8b1e960af5b060a4298021bb94"),
-}
-RELEASED_1_3_3 = {
-    "pico-pro": (166344, "3828ec6a147f98bdf2b039ecd4c336bf238d04bf7cec41cdea07a97b9d170f39"),
-    "pico-s": (166336, "3ed5d58c072cbb547f94fcc579730394c15c72e1126961491741fc846f91bfa4"),
-}
-RELEASED_1_3_2 = {
-    "pico-pro": (166528, "b0cb331a7b9890c61ab7b66e0ef698da8fbedc026ad563082e24c2741a0b1f90"),
-    "pico-s": (166520, "4b3bc5d6122f696b0866d7e73607bef574208cbcc031009f7a4ccf3df5c858a4"),
-}
-RELEASED_1_3_1 = {
-    "pico-s": (166512, "4cc792a016e34becfbebe41a32e752d80358e60be8c0c7571026551619ee0833"),
-    "pico-pro": (166520, "f887663ff2f6e8e4d5936a9c81b2e02cccb5adee89c45050cb2bea9fb4a1e9be"),
-}
-RELEASED_1_3_0 = {
-    "pico-s": (166280, "903873fbaa2c6338956c22689afc911c64635dafbc52c0b913e0613d5eff230b"),
-    "pico-pro": (166288, "29ccc98d45e734edfd5aa259d62fa040395ef366fb48fbc63c9bfe9c91a9e832"),
-}
-RELEASED_1_2_0_SIZE = 165344
-RELEASED_1_2_0_SHA256 = '8f40ad9c4eafecddea8bbf5be9feaad6b6f6347487b5148df523c83f001354c8'
 # Previously installed standalone versions are approved upgrade sources,
 # never alternate payloads accepted by --firmware. Keep these identities fixed
 # when the target CANDIDATE_* values change.
@@ -120,7 +134,7 @@ BOOT_INFO_SHA256 = "59112b9c5cd615ee3427b916c2a35a0a89a40a80250197169a545fb93b8e
 APP_NAME = "/sys/mcuimg2.bin"
 RECOVERY_NAME = "/sys/mcuimg1.bin"
 RECOVERY_FILE = Path(__file__).resolve().parents[1] / "firmware/standalone/pico-hub-recovery.bin"
-RECOVERY_IMAGE = {"size_bytes": 43352, "sha256": "c76c390034d1564d4d80ddeeae0347b2e7171c820878b44d0fce7731c359c9ce"}
+RECOVERY_IMAGE = {"size_bytes": 43352, "sha256": "ae8e361a323c5c999b72d8c8764d0e5c4227d77d49ca47347c7f9f38c8fe6ed9"}
 # The pinned nonmirrored allocation is 48 x 4096 bytes. The CC3200 SDK's
 # _sl_GetCreateFsMode rounds this size range to 1024-byte pages, then TI's
 # filesystem adds metadata and rounds to 4096-byte blocks (SWRA657 section 4;
@@ -133,11 +147,16 @@ APPLICATION_ALLOCATION_BLOCKS = 48
 APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-# Shared by the Pico S and Pico Pro 1.3.10 packages.
+# Shared by the stable Pico S and Pico Pro packages.
 WEB_MANIFEST_SHA256 = "76be243e622a8a0552d2d18f082dced8887ca3b5b58d5f931abc5052a72ed68e"
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 C_FIRMWARE = Path(__file__).resolve().parents[3] / "pico-c/modified/firmware"
 C_RECOVERY = {
+    "pico-c-ssd1325": {"size_bytes": 43912, "sha256": "5d0b4ed287132e817c768b372b61ed5999eca3865d5615edbf69c03448935990"},
+    "pico-c-ssd1309": {"size_bytes": 43912, "sha256": "ec79b06f6805915f93b276ca01310ff86fcd865d56a81d71fbb0c2fe0f2070cf"},
+}
+LEGACY_RECOVERY = {
+    "pico-s-pro": {"size_bytes": 43352, "sha256": "c76c390034d1564d4d80ddeeae0347b2e7171c820878b44d0fce7731c359c9ce"},
     "pico-c-ssd1325": {"size_bytes": 43912, "sha256": "c17c462edf7f9b61ee84dc1c6fb8a33d3a48d8b0007a18bfbc38cb646c387141"},
     "pico-c-ssd1309": {"size_bytes": 43912, "sha256": "46971bb53210fb8a3086b8ff3d2e8a0d0acd2b6680b568ee2b64f504c8bbddd4"},
 }
@@ -145,33 +164,9 @@ C_STOCK = {
     "pico-c-ssd1325": (156536, "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b"),
     "pico-c-ssd1309": (155864, "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226"),
 }
-C_RELEASED_1_2_3 = {
-    "pico-c-ssd1325": (162304, "ffe1fe5ba2e28504de897d2829343a003e684e8c4f92b14eda6c2d0fb711b174"),
-    "pico-c-ssd1309": (162224, "32bd24c118c18cabd29720894ad10647f465050f6786cd548dce874064a7f1df"),
-}
-C_RELEASED_1_2_4 = {
-    "pico-c-ssd1325": (164192, "b5b14f098652d1bd42396b22410028af86b8c5cd0d5bf8ac0a50533b40422f9f"),
-    "pico-c-ssd1309": (164088, "c5fab011051798e6ee93a934b9e0ad512303cf64028400bfda64957de3663424"),
-}
-C_RELEASED_1_2_5 = {
-    "pico-c-ssd1325": (164200, "a5d5078c426636b55595040b9e250cdb97821f2dae34e1991e1d66397bc02b4b"),
-    "pico-c-ssd1309": (164112, "f1096e145e485d732ccf55df2efc7d983a740639aed8656f282ad92857bd3bb7"),
-}
-C_RELEASED_1_2_6 = {
-    "pico-c-ssd1325": (164200, "7d474e8f7f0803850d654acdf42b2e38fdba7cc5463b6d9c9af5054fe8a57fa6"),
-    "pico-c-ssd1309": (164120, "ee826e15c1146077c78ef76f146174f7f669ae2e82ae8e7cbd0ab98fee22dc2e"),
-}
-C_RELEASED_1_2_7 = {
-    "pico-c-ssd1325": (164136, "d7c8ad7efe11eda6a009a605f1914132eb59436e56fdf9f97e138e74c439bb9f"),
-    "pico-c-ssd1309": (164056, "0bbd93aa290347c436cc50b801df06a3d58111dcfc850f2b0d817eb82999424e"),
-}
-C_RELEASED_1_2_8 = {
-    "pico-c-ssd1325": (164136, "782fa7c5f5cfc9cb3b03df0b1efc564a4c7879ce4fbc1c7a049d3e2a74f51d8a"),
-    "pico-c-ssd1309": (164056, "293506900d6fe720afe081cc5b8aff42b5b6101e81876d5c9e82dde098559ffb"),
-}
 C_STANDALONE = {
-    "pico-c-ssd1325": (168384, "f1f34b1f64ba5b060a60c30ed0f9b6c9d99a80c068533d6ed0f2e6ba8c8ca0f3"),
-    "pico-c-ssd1309": (168288, "ff2030d4c019b4d7ae3fe6a88036cbacbb5ff04ff35f93ffcac6f7226a0c3930"),
+    "pico-c-ssd1325": (168496, "e52c444322bd78e58c1bf641fd2d1dc56ba003cfbfff3d1cc761737131bad383"),
+    "pico-c-ssd1309": (168400, "02783efd34cba08a19d7fd719db2732b9fa12554997dbac4f9f85961fa55dc31"),
 }
 C_WEB_MANIFEST_SHA256 = "bb25ffd822ca8d351a2d4b9dbcd34afebb78c041d5b9a6494881c315aa187feb"
 UID_NAME = "/sys/uid.txt"
@@ -381,7 +376,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 170288, "30e10819a9095e0c41494d24a7a290754f78dd198dbc83371264cfaf9c99ec86"
+        return 170392, "5b221f2f52afceab4c9fe7d1c391071b708f439d9e1be8cf883addef584852af"
     if model in C_STANDALONE:
         return C_STANDALONE[model]
     raise InstallError("Unknown target model")
@@ -459,28 +454,19 @@ def _image_metadata(data):
 
 def _approved_current_applications(mode, model="pico-pro"):
     """Exact live images allowed before mutation; install payload stays pinned."""
-    if model in C_STOCK:
-        identities = [C_STOCK[model]]
-        if mode == "install-recovery":
-            identities = [candidate_identity(model)]
-        if mode == "install":
-            identities.extend((C_RELEASED_1_2_3[model], C_RELEASED_1_2_4[model], C_RELEASED_1_2_5[model], C_RELEASED_1_2_6[model],
-                               C_RELEASED_1_2_7[model], C_RELEASED_1_2_8[model], candidate_identity(model)))
-        return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
-    identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
+    identities = [C_STOCK.get(model, (ORIGINAL_SIZE, ORIGINAL_SHA256))]
     if mode == "install":
-        identities.extend(((PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
-                           (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
-                           (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
-                           (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256),
-                           (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
-                           RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
-                           RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model], RELEASED_1_3_6[model],
-                           RELEASED_1_3_7[model], RELEASED_1_3_8[model], RELEASED_1_3_9[model], candidate_identity(model)))
+        if model not in C_STOCK:
+            identities.extend(((162736, "f018cb90820c3cbf9cad201d4e3a95635761695e5cc2fcdee819ed6fa19145a7"),
+                               (PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
+                               (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
+                               (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
+                               (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256)))
+        identities.extend(LEGACY_APPLICATIONS[model])
+        identities.append(candidate_identity(model))
     if mode == "install-recovery":
-        identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
-                      RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model], RELEASED_1_3_6[model],
-                      RELEASED_1_3_7[model], RELEASED_1_3_8[model], RELEASED_1_3_9[model], candidate_identity(model)]
+        # Only the new app can authenticate the newly versioned recovery.
+        identities = [candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
@@ -497,7 +483,8 @@ def _expected_public(name, model="pico-pro", profile=None):
 
 def _protected_matches(name, observed, model="pico-pro", profile=None):
     return (observed == _expected_public(name, model, profile)
-            or (name == RECOVERY_NAME and observed == C_RECOVERY.get(model, RECOVERY_IMAGE)))
+            or (name == RECOVERY_NAME and observed in (C_RECOVERY.get(model, RECOVERY_IMAGE),
+                                                       LEGACY_RECOVERY[model if model in C_STOCK else "pico-s-pro"])))
 
 
 def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None,
@@ -1155,7 +1142,7 @@ def inspect_stock(path, model, cc):
     if model in C_STOCK:
         # This slot stays byte-for-byte as captured throughout conversion and
         # restore. Reject corrupt headers, non-applications and our OTA image.
-        if len(recovery) < 8 or recovery_identity in [RECOVERY_IMAGE, *C_RECOVERY.values()]:
+        if len(recovery) < 8 or recovery_identity in [RECOVERY_IMAGE, *C_RECOVERY.values(), *LEGACY_RECOVERY.values()]:
             raise InstallError("Pico C requires its original independent recovery slot")
         stack, reset = struct.unpack_from("<II", recovery)
         if (stack & 3 or not 0x20000000 <= stack <= 0x20040000 or not reset & 1

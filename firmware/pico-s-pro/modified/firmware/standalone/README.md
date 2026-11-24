@@ -1,4 +1,4 @@
-# Standalone firmware 1.3.0 packages
+# Standalone firmware 1.0.0 packages
 
 The two packages use the shared S/Pro implementation with an explicit model
 selection. Install the image matching the physical appliance:

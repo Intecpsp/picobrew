@@ -1,5 +1,6 @@
 /* A USB-enrolled recovery's display identity survives replacement of the
  * application and website. The existing core owns hashing and trial selection. */
+#include "../../../../pico-s-pro/modified/platform/hub_recovery/version.h"
 #define pico_recovery_http_handler shared_recovery_handler
 #include "../../../../pico-s-pro/modified/recovery/recovery/http.c"
 #undef pico_recovery_http_handler
