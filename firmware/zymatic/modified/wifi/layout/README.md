@@ -11,22 +11,22 @@ make wifi-bench ARDUINO_AVR_BIN="$ARDUINO_AVR_BIN" ZYMATIC_TEST_HEX="$ZYMATIC_TE
 
 ## What fits
 
-| Synthetic application | Free in the final code region | Static extension SRAM | Existing features exercised |
+| Synthetic application | Free before the boot boundary | Static extension SRAM | Existing features exercised |
 | --- | ---: | ---: | --- |
-| Compact | 34 bytes before `0x1e000` | 685 / 768 bytes | Ethernet API, image integrity and original commissioning behavior |
-| Extended | 386 bytes before `0x1fc00` | 762 / 768 bytes | Ethernet API, OLED, About pairing, remote dial, brew status, history, image integrity and original commissioning behavior |
+| Compact | 40 bytes before `0x1e000` | 689 / 768 bytes | Ethernet API, original controls, offline recipe selection, session handling, image integrity and commissioning |
+| Extended | 12 bytes before `0x1fc00` | 765 / 768 bytes | Compact features, About pairing, remote dial, live OLED, session history and the device website |
 
-Both builds link the CC3000 socket state machine, radio arbiter, HTTP bridge, SPI and display arbitration. The radio and Ethernet use a single HTTP request workspace. The linked radio transport exposes stock ownership handoff and an explicit lease on the OEM receive buffer. Those entry points require integration with the original firmware's connection lifecycle and qualification on a board. The existing AVR application regressions exercise incoming Ethernet requests.
+Both candidates hook the CC3000 listener into the normal Home menu and a read-only recipe pause. The extended candidate also serves the physical About pairing wait. The scheduler hands the radio back to the original client before entering a stock network operation. The firmware shares one HTTP request workspace between the radio and Ethernet, and defers a competing display refresh while the radio owns the SPI bus. [Tested firmware scopes and board limits](../integration/README.md)
 
-The compact profile uses the extended profile's lossless OEM table packers and reuses verified original AVR library routines. It retains its 8 KiB boot boundary. The extended profile reads the UID and device key directly from flash, saving 65 bytes of SRAM. Firmware selection still depends on the installed boot layout.
+The compact candidate uses lossless OEM table packing and reuses verified AVR library routines present in the original image. It retains its 8 KiB boot boundary. The extended build reads the UID and key directly from flash, freeing 65 bytes of SRAM. Firmware selection still depends on the installed boot layout.
 
 ## Flash layout evidence
 
-The network parser and URL encoder, OLED transactions and keyboard drawing routines occupy less space after their repeated code is shared. The ROM composers preserve their original entry points. Their differential tests check the rewritten routines separately. Together these changes free 4,142 bytes in eight address ranges.
+The benchmark retains the original font, images and website assets. Sharing repeated instructions in the network parser, URL encoder, HTTP writes, Ethernet address construction, OLED and keyboard drawing frees 4,550 bytes across fixed ranges. Direct register-save sequences and identical return sequences provide additional short spans. The allocation checks branch destinations, skip instructions, possible function pointers, known patch sites and instruction alignment. The simulator compares the stock stack, registers and flags at the original continuations. Indirect entries, shared-bus timing and real brewer behavior still need physical qualification.
 
-The extended build stores the existing compressed JavaScript, HTML and favicon in space after identical function returns are merged. The linked AVR reader reproduces all 2,725 asset bytes. The tool checks direct branch destinations, skip instructions, original data words that could be code pointers and known patch sites before choosing a return sequence. Each selected return saves and restores the same registers and status flags in the simulator, with two or three extra cycles. Indirect entries and in-brew timing on the physical board still need qualification.
+The extended build stores the 2,725 website bytes across 207 fragments. It reads the packed assets through a 474-byte index and places selected constants directly into the upper AVR flash bank. The integrated test checks 54,104 original and packed table accesses in each profile, reads every site byte on the AVR, and fetches the HTML, JavaScript and favicon over simulated Ethernet during a brew. The existing active-brew session recorder keeps its 64,000-cycle per-poll check.
 
-The integrated test checks 54,104 original and packed table accesses on each profile. The simulated active-brew history check remains below the existing 64,000-cycle limit. Use the following commands to inspect one part of the bench.
+To inspect a single part of the benchmark, run either command below.
 
 ```sh
 python3 wifi/layout/tail_budget.py --toolchain "$ARDUINO_AVR_BIN" --oem-file "$ZYMATIC_TEST_HEX" --simulate

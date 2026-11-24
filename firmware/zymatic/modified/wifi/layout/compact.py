@@ -181,13 +181,14 @@ def compact_layout(original, toolchain, directory):
     return bytes(composed), symbols, low_end
 
 
-def simulate(directory, original, image, symbols, original_hex):
+def simulate(directory, original, image, symbols, original_hex, toolchain):
     flags = os.environ.get("SIMAVR_FLAGS")
     if flags is None:
         flags = subprocess.check_output(["pkg-config", "--cflags", "--libs", "simavr"], text=True)
     base, binary = directory / "stock.bin", directory / "synthetic.bin"
     base.write_bytes(original)
     binary.write_bytes(image)
+    pause.verify_composed_pause(base, binary, directory / "compact.elf", toolchain, compact=True)
     stock_hex = directory / "stock.hex"
     stock_hex.write_bytes(original_hex)
     subprocess.run(["node", ROOT.parent / "reverse-engineered/tests/stock-controls.cjs", stock_hex, binary], check=True, timeout=60)
@@ -218,7 +219,7 @@ def main():
         directory = Path(temporary)
         image, symbols, low_end = compact_layout(original, args.toolchain.resolve(), directory)
         if args.simulate:
-            simulate(directory, original, image, symbols, original_hex)
+            simulate(directory, original, image, symbols, original_hex, args.toolchain.resolve())
         # AVR instruction alignment rules out the odd final byte of the table.
         aligned_end = tables.POOL_END & ~1
         print(f"Compact application: {len(image)} bytes. Contiguous free low flash "

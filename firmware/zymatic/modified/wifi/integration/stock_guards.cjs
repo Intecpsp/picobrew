@@ -24,6 +24,10 @@ function exec(cpu,entry,dest,override=()=>{}) {
     }
     assert.fail('AVR instruction timeout at 0x'+(cpu.pc*2).toString(16));
 }
+if (['compact','extended'].includes(process.argv[5])) {
+    require('./pause_controls.cjs')({machine,exec,baseline,candidate,symbols,profile:process.argv[5]});
+    process.exit(0);
+}
 function prepare(cpu,at,handle,flags) {
     for (let reg=2;reg<32;reg++) cpu.data[reg]=(reg*9 + at) & 255;
     cpu.data[0x5f]=flags;

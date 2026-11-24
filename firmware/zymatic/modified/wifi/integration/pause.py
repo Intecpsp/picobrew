@@ -1,8 +1,10 @@
 """Stage the output-off route-6 recipe pause for an experimental Wi-Fi build."""
 
 from pathlib import Path
+import json
 import shutil
 import subprocess
+import tempfile
 
 COMMANDS = {"zym_wifi_pause_wait": (0xfa28, 0x1122c), "zym_wifi_pause_dialog": (0xfaec, 0x7f9a)}
 COMPACT_BUTTON = "zym_wifi_pause_physical"
@@ -104,6 +106,18 @@ def compose(image, symbols, compact):
             raise ValueError(f"Wrong 1.1.14 recipe pause call at {site:#x}")
         result[site:site+4] = hooks.call(symbols[name])
     return bytes(result)
+
+
+def verify_composed_pause(stock_bin, synthetic_bin, elf, toolchain, compact):
+    """Run the output-off hooks and authenticated HTTP code in a final, synthetic-linked application."""
+    names = subprocess.check_output([toolchain / "avr-nm", "--defined-only", elf], text=True)
+    symbols = {fields[2]: int(fields[0], 16) for line in names.splitlines() if len(fields := line.split()) == 3}
+    with tempfile.TemporaryDirectory() as directory:
+        path = Path(directory) / "symbols.json"
+        path.write_text(json.dumps(symbols))
+        subprocess.run(["node", Path(__file__).with_name("stock_guards.cjs"), stock_bin, synthetic_bin,
+                        path, "compact" if compact else "extended"], check=True, timeout=60)
+
 
 def verify_extended_http(root, work):
     """Compile and exercise the paused policy on the extended firmware's full API."""

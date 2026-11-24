@@ -49,6 +49,7 @@ def arrange(original, toolchain, root, runtime, with_listener=False):
     for pc in re.findall(r"avr->pc\s*=\s*(0x[0-9a-f]+)", harness):
         excluded.append((int(pc, 16), int(pc, 16) + 2))
     spare = []
+    protected = []
     if with_listener:
         network, spare, protected = prologues.compose(original, network, dis, excluded)
         excluded.extend(protected)
@@ -109,7 +110,7 @@ def arrange(original, toolchain, root, runtime, with_listener=False):
             packed[word*2:word*2+end-start] for (end, word), start in zip(index, [0] + [x[0] for x in index])
     ) != payload:
         raise ValueError("Unable to preserve every byte of the compressed website")
-    return bytes(packed), payload, index, used, windows, reserved
+    return bytes(packed), payload, index, used, windows, reserved, protected
 
 
 def install_reader(runtime, index):
@@ -147,7 +148,7 @@ def install_reader(runtime, index):
     return len(rows) * 4 + len(index) * 2
 
 
-def simulator(root, runtime, original, packed, asset, original_hex):
+def simulator(root, runtime, original, packed, asset, original_hex, prologue_ranges, toolchain):
     # The unmodified composition code checks its source family, checksummed original and all release fields.
     # Apply the candidate's additional ROM substitutions to its temporary synthetic image.
     command = [sys.executable, "-c",
@@ -167,6 +168,12 @@ def simulator(root, runtime, original, packed, asset, original_hex):
     struct.pack_into("<I", result, len(result) - 4, zlib.crc32(result[:-4]))
     binary, base = root / "extended.bin", root / "original.bin"
     binary.write_bytes(result)
+    if prologue_ranges:
+        import pause
+        pause.verify_composed_pause(base, binary, root / "linked.elf", toolchain, compact=False)
+        sites = root / "prologue-ranges.txt"
+        sites.write_text("".join(f"{start:x} {end:x}\n" for start, end in prologue_ranges))
+        subprocess.run(["node", HERE / "push_compare.cjs", base, binary, sites], check=True, timeout=60)
     stock_hex = root / "stock.hex"
     stock_hex.write_bytes(original_hex)
     subprocess.run(["node", extended.ROOT.parent / "reverse-engineered/tests/stock-controls.cjs", stock_hex, binary], check=True, timeout=60)
@@ -206,7 +213,7 @@ def main():
     with tempfile.TemporaryDirectory() as tmp:
         root = Path(tmp)
         runtime = extended.stage(root)
-        packed, asset, index, tails, windows, reserved = arrange(original, toolchain, root, runtime, with_listener=args.with_listener)
+        packed, asset, index, tails, windows, reserved, prologue_ranges = arrange(original, toolchain, root, runtime, with_listener=args.with_listener)
         index_size = install_reader(runtime, index)
         sys.path.insert(0, str(HERE / "http"))
         from routes import stage as pack_routes
@@ -229,7 +236,7 @@ def main():
         else:
             subprocess.run([sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"], check=True)
         tail_budget.check(root, root / "original.bin", original, tails)
-        manifest = simulator(root, runtime, original, packed, asset, original_hex)
+        manifest = simulator(root, runtime, original, packed, asset, original_hex, prologue_ranges, toolchain)
         low_free = build.tables.POOL_END - build.tables.SEEK_END - manifest["low_bytes"]
         high_free = build.LIMIT - build.START - manifest["extension_bytes"]
         print(f"{len(asset)} site bytes in {len(index)} fragments with a {index_size}-byte index. "
