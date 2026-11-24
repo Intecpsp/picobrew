@@ -764,6 +764,28 @@
       "archive_sha256": "ac5510bfd4e4f1968bcb644a235b5d3d57f59903b90bf4cd3ee98fc8c4a7a4e1",
       "binary_sha256": "ce711a1ea7ac2af441d603ca35a602dbc9182884aa3d1740e2c4a4ef0be99545",
       "binary_bytes": 396432
+    },
+    {
+      "model": "picostill",
+      "model_family": "picostill",
+      "firmware_version": "1.2.7",
+      "kind": "reference",
+      "source_commit": "6af77091ebe9d41ebe8fcd17fdf0f169d98793aa",
+      "archive_sha256": "e536c61e0f9ffb17995015640c93905a2ab15ba87db1d16082c51e490a491d8d",
+      "binary_sha256": "b1bcfd8334fd79ee0a1114cc85973393ea8934040b5cae9975bd8d03d3e01edd",
+      "binary_bytes": 821200,
+      "ota_protocol": "esp32-factory-v1"
+    },
+    {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.9",
+      "kind": "reference",
+      "source_commit": "6af77091ebe9d41ebe8fcd17fdf0f169d98793aa",
+      "archive_sha256": "a2203fcf071aef53e65d01ac14f148b72fd1948a095be14f4f059dec398f5694",
+      "binary_sha256": "f8a1bdf4bccdfacd8bd4ae9a69973ef85133bcd2c95f23b168050a1e9aef6990",
+      "binary_bytes": 1659056,
+      "ota_protocol": "esp32-factory-v1"
     }
   ]
 }
