@@ -35,6 +35,21 @@ module.exports = function({boot,run,image}) {
     c.data.fill(0,held,held+sample.length);
     assert.equal(c.data[held],0);
 
+    // 0x6c06 is the Wi-Fi sample wrapper. Crossing its suppression threshold
+    // directly returns failure, without retaining the call for a later poll.
+    for (const [enabled, counter, expected] of [[0,4,true],[1,3,true],[1,4,false]]) {
+        const transport=boot();
+        transport.data[0x247b]=enabled;
+        transport.data[0x2476]=counter;
+        let submitted=false;
+        run(transport,0x6c06,0x1fffe,{0x680e:()=>{
+            submitted=true;
+            transport.data[24]=1;
+        }});
+        assert.equal(submitted,expected);
+        assert.equal(transport.data[24],Number(expected));
+    }
+
     const f=boot(); const fregs=f.dataView; let present=false, afterNotice=false;
     fregs.setUint16(24,0x23f6,true);
     const events=[];
@@ -59,5 +74,6 @@ module.exports = function({boot,run,image}) {
         0x1122c:()=>assert.fail('Filter wait unexpectedly reached the normal brew button poll'),
     },150000);
     assert.deepEqual(events,[8,208]); assert.equal(f.data[24],1);
+    assert.deepEqual(ports.slice(4),[[4,1],[13,1],[24,1],[25,1]]);
     console.log('OEM failed-send sample lifetime and two filter reports verified with physical shutdown before the notices.');
 };

@@ -1,11 +1,12 @@
 """Link the entire experimental radio into the extended board's real flash windows."""
 
 from pathlib import Path
-import flash_constants
 import json
 import shutil
 import subprocess
 import sys
+
+import flash_constants
 
 # Ordinals match the inspected network, display and keyboard regions returned
 # by their ROM composers. Preserve each function's natural AVR instruction alignment.
@@ -15,7 +16,7 @@ SECTIONS = [
     ("wired_fields", ("zymatic_api_more", "zym_spi_request_display", "read_at")),
     ("oled_transfer", ("step_index",)),
     ("oled_clear", ("number", "submit", "zym_spi_bind")),
-    ("oled_init", ("poll_network", "zym_wifi_network_poll")),
+    ("oled_init", ("zymatic_image_valid", "zym_wifi_network_poll")),
     ("key_one", ("reg_io",)),
     ("key_two", ("bind_from", "zymatic_factory_matches")),
     ("request0", ("unlikely.get32",)),
@@ -51,17 +52,22 @@ def link(root, runtime, toolchain, windows, original, fragments):
     import hooks
     import pause
     hooks.stage(runtime)
-    pause.stage(runtime, compact=False)
+    pause.stage(runtime, compact=False, api_already_staged=True)
     entries = (*pause.COMMANDS, *ENTRIES, *hooks.ENTRIES, "zym_wifi_network_poll")
     linker = src / "overlay.ld"
-    script = linker.read_text()
+    # This entire fixed-address 1.1.14 function is byte-identical to memcpy
+    # in the pinned AVR libc, including its two relative branch offsets.
+    memcpy_code = bytes.fromhex("fb01dc0102c001900d9241505040d8f70895")
+    if original[0x2686:0x2698] != memcpy_code:
+        raise ValueError("Original AVR memcpy differs")
+    script = linker.read_text() + "\nmemcpy = 0x2686;\n"
     for (name, functions), (start, end) in zip(SECTIONS, windows, strict=True):
         script = script.replace("MEMORY {", f"MEMORY {{\n  {name} (rx) : ORIGIN = {start:#x}, LENGTH = {end-start:#x}")
         selectors = " ".join(f"*(.text.{func})" for func in functions)
         if name == "encoder":
             selectors += " KEEP(*(.low_care))"
         script = script.replace("SECTIONS {", f"SECTIONS {{\n  .{name} : {{ {selectors} }} > {name}")
-    script = script.replace("*(.low_functions)", "*(.low_functions) *(.text.zymatic_history_poll) *(.text.json_uint)")
+    script = script.replace("*(.low_functions)", "*(.low_functions) *(.text.zymatic_history_poll) *(.text.json_uint) *(.text.equal)")
     linker.write_text(script)
     compiler = runtime / "tools/compile_extension.py"
     source = compiler.read_text()
@@ -74,6 +80,7 @@ def link(root, runtime, toolchain, windows, original, fragments):
         if source.count(old) != 1:
             raise ValueError("The base AVR compiler interface changed")
         source = source.replace(old, new)
+    source = source.replace('"-fmerge-all-constants",', '"-fmerge-all-constants", "-fshort-enums",')
     map_path = root / "extension.map"
     source = source.replace('"-Wl,--relax",', f'"-Wl,--relax", "-Wl,-Map={map_path}",')
     compiler.write_text(source)

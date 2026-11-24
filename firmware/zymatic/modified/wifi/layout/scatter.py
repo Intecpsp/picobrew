@@ -86,7 +86,7 @@ def arrange(original, toolchain, root, runtime, with_listener=False):
         def constant_preference(slot):
             start, end, _ = slot
             size = end - start
-            return max(0, 20 - size), size, start
+            return max(0, 28 - size), size, start
         for start, end, tail in sorted(slots, key=constant_preference):
             if start >= 0x10000 and slack >= end - start + 16:
                 slack -= end-start
@@ -211,6 +211,12 @@ def main():
         sys.path.insert(0, str(HERE / "http"))
         from routes import stage as pack_routes
         from literals import stage as pack_literals
+        if args.with_listener:
+            # Add pause/status text before tokenizing responses and before
+            # installing the immutable route table shared by both transports.
+            sys.path.insert(0, str(HERE.parent / "integration"))
+            import pause
+            pause.stage_api(runtime, compact=False)
         pack_routes(runtime)
         pack_literals(runtime)
         compiler = runtime / "tools/compile_extension.py"

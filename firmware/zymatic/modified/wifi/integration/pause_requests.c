@@ -25,7 +25,7 @@ int main(void)
     assert(!zymatic_panel_take_press());
     snprintf(request, sizeof(request), "GET /api/v1/status HTTP/1.0\r\n%s\r\n", auth);
     setup(&net); program_active=paused; req(&net,request);
-    assert(strstr(sent,"\"busy\":true"));
+    assert(strstr(sent,"\"state\":\"recipe_pause\",\"busy\":true"));
     snprintf(request, sizeof(request), "GET /api/v1/display HTTP/1.0\r\n%s\r\n", auth);
     setup(&net); program_active=paused; req(&net,request);
     assert(strstr(sent,"\"dial\":\"off\""));

@@ -84,6 +84,6 @@ module.exports = function ({ machine, exec, candidate, baseline, symbols }) {
     invoke('zymatic_api_reply');
     const status=Buffer.from(c.data.subarray(net,net+c.dataView.getUint16(net+396,true))).toString();
     assert.match(status,/HTTP\/1.0 200/);
-    assert.match(status,/"state":"program_running","busy":true/);
+    assert.match(status,/"state":"recipe_pause","busy":true/);
     console.log('Output-off recipe pause retained both physical decisions after a clean or faulted radio handoff and reported the running program busy.');
 };

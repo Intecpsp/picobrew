@@ -59,10 +59,10 @@ SECTIONS {
   } > keyboard2
   .low : {
     KEEP(*(.low_helpers))
-    KEEP(wifi_cc3000_broker.o(.text.submit))
+    KEEP(wifi_cc3000_broker.o(.text.submit .text.zym_broker_acquire_oem))
     KEEP(wifi_cc3000.o(.text .text.*))
     KEEP(wifi_http_session.o(.text .text.*))
-    KEEP(wifi_cc3000_spi.o(.text.within_budget))
+    KEEP(wifi_cc3000_spi.o(.text.within_budget .text.quarantine))
   } > low
   .text : {
     KEEP(wifi_cc3000_broker.o(.text .text.*))

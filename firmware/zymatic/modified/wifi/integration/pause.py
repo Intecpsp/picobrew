@@ -15,7 +15,7 @@ def edit(path, old, new):
     path.write_text(source.replace(old, new))
 
 
-def stage(runtime, compact):
+def stage(runtime, compact, api_already_staged=False):
     runtime = Path(runtime)
     src = runtime / "src"
     header = src / "scheduler.h"
@@ -69,7 +69,8 @@ uint8_t zym_wifi_pause_dialog(uint8_t count, uint8_t row, uint8_t timeout)
     with overlay.open("a") as f:
         f.write(functions.replace("CLEAR_INPUT", "" if compact else
                                   "(void)zymatic_panel_take_press();\n        zymatic_panel_changed();"))
-    stage_api(runtime, compact)
+    if not api_already_staged:
+        stage_api(runtime, compact)
 
 
 def stage_api(runtime, compact):
@@ -81,9 +82,13 @@ def stage_api(runtime, compact):
             + ("" if compact else
                "        if (!n->http_error && (n->route == ENCODER || n->route >= PAIR_REQUEST))\n"
                "            n->http_error = METHOD;\n")
-            + "        program_active = n->route == STATUS" + ("" if compact else " || n->route == OVERVIEW")
+            + "        if (n->route != STATUS) program_active = " + ("0" if compact else "n->route == OVERVIEW")
             + ";\n    }")
     edit(api, signature, signature + "\n" + body)
+    condition = "program_active" if compact else "program_active == ZYMATIC_PROGRAM"
+    original = 'if (' + condition + r') literal(n, CONSTANT("\",\"state\":\"program_running\",\"busy\":true"));'
+    paused = r'if (program_active == ZYM_WIFI_RECIPE_PAUSE) literal(n, CONSTANT("\",\"state\":\"recipe_pause\",\"busy\":true"));'
+    edit(api, original, paused + "\n        else " + original)
     # A numeric mode extends the staged API without any board/SPI header in its parser.
     edit(api, '#include "zymatic_api.h"', '#include "zymatic_api.h"\n#define ZYM_WIFI_RECIPE_PAUSE 4')
 
