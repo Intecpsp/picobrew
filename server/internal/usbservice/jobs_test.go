@@ -196,7 +196,7 @@ func TestWorkerRestartAndInvalidInputs(t *testing.T) {
 func TestPairingReadyRequiresVerifiedInstallAndPrivateHandoff(t *testing.T) {
 	m := newJobs(t, "ok")
 	id := strings.Repeat("1", 32)
-	j := USBJob{ID: id, State: "complete", USBInput: USBInput{Action: "install"}, CreatedAt: time.Now()}
+	j := USBJob{ID: id, State: "complete", USBInput: USBInput{Action: "install", Model: "pico-s"}, CreatedAt: time.Now()}
 	if err := m.persist(j); err != nil {
 		t.Fatal(err)
 	}
@@ -210,8 +210,9 @@ func TestPairingReadyRequiresVerifiedInstallAndPrivateHandoff(t *testing.T) {
 	}
 	key := strings.Repeat("ab", 32)
 	uid := strings.Repeat("cd", 16)
-	for name, value := range map[string]string{"device-key": key, "device-uid": uid} {
-		f, err := privatefs.OpenFile(filepath.Join(dir, name), os.O_WRONLY|os.O_CREATE|os.O_EXCL)
+	write := func(name, value string) {
+		t.Helper()
+		f, err := privatefs.OpenFile(filepath.Join(dir, name), os.O_WRONLY|os.O_CREATE|os.O_TRUNC)
 		if err != nil {
 			t.Fatal(err)
 		}
@@ -223,6 +224,8 @@ func TestPairingReadyRequiresVerifiedInstallAndPrivateHandoff(t *testing.T) {
 			t.Fatal(err)
 		}
 	}
+	write("device-key", key)
+	write("device-uid", uid)
 	got, err = m.Get(id)
 	if err != nil || !got.PairingReady {
 		t.Fatal(got, err)
@@ -231,7 +234,30 @@ func TestPairingReadyRequiresVerifiedInstallAndPrivateHandoff(t *testing.T) {
 	if strings.Contains(string(wire), key) || strings.Contains(string(wire), uid) {
 		t.Fatal("credential leaked")
 	}
-	j.State = "failed"
+	// Both the UI flag and registration consume the same model-specific USB
+	// result. Reading credentials here must agree with what the UI offered.
+	for _, model := range models {
+		j.Model = model
+		if err := m.persist(j); err != nil {
+			t.Fatal(err)
+		}
+		esp := model != "pico-s" && model != "pico-pro" && model != "pico-c" && model != "zymatic"
+		for _, sample := range []string{uid, uid[:12], "0123456789gg", uid[:10]} {
+			write("device-uid", sample)
+			got, err := m.Get(id)
+			want := esp && sample == uid[:12] || !esp && sample == uid
+			if err != nil || got.PairingReady != want {
+				t.Fatalf("%s %q: ready=%v, error=%v", model, sample, got.PairingReady, err)
+			}
+			gotKey, gotUID, err := m.InstalledCredential(id)
+			if (err == nil) != want || want && (gotKey != key || gotUID != sample) ||
+				!want && (gotKey != "" || gotUID != "") {
+				t.Fatalf("%s %q: credential result did not match readiness", model, sample)
+			}
+		}
+	}
+	write("device-uid", uid)
+	j.Model, j.State = "zymatic", "failed"
 	if err = m.persist(j); err != nil {
 		t.Fatal(err)
 	}

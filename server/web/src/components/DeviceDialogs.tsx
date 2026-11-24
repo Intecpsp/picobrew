@@ -2,10 +2,11 @@ import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { KeyRound, Loader2, Plus, RefreshCw, Save, Trash2 } from 'lucide-react'
 import { useHub } from '../context'
 import { api, errorMessage } from '../lib/api'
-import { deviceModelLabel, liveReadingsStatus } from '../lib/utils'
+import { deviceModelLabel, liveReadingsStatus, modelLabel } from '../lib/utils'
 import type { Device } from '../types'
 import { Button, ErrorBanner, Field, Modal } from './ui'
 import { StockSetupGuide } from './StockSetupGuide'
+import { NetworkDiscovery, type NetworkCandidate } from './NetworkDiscovery'
 
 export function DeviceKeyNotice() {
   return (
@@ -55,11 +56,14 @@ export function DeviceDialog({
   const [error, setError] = useState('')
   const [usbSetup, setUSBSetup] = useState(false)
   const [manualKey, setManualKey] = useState(false)
+  const [candidate, setCandidate] = useState<NetworkCandidate | null>(null)
   const [pairCode, setPairCode] = useState('')
   const request = useRef<AbortController | null>(null)
   useEffect(() => () => request.current?.abort(), [])
   const locked = busy || identifying
   const physical = form.adapter === 'pico-standalone'
+  const selected = physical && candidate?.base_url === form.base_url ? candidate : null
+  const keyOnly = selected?.model === 'picoferm' || selected?.model === 'picostill'
   const invalidIdentity = ['invalid_model', 'unsupported_model'].includes(
     current?.model_error_code || ''
   )
@@ -68,6 +72,22 @@ export function DeviceDialog({
     !invalidIdentity &&
     !!(current?.model_selection_required || current?.model_source === 'manual')
   const connectionChanged = !!form.api_key || form.base_url !== device?.base_url
+  function selectCandidate(item: NetworkCandidate) {
+    if (!item.base_url) return
+    const address = item.base_url
+    setCandidate(item)
+    setManualKey(false)
+    setError('')
+    setForm((previous) => ({
+      ...previous,
+      name:
+        previous.name && previous.name !== candidate?.name
+          ? previous.name
+          : item.name || modelLabel(item.model),
+      base_url: address,
+      api_key: '',
+    }))
+  }
   async function submit(event: FormEvent) {
     event.preventDefault()
     if (locked) return
@@ -77,7 +97,8 @@ export function DeviceDialog({
       const controller = new AbortController()
       request.current = controller
       const body = { ...form, model: physical && !manualModel ? '' : form.model }
-      if (!device && physical && !manualKey && !usbJobId) {
+      let addedDevice: Device | undefined
+      if (!device && physical && !manualKey && !keyOnly && !usbJobId) {
         const start = await api<{ pairing_id: string; code: string }>('/devices/pair', {
           method: 'POST',
           body: { base_url: form.base_url },
@@ -95,7 +116,7 @@ export function DeviceDialog({
           await new Promise((resolve) => setTimeout(resolve, 1500))
         }
       } else {
-        await api<Device>(device ? `/devices/${device.id}` : '/devices', {
+        addedDevice = await api<Device>(device ? `/devices/${device.id}` : '/devices', {
           method: device ? 'PUT' : 'POST',
           body: { ...body, ...(physical && !device && usbJobId ? { usb_job_id: usbJobId } : {}) },
           signal: controller.signal,
@@ -110,6 +131,13 @@ export function DeviceDialog({
             : 'Machine added. The hub is connecting now.'
       )
       onClose()
+      if (
+        !device &&
+        addedDevice &&
+        (selected?.model === 'picoferm' || addedDevice.model === 'picoferm')
+      ) {
+        hub.navigate(`/devices/${addedDevice.id}`)
+      }
     } catch (error) {
       if (!request.current?.signal.aborted) setError(errorMessage(error))
     } finally {
@@ -176,6 +204,9 @@ export function DeviceDialog({
       }
     >
       {!device && physical && !hub.session.demo && (
+        <NetworkDiscovery disabled={locked} onSelect={selectCandidate} onClose={onClose} />
+      )}
+      {!device && physical && !hub.session.demo && (
         <Button
           className="stock-setup-entry"
           variant="secondary"
@@ -214,7 +245,8 @@ export function DeviceDialog({
             <select
               disabled={!!device || locked}
               value={form.adapter}
-              onChange={(event) =>
+              onChange={(event) => {
+                setCandidate(null)
                 setForm({
                   ...form,
                   adapter: event.target.value,
@@ -222,7 +254,7 @@ export function DeviceDialog({
                   base_url: '',
                   api_key: '',
                 })
-              }
+              }}
             >
               {!hub.session.demo && (
                 <option value="pico-standalone">Pico standalone firmware</option>
@@ -259,7 +291,13 @@ export function DeviceDialog({
             ) : (
               <input
                 readOnly
-                value={current ? deviceModelLabel(current) : 'Detect automatically'}
+                value={
+                  current
+                    ? deviceModelLabel(current)
+                    : selected?.model
+                      ? modelLabel(selected.model)
+                      : 'Detect automatically'
+                }
               />
             )}
           </Field>
@@ -276,7 +314,10 @@ export function DeviceDialog({
                 maxLength={1024}
                 disabled={locked}
                 value={form.base_url}
-                onChange={(event) => setForm({ ...form, base_url: event.target.value })}
+                onChange={(event) => {
+                  setCandidate(null)
+                  setForm({ ...form, base_url: event.target.value })
+                }}
                 placeholder="http://picobrew.local"
               />
             </Field>
@@ -297,27 +338,31 @@ export function DeviceDialog({
                     </>
                   ) : device?.key_configured ? (
                     'Paired. The Hub has this machine’s API key for its controls and local website.'
+                  ) : keyOnly ? (
+                    'Use the device key from USB setup to connect this accessory.'
                   ) : (
                     'The Hub saves the device API key when you confirm pairing on the brewer.'
                   )}
                 </p>
-                <Button
-                  type="button"
-                  variant="ghost"
-                  disabled={locked}
-                  aria-expanded={manualKey}
-                  onClick={() => {
-                    setManualKey(!manualKey)
-                    setForm({ ...form, api_key: '' })
-                  }}
-                >
-                  {manualKey
-                    ? 'Cancel key entry'
-                    : device?.key_configured
-                      ? 'Replace saved key'
-                      : 'Use an existing key instead'}
-                </Button>
-                {manualKey && (
+                {!keyOnly && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    disabled={locked}
+                    aria-expanded={manualKey}
+                    onClick={() => {
+                      setManualKey(!manualKey)
+                      setForm({ ...form, api_key: '' })
+                    }}
+                  >
+                    {manualKey
+                      ? 'Cancel key entry'
+                      : device?.key_configured
+                        ? 'Replace saved key'
+                        : 'Use an existing key instead'}
+                  </Button>
+                )}
+                {(manualKey || keyOnly) && (
                   <>
                     <Field
                       label="USB setup key file"

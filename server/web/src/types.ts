@@ -98,6 +98,7 @@ export interface Capabilities {
 }
 export interface Device {
   id: string
+  brewer_id?: string
   name: string
   model: string
   model_source?: 'pending' | 'firmware' | 'manual'

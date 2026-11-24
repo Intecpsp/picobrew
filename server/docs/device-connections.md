@@ -2,7 +2,11 @@
 
 ## Manage machines from Brewery
 
-**Brewery → Add machine** opens the registration form. For a machine running custom firmware, select **Pico standalone firmware**, enter a name and its **Machine URL**, and click **Add machine**. The Hub host must be able to reach that address. For the unmodified Zymatic, use its separate recipe-menu setup. [Owner guide](../../README.md) · [Stock Zymatic recipe sync](stock-zymatic.md)
+**Brewery → Add machine** searches the Hub computer’s directly connected private IPv4 networks for PicoBrew devices. Select a standalone brewer or accessory under **On your network** to fill in its name and address. You can edit either before adding it. On larger networks, **Check again** covers additional addresses. If the Hub runs on another subnet or inside an isolated container, you can enter the **Machine URL** manually whenever the Hub has a route to it.
+
+The original Z Program Maker and PicoStill interfaces can also appear here. **Open device website** opens Program Maker or the Still’s readings page. A stock PicoFerm exposes its setup page while the Hub computer is connected to the PicoFerm’s own setup Wi-Fi. During normal fermentation it sleeps between outbound reports. A Zymatic that recently contacted this Hub’s recipe sync service offers **Use for recipe sync**, which selects its serial number for the recipe library’s stock transfer flow. For stock Zymatic network setup, see [Stock Zymatic recipe sync](stock-zymatic.md).
+
+After adding a PicoFerm, choose **Linked brewer** on its machine page and save. The brewer’s page links back to its PicoFerms. You can change the link between batches, or select **Unassigned**. Linking groups registered equipment in the Hub. Each accessory recording keeps its own journal entry.
 
 On firmware that supports pairing, compare the code in the browser with the one on the brewer under **About → Pair with Hub** and approve it at the physical dial. On a pairing-capable Zymatic, use Ethernet and **About Zymatic**. When continuing from a completed Hub USB setup, the form uses the key saved with that job and checks the machine’s identity. For models without dial pairing or for an existing key file, choose **Use an existing key instead**.
 

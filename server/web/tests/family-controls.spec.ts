@@ -295,6 +295,8 @@ for (const width of [1280, 390]) {
             Object.assign(status, { stopped: false, stop_reason: 'none' })
           code = 202
           result = { id: 'receipt', state: 'accepted', command: body }
+        } else if (ferm && path.endsWith('/brewer') && request.method() === 'GET') {
+          result = { brewer_id: '', revision: 0 }
         } else if (path.endsWith('/sync-history')) result = { synced: true }
         else if (path.endsWith('/test') || path.endsWith('/family-device')) result = device
         else throw new Error('Unexpected device request ' + path)
@@ -302,6 +304,10 @@ for (const width of [1280, 390]) {
       })
       await page.goto('/#/devices/family-device')
       await expect(page.getByRole('heading', { name, exact: true })).toBeVisible()
+      if (ferm)
+        await expect(page.getByRole('combobox', { name: 'Brewer for this PicoFerm' })).toHaveValue(
+          ''
+        )
       expect(commands).toEqual([])
       if (brewing) {
         const idleLock = page.getByRole('button', { name: 'Lock outputs', exact: true })

@@ -29,7 +29,7 @@ func (s *Server) attach(d domain.Device) *runtimeDevice {
 		if e != nil {
 			err = e
 		} else {
-			a, err = device.NewPico(d.BaseURL, key)
+			a, err = s.newDeviceAdapter(d.BaseURL, key)
 			// Canonicalize only the private advisory comparison. Authentication
 			// keeps the exact provisioned token, including its character case.
 			if decoded, e := hex.DecodeString(key); d.Adapter == "pico-standalone" && e == nil && len(decoded) == 32 {
@@ -57,6 +57,9 @@ func (s *Server) attach(d domain.Device) *runtimeDevice {
 		old.cancel()
 	}
 	s.devices[d.ID] = rt
+	if !d.IsBrewer() {
+		s.clearBrewerLinksLocked(d.ID)
+	}
 	s.updateKeyReuseLocked()
 	s.mu.Unlock()
 	if d.Enabled && err == nil {
@@ -450,7 +453,7 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 			key = pairing.claimedKey
 		} else {
 			var err error
-			key, expectedUID, err = s.installedCredential(in.USBJobID)
+			key, expectedUID, err = s.usb.InstalledCredential(in.USBJobID)
 			if err != nil {
 				s.fail(w, 409, "usb_key_unavailable", "USB setup has no verified pairing result for this machine")
 				return
@@ -466,7 +469,7 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		key, _ = s.readSecret("device:" + id)
 	}
 	if in.Adapter == "pico-standalone" {
-		adapter, e := device.NewPico(in.BaseURL, key)
+		adapter, e := s.newDeviceAdapter(in.BaseURL, key)
 		if e != nil {
 			s.fail(w, 400, "connection", safeMessage(e.Error()))
 			return
@@ -497,6 +500,7 @@ func (s *Server) saveDevice(w http.ResponseWriter, r *http.Request) {
 		d.Enabled = *in.Enabled
 	}
 	d.KeyConfigured = key != ""
+	d.ClearInapplicableBrewer()
 	var encrypted []byte
 	if key != "" {
 		encrypted = s.vault.seal("device:"+id, key)
@@ -547,16 +551,16 @@ func (s *Server) deleteDevice(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	telemetry := s.releaseTelemetry(r.Context(), d)
-	if e := s.db.Delete("device", id); e != nil {
+	if e := s.db.DeleteDeviceRegistration(id); e != nil {
 		s.storeError(w, e)
 		return
 	}
 	d.cancel()
 	s.mu.Lock()
 	delete(s.devices, id)
+	s.clearBrewerLinksLocked(id)
 	s.updateKeyReuseLocked()
 	s.mu.Unlock()
-	_ = s.db.DeleteSecret("device:" + id)
 	s.json(w, 200, map[string]any{"deleted": true, "telemetry": telemetry})
 }
 func (s *Server) testDevice(w http.ResponseWriter, r *http.Request) {

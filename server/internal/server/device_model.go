@@ -47,8 +47,8 @@ func (s *Server) reconcileModel(d *runtimeDevice, caps domain.Capabilities) erro
 	if err != nil {
 		return err
 	}
-	s.mu.RLock()
-	defer s.mu.RUnlock()
+	s.mu.Lock()
+	defer s.mu.Unlock()
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	if s.devices[d.view.ID] != d || s.ctx.Err() != nil {
@@ -72,7 +72,8 @@ func (s *Server) reconcileModel(d *runtimeDevice, caps domain.Capabilities) erro
 		}
 		if err == nil {
 			saved.Model, saved.ModelSource = model, "firmware"
-			_, err = s.db.Put("device", saved.ID, saved, version)
+			saved.ClearInapplicableBrewer()
+			_, err = s.db.PutWithSecret("device", saved.ID, saved, version, "", nil)
 		}
 		if err != nil {
 			d.view.ModelErrorCode, d.view.ModelSelectionRequired = "storage", false
@@ -83,6 +84,10 @@ func (s *Server) reconcileModel(d *runtimeDevice, caps domain.Capabilities) erro
 			return &device.Error{StatusCode: 503, Code: "model_storage", Message: d.view.ModelError}
 		}
 		d.view.Model, d.view.ModelSource = model, "firmware"
+		d.view.BrewerID, d.view.BrewerRevision = saved.BrewerID, saved.BrewerRevision
+		if !saved.IsBrewer() {
+			s.clearBrewerLinksLocked(saved.ID)
+		}
 	}
 	d.view.ModelError, d.view.ModelErrorCode, d.view.ModelSelectionRequired = "", "", false
 	return nil

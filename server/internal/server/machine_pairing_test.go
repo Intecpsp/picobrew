@@ -4,10 +4,70 @@ import (
 	"context"
 	"encoding/json"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/usbservice"
 )
+
+func TestRegisterPicoFermWithUSBHandoff(t *testing.T) {
+	s, h, c := newTestServer(t)
+	csrf := signIn(t, c, h.URL)
+	key, uid := strings.Repeat("ab", 32), "ac1234567890"
+	job := usbservice.USBJob{ID: strings.Repeat("d", 32), State: "complete", USBInput: usbservice.USBInput{Action: "install", Model: "picoferm"}}
+	if _, err := s.db.Put("usb-job", job.ID, job, 0); err != nil {
+		t.Fatal(err)
+	}
+	dir := filepath.Join(s.cfg.DataDir, "usb-jobs", job.ID)
+	if err := privatefs.EnsureDir(dir); err != nil {
+		t.Fatal(err)
+	}
+	for name, value := range map[string]string{"device-key": key, "device-uid": uid} {
+		f, err := privatefs.OpenFile(filepath.Join(dir, name), os.O_CREATE|os.O_EXCL|os.O_WRONLY)
+		if err != nil {
+			t.Fatal(err)
+		}
+		if _, err := f.WriteString(value); err != nil {
+			t.Fatal(err)
+		}
+		if err := f.Close(); err != nil {
+			t.Fatal(err)
+		}
+	}
+	address := "http://keg-monitor.local"
+	monitor := &identityAdapter{}
+	s.newDeviceAdapter = func(base, credential string) (device.Adapter, error) {
+		if base != address || credential != key {
+			t.Error("registration probe did not use the provisioned key at the selected address")
+		}
+		return monitor, nil
+	}
+	register := func(reportedUID string) (int, []byte) {
+		t.Helper()
+		monitor.mu.Lock()
+		monitor.uid = reportedUID
+		monitor.mu.Unlock()
+		return request(t, c, "POST", h.URL+"/api/v1/devices", csrf, map[string]any{
+			"name": "Keg monitor", "model": "picoferm", "adapter": "pico-standalone", "base_url": address, "usb_job_id": job.ID, "enabled": false,
+		}, nil)
+	}
+	if code, raw := register("ac1234567899"); code != 409 || !strings.Contains(string(raw), "usb_identity") || len(s.fleet()) != 0 {
+		t.Fatalf("different physical monitor: %d %s", code, raw)
+	}
+	code, raw := register(uid)
+	if code != 201 || strings.Contains(string(raw), key) || len(s.fleet()) != 1 {
+		t.Fatalf("registration with verified USB credentials: %d %s", code, raw)
+	}
+	id := mapFromJSON(t, raw)["id"].(string)
+	if saved, err := s.readSecret("device:" + id); err != nil || saved != key {
+		t.Fatal("Hub did not retain the provisioned key")
+	}
+}
 
 type dialApproval struct {
 	nonce, key string

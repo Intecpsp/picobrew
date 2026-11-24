@@ -7,8 +7,10 @@ import { HubContext, type HubState } from '../context'
 import { setCSRF } from '../lib/api'
 import type { Device } from '../types'
 import { DeviceDialog, HubConnectionStatus } from './DeviceDialogs'
+import { PicoFermAssociation } from './PicoFermAssociation'
 
 const fetchMock = vi.fn<typeof fetch>()
+const discover = vi.fn<typeof fetch>()
 const onClose = vi.fn()
 const originalShowModal = Object.getOwnPropertyDescriptor(HTMLDialogElement.prototype, 'showModal')
 
@@ -44,6 +46,7 @@ function hub(device?: Device): HubState {
     },
     devices: device ? [device] : [],
     profiles: [],
+    navigate: vi.fn(),
     notify: vi.fn(),
     refresh: vi.fn(async () => {}),
   } as unknown as HubState
@@ -70,8 +73,13 @@ function json(value: unknown, status = 200) {
 
 beforeEach(() => {
   fetchMock.mockReset()
+  discover.mockReset().mockResolvedValue(json({ candidates: [], partial: false }))
   onClose.mockReset()
-  vi.stubGlobal('fetch', fetchMock)
+  vi.stubGlobal('fetch', (input: RequestInfo | URL, options?: RequestInit) =>
+    String(input).endsWith('/devices/discover')
+      ? discover(input, options)
+      : fetchMock(input, options)
+  )
   setCSRF('test')
   Object.defineProperty(HTMLDialogElement.prototype, 'showModal', {
     configurable: true,
@@ -91,6 +99,112 @@ afterEach(() => {
 })
 
 describe('automatic physical-machine connections', () => {
+  it('links and unlinks a registered PicoFerm while the brewer is offline', async () => {
+    const user = userEvent.setup()
+    let saved = { brewer_id: '', revision: 0 }
+    fetchMock.mockImplementation(async (input, options) => {
+      expect(String(input)).toBe('/api/v1/devices/ferm/brewer')
+      if (options?.method === 'PUT') {
+        const body = JSON.parse(String(options.body))
+        expect(body.revision).toBe(saved.revision)
+        saved = { brewer_id: body.brewer_id, revision: saved.revision + 1 }
+      }
+      return json(saved)
+    })
+    const state = hub(machine({ online: false }))
+    state.devices.push(machine({ id: 'still', model: 'picostill', name: 'Garage still' }))
+    render(
+      createElement(
+        HubContext.Provider,
+        { value: state },
+        createElement(PicoFermAssociation, { id: 'ferm' })
+      )
+    )
+    const select = screen.getByRole('combobox')
+    await waitFor(() => expect((select as HTMLSelectElement).disabled).toBe(false))
+    expect(screen.queryByRole('option', { name: 'Garage still' })).toBeNull()
+    await user.selectOptions(select, 'physical-s')
+    await user.click(screen.getByRole('button', { name: 'Save link' }))
+    await user.click(await screen.findByRole('button', { name: 'Open brewer' }))
+    expect(state.navigate).toHaveBeenCalledWith('/devices/physical-s')
+    await user.selectOptions(select, '')
+    await user.click(screen.getByRole('button', { name: 'Save link' }))
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Open brewer' })).toBeNull())
+    expect(saved).toEqual({ brewer_id: '', revision: 2 })
+  })
+  it('finds a PicoFerm, preserves the chosen name, and enrolls it through its key', async () => {
+    const user = userEvent.setup()
+    discover.mockResolvedValue(
+      json({
+        candidates: [
+          {
+            name: 'PicoFerm',
+            model: 'picoferm',
+            source: 'standalone',
+            base_url: 'http://192.168.1.50',
+          },
+        ],
+        partial: false,
+      })
+    )
+    fetchMock.mockResolvedValue(json(machine({ id: 'ferm', model: 'picoferm' })))
+    const state = show()
+    await user.type(screen.getByLabelText('Machine name'), 'Garage keg')
+    await user.click(await screen.findByRole('button', { name: 'Select' }))
+    expect(fetchMock).not.toHaveBeenCalled()
+    expect((screen.getByLabelText('Machine name') as HTMLInputElement).value).toBe('Garage keg')
+    expect((screen.getByLabelText('Machine URL') as HTMLInputElement).value).toBe(
+      'http://192.168.1.50'
+    )
+    await user.type(screen.getByLabelText('Machine API key'), 'provisioned-key')
+    await user.click(screen.getByRole('button', { name: 'Add machine' }))
+    await waitFor(() => expect(state.navigate).toHaveBeenCalledWith('/devices/ferm'))
+    expect(fetchMock).toHaveBeenCalledOnce()
+    expect(JSON.parse(String(fetchMock.mock.calls[0][1]?.body))).toMatchObject({
+      model: '',
+      api_key: 'provisioned-key',
+    })
+  })
+
+  it('routes a Zymatic sync sighting to recipes without trying to enroll it', async () => {
+    const user = userEvent.setup()
+    discover.mockResolvedValue(
+      json({
+        candidates: [{ name: 'Zymatic', source: 'zymatic-sync', serial: '112233445566' }],
+        partial: false,
+      })
+    )
+    const state = show()
+    try {
+      await user.click(await screen.findByRole('button', { name: 'Use for recipe sync' }))
+      expect(localStorage.getItem('stock-zymatic-serial')).toBe('112233445566')
+      expect(state.navigate).toHaveBeenCalledWith('/recipes')
+      expect(fetchMock).not.toHaveBeenCalled()
+    } finally {
+      localStorage.removeItem('stock-zymatic-serial')
+    }
+  })
+
+  it('opens a stock Still’s readings without offering standalone pairing', async () => {
+    discover.mockResolvedValue(
+      json({
+        candidates: [
+          {
+            name: 'PicoStill',
+            model: 'picostill',
+            source: 'stock',
+            base_url: 'http://192.168.1.71',
+          },
+        ],
+        partial: false,
+      })
+    )
+    show()
+    const link = await screen.findByRole('link', { name: 'Open device website' })
+    expect(link.getAttribute('href')).toBe('http://192.168.1.71/data-page')
+    expect(screen.queryByRole('button', { name: 'Select' })).toBeNull()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
   it('sets up a connected machine through authenticated USB jobs and resumes its confirmation', async () => {
     const user = userEvent.setup()
     const id = '1'.repeat(32)
