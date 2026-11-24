@@ -2,15 +2,10 @@ package server
 
 import (
 	"context"
-	"encoding/hex"
-	"errors"
 	"net/http"
-	"path/filepath"
-	"strings"
 	"time"
 
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/device"
-	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/privatefs"
 )
 
 type machinePairing struct {
@@ -77,35 +72,6 @@ func (s *Server) pairClient(base string) (registrationPairer, error) {
 		return s.newPairingClient(base)
 	}
 	return device.NewPairingClient(base)
-}
-
-// The USB installer publishes these two private files only after verified installation.
-func (s *Server) installedCredential(id string) (key, uid string, err error) {
-	raw, e := hex.DecodeString(id)
-	if e != nil || len(raw) != 16 || id != strings.ToLower(id) {
-		return "", "", errors.New("invalid USB job")
-	}
-	var job struct{ ID, Action, State string }
-	if _, err := s.db.Get("usb-job", id, &job); err != nil || job.ID != id || job.Action != "install" || job.State != "complete" {
-		return "", "", errors.New("USB installation is incomplete")
-	}
-	dir := filepath.Join(s.cfg.DataDir, "usb-jobs", id)
-	k, e := privatefs.ReadFile(filepath.Join(dir, "device-key"), 66)
-	if e != nil {
-		return "", "", e
-	}
-	u, e := privatefs.ReadFile(filepath.Join(dir, "device-uid"), 34)
-	if e != nil {
-		return "", "", e
-	}
-	key = strings.TrimRight(string(k), "\r\n")
-	uid = strings.TrimRight(string(u), "\r\n")
-	kb, ke := hex.DecodeString(key)
-	ub, ue := hex.DecodeString(uid)
-	if ke != nil || ue != nil || len(kb) != 32 || len(ub) != 16 {
-		return "", "", errors.New("incomplete USB result")
-	}
-	return key, uid, nil
 }
 
 func (s *Server) machineKey(w http.ResponseWriter, r *http.Request) {

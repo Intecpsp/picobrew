@@ -114,38 +114,57 @@ func (m *Manager) persist(j USBJob) error {
 	return err
 }
 
-// hasPair checks whether registration can consume this successful install’s private handoff.
-func (m *Manager) hasPair(j USBJob) bool {
-	if j.State != "complete" || j.Action != "install" || len(j.ID) != 32 {
-		return false
+// InstalledCredential retrieves the private handoff for a verified USB installation.
+func (m *Manager) InstalledCredential(id string) (key, uid string, err error) {
+	j, err := m.readJob(id)
+	if err != nil || j.ID != id {
+		return "", "", ErrMissing
+	}
+	return m.installCredential(j)
+}
+
+func (m *Manager) installCredential(j USBJob) (key, uid string, err error) {
+	if j.State != "complete" || j.Action != "install" || len(j.ID) != 32 || j.ID != strings.ToLower(j.ID) {
+		return "", "", errors.New("no verified USB installation")
 	}
 	if _, err := hex.DecodeString(j.ID); err != nil {
-		return false
+		return "", "", errors.New("invalid USB job")
+	}
+
+	// The ESP devices identify themselves by a six-byte MAC. The CC3200
+	// and Zymatic installers provision a sixteen-byte device identity.
+	var uidBytes int
+	switch j.Model {
+	case "picoferm", "picostill", "z-series", "z1", "z2", "z3", "z4":
+		uidBytes = 6
+	case "pico-s", "pico-pro", "pico-c", "zymatic":
+		uidBytes = 16
+	default:
+		return "", "", errors.New("unknown USB device model")
 	}
 	dir := filepath.Join(m.dir, "usb-jobs", j.ID)
-	rawUID, err := privatefs.ReadFile(filepath.Join(dir, "device-uid"), 33)
-	if err != nil || len(rawUID) > 33 {
-		return false
+	rawUID, err := privatefs.ReadFile(filepath.Join(dir, "device-uid"), 34)
+	if err != nil {
+		return "", "", err
 	}
-	rawKey, err := privatefs.ReadFile(filepath.Join(dir, "device-key"), 65)
-	if err != nil || len(rawKey) > 65 {
-		return false
+	rawKey, err := privatefs.ReadFile(filepath.Join(dir, "device-key"), 66)
+	if err != nil {
+		return "", "", err
 	}
-	uid := strings.TrimSuffix(string(rawUID), "\n")
-	key := strings.TrimSuffix(string(rawKey), "\n")
-	if len(uid) != 12 && len(uid) != 32 || len(key) != 64 {
-		return false
+	uid = strings.TrimSuffix(strings.TrimSuffix(string(rawUID), "\n"), "\r")
+	key = strings.TrimSuffix(strings.TrimSuffix(string(rawKey), "\n"), "\r")
+	decodedUID, uidErr := hex.DecodeString(uid)
+	decodedKey, keyErr := hex.DecodeString(key)
+	if uidErr != nil || len(decodedUID) != uidBytes || keyErr != nil || len(decodedKey) != 32 ||
+		key == strings.Repeat("0", 64) || strings.EqualFold(key, strings.Repeat("f", 64)) {
+		return "", "", errors.New("invalid USB pairing result")
 	}
-	if _, err = hex.DecodeString(uid); err != nil {
-		return false
-	}
-	if _, err = hex.DecodeString(key); err != nil || key == strings.Repeat("0", 64) || strings.EqualFold(key, strings.Repeat("f", 64)) {
-		return false
-	}
-	return true
+	return key, uid, nil
 }
+
 func (m *Manager) withPair(j USBJob) USBJob {
-	j.PairingReady = m.hasPair(j)
+	_, _, err := m.installCredential(j)
+	j.PairingReady = err == nil
 	return j
 }
 func (m *Manager) current() *USBJob {

@@ -43,6 +43,7 @@ import AccessoryMachine from './AccessoryMachine'
 import { DevicePreferences } from '../components/DevicePreferences'
 import { brewerOutputsIdle, isAccessory, sensorValue, supports } from '../lib/capabilities'
 import { SensorHistory } from '../components/SensorHistory'
+import { LinkedPicoFerms } from '../components/PicoFermAssociation'
 const programNames: Record<string, string> = {
   'sous-vide': 'Sous vide',
   'cold-brew': 'Cold brew',
@@ -851,6 +852,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
           />
         )}
       </section>
+      <LinkedPicoFerms brewerId={device.id} />
       <MachineCare model={device.model} />
       <BrewAIMonitor
         deviceID={id}

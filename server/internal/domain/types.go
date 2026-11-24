@@ -6,16 +6,18 @@ import (
 )
 
 type Device struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	Model         string    `json:"model"`
-	ModelSource   string    `json:"model_source"`
-	Adapter       string    `json:"adapter"`
-	BaseURL       string    `json:"base_url"`
-	Location      string    `json:"location"`
-	Enabled       bool      `json:"enabled"`
-	KeyConfigured bool      `json:"key_configured"`
-	CreatedAt     time.Time `json:"created_at"`
+	ID             string    `json:"id"`
+	Name           string    `json:"name"`
+	Model          string    `json:"model"`
+	ModelSource    string    `json:"model_source"`
+	Adapter        string    `json:"adapter"`
+	BaseURL        string    `json:"base_url"`
+	Location       string    `json:"location"`
+	BrewerID       string    `json:"brewer_id,omitempty"`
+	BrewerRevision int64     `json:"brewer_revision,omitempty"`
+	Enabled        bool      `json:"enabled"`
+	KeyConfigured  bool      `json:"key_configured"`
+	CreatedAt      time.Time `json:"created_at"`
 }
 type Maintenance struct {
 	Available *bool    `json:"available,omitempty"`
@@ -28,6 +30,7 @@ type Status struct {
 	DisplayVariant   string     `json:"display_variant,omitempty"`
 	UptimeMS         uint64     `json:"uptime_ms"`
 	Ready            bool       `json:"ready"`
+	StorageReady     *bool      `json:"storage_ready,omitempty"`
 	DeviceUID        string     `json:"device_uid"`
 	StockSerial      string     `json:"stock_serial,omitempty"`
 	Busy             bool       `json:"busy"`
@@ -80,12 +83,14 @@ type Sensor struct {
 	Value *float64 `json:"value"`
 }
 type Actuator struct {
-	ID      string   `json:"id"`
-	Label   string   `json:"label"`
-	Kind    string   `json:"kind"`
-	Enabled *bool    `json:"enabled"`
-	Level   *float64 `json:"level"`
-	RPM     *float64 `json:"rpm"`
+	ID            string   `json:"id"`
+	Label         string   `json:"label"`
+	Kind          string   `json:"kind"`
+	Enabled       *bool    `json:"enabled"`
+	Level         *float64 `json:"level"`
+	RPM           *float64 `json:"rpm"`
+	SupportsLevel *bool    `json:"supports_level,omitempty"`
+	SupportsRPM   *bool    `json:"supports_rpm,omitempty"`
 }
 type CommandFields struct {
 	Allowed  []string `json:"allowed"`

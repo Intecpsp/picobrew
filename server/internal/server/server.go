@@ -56,8 +56,10 @@ type runtimeDevice struct {
 	telemetryReconnect bool // Guarded by mu; set by a verified reconnect or uptime rollback.
 }
 type Server struct {
+	discovery                 lanDiscoveryState
 	pairings                  map[string]*machinePairing // guarded by deviceMu
 	newPairingClient          func(string) (registrationPairer, error)
+	newDeviceAdapter          func(string, string) (device.Adapter, error)
 	cfg                       Config
 	db                        *store.Store
 	usb                       *usbservice.Manager
@@ -121,6 +123,7 @@ func New(cfg Config) (*Server, error) {
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	s := &Server{cfg: cfg, db: db, vault: v, devices: map[string]*runtimeDevice{}, ctx: ctx, cancel: cancel, aiClient: ai.New(), chatGPT: ai.NewChatGPT()}
+	s.newDeviceAdapter = device.NewPico
 	s.usb, e = usbservice.Open(cfg.DataDir, db, !cfg.Demo)
 	if e != nil {
 		db.Close()
@@ -263,11 +266,14 @@ func (s *Server) routes() http.Handler {
 			r.Post("/usb/jobs/{id}/confirm", s.usbAnswer)
 			r.Post("/usb/jobs/{id}/cancel", s.usbAnswer)
 			r.Get("/devices", s.listDevices)
+			r.Get("/devices/discover", s.discoverLAN)
 			r.Post("/devices", s.saveDevice)
 			r.Post("/devices/pair", s.startMachinePairing)
 			r.Post("/devices/{id}/key", s.machineKey)
 			r.Post("/devices/{id}/website", s.machineWebsite)
 			r.Get("/devices/{id}", s.getDevice)
+			r.Get("/devices/{id}/brewer", s.picoFermBrewer)
+			r.Put("/devices/{id}/brewer", s.picoFermBrewer)
 			r.Put("/devices/{id}", s.saveDevice)
 			r.Delete("/devices/{id}", s.deleteDevice)
 			r.Post("/devices/{id}/test", s.testDevice)

@@ -290,6 +290,9 @@ func (s *Server) stockWire(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "invalid machine", 400)
 		return
 	}
+	if op == "usersetup" || op == "syncuser" {
+		s.rememberZymatic(b.Machine)
+	}
 	version, err = s.db.Get(stockKind, b.Machine, &b)
 	if errors.Is(err, store.ErrNotFound) {
 		stockReply(w, "##")

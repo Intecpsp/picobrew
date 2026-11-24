@@ -203,6 +203,11 @@ func (s *Store) PutWithSecret(kind, id string, value any, expectedVersion int64,
 	if err != nil {
 		return 0, err
 	}
+	if device, ok := value.(domain.Device); ok && kind == "device" && expectedVersion > 0 && !device.IsBrewer() {
+		if err := unlinkBrewer(tx, id); err != nil {
+			return 0, err
+		}
+	}
 	if ciphertext != nil {
 		if _, err := tx.Exec("INSERT INTO secrets(id,ciphertext) VALUES(?,?) ON CONFLICT(id) DO UPDATE SET ciphertext=excluded.ciphertext", secretID, ciphertext); err != nil {
 			return 0, err
@@ -239,6 +244,34 @@ func (s *Store) Delete(kind, id string) error {
 	}
 	_, err := s.db.Exec("DELETE FROM records WHERE kind=? AND id=?", kind, id)
 	return err
+}
+
+// A brewer association belongs to the registration. Deletion (or a corrected
+// hardware model) clears references and advances their optimistic revisions.
+func unlinkBrewer(tx *sql.Tx, id string) error {
+	_, err := tx.Exec(`UPDATE records SET version = version + 1,
+		payload = json_set(CAST(payload AS TEXT), '$.brewer_id', '',
+			'$.brewer_revision', coalesce(json_extract(CAST(payload AS TEXT), '$.brewer_revision'), 0) + 1)
+		WHERE kind = 'device' AND json_extract(CAST(payload AS TEXT), '$.brewer_id') = ?`, id)
+	return err
+}
+
+func (s *Store) DeleteDeviceRegistration(id string) error {
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+	if err := unlinkBrewer(tx, id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec("DELETE FROM records WHERE kind = 'device' AND id = ?", id); err != nil {
+		return err
+	}
+	if _, err := tx.Exec("DELETE FROM secrets WHERE id = ?", "device:"+id); err != nil {
+		return err
+	}
+	return tx.Commit()
 }
 
 // Secret methods store bytes already encrypted by the application. This package

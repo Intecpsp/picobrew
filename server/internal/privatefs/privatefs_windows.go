@@ -265,7 +265,15 @@ func OpenFile(path string, flags int) (*os.File, error) {
 		windows.CloseHandle(h)
 		return nil, err
 	}
-	return os.NewFile(uintptr(h), path), nil
+	file := os.NewFile(uintptr(h), path)
+	// Truncate only after validating the open handle and its permissions.
+	if flags&os.O_TRUNC != 0 {
+		if err := file.Truncate(0); err != nil {
+			file.Close()
+			return nil, err
+		}
+	}
+	return file, nil
 }
 
 // OpenSource verifies an existing file's ACL without modifying it.

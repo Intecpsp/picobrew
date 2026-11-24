@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "firmware_version": "1.0.0",
+  "status": {
+    "model": "picostill",
+    "model_name": "PicoStill",
+    "model_family": "picostill",
+    "device_uid": "000011112222",
+    "uptime_ms": 5600,
+    "ready": true,
+    "busy": true,
+    "stopped": false,
+    "stop_reason": "none",
+    "command": "start",
+    "state": "On",
+    "device_state": 7,
+    "phase": 1,
+    "controller_status": 0,
+    "compartment": 0,
+    "wort_f": null,
+    "thermoblock_f": null,
+    "target_f": null,
+    "step_seconds": 0,
+    "current_step": -1,
+    "step_count": 0,
+    "recipe_name": "",
+    "step_name": "",
+    "session_id": "1",
+    "filter_inserted": null,
+    "encoder": {
+      "position": 0,
+      "min": 0,
+      "max": 0
+    },
+    "temperature_f": 106.953,
+    "pressure_kpa": 82.737,
+    "battery_v": null,
+    "sensors": [
+      {
+        "id": "inlet",
+        "label": "Inlet",
+        "kind": "temperature",
+        "unit": "F",
+        "value": 77.612
+      },
+      {
+        "id": "outlet",
+        "label": "Outlet",
+        "kind": "temperature",
+        "unit": "F",
+        "value": 77.612
+      },
+      {
+        "id": "pot",
+        "label": "Pot",
+        "kind": "temperature",
+        "unit": "F",
+        "value": 106.953
+      },
+      {
+        "id": "ambient",
+        "label": "Ambient",
+        "kind": "temperature",
+        "unit": "F",
+        "value": 76.976
+      },
+      {
+        "id": "pressure",
+        "label": "Pressure",
+        "kind": "pressure",
+        "unit": "kPa",
+        "value": 82.737
+      }
+    ],
+    "actuators": [
+      {
+        "id": "pump",
+        "label": "Pump",
+        "kind": "pump",
+        "enabled": true,
+        "level": null,
+        "rpm": null,
+        "supports_level": false,
+        "supports_rpm": false
+      },
+      {
+        "id": "fan1",
+        "label": "Fan 1",
+        "kind": "fan",
+        "enabled": true,
+        "level": 100.0,
+        "rpm": 3235.887,
+        "supports_level": true,
+        "supports_rpm": true
+      },
+      {
+        "id": "fan2",
+        "label": "Fan 2",
+        "kind": "fan",
+        "enabled": true,
+        "level": 100.0,
+        "rpm": 3235.887,
+        "supports_level": true,
+        "supports_rpm": true
+      }
+    ],
+    "recovery": null,
+    "maintenance": {
+      "available": true,
+      "due": []
+    },
+    "storage_ready": true
+  }
+}

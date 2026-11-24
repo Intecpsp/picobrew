@@ -21,6 +21,7 @@ import {
 import { DeviceDialog, DeviceKeyNotice, RemoveDeviceDialog } from '../components/DeviceDialogs'
 import { DevicePreferences } from '../components/DevicePreferences'
 import { SensorHistory } from '../components/SensorHistory'
+import { PicoFermAssociation } from '../components/PicoFermAssociation'
 
 import { MachineFirmwareDialog } from '../components/FirmwarePackages'
 export default function AccessoryMachine({ device }: { device: Device }) {
@@ -216,6 +217,9 @@ export default function AccessoryMachine({ device }: { device: Device }) {
           />
         ))}
       </div>
+      {device.model === 'picoferm' && device.adapter === 'pico-standalone' && (
+        <PicoFermAssociation key={id} id={id} />
+      )}
       <div className="machine-main accessory-main">
         <section className="panel">
           <SectionHeading
