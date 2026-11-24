@@ -13,9 +13,9 @@ Publishing pins that library revision and leaves other menu entries in place. Ed
 
 The adapter handles account setup, update checks, both spellings of recipe sync, session IDs and recipe/reset-point recovery for the current session. The firmware sends its own reset point. The Hub retains the selected program for recovery after its menu entry changes. Live stock telemetry charts and remote heating or dial controls are not implemented. Simulation keeps the external brewer routes off.
 
-## Custom Zymatic 1.2.0
+## Custom Zymatic 1.0.0
 
-Set `--hub-host brewery.lan:8080` during USB setup to point both network clients directly at the Hub. On Ethernet, pair the brewer with its private API key. In **Send**, selecting that paired brewer opens the same menu workflow and fills in its reported stock serial when available. Choose a program on the brewer using the dial. The wired API provides status and OLED monitoring. [Firmware service](../../firmware/zymatic/modified/README.md)
+Set `--hub-host brewery.lan:8080` during USB setup to point both network clients directly at the Hub. On Ethernet, pair the brewer with its private API key. In **Send**, selecting that paired brewer opens the same menu workflow and fills in its reported stock serial when available. Choose a program on the brewer using the dial. Both build profiles provide wired status and OLED monitoring. A brewer with a verified 1 KiB boot section can also run the extended profile for paired dial input and retained history. [Firmware service](../../firmware/zymatic/modified/README.md)
 
 ## Download an offline program
 

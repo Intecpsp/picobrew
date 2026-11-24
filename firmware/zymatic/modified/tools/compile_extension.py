@@ -5,9 +5,39 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+import tarfile
 import tempfile
 
+import compact_build
 import zymatic_build as build
+
+
+def compile_compact(toolchain, destination):
+    # These are the exact sources of the smaller overlay used on first conversion.
+    # Build them independently of the extended runtime and compare both profiles in CI.
+    with tempfile.TemporaryDirectory() as temporary:
+        work = Path(temporary)
+        archive = work / "source.tar"
+        subprocess.run(["git", "archive", "-o", str(archive), compact_build.SOURCE_REVISION,
+                        "firmware/zymatic/modified", "tools/private_files.py"],
+                       cwd=build.ROOT.parents[2], check=True)
+        with tarfile.open(archive) as source:
+            for entry in source:
+                if entry.isfile():
+                    target = work / entry.name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(source.extractfile(entry).read())
+        root = work / "firmware/zymatic/modified"
+        path = root / "zymatic_api.c"
+        code = path.read_text()
+        if code.count(compact_build.PREVIEW_VERSION) != 1:
+            raise ValueError("Expected one firmware version in pinned compact discovery source")
+        path.write_text(code.replace(compact_build.PREVIEW_VERSION, build.VERSION))
+        command = [sys.executable, str(root / "tools/compile_extension.py"), "--out-dir", str(destination.resolve())]
+        if toolchain:
+            command.extend(("--toolchain", str(toolchain.resolve())))
+        subprocess.run(command, check=True)
 
 
 def compile_extension(toolchain, destination):
@@ -72,10 +102,12 @@ def compile_extension(toolchain, destination):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", choices=("compact", "extended"), default="extended")
     parser.add_argument("--toolchain", type=Path, help="Directory containing avr-gcc and avr-binutils")
     parser.add_argument("--out-dir", required=True, type=Path)
     args = parser.parse_args()
     try:
-        compile_extension(args.toolchain, args.out_dir)
+        compiler = compile_compact if args.profile == "compact" else compile_extension
+        compiler(args.toolchain, args.out_dir)
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         parser.exit(1, f"{exc}\n")

@@ -430,7 +430,7 @@ int main(int argc, char **argv)
     assert(!presses);
     const char *expected = "200 OK";
     const char *needle = display ? "revision" :
-                                   (site == PROGRAM ? "program_running" : "1.3.3");
+                                   (site == PROGRAM ? "program_running" : "1.0.0");
     if (!strstr(reply, expected) || !strstr(reply, needle)) {
         fprintf(stderr, "Unexpected HTTP response: %s\n", reply);
         return 1;

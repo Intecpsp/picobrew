@@ -239,11 +239,13 @@ def project_files():
             for resource in (
                 "extension/low.bin",
                 "extension/crc-hole.bin",
+                "extension/compact/extension.bin",
+                "extension/compact/extension.json",
                 "extension/1.2.0/extension.bin",
                 "extension/1.2.0/extension.json",
                 "zymatic_pairing.h",
                 "tools/oem_tables.py",
-                "tools/release_1_2.py",
+                "tools/compact_build.py",
                 "tools/usb_layout.py",
             )
         )

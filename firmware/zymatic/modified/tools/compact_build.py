@@ -1,4 +1,4 @@
-"""Reproduce and recognize the released 1.2.0 layout for USB recovery and older boot configurations."""
+"""Compose compact Zymatic firmware under the smallest stock boot boundary."""
 
 import hashlib
 import json
@@ -9,13 +9,16 @@ import zlib
 
 import offline_program as recipes
 import usb_stock as stock
+from zymatic_build import VERSION
 
 ROOT = Path(__file__).resolve().parents[1]
-TEMPLATE = ROOT / "extension" / "1.2.0"
+TEMPLATE = ROOT / "extension"
+SOURCE_REVISION = "b278fe1735d6bc983c107c55120c2a67b4ac6ae3"
 START = 0x1bc00
 LIMIT = 0x1e000
 BSS = 0x2c8a
-VERSION = "1.2.0"
+PROFILE = "compact"
+PREVIEW_VERSION = "1.2.0"
 FIELDS = {"provision_key": 32, "provision_uid": 33, "provision_host": 64, "provision_recipe": recipes.SIZE}
 
 SERIAL_READS = (
@@ -42,12 +45,20 @@ def sha(data):
     return hashlib.sha256(data).hexdigest()
 
 
-def template():
-    raw = (TEMPLATE / "extension.json").read_bytes()
-    if sha(raw) != "6471500f3f04e2435ce17d96de557219eab657c7401e791721e62f3b745d4df1":
-        raise ValueError("Zymatic 1.2.0 extension metadata differs from the released manifest")
+def template(version=VERSION):
+    if version == VERSION:
+        directory = TEMPLATE / "compact"
+        manifest_hash = "0c236a65358e2b8583b6d57c053509493b234387fe17f51f464693bce1d18840"
+    elif version == PREVIEW_VERSION:
+        directory = TEMPLATE / PREVIEW_VERSION
+        manifest_hash = "6471500f3f04e2435ce17d96de557219eab657c7401e791721e62f3b745d4df1"
+    else:
+        raise ValueError("Unknown compact Zymatic application version")
+    raw = (directory / "extension.json").read_bytes()
+    if sha(raw) != manifest_hash:
+        raise ValueError(f"Zymatic {version} compact metadata differs from its verified manifest")
     record = json.loads(raw)
-    code = (TEMPLATE / "extension.bin").read_bytes()
+    code = (directory / "extension.bin").read_bytes()
     if (record["extension_sha256"] != sha(code)
             or len(code) != record["extension_bytes"] or not 0 < len(code) <= LIMIT - START):
         raise ValueError("The AVR extension differs from its recorded sources or binary; rebuild the template")
@@ -74,7 +85,7 @@ def call(address):
     return b"\x0e\x94" + struct.pack("<H", address // 2)
 
 
-def patch_list(symbols, port=80):
+def patch_list(symbols, port=80, version=VERSION):
     end = symbols["__extension_bss_end"] - 0x800000
     host = symbols["zymatic_hub_host"] - 0x800000
     authority = symbols["zymatic_hub_authority"] - 0x800000
@@ -113,8 +124,9 @@ def patch_list(symbols, port=80):
             patches.append((label, pc, load_pointer(register, 80), load_pointer(register, port)))
     # About Zymatic and the startup banner both convert three literal unsigned
     # components with base-10 itoa. The stock wire protocol remains 1.1.14.
-    for label, pc, old, new in [("about-minor", 0x8428, 1, 2), ("about-patch", 0x844c, 14, 0),
-                                ("boot-minor", 0xa444, 1, 2), ("boot-patch", 0xa468, 14, 0)]:
+    _, minor, patch = map(int, version.split("."))
+    for label, pc, old, new in [("about-minor", 0x8428, 1, minor), ("about-patch", 0x844c, 14, patch),
+                                ("boot-minor", 0xa444, 1, minor), ("boot-patch", 0xa468, 14, patch)]:
         patches.append((label, pc, immediate(0xe000, 24, old), immediate(0xe000, 24, new)))
     for symbol, sites in OFFLINE.items():
         for pc, before in sites:
@@ -144,15 +156,15 @@ def provisioning(key, uid, hub_host):
             "provision_host": hub_host.encode("ascii").ljust(64, b"\0")}
 
 
-def build_application(original, key, uid, hub_host="picobrew.com", offline_program=None):
+def build_application(original, key, uid, hub_host="picobrew.com", offline_program=None, *, version=VERSION):
     if not stock.is_original_app(original):
         raise ValueError("Use the verified, decoded application from the Zymatic 1.1.14 archive")
     image = bytearray(original + b"\xff"*(START - len(original)))
-    code, record = template()
+    code, record = template(version)
     image.extend(code)
     symbols = record["symbols"]
     _, port = hub_origin(hub_host)
-    patches = patch_list(symbols, port)
+    patches = patch_list(symbols, port, version)
     for name, pc, before, after in patches:
         if image[pc:pc+len(before)] != before:
             raise ValueError(f"Original 1.1.14 bytes differ at {name}")
@@ -166,12 +178,12 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
     image[where:where+2] = struct.pack("<H", legacy_sum(image))
     image[-4:] = struct.pack("<I", zlib.crc32(image[:-4]))
     metadata = {
-        "schema_version": 1, "model": "zymatic", "firmware_version": VERSION,
+        "schema_version": 1, "model": "zymatic", "firmware_version": version, "build_profile": PROFILE,
         "oem_application_sha256": stock.APP_SHA256, "binary_sha256": sha(image),
         "application_bytes": len(image), "uid": uid, "hub_host": hub_host, "hub_port": port,
         "offline_program": recipes.unpack_program(fields["provision_recipe"]),
         "extension_start": START, "extension_sha256": record["extension_sha256"],
-        "compiler": record["compiler"], "first_possible_bootloader": LIMIT,
+        "compiler": record["compiler"], "first_possible_bootloader": LIMIT, "minimum_boot_start": LIMIT,
         "sram_reserved_bytes": symbols["__extension_bss_end"] - 0x800000 - BSS,
         "config": {name: {"address": symbols[name], "bytes": size} for name, size in FIELDS.items()},
         "patches": [{"name": name, "address": pc, "bytes": len(before)}
@@ -180,9 +192,9 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
     return bytes(image), metadata
 
 
-def recognize_private_application(flash):
+def recognize_private_application(flash, *, version=VERSION):
     """Identify only a verified composition. Private key material is never returned."""
-    code, record = template()
+    code, record = template(version)
     length = START + len(code)
     if len(flash) < length:
         return None
@@ -197,14 +209,14 @@ def recognize_private_application(flash):
     except ValueError:
         return None
     recovered = bytearray(application[:stock.APP_SIZE])
-    for name, pc, before, after in patch_list(symbols, port):
+    for name, pc, before, after in patch_list(symbols, port, version):
         if recovered[pc:pc+len(after)] != after:
             return None
         recovered[pc:pc+len(before)] = before
     if not stock.is_original_app(recovered):
         return None
     try:
-        expected, metadata = build_application(bytes(recovered), values["provision_key"], uid, host, recipe)
+        expected, metadata = build_application(bytes(recovered), values["provision_key"], uid, host, recipe, version=version)
     except ValueError:
         return None
     if expected != application:

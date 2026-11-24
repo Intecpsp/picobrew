@@ -222,7 +222,7 @@ func TestZymaticDoesNotServeAnUnsafeSavedProgram(t *testing.T) {
 		}
 		return strings.TrimSpace(string(body))
 	}
-	for _, version := range []string{"1.1.14", "1.2.0"} {
+	for _, version := range []string{"1.1.14", "1.0.0", "1.2.0"} {
 		for _, account := range []string{user, cleaningUser} {
 			get("logSession?machine=TEST&user="+account+"&code=0&recipe="+bad.Program.ID+"&firm="+version, 404)
 		}

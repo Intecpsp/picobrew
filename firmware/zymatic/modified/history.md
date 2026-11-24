@@ -26,6 +26,6 @@ The writer invalidates the old tag, updates and reads back each changed byte, th
 
 ## Reading the journal
 
-Version 1.3.2 exposes these records under **Brew history** on the paired local site. Select a session to see its samples. Both API routes use the paired device key. `GET /api/v1/history` returns a `fields` array and a newest-first `sessions` array. The Hub uses a session's numeric ID to read `GET /api/v1/history/samples/0?id=<id>`. A page contains up to three rows. When present, `next_offset` gives the next page. A unit that cannot verify its EEPROM returns an unavailable response.
+The extended build exposes these records under **Brew history** on the paired local site. Select a session to see its samples. Both API routes use the paired device key. `GET /api/v1/history` returns a `fields` array and a newest-first `sessions` array. The Hub uses a session's numeric ID to read `GET /api/v1/history/samples/0?id=<id>`. A page contains up to three rows. When present, `next_offset` gives the next page. A unit that cannot verify its EEPROM returns an unavailable response.
 
 The host regression suite exercises power loss at each byte-write boundary, timer rollover, corrupt records, cancellation, EEPROM ownership, factory erasure, session eviction and requests through the modeled W5100. Physical EEPROM endurance, controller latency and behavior through real mains interruptions still need hardware qualification.

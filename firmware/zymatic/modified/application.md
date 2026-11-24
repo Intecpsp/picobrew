@@ -1,8 +1,8 @@
 # Zymatic standalone firmware
 
-Both versions use the brewing controller from PicoBrew 1.1.14. The Hub chooses the version that fits the verified application space on each brewer. **About Zymatic** shows the installed version. [Flash layout and compatibility evidence](flash-layout.md)
+Both 1.0.0 builds use the brewing controller from PicoBrew 1.1.14. The Hub selects a build from the verified application space on each brewer. **About Zymatic** and the Ethernet API report version **1.0.0**. The API advertises the features the installed build supports. [Flash layout and compatibility evidence](flash-layout.md)
 
-| Feature | 1.2.0 | 1.3.x |
+| Feature | Compact | Extended |
 | --- | --- | --- |
 | Stock recipe menu and physical dial | Yes | Yes |
 | Sync recipes and sessions with a configured Hub over Ethernet or Wi-Fi | Yes | Yes |
@@ -18,27 +18,27 @@ History records the measurements the Zymatic actually supplies. Interrupted sess
 
 ## Pair a brewer
 
-Connect the Zymatic to Ethernet and enter its address in **Add machine**. With 1.3.x, compare the code in the Hub with the one on the brewer’s **About Zymatic** screen and approve it at the physical dial. The Hub stores the key. A paired owner can use **Manage machine → Open machine website**. Stock Wi-Fi supports outbound recipe and session traffic. The custom incoming API and device website use the wired W5100. [Original network protocols](../reverse-engineered/network/README.md)
+Connect the Zymatic to Ethernet and enter its address in **Add machine**. With the extended build, compare the code in the Hub with the one on the brewer’s **About Zymatic** screen and approve it at the physical dial. The Hub stores the key. A paired owner can use **Manage machine → Open machine website**. Stock Wi-Fi supports outbound recipe and session traffic. The custom incoming API and device website use the wired W5100. [Original network protocols](../reverse-engineered/network/README.md)
 
 ## Installation and recovery
 
-First-time USB setup uses 1.2.0, which fits below every supported boot boundary. USB verification reads the full flash twice. A backup of the stock application or an Optiboot filename alone cannot establish how much space a particular brewer reserves for its bootloader.
+First-time USB setup uses the compact build, which fits below every supported boot boundary. USB verification reads the full flash twice. A backup of the stock application or an Optiboot filename alone cannot establish how much space a particular brewer reserves for its bootloader.
 
 To qualify an expanded application window, capture the configured fuse and lock bits through the external programmer on the same provisioned brewer. The installer checks the prior paired UID and compares the live boot bytes against the independent capture before choosing an image. Both the private API key and identity carry forward. Stock restoration clears the recognized custom application extent and verifies the full flash after writing. [Boot evidence and recovery](recovery.md) · [USB setup](README.md)
 
-The private reference package builder defaults to 1.2.0. To compose a 1.3.3 image for simulator testing, use `tools/package.py --firmware-version 1.3.3`. Its manifest reports the required boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
+The private reference package builder defaults to the compact profile. Use `tools/package.py --profile extended` to compose the extended image for simulator testing. Each manifest includes its build profile and minimum boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
 
-CI compares the reconstructed OEM control paths and executes the overlay, screen handling, EEPROM recorder and packed OEM assets in an AVR simulator. Physical brewing, power-loss recovery on a real unit and installation of an expanded application still need hardware trials. Network firmware installation remains unavailable. [1.2.0 build and memory details](application-1.2.md) · [Offline recipe format](offline-recipe.md)
+CI compares the reconstructed OEM control paths and executes the overlay, screen handling, EEPROM recorder and packed OEM assets in an AVR simulator. Physical brewing, power-loss recovery on a real unit and installation of an expanded application still need hardware trials. Network firmware installation remains unavailable. [Compact build and memory details](compact-application.md) · [Offline recipe format](offline-recipe.md)
 
-The 1.3.1 Ethernet website serves `/favicon.ico` from the Zymatic itself. The file contains the original 16×16 frame of [PicoBrew’s favicon](https://picobrew.com/favicon.ico), with its original colors and transparency. The USB installer also recognizes prior firmware versions 1.2.0, 1.3.0, and 1.3.1.
+The extended Ethernet website serves `/favicon.ico` from the Zymatic itself. The file contains the original 16×16 frame of [PicoBrew’s favicon](https://picobrew.com/favicon.ico), with its original colors and transparency. The USB installer also recognizes previously provisioned development images from 1.2.0 and 1.3.0–1.3.3. It verifies the entire private application before preserving its identity, key and offline recipe.
 
-In 1.3.2, select **Brew history** on the paired local site to read a retained
+On the extended build, select **Brew history** on the paired local site to read a retained
 session. It shows the outcome and samples from all available pages, with elapsed
 seconds, temperatures, flow path and step number. Each new front-panel image
 appears after its complete, consistent OLED frame arrives. The site shows the
 manufacturer's rinse, inline-filter and deep-clean intervals. [Zymatic manual, care and maintenance](https://picodevblob.blob.core.windows.net/content/zymatic/Zymatic_Manual.pdf#page=23)
 
-In 1.3.3 the main menu and Ethernet site prompt for a rinse and an inline-filter check after a completed brew. After three brews they also recommend Deep Clean. A completed stock rinse acknowledges the rinse and filter reminder together. The operator inspects the filter. A completed stock deep clean resets the brew count and calls for a rinse. Interrupted runs leave prior reminders in place. The status and public overview report these reminders under `maintenance.due` when retained history is available.
+On the extended build, the main menu and Ethernet site prompt for a rinse and an inline-filter check after a completed brew. After three brews they also recommend Deep Clean. A completed stock rinse acknowledges the rinse and filter reminder together. The operator inspects the filter. A completed stock deep clean resets the brew count and calls for a rinse. Interrupted runs leave prior reminders in place. The status and public overview report these reminders under `maintenance.due` when retained history is available.
 
 The private installer uses the checked-in compressed site. To regenerate it
 after a website edit, run `npm ci --ignore-scripts --prefix tools` followed by

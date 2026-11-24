@@ -28,7 +28,7 @@ const device = {
   online: true,
   status,
   capabilities: {
-    firmware_version: '1.2.0',
+    firmware_version: '1.0.0',
     api_version: 1,
     commands: [],
     capabilities: { display: true, front_panel: false, temperature: true },
@@ -219,7 +219,7 @@ it('uses the paired Zymatic front panel and retained history without offering un
     ...device,
     capabilities: {
       ...device.capabilities!,
-      firmware_version: '1.3.2',
+      firmware_version: '1.0.0',
       commands: ['encoder'],
       capabilities: {
         display: true,

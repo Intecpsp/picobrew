@@ -1,6 +1,6 @@
-# Zymatic standalone application 1.2.0
+# Zymatic 1.0.0 compact build
 
-The front panel runs PicoBrew’s original Zymatic 1.1.14 brew controller. The extension adds a configurable recipe server, a local recipe for offline use, an Ethernet status page and a read-only API for the Hub. Choose a recipe and operate the brewer with its physical dial. The display shows **1.2.0** at startup and in **About Zymatic**. [OEM reconstruction](../reverse-engineered/README.md) · [Offline recipe and control flow](offline-recipe.md)
+The front panel runs PicoBrew’s original Zymatic 1.1.14 brew controller. The extension adds a configurable recipe server, a local recipe for offline use, an Ethernet status page and a read-only API for the Hub. Choose a recipe and operate the brewer with its physical dial. The display shows **1.0.0** at startup and in **About Zymatic**. [OEM reconstruction](../reverse-engineered/README.md) · [Offline recipe and control flow](offline-recipe.md)
 
 ## Connections
 
@@ -39,13 +39,15 @@ The original EEPROM release-migration constants stay at 1.1.14. Choosing Factory
 
 ## Rebuild and check the extension
 
-Ordinary private builds use Python and the shipped template. To regenerate that template, select the directory containing `avr-gcc` and its matching binutils from Arduino’s **7.3.0-atmel3.6.1-arduino7** distribution. On Arduino CLI installations it is under `packages/arduino/tools/avr-gcc/7.3.0-atmel3.6.1-arduino7/bin`. The compiler archives for macOS and Linux use `avr/bin` after extraction. [Arduino toolchain package index and checksums](https://downloads.arduino.cc/packages/package_index.json)
+The installer composes each private application from the verified OEM bytes and an unprovisioned overlay. The compact overlay is built from the original compact source revision with the discovery version set to 1.0.0. The firmware also updates the startup and About displays. CI checks the complete compiled overlay and symbol manifest against the files shipped in the USB worker. [Pinned compact sources](https://github.com/jeffreydwalter/picobrew/tree/b278fe1735d6bc983c107c55120c2a67b4ac6ae3/firmware/zymatic/modified)
+
+For a developer rebuild, use a full Git checkout and the Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 toolchain. Set `ARDUINO_AVR_BIN` to its `bin` directory. [Arduino toolchain index and checksums](https://downloads.arduino.cc/packages/package_index.json)
 
 ```sh
-python3 firmware/zymatic/modified/tools/compile_extension.py \
-  --toolchain "$ARDUINO_AVR_BIN" --out-dir /tmp/zymatic-extension
-cmp firmware/zymatic/modified/extension/extension.bin /tmp/zymatic-extension/extension.bin
-cmp firmware/zymatic/modified/extension/extension.json /tmp/zymatic-extension/extension.json
+python3 firmware/zymatic/modified/tools/compile_extension.py --profile compact \
+  --toolchain "$ARDUINO_AVR_BIN" --out-dir /tmp/zymatic-compact
+cmp firmware/zymatic/modified/extension/compact/extension.bin /tmp/zymatic-compact/extension.bin
+cmp firmware/zymatic/modified/extension/compact/extension.json /tmp/zymatic-compact/extension.json
 ZYMATIC_TEST_HEX=/path/to/Zymatic_1_1_14.zip python3 -m unittest discover -s firmware/zymatic/modified/tests
 python3 firmware/zymatic/modified/tests/run_simavr.py --oem-file /path/to/Zymatic_1_1_14.zip
 ```

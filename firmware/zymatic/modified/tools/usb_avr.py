@@ -198,6 +198,7 @@ def service(data, port, action, source=None, *, confirm=None, key_file=None, hub
             pages, metadata = usb_application.install_pages(standalone or before, application, installed,
                                                            key_file, hub_host, offline_program, limit=limit)
             version = metadata["firmware_version"]
+            print(f"Selected Zymatic {version}, {metadata['build_profile']} profile, for the verified application window.")
             confirmations = ("INSTALL ZYMATIC", "WRITE " + version)
         else:
             pages = plan(before, application)
