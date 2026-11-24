@@ -34,6 +34,7 @@ public:
     // starts an output. Missing hardware/storage leaves status/stop available.
     void begin(bool hardware_ready, const char* uid);
     void storage_ready(bool value) noexcept { storage_ready_ = value; }
+    void wireless_capable(bool available) { wireless_ = available; }
     void poll();
     bool idle() const noexcept { return !controller.running(); }
     picobrew::standalone::DeviceServices services() noexcept;
@@ -47,6 +48,7 @@ public:
     void controller_changed() override;
     void console_message(const char*) override;
 private:
+    bool wireless_ = false;
     picobrew::standalone::Engine* engine_ = nullptr;
     picobrew::standalone::Settings settings_;
     char uid_[32] = {}, command_[32] = {};

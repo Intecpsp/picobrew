@@ -47,3 +47,42 @@ def stage(empty, profile, key):
     result = bytes(image)
     spiffs_format.inspect_image(result, profile, {"/pb/api.key": value})
     return result
+
+
+def matches_stored_esp32_key(image, key):
+    """Read the live one-page key the device would select, without modifying SPIFFS."""
+    if len(image) != 0x200000 or not isinstance(key, str) or not re.fullmatch("[0-9a-f]{64}", key):
+        return False
+    page_size, block_size = 256, 4096
+    count = len(image) // block_size
+    found = {}
+    for block in range(count):
+        base = block * block_size
+        if struct.unpack_from("<H", image, base + 252)[0] != (0x529 ^ page_size ^ (count - block)):
+            return False
+        for entry in range(15):
+            object_id = struct.unpack_from("<H", image, base + 2*entry)[0]
+            if object_id in (0, 0xffff) or not object_id & 0x8000:
+                continue
+            offset = base + page_size * (entry + 1)
+            owner, span, flags = struct.unpack_from("<HHB", image, offset)
+            if owner != object_id or span or flags != 0xf8:
+                continue
+            name = bytes(image[offset+13:offset+45]).split(b"\0", 1)[0]
+            if name not in (b"/pb/api.key", b"/pb/api.key.bak"):
+                continue
+            if name in found:
+                return False
+            size = struct.unpack_from("<I", image, offset+8)[0]
+            page = struct.unpack_from("<H", image, offset+49)[0]
+            if size not in (64, 65, 66) or page >= len(image)//page_size or page % 16 == 0 or image[offset+12] != 1:
+                return False
+            reference = page*page_size
+            lookup = (page//16) * block_size + 2*(page % 16 - 1)
+            if (struct.unpack_from("<HHB", image, reference) != (owner & 0x7fff, 0, 0xfc)
+                    or struct.unpack_from("<H", image, lookup)[0] != (owner & 0x7fff)):
+                return False
+            found[name] = image[reference+5:reference+5+size]
+    record = found.get(b"/pb/api.key", found.get(b"/pb/api.key.bak"))
+    value = key.encode("ascii")
+    return record in (value, value+b"\n", value+b"\r\n")

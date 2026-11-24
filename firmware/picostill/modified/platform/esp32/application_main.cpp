@@ -1,8 +1,9 @@
-// Complete PicoStill standalone 1.2.6 owner. The recovered cloud/update/main
+// Complete PicoStill standalone 1.2.7 owner. The recovered cloud/update/main
 // application is not instantiated. The modified task preserves local control
 // independently of Wi-Fi and the optional Hub.
 #include "picostill/standalone.hpp"
 #include "arduino_ports.hpp"
+#include "factory_flash.hpp"
 #include "picobrew/common_web.h"
 #include "picobrew/provisioning.hpp"
 #include "network_ports.hpp"
@@ -18,6 +19,7 @@
 #include <cstring>
 
 namespace {
+namespace ota = picostill::update;
 namespace api = picobrew::standalone;
 namespace sdk = picobrew::standalone::esp32;
 class Application {
@@ -27,34 +29,40 @@ public:
         engine_(device_.services(), storage_.binding(), clock()), socket_io_(listener_.io()) { device_.bind_engine(engine_); }
     void begin() {
         Serial.begin(115200, SERIAL_8N1, -1, -1, false, 20000);
-        Serial.println("PicoStill standalone 1.2.6");
+        Serial.println("PicoStill standalone 1.2.7");
         // NVS failure cannot reach controller initialization. Establish the
         // known output lows even when the rest of startup is unavailable.
         board_.pin_mode(18, 2); board_.digital_write(18, false);
         board_.pin_mode(19, 2); board_.digital_write(19, false);
         const bool startup = sdk::nvs_initialization_status() == 0;
-        const bool hardware = startup && board_.initialize_hardware(device_.hardware.fans, device_.hardware.pump, device_.hardware.sensors);
+        flash_.inspect();
+        const auto role = flash_.role();
+        recovery_ = role == ota::Role::Recovery || role == ota::Role::InvalidRecovery;
+        const bool hardware = !recovery_ && startup && board_.initialize_hardware(device_.hardware.fans, device_.hardware.pump, device_.hardware.sensors);
         Wire.setTimeOut(50); // Pinned SDK's finite transaction timeout.
-        std::uint8_t mac[6] = {}; char uid[32] = {};
+        std::uint8_t mac[6] = {};
         const bool identity = esp_efuse_mac_get_default(mac) == ESP_OK;
-        ::snprintf(uid, sizeof(uid), "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
-        device_.begin(hardware && identity, uid);
+        if (identity) ::snprintf(uid_, sizeof(uid_), "%02x%02x%02x%02x%02x%02x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]);
+        if (!recovery_) device_.begin(hardware && identity, uid_);
         const bool mounted = files_.mount(); std::size_t total = 0, used = 0;
         // The selected clean-install partition is 2 MiB. The independently
         // exercised historical 0x16f000 sizing profile also retains 4,224
         // Still records. Smaller filesystems cannot claim this capacity.
         const bool capacity = mounted && files_.capacity(total, used) && total >= 1300000u;
         if (!startup) Serial.println("ERROR: NVS initialization failed; controller inhibited; no erase attempted");
-        if (!hardware || !identity) Serial.println("ERROR: PicoStill hardware initialization is unavailable");
+        if (!recovery_ && (!hardware || !identity)) Serial.println("ERROR: PicoStill hardware initialization is unavailable");
         if (!capacity) Serial.println("ERROR: verified history filesystem is unavailable or too small; no formatting attempted");
         report(provisioning_.load());
-        if (startup) import_original_network();
-        engine_.set_telemetry_io(telemetry_.services());
-        const api::Result initialized = engine_.begin(); report(initialized);
-        device_.storage_ready(capacity && initialized.ok());
-        pico_http_server_initialize(&http_, &socket_io_, &listener_, api::Engine::http_handler, &engine_,
-                                    pico_common_web_assets, pico_common_web_assets_count);
-        pico_http_server_enable_pairing(&http_, false);
+        if (!recovery_) {
+            if (startup) import_original_network();
+            device_.wireless_capable(role == ota::Role::Application && capacity && identity && startup);
+            engine_.set_telemetry_io(telemetry_.services());
+            const api::Result initialized = engine_.begin(); report(initialized);
+            device_.storage_ready(capacity && initialized.ok());
+        }
+        pico_http_server_initialize(&http_, &socket_io_, &listener_, route, this,
+                                    recovery_ ? nullptr : pico_common_web_assets, recovery_ ? 0 : pico_common_web_assets_count);
+        if (!recovery_) pico_http_server_enable_pairing(&http_, false);
         pico_http_server_set_asset_io(&http_, &pico_common_web_asset_io, nullptr);
         apply_key();
         if (startup) { WiFi.persistent(false); apply_network(); }
@@ -62,8 +70,8 @@ public:
         Serial.println("UART: status | key <64 lowercase hex> | wifi <SSID><TAB><password>");
     }
     void poll() {
-        device_.poll();
-        for (unsigned n = 0; n < 32 && Serial.available() > 0; ++n) {
+        if (!recovery_ && !update_.reboot_pending()) device_.poll();
+        for (unsigned n = 0; n < 32 && !recovery_ && !update_.reboot_pending() && Serial.available() > 0; ++n) {
             const int byte = Serial.read(); if (byte < 0) break;
             api::Result result; if (provisioning_.feed(static_cast<char>(byte), result)) report(result);
         }
@@ -78,7 +86,9 @@ public:
         connected_ = connected;
         if (connected && !listening_) listening_ = listener_.begin(80);
         pico_http_server_poll(&http_, ::millis());
-        engine_.poll();
+        if (update_.reboot_pending()) {
+            if (http_.client < 0 || static_cast<std::uint32_t>(::millis() - restart_ms_) >= 2000u) esp_restart();
+        } else if (!recovery_) engine_.poll();
         ::yield();
     }
 private:
@@ -92,7 +102,23 @@ private:
     sdk::TelemetrySocket telemetry_;
     PicoHttpIo socket_io_;
     PicoHttpServer http_{};
-    bool connected_ = false, listening_ = false;
+    ota::FactoryFlash flash_;
+    ota::Service update_{flash_};
+    bool connected_ = false, listening_ = false, recovery_ = false;
+    char uid_[32] = {};
+    std::uint32_t restart_ms_ = 0;
+    static bool route(const PicoHttpRequest* req, PicoHttpResponse* res, char* arena, std::size_t capacity, void* context) {
+        auto& self = *static_cast<Application*>(context);
+        bool already_pending = self.update_.reboot_pending();
+        if (self.update_.handle(*req, *res, arena, capacity, self.uid_, self.device_.idle())) {
+            if (!already_pending && self.update_.reboot_pending()) {
+                if (!self.recovery_) self.device_.output.inhibit();
+                self.restart_ms_ = ::millis();
+            }
+            return true;
+        }
+        return self.engine_.handle(*req, *res, arena, capacity);
+    }
     static api::Clock clock() { api::Clock c; c.millis = [](void*) { return static_cast<std::uint32_t>(::millis()); }; return c; }
     static void report(const api::Result& result) {
         if (result.message) Serial.println(result.message);

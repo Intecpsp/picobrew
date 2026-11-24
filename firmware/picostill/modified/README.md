@@ -1,4 +1,4 @@
-# PicoStill standalone firmware 1.2.6
+# PicoStill standalone firmware 1.2.7
 
 This is a complete, linked standalone application for the recovered PicoStill
 ESP32 board. It operates the original four thermistor channels, pressure
@@ -18,6 +18,14 @@ intact. Unsupported diagnostic programs and original cloud/update listeners
 are not exposed by the standalone API.
 
 After a distillation program is used, the local website and authenticated status show a condenser-cleaning reminder. After cleaning the removable parts, acknowledge the reminder while PicoStill is idle.
+
+## Wireless updates
+
+After USB setup provisions wireless recovery, the Hub can update an idle PicoStill over its local network. Factory recovery starts with pump and fan power off. It reads the saved device key and Wi-Fi settings, checks the package identity, and writes the application and its embedded website together. Settings, history and the factory recovery copy occupy separate flash regions.
+
+The Hub verifies the running machine’s ID, version, image length and SHA-256 after restart. A lost connection can resume the acknowledged byte offset during the same recovery boot. A power interruption during transfer leaves factory recovery selected and the Hub restarts the upload. A valid image that fails after boot may require USB service. Physical installation and power-cut trials remain outstanding.
+
+A previously converted PicoStill needs a single USB migration using its saved original and existing Hub key. The installer verifies the old application and retains the entire live filesystem and NVS. The authenticated update endpoint is `/api/v1/firmware/ota` for the `esp32-factory-v1` protocol. See the [USB service procedure](../../common/docs/esp-usb.md).
 
 ## Applicable S/Pro parity
 
@@ -121,17 +129,17 @@ python -m unittest discover -s firmware/picostill/modified/tests -v
 ```
 
 The offline converter requires `pyserial==3.5` because its pinned module imports
-pyserial even when no device operation is requested. The build links **24
-application/common/recovered modules and 44 unmodified SDK units**, producing
+pyserial even when no device operation is requested. The build links the
+application, recovery service and pinned Arduino SDK, producing
 `build/esp32/picostill-standalone.elf`, its map, `application.bin` and
 `build-report.json`. Modified `app_main` owns an 8,192-byte appliance task and
 calls checked startup; the SDK's erase-capable `initArduino` and original
 cloud/update application symbols are absent.
 
-The image fits the explicit common ESP32 layout: minimum 4 MiB flash, factory
-application at `0x10000` with size `0x1f0000`, and SPIFFS at `0x200000` with size
-`0x200000`. This is a reproducible **custom reference layout**, not a recovered
-OEM partition table. The [USB service procedure](../../common/docs/esp-usb.md)
+The 4 MiB USB layout reserves 960 KiB each for factory recovery at `0x10000` and
+the normal application at `0x100000`. It keeps the 2 MiB SPIFFS partition at
+`0x200000` and NVS at `0x9000`. USB sets the initial boot selector at `0xe000`
+to the normal application. The [USB service procedure](../../common/docs/esp-usb.md)
 checks the installed layout and preserves a private same-unit flash backup before conversion. Flash capacity, wiring,
 existing partition contents, controller behavior and runtime stack/heap
 high-water require physical installation qualification before appliance use.

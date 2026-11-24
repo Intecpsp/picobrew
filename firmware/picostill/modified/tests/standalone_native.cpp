@@ -65,10 +65,10 @@ struct World {
     Ports ports; Files files; picostill::standalone::Device device; api::Engine engine;
     unsigned status = 0;
     static api::Clock clock(Ports& ports) { api::Clock c; c.context=&ports; c.millis=[](void*p){return static_cast<Ports*>(p)->time;};return c; }
-    explicit World(bool ready=true,const Files* restored=nullptr):device(ports,ports,ports),engine(device.services(),files.binding(),clock(ports)) {
+    explicit World(bool ready=true,const Files* restored=nullptr,bool wireless=false):device(ports,ports,ports),engine(device.services(),files.binding(),clock(ports)) {
         CHECK(ports.writes==0); if(restored)files.data=restored->data;
         device.bind_engine(engine); device.begin(ready,"000011112222"); CHECK(!ports.pins[18]&&!ports.pins[19]);
-        CHECK(engine.begin().ok());device.storage_ready(true);
+        device.wireless_capable(wireless);CHECK(engine.begin().ok());device.storage_ready(true);
     }
     void poll(){device.poll();engine.poll();}
     void tick(unsigned amount) { for(unsigned n=0;n<amount;n+=5){ports.time+=std::min(5u,amount-n);poll();} }
@@ -90,6 +90,11 @@ void discovery_and_start_guard(){
     CHECK(w.status == 202 && acknowledgment.find("\"accepted\":true") != std::string::npos);
     CHECK(acknowledgment.find("\"command\":\"ack-clean-condenser\"") != std::string::npos);
     const auto info=w.request("/api/v1");CHECK(info.find("\"model\":\"picostill\"")!=std::string::npos);
+    CHECK(info.find("\"ota_protocol\"")==std::string::npos);
+    World provisioned(true,nullptr,true);
+    auto qualified=provisioned.request("/api/v1");
+    CHECK(qualified.find("\"ota_protocol\":\"esp32-factory-v1\"")!=std::string::npos);
+    CHECK(qualified.find("\"firmware_version\":\"1.2.7\"")!=std::string::npos);
     CHECK(info.find("\"heating\":false")!=std::string::npos);CHECK(info.find("\"recipes\":false")!=std::string::npos);
     w.request("/api/v1/recipes");CHECK(w.status==404);w.request("/api/v1/display");CHECK(w.status==404);
     w.command("{\"command\":\"brew\",\"recipe_id\":\"bad\"}");CHECK(w.status==400);

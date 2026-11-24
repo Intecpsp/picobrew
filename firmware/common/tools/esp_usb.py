@@ -29,6 +29,9 @@ Z_STACKS = ("z1", "z2", "z3", "z4")
 MODELS = ("picoferm", "picostill", "z-series", *Z_STACKS)
 ESP32_LAYOUT = {"bootloader.bin": (0x1000, 0x7000), "partitions.bin": (0x8000, SECTOR),
                 "application.bin": (0x10000, 0x1f0000), "spiffs.bin": (0x200000, 0x200000)}
+STILL_LAYOUT = {**ESP32_LAYOUT, "otadata.bin": (0xe000, 0x2000), "recovery.bin": (0x10000, 0xf0000),
+                "application.bin": (0x100000, 0xf0000)}
+LEGACY_STILL_TABLE_SHA256 = "cc5b9d52da361e51fdf767a6adf777909c44d0546a1f80d0f3bae3aa154a1ab9"
 FERM_LAYOUT = {"application.bin": (0, MIB), "spiffs.bin": (MIB, 0xfb000)}
 
 
@@ -101,6 +104,11 @@ def reference(model):
         manifest = json.loads(package.read("manifest.json"))
         if manifest.get("schema_version") != 1 or manifest.get("model") != model:
             raise ValueError("Invalid USB package model or schema")
+        if manifest.get("ota_protocol"):
+            if (model != "picostill" or manifest["ota_protocol"] != "esp32-factory-v1"
+                    or manifest.get("ota_image") != "application.bin"):
+                raise ValueError("Unsupported USB reference update protocol")
+            layout = STILL_LAYOUT
         for item in manifest["components"]:
             name = item["file"]
             if name in components or layout.get(name) != (item["offset"], item["maximum_bytes"]):
@@ -151,13 +159,63 @@ def install_target(flash, model, *, api_key=None):
     if api_key is not None:
         profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
         parts["spiffs.bin"] = esp_provisioning.stage(parts["spiffs.bin"], profile, api_key)
+    if "recovery.bin" in parts:
+        if model != "picostill" or parts["recovery.bin"] != parts["application.bin"]:
+            raise ValueError("Invalid PicoStill factory recovery")
+        layout = STILL_LAYOUT
+        # The USB boot-selection record is writable only inside identified stock
+        # otadata, or in erased bytes where the original omitted the partition.
+        slots = esp_stock_partitions.partitions(flash)
+        if not any((p.kind, p.subtype) == (1, 0) for p in slots) and flash[0xe000:0x10000].strip(b"\xff"):
+            raise ValueError("Unidentified data overlaps the proposed OTA selection")
     desired = bytearray(flash)
     for name, data in parts.items():
         start, _ = layout[name]
         desired[start:start + len(data)] = data
-    if model != "picoferm" and esp_stock_partitions.selected_app_slice(desired).start != 0x10000:
+    if model != "picoferm" and esp_stock_partitions.selected_app_slice(desired).start != layout["application.bin"][0]:
         raise ValueError("Installed partition metadata would not select the reference application")
     return version, bytes(desired)
+
+
+def installed_still_matches(current, original, key):
+    _, parts = reference("picostill")
+    if "recovery.bin" not in parts or current[0x1000:0x8000] != original[0x1000:0x8000]:
+        return False
+    for name in ("partitions.bin", "recovery.bin", "application.bin"):
+        offset = STILL_LAYOUT[name][0]
+        if current[offset:offset+len(parts[name])] != parts[name]:
+            return False
+    return (esp_stock_partitions.selected_app_slice(current).start == STILL_LAYOUT["application.bin"][0]
+            and esp_provisioning.matches_stored_esp32_key(current[0x200000:0x400000], key))
+
+
+def migrate_still_layout(current, original, key):
+    """Preserve the complete running filesystem and NVS when adding a factory partition."""
+    version, parts = reference("picostill")
+    if ("recovery.bin" not in parts or sha(current[0x8000:0x8c00]) != LEGACY_STILL_TABLE_SHA256
+            or esp_stock_partitions.selected_app_slice(current) != slice(0x10000, 0x200000)):
+        raise ValueError("The installed PicoStill layout was not recognized")
+    if not esp_provisioning.matches_stored_esp32_key(current[0x200000:0x400000], key):
+        raise ValueError("The connected PicoStill key does not match the Hub's saved pairing")
+    releases = json.loads((ROOT/"firmware/releases.json").read_bytes())["releases"]
+    old = next((r for r in releases if r["model"] == "picostill" and r["kind"] == "reference"
+                and 0 < r["binary_bytes"] <= 0x1f0000
+                and sha(current[0x10000:0x10000+r["binary_bytes"]])==r["binary_sha256"]), None)
+    if not old:
+        raise ValueError("The installed PicoStill application did not match a published binary")
+    # Legacy USB setup replaced exactly one application, one table and SPIFFS.
+    # Refuse to repurpose any unexplained data that appeared in the app tail.
+    tail = 0x10000 + old["binary_bytes"]
+    if current[:0x8000] != original[:0x8000] or current[tail:0x200000] != original[tail:0x200000]:
+        raise ValueError("The bootloader or unused application region differs from the saved original")
+    esp_stock_partitions.qualify_install_layout(current)
+    target = bytearray(current)
+    for name in ("otadata.bin", "recovery.bin", "application.bin", "partitions.bin"):
+        start = STILL_LAYOUT[name][0]
+        target[start:start+len(parts[name])] = parts[name]
+    if esp_stock_partitions.selected_app_slice(target).start != STILL_LAYOUT["application.bin"][0]:
+        raise ValueError("The new PicoStill layout does not select the verified application")
+    return version, bytes(target)
 
 
 def backup_path(root, identity):
@@ -256,11 +314,17 @@ def operation(action, model, device, root, ask=input, *, api_key=None):
             if action != "install" or api_key is None or original is None:
                 raise
             _, wanted = install_target(original, model, api_key=api_key)
-            if current != wanted or device.read() != wanted:
-                raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None
-            device.verify_identity()
-            print("The installed image and private key were verified. No further write is needed.")
-            return
+            if device.read() != current:
+                raise ValueError("The full-device reads disagree; no USB write was made") from None
+            if current == wanted or model == "picostill" and installed_still_matches(current, original, api_key):
+                device.verify_identity()
+                print("The installed image and private key were verified. No further write is needed.")
+                return
+            if model == "picostill" and sha(current[0x8000:0x8c00]) == LEGACY_STILL_TABLE_SHA256:
+                version, target = migrate_still_layout(current, original, api_key)
+                print(f"USB setup will install PicoStill {version} with wireless recovery and retain its settings and history.")
+                return write_target(action, device, ident, current, target, ask)
+            raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None
         print(f"Identified active OEM firmware {version}. Verifying with a second full read…", flush=True)
         if device.read() != current:
             raise ValueError("The full-device reads disagree; capture failed")
@@ -290,6 +354,10 @@ def operation(action, model, device, root, ask=input, *, api_key=None):
         target = original
         if ask("Restore all original slots, settings and calibration, and remove the custom Hub interface? Type RESTORE: ") != "RESTORE":
             raise ValueError("Restore cancelled before writing")
+    write_target(action, device, ident, current, target, ask)
+
+
+def write_target(action, device, ident, current, target, ask):
     if current == target:
         print("The complete flash already matches the requested contents.")
         return
