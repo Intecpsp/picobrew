@@ -782,3 +782,54 @@ func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *test
 		t.Fatal("adapter did not receive retry")
 	}
 }
+
+func TestPicoCInstallationRequiresIndependentlyVerifiedController(t *testing.T) {
+	s, h, c, stop := startFirmwareServer(t, newTestDataDir(t))
+	defer stop()
+	csrf := signIn(t, c, h.URL)
+	uid := "c-uid"
+	model := "pico-c"
+	a := &resumeFirmwareAdapter{pairingAdapter: &pairingAdapter{
+		status: domain.Status{Model: model, ModelFamily: model, DisplayVariant: "ssd1325", DeviceUID: uid, Ready: true},
+		caps:   domain.Capabilities{Model: model, ModelFamily: model, DisplayVariant: "ssd1325", HubOTAV1: true, FirmwareVersion: "1.0.0"},
+	}, stages: make(chan string, 1)}
+	d := s.attach(domain.Device{ID: "brewer", Model: model, ModelSource: "firmware", Enabled: true, Adapter: "pico-standalone"})
+	d.adapter = a
+	if _, err := s.verifiedStatus(context.Background(), d); err != nil {
+		t.Fatal(err)
+	}
+	url := h.URL + "/api/v1/devices/brewer/firmware"
+	packages := map[string]string{}
+	for _, display := range []string{"ssd1309", "ssd1325"} {
+		code, body := uploadFirmware(t, c, h.URL, csrf, firmwaretest.Archive(firmwaretest.COTAFiles(display)), nil)
+		if code != 201 {
+			t.Fatalf("upload: %d %s", code, body)
+		}
+		packages[display] = parseFirmwarePackage(t, body).ID
+	}
+	install := func(display string, want int) {
+		t.Helper()
+		code, body := request(t, c, "POST", url+"/install", csrf, map[string]any{"package_id": packages[display], "device_uid": uid, "confirm": true}, nil)
+		if code != want {
+			t.Fatalf("install %s: %d %s", display, code, body)
+		}
+	}
+	verify := func(display string) {
+		code, body := request(t, c, "PUT", url+"/hardware", csrf, map[string]string{"device_uid": uid, "display_variant": display}, nil)
+		if code != 200 {
+			t.Fatalf("verify %s: %d %s", display, code, body)
+		}
+	}
+	install("ssd1325", 409)
+	verify("ssd1309")
+	install("ssd1309", 409)
+	install("ssd1325", 409)
+	verify("ssd1325")
+	install("ssd1309", 409)
+	install("ssd1325", 202)
+	select {
+	case <-a.stages:
+	case <-time.After(time.Second):
+		t.Fatal("install did not start")
+	}
+}

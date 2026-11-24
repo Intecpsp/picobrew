@@ -321,6 +321,7 @@ def self_test():
             cc.C_FIRMWARE / "standalone" / "pico-c" / variant / "pico-c-standalone.bin", model
         )
         cc.load_web_bundle(cc.C_FIRMWARE / "web", model)
+        cc._load_hub_recovery(model)
     usb_avr.programmer()
     zymatic_build.template()
     if (ZYMATIC / "usb_layout.py").is_file():

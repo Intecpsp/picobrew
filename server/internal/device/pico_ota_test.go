@@ -52,6 +52,11 @@ func TestMatchingLiveVersionNeverEntersRecovery(t *testing.T) {
 // The component's standalone tests run without a compiler or firmware checkout.
 // CI also runs this test against the actual recovery dispatcher and flash model.
 func TestHubOTAWithNativeRecovery(t *testing.T) {
+	for _, target := range []struct{ model, display string }{{"pico-s", ""}, {"pico-c", "ssd1309"}, {"pico-c", "ssd1325"}} {
+		t.Run(target.model+target.display, func(t *testing.T) { testHubOTAWithNativeRecovery(t, target.model, target.display) })
+	}
+}
+func testHubOTAWithNativeRecovery(t *testing.T, model, display string) {
 	harness := os.Getenv("PICO_HUB_RECOVERY_TEST")
 	if harness == "" {
 		t.Skip("set PICO_HUB_RECOVERY_TEST to the recovery HTTP host fixture")
@@ -62,7 +67,7 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
-	command := exec.CommandContext(ctx, python, harness)
+	command := exec.CommandContext(ctx, python, harness, display)
 	command.Stderr = os.Stderr
 	stdout, err := command.StdoutPipe()
 	if err != nil {
@@ -82,13 +87,16 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 	image := make([]byte, 2700)
 	binary.LittleEndian.PutUint32(image, 0x2003f000)
 	binary.LittleEndian.PutUint32(image[4:], 0x20004009)
-	pkg := firmware.UpdatePayload{Candidate: firmware.Candidate{Model: "pico-s", FirmwareVersion: "1.3.0", BinaryBytes: len(image), BinarySHA256: firmware.Digest(image)}}
+	if display != "" {
+		copy(image[1024:], []byte("PicoBrew:pico-c:"+display+"\x00"))
+	}
+	pkg := firmware.UpdatePayload{Candidate: firmware.Candidate{Model: model, DisplayVariant: display, FirmwareVersion: "1.3.0", BinaryBytes: len(image), BinarySHA256: firmware.Digest(image)}}
 	pkg.Files[0] = image
 	for i := 1; i < len(pkg.Files); i++ {
 		pkg.Files[i] = append([]byte{0x1f, 0x8b, 8, 0, 0, 0, 0, 0, 0, 3}, bytes.Repeat([]byte{byte(i)}, 1400)...)
 	}
-	old := otaIdentity{UID: uid, Model: pkg.Model, Digest: strings.Repeat("f", 64)}
-	target := otaIdentity{UID: uid, Model: pkg.Model, Digest: pkg.BinarySHA256}
+	old := otaIdentity{UID: uid, Model: pkg.Model, DisplayVariant: display, Digest: strings.Repeat("f", 64)}
+	target := otaIdentity{UID: uid, Model: pkg.Model, DisplayVariant: display, Digest: pkg.BinarySHA256}
 	key := strings.Repeat("a", 64)
 	var mu sync.Mutex
 	state := "normal"
@@ -152,13 +160,13 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 			}
 			json.NewEncoder(w).Encode(otaState{otaIdentity: value, Size: len(image), OK: true})
 		case "/api/v1/status":
-			json.NewEncoder(w).Encode(map[string]any{"device_uid": uid, "model": pkg.Model, "ready": true})
+			json.NewEncoder(w).Encode(map[string]any{"device_uid": uid, "model": pkg.Model, "display_variant": display, "ready": true})
 		case "/api/v1":
 			version := pkg.FirmwareVersion
 			if state == "normal" {
 				version = "1.2.0"
 			}
-			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "firmware_version": version, "hub_ota_v1": true})
+			json.NewEncoder(w).Encode(map[string]any{"model": pkg.Model, "display_variant": display, "firmware_version": version, "hub_ota_v1": true})
 		default:
 			w.WriteHeader(404)
 		}
@@ -175,6 +183,27 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 	if err = p.InstallFirmware(ctx, uid, pkg, "", checkpoint); err == nil {
 		t.Fatal("lost acknowledgement reported success")
 	}
+	if display != "" {
+		other := "ssd1325"
+		if display == other {
+			other = "ssd1309"
+		}
+		if _, ready := p.readRecovery(ctx, uid, other, 2, len(image)); ready {
+			t.Fatal("recovery accepted different controller after a lost acknowledgement")
+		}
+		wrong := pkg
+		wrong.DisplayVariant = other
+		if err := p.transferFirmware(ctx, wrong, checkpoint); err == nil {
+			t.Fatal("recovery accepted cross-display plan")
+		}
+		wrong = pkg
+		wrong.Files[0] = append([]byte(nil), image...)
+		copy(wrong.Files[0][1024:], []byte("PicoBrew:pico-c:"+other+"\x00"))
+		wrong.BinarySHA256 = firmware.Digest(wrong.Files[0])
+		if err := p.transferFirmware(ctx, wrong, checkpoint); err == nil {
+			t.Fatal("recovery selected image for a different display")
+		}
+	}
 	if err = p.InstallFirmware(ctx, uid, pkg, "transferring", checkpoint); err != nil {
 		t.Fatal(err)
 	}
@@ -183,7 +212,11 @@ func TestHubOTAWithNativeRecovery(t *testing.T) {
 	}
 	mu.Lock()
 	defer mu.Unlock()
-	if state != "confirmed" || entered != 1 || confirmed != 1 || imageUploads != 1 {
+	expectedWrites := 1
+	if display != "" {
+		expectedWrites = 3
+	}
+	if state != "confirmed" || entered != 1 || confirmed != 1 || imageUploads != expectedWrites {
 		t.Fatalf("state=%s entries=%d confirms=%d image writes=%d", state, entered, confirmed, imageUploads)
 	}
 }

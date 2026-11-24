@@ -106,6 +106,25 @@ func CFiles(display string) map[string][]byte {
 	return files
 }
 
+// COTAFiles produces a nonexecutable test image carrying the same target marker as a linked Pico C.
+func COTAFiles(display string) map[string][]byte {
+	files := CFiles(display)
+	const name = "pico-c-standalone.bin"
+	image := make([]byte, 1100)
+	copy(image, files[name])
+	copy(image[1024:], "PicoBrew:pico-c:"+display+"\x00")
+	files[name] = image
+	ChangeReport(files, func(report map[string]any) {
+		report["hub_ota_protocol"] = 1
+		report["binary_sha256"] = Digest(image)
+		layout := report["image_layout"].(map[string]any)
+		layout["binary_bytes"] = len(image)
+		seg := layout["load_segments"].([]any)[0].(map[string]any)
+		seg["memory_bytes"], seg["file_bytes"] = len(image), len(image)
+	})
+	return files
+}
+
 func Archive(files map[string][]byte) []byte {
 	var out bytes.Buffer
 	z := zip.NewWriter(&out)

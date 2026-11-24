@@ -150,7 +150,7 @@ func (s *Server) firmwareUpdates(w http.ResponseWriter, r *http.Request) {
 	for _, d := range s.fleetForReleases() {
 		latest := ""
 		for _, v := range c.Releases {
-			if v.Model != d.Model {
+			if v.Model != d.Model || (v.Model == "pico-c" && d.Capabilities != nil && v.DisplayVariant != d.Capabilities.DisplayVariant) {
 				continue
 			}
 			if !seen[v.ArchiveSHA256] {

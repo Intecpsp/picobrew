@@ -235,67 +235,79 @@ describe('Hub firmware packages', () => {
     expect(calls(path + '/install', 'POST')).toHaveLength(1)
     expect(calls('/stage', 'POST')).toHaveLength(0)
   })
-  it('requires an independent controller selection once and never installs firmware', async () => {
-    const user = userEvent.setup()
-    let verified = false
-    fetchMock.mockImplementation(async (url, options) => {
-      if (String(url).endsWith('/devices/c/firmware/hardware')) {
-        verified = true
-        return json({
-          device_uid: 'pinned-c',
-          display_variant: 'ssd1309',
-          verified_at: '2026-11-20T00:00:00Z',
-        })
-      }
-      if (String(url).endsWith('/devices/c/firmware'))
-        return json({
-          device_id: 'c',
-          device_uid: 'pinned-c',
-          model: 'pico-c',
-          current_version: '1.2.0',
-          display_variant: 'ssd1309',
-          verified_display_variant: verified ? 'ssd1309' : '',
-          hardware_verification_required: !verified,
-          install_supported: false,
-          reason: 'Network installation is not available yet.',
-          packages: [
-            {
-              ...uploaded,
-              model: 'pico-c',
-              model_family: 'pico-c',
-              display_variant: 'ssd1309',
-              hub_ota_protocol: 1,
-            },
-          ],
-        })
-      return response(url, options)
-    })
-    show(createElement(MachineFirmwareDialog, { deviceID: 'c', onClose: close }))
-    const select = await screen.findByLabelText('Verified display controller')
-    expect((select as HTMLSelectElement).value).toBe('')
-    const save = screen.getByRole('button', { name: 'Save verified controller' })
-    expect((save as HTMLButtonElement).disabled).toBe(true)
-    await user.selectOptions(select, 'ssd1309')
-    expect((save as HTMLButtonElement).disabled).toBe(true)
-    await user.click(
-      screen.getByRole('checkbox', {
-        name: /I checked this machine's display controller independently/,
+  it.each([false, true])(
+    'gates Pico C installation on controller verification and recovery support (OTA %s)',
+    async (ota) => {
+      const user = userEvent.setup()
+      let verified = false
+      fetchMock.mockImplementation(async (url, options) => {
+        if (String(url).endsWith('/devices/c/firmware/hardware')) {
+          verified = true
+          return json({
+            device_uid: 'pinned-c',
+            display_variant: 'ssd1309',
+            verified_at: '2026-11-20T00:00:00Z',
+          })
+        }
+        if (String(url).endsWith('/devices/c/firmware'))
+          return json({
+            device_id: 'c',
+            device_uid: 'pinned-c',
+            model: 'pico-c',
+            current_version: '1.2.0',
+            display_variant: 'ssd1309',
+            verified_display_variant: verified ? 'ssd1309' : '',
+            hardware_verification_required: !verified,
+            install_supported: verified && ota,
+            reason:
+              verified && ota
+                ? 'Ready to install.'
+                : 'Verify the controller and provision compatible recovery.',
+            packages: [
+              {
+                ...uploaded,
+                model: 'pico-c',
+                model_family: 'pico-c',
+                display_variant: 'ssd1309',
+                hub_ota_protocol: ota ? 1 : 0,
+              },
+            ],
+          })
+        return response(url, options)
       })
-    )
-    await user.click(save)
-    await waitFor(() => expect(notify).toHaveBeenCalledWith('Verified display controller saved.'))
-    expect(((await screen.findByLabelText('Firmware version')) as HTMLSelectElement).disabled).toBe(
-      true
-    )
-    expect(JSON.parse(String(calls('/devices/c/firmware/hardware', 'PUT')[0][1]?.body))).toEqual({
-      device_uid: 'pinned-c',
-      display_variant: 'ssd1309',
-    })
-    expect(
-      fetchMock.mock.calls.filter(([url]) => /install|commands/.test(String(url)))
-    ).toHaveLength(0)
-    expect(screen.queryByRole('button', { name: /install firmware/i })).toBeNull()
-  })
+      show(createElement(MachineFirmwareDialog, { deviceID: 'c', onClose: close }))
+      const select = await screen.findByLabelText('Verified display controller')
+      expect(screen.queryByRole('button', { name: 'Install', exact: true })).toBeNull()
+      expect((select as HTMLSelectElement).value).toBe('')
+      const save = screen.getByRole('button', { name: 'Save verified controller' })
+      expect((save as HTMLButtonElement).disabled).toBe(true)
+      await user.selectOptions(select, 'ssd1309')
+      expect((save as HTMLButtonElement).disabled).toBe(true)
+      await user.click(
+        screen.getByRole('checkbox', {
+          name: /I checked this machine's display controller independently/,
+        })
+      )
+      await user.click(save)
+      await waitFor(() => expect(notify).toHaveBeenCalledWith('Verified display controller saved.'))
+      expect(
+        ((await screen.findByLabelText('Firmware version')) as HTMLSelectElement).disabled
+      ).toBe(!ota)
+      expect(JSON.parse(String(calls('/devices/c/firmware/hardware', 'PUT')[0][1]?.body))).toEqual({
+        device_uid: 'pinned-c',
+        display_variant: 'ssd1309',
+      })
+      expect(
+        fetchMock.mock.calls.filter(([url]) => /install|commands/.test(String(url)))
+      ).toHaveLength(0)
+      if (ota)
+        expect(
+          (screen.getByRole('button', { name: 'Install', exact: true }) as HTMLButtonElement)
+            .disabled
+        ).toBe(false)
+      else expect(screen.queryByRole('button', { name: 'Install', exact: true })).toBeNull()
+    }
+  )
   it('keeps another brewer’s USB prompt outside a machine-scoped restoration', async () => {
     fetchMock.mockImplementation(async (url, opts) => {
       if (String(url).endsWith('/devices/s/firmware'))

@@ -195,6 +195,7 @@ def project_files():
         "firmware/pico-s-pro/modified/firmware/standalone/pico-s/pico-s-standalone.bin",
         "firmware/pico-s-pro/modified/firmware/standalone/pico-pro/pico-pro-standalone.bin",
         "firmware/pico-c/modified/firmware/standalone/pico-c/*/pico-c-standalone.bin",
+        "firmware/pico-c/modified/firmware/standalone/pico-c/*/pico-c-recovery.bin",
     ]
     for model in ("pico-s-pro", "pico-c"):
         patterns.extend(

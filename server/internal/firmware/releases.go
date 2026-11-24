@@ -31,7 +31,7 @@ func (r Release) valid() bool {
 	}
 	switch r.Kind {
 	case "standalone":
-		return ValidVariant(r.Model, r.DisplayVariant) && r.ModelFamily == modelFamily(r.Model) && (r.HubOTAProtocol == 0 || r.HubOTAProtocol == 1 && r.Model != "pico-c")
+		return ValidVariant(r.Model, r.DisplayVariant) && r.ModelFamily == modelFamily(r.Model) && (r.HubOTAProtocol == 0 || r.SupportsCC3200OTA())
 	case "historical":
 		return r.Model == "pico-s-pro" && r.ModelFamily == r.Model && r.DisplayVariant == "" && r.HubOTAProtocol == 0
 	case "reference":

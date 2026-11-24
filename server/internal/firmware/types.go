@@ -36,7 +36,11 @@ type Candidate struct {
 
 // SupportsHubOTA identifies packages the Hub recovery protocol can install.
 func (c Candidate) SupportsHubOTA() bool {
-	return c.HubOTAProtocol == 1 && c.ModelFamily == "pico-s-pro" && c.DisplayVariant == "" && (c.Model == "pico-s" || c.Model == "pico-pro")
+	return c.SupportsCC3200OTA()
+}
+
+func (c Candidate) SupportsCC3200OTA() bool {
+	return c.HubOTAProtocol == 1 && ValidVariant(c.Model, c.DisplayVariant) && c.ModelFamily == modelFamily(c.Model)
 }
 
 type Catalog struct {
@@ -64,13 +68,14 @@ type Package struct {
 }
 
 type InstallReceipt struct {
-	Stage     string    `json:"stage,omitempty"`
-	UID       string    `json:"device_uid"`
-	Model     string    `json:"model"`
-	PackageID string    `json:"package_id"`
-	Started   time.Time `json:"started"`
-	State     string    `json:"state"`
-	Message   string    `json:"message"`
+	DisplayVariant string    `json:"display_variant,omitempty"`
+	Stage          string    `json:"stage,omitempty"`
+	UID            string    `json:"device_uid"`
+	Model          string    `json:"model"`
+	PackageID      string    `json:"package_id"`
+	Started        time.Time `json:"started"`
+	State          string    `json:"state"`
+	Message        string    `json:"message"`
 }
 
 // USBRestoreTarget identifies the physical registration for a local guide.

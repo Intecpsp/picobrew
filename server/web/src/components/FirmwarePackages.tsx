@@ -25,11 +25,15 @@ function firmwareModelName(model: string) {
 
 function matchesWirelessPackage(item: FirmwareCandidate, machine: MachineFirmware | null) {
   return (
-    (item.model === 'pico-s' || item.model === 'pico-pro') &&
     item.model === machine?.model &&
-    item.model_family === 'pico-s-pro' &&
     item.hub_ota_protocol === 1 &&
-    !item.display_variant
+    (item.model === 'pico-c'
+      ? item.model_family === 'pico-c' &&
+        (item.display_variant === 'ssd1325' || item.display_variant === 'ssd1309') &&
+        item.display_variant === machine.display_variant
+      : (item.model === 'pico-s' || item.model === 'pico-pro') &&
+        item.model_family === 'pico-s-pro' &&
+        !item.display_variant)
   )
 }
 
@@ -136,7 +140,10 @@ export function MachineFirmwareDialog({
   const selected = id ? items.get(id) : undefined
   const resuming = !!id && machine?.retry_package_id === id
   const supportsInstall =
-    machine?.install_supported && !!selected && (!machine.retry_package_id || resuming)
+    machine?.install_supported &&
+    !!selected &&
+    (machine.model !== 'pico-c' || machine.verified_display_variant === selected.display_variant) &&
+    (!machine.retry_package_id || resuming)
   const alreadyInstalled =
     !!selected && selected.firmware_version === machine?.current_version && !resuming
   async function checkUpdates() {

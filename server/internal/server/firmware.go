@@ -571,7 +571,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			switch {
 			case s.cfg.Demo:
 				out.Reason = "Firmware installation is unavailable in simulation."
-			case out.Model != "pico-s" && out.Model != "pico-pro":
+			case !firmware.ValidModel(out.Model):
 				out.Reason = "Hub wireless firmware installation is unavailable for this model."
 			case out.InstallSupported:
 				out.Reason = "The Hub can install a matching OTA package after the brewer verifies its recovery image and boot layout."
@@ -615,7 +615,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			receipt.Message = "Hub restarted before it recorded the result. Check the brewer before continuing."
 		}
 		out.LastInstall = &receipt
-		if !active && retryEnabled && (!out.InstallSupported || pendingTrial(receipt)) && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID) && receipt.State != "installed" && !s.cfg.Demo {
+		if !active && retryEnabled && (!out.InstallSupported || pendingTrial(receipt)) && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID && out.DisplayVariant == receipt.DisplayVariant) && receipt.State != "installed" && !s.cfg.Demo {
 			matches, err := s.savedFirmwareIdentity(out.DeviceID, receipt.UID)
 			if err != nil {
 				s.storeError(w, err)
@@ -624,6 +624,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			out.InstallSupported = matches
 			if matches {
 				out.Model = receipt.Model
+				out.DisplayVariant = receipt.DisplayVariant
 				out.DeviceUID = receipt.UID
 				out.RetryPackageID = receipt.PackageID
 				out.Reason = "Retry the same firmware package so the Hub can verify the interrupted update."
@@ -685,13 +686,16 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 		out.VerifiedDisplayVariant = verified
 		out.HardwareVerificationRequired = verified == "" || verified != out.DisplayVariant
+		if out.HardwareVerificationRequired {
+			out.InstallSupported = false
+		}
 		if verified == "" {
 			out.Reason += " Record the display controller fitted to this Pico C."
 		} else if verified != out.DisplayVariant {
 			out.Reason += " The firmware-reported display differs from the independently verified controller."
 		}
 	}
-	if out.Model == "pico-s" || out.Model == "pico-pro" {
+	if firmware.ValidVariant(out.Model, out.DisplayVariant) {
 		s.firmwareMu.Lock()
 		packages, err := s.listFirmwarePackages()
 		s.firmwareMu.Unlock()
@@ -700,7 +704,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range packages {
-			if p.Model == out.Model && p.SupportsHubOTA() {
+			if p.Model == out.Model && p.DisplayVariant == out.DisplayVariant && p.SupportsHubOTA() {
 				out.Packages = append(out.Packages, p)
 			}
 		}

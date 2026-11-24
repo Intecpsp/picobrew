@@ -91,3 +91,21 @@ func TestCGitHubCatalogAndImportKeepDisplayPathsDistinct(t *testing.T) {
 		t.Fatal("accepted a report from the other controller path")
 	}
 }
+
+func TestPicoCOTAMatchesDisplayMarker(t *testing.T) {
+	for _, display := range []string{"ssd1309", "ssd1325"} {
+		files := firmwaretest.COTAFiles(display)
+		if _, err := ReadUpdatePayload(firmwaretest.Archive(files)); err != nil {
+			t.Fatal(err)
+		}
+		image := files["pico-c-standalone.bin"]
+		image[1024] = 0
+		firmwaretest.ChangeReport(files, func(r map[string]any) { r["binary_sha256"] = Digest(image) })
+		if _, err := ValidateArchive(firmwaretest.Archive(files)); err == nil {
+			t.Fatal("accepted incorrect target marker with self-consistent hash")
+		}
+		if _, err := ReadUpdatePayload(firmwaretest.Archive(firmwaretest.CFiles(display))); err == nil {
+			t.Fatal("accepted USB-only package for OTA")
+		}
+	}
+}

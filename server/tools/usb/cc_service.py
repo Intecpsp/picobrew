@@ -286,9 +286,7 @@ def run(action, model, port, display, data_dir, confirm, progress, *, job_key_pa
             _private_write(key, captured_key or (secrets.token_hex(32) + "\n").encode())
         if application is None or install._image_metadata(application) not in install._approved_current_applications("install", name):
             raise CCError("This application is outside the supported set for the selected physical model.")
-        stages = (["provision-key"] if captured_key is None else []) + ["install"]
-        if model != "pico-c":
-            stages.append("install-recovery")
+        stages = (["provision-key"] if captured_key is None else []) + ["install", "install-recovery"]
     for stage in stages:
         if stage != "restore-stock":
             instruction = {"provision-key": "Set up and verify the brewer’s device key?",

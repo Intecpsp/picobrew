@@ -8,7 +8,7 @@ Open a machine's **Firmware** view to see wireless update versions for its exact
 
 While physical devices are registered, the Hub checks daily. The Brewery page displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
-The repository release index also preserves historical family builds, Pico C display variants and reference packages for the generic Z, PicoFerm and PicoStill. Each entry records the model, version and SHA-256 of the ZIP and application. The Hub's update catalog and machine version picker include only S and Pro standalone releases with Hub OTA protocol 1. The same rule applies to packages previously uploaded or cached on the Hub. The administrative package API can still list and download saved archives. On Pico C, owners can record their actual display controller independently of wireless update availability.
+The repository release index also preserves historical family builds, Pico C display variants and reference packages for the generic Z, PicoFerm and PicoStill. Each entry records the model, version and SHA-256 of the ZIP and application. The Hub's update catalog and machine version picker include C/S/Pro standalone releases that declare Hub OTA protocol 1. A C package also carries a display-specific marker in the application image. The same rule applies to packages previously uploaded or cached on the Hub. The administrative package API can still list and download saved archives. On Pico C, owners can record their actual display controller independently of wireless update availability.
 
 To publish a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
@@ -81,7 +81,7 @@ match compares declared package and machine model information.
 
 ## Installation
 
-An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
+An idle, connected Pico S, Pico Pro, or Pico C with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. For Pico C, USB setup installs recovery for the specific SSD1325 or SSD1309 display. Record the independently verified display controller on the paired brewer’s Firmware page. The application, recovery, and package must all match that variant. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
 ### Restore the original Pico S/Pro firmware over Wi-Fi
 
@@ -104,7 +104,7 @@ USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both display
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
 | Pico S and Pico Pro | The CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |
-| Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application and website. | Restore the original application and verify the retained recovery against this brewer’s backup. A separate authenticated OEM recovery image for Pico C is unavailable. |
+| Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application, website, and the matching display’s wireless recovery. | Restore the original application and recovery from this brewer’s verified backup. |
 | PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
 | PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
 | Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
