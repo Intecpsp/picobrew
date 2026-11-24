@@ -15,7 +15,7 @@ BANKS = (0x3000, 0x83000)
 BANK_SIZE = 0x7d000
 SECTIONS = ('.irom0.text', '.text', '.data', '.rodata')
 IDENTITY = b'PicoFerm-AB1:'
-VERSION = '1.2.7'
+VERSION = '1.0.0'
 
 def bank_record(bank, image):
     body = struct.pack('<5I', 0x31424650, bank, 1, len(image), zlib.crc32(image))

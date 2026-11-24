@@ -105,7 +105,7 @@ def main():
     sys.path.insert(0,str(REPOSITORY/'tools'))
     from firmware_analysis.esp_image import parse_esp32
     parsed=parse_esp32(image.read_bytes())
-    version = "1.2.7"
+    version = "1.0.0"
     marker = ("PicoBrew OTA1|picostill|" + version).encode().ljust(64, b"\0")
     if image.read_bytes()[0x120:0x160] != marker or image.stat().st_size > 0xf0000:
         raise ValueError("PicoStill OTA descriptor or slot length differs from the installer contract")

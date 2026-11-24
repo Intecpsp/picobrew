@@ -330,11 +330,11 @@ def self_test():
         usb_layout.for_version("1.2.0").template()
         for version in getattr(zymatic_build, "ARCHIVED_MANIFESTS", ("1.3.0",)):
             usb_layout.for_version(version).template()
-    esp_usb.picoferm_ab_reference()
-    for model in ("z-series", "picostill", "picoferm"):
-        _, parts = esp_usb.reference(model)
-        profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
+    for model, profile in (("z-series", "esp32-z-recovery"), ("picostill", "esp32-4m"), ("picoferm", "esp8266-2m")):
+        _, parts = esp_usb.picoferm_ab_reference() if model == "picoferm" else esp_usb.reference(model)
         esp_provisioning.stage(parts["spiffs.bin"], profile, secrets.token_hex(32))
+        if not esp_usb.legacy_applications(model):
+            raise ValueError("Missing ESP USB migration identities")
     if not callable(cc_service.run) or not callable(usb_stock.prepare):
         raise ValueError("Missing USB service")
 

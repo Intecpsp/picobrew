@@ -21,4 +21,7 @@ def pack(directory,fs):
 if __name__=='__main__':
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument('build',type=Path);p.add_argument('spiffs',type=Path);p.add_argument('output',type=Path)
-    a=p.parse_args();a.output.write_bytes(pack(a.build,a.spiffs.read_bytes()))
+    a=p.parse_args()
+    data=pack(a.build,a.spiffs.read_bytes())
+    a.output.parent.mkdir(parents=True,exist_ok=True)
+    a.output.write_bytes(data)

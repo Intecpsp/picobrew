@@ -124,7 +124,7 @@ def matches_key(fs, key):
     return found.get(b'/pb/api.key',found.get(b'/pb/api.key.bak')) in (expected,expected+b'\n',expected+b'\r\n')
 
 
-def migrate(current, original, wanted, key, releases):
+def migrate(current, original, wanted, key, legacy_applications):
     """Retain all live private storage and SDK data during a recognized single-bank migration."""
     if len(current)!=0x200000 or len(original)!=len(current) or len(wanted)!=len(current):
         raise ValueError('PicoFerm flash geometry changed')
@@ -132,10 +132,9 @@ def migrate(current, original, wanted, key, releases):
         raise ValueError("The PicoFerm key differs from the Hub's saved pairing")
     if current[:FS.start]==wanted[:FS.start]:
         return current
-    allowed=[r for r in releases if r.get('model')=='picoferm' and r.get('kind')=='reference'
-             and isinstance(r.get('binary_bytes'),int) and 0<r['binary_bytes']<=FS.start]
-    for entry in allowed:
+    for entry in legacy_applications:
         end=entry['binary_bytes']
+        if not 0<end<=FS.start: continue
         if sha(current[:end])!=entry.get('binary_sha256'):
             continue
         if current[end:FS.start]!=original[end:FS.start]:

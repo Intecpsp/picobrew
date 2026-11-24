@@ -85,7 +85,8 @@ api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
     out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version=picobrew::esp32_ota::Version;id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void* p){api::Capabilities caps;
-        if(static_cast<Adapter*>(p)->wireless_)caps.ota_protocol="esp32-factory-v1";caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
+        if (static_cast<Adapter*>(p)->wireless_) caps.ota_protocol = "esp32-factory-v1";
+        caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.z_program_maker=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
     out.execute=[](void* p,const api::Command& value){return static_cast<Adapter*>(p)->execute(value);};

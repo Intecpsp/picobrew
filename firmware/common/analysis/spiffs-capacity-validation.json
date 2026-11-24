@@ -127,7 +127,7 @@
     "dependencies/esp8266-adapters.json": "dbdb5726b2135ca3be807834f3f30eb33a30113f27fdd0dcb99af6a98b196580",
     "dependencies/esp32-spiffs-sizing.json": "cd300710f154903238ca8fb15253ff1991874a980762201252a30b094320e834",
     "src/engine.cpp": "5842f1e82ab2b85a1db91ed0385ff17f812abda43df94bed7f96ea71c0706c4c",
-    "src/api.cpp": "5cd77ea8486d025df5c4a2ec45392b6989a7261865f087e8c40bb5a1a0e800f7",
+    "src/api.cpp": "45c7e802c8d1710ba5d95f3e0d4ee4221281b30a3438fbedff1921177e57bb3a",
     "src/values.cpp": "ef788b7690883ab6b0edfddd717e6bf8e4d6fb4538f9870d676ccfc020b88d1b",
     "src/records.cpp": "9deec7864ea4dbfb9dcfad9a24ed9c52416724fb67af0c89ac6c7a000151ccc2",
     "src/history.cpp": "b66d329d4a860a3e0dc5f44e3a9eef8e76795f360fefbcdb31eaf091ce308d71",

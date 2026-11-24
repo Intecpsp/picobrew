@@ -183,6 +183,7 @@ def project_files():
         "firmware/common/tools/esp_provisioning.py",
         "firmware/common/tools/spiffs_format.py",
         "firmware/common/dependencies/spiffs-format-abi.json",
+        "firmware/common/dependencies/legacy-usb-applications.json",
         "firmware/z-series/modified/tools/usb_profile.py",
         "firmware/zymatic/modified/extension/extension.bin",
         "firmware/zymatic/modified/extension/extension.json",
@@ -219,17 +220,12 @@ def project_files():
         for n in ("usb_stock", "usb_avr", "usb_application", "zymatic_build", "offline_program")
     )
     release_index = json.loads((ROOT / "firmware/releases.json").read_text())["releases"]
-    for model in ("picostill", "picoferm", "z-series"):
+    for model, kind in (("picostill", "reference"), ("picoferm", "picoferm-ab"), ("z-series", "reference")):
         latest = max(
-            (r for r in release_index if r["model"] == model and r["kind"] == "reference"),
+            (r for r in release_index if r["model"] == model and r["kind"] == kind),
             key=lambda r: tuple(map(int, r["firmware_version"].split("."))),
         )
         patterns.append(f"firmware/{model}/modified/releases/{model}/{latest['firmware_version']}.zip")
-        if model == "picoferm":
-            ab = [r for r in release_index if r.get("model") == model and r.get("kind") == "picoferm-ab"]
-            if ab:
-                newest = max(ab, key=lambda r: tuple(map(int, r["firmware_version"].split("."))))
-                patterns.append(f"firmware/picoferm/modified/releases/picoferm/{newest['firmware_version']}.zip")
     # Include further inputs covered by the Zymatic extension's source fingerprint.
     extra = [
         *ROOT.glob("firmware/zymatic/modified/src/*.h"),
