@@ -31,10 +31,18 @@ func otaEligible(v domain.DeviceView) bool {
 		v.Status != nil && v.Status.Ready && !v.Status.Busy && !v.Status.Stopped && v.Status.DeviceUID != ""
 }
 
-// Selecting and confirming are persisted before the respective boot mutations.
-// A lost reply can leave the current application in trial mode.
-func pendingTrial(receipt firmware.InstallReceipt) bool {
-	return receipt.State != "installed" && (receipt.Stage == "selecting" || receipt.Stage == "confirming")
+// Each checkpoint precedes a device mutation. The previous package owns the
+// transfer or trial even if the device still answers its normal status API.
+func pendingFirmwareConflict(receipt firmware.InstallReceipt) string {
+	if receipt.State != "installed" {
+		switch receipt.Stage {
+		case "entering", "transferring":
+			return "transfer_pending"
+		case "selecting", "confirming":
+			return "trial_pending"
+		}
+	}
+	return ""
 }
 
 func (s *Server) savedFirmwareIdentity(id, uid string) (bool, error) {
@@ -117,14 +125,19 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "ota_unavailable", "The registered brewer identity could not be verified")
 		return
 	}
-	if pendingTrial(prior) && !resume {
-		s.fail(w, 409, "trial_pending", "Finish verifying the previous firmware package before installing another version")
+	if conflict := pendingFirmwareConflict(prior); conflict != "" && !resume {
+		s.fail(w, 409, conflict, "Finish the interrupted firmware update before installing another version")
 		return
 	}
 	model := prior.Model
 	display := prior.DisplayVariant
 	var currentVersion string
 	if resume {
+		if view.Online && (!otaEligible(view) || view.Status.DeviceUID != prior.UID ||
+			view.Model != prior.Model || view.Capabilities.DisplayVariant != prior.DisplayVariant) {
+			s.fail(w, 409, "ota_unavailable", "Retry on the same idle brewer with wireless update support")
+			return
+		}
 		// A restarted Hub can find the brewer in recovery, which has no normal
 		// status endpoint. Require the original persisted pin; the adapter
 		// independently verifies the live application or recovery identity.

@@ -615,7 +615,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			receipt.Message = "Hub restarted before it recorded the result. Check the brewer before continuing."
 		}
 		out.LastInstall = &receipt
-		if !active && retryEnabled && (!out.InstallSupported || pendingTrial(receipt)) && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID && out.DisplayVariant == receipt.DisplayVariant) && receipt.State != "installed" && !s.cfg.Demo {
+		if !active && retryEnabled && (!out.InstallSupported || pendingFirmwareConflict(receipt) != "") && (out.Model == "" || out.Model == receipt.Model && out.DeviceUID == receipt.UID && out.DisplayVariant == receipt.DisplayVariant) && receipt.State != "installed" && !s.cfg.Demo {
 			matches, err := s.savedFirmwareIdentity(out.DeviceID, receipt.UID)
 			if err != nil {
 				s.storeError(w, err)
