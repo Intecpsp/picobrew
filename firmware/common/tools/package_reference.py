@@ -38,6 +38,17 @@ STILL_PARTITIONS = PARTITIONS[:2] + (('pb_recovery',0,0,0x10000,0xf0000),
 STILL_PARTITION_CSV = PARTITION_CSV.replace('factory,app,factory,0x10000,0x1f0000,',
     'pb_recovery,app,factory,0x10000,0xf0000,\npb_app,app,ota_0,0x100000,0xf0000,')
 
+Z_PARTITIONS = PARTITIONS[:2] + (('pb_recovery',0,0,0x10000,0xe0000),
+    ('pb_app',0,0x10,0xf0000,0x1a1000),('spiffs',1,0x82,0x291000,0x16f000))
+
+def esp_layout(model,protocol):
+    if not protocol: return PARTITIONS,PARTITION_CSV
+    if protocol!=STILL_PROTOCOL or model not in ('picostill','z-series'):
+        raise ValueError('Unsupported OTA reference layout')
+    if model=='picostill': return STILL_PARTITIONS,STILL_PARTITION_CSV
+    return Z_PARTITIONS, '# Explicit standalone Z recovery partitions\n'+''.join(
+        f'{label},{kind},{subtype},0x{start:x},0x{size:x},\n' for label,kind,subtype,start,size in Z_PARTITIONS)
+
 def still_boot_selection():
     sector = 4096
     data = bytearray(b'\xff' * (2 * sector))
@@ -45,14 +56,21 @@ def still_boot_selection():
     struct.pack_into('<I', data, 28, binascii.crc32(data[:4], 0xffffffff))
     return bytes(data)
 
-def verify_still_descriptor(image, version):
+def verify_esp32_descriptor(image, version, model, recovery=False):
+    if model not in ('z-series','picostill'):
+        raise ValueError('Unknown protected ESP32 appliance')
     if not isinstance(version,str) or not re.fullmatch(r'(?:0|[1-9][0-9]*)(?:\.(?:0|[1-9][0-9]*)){2}',version) or len(version)>31:
-        raise ValueError('Invalid PicoStill version')
-    marker = ('PicoBrew OTA1|picostill|'+version).encode().ljust(64,b'\0')
-    if (len(image) > 0xf0000 or len(image) < 0x160 or image[23] != 1 or
+        raise ValueError('Invalid firmware version')
+    prefix = 'REC1' if model=='z-series' and recovery else 'OTA1'
+    limit = (0xe0000 if recovery else 0x1a1000) if model=='z-series' else 0xf0000
+    marker = f'PicoBrew {prefix}|{model}|{version}'.encode().ljust(64,b'\0')
+    if (len(image) > limit or len(image) < 0x160 or image[23] != 1 or
             struct.unpack_from('<I', image,24)[0] != 0x3f400020 or struct.unpack_from('<I',image,28)[0]<320 or
             struct.unpack_from('<I', image,32)[0] != 0xabcd5432 or image[0x120:0x160] != marker):
-        raise ValueError('PicoStill image has the wrong target, version or native descriptor')
+        raise ValueError('ESP32 image has the wrong target, version or native descriptor')
+
+def verify_still_descriptor(image,version):
+    verify_esp32_descriptor(image,version,'picostill')
 
 def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 def write_json(path,value):Path(path).write_text(json.dumps(value,indent=2)+'\n')
@@ -119,8 +137,9 @@ def check_components(components,flash_bytes,model,protocol=None):
     expected={'application.bin':(0,0x100000),'spiffs.bin':(0x100000,0xfb000)} if model=='picoferm' else {
         'bootloader.bin':(0x1000,0x7000),'partitions.bin':(0x8000,0x1000),'application.bin':(0x10000,0x1f0000),'spiffs.bin':(0x200000,0x200000)}
     if protocol:
-        if model!='picostill' or protocol!=STILL_PROTOCOL:raise ValueError('Unsupported OTA reference layout')
-        expected.update({'recovery.bin':(0x10000,0xf0000),'application.bin':(0x100000,0xf0000),'otadata.bin':(0xe000,0x2000)})
+        layout,_ = esp_layout(model,protocol)
+        for name,row in zip(('otadata.bin','recovery.bin','application.bin','spiffs.bin'),layout[1:]):
+            expected[name]=row[-2:]
     if model not in MODELS or flash_bytes!=(0x200000 if model=='picoferm' else 0x400000):raise ValueError('Unknown reference layout')
     if len(components)!=len(expected) or {item['file'] for item in components}!=set(expected):raise ValueError('Reference component set changed')
     previous=0
@@ -141,6 +160,7 @@ def build(model,elf,build_report,esp8266_sdk,esp32_sdk,output,source_root=REPOSI
     protocol=report.get("ota_protocol")
     inputs=verify_image_inputs(esp8266,esp32)
     profile='esp8266-2m' if esp8266_model else 'esp32-4m'
+    if model=='z-series' and protocol: profile='esp32-z-recovery'
     flash_bytes=0x200000 if esp8266_model else 0x400000
     output.mkdir(parents=True,exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.reference-build-',dir=output) as temporary:
@@ -167,17 +187,25 @@ def build(model,elf,build_report,esp8266_sdk,esp32_sdk,output,source_root=REPOSI
             boot=parse_esp32((directory/'bootloader.bin').read_bytes())
             if boot['flash_mode']!=2 or boot['flash_size_frequency_header']!=0x20 or not boot['digest_verified']:
                 raise ValueError('Pinned bootloader configuration differs from the explicit reference')
-            csv=directory/'partitions.csv';csv.write_text(STILL_PARTITION_CSV if protocol==STILL_PROTOCOL else PARTITION_CSV)
+            csv=directory/'partitions.csv';layout,csv_text=esp_layout(model,protocol);csv.write_text(csv_text)
             subprocess.run([sys.executable,str(esp32/'tools/gen_esp32part.py'),str(csv),str(directory/'partitions.bin')],check=True)
-            partitions=verify_partition_table((directory/'partitions.bin').read_bytes(), STILL_PARTITIONS if protocol==STILL_PROTOCOL else PARTITIONS)
+            partitions=verify_partition_table((directory/'partitions.bin').read_bytes(),layout)
             component('bootloader.bin',0x1000,0x7000,'pinned-sdk-bootloader');component('partitions.bin',0x8000,0x1000,'explicit-reference-partition-table')
             preserved=[dict(offset=0x9000,bytes=0x5000,purpose='NVS: no blank or replacement credential image is generated')]
             if protocol==STILL_PROTOCOL:
-                verify_still_descriptor(app.read_bytes(),report['firmware_version'])
-                shutil.copyfile(app,directory/'recovery.bin')
+                verify_esp32_descriptor(app.read_bytes(),report['firmware_version'],model)
+                if model=='picostill': shutil.copyfile(app,directory/'recovery.bin')
+                else:
+                    recovery=report['recovery_image']
+                    rescue_elf=build_report.parent/'recovery.elf'
+                    if digest(rescue_elf)!=recovery['elf_sha256']: raise ValueError('Recovery ELF differs from its build report')
+                    shutil.copyfile(rescue_elf,directory/'recovery.elf')
+                    subprocess.run([sys.executable,str(esptool),'--chip','esp32','elf2image','--flash_mode','dio','--flash_freq','40m',
+                        '--flash_size','4MB','-o',str(directory/'recovery.bin'),str(rescue_elf)],check=True)
+                    if digest(directory/'recovery.bin')!=recovery['sha256']: raise ValueError('Re-encoded recovery differs from its build report')
                 (directory/'otadata.bin').write_bytes(still_boot_selection())
-                component('recovery.bin',0x10000,0xf0000,'immutable-network-recovery')
-                component('application.bin',0x100000,0xf0000,'wireless-application')
+                component('recovery.bin',*layout[2][-2:],'immutable-network-recovery')
+                component('application.bin',*layout[3][-2:],'wireless-application')
                 component('otadata.bin',0xe000,0x2000,'initial-application-selection')
             else:
                 component('application.bin',0x10000,0x1f0000,'factory-application')
@@ -238,13 +266,23 @@ def verify_package(directory):
         if manifest.get('ota_image')!='application.bin' or (directory/'otadata.bin').read_bytes()!=still_boot_selection():
             raise ValueError('Invalid wireless package selection')
         app=(directory/'application.bin').read_bytes()
-        if app!=(directory/'recovery.bin').read_bytes():raise ValueError('Factory recovery differs from verified build')
         report=json.loads((directory/'build-report.json').read_bytes())
-        if report.get('ota_protocol')!=protocol or report.get('model')!='picostill':
+        if report.get('ota_protocol')!=protocol or report.get('model')!=manifest['model']:
             raise ValueError('Firmware build report does not implement the declared update protocol')
-        verify_still_descriptor(app,report['firmware_version'])
+        model=manifest['model']
+        rescue=(directory/'recovery.bin').read_bytes()
+        verify_esp32_descriptor(app,report['firmware_version'],model)
+        verify_esp32_descriptor(rescue,report['firmware_version'],model,recovery=True)
+        if model=='picostill':
+            if app!=rescue:raise ValueError('Factory recovery differs from verified build')
+        else:
+            record=report['recovery_image']
+            rescue_elf=directory/'recovery.elf'
+            if digest(rescue_elf)!=record['elf_sha256'] or hashlib.sha256(rescue).hexdigest()!=record['sha256']:
+                raise ValueError('Z recovery differs from its verified artifacts')
+            build_esp8266_image.verify_elf_image(rescue_elf,rescue,parse_esp32(rescue))
     if manifest['model']!='picoferm':
-        table=verify_partition_table((directory/'partitions.bin').read_bytes(), STILL_PARTITIONS if protocol==STILL_PROTOCOL else PARTITIONS)
+        table=verify_partition_table((directory/'partitions.bin').read_bytes(), esp_layout(manifest['model'],protocol)[0])
         if table!=manifest['partitions']:raise ValueError('Manifest partitions do not match the verified table')
         boot=parse_esp32((directory/'bootloader.bin').read_bytes())
         if not boot['digest_verified']:raise ValueError('Bootloader digest is unavailable')

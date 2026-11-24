@@ -7,14 +7,14 @@
 #include <string>
 #include <vector>
 
-using namespace picostill::update;
+using namespace picobrew::esp32_ota;
 namespace {
 esp_partition_t parts[] = {
-    {ESP_PARTITION_TYPE_APP,ESP_PARTITION_SUBTYPE_APP_FACTORY,0x10000,SlotBytes,"pb_recovery",false},
-    {ESP_PARTITION_TYPE_APP,ESP_PARTITION_SUBTYPE_APP_OTA_0,0x100000,SlotBytes,"pb_app",false},
+    {ESP_PARTITION_TYPE_APP,ESP_PARTITION_SUBTYPE_APP_FACTORY,0x10000,RecoveryBytes,"pb_recovery",false},
+    {ESP_PARTITION_TYPE_APP,ESP_PARTITION_SUBTYPE_APP_OTA_0,SlotOffset,SlotBytes,"pb_app",false},
     {ESP_PARTITION_TYPE_DATA,ESP_PARTITION_SUBTYPE_DATA_NVS,0x9000,0x5000,"nvs",false},
     {ESP_PARTITION_TYPE_DATA,ESP_PARTITION_SUBTYPE_DATA_OTA,0xe000,0x2000,"otadata",false},
-    {ESP_PARTITION_TYPE_DATA,ESP_PARTITION_SUBTYPE_DATA_SPIFFS,0x200000,0x200000,"spiffs",false}
+    {ESP_PARTITION_TYPE_DATA,ESP_PARTITION_SUBTYPE_DATA_SPIFFS,FilesystemOffset,FilesystemBytes,"spiffs",false}
 };
 auto& factory=parts[0]; auto& app=parts[1];
 const esp_partition_t *running=&app, *selected=&app;
@@ -34,7 +34,7 @@ const esp_partition_t* esp_partition_find_first(esp_partition_type_t type,esp_pa
 const esp_partition_t* esp_ota_get_running_partition(){return running;}
 const esp_partition_t* esp_ota_get_boot_partition(){return selected;}
 esp_err_t esp_image_verify(int,const esp_partition_pos_t* pos,esp_image_metadata_t* meta) {
-    assert(pos->size==SlotBytes);
+    assert(pos->size==(pos->offset==0x10000?RecoveryBytes:SlotBytes));
     if (corrupt_native || (pos->offset!=factory.address && pos->offset!=app.address)) return -1;
     meta->image.hash_appended=true; meta->image.segment_count=2;
     meta->segments[0].load_addr=0x3f400020; meta->segments[0].data_len=512;
@@ -71,8 +71,16 @@ int mbedtls_sha256_finish_ret(mbedtls_sha256_context* c,unsigned char* output) {
 }
 void mbedtls_sha256_free(mbedtls_sha256_context*) {}
 int main() {
-    std::memset(original.data()+0x120,0,64);std::strcpy(reinterpret_cast<char*>(original.data()+0x120),"PicoBrew OTA1|picostill|" PICOSTILL_VERSION);
+    std::memset(original.data()+0x120,0,64);std::strcpy(reinterpret_cast<char*>(original.data()+0x120),PB_FIELD_IDENTITY);
+    const unsigned native_magic=ESP_APP_DESC_MAGIC_WORD;
+    std::memcpy(original.data()+32,&native_magic,sizeof(native_magic));
     active=recovery=original;
+    std::strcpy(reinterpret_cast<char*>(recovery.data()+0x120),PB_RECOVERY_IDENTITY);
+    const auto immutable=recovery;
+    if (std::strcmp(IdentityPrefix,RecoveryPrefix)) {
+        recovery=active;FactoryFlash field_in_factory;field_in_factory.inspect();
+        assert(field_in_factory.role()==Role::Unavailable);recovery=immutable;
+    }
     FactoryFlash normal; normal.inspect();assert(normal.role()==Role::Application && normal.running_size()==original.size());
     std::string sha=normal.running_sha256();assert(sha.size()==64 && !normal.start(12));
     corrupt_native=true;assert(!normal.select_recovery() && selected==&app);corrupt_native=false;
@@ -91,7 +99,7 @@ int main() {
     upload();corrupt_native=true;assert(!rescue.finish(original.size(),Version,sha.c_str()));corrupt_native=false;
     upload();short_read=true;assert(!rescue.finish(original.size(),Version,sha.c_str()));short_read=false;
     upload();fail_selection=true;assert(!rescue.finish(original.size(),Version,sha.c_str()));fail_selection=false;
-    upload();assert(rescue.finish(original.size(),Version,sha.c_str()) && selected==&app && recovery==original);
+    upload();assert(rescue.finish(original.size(),Version,sha.c_str()) && selected==&app && recovery==immutable);
     app.size--;FactoryFlash broken;broken.inspect();assert(broken.role()==Role::InvalidRecovery && !broken.start(100));app.size++;
     running=&app;recovery[0x120]^=8;FactoryFlash missing;missing.inspect();assert(missing.role()==Role::Unavailable && !missing.select_recovery());
     puts("Factory flash gates, native image rejection, readback coverage, durable fallback and exact selection passed");

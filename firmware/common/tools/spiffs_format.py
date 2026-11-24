@@ -16,6 +16,7 @@ PROFILES = {
                      page_bytes=256, block_bytes=4096, metadata_bytes=4,
                      magic_length=True, gc_max_runs=10),
 }
+PROFILES['esp32-z-recovery'] = dict(PROFILES['esp32-4m'], partition_offset=0x291000, partition_bytes=0x16f000)
 
 
 def digest(path):
@@ -214,15 +215,17 @@ def staged_files(arguments, partition_bytes):
     return dict(sorted(result.items()))
 
 
-def inspect_image(data, profile, expected):
+def inspect_image(data, profile, expected, *, relocation=None):
     """Independent on-flash traversal, using the SDK-verified packed ABI.
 
     Checks magic, lookup/page IDs, finalized header flags and every data/index
     reference. This is separate from the SPIFFS native mount/readback itself.
     """
     geometry = PROFILES[profile]
-    if len(data) != geometry['partition_bytes']:
-        raise ValueError('Filesystem image length mismatch')
+    if relocation is None:
+        if len(data) != geometry['partition_bytes']: raise ValueError('Filesystem image length mismatch')
+    elif not profile.startswith('esp32') or not 3*4096 <= len(data) <= 0x400000 or len(data)%4096:
+        raise ValueError('Unsupported ESP32 migration geometry')
     pin = json.loads((ROOT / 'dependencies/spiffs-format-abi.json').read_text())
     layout = pin['layouts']['esp32' if profile.startswith('esp32') else 'esp8266']
     page_size, block_size = geometry['page_bytes'], geometry['block_bytes']
@@ -230,6 +233,7 @@ def inspect_image(data, profile, expected):
     per_block, lookup_pages = block_size // page_size, 1
     page_header, object_header, index_header = layout['page_header'], layout['object_header'], layout['index_header']
     pages, headers = {}, {}
+    identities = {}
     for block in range(block_count):
         base = block * block_size
         magic = (0x529 ^ page_size ^ (block_count - block if geometry['magic_length'] else 0)) & 0xffff
@@ -238,6 +242,10 @@ def inspect_image(data, profile, expected):
         for entry in range(per_block - lookup_pages):
             object_id = struct.unpack_from('<H', data, base + entry * 2)[0]
             if object_id in (0, 0xffff):
+                if relocation is not None and object_id == 0xffff:
+                    start = base + (lookup_pages+entry)*page_size
+                    if data[start:start+page_size] != b'\xff'*page_size:
+                        raise ValueError('Unallocated SPIFFS page contains unidentified data')
                 continue
             page = block * per_block + lookup_pages + entry
             start = page * page_size
@@ -246,6 +254,8 @@ def inspect_image(data, profile, expected):
                 raise ValueError('Filesystem lookup/page header mismatch')
             if bool(owner & 0x8000) == bool(flags & 4):
                 raise ValueError('Filesystem page index flag mismatch')
+            if (owner, span) in identities: raise ValueError('Duplicate live SPIFFS span')
+            identities[owner, span] = page
             pages[page] = (owner, span, flags)
             if owner & 0x8000 and span == 0:
                 if not flags & 0x40:
@@ -258,18 +268,22 @@ def inspect_image(data, profile, expected):
                 if b'\0' not in raw_name:
                     raise ValueError('Unterminated filesystem name')
                 name = raw_name.split(b'\0', 1)[0].decode('ascii')
-                if not valid_logical_name(name) or name in headers:
+                valid = valid_logical_name(name) if relocation is None else name.startswith('/') and name.isprintable()
+                if not valid or name in headers:
                     raise ValueError('Unexpected or duplicate filesystem name')
                 if data[start + object_header['type']] != 1:
                     raise ValueError('Unexpected filesystem object type')
-                if geometry['metadata_bytes'] and data[start + object_header['meta']:start + object_header['meta'] + 4] != bytes(4):
+                if length > len(data): raise ValueError('Filesystem object exceeds the partition')
+                meta = data[start + object_header['meta']:start + object_header['meta'] + 4] if geometry['metadata_bytes'] else b''
+                if relocation is not None: relocation['metadata'][name] = bytes(meta)
+                if relocation is None and geometry['metadata_bytes'] and meta != bytes(4):
                     raise ValueError('Staged metadata is not deterministic epoch zero')
                 headers[name] = (page, owner, length)
-    if set(headers) != set(expected):
+    if expected is not None and set(headers) != set(expected):
         raise ValueError('Filesystem names differ from staged inputs')
     referenced = set()
     for name, (page, owner, length) in headers.items():
-        if length != len(expected[name]):
+        if expected is not None and length != len(expected[name]):
             raise ValueError('Filesystem object length differs from staged input')
         reconstructed = bytearray()
         header_entries = (page_size - object_header['size']) // 2
@@ -280,20 +294,25 @@ def inspect_image(data, profile, expected):
                 index_page, slot, index_offset = page, span, object_header['size']
             else:
                 index_span = 1 + (span - header_entries) // index_entries
-                matches = [p for p, value in pages.items() if value[0] == owner and value[1] == index_span]
-                if len(matches) != 1:
-                    raise ValueError('Missing or duplicate filesystem index page')
-                index_page, slot, index_offset = matches[0], (span - header_entries) % index_entries, index_header['size']
+                index_page = identities.get((owner,index_span))
+                if index_page is None:
+                    raise ValueError('Missing filesystem index page')
+                slot, index_offset = (span - header_entries) % index_entries, index_header['size']
                 referenced.add(index_page)
             data_page = struct.unpack_from('<H', data, index_page * page_size + index_offset + slot * 2)[0]
             if data_page >= page_count or data_page not in pages or pages[data_page][:2] != (owner & 0x7fff, span):
                 raise ValueError('Filesystem data reference mismatch')
+            if data_page in referenced: raise ValueError('Filesystem data page has multiple owners')
+            if relocation is not None:
+                relocation['references'].setdefault(index_page, []).append((index_offset + slot * 2, data_page))
             referenced.add(data_page)
             start = data_page * page_size + page_header['size']
             reconstructed += data[start:start + min(data_capacity, length - len(reconstructed))]
-        if bytes(reconstructed) != expected[name]:
+        if relocation is not None: relocation['files'][name] = bytes(reconstructed)
+        if expected is not None and bytes(reconstructed) != expected[name]:
             raise ValueError('Independent filesystem data reconstruction failed')
         referenced.add(page)
+    if relocation is not None: relocation['pages']=pages
     if referenced != set(pages):
         raise ValueError('Filesystem contains unreferenced live pages')
     tail = block_count * block_size

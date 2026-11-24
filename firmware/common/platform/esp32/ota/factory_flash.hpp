@@ -1,10 +1,10 @@
 #pragma once
-#include "picostill/wireless_update.hpp"
+#include "picobrew/esp32_ota.hpp"
 extern "C" {
 #include <esp_ota_ops.h>
 }
 
-namespace picostill { namespace update {
+namespace picobrew { namespace esp32_ota {
 class FactoryFlash final : public Flash {
 public:
     void inspect();

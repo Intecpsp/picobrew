@@ -1,11 +1,11 @@
-#include "picostill/wireless_update.hpp"
+#include "picobrew/esp32_ota.hpp"
 #include <cassert>
 #include <cstdio>
 #include <cstring>
 #include <string>
 #include <vector>
 
-using namespace picostill::update;
+using namespace picobrew::esp32_ota;
 struct SimulatedFlash final : Flash {
     Role running = Role::Application, selected = Role::Application;
     bool ready = true, write_ok = true, finish_ok = true;
@@ -31,7 +31,7 @@ struct SimulatedFlash final : Flash {
     }
     bool finish(std::uint32_t n, const char* version, const char*) override {
         assert(running == Role::Recovery && selected == Role::Recovery && image.size() == n);
-        ++finishes; if (!finish_ok || std::strcmp(version,"1.2.7")) return false;
+        ++finishes; if (!finish_ok || std::strcmp(version,Version)) return false;
         selected = Role::Application; return true;
     }
 };
@@ -53,8 +53,8 @@ struct Requests {
 };
 int main() {
     const std::string enter = "{\"device_uid\":\"001122334455\"}";
-    auto begin = [](unsigned size, std::string version="1.2.7") {
-        return "{\"device_uid\":\"001122334455\",\"model\":\"picostill\",\"sha256\":\"" + std::string(64,'a') +
+    auto begin = [](unsigned size, std::string version=Version) {
+        return "{\"device_uid\":\"001122334455\",\"model\":\"" + std::string(Model) + "\",\"sha256\":\"" + std::string(64,'a') +
             "\",\"size\":" + std::to_string(size) + ",\"version\":\"" + version + "\"}";
     };
     auto chunk = [](unsigned id, unsigned off, const std::string& data) {

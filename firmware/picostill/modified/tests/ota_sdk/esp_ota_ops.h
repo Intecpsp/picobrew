@@ -1,6 +1,7 @@
 // Minimal host declarations for the pinned SDK boundary used by FactoryFlash.
 #pragma once
 #include <stddef.h>
+#define ESP_APP_DESC_MAGIC_WORD 0xabcd5432u
 #include <stdint.h>
 typedef int esp_err_t;
 enum { ESP_OK=0, ESP_IMAGE_VERIFY=0 };

@@ -9,6 +9,7 @@ import spiffs_format
 # Exact empty images from the release formatters. Refuse to modify a populated
 # or differently formatted filesystem, even if its logical directory is empty.
 EMPTY = {
+    "esp32-z-recovery": "c63d34b5dfda648f125d1c8f75f01bb089ec569b6622f72a79df193cbba4fa91",
     "esp8266-2m": "18a484702761fe942d97a59918fabc46d3f375c6e7c33ad252fbf612797aff48",
     "esp32-4m": "5ab1eab8391a2fb3e71c21c348b2c283e356cad0bcb7881367860279357909a6",
 }
@@ -26,7 +27,7 @@ def stage(empty, profile, key):
     # in page 3 and retires page 1. The other blocks retain their release bytes.
     page = 256
     file_id = 0x8001
-    esp32 = profile == "esp32-4m"
+    esp32 = profile.startswith("esp32")
     if esp32:
         struct.pack_into("<HHH", image, 0, 0, 1, file_id)
     else:
@@ -51,7 +52,7 @@ def stage(empty, profile, key):
 
 def matches_stored_esp32_key(image, key):
     """Read the live one-page key the device would select, without modifying SPIFFS."""
-    if len(image) != 0x200000 or not isinstance(key, str) or not re.fullmatch("[0-9a-f]{64}", key):
+    if len(image) not in (0x16f000, 0x200000) or not isinstance(key, str) or not re.fullmatch("[0-9a-f]{64}", key):
         return False
     page_size, block_size = 256, 4096
     count = len(image) // block_size
@@ -68,7 +69,7 @@ def matches_stored_esp32_key(image, key):
             owner, span, flags = struct.unpack_from("<HHB", image, offset)
             if owner != object_id or span or flags != 0xf8:
                 continue
-            name = image[offset+13:offset+45].split(b"\0", 1)[0]
+            name = bytes(image[offset+13:offset+45]).split(b"\0", 1)[0]
             if name not in (b"/pb/api.key", b"/pb/api.key.bak"):
                 continue
             if name in found:
@@ -86,3 +87,66 @@ def matches_stored_esp32_key(image, key):
     record = found.get(b"/pb/api.key", found.get(b"/pb/api.key.bak"))
     value = key.encode("ascii")
     return record in (value, value+b"\n", value+b"\r\n")
+
+
+def _read_migration_image(image):
+    contents = {"files": {}, "metadata": {}, "references": {}}
+    spiffs_format.inspect_image(image, "esp32-z-recovery", None, relocation=contents)
+    return contents
+
+
+def migrate_z_files(source, empty, key, *, paired):
+    """Repack all live ESP32 files, including transactional backups and metadata.
+
+    SPIFFS stores absolute page numbers in index pages. Relocate every live page
+    and referenced index, then decode and compare the entire logical directory
+    before returning any data to the USB writer.
+    """
+    profile = "esp32-z-recovery"
+    if hashlib.sha256(empty).hexdigest() != EMPTY[profile]:
+        raise ValueError("The target filesystem is not the pinned, empty Z layout")
+    if not source or source == b"\xff" * len(source):
+        if paired: raise ValueError("The paired Z filesystem is missing")
+        return stage(empty, profile, key) if key else empty
+    old = _read_migration_image(source)
+    files, meta = old["files"].copy(), old["metadata"].copy()
+    existing_key = files.get("/pb/api.key", files.get("/pb/api.key.bak"))
+    if paired or existing_key is not None:
+        if not key or existing_key not in (key.encode(), (key+"\n").encode(), (key+"\r\n").encode()):
+            raise ValueError("The existing Z device key does not match its Hub pairing")
+    # Avoid merging an ambiguous, partially initialized key into a new identity.
+    if existing_key is None and "/pb/api.key.tmp" in files:
+        raise ValueError("An unfinished API key transaction requires review")
+    initial = stage(empty, profile, key) if key and existing_key is None else empty
+    dest = bytearray(initial)
+    reserved = _read_migration_image(initial)
+    files.update(reserved["files"])
+    meta.update(reserved["metadata"])
+    pages = old["pages"]
+    # Leave three full erase blocks for SPIFFS garbage collection.
+    available = [p for p in range(1,(len(dest)//4096-3)*16) if p%16 and p not in reserved["pages"]
+                 and struct.unpack_from("<H", initial, p//16*4096+2*(p%16-1))[0] == 0xffff]
+    if len(pages) > len(available):
+        raise ValueError("The existing files exceed the new Z filesystem capacity")
+    mapping = dict(zip(sorted(pages),available))
+    used = {owner & 0x7fff for owner,_,_ in reserved["pages"].values()}
+    objects = {}
+    next_owner = 1
+    for old_page, new_page in mapping.items():
+        owner = pages[old_page][0] & 0x7fff
+        if owner not in objects:
+            while next_owner in used: next_owner += 1
+            objects[owner] = next_owner
+            next_owner += 1
+        new_id = objects[owner] | (pages[old_page][0] & 0x8000)
+        content = bytearray(source[old_page*256:(old_page+1)*256])
+        struct.pack_into("<H",content,0,new_id)
+        for index, data_page in old["references"].get(old_page, ()):
+            struct.pack_into("<H",content,index,mapping[data_page])
+        dest[new_page*256:(new_page+1)*256] = content
+        struct.pack_into("<H",dest,new_page//16*4096+2*(new_page%16-1),new_id)
+    result = bytes(dest)
+    check = _read_migration_image(result)
+    if check["files"] != files or check["metadata"] != meta:
+        raise ValueError("Z filesystem migration readback failed")
+    return result

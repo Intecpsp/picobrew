@@ -17,6 +17,40 @@ OEM=ROOT.parent/'reverse-engineered'
 COMMON=ROOT.parents[1]/'common'
 def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
+def build_recovery(args,output,objects,esptool,version):
+    """Link only the immutable receiver, Wi-Fi, storage, and pump/heat cutoff."""
+    from package_reference import verify_esp32_descriptor
+    sdk=args.arduino/'tools/sdk'
+    binary=args.toolchain/'bin'
+    directory=output/'link'
+    selected=['firmware/common/platform/esp32/'+name for name in (
+        'ota/factory_flash.cpp','ota/service.cpp','network_ports.cpp','startup.cpp','station.cpp','storage_ports.cpp')]
+    selected+=['firmware/common/src/'+name for name in ('provisioning.cpp','verified_storage.cpp','http_server.c','values.cpp','records.cpp')]
+    selected+=['firmware/z-series/modified/platform/esp32/'+name for name in ('msp_bus.cpp','output_cutoff.cpp','factory_application.cpp')]
+    elf=output/'recovery.elf'
+    props=dict(line.split('=',1) for line in (args.arduino/'platform.txt').read_text().splitlines()
+               if line and not line.startswith('#') and '=' in line)
+    command=[str(binary/'xtensa-esp32-elf-gcc'),'-nostdlib','-L'+str(sdk/'lib'),'-L'+str(sdk/'ld')]
+    for script in ('esp32_out.ld','esp32.common.ld','esp32.rom.ld','esp32.peripherals.ld','esp32.rom.spiram_incompatible_fns.ld'):
+        command+=['-T',script]
+    for symbol in ('ld_include_panic_highint_hdl','call_user_start_cpu0','esp_app_desc','z_recovery_identity','picobrew_z_recovery_main','uxTopUsedPriority','__cxa_guard_dummy','__cxx_fatal_exception'):
+        command+=['-u',symbol]
+    command+=['-Wl,--defsym,app_main=picobrew_z_recovery_main','-Wl,--gc-sections','-Wl,-static','-Wl,--start-group']
+    command += [str(directory/('owned_'+name.replace('/','_')+'.o')) for name in selected]
+    command += [str(objects/'libzseries_recovered_esp32.a'),str(directory/'libarduino_required.a')]
+    subprocess.run([*command,*props['compiler.c.elf.libs'].split(),'-Wl,--end-group','-Wl,-EL','-o',str(elf)],check=True)
+    nm=subprocess.check_output([str(binary/'xtensa-esp32-elf-nm'),'-C',str(elf)],text=True)
+    for name in ('FirmwareApplication::setup(', 'CoreApplication::tick(', 'HeadApplication::setup(', 'Adapter::execute(', 'Engine::begin('):
+        if name in nm:raise ValueError('Factory recovery linked an appliance controller: '+name)
+    for name in ('picobrew_z_recovery_main','z_recovery_identity','force_outputs_off()','FactoryFlash::finish('):
+        if name not in nm:raise ValueError('Missing factory recovery symbol: '+name)
+    image=output/'recovery.bin'
+    subprocess.run([sys.executable,str(esptool),'--chip','esp32','elf2image','--flash_mode','dio','--flash_freq','40m','--flash_size','4MB',
+                    '-o',str(image),str(elf)],check=True)
+    verify_esp32_descriptor(image.read_bytes(),version,'z-series',recovery=True)
+    return {'path':image.name,'sha256':digest(image),'bytes':image.stat().st_size,'elf_sha256':digest(elf),'source_files':selected}
+
+
 def main():
     parser=argparse.ArgumentParser(description=__doc__)
     for option in ('toolchain','arduino','arduinojson','ethernet2','output'):
@@ -34,11 +68,12 @@ def main():
         '--toolchain',str(args.toolchain),'--arduino',str(args.arduino),
         '--objects',str(objects),'--output',str(output/'link'),
         '--entry',str(ROOT/'platform/esp32/application_main.cpp'),'--profile','standalone']
-    for folder in [ROOT/'include',ROOT/'platform/esp32',COMMON/'include',COMMON/'src',COMMON/'platform/esp32']:
+    for folder in [ROOT/'include',ROOT/'platform/esp32',COMMON/'include',COMMON/'src',COMMON/'platform/esp32',COMMON/'platform/esp32/ota']:
         command+=['--extra-include',str(folder)]
     sources=sorted((COMMON/'src').glob('*.cpp'))+[COMMON/'src/http_server.c']
     sources+=sorted((COMMON/'platform/esp32').glob('*.cpp'))+sorted((ROOT/'src').glob('*.cpp'))
-    sources += [ROOT/'platform/esp32/msp_bus.cpp']
+    sources += sorted((COMMON/'platform/esp32/ota').glob('*.cpp'))
+    sources += [ROOT/'platform/esp32'/name for name in ('msp_bus.cpp','output_cutoff.cpp','factory_application.cpp')]
     for source in sources:command+=['--extra-source',str(source)]
     subprocess.run(command,check=True)
     report=json.loads((output/'link/link-report.json').read_text())
@@ -69,6 +104,13 @@ def main():
     report['variant_mapping']='Z1/Z2 mapping has not been established from an original device backup'
     report['task_stack_bytes']=32768
     report['scope']+=' The standalone profile replaces remote service stages with authenticated local API/history/telemetry and a local recipe catalogue. Persistent storage is checked without automatic formatting. A latched output inhibit and bounded MSP bus transactions are modified policies. Stack frame sizes are compiler estimates, not measured runtime stack or heap high-water marks.'
+    sys.path.insert(0,str(COMMON/'tools'))
+    from package_reference import verify_esp32_descriptor
+    version='1.2.9'
+    verify_esp32_descriptor(application.read_bytes(),version,'z-series')
+    report.update(model='z-series',firmware_version=version,ota_protocol='esp32-factory-v1')
+    report['application_image'].update(reference_partition_offset=0xf0000,reference_partition_bytes=0x1a1000)
+    report['recovery_image']=build_recovery(args,output,objects,esptool,version)
     report['build_script_sha256']=digest(__file__)
     (output/'standalone-build-report.json').write_text(json.dumps(report,indent=2)+'\n')
 

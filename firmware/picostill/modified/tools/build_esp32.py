@@ -35,7 +35,7 @@ def main():
     flags=['-Os','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-mlongcalls','-ffunction-sections','-fdata-sections',
            '-fno-fast-math','-ffp-contract=off','-DESP_PLATFORM','-DESP32','-DARDUINO_ARCH_ESP32','-DARDUINO=10805',
            '-DF_CPU=240000000L','-DCORE_DEBUG_LEVEL=0','-DHAVE_CONFIG_H']
-    includes=[ROOT/'include',ROOT/'platform/esp32',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'platform/esp32',
+    includes=[ROOT/'include',ROOT/'platform/esp32',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'platform/esp32',COMMON/'platform/esp32/ota',
               arduino/'cores/esp32',arduino/'variants/esp32']
     sdk_sources=[p for p in sorted((arduino/'cores/esp32').iterdir()) if p.suffix in ('.c','.cpp','.S') and p.name!='main.cpp']
     for library in ('Wire','WiFi'):
@@ -43,6 +43,7 @@ def main():
         sdk_sources.extend(p for p in sorted(folder.rglob('*')) if p.suffix in ('.c','.cpp','.S'))
     includes += sorted(p for p in (sdk/'include').iterdir() if p.is_dir())
     own=list(sorted((ROOT/'src').glob('*.cpp')))+list(sorted((ROOT/'platform/esp32').glob('*.cpp')))
+    own += [COMMON/'platform/esp32/ota'/name for name in ('service.cpp','factory_flash.cpp')]
     own += [OEM/'src'/name for name in ('core.cpp','enums.cpp','animations.cpp','sensors.cpp')]
     own += [OEM/'platform/esp32/arduino_ports.cpp']
     own += [COMMON/'src'/name for name in ('engine.cpp','api.cpp','values.cpp','records.cpp','history.cpp','history_records.cpp','telemetry.cpp',
@@ -87,7 +88,7 @@ def main():
               'picobrew::standalone::Provisioning::feed(', 'picobrew::standalone::esp32::initialize_arduino()',
               'picobrew::standalone::esp32::connect_station(', 'picobrew::standalone::esp32::SpiffsFiles::mount()',
               'picobrew::standalone::esp32::TelemetrySocket::send(', 'pico_http_server_poll',
-              'picostill::update::Service::handle(', 'picostill::update::FactoryFlash::finish(',
+              'picobrew::esp32_ota::Service::handle(', 'picobrew::esp32_ota::FactoryFlash::finish(',
               'esp_ota_begin', 'esp_ota_set_boot_partition']
     forbidden=[' initArduino',' loopTask(', 'picostill::oem::Machine::', 'picostill::oem::Application::',
                'picostill::oem::Backend::','picostill::oem::FirmwareUpdate::','picostill::oem::CredentialStorage::','picostill::oem::HttpServer::']

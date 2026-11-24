@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.8
+# Pico Z standalone firmware 1.2.9
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -12,6 +12,12 @@ software reference, not a qualified initial installation. No build or test
 command flashes or operates a brewer.
 
 The idle home screen suggests Rinse after a brew and Clean after three brews. A completed cleaning program clears its reminder. The local website and authenticated status report the same machine records.
+
+## Wireless firmware updates
+
+Hub USB setup can provision an individually identified Z-series module with protected recovery. The Hub backs up the whole device and verifies the active stock image and partition layout first. For previously paired standalone installations, it also saves the running flash before repartitioning, checks the existing key, and verifies each migrated file and its metadata. Unreadable storage, an unknown application, or data that cannot fit stops setup before a write.
+
+A provisioned module advertises `esp32-factory-v1`. From the machine’s Firmware panel, an idle module can restart into recovery, accept a matching application, read it back, and select it for boot. Recovery uses the existing Wi-Fi settings and device key and leaves the heater and pumps off. The 4 MiB layout reserves 896 KiB for recovery, 1,668 KiB for the application and 1,468 KiB for SPIFFS. USB recovery and OTA still require operating trials on physical hardware.
 
 ## Implemented local operation
 

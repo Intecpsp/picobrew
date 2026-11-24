@@ -51,11 +51,12 @@ def device(model, version=None):
         version = version or ("0_0_35" if model == "picostill" else "0_0_119")
         chip = MemoryDevice("ESP32", b"\xff" * (4*usb.MIB))
         _, parts = usb.reference(model)
-        if model == "picostill" and "recovery.bin" in parts:
+        if model in ("picostill","z-series") and "recovery.bin" in parts:
             # The specimen starts with the historically supported single-factory
             # layout. Never import a new release partition table as a stock fact.
             parts = dict(parts)
-            with zipfile.ZipFile(usb.ROOT/"firmware/picostill/modified/releases/picostill/1.2.6.zip") as old:
+            previous = "1.2.6" if model == "picostill" else "1.2.8"
+            with zipfile.ZipFile(usb.ROOT/f"firmware/{model}/modified/releases/{model}/{previous}.zip") as old:
                 parts["partitions.bin"] = old.read("partitions.bin")
         for key in ("bootloader.bin", "partitions.bin"):
             offset, _ = usb.ESP32_LAYOUT[key]
@@ -102,7 +103,7 @@ class USBTest(unittest.TestCase):
                 preserved = slice(-0x5000, None) if model == "picoferm" else slice(0x9000, 0xe000 if "otadata.bin" in components else 0x10000)
                 self.assertEqual(chip.contents[preserved], before[preserved])
                 if "recovery.bin" in components:
-                    self.assertEqual(start, 0x100000)
+                    self.assertEqual(start, 0xf0000 if model=="z-series" else 0x100000)
                     recovery = components["recovery.bin"]
                     self.assertEqual(chip.contents[0x10000:0x10000 + len(recovery)], recovery)
                     self.assertEqual(chip.contents[0xe000:0x10000], components["otadata.bin"])
@@ -126,8 +127,10 @@ class USBTest(unittest.TestCase):
                 key = secrets.token_hex(32)
                 usb.operation("install", model, chip, data, ask=lambda _: chip.identity.mac, api_key=key)
                 layout = usb.FERM_LAYOUT if model == "picoferm" else usb.ESP32_LAYOUT
-                start, size = layout["spiffs.bin"]
                 profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
+                if model == "z-series" and "recovery.bin" in usb.reference(model)[1]:
+                    layout,profile=usb.Z_LAYOUT,"esp32-z-recovery"
+                start, size = layout["spiffs.bin"]
                 image = bytes(chip.contents[start:start+size])
                 self.assertTrue(spiffs_format.inspect_image(image, profile, {"/pb/api.key": key.encode()})["exact_contents"])
                 writes = len(chip.writes)
@@ -177,6 +180,7 @@ class USBTest(unittest.TestCase):
         chip.contents[0x9110:0x9116] = b"config"
         chip.contents[-1024:-1015] = b"brew data"
         used = bytes(chip.contents)
+        self.assertTrue(usb.esp_provisioning.matches_stored_esp32_key(chip.contents[0x200000:0x400000], key))
         writes = len(chip.writes)
         with self.assertRaisesRegex(ValueError, "pairing"):
             usb.operation("install", "picostill", chip, self.data, api_key=secrets.token_hex(32))
@@ -189,6 +193,38 @@ class USBTest(unittest.TestCase):
         self.assertEqual(chip.contents[0x200000:], used[0x200000:])
         self.assertEqual(chip.contents[0x9000:0xe000], used[0x9000:0xe000])
         self.assertEqual(usb.load_original(usb.backup_path(self.data, chip.identity), chip.identity, "picostill"), stock)
+
+    def test_z_usb_migration_preserves_storage_and_original(self):
+        import secrets
+        import esp_provisioning
+        chip=device("z-series")
+        original=bytes(chip.contents)
+        key=secrets.token_hex(32)
+        # Restore the actually published legacy USB setup for this simulated unit.
+        with zipfile.ZipFile(usb.ROOT/"firmware/z-series/modified/releases/z-series/1.2.8.zip") as old:
+            parts={n:old.read(n) for n in usb.ESP32_LAYOUT}
+        with patch.object(usb,"reference",return_value=("1.2.8",parts)):
+            usb.operation("install","z-series",chip,self.data,ask=lambda _:chip.identity.mac,api_key=key)
+        chip.contents[0x9100:0x9109]=b"unit data"
+        before=bytes(chip.contents)
+        damaged=chip.contents[0x200000+252]
+        chip.contents[0x200000+252] ^= 1
+        count=len(chip.writes)
+        with self.assertRaises(ValueError):
+            usb.operation("install","z-series",chip,self.data,api_key=key)
+        self.assertEqual(count,len(chip.writes))
+        chip.contents[0x200000+252]=damaged
+        usb.operation("install","z-series",chip,self.data,ask=lambda _:chip.identity.mac,api_key=key)
+        base=usb.backup_path(self.data,chip.identity)
+        self.assertEqual(usb.load_original(base,chip.identity,"z-series"),original)
+        capture=base.with_name("before-repartition-"+usb.sha(before)+".bin")
+        self.assertEqual(usb.private_files.read_regular(capture,len(before),private=True),before)
+        self.assertEqual(chip.contents[:0x8000],before[:0x8000])
+        self.assertEqual(chip.contents[0x9000:0xe000],before[0x9000:0xe000])
+        self.assertEqual(usb.esp_stock_partitions.selected_app_slice(chip.contents).start,0xf0000)
+        self.assertEqual(esp_provisioning._read_migration_image(before[0x200000:])["files"],
+                         esp_provisioning._read_migration_image(chip.contents[0x291000:])["files"])
+        usb.operation("install","z-series",chip,self.data,ask=lambda _:self.fail("retry wrote"),api_key=key)
 
     def test_picostill_refuses_mixed_stock_and_custom_slots(self):
         chip = device("picostill")

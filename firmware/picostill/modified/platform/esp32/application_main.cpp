@@ -19,7 +19,7 @@
 #include <cstring>
 
 namespace {
-namespace ota = picostill::update;
+namespace ota = picobrew::esp32_ota;
 namespace api = picobrew::standalone;
 namespace sdk = picobrew::standalone::esp32;
 class Application {

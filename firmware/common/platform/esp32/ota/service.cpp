@@ -1,13 +1,13 @@
-#include "picostill/wireless_update.hpp"
-#include "../../../common/src/json.hpp"
+#include "picobrew/esp32_ota.hpp"
+#include "../../../src/json.hpp"
 #include <algorithm>
 #include <cstring>
 
-namespace picostill { namespace update {
+namespace picobrew { namespace esp32_ota {
 namespace {
 using picobrew::standalone::detail::Json;
 constexpr char Path[] = "/api/v1/firmware/ota";
-enum Field : unsigned { Device = 1, Model = 2, VersionName = 4, Digest = 8, Size = 16,
+enum Field : unsigned { Device = 1, ModelField = 2, VersionName = 4, Digest = 8, Size = 16,
                         Session = 32, Offset = 64, Data = 128 };
 struct Fields {
     char uid[32] = {}, model[16] = {}, version[32] = {}, digest[65] = {};
@@ -38,7 +38,7 @@ bool parse(const PicoHttpRequest& request, unsigned required, Fields& body) {
         char key[40]; if (!in.key(key)) return false;
         unsigned field;
         if (!std::strcmp(key, "device_uid")) { field = Device; if (!in.string(body.uid, sizeof(body.uid))) return false; }
-        else if (!std::strcmp(key, "model")) { field = Model; if (!in.string(body.model, sizeof(body.model))) return false; }
+        else if (!std::strcmp(key, "model")) { field = ModelField; if (!in.string(body.model, sizeof(body.model))) return false; }
         else if (!std::strcmp(key, "version")) { field = VersionName; if (!in.string(body.version, sizeof(body.version))) return false; }
         else if (!std::strcmp(key, "sha256")) { field = Digest; if (!in.string(body.digest, sizeof(body.digest))) return false; }
         else if (!std::strcmp(key, "size")) { field = Size; if (!number(in, 1, SlotBytes, body.size)) return false; }
@@ -85,9 +85,9 @@ bool Service::handle(const PicoHttpRequest& req, PicoHttpResponse& res, char* ar
     const char* action = req.path + sizeof(Path) - 1;
     if (!*action && req.method == PICO_HTTP_GET) {
         int n = ::snprintf(arena, capacity,
-              "{\"protocol\":\"%s\",\"model\":\"picostill\",\"device_uid\":\"%s\",\"mode\":\"%s\",\"version\":\"%s\","
+              "{\"protocol\":\"%s\",\"model\":\"%s\",\"device_uid\":\"%s\",\"mode\":\"%s\",\"version\":\"%s\","
               "\"image_sha256\":\"%s\",\"image_size\":%u,\"max_bytes\":%u,\"session\":%u,\"offset\":%u,\"size\":%u,\"sha256\":\"%s\",\"target_version\":\"%s\"}",
-              Protocol, uid, role == Role::Recovery ? "recovery" : "application", Version,
+              Protocol, Model, uid, role == Role::Recovery ? "recovery" : "application", Version,
               flash_.running_sha256(), unsigned(flash_.running_size()), unsigned(SlotBytes), unsigned(session_), unsigned(offset_), unsigned(size_), digest_, version_);
         return n >= 0 && static_cast<std::size_t>(n) < capacity ? reply(res, 200, arena) : reply(res, 500, "{}");
     }
@@ -103,8 +103,8 @@ bool Service::handle(const PicoHttpRequest& req, PicoHttpResponse& res, char* ar
     }
     if (role != Role::Recovery) return reply(res, 409, "{\"error\":\"requires_recovery\"}");
     if (!std::strcmp(action, "/begin")) {
-        if (!parse(req, Device|Model|VersionName|Digest|Size, b) || std::strcmp(uid, b.uid) ||
-            std::strcmp(b.model, "picostill") || !version_ok(b.version) || !digest_ok(b.digest))
+        if (!parse(req, Device|ModelField|VersionName|Digest|Size, b) || std::strcmp(uid, b.uid) ||
+            std::strcmp(b.model, Model) || !version_ok(b.version) || !digest_ok(b.digest))
             return reply(res, 400, "{\"error\":\"invalid_package\"}");
         if (!session_ || size_ != b.size || std::strcmp(version_, b.version) || std::strcmp(digest_, b.digest)) {
             if (session_) flash_.abandon();
