@@ -15,39 +15,26 @@ def compose(original, toolchain, directory):
         raise ValueError("Expected the recognized Zymatic 1.1.14 application")
     candidate = bytearray(original)
 
-    def build(name, source, *linker_options):
+    def build(name, sources, linker):
         elf = directory / (name + ".elf")
-        binary = directory / (name + ".bin")
         subprocess.run([toolchain / "avr-gcc", "-Os", "-mmcu=atmega1284p", "-nostdlib",
-                        *linker_options, HERE / source, "-o", elf], check=True)
-        subprocess.run([toolchain / "avr-objcopy", "-j", ".text", "-O", "binary", elf, binary], check=True)
-        symbols = {}
-        for line in subprocess.check_output([toolchain / "avr-nm", elf], text=True).splitlines():
-            parts = line.split()
-            if len(parts) == 3 and parts[1] in ("t", "T"):
-                symbols[parts[2]] = int(parts[0], 16)
-        return binary.read_bytes(), symbols
+                        "-Wl,--relax,-T," + str(HERE / linker), "-o", elf,
+                        *(HERE / source for source in sources)], check=True)
+        return elf
 
-    encoder, enc = build("encoder", "escape.c", "-Wl,-e,encode", "-Wl,-T," + str(HERE / "escape.ld"))
-    reader, rd = build("reader", "read_fields.S", "-Wl,-e,ethernet,-Ttext=0xccba")
-    if enc["encode"] != 0x2ed0 or rd["ethernet"] != 0xccba:
-        raise ValueError("Original entry points must be preserved")
-    if original[0x341a:0x35dc] != original[0xcd34:0xcef6]:
-        raise ValueError("Original network parsers no longer share their field conversion code")
+    def section(elf, name):
+        binary = directory / (elf.stem + name + ".bin")
+        subprocess.run([toolchain / "avr-objcopy", "-j", name, "-O", "binary", elf, binary], check=True)
+        return binary.read_bytes()
 
-    def branch(site, expected, target, call=False):
-        if original[site:site + 4] != bytes.fromhex(expected) or target & 1 or target >= 0x20000:
-            raise ValueError(f"Unexpected original instruction or target at {site:#x}")
-        candidate[site:site + 4] = bytes([0x0e if call else 0x0c, 0x94]) + (target // 2).to_bytes(2, "little")
-
-    branch(0x33a0, "2f923f92", rd["wifi"])
-    branch(0x3402, "0e944019", rd["fetch"], call=True)
-    branch(0x35e0, "81e0f501", rd["success"])
-    branch(0x361e, "2f900895", rd["cleanup"])
+    encoder = build("encoder", ["escape.c"], "escape.ld")
+    readers = build("readers", ["read_fields.c", "read_fields.S"], "read_fields.ld")
     ranges = []
-    for start, end, code in ((0x2ed0, 0x3228, encoder), (0xccba, 0xcf38, reader)):
-        if len(code) > end - start:
-            raise ValueError("Replacement exceeds its original region")
+    for start, end, code in ((0x2ed0, 0x3228, section(encoder, ".text")),
+                             (0x33a0, 0x3622, section(readers, ".one")),
+                             (0xccba, 0xcf38, section(readers, ".two"))):
+        if not code or len(code) > end - start:
+            raise ValueError("Replacement exceeds its original region or was omitted")
         candidate[start:end] = code + b"\xff" * (end - start - len(code))
         ranges.append((start + len(code), end))
     return bytes(candidate), ranges

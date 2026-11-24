@@ -111,7 +111,7 @@ def link_application(directory, toolchain):
         if len(parts) == 3:
             symbols[parts[2]] = int(parts[0], 16)
     pieces = {}
-    for section in ("text", "low", "crc_hole", "net_encoder", "net_reader"):
+    for section in ("text", "low", "crc_hole", "net_encoder", "net_wifi_fields", "net_reader"):
         filename = section + ".bin"
         tool("avr-objcopy", "-O", "binary", "-j", "." + section, elf, filename)
         pieces[section] = (directory / filename).read_bytes()
@@ -125,7 +125,7 @@ def compact_layout(original, toolchain, directory):
     network, windows = compact_network(original, toolchain, directory)
     composed = bytearray(network)
     symbols, pieces = link_application(directory, toolchain)
-    for name, (start, end) in zip(("net_encoder", "net_reader"), windows):
+    for name, (start, end) in zip(("net_encoder", "net_wifi_fields", "net_reader"), windows, strict=True):
         part = pieces[name]
         if (symbols["__" + name + "_start"] != start or not 0 < len(part) <= end - start
                 or composed[start:end] != b"\xff" * (end - start)):

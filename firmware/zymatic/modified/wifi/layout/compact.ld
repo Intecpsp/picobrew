@@ -5,19 +5,24 @@ MEMORY {
   low (rx) : ORIGIN = 0x10b6, LENGTH = 0xbc0
   crc (rx) : ORIGIN = 0x2178, LENGTH = 0xfe
   encoder (rx) : ORIGIN = 0x2f72, LENGTH = 0x2b6
-  parser (rx) : ORIGIN = 0xcd06, LENGTH = 0x232
+  wifi_fields (rx) : ORIGIN = 0x352c, LENGTH = 0xf6
+  wired_fields (rx) : ORIGIN = 0xccc2, LENGTH = 0x276
   app (rx) : ORIGIN = 0x1b920, LENGTH = 0x26e0
   globals (rw) : ORIGIN = 0x802c8a, LENGTH = 0x300
 }
 SECTIONS {
   .net_encoder : {
     __net_encoder_start = .;
-    KEEP(wifi_cc3000_spi.o(.text.zym_spi_bind .text.zym_spi_submit))
+    KEEP(wifi_cc3000_spi.o(.text.bind_from .text.zym_spi_receive))
   } > encoder
+  .net_wifi_fields : {
+    __net_wifi_fields_start = .;
+    KEEP(wifi_cc3000_spi.o(.text.zym_spi_yield_to_stock .text.zym_spi_resume_from_stock .text.byte_io .text.zym_spi_bind .text.zym_spi_record_irq))
+  } > wifi_fields
   .net_reader : {
     __net_reader_start = .;
-    KEEP(wifi_cc3000_spi.o(.text.zym_spi_receive .text.byte_io .text.finish .text.owns_radio*))
-  } > parser
+    KEEP(wifi_cc3000_spi.o(.text.zym_spi_submit .text.owns_radio* .text.finish))
+  } > wired_fields
   .crc_hole : {
     KEEP(*(.crc_hole))
     KEEP(wifi_cc3000_broker.o(.text.zym_broker_begin .text.zym_broker_release_oem .text.zym_broker_link_lost))

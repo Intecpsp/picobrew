@@ -1,0 +1,19 @@
+struct site_fragment { uint16_t end, word; };
+static const struct site_fragment site_index[] __attribute__((section(".low_web"), used)) = {
+@INDEX@
+};
+
+/* The route checks its individual asset length before requesting a byte. */
+__attribute__((noinline,used,externally_visible))
+uint8_t candidate_site_byte(uint16_t offset)
+{
+    uint8_t first = 0, last = sizeof(site_index) / sizeof(site_index[0]);
+    while (first < last) {
+        uint8_t mid = (first + (uint16_t)last) / 2;
+        if (offset < pgm_read_word_near(&site_index[mid].end)) last = mid;
+        else first = mid + 1;
+    }
+    uint16_t word = pgm_read_word_near(&site_index[first].word);
+    uint16_t start = first ? pgm_read_word_near(&site_index[first - 1].end) : 0;
+    return pgm_read_byte_far((uint32_t)word * 2 + offset - start);
+}

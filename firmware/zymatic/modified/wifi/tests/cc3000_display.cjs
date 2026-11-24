@@ -48,12 +48,13 @@ module.exports = function verifyDisplayHandoff({ words, boot, run, avrBin }) {
         const tool = (name, args) => execFileSync(path.join(avrBin, name), args, {encoding:'utf8'});
         tool('avr-gcc', ['-mmcu=atmega1284p', '-Os', '-Wall', '-Wextra', '-Werror', '-nostartfiles',
             '-nostdlib', '-Wl,-Ttext=0x1c000,-Tbss=0x803300', path.resolve(__dirname, '../cc3000_spi_bus.c'),
-            path.resolve(__dirname, '../cc3000_spi.c'), '-o', elf]);
+            path.resolve(__dirname, '../cc3000_spi.c'), path.resolve(__dirname, '../cc3000_broker.c'),
+            path.resolve(__dirname, '../cc3000.c'), '-o', elf, '-lc', '-lgcc']);
         tool('avr-objcopy', ['-O','binary','-j','.text',elf,bin]);
         const binary = readFileSync(bin), symbols = new Map();
         for (const match of tool('avr-nm', [elf]).matchAll(/^([\da-f]+) T (zym_spi_\w+)$/gm))
             symbols.set(match[2], parseInt(match[1], 16));
-        assert.equal(symbols.size, 8);
+        assert.equal(symbols.size, 12);
         for (let i = 0; i < binary.length; i+=2) words[(base+i)/2] = binary.readUInt16LE(i);
         for (const at of [0x5044, 0x8738]) {
             assert.equal(words[at/2], 0xb58c); // original IN r24, SPCR

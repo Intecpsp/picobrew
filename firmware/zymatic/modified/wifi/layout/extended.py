@@ -11,27 +11,29 @@ import tempfile
 
 ROOT = Path(__file__).resolve().parents[2]
 
+def stage(directory):
+    repo = ROOT.parents[2]
+    component = ROOT.relative_to(repo)
+    archive = subprocess.check_output(["git", "archive", "HEAD", str(component), "tools/private_files.py"], cwd=repo)
+    with tarfile.open(fileobj=io.BytesIO(archive)) as source:
+        for member in source:
+            if member.isfile():
+                target = directory / member.name
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(source.extractfile(member).read())
+    runtime = directory / component
+    subprocess.run(["git", "apply", "--no-index", str(Path(__file__).with_name("extended-identity.patch"))],
+                   cwd=runtime, check=True)
+    return runtime
+
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--toolchain", required=True, type=Path)
     parser.add_argument("--oem-file", type=Path, help="Run the AVR regressions with this original 1.1.14 ZIP or HEX")
     args = parser.parse_args()
-    repo = ROOT.parents[2]
-    component = ROOT.relative_to(repo)
-    # Only copy the tracked sources, release templates and test fixtures to the temporary build.
-    archive = subprocess.check_output(["git", "archive", "HEAD", str(component), "tools/private_files.py"], cwd=repo)
     with tempfile.TemporaryDirectory() as temporary:
-        directory = Path(temporary)
-        with tarfile.open(fileobj=io.BytesIO(archive)) as source:
-            for member in source:
-                if member.isfile():
-                    target = directory / member.name
-                    target.parent.mkdir(parents=True, exist_ok=True)
-                    target.write_bytes(source.extractfile(member).read())
-        runtime = directory / component
-        subprocess.run(["git", "apply", "--no-index", str(Path(__file__).with_name("extended-identity.patch"))],
-                       cwd=runtime, check=True)
+        runtime = stage(Path(temporary))
         subprocess.run([sys.executable, runtime / "tools/compile_extension.py", "--toolchain",
                         args.toolchain.resolve(), "--out-dir", runtime / "extension"], check=True)
         manifest = json.loads((runtime / "extension/extension.json").read_bytes())
