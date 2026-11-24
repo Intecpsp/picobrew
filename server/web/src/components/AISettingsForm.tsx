@@ -354,24 +354,30 @@ export function AISettingsForm() {
         <select
           value={form.provider}
           disabled={busy}
-          onChange={(event) => chooseConnection(event.target.value, mode)}
+          onChange={(event) => {
+            const provider = event.target.value
+            chooseConnection(provider, provider === 'gemini' ? 'api_key' : mode)
+          }}
         >
           <option value="openai">OpenAI / ChatGPT</option>
           <option value="anthropic">Anthropic / Claude</option>
+          <option value="gemini">Google / Gemini</option>
         </select>
       </Field>
-      <Field label="Connection method">
-        <select
-          value={mode}
-          disabled={busy}
-          onChange={(event) => chooseConnection(form.provider, event.target.value as AIAuthMode)}
-        >
-          <option value="api_key">API key · provider API billing</option>
-          <option value="subscription">
-            {form.provider === 'openai' ? 'ChatGPT subscription' : 'Claude subscription'}
-          </option>
-        </select>
-      </Field>
+      {form.provider !== 'gemini' && (
+        <Field label="Connection method">
+          <select
+            value={mode}
+            disabled={busy}
+            onChange={(event) => chooseConnection(form.provider, event.target.value as AIAuthMode)}
+          >
+            <option value="api_key">API key · provider API billing</option>
+            <option value="subscription">
+              {form.provider === 'openai' ? 'ChatGPT subscription' : 'Claude subscription'}
+            </option>
+          </select>
+        </Field>
+      )}
       {subscriptionMode ? (
         <section aria-label="Subscription connection">
           <p className="help-text">
@@ -493,7 +499,9 @@ export function AISettingsForm() {
           hint={
             form.key_configured
               ? 'A key is saved for this provider. Leave this blank to keep it. Uses provider API billing.'
-              : 'Enter an API key from this provider. Uses provider API billing and any eligible account credits.'
+              : form.provider === 'gemini'
+                ? 'Enter a key from Google AI Studio. Your Gemini API plan and quotas apply.'
+                : 'Enter an API key from this provider. Uses provider API billing and any eligible account credits.'
           }
         >
           <input

@@ -82,7 +82,7 @@ func (s *Server) subscriptionStatus(ctx context.Context, provider string) (ai.Su
 
 func (s *Server) aiSubscription(w http.ResponseWriter, r *http.Request) {
 	provider := r.URL.Query().Get("provider")
-	if !validAIProvider(provider) {
+	if !aiSubscriptionProvider(provider) {
 		s.fail(w, 400, "provider", "Choose OpenAI or Anthropic")
 		return
 	}

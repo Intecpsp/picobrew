@@ -310,12 +310,13 @@ func buildSchemas() schemaMap {
 	for k, v := range r.properties("Config") {
 		aiConfig[k] = v
 	}
-	aiConfig["api_key"] = schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "Provider API key, not a ChatGPT/Claude consumer account password. Blank preserves the stored key."}
+	aiConfig["provider"] = schemaMap{"type": "string", "enum": []string{"openai", "anthropic", "gemini"}}
+	aiConfig["api_key"] = schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "Provider API key. Leave blank to preserve the stored key for this provider."}
 	aiConfig["auth_mode"] = schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}, "default": "api_key", "description": "Explicit billing mode. Subscription failures never fall back to an API key."}
 	aiConfig["model"] = schemaMap{"type": "string", "maxLength": 512, "description": "Provider model ID. Model discovery is available before choosing a model or enabling AI."}
 	r.values["AISettingsInput"] = schemaObject(aiConfig, "provider")
 	r.values["AIModelsInput"] = schemaObject(schemaMap{
-		"provider":  schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}},
+		"provider":  schemaMap{"type": "string", "enum": []string{"openai", "anthropic", "gemini"}},
 		"auth_mode": schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}, "default": "api_key"},
 		"api_key":   schemaMap{"type": "string", "maxLength": 1024, "writeOnly": true, "description": "API-key mode only. Optional unsaved key, used only for model discovery. Omit to use this provider's saved key. This operation does not change settings or credentials."},
 	}, "provider")
@@ -454,7 +455,7 @@ func operationParameters(e endpoint) []any {
 		query("mode", "Limit advice to one stage of the brewing workflow.", schemaMap{"type": "string", "enum": []string{"recipe", "live", "analysis"}})
 	case "/ai/models":
 		if e.method == "GET" {
-			query("provider", "Provider to query. Defaults to the selected provider.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic"}})
+			query("provider", "Provider to query. Defaults to the selected provider.", schemaMap{"type": "string", "enum": []string{"openai", "anthropic", "gemini"}})
 			query("auth_mode", "Choose subscription or API-key access. An omitted mode uses saved settings only when provider is also omitted; otherwise API-key mode applies.", schemaMap{"type": "string", "enum": []string{"api_key", "subscription"}})
 		}
 	case "/ai/subscription":

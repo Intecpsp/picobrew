@@ -47,11 +47,15 @@ func (s *Server) aiSettings(w http.ResponseWriter, r *http.Request) {
 		in.Model = strings.TrimSpace(in.Model)
 		in.AuthMode = ai.NormalizeAuthMode(in.AuthMode)
 		if !validAIProvider(in.Provider) {
-			s.fail(w, 400, "provider", "Choose OpenAI or Anthropic")
+			s.fail(w, 400, "provider", "Choose OpenAI, Anthropic, or Google Gemini")
 			return
 		}
-		if !validAIAuthMode(in.AuthMode) {
-			s.fail(w, 400, "auth_mode", "Choose subscription or API key")
+		if !validAIAuthMode(in.Provider, in.AuthMode) {
+			s.fail(w, 400, "auth_mode", "Choose a connection method supported by this provider")
+			return
+		}
+		if in.Provider == "gemini" && in.Model != "" && !ai.ValidGeminiModelID(in.Model) {
+			s.fail(w, 400, "model", "Choose a Gemini model or enter its model ID")
 			return
 		}
 		if len(in.Model) > 512 || invalidProviderKey(in.APIKey) {
@@ -114,11 +118,15 @@ func (s *Server) aiSettings(w http.ResponseWriter, r *http.Request) {
 }
 
 func validAIProvider(provider string) bool {
+	return provider == "gemini" || aiSubscriptionProvider(provider)
+}
+
+func aiSubscriptionProvider(provider string) bool {
 	return provider == "openai" || provider == "anthropic"
 }
 
-func validAIAuthMode(mode string) bool {
-	return mode == ai.AuthAPIKey || mode == ai.AuthSubscription
+func validAIAuthMode(provider, mode string) bool {
+	return mode == ai.AuthAPIKey || (mode == ai.AuthSubscription && aiSubscriptionProvider(provider))
 }
 
 func (s *Server) aiConfiguration() (ai.Config, string, error) {
@@ -129,7 +137,7 @@ func (s *Server) aiConfiguration() (ai.Config, string, error) {
 		return cfg, "", errors.New("configure AI in Settings first")
 	}
 	cfg.AuthMode = ai.NormalizeAuthMode(cfg.AuthMode)
-	if !validAIProvider(cfg.Provider) || !validAIAuthMode(cfg.AuthMode) || cfg.Model == "" || !cfg.Enabled {
+	if !validAIProvider(cfg.Provider) || !validAIAuthMode(cfg.Provider, cfg.AuthMode) || cfg.Model == "" || !cfg.Enabled {
 		return cfg, "", errors.New("connect an AI provider, choose a model and enable AI in Settings first")
 	}
 	if cfg.AuthMode == ai.AuthSubscription {

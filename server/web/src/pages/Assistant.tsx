@@ -151,7 +151,7 @@ export function AIWorkbench({
           <div>
             <h3>Bring your own brewing companion.</h3>
             <p>
-              Connect a ChatGPT or Claude subscription, or add a provider API key, in Settings.
+              Choose OpenAI, Anthropic, or Google Gemini in Settings to connect the brew assistant.
               Choose a model and save with the brew assistant enabled. Your Hub works fully without
               it.
             </p>

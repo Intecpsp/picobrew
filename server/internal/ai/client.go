@@ -39,6 +39,7 @@ type Client struct {
 	AnthropicURL       string
 	OpenAIModelsURL    string
 	AnthropicModelsURL string
+	GeminiModelsURL    string
 	CLI                CommandRunner
 }
 
@@ -49,6 +50,7 @@ func New() *Client {
 		AnthropicURL:       "https://api.anthropic.com/v1/messages",
 		OpenAIModelsURL:    "https://api.openai.com/v1/models",
 		AnthropicModelsURL: "https://api.anthropic.com/v1/models",
+		GeminiModelsURL:    "https://generativelanguage.googleapis.com/v1beta/models",
 		CLI:                nativeCommandRunner{},
 	}
 }
@@ -58,6 +60,9 @@ const systemPrompt = `You are the brewing assistant for PicoBrew Hub. Machine te
 func (c *Client) Assist(ctx context.Context, cfg Config, key string, input Request, data any) (Result, error) {
 	cfg.AuthMode = NormalizeAuthMode(cfg.AuthMode)
 	if cfg.AuthMode == AuthSubscription {
+		if cfg.Provider == "gemini" {
+			return Result{}, errors.New("configure a Gemini API key in Settings")
+		}
 		if cfg.Provider != "anthropic" {
 			return Result{}, errors.New("connect ChatGPT in Settings before using its subscription")
 		}
@@ -88,22 +93,37 @@ func (c *Client) Assist(ctx context.Context, cfg Config, key string, input Reque
 	case "anthropic":
 		url = c.AnthropicURL
 		payload = map[string]any{"model": cfg.Model, "max_tokens": 3500, "system": systemPrompt, "messages": []map[string]string{{"role": "user", "content": user}}}
+	case "gemini":
+		if !ValidGeminiModelID(cfg.Model) {
+			return Result{}, errors.New("choose a valid Gemini model in Settings")
+		}
+		if !validProviderKey(key) {
+			return Result{}, errors.New("set a valid Gemini API key in Settings")
+		}
+		url = strings.TrimRight(c.GeminiModelsURL, "/") + "/" + cfg.Model + ":generateContent"
+		payload = geminiRequest(input.Mode, user)
 	default:
 		return Result{}, errors.New("unsupported AI provider")
 	}
 	body, _ := json.Marshal(payload)
 	r, e := http.NewRequestWithContext(ctx, "POST", url, bytes.NewReader(body))
 	if e != nil {
-		return Result{}, e
+		return Result{}, errors.New("the AI provider request could not be created")
 	}
 	r.Header.Set("Content-Type", "application/json")
-	if cfg.Provider == "anthropic" {
+	if cfg.Provider == "gemini" {
+		r.Header.Set("x-goog-api-key", key)
+	} else if cfg.Provider == "anthropic" {
 		r.Header.Set("x-api-key", key)
 		r.Header.Set("anthropic-version", "2023-06-01")
 	} else {
 		r.Header.Set("Authorization", "Bearer "+key)
 	}
-	resp, e := c.HTTP.Do(r)
+	client := c.noRedirectClient()
+	if client.Timeout == 0 || client.Timeout > 90*time.Second {
+		client.Timeout = 90 * time.Second
+	}
+	resp, e := client.Do(r)
 	if e != nil {
 		return Result{}, errors.New("the AI provider could not be reached")
 	}
@@ -117,6 +137,13 @@ func (c *Client) Assist(ctx context.Context, cfg Config, key string, input Reque
 	}
 	if resp.StatusCode != 200 {
 		return Result{}, fmt.Errorf("AI provider returned HTTP %d; check its API key, model, quota and account billing", resp.StatusCode)
+	}
+	if cfg.Provider == "gemini" {
+		text, err := geminiText(p)
+		if err != nil {
+			return Result{}, err
+		}
+		return parseResult(text, input.Mode, apiBillingNotice)
 	}
 	var wire struct {
 		Choices []struct {
@@ -145,7 +172,19 @@ func (c *Client) Assist(ctx context.Context, cfg Config, key string, input Reque
 	if strings.TrimSpace(text) == "" {
 		return Result{}, errors.New("the provider returned no text")
 	}
-	return parseResult(text, input.Mode, "Uses provider API billing. Subscription sign-in is not used for this connection.")
+	return parseResult(text, input.Mode, apiBillingNotice)
+}
+
+const apiBillingNotice = "Uses provider API billing. Subscription sign-in is not used for this connection."
+
+func (c *Client) noRedirectClient() http.Client {
+	client := c.HTTP
+	if client == nil {
+		client = http.DefaultClient
+	}
+	bounded := *client
+	bounded.CheckRedirect = func(*http.Request, []*http.Request) error { return http.ErrUseLastResponse }
+	return bounded
 }
 
 const (
