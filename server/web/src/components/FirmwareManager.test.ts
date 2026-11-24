@@ -277,7 +277,7 @@ describe('Hub firmware packages', () => {
       })
       show(createElement(MachineFirmwareDialog, { deviceID: 'c', onClose: close }))
       const select = await screen.findByLabelText('Verified display controller')
-      expect(screen.queryByRole('button', { name: 'Install', exact: true })).toBeNull()
+      expect(screen.queryByRole('button', { name: /^Install$/ })).toBeNull()
       expect((select as HTMLSelectElement).value).toBe('')
       const save = screen.getByRole('button', { name: 'Save verified controller' })
       expect((save as HTMLButtonElement).disabled).toBe(true)
@@ -302,10 +302,10 @@ describe('Hub firmware packages', () => {
       ).toHaveLength(0)
       if (ota)
         expect(
-          (screen.getByRole('button', { name: 'Install', exact: true }) as HTMLButtonElement)
+          (screen.getByRole('button', { name: /^Install$/ }) as HTMLButtonElement)
             .disabled
         ).toBe(false)
-      else expect(screen.queryByRole('button', { name: 'Install', exact: true })).toBeNull()
+      else expect(screen.queryByRole('button', { name: /^Install$/ })).toBeNull()
     }
   )
   it('keeps another brewer’s USB prompt outside a machine-scoped restoration', async () => {
