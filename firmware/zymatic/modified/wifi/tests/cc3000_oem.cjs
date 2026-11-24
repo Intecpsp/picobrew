@@ -123,10 +123,12 @@ assert.equal(credits.dataView.getUint16(0x263f, true), 0);
 assert.equal(credits.dataView.getUint16(0x263d, true), 0x1008);
 assert.equal(credits.dataView.getUint16(0x2659, true), 2);
 assert.equal(credits.dataView.getUint32(0x2665, true), 2);
-const inactive = receiveIRQ(Buffer.from('040310090103000000c7ffffff', 'hex'), 0x1008);
-assert.equal(inactive.dataView.getUint16(0x263f, true), 0);
-assert.equal(inactive.dataView.getUint32(0x2655, true), 1);
-assert.equal(inactive.dataView.getUint32(0x09be, true), 8);
+for (const code of ['03', '0e', '0f']) {
+    const inactive = receiveIRQ(Buffer.from('04'+code+'10090103000000c7ffffff', 'hex'), 0x1008);
+    assert.equal(inactive.dataView.getUint16(0x263f, true), 0);
+    assert.equal(inactive.dataView.getUint32(0x2655, true), 1);
+    assert.equal(inactive.dataView.getUint32(0x09be, true), 8);
+}
 
 // An original synchronous caller with no event does not treat busy as a
 // retry. It polls indefinitely unless all three diagnostic state bits allow

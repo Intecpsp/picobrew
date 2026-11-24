@@ -14,4 +14,5 @@ void zym_spi_release_radio(void);
  * flush_pending from the foreground after the radio has returned the bus. */
 void zym_spi_request_display(void);
 void zym_spi_flush_pending(void);
+bool zym_spi_stock_selected(void);
 #endif

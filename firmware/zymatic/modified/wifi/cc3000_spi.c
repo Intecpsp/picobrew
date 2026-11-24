@@ -14,8 +14,8 @@
 #define OEM_TX_CREDITS OEM16(0x2659)
 #define OEM_PACKETS_SENT OEM32(0x2661)
 
-enum { UNBOUND, ACTIVE, RX_HELD, QUARANTINED, STOCK };
-static uint8_t link;
+enum { UNBOUND, ACTIVE, RX_HELD, QUARANTINED, STOCK, STOCK_ONLY };
+static volatile uint8_t link; /* OLED supervisor reads active stock ownership. */
 static volatile uint8_t irq_edge;
 struct transaction { uint8_t spcr, spi2x, started, millis; uint16_t polls; };
 
@@ -60,6 +60,16 @@ static void quarantine(void)
         irq_edge = 0;
         link = QUARANTINED;
     }
+}
+
+void zym_spi_close_if_owned(void)
+{
+    if (link == ACTIVE || link == RX_HELD) quarantine();
+}
+
+bool zym_spi_stock_selected(void)
+{
+    return link >= STOCK && (DDRC & _BV(PC4)) && !(PORTC & _BV(PC4));
 }
 
 /* A stuck or reconfigured Timer0 cannot cause an infinite wait. The single
@@ -127,7 +137,7 @@ void zym_spi_stock_restart(struct zym_cc3000_broker *b)
     if (link == STOCK) {
         /* The OEM owns the bus/IRQ. It continues its original startup even
          * though HTTP descriptors from the preceding generation are invalid. */
-        link = QUARANTINED;
+        link = STOCK_ONLY;
         zym_broker_link_lost(b);
     }
 }

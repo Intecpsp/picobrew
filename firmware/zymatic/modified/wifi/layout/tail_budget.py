@@ -21,7 +21,7 @@ INSTRUCTION = re.compile(r"^\s*([0-9a-f]+):\s+((?:[0-9a-f]{2} )+)\s*\t(\w+)\s*(.
 LOAD = re.compile(r"r(\d+), 0x([\da-f]+)", re.I)
 
 
-def return_sequences(image, disassembly):
+def control_flow(image, disassembly):
     instructions = {}
     for line in disassembly.splitlines():
         match = INSTRUCTION.match(line)
@@ -61,6 +61,11 @@ def return_sequences(image, disassembly):
         protected.update(range(pc, pc + len(before), 2))
     for _, pc, size, _ in tables.LIBRARY:
         protected.update(range(pc, pc + size, 2))
+    return instructions, entries, protected
+
+
+def return_sequences(image, disassembly):
+    instructions, entries, protected = control_flow(image, disassembly)
     sequences = []
     for end, (op, _, _, _) in instructions.items():
         if op != "ret" or end in protected:

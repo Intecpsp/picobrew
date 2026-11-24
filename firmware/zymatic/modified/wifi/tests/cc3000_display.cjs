@@ -56,7 +56,7 @@ module.exports = function verifyDisplayHandoff({ words, boot, run, avrBin }) {
             writeFileSync(path.join(temp,file),execFileSync('git',['show',blob],{cwd:__dirname}));
         }
         tool('avr-gcc', ['-mmcu=atmega1284p', '-Os', '-Wall', '-Wextra', '-Werror', '-nostartfiles',
-            '-fno-jump-tables','-DZYMATIC_WIFI_COMPACT','-I'+temp,
+            '-fno-jump-tables','-fno-tree-switch-conversion','-DZYMATIC_WIFI_COMPACT','-I'+temp,
             '-nostdlib', '-Wl,-Ttext=0x1c000,-Tbss=0x803300', path.resolve(__dirname, '../cc3000_spi_bus.c'),
             path.resolve(__dirname, '../cc3000_spi.c'), path.resolve(__dirname, '../cc3000_broker.c'),
             path.resolve(__dirname, '../cc3000.c'), path.resolve(__dirname,'../cc3000_board.c'),
@@ -66,7 +66,7 @@ module.exports = function verifyDisplayHandoff({ words, boot, run, avrBin }) {
         const binary = readFileSync(bin), symbols = new Map();
         for (const match of tool('avr-nm', [elf]).matchAll(/^([\da-f]+) T (zym_(?:spi|cc3000_board)_\w+)$/gm))
             symbols.set(match[2], parseInt(match[1], 16));
-        assert.equal(symbols.size, 14);
+        assert.equal(symbols.size, 16);
         assert(base+binary.length <= 2*words.length);
         for (let i = 0; i < binary.length; i+=2) words[(base+i)/2] = binary.readUInt16LE(i);
         for (const at of [0x5044, 0x8738]) {

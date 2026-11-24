@@ -105,6 +105,14 @@ void zym_cc3000_link_lost(struct zym_cc3000 *s, struct zym_cc3000_event *out)
     s->waiting = false;
 }
 
+void zym_cc3000_retire(struct zym_cc3000 *s, uint8_t owned_sockets)
+{
+    if (s->waiting) return;
+    s->accept_backoff = false;
+    if (s->connected) s->want_close = true;
+    else s->state = owned_sockets ? CLOSE_LISTENER : OFFLINE;
+}
+
 bool zym_cc3000_read(struct zym_cc3000 *s, uint32_t peer)
 {
     if (!s->connected || peer != s->token || s->state != SERVING ||

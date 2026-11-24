@@ -40,6 +40,9 @@ struct zym_cc3000 {
  * generation with IP acquired and all old HCI transactions drained. */
 void zym_cc3000_begin(struct zym_cc3000 *s, uint16_t port);
 void zym_cc3000_link_lost(struct zym_cc3000 *s, struct zym_cc3000_event *out);
+/* Stop submitting application traffic after Wi-Fi loss. Observe any prior
+ * completion/data before explicitly closing each allocated descriptor. */
+void zym_cc3000_retire(struct zym_cc3000 *s, uint8_t owned_sockets);
 /* Each call attempts at most one command or consumes one supplied frame.
  * Returns true iff the input frame belonged to this owner. The broker must
  * deliver unsolicited events, radio resets and other clients' events itself. */

@@ -6,7 +6,7 @@ const { createRequire } = require('node:module');
 const path = require('node:path');
 const stockRequire = createRequire(path.resolve(__dirname, '../../../../reverse-engineered/tests/package.json'));
 const { CPU, avrInstruction } = stockRequire('avr8js');
-const [stock, candidate] = process.argv.slice(2).map(p => readFileSync(p));
+const [stock, candidate] = process.argv.slice(2, 4).map(p => readFileSync(p));
 const returnPC = 0xffff;
 
 function start(image, entry) {
@@ -97,3 +97,47 @@ for (const entry of [0x33a0, 0xccba]) {
     }
 }
 console.log(inputs.length + ' encoding and ' + (responses.length * 2) + ' transport parser comparisons passed');
+
+// Trace the exact arguments to the OEM HTTP writer, wait and formatting
+// functions. Vary their return registers and the current client after each call.
+function requestTrace(image, startPC, endPC, seed, callees) {
+    const cpu = start(image, startPC);
+    cpu.dataView.setUint16(28, 0x3500, true);
+    cpu.dataView.setUint16(0x16bc, 0x2400 + seed * 3, true);
+    cpu.data[0x5f] = seed;
+    const stack = cpu.SP, calls = [];
+    for (let i = 0; i < 1000; i++) {
+        const pc = cpu.pc * 2;
+        if (pc === endPC) {
+            assert.equal(cpu.SP, stack);
+            return {calls, registers: cpu.data.slice(0, 32), flags: cpu.data[0x5f],
+                frame: cpu.data.slice(0x3500, 0x3540)};
+        }
+        if (callees.has(pc)) {
+            calls.push([pc, Array.from(cpu.data.slice(12, 26))]);
+            for (let reg = 18; reg < 28; reg++) cpu.data[reg] = seed + 11 * reg + calls.length;
+            cpu.data[0x5f] = (seed * 37 + calls.length) & 255;
+            cpu.dataView.setUint16(0x16bc, 0x2400 + calls.length * 8 + seed, true);
+            cpu.pc = 0x28d2 / 2;
+        }
+        avrInstruction(cpu);
+    }
+    assert.fail('Request builder did not reach its original continuation');
+}
+let requestCases = 0;
+for (const range of process.argv.slice(4)) {
+    const [begin, end] = range.split('-').map(x => parseInt(x, 16));
+    const callees = new Set();
+    for (let p = begin; p < end; p += 2) {
+        if (stock.readUInt16LE(p) === 0x940e) {
+            callees.add(stock.readUInt16LE(p + 2) * 2);
+            p += 2;
+        }
+    }
+    for (let seed = 0; seed < 256; seed += 7) {
+        assert.deepEqual(requestTrace(candidate, begin, end, seed, callees),
+            requestTrace(stock, begin, end, seed, callees));
+        requestCases++;
+    }
+}
+console.log(requestCases + ' original Wi-Fi request builder comparisons passed');

@@ -6,8 +6,11 @@ import sys
 import tempfile
 
 HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE.parent))
 sys.path.insert(0, str(HERE.parents[2] / "tools"))
 import usb_stock
+from network.requests import PROTECTED_RANGES, check_ranges, compose as share_requests
+from tail_budget import control_flow
 
 
 def compose(original, toolchain, directory):
@@ -49,11 +52,16 @@ def main():
     with tempfile.TemporaryDirectory() as temp:
         directory = Path(temp)
         candidate, ranges = compose(original, args.toolchain.resolve(), directory)
+        candidate, request_windows = share_requests(candidate)
         stock, test = directory / "original.bin", directory / "test.bin"
         stock.write_bytes(original)
         test.write_bytes(candidate)
-        subprocess.run(["node", HERE / "compare.cjs", stock, test], check=True)
-        for start, end in ranges:
+        listing = subprocess.check_output([args.toolchain.resolve() / "avr-objdump", "-D", "-z",
+                                           "-b", "binary", "-m", "avr:51", stock], text=True)
+        check_ranges(*control_flow(original, listing))
+        subprocess.run(["node", HERE / "compare.cjs", stock, test,
+                        *(f"{a:x}-{b:x}" for a, b in PROTECTED_RANGES)], check=True)
+        for start, end in ranges + request_windows:
             print(f"[{start:#x}, {end:#x}) {end - start} bytes")
 
 

@@ -11,6 +11,7 @@ void zym_broker_begin(struct zym_cc3000_broker *b, zym_cc3000_submit bounded_spi
 
 bool zym_broker_acquire_oem(struct zym_cc3000_broker *b)
 {
+    if (b->draining && b->http_sockets) return false;
     if (b->owner != ZYM_RADIO_FREE) {
         if (b->owner == ZYM_RADIO_HTTP) b->oem_queued = true;
         return false;
@@ -35,7 +36,7 @@ static enum zym_cc3000_submit_result submit(void *context, const uint8_t *frame,
 {
     struct zym_cc3000_broker *b = context;
     if (b->owner == ZYM_RADIO_LOST || !b->try_write) return ZYM_WIFI_BAD_LINK;
-    if (b->owner != ZYM_RADIO_FREE || b->oem_queued) return ZYM_WIFI_BUSY;
+    if (b->owner != ZYM_RADIO_FREE || (b->oem_queued && !b->draining)) return ZYM_WIFI_BUSY;
     b->owner = ZYM_RADIO_HTTP;
     b->expected = frame[0] == 2 ? 0x1003 : (uint16_t)frame[1] | (uint16_t)frame[2] << 8;
     b->submitted_socket = frame[0] == 2 ? frame[5] : frame[4];
@@ -57,11 +58,13 @@ enum zym_radio_rx zym_broker_irq(struct zym_cc3000_broker *b,
     uint16_t op = 0;
     if (frame[0] == 4 && size >= 3) {
         op = (uint16_t)frame[1] | (uint16_t)frame[2] << 8;
-        if (op == 0x8002 || op == 0x1000) zym_broker_link_lost(b); /* disconnect or patch request */
+        if (op == 0x8002) b->draining = true; /* leave the HCI engine alive */
+        if (op == 0x1000) zym_broker_link_lost(b); /* chip requests startup patches */
         if ((op & 0xc000) || op == 0x1000) return ZYM_RADIO_PASS_TO_OEM;
         /* SEND failure -57 is also an unsolicited chip report. The OEM
          * records it in its own bookkeeping even if HTTP owns a command. */
-        if (op == 0x1003 && size >= 13 && frame[9] == 0xc7 &&
+        if ((op == 0x1003 || op == 0x100e || op == 0x100f) &&
+            size >= 13 && frame[9] == 0xc7 &&
             frame[10] == 0xff && frame[11] == 0xff && frame[12] == 0xff &&
             frame[5] < 8 && !frame[6] && !frame[7] && !frame[8]) {
             if (!(b->http_sockets & (1u << frame[5]))) return ZYM_RADIO_PASS_TO_OEM;

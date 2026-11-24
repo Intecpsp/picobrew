@@ -164,12 +164,33 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
         }
         return true;
     };
+    function interruptWithDisplay(machine) {
+        machine.rf.inject = () => {
+            const {cpu,u} = machine;
+            const regs=u.slice(0,32), pc=cpu.pc, sr=u[0x5f], sp=cpu.SP;
+            u[0x5f] &= 0x7f;
+            supervisor(machine.f);
+            assert.equal(cpu.SP,sp);
+            assert.equal(machine.f.bytes.length,0);
+            assert.equal(machine.rf.wire.length,0);
+            u.set(regs); u[0x5f]=sr; cpu.pc=pc;
+        };
+    }
+    interruptWithDisplay(loan);
     loan.cpu.dataView.setUint32(22,2,true); // socket(AF_INET,SOCK_STREAM,IPPROTO_TCP)
     loan.cpu.dataView.setUint32(18,1,true);
     loan.cpu.dataView.setUint32(14,6,true);
     loan.callAt(0x14984);
     assert.equal(loan.get16(24),3); assert.equal(csEdges,2);
     assert.equal(loan.get16(0x263d),0);
+    const shift=loan.cpu.writeHooks[0x4e];
+    loan.cpu.writeHooks[0x4e]=v=>{
+        assert.equal(loan.u[0x3d]&4,0); // stock radio IRQ cannot preempt OLED
+        return shift(v);
+    };
+    loan.call('flush_pending');
+    assert.equal(loan.f.bytes.length,4102); assert.equal(loan.u[0x3d],7);
+    loan.cpu.writeHooks[0x4e]=shift;
     loan.callAt(0x12922); // normal high-level stock exit: callback is now NULL
     assert.equal(loan.get16(0x2b1f),0); assert.equal(loan.u[0x3d],7);
     assert.equal(stockControl('resume_from_stock'),1);
@@ -202,61 +223,72 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
     assert.deepEqual(state,[0,0]); assert.equal(menu.u[0x089d],1);
     assert.equal(menu.u[0x263c],0); assert.equal(menu.get16(0x2b1f),0);
     menu.set16(24,brokerAddr); assert.equal(menu.call('resume_from_stock')&255,1);
-    // The TCP façade supplies a normal Hub-format menu response. The
-    // completed request, stream framing, tokenizer and brew-bank writes
-    // all execute in the original foreground. The physical brewer is idle.
-    menu.set16(24,brokerAddr); assert.equal(menu.call('yield_to_stock')&255,1);
-    const id = '0123456789abcdef0123456789abcdef';
-    const wire = Buffer.from('#Bench Pale/'+id+'/Mash,153,60,1,0/Boil,203,60,0,0/|#');
-    const requestParts = [];
-    const ramString = addr => Buffer.from(menu.u.slice(addr,menu.u.indexOf(0,addr))).toString('ascii');
-    const crt = new Uint8Array(menu.cpu.progMem.buffer,0x1b24a,0x980);
-    menu.u.set(crt,0x100);
-    menu.u.set(Buffer.from('TEST-USER\0'),0x1672);
-    menu.u[menu.cpu.SP]=menu.u[menu.cpu.SP-1]=255; menu.cpu.SP-=2;
-    menu.u[24]=0;
-    let position = 0, closed = false;
-    const flash = new Uint8Array(menu.cpu.progMem.buffer);
-    const flashString = addr => Buffer.from(flash.slice(addr,flash.indexOf(0,addr))).toString('ascii');
-    run(menu.cpu,0xdade,stop,{
-        ...menuIO,
-        0x4342: () => {menu.u.set(Buffer.from('123456789ABC\0'),menu.get16(24)); menu.u[24]=1;},
-        0x11562: () => {assert.equal(menu.u[0x089d],0); menu.u[24]=1;},
-        0x113e4: () => {requestParts.push(flashString(menu.get16(22))); menu.u[24]=1;},
-        0x11406: () => {requestParts.push(ramString(menu.get16(22))); menu.u[24]=1;},
-        0x1abd4: () => {}, 0x1abce: () => {}, 0x1a914: () => {}, 0x1aaae: () => {},
-        0x2ea2: () => {}, 0x113b4: () => {menu.u[24]=!closed;},
-        0x11428: () => {menu.u[24]=position < wire.length;},
-        0x114b4: () => {assert(position < wire.length); menu.u[24]=wire[position++];},
-        0x11444: () => {closed=true;}, 0x19d94: () => menu.cpu.dataView.setUint32(22,0,true),
-        0x6da8: () => {throw Error('normal recipe entered the network error path');},
-    },350000);
-    assert.equal(position,wire.length); assert.equal(closed,true);
-    assert.match(requestParts.join(''),/SyncUser\?user=TEST-USER&machine=123456789ABC/i);
-    assert.equal(menu.u[0x1ec5],1); assert.equal(ramString(0x16be),'Bench Pale');
-    assert.equal(ramString(0x1d76),id); assert.equal(menu.u[0x16be+21],2);
-    assert.equal(menu.u[0x089d],1);
-    menu.set16(24,brokerAddr); assert.equal(menu.call('resume_from_stock')&255,1);
-    assert.equal(menu.tx(command),1);
     // Enter the actual timer display path during CS assertion. The CPU
     // preserves registers at the asynchronous boundary as the AVR ISR does.
     const concurrent = setup();
     concurrent.bind();
-    concurrent.rf.inject = () => {
-        const {cpu,u} = concurrent;
-        const regs = u.slice(0,32), pc = cpu.pc, sr = u[0x5f], sp = cpu.SP;
-        u[0x5f] &= 0x7f;
-        supervisor(concurrent.f);
-        assert.equal(cpu.SP,sp);
-        assert.equal(concurrent.f.bytes.length,0);
-        assert.equal(concurrent.rf.wire.length,0);
-        u.set(regs); u[0x5f] = sr; cpu.pc = pc;
-    };
+    interruptWithDisplay(concurrent);
     assert.equal(concurrent.tx(command),1);
     assert.equal(concurrent.tx(command),0); // waiting OLED has priority
     concurrent.call('flush_pending');
     assert.equal(concurrent.f.bytes.length,4102);
     assert.equal(concurrent.tx(command),1);
     console.log('Bounded AVR SPI transfers matched OEM writes, handled deferred INT2 and OLED traffic, accounted for credits and quarantined failed transactions.');
-    require('./cc3000_board.cjs')({setup,symbols});
+    require('./cc3000_board.cjs')({setup,symbols,recipe: (menu,serve) => syncMenu(menu,run,stop,serve)});
 };
+
+function syncMenu(menu,run,stop,serve) {
+    // The TCP façade supplies a normal Hub-format menu response. The
+    // completed request, stream framing, tokenizer and brew-bank writes
+    // all execute in the original foreground. The physical brewer is idle.
+    const id = '0123456789abcdef0123456789abcdef';
+    const wire = Buffer.from('#Bench Pale/'+id+'/Mash,153,60,1,0/Boil,203,60,0,0/|#');
+    const ramString = addr => Buffer.from(menu.u.slice(addr,menu.u.indexOf(0,addr))).toString('ascii');
+    const crt = new Uint8Array(menu.cpu.progMem.buffer,0x1b24a,0x980);
+    menu.u.set(crt,0x100);
+    menu.set16(0x16bc,0x1800);
+    menu.set16(0x2643,0x25b8); menu.set16(0x2527,0x1550e/2);
+    menu.u.set(Buffer.from('TEST-USER\0'),0x1672);
+    menu.u[menu.cpu.SP]=menu.u[menu.cpu.SP-1]=255; menu.cpu.SP-=2;
+    menu.u[24]=0;
+    let position = 0, closed = false, joined = false;
+    const request = [];
+    serve((hci, op, evt, int, waiting) => {
+        switch (op) {
+        case 0x1001: waiting.push(evt(op,...int(2))); break;
+        case 0x1007: assert.equal(hci[4],2); joined=true; waiting.push(evt(op,...int(0))); break;
+        case 0x1003:
+            assert.equal(hci[5],2); request.push(...hci.slice(21,21+hci[13]));
+            waiting.push(evt(0x4100,1,0,0,0,1,0),evt(op,...int(2),...int(hci[13])));
+            break;
+        case 0x1008:
+            waiting.push(evt(op,...int(position < wire.length ? 1 : 0),
+                ...int(position < wire.length ? 4 : 0),...Array(8).fill(0)));
+            break;
+        case 0x1004: {
+            const chunk=wire.slice(position,position+hci[8]); position+=chunk.length;
+            waiting.push(evt(op,...int(2),...int(chunk.length),...int(0)));
+            if (chunk.length) waiting.push([2,0x85,4,4+chunk.length,0,...int(2),...chunk]);
+            break;
+        }
+        case 0x100b:
+            assert.equal(hci[4],2);closed=true;waiting.push(evt(op,...int(0)));break;
+        default: throw Error('Unexpected OEM HCI operation '+op.toString(16));
+        }
+    });
+    run(menu.cpu,0xdade,stop,{
+        0x5ebc: () => {menu.u[24]=5;}, 0x2cd2: () => {menu.u[24]=1;},
+        0x3228: () => {}, 0x1604e: () => {}, 0x5040: () => {}, 0x19db0: () => {},
+        0x4342: () => {menu.u.set(Buffer.from('123456789ABC\0'),menu.get16(24)); menu.u[24]=1;},
+        0x1abd4: () => {}, 0x1abce: () => {}, 0x1a914: () => {}, 0x1aaae: () => {},
+        0x2ea2: () => {}, 0x19d94: () => menu.cpu.dataView.setUint32(22,0,true),
+        0x1a7fc: () => {menu.set16(24,0x3030);}, // original C++ Client allocation
+        0x6da8: () => {throw Error('normal recipe entered the network error path');},
+    },4000000);
+    serve(null);
+    assert.equal(position,wire.length); assert(closed && joined);
+    assert.match(Buffer.from(request).toString('ascii'),/SyncUser\?user=TEST-USER&machine=123456789ABC/i);
+    assert.equal(menu.u[0x1ec5],1); assert.equal(ramString(0x16be),'Bench Pale');
+    assert.equal(ramString(0x1d76),id); assert.equal(menu.u[0x16be+21],2);
+    assert.equal(menu.u[0x089d],1);
+}

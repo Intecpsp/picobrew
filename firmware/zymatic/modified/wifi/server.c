@@ -8,7 +8,9 @@ bool zymatic_wifi_server_poll(struct zym_cc3000_broker *broker, struct zym_cc300
                               const char *uid, uint32_t now, uint8_t mode)
 {
     struct zym_cc3000_event event;
+    if (broker->draining) zym_cc3000_retire(radio, broker->http_sockets);
     bool release_rx = zym_broker_poll(broker, radio, now, &event);
+    if (broker->draining) return release_rx;
     if (event.kind == ZYM_WIFI_CLOSED || event.kind == ZYM_WIFI_LINK_FAILED) {
         memset(http, 0, sizeof(*http));
         return release_rx;

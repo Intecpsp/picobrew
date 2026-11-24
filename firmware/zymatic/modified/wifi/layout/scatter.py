@@ -15,6 +15,7 @@ import zlib
 import extended
 import tail_budget
 from network.compact import compose
+from network import requests
 from oled import compact as oled
 from tail_budget import usb_stock, build
 
@@ -30,12 +31,15 @@ def arrange(original, toolchain, root, runtime):
     windows.extend(display_windows)
     network, keyboard_windows = oled.compose_keyboard(network, toolchain, root)
     windows.extend(keyboard_windows)
+    network, request_windows = requests.compose(network)
+    windows.extend(request_windows)
     dis = subprocess.check_output([toolchain / "avr-objdump", "-D", "-z", "-b", "binary",
                                    "-m", "avr:51", stock], text=True)
     # The new network parser uses existing parts of the Wi-Fi routine as well as both holes.
     # Keep all three routines, branch receivers and the timer display hooks out of the allocation.
     excluded = [(0x2ed0, 0x3228), (0x33a0, 0x3622), (0xccba, 0xcf38),
                 (0x5044, 0x504a), (0x8738, 0x873e), (oled.TRANSFER, oled.END), (0xa74c, 0xaa50)]
+    excluded.extend(requests.PROTECTED_RANGES)
     # The simulator models the external device at a few fixed instruction addresses,
     # including the original brew runner's bare RET at 0xfd4c.
     harness = (runtime / "tests/simavr_overlay.c").read_text()
@@ -133,12 +137,12 @@ def simulator(root, runtime, original, packed, asset):
         subprocess.run([os.environ.get("CC", "cc"), "-O2", source, *shlex.split(flags), "-o", target], check=True)
         return target
     subprocess.run([harness(runtime / "tests/simavr_tables.c"), base, binary], check=True, timeout=60)
-    api = harness(runtime / "tests/simavr_overlay.c")
+    api = harness(extended.ROOT / "tests/simavr_overlay.c")
     args = [api, binary, str(symbols["zymatic_hub_host"] - 0x800000),
             str(symbols["__extension_bss_end"] - 0x800000), str(symbols["zymatic_hub_authority"] - 0x800000),
             str(symbols["zymatic_image_invalid"])]
     for case in ("api", "corrupt", "factory-good", "factory-bad", "display", "program-status",
-                 "program-history", "about-pairing", "program-display", "menu-encoder", "dialog-encoder", "program-encoder"):
+                 "program-history", "program-website", "about-pairing", "program-display", "menu-encoder", "dialog-encoder", "program-encoder"):
         subprocess.run([*args, case, base], check=True, timeout=60)
     asset_file = root / "assets.bin"
     asset_file.write_bytes(asset)

@@ -10,20 +10,25 @@ import sys
 SECTIONS = [
     ("encoder", ("zym_spi_submit", "zymatic_history_row")),
     ("wifi_fields", ("zymatic_api_reply_byte", "zymatic_history_ready")),
-    ("wired_fields", ("zymatic_api_more", "zym_spi_request_display")),
+    ("wired_fields", ("zymatic_api_more", "zym_spi_request_display", "read_at")),
     ("oled_transfer", ("step_index",)),
     ("oled_clear", ("number", "submit", "zym_spi_bind")),
     ("oled_init", ("poll_network", "zymatic_image_valid", "zymatic_temperature_tenths")),
     ("key_one", ("reg_io",)),
     ("key_two", ("bind_from", "zymatic_factory_matches")),
+    ("request0", ("unlikely.get32",)),
+    ("request1", ("crc",)),
+    ("request2", ("transfer",)),
+    ("request3", ("after_care",)),
+    ("request4", ("whitespace",)),
+    ("request5", ("zymatic_pair_reset",)),
+    ("request6", ("read_eeprom",)),
+    ("request7", ("zym_spi_record_irq",)),
+    ("request8", ("append",)),
 ]
 ENTRIES = (
-    "candidate_radio", "candidate_broker", "zymatic_wifi_server_poll", "zym_broker_begin", "zym_broker_irq",
-    "zym_broker_acquire_oem", "zym_broker_release_oem", "zym_broker_link_lost", "zym_cc3000_begin",
-    "zym_spi_bind", "zym_spi_record_irq", "zym_spi_receive", "zym_spi_submit", "zym_spi_release_frame",
-    "zym_spi_stock_restart", "zym_spi_yield_to_stock", "zym_spi_resume_from_stock", "zym_spi_flush_pending",
-    "zym_spi_request_display",
-    "zym_cc3000_board_begin", "zym_cc3000_board_poll",
+    "candidate_radio", "candidate_broker", "zym_cc3000_board_begin", "zym_cc3000_board_poll",
+    "zym_spi_stock_restart", "zym_spi_yield_to_stock", "zym_spi_resume_from_stock", "zym_spi_request_display",
 )
 
 

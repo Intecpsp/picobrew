@@ -16,7 +16,9 @@ struct zym_cc3000_broker {
     const uint8_t *rx;
     zym_cc3000_submit try_write;
     void *hardware;
-    bool await_data, oem_queued;
+    bool await_data : 1;
+    bool oem_queued : 1;
+    bool draining : 1;
 };
 
 void zym_broker_begin(struct zym_cc3000_broker *b, zym_cc3000_submit bounded_spi,

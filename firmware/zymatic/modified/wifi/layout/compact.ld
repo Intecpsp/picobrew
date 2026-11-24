@@ -15,6 +15,8 @@ SECTIONS {
   .oled_init : {
     __oled_init_start = .;
     KEEP(wifi_cc3000_board.o(.text .text.*))
+    KEEP(wifi_cc3000_spi_bus.o(.text .text.*))
+    KEEP(wifi_cc3000_spi.o(.text.zym_spi_close_if_owned .text.zym_spi_stock_selected))
   } > display
   .net_encoder : {
     __net_encoder_start = .;
@@ -41,7 +43,6 @@ SECTIONS {
   } > low
   .text : {
     KEEP(wifi_cc3000_broker.o(.text .text.*))
-    KEEP(wifi_cc3000_spi_bus.o(.text .text.*))
     KEEP(wifi_cc3000_spi.o(.text .text.*))
     *(.text .text.*)
     *(.progmem .progmem.* .progmem1.data*)

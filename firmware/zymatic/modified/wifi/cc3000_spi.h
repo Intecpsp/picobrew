@@ -14,6 +14,7 @@ enum zym_spi_rx { ZYM_SPI_NO_FRAME, ZYM_SPI_FRAME, ZYM_SPI_LINK_LOST };
  * Release it after the broker or OEM consumer finishes with its bytes. */
 enum zym_spi_rx zym_spi_receive(uint8_t **frame, uint8_t *size);
 void zym_spi_release_frame(void);
+void zym_spi_close_if_owned(void);
 
 /* At a retryable foreground entry to an OEM operation, take its entire HCI
  * lease before allowing its synchronous code to run. Return the radio only
