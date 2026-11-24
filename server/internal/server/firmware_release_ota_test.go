@@ -130,6 +130,10 @@ func TestESPReleasesRequireAMatchingDeviceRecoveryProtocol(t *testing.T) {
 			wireless := firmware.Release{Kind: tc.kind, Candidate: firmware.Candidate{
 				Model: tc.model, ModelFamily: tc.model, OTAProtocol: tc.protocol, BinaryBytes: 400000,
 			}}
+			if !wireless.MatchesWirelessTarget(tc.model, "") || wireless.MatchesWirelessTarget(tc.model, "ssd1309") ||
+				wireless.MatchesWirelessTarget(tc.model, "ssd1325") != (tc.model == "z-series") {
+				t.Fatal("package accepted the wrong hardware identity")
+			}
 			usb := wireless
 			usb.OTAProtocol = ""
 			wrongKind := wireless

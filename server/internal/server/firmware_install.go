@@ -195,7 +195,7 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
-	if payload.Model != model || payload.DisplayVariant != display {
+	if !payload.MatchesWirelessTarget(model, display) {
 		s.fail(w, 409, "firmware_model", "The package model does not match this brewer")
 		return
 	}

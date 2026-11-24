@@ -40,6 +40,18 @@ func (c Candidate) SupportsHubOTA() bool {
 	return c.SupportsCC3200OTA() || c.SupportsFactoryOTA() || c.SupportsFermOTA()
 }
 
+// MatchesWirelessTarget binds a downloaded package to the registered machine.
+// A Z module may also report its fixed SSD1325 display in its identity.
+func (c Candidate) MatchesWirelessTarget(model, display string) bool {
+	if c.Model != model || !c.SupportsHubOTA() {
+		return false
+	}
+	if model == "z-series" && display == "ssd1325" {
+		return c.SupportsFactoryOTA()
+	}
+	return c.DisplayVariant == display
+}
+
 func (c Candidate) SupportsCC3200OTA() bool {
 	return c.OTAProtocol == "" && c.HubOTAProtocol == 1 && ValidVariant(c.Model, c.DisplayVariant) && c.ModelFamily == modelFamily(c.Model)
 }

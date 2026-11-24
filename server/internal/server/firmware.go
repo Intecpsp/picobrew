@@ -695,7 +695,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			out.Reason += " The firmware-reported display differs from the independently verified controller."
 		}
 	}
-	if firmware.ValidVariant(out.Model, out.DisplayVariant) {
+	if out.Model != "" {
 		s.firmwareMu.Lock()
 		packages, err := s.listFirmwarePackages()
 		s.firmwareMu.Unlock()
@@ -704,7 +704,7 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range packages {
-			if p.Model == out.Model && p.DisplayVariant == out.DisplayVariant && p.SupportsHubOTA() {
+			if p.MatchesWirelessTarget(out.Model, out.DisplayVariant) {
 				out.Packages = append(out.Packages, p)
 			}
 		}
