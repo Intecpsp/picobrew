@@ -114,7 +114,8 @@ jobs:
         env: {GOOS: linux, GOARCH: arm, GOARM: '7', CGO_ENABLED: '0', TAG: '${{ needs.revision.outputs.tag }}'}
         run: |
           chmod +x ../artifacts/picobrew-usb-linux-arm
-          test "$(../artifacts/picobrew-usb-linux-arm --version)" = "1.0.0"
+          worker_version=$(docker run --rm --platform linux/arm/v7 -v "$GITHUB_WORKSPACE/artifacts:/artifacts:ro" debian:bookworm-slim /artifacts/picobrew-usb-linux-arm --version)
+          test "$worker_version" = "1.0.0"
           go build -o /tmp/picobrew-stage ./tools/usb-prepare
           /tmp/picobrew-stage -local ../artifacts
           go test -c -o /tmp/picobrew-usb-test ./internal/usbservice/helper
