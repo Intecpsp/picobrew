@@ -63,6 +63,25 @@ class HistoryTests(unittest.TestCase):
     def setUp(self):
         self.lib.hf_reset()
 
+    def test_care_tracks_completed_programs_and_survives_history_eviction_and_reboot(self):
+        for i in range(20):
+            self.assertEqual(self.lib.hf_start(b"manual" if i % 2 else b"brew"), 1)
+            self.lib.hf_finish(0)
+            self.lib.hf_finish(0)
+            self.assertEqual(self.lib.pico_care_due(), 1 | (2 if i >= 2 else 0) | (4 if i == 19 else 0))
+        self.lib.hf_reboot()
+        self.assertEqual(self.lib.pico_care_due(), 7)
+        self.lib.pico_care_completed(1)
+        self.lib.pico_care_completed(2)
+        self.assertEqual(self.lib.pico_care_due(), 4)
+        self.lib.pico_care_completed(4)
+        self.assertEqual(self.lib.pico_care_due(), 2)
+        self.lib.pico_care_completed(2)
+        self.assertEqual(self.lib.hf_start(b"brew"), 1)
+        self.lib.hf_finish(1)
+        self.lib.hf_reboot()
+        self.assertEqual(self.lib.pico_care_due(), 0)
+
     def metadata(self, ordinal=0):
         value = Metadata()
         self.lib.pico_history_at(ordinal, C.byref(value))

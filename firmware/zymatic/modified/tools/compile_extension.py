@@ -5,9 +5,39 @@ import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+import tarfile
 import tempfile
 
+import compact_build
 import zymatic_build as build
+
+
+def compile_compact(toolchain, destination):
+    # These are the exact sources of the smaller overlay used on first conversion.
+    # Build them independently of the extended runtime and compare both profiles in CI.
+    with tempfile.TemporaryDirectory() as temporary:
+        work = Path(temporary)
+        archive = work / "source.tar"
+        subprocess.run(["git", "archive", "-o", str(archive), compact_build.SOURCE_REVISION,
+                        "firmware/zymatic/modified", "tools/private_files.py"],
+                       cwd=build.ROOT.parents[2], check=True)
+        with tarfile.open(archive) as source:
+            for entry in source:
+                if entry.isfile():
+                    target = work / entry.name
+                    target.parent.mkdir(parents=True, exist_ok=True)
+                    target.write_bytes(source.extractfile(entry).read())
+        root = work / "firmware/zymatic/modified"
+        path = root / "zymatic_api.c"
+        code = path.read_text()
+        if code.count(compact_build.PREVIEW_VERSION) != 1:
+            raise ValueError("Expected one firmware version in pinned compact discovery source")
+        path.write_text(code.replace(compact_build.PREVIEW_VERSION, build.VERSION))
+        command = [sys.executable, str(root / "tools/compile_extension.py"), "--out-dir", str(destination.resolve())]
+        if toolchain:
+            command.extend(("--toolchain", str(toolchain.resolve())))
+        subprocess.run(command, check=True)
 
 
 def compile_extension(toolchain, destination):
@@ -31,7 +61,7 @@ def compile_extension(toolchain, destination):
         entry_points = [*build.OFFLINE, "zymatic_factory_compare", "zymatic_factory_stamp", "zymatic_after_loop",
                         "zymatic_sensor_crc", "zymatic_pgm_copy", "zymatic_pgm_bitmap", "zymatic_original_byte",
                         "zymatic_pgm_wifi_print", "zymatic_pgm_serial_print", "zymatic_crt_data",
-                        "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
+                        "zymatic_home_menu", "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
                         "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
         invoke("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-flto",
                "-fmerge-all-constants", "-finline-limit=10", "-fno-tree-dominator-opts", "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",
@@ -72,10 +102,12 @@ def compile_extension(toolchain, destination):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--profile", choices=("compact", "extended"), default="extended")
     parser.add_argument("--toolchain", type=Path, help="Directory containing avr-gcc and avr-binutils")
     parser.add_argument("--out-dir", required=True, type=Path)
     args = parser.parse_args()
     try:
-        compile_extension(args.toolchain, args.out_dir)
+        compiler = compile_compact if args.profile == "compact" else compile_extension
+        compiler(args.toolchain, args.out_dir)
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         parser.exit(1, f"{exc}\n")

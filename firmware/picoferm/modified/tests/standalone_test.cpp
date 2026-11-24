@@ -174,8 +174,16 @@ struct World {
 };
 void controller_cases(){
     World world;auto current=world.snapshot();require(current.ready&&!current.busy&&!current.recording,"standalone ready without cloud or session resume");
+    const auto care = world.api_call(PICO_HTTP_POST, "/api/v1/commands", "{\"command\":\"ack-sanitize-seal\"}");
+    require(care.first == 202 && care.second.find("\"accepted\":true") != std::string::npos
+            && care.second.find("\"command\":\"ack-sanitize-seal\"") != std::string::npos,
+            "Hub receives a verified seal acknowledgment");
     require(current.sensor_count==3&&!current.actuator_count&&!current.pressure_kpa.valid&&!current.wort_f.valid,"only actual accessory measurements");
     const auto discovery=world.api_call(PICO_HTTP_GET,"/api/v1");require(discovery.first==200&&discovery.second.find("\"model\":\"picoferm\"")!=std::string::npos,"real Engine advertises PicoFerm identity");
+    require(discovery.second.find("ota_protocol")==std::string::npos,"single-bank firmware omits OTA");
+    world.engine->set_ota_protocol("esp8266-ab-v1");
+    require(world.api_call(PICO_HTTP_GET,"/api/v1").second.find("\"ota_protocol\":\"esp8266-ab-v1\"")!=std::string::npos,"qualified live bootstrap is discoverable");
+    world.engine->set_ota_protocol(nullptr);
     require(discovery.second.find("\"recipes\":false")!=std::string::npos&&discovery.second.find("\"front_panel\":false")!=std::string::npos,"no fictitious capabilities");
     require(world.api_call(PICO_HTTP_GET,"/api/v1/display").first==404&&world.api_call(PICO_HTTP_GET,"/api/v1/recipes").first==404,"unsupported resources absent");
     require(world.api_call(PICO_HTTP_POST,"/api/v1/commands","{\"command\":\"start\"}").first==202,"local start accepted with reserved history");

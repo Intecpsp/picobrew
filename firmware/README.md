@@ -11,7 +11,7 @@ general repository tools live at root `tools/`.
 | [`z1/`](z1/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Uses shared development under z-series; no model-specific image claim |
 | [`z2/`](z2/README.md) | See the separate Z-series archive; compatibility is not yet assigned | Uses shared development under z-series; no model-specific image claim |
 | [`z-series/`](z-series/README.md) | 2 unchanged upstream Z-series images | Recovered Core/Head application and standalone ESP32 source/image build, local recipes, explicit restart recovery and common API/browser |
-| [`zymatic/`](zymatic/README.md) | Verified 1.1.14 HEX from a separate pinned support archive | Reconstructed AVR control paths and conservative 1.2.0 USB conversion for offline brewing and wired monitoring, plus 1.3.x dial pairing and session history on units with a verified boot window |
+| [`zymatic/`](zymatic/README.md) | Verified 1.1.14 HEX from a separate pinned support archive | Reconstructed AVR control paths and USB conversion for offline brewing and wired monitoring. Both custom profiles ship as 1.0.0. The extended profile adds dial pairing and session history on units with a verified boot window |
 | [`picoferm/`](picoferm/README.md) | 16 unchanged upstream images | Recovered ESP8266 application and standalone sensor/recording firmware with bounded acquisition, calibration and common API/browser |
 | [`picostill/`](picostill/README.md) | 6 unchanged upstream images | Recovered ESP32 application and standalone accessory controller with native pump/fan interlocks and common API/browser |
 

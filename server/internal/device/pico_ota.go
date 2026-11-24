@@ -16,9 +16,10 @@ type FirmwareUpdater interface {
 }
 
 type otaIdentity struct {
-	UID    string `json:"device_uid"`
-	Model  string `json:"model"`
-	Digest string `json:"sha256"`
+	DisplayVariant string `json:"display_variant,omitempty"`
+	UID            string `json:"device_uid"`
+	Model          string `json:"model"`
+	Digest         string `json:"sha256"`
 }
 type otaState struct {
 	otaIdentity
@@ -73,13 +74,16 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 	defer p.unlock()
 	// Long flash readbacks need more time than the usual polling deadline.
 	remote := &pico{base: p.base, key: p.key, client: &http.Client{Transport: p.client.Transport, CheckRedirect: p.client.CheckRedirect, Timeout: 30 * time.Second}}
+	if pkg.OTAProtocol != "" {
+		return remote.installESP(ctx, uid, pkg, previousStage, checkpoint)
+	}
 	var before otaState
 	inspectErr := remote.request(ctx, "GET", "/api/v1/ota", nil, &before, 200)
 	if inspectErr != nil && previousStage == "" {
 		return inspectErr
 	}
 	if inspectErr == nil {
-		if !before.OK || before.UID != uid || before.Model != pkg.Model || !firmware.ValidID(before.Digest) || before.Size <= 0 || before.Size > firmware.MaxBinaryBytes {
+		if !before.OK || before.UID != uid || before.Model != pkg.Model || before.DisplayVariant != pkg.DisplayVariant || !firmware.ValidID(before.Digest) || before.Size <= 0 || before.Size > firmware.MaxBinaryBytes {
 			return otaFailure("The update preflight could not verify this brewer and its installed image")
 		}
 		if before.Trial && (before.Digest != pkg.BinarySHA256 || (previousStage != "selecting" && previousStage != "confirming")) {
@@ -96,7 +100,7 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 			if err := remote.request(ctx, "GET", "/api/v1", nil, &caps, 200); err != nil {
 				return err
 			}
-			if !caps.HubOTAV1 || caps.Model != pkg.Model || caps.FirmwareVersion == "" {
+			if !caps.HubOTAV1 || caps.Model != pkg.Model || caps.DisplayVariant != pkg.DisplayVariant || caps.FirmwareVersion == "" {
 				return otaFailure("The brewer did not confirm its model, installed version and OTA support")
 			}
 			if caps.FirmwareVersion == pkg.FirmwareVersion {
@@ -113,7 +117,7 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 	}
 	if !before.Trial {
 		if err := awaitBoot(ctx, func(c context.Context) bool {
-			info, ready := remote.readRecovery(c, uid, 2, pkg.BinaryBytes)
+			info, ready := remote.readRecovery(c, uid, pkg.DisplayVariant, 2, pkg.BinaryBytes)
 			return ready && !info.Upload.Active
 		}); err != nil {
 			return err
@@ -122,7 +126,7 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 			return err
 		}
 	}
-	target := otaIdentity{UID: uid, Model: pkg.Model, Digest: pkg.BinarySHA256}
+	target := otaIdentity{UID: uid, Model: pkg.Model, DisplayVariant: pkg.DisplayVariant, Digest: pkg.BinarySHA256}
 	if err := remote.awaitApplication(ctx, target, pkg.FirmwareVersion, true); err != nil {
 		return err
 	}
@@ -142,11 +146,11 @@ func (p *pico) InstallFirmware(ctx context.Context, uid string, pkg firmware.Upd
 func (remote *pico) awaitApplication(ctx context.Context, target otaIdentity, version string, trial bool) error {
 	return awaitBoot(ctx, func(c context.Context) bool {
 		var s domain.Status
-		if remote.request(c, "GET", "/api/v1/status", nil, &s, 200) != nil || s.DeviceUID != target.UID || s.Model != target.Model || !s.Ready || s.Busy || s.Stopped {
+		if remote.request(c, "GET", "/api/v1/status", nil, &s, 200) != nil || s.DeviceUID != target.UID || s.Model != target.Model || s.DisplayVariant != target.DisplayVariant || !s.Ready || s.Busy || s.Stopped {
 			return false
 		}
 		var caps domain.Capabilities
-		if remote.request(c, "GET", "/api/v1", nil, &caps, 200) != nil || !caps.HubOTAV1 || caps.Model != target.Model || caps.FirmwareVersion != version {
+		if remote.request(c, "GET", "/api/v1", nil, &caps, 200) != nil || !caps.HubOTAV1 || caps.Model != target.Model || caps.DisplayVariant != target.DisplayVariant || caps.FirmwareVersion != version {
 			return false
 		}
 		var state otaState
@@ -156,6 +160,9 @@ func (remote *pico) awaitApplication(ctx context.Context, target otaIdentity, ve
 
 func (p *pico) transferFirmware(ctx context.Context, pkg firmware.UpdatePayload, checkpoint func(string) error) error {
 	plan := map[string]any{"slot": 2, "web": true, "version": pkg.FirmwareVersion, "size": pkg.BinaryBytes, "sha256": pkg.BinarySHA256}
+	if pkg.DisplayVariant != "" {
+		plan["display_variant"] = pkg.DisplayVariant
+	}
 	for i, name := range []string{"index", "app", "explorer", "history", "style"} {
 		data := pkg.Files[i+1]
 		plan[name+"_size"] = len(data)
@@ -210,16 +217,22 @@ type recoveryInventory struct {
 	}
 }
 
-func (remote *pico) readRecovery(c context.Context, uid string, slot, size int) (recoveryInventory, bool) {
+func (remote *pico) readRecovery(c context.Context, uid, displayVariant string, slot, size int) (recoveryInventory, bool) {
 	var identity struct {
-		UID      string `json:"device_uid"`
-		Protocol int    `json:"hub_ota_protocol"`
+		UID            string `json:"device_uid"`
+		Protocol       int    `json:"hub_ota_protocol"`
+		Model          string `json:"model"`
+		DisplayVariant string `json:"display_variant"`
 	}
 	var info recoveryInventory
 	if remote.request(c, "GET", "/api/v1/recovery/identity", nil, &identity, 200) != nil || identity.UID != uid || identity.Protocol != 1 {
 		return info, false
 	}
-	if remote.request(c, "GET", "/api/v1/recovery", nil, &info, 200) != nil || info.Profile != "recovery" || info.Version != "0.1.0" || !info.Boot.Valid || !info.Boot.RecoverySelected {
+	if identity.DisplayVariant != displayVariant || (displayVariant != "" && identity.Model != "pico-c") || (identity.Model == "pico-c" && displayVariant == "") {
+		return info, false
+	}
+	if remote.request(c, "GET", "/api/v1/recovery", nil, &info, 200) != nil || info.Profile != "recovery" ||
+		(info.Version != "1.0.0" && info.Version != "0.1.0") || !info.Boot.Valid || !info.Boot.RecoverySelected {
 		return info, false
 	}
 	for _, s := range info.Slots {

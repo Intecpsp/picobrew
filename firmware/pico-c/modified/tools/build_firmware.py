@@ -108,6 +108,8 @@ def main():
     remaining=[value.decode() for value in forbidden if value in raw.read_bytes()]
     if remaining:
         raise ValueError('Cloud protocol remains in standalone image: '+repr(remaining))
+    if raw.read_bytes()[1024:1048] != ('PicoBrew:pico-c:'+a.display+'\0').encode():
+        raise ValueError('Missing Pico C OTA target marker after the CC3200 vector table')
     update=out/'pico-c-standalone.update.txt'
     body=encode_update(raw.read_bytes())
     if decode_update(body)!=raw.read_bytes():raise ValueError('Update envelope round trip failed')
@@ -122,7 +124,7 @@ def main():
         'display_variant':a.display,'reference_version':'0.1.34','source_reconstruction':True,'hardware_executed':False,
         'display_geometry':{'width':128,'height':32 if a.display=='ssd1309' else 64,
                             'rotation':0 if a.display=='ssd1309' else 2,'storage_bytes':1024,'transfer_bytes':1024},
-        'cloud_protocol_strings_absent':True,'api_key_embedded':False,'firmware_update':False,
+        'cloud_protocol_strings_absent':True,'api_key_embedded':False,'firmware_update':False,'hub_ota_protocol':1,
         'browser_manifest_sha256':digest(ROOT/'firmware/web/manifest.json'),
         'browser_storage':json.loads((ROOT/'firmware/web/manifest.json').read_text()),
         'web_sources_sha256':{str(f.relative_to(ROOT)):digest(f) for f in sorted((ROOT/'web').iterdir()) if f.is_file()},

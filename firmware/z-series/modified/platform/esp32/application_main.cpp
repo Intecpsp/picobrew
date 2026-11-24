@@ -8,6 +8,9 @@
 #include "network_ports.hpp"
 #include "storage_ports.hpp"
 #include "msp_bus.hpp"
+#include "factory_flash.hpp"
+#include "output_cutoff.hpp"
+#include <esp_system.h>
 #include "startup.hpp"
 #include "station.hpp"
 #include <WiFi.h>
@@ -16,6 +19,8 @@
 #include <cstring>
 #include <cstdio>
 #include <new>
+
+extern "C" const char z_field_identity[64] __attribute__((section(".rodata_custom_desc"),used)) = PB_FIELD_IDENTITY;
 
 namespace zseries { namespace standalone { namespace esp32 {
 namespace {
@@ -29,6 +34,10 @@ struct Application {
     Adapter adapter;
     api::Engine engine;
     api::Provisioning provisioning;
+    picobrew::esp32_ota::FactoryFlash flash;
+    picobrew::esp32_ota::Service update{flash};
+    bool update_ready = false, update_store_ready = false;
+    std::uint32_t restart_ms = 0;
     platform::HttpSocket listener;
     platform::TelemetrySocket telemetry;
     PicoHttpIo http_io{};
@@ -86,7 +95,7 @@ struct Application {
             if(length<=0||static_cast<std::size_t>(length)>=sizeof line)return false;
             const auto result=a.provisioning.execute(line,static_cast<std::size_t>(length));std::memset(line,0,sizeof line);
             if(!result.ok())return false;
-            a.provisioning.take_network_changed();a.sync_network();return true;};
+            a.provisioning.take_network_changed();a.sync_network();a.update_capability();return true;};
         ports.reconnect_network=[](void* p){auto& a=*static_cast<Application*>(p);a.apply_network();return true;};
         ports.save_configuration=[](void* p){return static_cast<Application*>(p)->firmware.save_configuration();};
         ports.pair_prompt=[](void*,std::uint32_t now,char code[9]){return pico_http_pairing_prompt(now,code);};
@@ -99,9 +108,23 @@ struct Application {
         gpio.configure_output(gpio.context,firmware.core.heater.output_pin);gpio.write_pin(gpio.context,firmware.core.heater.output_pin,false);
         return true;
     }
+    static bool route(const PicoHttpRequest* req,PicoHttpResponse* res,char* arena,std::size_t capacity,void* ctx){
+        auto& self=*static_cast<Application*>(ctx);
+        const bool pending=self.update.reboot_pending();
+        if(self.update.handle(*req,*res,arena,capacity,self.update_ready?self.firmware.core.identifier.data():nullptr,
+                self.update_ready && !self.fault_reported && self.adapter.idle())){
+            if(!pending && self.update.reboot_pending()){
+                self.adapter.stop("firmware-update");
+                force_outputs_off();
+                self.restart_ms=::millis();
+            }
+            return true;
+        }
+        return self.engine.handle(*req,*res,arena,capacity);
+    }
     void configure_http(){
         http_io=listener.io();
-        pico_http_server_initialize(&http,&http_io,&listener,api::Engine::http_handler,&engine,
+        pico_http_server_initialize(&http,&http_io,&listener,route,this,
             pico_common_web_assets,pico_common_web_assets_count);
         pico_http_server_enable_pairing(&http, true);
         pico_http_server_set_asset_io(&http,&pico_common_web_asset_io,nullptr);
@@ -125,23 +148,32 @@ struct Application {
         std::memcpy(credentials.password.data(),network.password,sizeof network.password);credentials.internet_expected=false;
         firmware.core.wifi.connect(credentials);
     }
+    void update_capability(){
+        update_ready=controller_ready && !fault_reported && update_store_ready && provisioning.key_configured() &&
+            provisioning.network_configured() && flash.role()==picobrew::esp32_ota::Role::Application;
+        adapter.wireless_capable(update_ready);
+    }
     void serial_poll(){
         // This modified profile owns UART input. It never passes provisioning
         // text through the original command echo/logger.
         for(unsigned budget=0;budget<64&&Serial.available()>0;++budget){const int value=Serial.read();if(value<0)break;
             api::Result result;if(provisioning.feed(static_cast<char>(value),result)&&result.message)Serial.println(result.message);}
-        if(provisioning.take_key_changed()){pico_http_server_disconnect(&http);pico_http_server_set_key(&http,provisioning.key(),std::strlen(provisioning.key()));}
-        if(provisioning.take_network_changed())apply_network();
+        if(provisioning.take_key_changed()){update_capability();pico_http_server_disconnect(&http);pico_http_server_set_key(&http,provisioning.key(),std::strlen(provisioning.key()));}
+        if(provisioning.take_network_changed()){apply_network();update_capability();}
     }
     void fault(const char* reason){
         if(fault_reported)return;
-        fault_reported=true;firmware.core.system_error=true;
+        fault_reported=true;update_capability();firmware.core.system_error=true;
         std::strncpy(firmware.core.system_error_text.data(),reason,firmware.core.system_error_text.size()-1);
         adapter.stop(reason);engine.event("controller-fault",reason);
         firmware.core.core.transition(oem::CoreStateId::Error);
     }
     bool begin(){
         if(!bind()){Serial.println("Pico Z standalone bindings unavailable");return false;}
+        // A misplaced field image must never run the brewer from the protected factory slot.
+        flash.inspect();
+        const auto* running=esp_ota_get_running_partition();
+        if(!running || !std::strcmp(running->label,"pb_recovery"))return false;
         controller_ready=firmware.setup();
         files.mount(); // Failure remains visible; no automatic erase/format.
         const auto provisioned=provisioning.load();
@@ -155,6 +187,9 @@ struct Application {
         if(!stored.ok())Serial.println("Pico Z persistent store unavailable; starting sessions is disabled");
         controller_ready=controller_ready&&adapter.begin();
         WiFi.mode(WIFI_STA); // Initialize lwIP before opening its listener.
+        std::size_t total=0,used=0;
+        update_store_ready=stored.ok() && files.capacity(total,used) && total>=1300000u;
+        update_capability();
         configure_http();
         provisioning.take_network_changed();apply_network();
         if(!controller_ready)fault(bus.failed()?"controller-io":"controller-setup");
@@ -165,6 +200,11 @@ struct Application {
     }
     void poll(){
         const std::uint32_t now=::millis();
+        if(update.reboot_pending()){
+            http_poll(now);
+            if(http.client<0 || now-restart_ms>=2000u)esp_restart();
+            return;
+        }
         if(controller_ready&&!fault_reported){adapter.poll();if(!firmware.tick(now))fault(bus.failed()?"controller-io":"controller-service");}
         else {serial_poll();
             // Keep local diagnosis/provisioning reachable after a controller
@@ -194,10 +234,9 @@ bool start_firmware(){
     const int initialized=platform::initialize_arduino();
     // An ESP32 reset can leave the independent MSP running. Establish inactive
     // outputs before allocation/task creation as well as on an NVS failure.
-    pinMode(oem::OriginalHeaterEnablePin,OUTPUT);digitalWrite(oem::OriginalHeaterEnablePin,LOW);
-    pinMode(oem::OriginalHeaterOutputPin,OUTPUT);digitalWrite(oem::OriginalHeaterOutputPin,LOW);
-    Wire1.begin(25,26,400000);MspBus cutoff(Wire1);auto io=cutoff.transport();std::uint8_t frame[6];
-    const auto size=z_msp_app_frame(frame,sizeof frame,Z_MSP_PUMPS_SET,0,1);io.transmit(io.context,0x40,frame,size);
+    force_outputs_off();
+    const volatile char* marker=z_field_identity;
+    if(*marker!='P' || esp_ota_get_app_description()->magic_word!=ESP_APP_DESC_MAGIC_WORD)return false;
     // The modified owner replaces the OEM task, including its console setup.
     // Open UART before any allocation/task failure and before provisioning.
     oem::esp32::initialize_console();

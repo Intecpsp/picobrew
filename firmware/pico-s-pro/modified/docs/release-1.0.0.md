@@ -1,8 +1,12 @@
-# Standalone firmware 1.0.0
+# Archived shared development firmware 1.0.0
 
-This page records the 1.0.0 release and its hardware observations. The original
-package is preserved in [commit 0a7d499](https://github.com/jeffreydwalter/picobrew-pico-pro-firmware/tree/0a7d4991bcdb29871534e08fd73a784637bae79b/firmware).
-The current Settings layout patch is described in [1.0.1](release-1.0.1.md).
+This record covers the development image shared by Pico S and Pro. Its SHA-256
+is `652f94f941a4551ebb4a2df17e818dec3b3aebd2fc1cf43ec6bcb2e5ec684558`.
+The [original package](https://github.com/jeffreydwalter/picobrew/tree/0a7d4991bcdb29871534e08fd73a784637bae79b/firmware)
+and [subsequent development changes](release-1.0.1.md) remain in the project history.
+The [stable 1.0.0 packages](../firmware/standalone/README.md) use separate model
+images and report `"release_channel":"stable"` in `/api/v1`. A brewer running
+this shared image needs [one-time USB setup](hub-ota.md).
 
 This is the first major standalone release after the recovered stock 0.1.34
 firmware and the initial unversioned standalone candidate. REST stays at
@@ -120,7 +124,7 @@ upload. Failed allocation is reported without changing brewing controls or
 replacing previously committed history. Other SDK/application allocations
 still use the same heap; the reservation is not all free memory.
 
-See the packaged [firmware report](../firmware/standalone/firmware-report.json)
+See the packaged [firmware report](https://github.com/jeffreydwalter/picobrew/blob/0a7d4991bcdb29871534e08fd73a784637bae79b/firmware/standalone/firmware-report.json)
 for the exact linked image size, static RAM, remaining unallocated SRAM,
 source hashes and matching browser manifest. Build fit does not establish
 physical peak stack/heap usage or timing.

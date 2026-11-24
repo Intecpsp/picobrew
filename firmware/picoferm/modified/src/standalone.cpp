@@ -1,3 +1,4 @@
+#include "picoferm/version.hpp"
 #include "picoferm/standalone.hpp"
 #include <cmath>
 #include <cstring>
@@ -6,7 +7,7 @@ namespace picoferm { namespace standalone {
 namespace {
 namespace api=picobrew::standalone;
 const api::CommandDescriptor commands[]={
-    {"start",0,0},{"stop",0,0},{"calibrate",api::Confirm,api::Confirm},
+    {"ack-sanitize-seal",0,0},{"start",0,0},{"stop",0,0},{"calibrate",api::Confirm,api::Confirm},
     {"sample",0,0},{"set-sampling-interval",api::Value,api::Value}
 };
 bool due(std::uint32_t now,std::uint32_t deadline){return now-deadline<0x80000000u;}
@@ -25,7 +26,7 @@ void Controller::event(const char* kind,const char* detail){if(engine_)engine_->
 api::DeviceServices Controller::services() noexcept {
     api::DeviceServices out;out.context=this;
     out.identity=[](void* p){auto& self=*static_cast<Controller*>(p);api::Identity id;
-        id.model="picoferm";id.model_name="PicoFerm";id.model_family="picoferm";id.firmware_version="1.2.5";id.device_uid=self.uid_;return id;};
+        id.model="picoferm";id.model_name="PicoFerm";id.model_family="picoferm";id.firmware_version=PICOFERM_VERSION;id.device_uid=self.uid_;return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Temperature|api::Pressure|api::Battery|api::Calibration|api::Fermentation;
         caps.settings=api::TemperatureUnit;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Controller*>(p)->snapshot(value);};
@@ -88,6 +89,12 @@ api::Result Controller::execute(const api::Command& command){
     for(const auto& candidate:commands)if(!std::strcmp(command.name,candidate.name))descriptor=&candidate;
     if(!descriptor||(command.fields&~descriptor->allowed_fields)||(command.fields&descriptor->required_fields)!=descriptor->required_fields)
         return {400,"invalid_command","Command arguments do not match this PicoFerm"};
+    if(!std::strcmp(command.name,"ack-sanitize-seal")){
+        if(recording_||calibrating_)return busy();
+        if (!engine_) return {503, "not_ready", "Care record unavailable"};
+        const auto saved = engine_->record_care(api::CareEvent::SealSanitized);
+        return saved.ok() ? api::Result(202) : saved;
+    }
     if(!std::strcmp(command.name,"stop")){
         recording_=false;calibrating_=false;if(engine_)engine_->cancel_prepared_session();
         event("stop","Local recording stopped; no session will resume automatically");return {202};
@@ -118,7 +125,7 @@ api::Result Controller::execute(const api::Command& command){
     std::uint32_t token=session_token_+1;if(!token)++token;
     const auto reserved=engine_->prepare_session("start","",token);if(!reserved.ok())return reserved;
     if(!request_sample(false)){engine_->cancel_prepared_session();return busy();}
-    session_token_=token;recording_=true;event("fermentation","Local session started");return {202};
+    session_token_=token;recording_=true;engine_->record_care(api::CareEvent::FermUsed);event("fermentation","Local session started");return {202};
 }
 api::Result Controller::snapshot(api::Snapshot& out){
     out=api::Snapshot();out.uptime_ms=now();const bool available=begun_&&measured();

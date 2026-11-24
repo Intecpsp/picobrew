@@ -10,12 +10,12 @@
       "payload": "index.html.gz",
       "content_type": "text/html; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6462,
+      "length": 6470,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "e7db304a314514d63a0ac2a5d7b7ad9c6c2d436442b66a4302ae6dfe305ff5e6",
-      "source_length": 60444,
-      "source_sha256": "59078072df407a0a65cf536549dc543741e2315fe312d9542de31d720eb4565c"
+      "sha256": "92840d59cf737dbd91c0ebe33f1514a618ec96febad11e9854593e1f756f709f",
+      "source_length": 60500,
+      "source_sha256": "0e28279e8eebbdfa433f6273e872c6cffc62fe5efa7b851a254ca147dd8d6e32"
     },
     {
       "source": "app.js",
@@ -23,12 +23,12 @@
       "payload": "app.js.gz",
       "content_type": "application/javascript; charset=utf-8",
       "content_encoding": "gzip",
-      "length": 6594,
+      "length": 6788,
       "max_size": 7680,
       "allocation_blocks": 2,
-      "sha256": "bce9442daabeb76cc4a32cf75ba8014c2755bb8adfe6e0c53470b5f5f0f2f325",
-      "source_length": 20286,
-      "source_sha256": "bea6863a91b6547fe75c07df3576a0588698faff2ed7287c0a44148959472636"
+      "sha256": "33d0021302ecbedefcd4b541fb8ce7b8de91135684f4b4e2c993927cdd2f470a",
+      "source_length": 20882,
+      "source_sha256": "596ef390bf793cc2de1578c751d9756bcb0a4e7c4bbed06505dd9389e98da66d"
     },
     {
       "source": "api-explorer.js",

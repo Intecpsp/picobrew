@@ -33,6 +33,7 @@ def build():
         "world_sent": (ctypes.c_char_p, [ctypes.c_void_p]),
         "world_response": (None, [ctypes.c_void_p, ctypes.c_char_p]),
         "world_prepare": (ctypes.c_uint, [ctypes.c_void_p, ctypes.c_uint]),
+        "world_care": (ctypes.c_uint, [ctypes.c_void_p, ctypes.c_uint]),
         "world_cancel": (None, [ctypes.c_void_p]),
         "world_recovery": (None, [ctypes.c_void_p, ctypes.c_uint]),
         "world_preferences": (ctypes.c_uint, [ctypes.c_void_p, ctypes.c_char]),
@@ -90,6 +91,7 @@ class EngineTests(unittest.TestCase):
 
     def test_discovery_capabilities_and_no_fictional_routes(self):
         ferm = self.request("/api/v1")
+        self.assertEqual(ferm["release_channel"], "stable")
         self.assertFalse(ferm["capabilities"]["recipes"])
         self.assertFalse(ferm["recipe_create_only"])
         self.assertTrue(self.request("/api/v1", world=self.new(0))["recipe_create_only"])
@@ -102,6 +104,37 @@ class EngineTests(unittest.TestCase):
         status = self.request("/api/v1/status", world=still)
         self.assertEqual(len(status["sensors"]), 5)
         self.assertEqual([a["id"] for a in status["actuators"]], ["pump", "fan1", "fan2"])
+
+    def test_device_care_is_persistent_and_a_rinse_does_not_reset_the_brew_count(self):
+        def due(world):
+            return self.request("/api/v1/status", world=world)["maintenance"]["due"]
+        z = self.new(0)
+        for _ in range(2):
+            self.assertEqual(self.lib.world_care(z, 0), 200)
+            self.assertEqual(due(z), ["rinse"])
+            self.assertEqual(self.lib.world_care(z, 2), 200)
+            self.assertEqual(due(z), [])
+            self.lib.world_reboot(z)
+        self.assertEqual(self.lib.world_care(z, 0), 200)
+        self.assertEqual(due(z), ["rinse", "clean"])
+        self.assertEqual(self.lib.world_care(z, 2), 200)
+        self.assertEqual(due(z), ["clean"])
+        self.assertEqual(self.lib.world_care(z, 3), 200)
+        self.lib.world_reboot(z)
+        self.assertEqual(due(z), [])
+        ferm = self.world
+        self.assertEqual(due(ferm), ["sanitize_seal"])
+        self.assertEqual(self.lib.world_care(ferm, 7), 200)
+        self.lib.world_reboot(ferm)
+        self.assertEqual(due(ferm), [])
+        self.assertEqual(self.lib.world_care(ferm, 6), 200)
+        self.assertEqual(due(ferm), ["sanitize_seal"])
+        still = self.new(2)
+        self.assertEqual(self.lib.world_care(still, 4), 200)
+        self.lib.world_reboot(still)
+        self.assertEqual(due(still), ["clean_condenser"])
+        self.assertEqual(self.lib.world_care(still, 5), 200)
+        self.assertEqual(due(still), [])
 
     def test_compact_history_preserves_legacy_rows_and_integer_extremes(self):
         self.assertTrue(self.lib.world_legacy_codec_test())

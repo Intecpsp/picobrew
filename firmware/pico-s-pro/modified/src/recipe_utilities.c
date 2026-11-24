@@ -1,5 +1,8 @@
 #include "picobrew/recipe.h"
 #include "picobrew/local_control.h"
+#if PICO_STANDALONE
+#include "picobrew/local_history.h"
+#endif
 #include <limits.h>
 #include <stdio.h>
 
@@ -447,6 +450,9 @@ void pico_recipe_rinse(PicoRecipeRuntime *r)
     pico_recipe_vacuum(r, (first + 1u) & 255u, first);
     r->state->device_state = 2;
     r->ops->report_state(r->context);
+#if PICO_STANDALONE
+    if (!pico_local_cancelled()) pico_care_completed(PICO_CARE_RINSE);
+#endif
     r->ops->instruction_screen(r->context, 24, 0, 0, title, false);
 }
 
@@ -702,4 +708,7 @@ void pico_recipe_descale(PicoRecipeRuntime *r)
     pico_actuators_all_off(a);
     r->state->device_state = 2;
     r->ops->report_state(r->context);
+#if PICO_STANDALONE
+    if (!pico_local_cancelled()) pico_care_completed(PICO_CARE_DESCALE);
+#endif
 }

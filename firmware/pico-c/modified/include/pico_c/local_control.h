@@ -63,6 +63,7 @@ static inline void pico_local_poll(void)
 
 /* Application integration; not REST endpoints. */
 void pico_local_control_enter_menu(void);
+void pico_local_control_show_update_notice(const char *message);
 void pico_local_control_leave_menu(void);
 bool pico_local_control_run_pending(void);
 bool pico_local_control_has_pending(void);

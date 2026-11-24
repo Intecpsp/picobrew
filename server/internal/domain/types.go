@@ -17,6 +17,10 @@ type Device struct {
 	KeyConfigured bool      `json:"key_configured"`
 	CreatedAt     time.Time `json:"created_at"`
 }
+type Maintenance struct {
+	Available *bool    `json:"available,omitempty"`
+	Due       []string `json:"due"`
+}
 type Status struct {
 	Model            string     `json:"model,omitempty"`
 	ModelName        string     `json:"model_name,omitempty"`
@@ -56,6 +60,8 @@ type Status struct {
 		Min      int `json:"min"`
 		Max      int `json:"max"`
 	} `json:"encoder"`
+
+	Maintenance *Maintenance `json:"maintenance,omitempty"`
 }
 type Recovery struct {
 	Available      bool   `json:"available"`
@@ -91,12 +97,14 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	ReleaseChannel          string                   `json:"release_channel,omitempty"`
 	EventsPersistent        *bool                    `json:"events_persistent,omitempty"`
 	SystemRestart           bool                     `json:"system_restart,omitempty"`
 	HistorySampleIntervalMS uint32                   `json:"history_sample_interval_ms,omitempty"`
 	StockRestoreOTAV1       bool                     `json:"stock_restore_ota_v1,omitempty"`
 	PairingV1               bool                     `json:"pairing_v1,omitempty"`
 	ZProgramMaker           bool                     `json:"z_program_maker,omitempty"`
+	OTAProtocol             string                   `json:"ota_protocol,omitempty"`
 	HubOTAV1                bool                     `json:"hub_ota_v1,omitempty"`
 	APIVersion              int                      `json:"api_version"`
 	FirmwareVersion         string                   `json:"firmware_version"`

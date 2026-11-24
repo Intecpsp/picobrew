@@ -1,4 +1,4 @@
-# Standalone firmware 1.3.0 packages
+# Standalone firmware 1.0.0 packages
 
 The two packages use the shared S/Pro implementation with an explicit model
 selection. Install the image matching the physical appliance:
@@ -20,11 +20,11 @@ files are generated in the model-specific build output. The main firmware hands 
 `pico-hub-recovery.bin` application. See [OTA setup and verification](../../docs/hub-ota.md). Pico C, Z and
 Zymatic cannot use these images merely by changing a label.
 
-The [guarded USB installer](../../docs/macos-usb-installation.md) remains tied to
-one pinned backup and allocation layout. Use `--model pico-s` for both USB stages on the confirmed Pico S. Preserve and verify each appliance's own backup and installation
-requirements. Physical brew and interlock validation remain in the
-[hardware acceptance record](../../docs/hardware-validation.md).
+For first-time setup, use the Hub's **USB setup and recovery** flow and connect
+the brewer to the Hub computer. The [USB installer](../../docs/macos-usb-installation.md)
+compares the machine with its verified stock backup and flash layout before
+writing. See the [hardware acceptance record](../../docs/hardware-validation.md)
+for the remaining physical checks.
 
-See [release 1.2.0](../../docs/release-1.2.0.md), the
-[API guide](../../docs/standalone-api.md), and
+See the [API guide](../../docs/standalone-api.md) and
 [Hub connection guide](../../docs/telemetry.md).

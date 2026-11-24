@@ -34,6 +34,7 @@ public:
     api::Result validate_recipe(const api::Recipe&);
     api::Result load_recipe(const api::Recipe&, bool start);
     bool idle() const noexcept;
+    void wireless_capable(bool enabled) noexcept { wireless_ = enabled; }
     bool stopped() const noexcept { return inhibited_ != 0; }
     bool stop(const char* reason);
     bool show_home();
@@ -42,6 +43,7 @@ public:
     bool service_stage(oem::CoreTickStage, std::uint32_t);
     bool service_effect(const oem::CoreAction&, std::uint32_t&);
 private:
+    bool wireless_ = false;
     enum class Page { Home, Recipes, Original, Scanning, Networks, Pairing };
     oem::CoreApplication& core_;
     oem::HeadApplication& head_;
@@ -59,6 +61,8 @@ private:
     const char* stop_reason_ = "initializing";
     Page page_ = Page::Original;
     bool bound_ = false, begun_ = false, queued_ = false, encoder_click_ = false;
+    bool care_recorded_ = false;
+    void observe_care();
     bool native_prepared_ = false, owned_recipe_ = false;
     BrewRecovery recovery_;
     bool recovery_active_ = false, resuming_ = false;

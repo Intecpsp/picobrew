@@ -54,6 +54,32 @@ class LocalApi(unittest.TestCase):
     def setUp(self):
         LIB.test_reset(1)
 
+    def test_ota_identity_busy_and_trial_gates(self):
+        path = "/api/v1/ota"
+        self.assertEqual(request("GET", path)[0], 409)
+        LIB.test_restart_state(4, 0, -1)
+        LIB.test_ota_enable(0)
+        code, state = request("GET", path)
+        self.assertEqual(code, 200)
+        identity = {k: state[k] for k in ("device_uid", "model", "sha256", "display_variant")}
+        self.assertEqual(identity["display_variant"], "ssd1325")
+        self.assertEqual(request("POST", path+"/enter", {k:v for k,v in identity.items() if k!="display_variant"})[0], 409)
+        LIB.test_restart_state(4, 0, 5)
+        self.assertEqual(request("POST", path+"/enter", identity)[0], 409)
+        LIB.test_restart_state(4, 0, -1)
+        for field in identity:
+            self.assertEqual(request("POST", path + "/enter", {**identity,field:"wrong"})[0], 409)
+        self.assertEqual(request("POST", path + "/confirm", identity)[0], 409)
+        LIB.test_busy(1)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+        LIB.test_busy(0)
+        LIB.test_ota_enable(1)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+        self.assertEqual(request("POST", path + "/confirm", identity)[0], 200)
+        LIB.test_ota_enable(0)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 200)
+        self.assertEqual(request("POST", path + "/enter", identity)[0], 409)
+
     def test_authenticated_restart_through_http(self):
         path = "/api/v1/system/restart"
         key = "ab" * 32
@@ -116,7 +142,8 @@ class LocalApi(unittest.TestCase):
         self.assertTrue(data["recipe_create_only"])
         self.assertTrue(data["restore_default_recipes"])
         self.assertEqual(data["starter_recipe_count"], 8)
-        self.assertEqual(data["firmware_version"], "1.2.8")
+        self.assertEqual(data["firmware_version"], "1.0.0")
+        self.assertEqual(data["release_channel"], "stable")
         self.assertIn("encoder", data["commands"])
         self.assertIn("deep-clean", data["commands"])
         self.assertFalse(data["dedicated_pause_resume"])

@@ -23,6 +23,9 @@ typedef struct PicoLocalApi {
     uint8_t event_head;
     uint8_t event_count;
     bool auth_configured;
+    bool (*ota_inspect)(bool *trial, char digest[65], uint32_t *size);
+    bool (*ota_commit)(bool confirm);
+    bool ota_trial;
     bool restart_pending;
 } PicoLocalApi;
 

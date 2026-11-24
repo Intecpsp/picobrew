@@ -38,6 +38,8 @@ SECTIONS
     .api_bss (NOLOAD) : {
         . = ALIGN(8); _bss = .; *(.pico_api_bss)
         *(.bss.Serial) *(.pico_telemetry_bss)
+        /* Four Energia GPIO interrupt callback tables fit before DMA alignment. */
+        *(.bss.cbFuncsA*)
     } > SRAM
     .bss (NOLOAD) : {
         /* The SDK DMA table requires 1024-byte alignment. Put it at the

@@ -166,3 +166,105 @@ def verify_library(raw):
     for name, pc, count, expected in LIBRARY:
         if hashlib.sha256(raw[pc:pc+count]).hexdigest() != expected:
             raise ValueError("Unrecognized original AVR routine: " + name)
+
+# A block can reference prior blocks. Each lookup seeks backwards to the source
+# of a copied byte until it reaches a literal. This requires no decode buffer.
+SEEK_BLOCK = 128
+SEEK_END = 0x10b6
+
+@lru_cache(maxsize=1)
+def pack_seek_pool(raw):
+    if len(raw) != POOL_END - POOL:
+        raise ValueError("Invalid original text and bitmap table")
+    cost = [0] * (len(raw) + 1)
+    choices = [None] * len(raw)
+    for pos in range(len(raw) - 1, -1, -1):
+        room = min(SEEK_BLOCK - pos % SEEK_BLOCK, len(raw) - pos)
+        best, length = min((1 + n + cost[pos+n], n) for n in range(1, room + 1))
+        choice = length, 0
+        for n in range(3, min(10, room) + 1):
+            source = raw.rfind(raw[pos:pos+n], max(0, pos-4096), pos+n-1)
+            if source < 0:
+                break
+            if 2 + cost[pos+n] <= best:
+                best, choice = 2 + cost[pos+n], (n, pos-source)
+        cost[pos], choices[pos] = best, choice
+    offsets = bytearray()
+    stream = bytearray()
+    lookup_cost = []
+    pos = 0
+    while pos < len(raw):
+        if pos % SEEK_BLOCK == 0:
+            offsets.extend(struct.pack("<H", len(stream)))
+            scan = 0
+        scan += 1
+        length, distance = choices[pos]
+        if distance:
+            # Prefer source bytes with short lookup paths among equally compact
+            # encodings. Repeated padding otherwise creates long reference chains
+            # and delays rendering on the original controller.
+            source = max(0, pos-4096)
+            best = None
+            while True:
+                source = raw.find(raw[pos:pos+length], source, pos+length-1)
+                if source < 0:
+                    break
+                back = pos-source
+                costs = [lookup_cost[source + k % back] + scan*(1 + k//back)
+                         for k in range(length)]
+                candidate = (max(costs), sum(costs), back, costs)
+                if best is None or candidate < best:
+                    best = candidate
+                source += 1
+            _, _, distance, winning_costs = best
+            lookup_cost.extend(winning_costs)
+            stream.extend(struct.pack(">H", 0x8000 | ((length-3) << 12) | (distance-1)))
+        else:
+            lookup_cost.extend([scan] * length)
+            stream.append(length-1)
+            stream.extend(raw[pos:pos+length])
+        pos += length
+    packed = bytes(offsets + stream)
+    if len(packed) > SEEK_END - POOL:
+        raise ValueError("Original table exceeds the packed region")
+    packed = packed.ljust(SEEK_END - POOL, b"\xff")
+    if unpack_seek_pool(packed) != raw:
+        raise ValueError("Original table readback failed")
+    return packed
+
+@lru_cache(maxsize=2)
+def unpack_seek_pool(packed):
+    count = (POOL_END - POOL + SEEK_BLOCK - 1) // SEEK_BLOCK
+    if len(packed) != SEEK_END - POOL:
+        raise ValueError("Invalid packed table size")
+    pos = 2 * count
+    raw = bytearray()
+    while len(raw) < POOL_END - POOL:
+        slot, offset = divmod(len(raw), SEEK_BLOCK)
+        if not offset and struct.unpack_from("<H", packed, 2*slot)[0] != pos - 2*count:
+            raise ValueError("Invalid packed table index")
+        if pos >= len(packed):
+            raise ValueError("Truncated table")
+        tag = packed[pos]
+        pos += 1
+        if tag & 128:
+            if pos >= len(packed):
+                raise ValueError("Truncated backreference")
+            length = ((tag >> 4) & 7) + 3
+            distance = ((tag & 15) << 8) + packed[pos] + 1
+            pos += 1
+            if distance > len(raw):
+                raise ValueError("Invalid backreference")
+            for _ in range(length):
+                raw.append(raw[-distance])
+        else:
+            length = tag + 1
+            if pos + length > len(packed):
+                raise ValueError("Truncated literal")
+            raw.extend(packed[pos:pos+length])
+            pos += length
+        if offset + length > SEEK_BLOCK or len(raw) > POOL_END - POOL:
+            raise ValueError("Packed token crosses its block")
+    if any(value != 255 for value in packed[pos:]):
+        raise ValueError("Invalid packed table padding")
+    return bytes(raw)

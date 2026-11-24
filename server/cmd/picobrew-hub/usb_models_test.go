@@ -77,10 +77,10 @@ func TestPicoCUSBStages(t *testing.T) {
 			}
 			return nil
 		}
-		if err := installOverUSB(opts, c, strings.NewReader("provision-key\ninstall\n"), io.Discard, run, cache); err != nil {
+		if err := installOverUSB(opts, c, strings.NewReader("provision-key\ninstall\ninstall-recovery\n"), io.Discard, run, cache); err != nil {
 			t.Fatal(err)
 		}
-		if !slices.Equal(stages, []string{"prepare-install", "provision-key", "install"}) {
+		if !slices.Equal(stages, []string{"prepare-install", "provision-key", "install", "install-recovery"}) {
 			t.Fatal(stages)
 		}
 	}

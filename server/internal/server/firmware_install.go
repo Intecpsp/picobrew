@@ -12,17 +12,37 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
+func reportsWirelessUpdate(c domain.Capabilities) bool {
+	switch c.Model {
+	case "picostill", "z-series":
+		return c.OTAProtocol == firmware.ESP32FactoryProtocol
+	case "picoferm":
+		return c.OTAProtocol == firmware.FermABProtocol
+	default:
+		return c.HubOTAV1 && c.OTAProtocol == "" && firmware.ValidVariant(c.Model, c.DisplayVariant)
+	}
+}
+
 func otaEligible(v domain.DeviceView) bool {
 	return v.Adapter == "pico-standalone" && v.Enabled && v.Online && !v.KeyReused &&
-		v.ModelSource == "firmware" && v.ModelError == "" && v.Capabilities != nil && v.Capabilities.HubOTAV1 &&
-		(v.Capabilities.Model == "pico-s" || v.Capabilities.Model == "pico-pro") &&
+		v.ModelSource == "firmware" && v.ModelError == "" && v.Capabilities != nil &&
+		v.Capabilities.Model == v.Model &&
+		reportsWirelessUpdate(*v.Capabilities) &&
 		v.Status != nil && v.Status.Ready && !v.Status.Busy && !v.Status.Stopped && v.Status.DeviceUID != ""
 }
 
-// Selecting and confirming are persisted before the respective boot mutations.
-// A lost reply can leave the current application in trial mode.
-func pendingTrial(receipt firmware.InstallReceipt) bool {
-	return receipt.State != "installed" && (receipt.Stage == "selecting" || receipt.Stage == "confirming")
+// Each checkpoint precedes a device mutation. The previous package owns the
+// transfer or trial even if the device still answers its normal status API.
+func pendingFirmwareConflict(receipt firmware.InstallReceipt) string {
+	if receipt.State != "installed" {
+		switch receipt.Stage {
+		case "entering", "transferring":
+			return "transfer_pending"
+		case "selecting", "confirming":
+			return "trial_pending"
+		}
+	}
+	return ""
 }
 
 func (s *Server) savedFirmwareIdentity(id, uid string) (bool, error) {
@@ -105,13 +125,19 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.fail(w, 409, "ota_unavailable", "The registered brewer identity could not be verified")
 		return
 	}
-	if pendingTrial(prior) && !resume {
-		s.fail(w, 409, "trial_pending", "Finish verifying the previous firmware package before installing another version")
+	if conflict := pendingFirmwareConflict(prior); conflict != "" && !resume {
+		s.fail(w, 409, conflict, "Finish the interrupted firmware update before installing another version")
 		return
 	}
 	model := prior.Model
+	display := prior.DisplayVariant
 	var currentVersion string
 	if resume {
+		if view.Online && (!otaEligible(view) || view.Status.DeviceUID != prior.UID ||
+			view.Model != prior.Model || view.Capabilities.DisplayVariant != prior.DisplayVariant) {
+			s.fail(w, 409, "ota_unavailable", "Retry on the same idle brewer with wireless update support")
+			return
+		}
 		// A restarted Hub can find the brewer in recovery, which has no normal
 		// status endpoint. Require the original persisted pin; the adapter
 		// independently verifies the live application or recovery identity.
@@ -137,12 +163,24 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 		d.mu.RUnlock()
 		if !ready || status.DeviceUID != in.UID {
-			s.fail(w, 409, "ota_unavailable", "Use an idle S/Pro with Hub OTA support, its pinned identity and a unique device key")
+			s.fail(w, 409, "ota_unavailable", "Use an idle brewer with wireless update support and its verified device identity")
 			return
 		}
 		model = status.Model
+		display = status.DisplayVariant
 		if currentVersion == "" {
 			s.fail(w, 409, "firmware_version_unknown", "The brewer did not report its installed firmware version")
+			return
+		}
+	}
+	if model == "pico-c" {
+		verified, err := s.verifiedFirmwareDisplay(view.ID, in.UID)
+		if err != nil {
+			s.storeError(w, err)
+			return
+		}
+		if !firmware.ValidVariant(model, display) || verified != display {
+			s.fail(w, 409, "hardware_verification", "Verify the display controller fitted to this Pico C before installing firmware")
 			return
 		}
 	}
@@ -158,12 +196,30 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
-	payload, err := firmware.ReadUpdatePayload(archive)
+	if !resume {
+		catalog, err := s.savedCatalog()
+		if err != nil {
+			s.firmwareError(w, err)
+			return
+		}
+		if catalog.Withdrawn(saved) {
+			s.fail(w, 409, "firmware_withdrawn", "Choose a firmware version currently offered by the configured release source")
+			return
+		}
+	}
+	var payload firmware.UpdatePayload
+	if saved.SupportsFermOTA() {
+		payload, err = firmware.ReadPicoFermUpdate(archive, saved.Candidate)
+	} else if saved.SupportsFactoryOTA() {
+		payload, err = firmware.ReadFactoryUpdate(archive, saved.Candidate)
+	} else {
+		payload, err = firmware.ReadUpdatePayload(archive)
+	}
 	if err != nil {
 		s.firmwareError(w, err)
 		return
 	}
-	if payload.Model != model {
+	if !payload.MatchesWirelessTarget(model, display) {
 		s.fail(w, 409, "firmware_model", "The package model does not match this brewer")
 		return
 	}
@@ -177,7 +233,7 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
-	receipt := firmware.InstallReceipt{UID: in.UID, Model: model, PackageID: in.PackageID, Started: time.Now().UTC(), State: "running", Message: "Checking recovery, transferring the package and confirming the new boot."}
+	receipt := firmware.InstallReceipt{UID: in.UID, Model: model, DisplayVariant: display, PackageID: in.PackageID, Started: time.Now().UTC(), State: "running", Message: "Checking recovery, transferring the package and confirming the new boot."}
 	previousStage := ""
 	if resume {
 		previousStage = prior.Stage

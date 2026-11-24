@@ -2,7 +2,7 @@
 import { createElement } from 'react'
 import { cleanup, render, screen } from '@testing-library/react'
 import { afterEach, expect, it } from 'vitest'
-import { MachineCare } from './MachineCare'
+import { CareNotice, MachineCare } from './MachineCare'
 
 afterEach(cleanup)
 
@@ -21,3 +21,13 @@ it.each([
     expect(screen.getByRole('link').getAttribute('href')).toContain(manual)
   }
 )
+
+it('shows device-reported tasks and clears the reminder after completion', () => {
+  const view = render(createElement(CareNotice, {}))
+  expect(screen.queryByRole('status')).toBeNull()
+  view.rerender(createElement(CareNotice, { maintenance: { due: ['rinse', 'clean_filter'] } }))
+  expect(screen.getByRole('status').textContent).toContain('Rinse the brewer')
+  expect(screen.getByRole('status').textContent).toContain('Clean the inline filter')
+  view.rerender(createElement(CareNotice, { maintenance: { due: [] } }))
+  expect(screen.queryByRole('status')).toBeNull()
+})

@@ -20,22 +20,22 @@ const jsBytes=readFileSync(join(site,"zymatic_pair_js.h"),"utf8").match(/0x[0-9a
 const source=gunzipSync(Buffer.from(jsBytes)).toString();
 const moves=[],pixels=[],requests=[];
 const show=()=>env.form.onsubmit({preventDefault(){}});
-let revision=321,mode="menu",conflict=false,copied,stored="";
+let revision=321,mode="menu",conflict=false,copied,stored="",refreshOverview;
 const env={
   location:{hash:"",pathname:"/",search:""},pair:{},
-  form:{},key:{value:""},owner:{hidden:true},message:{},info:{},journal:{},samples:{},
+  document:{hidden:false},form:{},key:{value:""},owner:{hidden:true},message:{},info:{},journal:{},samples:{},
   Option:class {constructor(text,value){this.text=text;this.value=value}},
   list:{value:"",hidden:true,options:[],replaceChildren(...options){this.options=options;this.value=""},add(option){this.options.push(option)}},
   oled:{getContext(){return {fillRect(x,y){pixels[y*128+x]=this.fillStyle}}}},up:{},press:{},down:{},copy:{},forget:{},
   navigator:{clipboard:{async writeText(value){copied=value}}},
   sessionStorage:{getItem(){return stored},setItem(name,value){stored=value},removeItem(){stored=""}},
-  setInterval(){},
+  setInterval(fn){refreshOverview=fn;},
   async fetch(url,options){
     const path=url.slice("/api/v1/".length);
     requests.push(path);
     if(path==="overview"){
       assert.equal(options.headers.Authorization,undefined);
-      return {ok:true,json:async()=>({busy:mode==="press",wort_f:151.5})};
+      return {ok:true,json:async()=>({busy:mode==="press",wort_f:151.5,maintenance:{due:mode==="press"?["rinse","clean_filter","deep_clean"]:[]}})};
     }
     if(options.headers.Authorization!=="Bearer abc")return {ok:false,status:401};
     if(path==="history")return {ok:true,json:async()=>({sessions:[{id:7,recipe_name:"Pale",state:"interrupted",truncated:true}]})};
@@ -71,7 +71,8 @@ vm.runInNewContext(source,env);
   assert.match(env.samples.textContent,/9\t—\t80\tOff\tHop 1\t—/);
   const move=env.up.onclick();await env.down.onclick();await move;
   assert.deepEqual(moves,[{command:"encoder",display_revision:321,delta:-1}]);
-  mode="press";await show();
+  mode="press";refreshOverview();await new Promise(resolve=>setImmediate(resolve));
+  assert.match(env.info.value,/Rinse.*check filter.*Deep clean due/);await show();
   assert.equal(env.up.disabled,true);assert.equal(env.down.disabled,true);assert.equal(env.press.disabled,false);
   mode="off";await show();assert.equal(env.press.disabled,true);
   mode="menu";await show();conflict=true;

@@ -178,10 +178,12 @@ def project_files():
         "firmware/upstream-manifest.json",
         "firmware/releases.json",
         "firmware/common/tools/esp_usb.py",
+        "firmware/picoferm/modified/tools/usb_ab.py",
         "firmware/common/tools/esp_stock_partitions.py",
         "firmware/common/tools/esp_provisioning.py",
         "firmware/common/tools/spiffs_format.py",
         "firmware/common/dependencies/spiffs-format-abi.json",
+        "firmware/common/dependencies/legacy-usb-applications.json",
         "firmware/z-series/modified/tools/usb_profile.py",
         "firmware/zymatic/modified/extension/extension.bin",
         "firmware/zymatic/modified/extension/extension.json",
@@ -195,6 +197,7 @@ def project_files():
         "firmware/pico-s-pro/modified/firmware/standalone/pico-s/pico-s-standalone.bin",
         "firmware/pico-s-pro/modified/firmware/standalone/pico-pro/pico-pro-standalone.bin",
         "firmware/pico-c/modified/firmware/standalone/pico-c/*/pico-c-standalone.bin",
+        "firmware/pico-c/modified/firmware/standalone/pico-c/*/pico-c-recovery.bin",
     ]
     for model in ("pico-s-pro", "pico-c"):
         patterns.extend(
@@ -217,9 +220,9 @@ def project_files():
         for n in ("usb_stock", "usb_avr", "usb_application", "zymatic_build", "offline_program")
     )
     release_index = json.loads((ROOT / "firmware/releases.json").read_text())["releases"]
-    for model in ("picostill", "picoferm", "z-series"):
+    for model, kind in (("picostill", "reference"), ("picoferm", "picoferm-ab"), ("z-series", "reference")):
         latest = max(
-            (r for r in release_index if r["model"] == model and r["kind"] == "reference"),
+            (r for r in release_index if r["model"] == model and r["kind"] == kind),
             key=lambda r: tuple(map(int, r["firmware_version"].split("."))),
         )
         patterns.append(f"firmware/{model}/modified/releases/{model}/{latest['firmware_version']}.zip")
@@ -236,11 +239,13 @@ def project_files():
             for resource in (
                 "extension/low.bin",
                 "extension/crc-hole.bin",
+                "extension/compact/extension.bin",
+                "extension/compact/extension.json",
                 "extension/1.2.0/extension.bin",
                 "extension/1.2.0/extension.json",
                 "zymatic_pairing.h",
                 "tools/oem_tables.py",
-                "tools/release_1_2.py",
+                "tools/compact_build.py",
                 "tools/usb_layout.py",
             )
         )
@@ -258,6 +263,22 @@ def project_files():
             raise ValueError("Missing USB package input: " + pattern)
         files.update(matches)
     return sorted(files)
+
+
+def worker_inputs():
+    """Identify the firmware, packing scripts and pinned programmer dependencies."""
+    inputs = set(project_files())
+    inputs.update(SCRIPT / name for name in (
+        "build_worker.py", "build_pi32.sh", "usb_bridge.py", "AVRDUDE-COPYING",
+    ))
+    inputs.update(ROOT / name for name in (
+        "firmware/common/requirements-usb.txt", "firmware/pico-s-pro/modified/requirements-usb.txt",
+        ".github/workflows/hub-usb-tools.yml",
+    ))
+    digest = hashlib.sha256()
+    for path in sorted(inputs, key=lambda entry: entry.relative_to(ROOT).as_posix()):
+        digest.update(path.relative_to(ROOT).as_posix().encode() + b"\0" + bytes.fromhex(sha(path)))
+    return digest.hexdigest()
 
 
 def notices(key, output, avr):
@@ -379,8 +400,10 @@ def build(args):
         file = args.output / ("picobrew-usb-" + key + (".exe" if key.startswith("windows") else ""))
         shutil.copy2(built, file)
         meta = {"platform": key, "name": file.name, "bytes": file.stat().st_size, "sha256": sha(file)}
-        (args.output / (key + ".json")).write_text(json.dumps(meta, indent=2) + "\n")
         notices(key, args.output, avr)
+        meta["inputs_sha256"] = worker_inputs()
+        meta["notices_sha256"] = sha(args.output / f"usb-notices-{key}.zip")
+        (args.output / (key + ".json")).write_text(json.dumps(meta, indent=2) + "\n")
         print(json.dumps(meta))
 
 

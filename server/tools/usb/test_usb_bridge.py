@@ -1,6 +1,8 @@
 from contextlib import nullcontext
 import io
 import json
+import subprocess
+import sys
 import tempfile
 from pathlib import Path
 from types import SimpleNamespace
@@ -11,6 +13,11 @@ import usb_bridge as bridge
 
 
 class WorkerTests(unittest.TestCase):
+    def test_version_runs_without_input_or_device_access(self):
+        run = subprocess.run([sys.executable, str(Path(bridge.__file__).resolve()), "--version"],
+                             stdin=subprocess.DEVNULL, capture_output=True, text=True, check=True, timeout=5)
+        self.assertEqual((run.stdout, run.stderr), ("1.0.0\n", ""))
+
     def test_another_hub_worker_cannot_open_the_same_usb_service(self):
         import usb_avr
         with tempfile.TemporaryDirectory() as tmp:
@@ -82,7 +89,7 @@ class WorkerTests(unittest.TestCase):
 
                 def complete(data, port, action, *, confirm, key_file, hub_host, expected_uid):
                     self.assertEqual(confirm("Type INSTALL ZYMATIC: "), "INSTALL ZYMATIC")
-                    self.assertEqual(confirm("Type WRITE 1.2.0: "), "WRITE 1.2.0")
+                    self.assertEqual(confirm("Type WRITE 1.0.0: "), "WRITE 1.0.0")
                     self.assertNotEqual(key_file("b" * 32), key_file("c" * 32))
                     usb_stock.save_private(key_file("b" * 32), b"a" * 64)
                     return "b" * 32

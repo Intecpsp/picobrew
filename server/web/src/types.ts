@@ -6,6 +6,7 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
+  maintenance?: { available?: boolean; due: string[] }
   state?: string
   temperature_f?: number | null
   pressure_kpa?: number | null
@@ -82,6 +83,7 @@ export interface Capabilities {
   model_family?: string
   display_variant?: string
   api_version: number
+  release_channel?: string
   firmware_version: string
   commands: string[]
   recipe_capacity: number
@@ -356,6 +358,7 @@ export interface FirmwareSettings {
   ref: string
 }
 export interface FirmwareCandidate {
+  ota_protocol?: string
   hub_ota_protocol?: number
   model: string
   model_family: string
@@ -366,7 +369,7 @@ export interface FirmwareCandidate {
 }
 export interface FirmwareRelease extends FirmwareCandidate {
   archive_sha256: string
-  kind: 'historical' | 'standalone' | 'reference'
+  kind: 'historical' | 'standalone' | 'reference' | 'picoferm-ab'
 }
 export interface FirmwareUpdates {
   checked?: string

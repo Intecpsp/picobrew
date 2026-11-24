@@ -187,6 +187,8 @@ int main(int argc, char** argv) {
         if (argc == 2 && std::strcmp(argv[1], "--layout") == 0) {
             std::printf("{"); layout(); std::printf("}\n"); return 0;
         }
+        const bool readback = argc >= 2 && std::strcmp(argv[1], "--readback") == 0;
+        if (readback) { --argc; ++argv; }
         require(argc >= 5 && (argc - 5) % 2 == 0, "Invalid formatter invocation");
         const u32_t size = std::stoul(argv[1]), block = std::stoul(argv[2]);
         physical_start = std::stoul(argv[3]);
@@ -203,6 +205,14 @@ int main(int argc, char** argv) {
         std::sort(inputs.begin(), inputs.end(), [](const File& a, const File& b) { return a.name < b.name; });
         for (std::size_t index = 1; index < inputs.size(); ++index)
             require(inputs[index - 1].name != inputs[index].name, "Duplicate staged logical name");
+        if (readback) {
+            flash = load(argv[4]);
+            require(flash.size() == size, "Wrong readback image size");
+            Filesystem existing(size, block);
+            require(existing.mount() == SPIFFS_OK, "Migrated filesystem did not mount");
+            existing.verify(inputs);
+            return 0;
+        }
         u32_t total = 0, used = 0;
         {
             Filesystem filesystem(size, block);

@@ -1,4 +1,37 @@
+import type { DeviceStatus } from '../types'
 import { SectionHeading } from './ui'
+
+const careTasks = new Map([
+  ['rinse', 'Rinse the brewer'],
+  ['deep_clean', 'Run Deep Clean'],
+  ['descale', 'Descale if using water other than distilled or reverse osmosis'],
+  ['clean', 'Run Clean'],
+  ['clean_filter', 'Clean the inline filter'],
+  ['clean_condenser', 'Clean the condenser and removable parts'],
+  ['sanitize_seal', 'Sanitize and air-dry the fermentation seal before fitting it'],
+])
+
+export function careTasksDue(maintenance?: DeviceStatus['maintenance']) {
+  if (maintenance?.available === false) return []
+  return (maintenance?.due || []).map(
+    (task) => careTasks.get(task) || 'Check the machine for care instructions'
+  )
+}
+
+export function CareNotice({ maintenance }: { maintenance?: DeviceStatus['maintenance'] }) {
+  const tasks = careTasksDue(maintenance)
+  if (!tasks.length) return null
+  return (
+    <div className="connection-advisory" role="status">
+      <strong>Maintenance due</strong>
+      <ul>
+        {tasks.map((task, i) => (
+          <li key={i}>{task}</li>
+        ))}
+      </ul>
+    </div>
+  )
+}
 
 const manualRoot = 'https://picobrewcontent.blob.core.windows.net/content/'
 function picoCare(tabletLocation: string) {

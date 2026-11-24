@@ -178,6 +178,17 @@ int test_http_request(const char *key, const char *input, char *output, size_t c
     return wire.closed;
 }
 
+static bool ota_trial;
+static bool fake_ota_inspect(bool *trial, char digest[65], uint32_t *size)
+{
+    *trial = ota_trial;
+    memset(digest, 'a', 64); digest[64] = 0; *size = 1000;
+    return true;
+}
+static bool fake_ota_commit(bool confirm) { return confirm == ota_trial; }
+void test_ota_enable(int trial) {
+    ota_trial = trial != 0; api.ota_trial = ota_trial; api.ota_inspect = fake_ota_inspect; api.ota_commit = fake_ota_commit;
+}
 void test_reset(int clear_files)
 {
     if (clear_files) memset(files, 0, sizeof files);

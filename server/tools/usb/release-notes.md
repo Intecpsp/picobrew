@@ -1,4 +1,10 @@
-Download the single `picobrew-hub` executable for your computer. It includes the Hub website, USB programmer and firmware resources. The separate `picobrew-usb` executables are build inputs for users building the Hub from source. `releases.json` records the size and SHA-256 of each worker.
+PicoBrew 1.0.0 is the first public release of the Hub, USB tools, and custom firmware. It includes model-specific firmware for Pico S, Pico Pro, both Pico C displays, individual Z-series modules, Zymatic, PicoStill, and PicoFerm.
+
+Use the Hub to build recipes, control compatible machines, review brew history, and see model-specific cleaning reminders. To convert a stock machine, connect it to the computer running the Hub and open **Brewery → Add machine → USB setup and recovery**. Keep a private copy of the Hub data directory after it saves the original firmware.
+
+If your brewer runs development firmware with a higher version number, update the Hub first. Select **Check for Updates** on the machine’s Firmware page. Wireless installation requires the matching recovery layout. Earlier layouts and both Zymatic profiles use USB setup. Zymatic firmware is prepared with the individual brewer’s identity. Physical qualification varies by model. [Setup and compatibility](https://github.com/jeffreydwalter/picobrew/blob/v1.0.0/README.md)
+
+Download the **picobrew-hub** executable for your computer. Run it with `--version` to check the release. It includes the Hub website, USB programmer and firmware resources. The separate `picobrew-usb` executables are build inputs for users building the Hub from source. `SHA256SUMS.txt` covers all downloads. `releases.json` identifies the exact source commit and the size and SHA-256 of every Hub and worker.
 
 Use Linux ARM64 for a 64-bit Raspberry Pi OS installation and Linux ARM for 32-bit Raspberry Pi OS on ARMv7 or newer. Linux binaries use glibc. USB access requires the Hub account to have access to the physical port or USB adapter. Follow the device and power prompts in the Hub. Backup and setup preserve the existing model and flash-layout checks. Firmware changes for a named Z stack require independently qualifying its individual module.
 

@@ -171,3 +171,19 @@ uint8_t zymatic_brew_button(void *encoder)
     }
     return pressed;
 }
+
+/* The OEM finishes loading six menu rows immediately before the call at
+ * 0x105da. Keep the original selection, labels and action dispatch. */
+__attribute__((section(".low_functions")))
+uint8_t zymatic_home_menu(const char *title, uint8_t count, uint8_t selected)
+{
+    uint8_t due = zymatic_maintenance();
+    char prompt[22];
+    if (due != 0xff && (due >= 4 || due == 3)) {
+        static const char deep[] __attribute__((section(".low_care"))) = "Deep clean due";
+        static const char rinse[] __attribute__((section(".low_care"))) = "Rinse + clean filter";
+        strcpy_P(prompt, (due & 3) == 3 ? deep : rinse);
+        title = prompt;
+    }
+    return OEM_ENTRY(0x81f0,uint8_t,(const char *,uint8_t,uint8_t))(title,count,selected);
+}

@@ -3,6 +3,7 @@
 #include <string.h>
 #ifdef __AVR__
 #include <avr/io.h>
+#include <avr/pgmspace.h>
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #define OEM(address, type, args) ((type(*) args)(uintptr_t)((address) / 2))
@@ -101,7 +102,7 @@ static struct {
     uint8_t phase, aborted, index, laststep, final, truncated, closing;
     uint8_t has_next, next_index, next_aborted, next_closed;
     uint16_t addr;
-    uint8_t len, pos, checked, written;
+    uint8_t len, pos, care, written;
     union {
         Anchor a;
         Header h;
@@ -162,8 +163,10 @@ void zymatic_history_init(void)
     Anchor a;
     for (uint8_t i = 0; i < 2; i++) {
         read_at(BASE + i * 8, &a, sizeof(a));
-        if (anchor_ok(&a) && a.id > h.latest)
+        if (anchor_ok(&a) && a.id > h.latest) {
             h.latest = a.id;
+            h.care = a.reserved & 7;
+        }
     }
     if (!h.latest) {
         /* Never claim an unknown EEPROM allocation or silently reinitialize
@@ -188,6 +191,8 @@ void zymatic_history_init(void)
                 continue;
             if (!header_ok(&v) || v.id > h.latest || slot(v.id) != i)
                 return;
+            if (v.id == h.latest && (v.state & 0xf0) == 0xd0)
+                h.care = v.state & 7;
             h.first[i] = v.first;
             uint8_t n = 0;
             while (n < ZH_ROWS) {
@@ -227,7 +232,6 @@ static void queue(uint16_t addr, uint8_t len)
     h.addr = addr;
     h.len = len;
     h.pos = 0;
-    h.checked = 0;
 }
 /* One EEPROM byte per service, committed tag last. The old tag is invalidated
  * first, so interrupted application updates cannot validate a mixture of rows. */
@@ -237,7 +241,7 @@ static uint8_t pump(void)
         return 1;
     if (!ready())
         return 0;
-    if (h.checked) {
+    if (h.pos) {
         uint8_t before = h.pos - 1;
         uint16_t p = before < h.len ? h.addr + before : h.addr;
         uint8_t check;
@@ -247,8 +251,7 @@ static uint8_t pump(void)
             h.enabled = 0;
             return 0;
         }
-        h.checked = 0;
-    }
+        }
     if (h.pos > h.len) {
         h.len = 0;
         return 1;
@@ -265,7 +268,6 @@ static uint8_t pump(void)
         return 0;
     h.pos = k + 1;
     h.written = v;
-    h.checked = 1;
     return 0;
 }
 static uint8_t step_index(uint8_t index)
@@ -346,11 +348,73 @@ static void begin_session(uint8_t index, uint32_t now)
     Anchor *a = &h.tx.a;
     a->tag = COUNTER_TAG;
     a->id = h.latest;
-    a->reserved = 0;
+    a->reserved = h.care;
     a->check = crc(&a->id, 5);
     queue(BASE + ((uint8_t)h.latest & 1u) * 8, sizeof(*a));
     h.phase = OPEN;
 }
+/* Exact four routed bytes per stock step (temperature, time, valve, drain).
+ * The original recipe name and step-name pointers are not identities. Only
+ * the Clean/Rinse selection sets OEM SRAM[0x1ec4] before the run at 0xffea. */
+#ifdef __AVR__
+#define CARE_DATA __attribute__((section(".low_care"),used))
+#define care_byte(p) pgm_read_byte_near(p)
+#define LOW_CODE __attribute__((section(".low_functions"),noinline))
+#else
+#define CARE_DATA
+#define care_byte(p) (*(p))
+#define LOW_CODE
+#endif
+enum { CARE_OTHER = 1, CARE_BREW, CARE_RINSE, CARE_DEEP };
+static const uint8_t cleaning_v1[] CARE_DATA = {
+    152, 0, 0, 0, 152, 15, 1, 5, 152, 0, 0, 0,
+    152, 3, 2, 1, 152, 2, 3, 1, 152, 2, 4, 1,
+    152, 2, 5, 1, 197, 0, 0, 0, 197, 10, 1, 0,
+    197, 2, 1, 0, 197, 2, 2, 0, 120, 10, 0, 2,
+};
+static const uint8_t clean_v6[] CARE_DATA = {
+    0, 5, 1, 0, 0, 5, 5, 0, 120, 0, 0, 0,
+    120, 20, 5, 0, 140, 0, 0, 0, 140, 35, 5, 0,
+    0, 5, 1, 0, 0, 3, 0, 0, 140, 5, 5, 0,
+    160, 5, 5, 0, 175, 5, 5, 0, 197, 0, 0, 0,
+    197, 19, 5, 0, 0, 3, 1, 0, 0, 3, 0, 0,
+    120, 3, 5, 0, 0, 5, 1, 8, 0, 0, 6, 0,
+    0, 12, 5, 0,
+};
+static const uint8_t rinse_v3[] CARE_DATA = {
+    0, 2, 0, 5,
+};
+
+static LOW_CODE uint8_t care_kind(uint8_t index)
+{
+    if (!*memory(0x1ec4)) return CARE_BREW;
+    volatile uint8_t *program = memory(0x16be + 172u * index + 21);
+    uint8_t count = *program++;
+    const uint8_t *routes;
+    uint8_t kind = CARE_DEEP;
+    switch (count) {
+    case sizeof(cleaning_v1)/4: routes = cleaning_v1; break;
+    case sizeof(clean_v6)/4: routes = clean_v6; break;
+    case sizeof(rinse_v3)/4: routes = rinse_v3; kind = CARE_RINSE; break;
+    default: return CARE_OTHER;
+    }
+    while (count--) {
+        program += 2; /* OEM SRAM step-name pointer */
+        for (uint8_t field = 0; field < 4; ++field)
+            if (*program++ != care_byte(routes++)) return CARE_OTHER;
+    }
+    return kind;
+}
+/* Bits 0–1 count completed brews, saturating at the manual's third brew.
+ * Bit 2 requests a rinse and the associated manual inline-filter inspection. */
+static __attribute__((noinline)) uint8_t after_care(uint8_t before, uint8_t kind)
+{
+    if (kind == CARE_RINSE) return before & 3;
+    if (kind == CARE_DEEP) return 4;
+    if (kind == CARE_BREW) return (before | 4) + ((before & 3) != 3);
+    return before;
+}
+
 void zymatic_history_poll(uint32_t now)
 {
     if (!h.enabled || !ready() || !pump())
@@ -401,8 +465,12 @@ void zymatic_history_poll(uint32_t now)
         return;
     }
     if (h.closing && h.final) {
-        h.tx.raw[0] =
-            h.aborted ? (h.truncated ? ABORTED_TRUNC : ABORTED) : (h.truncated ? TRUNC : COMPLETE);
+        if (h.aborted)
+            h.tx.raw[0] = h.truncated ? ABORTED_TRUNC : ABORTED;
+        else {
+            h.care = after_care(h.care, h.closing);
+            h.tx.raw[0] = 0xd0 | (h.truncated ? 8 : 0) | h.care;
+        }
         queue(meta_addr(i) + offsetof(Header, state), 1);
         h.phase = CLOSING;
         return;
@@ -444,14 +512,23 @@ void zymatic_run_program(uint8_t index)
         } else
             record = 0;
     }
+    uint8_t kind = record ? care_kind(index) : CARE_OTHER;
     stock_program(index);
     if (record) {
         if (h.has_next)
-            h.next_closed = 1;
+            h.next_closed = kind;
         else
-            h.closing = 1;
+            h.closing = kind;
         zymatic_history_poll(millis_now());
     }
+}
+uint8_t zymatic_maintenance(void)
+{
+    if (!h.enabled) return 0xff;
+    /* Closing and the EEPROM final marker are asynchronous. The operator has
+     * already left the stock runner, so the main menu can show the new notice. */
+    return h.closing && h.phase != IDLE && h.phase != CLOSING && !h.aborted
+        ? after_care(h.care, h.closing) : h.care;
 }
 uint32_t zymatic_history_latest(void) { return h.latest; }
 uint8_t zymatic_history_ready(void) { return h.enabled && ready(); }
@@ -474,11 +551,11 @@ uint8_t zymatic_history_session(uint32_t id, ZymaticHistorySession *out)
     out->flags = 0;
     if (h.phase != IDLE && id == h.latest && v.state == 0)
         out->flags |= ZH_ACTIVE;
-    if (v.state == COMPLETE || v.state == TRUNC)
+    if (v.state == COMPLETE || v.state == TRUNC || (v.state & 0xf0) == 0xd0)
         out->flags |= ZH_COMPLETE;
     if (v.state == ABORTED || v.state == ABORTED_TRUNC)
         out->flags |= ZH_ABORTED;
-    if (v.state == TRUNC || v.state == ABORTED_TRUNC || (id == h.latest && h.truncated))
+    if (v.state == TRUNC || v.state == ABORTED_TRUNC || (v.state & 0xf8) == 0xd8 || (id == h.latest && h.truncated))
         out->flags |= ZH_TRUNCATED;
     out->first_elapsed = out->duration = 0;
     if (out->count) {

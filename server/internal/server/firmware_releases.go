@@ -15,6 +15,9 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/store"
 )
 
+// A fresh index drops cached development listings when upgrading an existing Hub.
+const firmwareCatalogKey = "firmware-release-index-v2"
+
 type releaseNotice struct {
 	DeviceID string `json:"device_id"`
 	Name     string `json:"name"`
@@ -30,7 +33,7 @@ type releaseView struct {
 // catalog boundaries so a Hub upgrade takes effect before the next refresh.
 func otaCatalog(c firmware.ReleaseCatalog) firmware.ReleaseCatalog {
 	c.Releases = slices.DeleteFunc(c.Releases, func(r firmware.Release) bool {
-		return r.Kind != "standalone" || !r.Candidate.SupportsHubOTA()
+		return !r.WirelessPackage()
 	})
 	return c
 }
@@ -43,7 +46,7 @@ func (s *Server) savedCatalog() (firmware.ReleaseCatalog, error) {
 	if err != nil {
 		return catalog, err
 	}
-	_, err = s.db.Get("config", "firmware-releases", &catalog)
+	_, err = s.db.Get("config", firmwareCatalogKey, &catalog)
 	if errors.Is(err, store.ErrNotFound) || (err == nil && catalog.Settings != cfg) {
 		return firmware.ReleaseCatalog{Settings: cfg}, nil
 	}
@@ -70,7 +73,7 @@ func (s *Server) refreshCatalog(ctx context.Context) (firmware.ReleaseCatalog, e
 		return catalog, sourceChanged()
 	}
 	next = otaCatalog(next)
-	_, err = s.db.Put("config", "firmware-releases", next, -1)
+	_, err = s.db.Put("config", firmwareCatalogKey, next, -1)
 	return next, err
 }
 func (s *Server) fleetForReleases() []domain.DeviceView {
@@ -110,6 +113,22 @@ func newerRelease(a, b string) bool {
 	}
 	return cmp > 0
 }
+
+// The public series starts at 1.0.0. Development firmware used larger
+// version numbers and did not report a release channel.
+func updateAvailable(catalog firmware.ReleaseCatalog, target firmware.Release, installed *domain.Capabilities) bool {
+	if installed == nil || installed.FirmwareVersion == "" {
+		return false
+	}
+	version := installed.FirmwareVersion
+	if catalog.ReleaseChannel == "stable" && installed.ReleaseChannel == "" &&
+		((strings.HasPrefix(version, "1.") && newerRelease("1.3.11", version)) ||
+			version == "preview-090fe78" || version == "preview-15739da") {
+		return true
+	}
+	return newerRelease(target.FirmwareVersion, installed.FirmwareVersion)
+}
+
 func (s *Server) monitorReleases(ctx context.Context) {
 	ticker := time.NewTicker(time.Minute)
 	defer ticker.Stop()
@@ -150,14 +169,14 @@ func (s *Server) firmwareUpdates(w http.ResponseWriter, r *http.Request) {
 	for _, d := range s.fleetForReleases() {
 		latest := ""
 		for _, v := range c.Releases {
-			if v.Model != d.Model {
+			if v.Model != d.Model || (v.Model == "pico-c" && d.Capabilities != nil && v.DisplayVariant != d.Capabilities.DisplayVariant) {
 				continue
 			}
 			if !seen[v.ArchiveSHA256] {
 				out.Releases = append(out.Releases, v)
 				seen[v.ArchiveSHA256] = true
 			}
-			if d.Capabilities != nil && newerRelease(v.FirmwareVersion, d.Capabilities.FirmwareVersion) && (latest == "" || newerRelease(v.FirmwareVersion, latest)) {
+			if updateAvailable(c, v, d.Capabilities) && (latest == "" || newerRelease(v.FirmwareVersion, latest)) {
 				latest = v.FirmwareVersion
 			}
 		}

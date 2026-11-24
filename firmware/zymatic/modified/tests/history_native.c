@@ -116,6 +116,32 @@ void zh_test_seed(void)
 }
 void zh_test_history_suite(void)
 {
+    /* The OEM menu selects brew versus maintenance independently of its label.
+     * A valid rinse clears only the per-brew reminder, even across reboot. */
+    prepare();
+    assert(zymatic_maintenance() == 0);
+    run(CANCEL);
+    assert(zymatic_maintenance() == 0);
+    run(SHORT_RUN);
+    run(SHORT_RUN);
+    run(SHORT_RUN);
+    zymatic_history_init();
+    assert(zymatic_maintenance() == 7);
+    zh_test_sram[0x1ec4] = 1;
+    uint8_t *schedule = zh_test_sram + 0x16be + 21;
+    schedule[0] = 1;
+    const uint8_t rinse[] = {0, 2, 0, 5};
+    memcpy(schedule + 3, rinse, sizeof(rinse));
+    run(CANCEL);
+    assert(zymatic_maintenance() == 7);
+    schedule[3] = 9;
+    run(SHORT_RUN);
+    assert(zymatic_maintenance() == 7);
+    schedule[3] = 0;
+    run(SHORT_RUN);
+    zymatic_history_init();
+    assert(zymatic_maintenance() == 3);
+
     ZymaticHistorySession s;
     prepare();
     eeprom[0x180] = 0x2d;

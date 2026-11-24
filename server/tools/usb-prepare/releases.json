@@ -1,41 +1,54 @@
 {
-  "tag": "usb-tools-v1.0.1",
+  "tag": "v1.0.0",
+  "candidate_tag": "usb-candidate-45309233505-1",
   "assets": {
     "darwin-amd64": {
       "platform": "darwin-amd64",
       "name": "picobrew-usb-darwin-amd64",
-      "bytes": 24369616,
-      "sha256": "d8eca10e194410b353618e1258f8f1c222ff4c2d60262f425142a887b5d78e1e"
+      "bytes": 27086080,
+      "sha256": "44a65b27538dc9753ba7a49a637bb227f86665d8c0f7f349d378646e67858fed",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "3911fddc6dca0945b0142ea6c9918a6b86ea94bc11c965722c7e1e79fcd91a92"
     },
     "darwin-arm64": {
       "platform": "darwin-arm64",
       "name": "picobrew-usb-darwin-arm64",
-      "bytes": 24118480,
-      "sha256": "142ba41363cfdbc2bf74742a4cfed332dd12a2f6ea166b69da17677e17f15ef3"
+      "bytes": 26836768,
+      "sha256": "ef6ce8971f4aa0e5ce3ee1b9dc20ce9df2062953630ac7973752ad921c28ff8b",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "028b79ff48bd70f30121cc9c92d659f8ffadc1992fd6f9af25c6de300ea1f24b"
     },
     "linux-amd64": {
       "platform": "linux-amd64",
       "name": "picobrew-usb-linux-amd64",
-      "bytes": 39906088,
-      "sha256": "3d822a1755ac5b5efcd0162f0a38c17257c19a9aa9e721f9a246e0556c92551a"
+      "bytes": 42602968,
+      "sha256": "266adf61fb07ee12ff2044734ef15adfbbdcbe04e4342bd520109e7b28e5e70f",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "231fd3ff6a1dee43ea4d0e57eb3108e55b8dd1a9d2d3547febe7b3336bdf4c93"
     },
     "linux-arm": {
       "platform": "linux-arm",
       "name": "picobrew-usb-linux-arm",
-      "bytes": 21001224,
-      "sha256": "49ee7319c2162970d5ba4421011777ea9aefc387bbe8fde9d41477063f7fe4e2"
+      "bytes": 23697648,
+      "sha256": "2d4aca74ba9c7905b3b58490b10300c880c0239d0bbcd82b53b2001abd846090",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "058515b70f11a0a248e9ff8f925cbd13c859a716a7c9162968084e9f3d1925a8"
     },
     "linux-arm64": {
       "platform": "linux-arm64",
       "name": "picobrew-usb-linux-arm64",
-      "bytes": 39006896,
-      "sha256": "99653549de2f511f12e5cd9f0dbce087c122d682cca7244c0b821b846d408919"
+      "bytes": 41705032,
+      "sha256": "f5a1d751f39330a78666a411df82da4f45bc35115e917a67301a1081d238c0be",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "d7c79ed4fa88bef87646a4819921819e2ca567ee6c2b566f1aff992121b78d89"
     },
     "windows-amd64": {
       "platform": "windows-amd64",
       "name": "picobrew-usb-windows-amd64.exe",
-      "bytes": 25952736,
-      "sha256": "2f79c374b1211286ca3b86d265228559c7616702fd28c5b2b7363a51ed02a632"
+      "bytes": 28650476,
+      "sha256": "3d10c511db1da16d46a30b43c825d46243fad2d98552760374ae5854d8bc92e7",
+      "inputs_sha256": "1cacc477cf61ebbb78b4aa529fccc8d931d235889c0abe753e06a58e1d8e7c6e",
+      "notices_sha256": "5012f8ea07df1ac5126f9f9426c7ecdfb5c6b466ddd079403930229617cad293"
     }
   }
 }

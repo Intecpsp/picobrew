@@ -25,6 +25,7 @@ type Settings struct {
 // Candidate describes a report. The catalog does not assert that the image
 // and browser payloads have been downloaded or validated.
 type Candidate struct {
+	OTAProtocol     string `json:"ota_protocol,omitempty"`
 	HubOTAProtocol  int    `json:"hub_ota_protocol,omitempty"`
 	Model           string `json:"model"`
 	ModelFamily     string `json:"model_family"`
@@ -36,7 +37,62 @@ type Candidate struct {
 
 // SupportsHubOTA identifies packages the Hub recovery protocol can install.
 func (c Candidate) SupportsHubOTA() bool {
-	return c.HubOTAProtocol == 1 && c.ModelFamily == "pico-s-pro" && c.DisplayVariant == "" && (c.Model == "pico-s" || c.Model == "pico-pro")
+	return c.SupportsCC3200OTA() || c.SupportsFactoryOTA() || c.SupportsFermOTA()
+}
+
+// MatchesWirelessTarget binds a downloaded package to the registered machine.
+// A Z module may also report its fixed SSD1325 display in its identity.
+func (c Candidate) MatchesWirelessTarget(model, display string) bool {
+	if c.Model != model || !c.SupportsHubOTA() {
+		return false
+	}
+	if model == "z-series" && display == "ssd1325" {
+		return c.SupportsFactoryOTA()
+	}
+	return c.DisplayVariant == display
+}
+
+func (c Candidate) SupportsCC3200OTA() bool {
+	return c.OTAProtocol == "" && c.HubOTAProtocol == 1 && ValidVariant(c.Model, c.DisplayVariant) && c.ModelFamily == modelFamily(c.Model)
+}
+
+const ESP32FactoryProtocol = "esp32-factory-v1"
+const StillApplicationLimit = 960 << 10
+
+// ESP32 transmit limits come from the USB-provisioned layout for each model.
+func FactoryApplicationLimit(model string) int {
+	switch model {
+	case "picostill":
+		return StillApplicationLimit
+	case "z-series":
+		return 0x1a1000
+	}
+	return 0
+}
+
+func (c Candidate) SupportsFactoryOTA() bool {
+	return c.OTAProtocol == ESP32FactoryProtocol && c.ModelFamily == c.Model &&
+		c.DisplayVariant == "" && c.HubOTAProtocol == 0 && c.BinaryBytes > 0 && c.BinaryBytes <= FactoryApplicationLimit(c.Model)
+}
+
+const FermABProtocol = "esp8266-ab-v1"
+const FermBankLimit = 0x7d000
+
+func (c Candidate) SupportsFermOTA() bool {
+	return c.OTAProtocol == FermABProtocol && c.Model == "picoferm" && c.ModelFamily == "picoferm" &&
+		c.DisplayVariant == "" && c.HubOTAProtocol == 0 && c.BinaryBytes > 0 && c.BinaryBytes <= FermBankLimit
+}
+
+func (r Release) WirelessPackage() bool {
+	switch r.Kind {
+	case "standalone":
+		return r.SupportsCC3200OTA()
+	case "reference":
+		return r.SupportsFactoryOTA()
+	case "picoferm-ab":
+		return r.SupportsFermOTA()
+	}
+	return false
 }
 
 type Catalog struct {
@@ -64,13 +120,14 @@ type Package struct {
 }
 
 type InstallReceipt struct {
-	Stage     string    `json:"stage,omitempty"`
-	UID       string    `json:"device_uid"`
-	Model     string    `json:"model"`
-	PackageID string    `json:"package_id"`
-	Started   time.Time `json:"started"`
-	State     string    `json:"state"`
-	Message   string    `json:"message"`
+	DisplayVariant string    `json:"display_variant,omitempty"`
+	Stage          string    `json:"stage,omitempty"`
+	UID            string    `json:"device_uid"`
+	Model          string    `json:"model"`
+	PackageID      string    `json:"package_id"`
+	Started        time.Time `json:"started"`
+	State          string    `json:"state"`
+	Message        string    `json:"message"`
 }
 
 // USBRestoreTarget identifies the physical registration for a local guide.

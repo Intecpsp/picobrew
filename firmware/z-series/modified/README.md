@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.7
+# Pico Z standalone firmware 1.0.0
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -10,6 +10,14 @@ The identity is **`z-series` / Pico Z**. The available originals do not establis
 which physical Z1/Z2 revisions use this image. The build and package are a
 software reference, not a qualified initial installation. No build or test
 command flashes or operates a brewer.
+
+The idle home screen suggests Rinse after a brew and Clean after three brews. A completed cleaning program clears its reminder. The local website and authenticated status report the same machine records.
+
+## Wireless firmware updates
+
+Hub USB setup can provision an individually identified Z-series module with protected recovery. The Hub backs up the whole device and verifies the active stock image and partition layout first. For previously paired standalone installations, it also saves the running flash before repartitioning, checks the existing key, and verifies each migrated file and its metadata. Unreadable storage, an unknown application, or data that cannot fit stops setup before a write.
+
+A provisioned module advertises `esp32-factory-v1`. From the machine’s Firmware panel, an idle module can restart into recovery, accept a matching application, read it back, and select it for boot. Recovery uses the existing Wi-Fi settings and device key and leaves the heater and pumps off. The 4 MiB layout reserves 896 KiB for recovery, 1,668 KiB for the application and 1,468 KiB for SPIFFS. USB recovery and OTA still require operating trials on physical hardware.
 
 ## Implemented local operation
 
@@ -153,9 +161,7 @@ and encoder interrupt dependencies in internal code and the active owner in
 internal RAM. Compiler stack estimates and object sizes do not replace physical
 heap/stack high-water measurements or brewing qualification.
 
-The checked [standalone build report](analysis/standalone-build.json) records
-the complete linked application's source identities, SDK objects, target memory
-layout and generated image checks. The [reference-package validation](../../common/analysis/reference-package-validation.json)
+The [1.0.0 package](releases/z-series/1.0.0.zip) includes the release build report, both ELFs, and the application and recovery images. The [earlier standalone link report](analysis/standalone-build.json) records historical source identities and target memory measurements. The [reference-package validation](../../common/analysis/reference-package-validation.json)
 binds the Z, PicoStill and PicoFerm packages to their actual ELFs and build
 reports, including deterministic rebuilds, filesystem readback and rejection
 of corrupted images, changed addresses and stale build inputs.

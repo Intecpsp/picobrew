@@ -290,7 +290,6 @@ def _service(request, stream, emit, entries, action, model, port, display, data,
 
 
 def self_test():
-    import zymatic_build
     import cc_service
     import esp_usb
     import esp_provisioning
@@ -300,6 +299,7 @@ def self_test():
     import pico_flash_install as cc
     import serial
     import usb_avr
+    import usb_layout
     import usb_stock
 
     if (
@@ -321,23 +321,23 @@ def self_test():
             cc.C_FIRMWARE / "standalone" / "pico-c" / variant / "pico-c-standalone.bin", model
         )
         cc.load_web_bundle(cc.C_FIRMWARE / "web", model)
+        cc._load_hub_recovery(model)
     usb_avr.programmer()
-    zymatic_build.template()
-    if (ZYMATIC / "usb_layout.py").is_file():
-        import usb_layout
-
-        usb_layout.for_version("1.2.0").template()
-        for version in getattr(zymatic_build, "ARCHIVED_MANIFESTS", ("1.3.0",)):
-            usb_layout.for_version(version).template()
-    for model in ("z-series", "picostill", "picoferm"):
-        _, parts = esp_usb.reference(model)
-        profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"
+    for release in usb_layout.known_releases():
+        release.template()
+    for model, profile in (("z-series", "esp32-z-recovery"), ("picostill", "esp32-4m"), ("picoferm", "esp8266-2m")):
+        _, parts = esp_usb.picoferm_ab_reference() if model == "picoferm" else esp_usb.reference(model)
         esp_provisioning.stage(parts["spiffs.bin"], profile, secrets.token_hex(32))
+        if not esp_usb.legacy_applications(model):
+            raise ValueError("Missing ESP USB migration identities")
     if not callable(cc_service.run) or not callable(usb_stock.prepare):
         raise ValueError("Missing USB service")
 
 
 def main():
+    if sys.argv[1:] == ["--version"]:
+        print("1.0.0")
+        return 0
     if getattr(sys, "frozen", False):
         os.environ["PATH"] = str(ROOT / "native" / "bin")
     if sys.argv[1:] == ["--self-test"]:

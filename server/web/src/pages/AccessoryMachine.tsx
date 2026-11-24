@@ -1,4 +1,4 @@
-import { MachineCare } from '../components/MachineCare'
+import { CareNotice, MachineCare } from '../components/MachineCare'
 import { MachineManagement } from '../components/MachineManagement'
 import { useState } from 'react'
 import { ArrowUpRight, RefreshCw, Square } from 'lucide-react'
@@ -172,6 +172,7 @@ export default function AccessoryMachine({ device }: { device: Device }) {
         }
       />
       <ErrorBanner message={error || device.error || device.model_error || ''} />
+      <CareNotice maintenance={device.online ? device.status?.maintenance : undefined} />
       {device.key_reused && <DeviceKeyNotice />}
       <div className="machine-metrics accessory-metrics">
         {sensors.map((sensor) => (
@@ -235,6 +236,13 @@ export default function AccessoryMachine({ device }: { device: Device }) {
             {commands
               .filter(
                 (name) => !['stop', 'set-fan', 'set-pump', 'set-sampling-interval'].includes(name)
+              )
+              .filter((name) =>
+                name === 'ack-clean-condenser'
+                  ? status?.maintenance?.due.includes('clean_condenser')
+                  : name === 'ack-sanitize-seal'
+                    ? status?.maintenance?.due.includes('sanitize_seal')
+                    : true
               )
               .map((name) => (
                 <Button

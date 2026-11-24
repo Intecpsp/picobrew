@@ -300,6 +300,9 @@ func parseReport(data []byte) (report, error) {
 		r.SDKLinkPassed == nil || !*r.SDKLinkPassed || r.APIKeyEmbedded == nil || *r.APIKeyEmbedded {
 		return r, invalid("The report must describe a supported C/S/Pro standalone image with an explicit C display variant and no embedded API key")
 	}
+	if r.HubOTAProtocol != 0 && r.HubOTAProtocol != 1 {
+		return r, invalid("The package specifies an unsupported wireless update protocol")
+	}
 	if r.Model == "pico-c" {
 		height, rotation := 64, 2
 		if r.DisplayVariant == "ssd1309" {
@@ -438,6 +441,13 @@ func validateFiles(files map[string][]byte) (Candidate, error) {
 	if err := validateLayout(r.ImageLayout, image); err != nil {
 		return empty, err
 	}
+	if r.Model == "pico-c" && r.HubOTAProtocol == 1 {
+		const markerOffset = 1024 // Linker reserves the first KiB for the CC3200 vectors.
+		marker := []byte("PicoBrew:pico-c:" + r.DisplayVariant + "\x00")
+		if len(image) < markerOffset+len(marker) || !bytes.Equal(image[markerOffset:markerOffset+len(marker)], marker) {
+			return empty, invalid("The Pico C image does not match the package display controller")
+		}
+	}
 	manifestBytes := files["web/manifest.json"]
 	if Digest(manifestBytes) != r.BrowserManifestSHA256 {
 		return empty, invalid("The browser manifest SHA-256 does not match the firmware report")
@@ -506,7 +516,8 @@ func buildArchive(files map[string][]byte) ([]byte, error) {
 // UpdatePayload contains only fixed, validated destinations in the order used by recovery.
 type UpdatePayload struct {
 	Candidate
-	Files [6][]byte
+	Files    [6][]byte
+	PicoFerm *PicoFermUpdate
 }
 
 func ReadUpdatePayload(archive []byte) (UpdatePayload, error) {
@@ -520,7 +531,7 @@ func ReadUpdatePayload(archive []byte) (UpdatePayload, error) {
 		return payload, err
 	}
 	if !c.SupportsHubOTA() {
-		return payload, invalid("Choose an S/Pro package that supports Hub OTA trial confirmation")
+		return payload, invalid("Choose a package that supports Hub wireless installation")
 	}
 	payload.Candidate = c
 	payload.Files[0] = files[c.Model+"-standalone.bin"]

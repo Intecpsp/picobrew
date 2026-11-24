@@ -111,6 +111,9 @@ struct standalone::Engine::Impl {
     std::uint32_t config_generation = 0, catalogue_generation = 0;
     std::uint32_t sequence_generation = 0, history_generation = 0, sequence = 0;
     std::uint32_t started_at = 0, sampled_at = 0, session_token = 0, state_signature = 0;
+    std::uint32_t care_generation = 0;
+    std::uint8_t care_flags = 0, brews_since_clean = 0;
+    bool care_available = false;
     unsigned next_point = 0;
     int active = -1;
     bool initialized = false, persistent = false, snapshot_valid = false, recording_blocked = false, prepared = false, history_loaded = false;

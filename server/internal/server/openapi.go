@@ -12,6 +12,7 @@ import (
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/ai"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/catalog"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/domain"
+	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/firmware"
 	"github.com/jeffreydwalter/picobrew-pico-pro-firmware/server/internal/usbservice"
 )
 
@@ -339,13 +340,14 @@ func addFirmwareSchemas(values schemaMap) {
 	values["FirmwareHardware"] = schemaObject(schemaMap{"device_uid": stringSchema(), "display_variant": displayVariant, "verified_at": schemaMap{"type": "string", "format": "date-time"}}, "device_uid", "display_variant", "verified_at")
 	values["FirmwareUploadInput"] = schemaObject(schemaMap{"file": schemaMap{"type": "string", "format": "binary", "description": "Complete firmware ZIP, at most 2 MiB, with the report, model image, browser manifest and five matching gzip assets."}}, "file")
 	candidate := schemaMap{
-		"hub_ota_protocol": schemaMap{"type": "integer"},
-		"model":            model,
-		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro", "pico-c"}},
+		"hub_ota_protocol": schemaMap{"type": "integer", "enum": []int{0, 1}, "description": "CC3200 recovery protocol for Pico S, Pro and C."},
+		"ota_protocol":     schemaMap{"type": "string", "enum": []string{firmware.ESP32FactoryProtocol, firmware.FermABProtocol}, "description": "ESP application transfer protocol. Present on wireless-capable packages."},
+		"model":            schemaMap{"type": "string", "enum": []string{"pico-s", "pico-pro", "pico-c", "z-series", "picostill", "picoferm"}},
+		"model_family":     schemaMap{"type": "string", "enum": []string{"pico-s-pro", "pico-c", "z-series", "picostill", "picoferm"}},
 		"display_variant":  displayVariant,
 		"firmware_version": stringSchema(),
 		"binary_sha256":    hash,
-		"binary_bytes":     schemaMap{"type": "integer", "minimum": 16, "maximum": 188416},
+		"binary_bytes":     schemaMap{"type": "integer", "minimum": 1, "maximum": firmware.MaxReleaseBytes, "description": "Bytes in the cataloged application image. The installer also enforces the target partition limit. PicoFerm A/B releases identify bank zero here and record both bank images in the package."},
 	}
 	required := []string{"model", "model_family", "firmware_version", "binary_sha256", "binary_bytes"}
 	values["FirmwareCandidate"] = schemaObject(candidate, required...)
@@ -359,7 +361,7 @@ func addFirmwareSchemas(values schemaMap) {
 		properties[key] = value
 	}
 	properties["id"] = hash
-	properties["package_bytes"] = schemaMap{"type": "integer", "minimum": 1, "maximum": 2097152}
+	properties["package_bytes"] = schemaMap{"type": "integer", "minimum": 1, "maximum": firmware.MaxReleaseBytes}
 	properties["created_at"] = schemaMap{"type": "string", "format": "date-time"}
 	properties["validation"] = schemaMap{"type": "string", "enum": []string{"passed"}, "description": "Package structure, sizes, hashes and image bounds passed. This is not a publisher signature, physical hardware identification, or installation result."}
 	properties["provenance"] = schemaRef("FirmwareProvenance")
@@ -370,7 +372,7 @@ func addFirmwareSchemas(values schemaMap) {
 	}
 	releaseProps["model"] = stringSchema()
 	releaseProps["model_family"] = stringSchema()
-	releaseProps["kind"] = stringSchema()
+	releaseProps["kind"] = schemaMap{"type": "string", "enum": []string{"standalone", "reference", "picoferm-ab", "historical"}}
 	releaseProps["source_commit"] = commit
 	releaseProps["archive_sha256"] = hash
 	values["FirmwareRelease"] = schemaObject(releaseProps, append(append([]string{}, required...), "kind", "source_commit", "archive_sha256")...)

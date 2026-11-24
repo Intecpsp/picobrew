@@ -29,9 +29,13 @@ Keep the archive and later `stock-<sha256>.zip` captures private. They can conta
 
 Conversion checks the versioned ZIP hash and the digest, address and maximum length of each component. It replaces the application and initializes the packaged SPIFFS filesystem, and changes the ESP32 partition table when a qualified layout requires it. The retained NVS/EEPROM may hold OEM network or calibration data. Private copies of the pre-install filesystem and any displaced OEM slots remain in the full backup. Each new write uses whole changed erase sectors and the tool verifies the **entire** resulting flash before reporting success. If power or USB is interrupted, return to ROM download mode and run `restore` for the same MAC.
 
+PicoStill USB setup installs a protected factory recovery image at `0x10000` and the normal application at `0x100000`. It writes the initial boot selector after checking the destination region. For an existing single-slot PicoStill, the Hub checks its saved same-unit original, the running firmware against the local release index, and the stored device key. This migration retains the live filesystem and NVS byte for byte. After reboot the Hub can send matching firmware over Wi-Fi. A factory recovery installation and interrupted-transfer trial on a physical PicoStill remain outstanding.
+
 ## Pair the installed appliance
 
-After a normal boot, use the appliance's physical provisioning UART at 115200 baud while idle. A valid saved OEM network may already have been imported. Use a private terminal with local echo and logging disabled and send each command as a complete line. Supply a fresh random 32-byte key as 64 lowercase hexadecimal characters. The Wi-Fi separator is **one literal tab**.
+When you install through the Hub, it provisions the device key and saves it with that appliance’s identity. After setup, choose **Add machine** in the Hub and enter the appliance’s network address. If it needs Wi-Fi credentials, use the supported network setup for that appliance.
+
+For installation with the command-line tool, use the appliance’s physical provisioning UART at 115200 baud while idle. A valid saved OEM network may already have been imported. Use a private terminal with local echo and logging disabled and send each command as a complete line. Supply a fresh random 32-byte key as 64 lowercase hexadecimal characters. The Wi-Fi separator is **one literal tab**.
 
 ```
 key <64 lowercase hexadecimal characters>

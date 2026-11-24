@@ -64,9 +64,6 @@ func parseUSBInstallOptions(args []string, out io.Writer) (usbInstallOptions, er
 		if !filepath.IsAbs(opts.keyFile) || opts.backup != "" && !filepath.IsAbs(opts.backup) {
 			return opts, errors.New("supply an absolute key-file path and an absolute path for any existing backup")
 		}
-		if opts.model == "pico-c" && opts.startAt == "install-recovery" {
-			return opts, errors.New("Pico C preserves its original recovery")
-		}
 	} else if opts.keyFile != "" || opts.backup != "" || opts.startAt != "provision-key" {
 		return opts, errors.New("ESP setup uses its ROM serial port and saves its own matched stock backup; --key-file, --backup and --start-at are CC3200 options")
 	}
@@ -259,9 +256,6 @@ func installOverUSB(opts usbInstallOptions, component string, input io.Reader, o
 		{"provision-key", "Write and verify the device key on the stock brewer"},
 		{"install", "Install and verify the standalone application and its website"},
 		{"install-recovery", "Install and verify the separate OTA recovery image"},
-	}
-	if opts.model == "pico-c" {
-		stages = stages[:2]
 	}
 	started := false
 	for _, stage := range stages {

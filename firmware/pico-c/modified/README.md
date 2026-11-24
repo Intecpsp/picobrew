@@ -1,4 +1,4 @@
-# Pico C standalone firmware 1.2.0
+# Pico C standalone firmware 1.0.0
 
 This is a complete source build of the standalone Pico C application, based on
 its frozen [OEM reconstruction](../reverse-engineered/README.md). It retains
@@ -15,8 +15,8 @@ neither establishes physical timing, wiring compatibility or power-loss safety.
 
 | Selection | Logical display | Rotation | Buffer / transferred bytes | Raw image | Unallocated RAM |
 | --- | --- | --- | --- | --- | --- |
-| `ssd1325` | 128 × 64 | 180° | 1,024 / 1,024 | 162,152 bytes | 3,400 bytes |
-| `ssd1309` | 128 × 32 | 0° | 1,024 / 1,024 | 162,064 bytes | 3,400 bytes |
+| `ssd1325` | 128 × 64 | 180° | 1,024 / 1,024 | 168,496 bytes | 1,296 bytes |
+| `ssd1309` | 128 × 32 | 0° | 1,024 / 1,024 | 168,400 bytes | 1,296 bytes |
 
 The alternate OEM implementation transfers all 1,024 bytes despite exposing a
 32-row logical viewport. This behavior is preserved. The API returns the full
@@ -53,8 +53,7 @@ telemetry setup and package downloads do not require that hardware confirmation.
   strings.
 
 PicoStill is not advertised. The legacy factory recovery action is disabled.
-`firmware_update` is **false**: package upload/download and the legacy-format
-update envelope are not an in-place installer. The [USB setup and stock restoration tool](docs/standalone-provisioning.md) uses a per-device stock backup and keeps the existing recovery slot. C OTA installation and physical USB qualification remain open. No build or test command
+The Hub can update either Pico C display build over Wi-Fi once the device has been provisioned with its matching independent recovery and key. The [USB setup and stock restoration tool](docs/standalone-provisioning.md) verifies each brewer against its own original backup. Physical USB and OTA qualification is pending for both displays. No build or test command
 connects to, programs or operates a brewer.
 
 ## Build and package

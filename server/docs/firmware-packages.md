@@ -8,7 +8,9 @@ Open a machine's **Firmware** view to see wireless update versions for its exact
 
 While physical devices are registered, the Hub checks daily. The Brewery page displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
-The repository release index also preserves historical family builds, Pico C display variants and reference packages for the generic Z, PicoFerm and PicoStill. Each entry records the model, version and SHA-256 of the ZIP and application. The Hub's update catalog and machine version picker include only S and Pro standalone releases with Hub OTA protocol 1. The same rule applies to packages previously uploaded or cached on the Hub. The administrative package API can still list and download saved archives. On Pico C, owners can record their actual display controller independently of wireless update availability.
+The version picker shows packages the Hub can install on the selected machine. A Pico S or Pro uses its model-specific application and website. A Pico C also needs a verified display controller, and the recovery image checks the application’s display marker. For ESP devices, each wireless package declares its recovery protocol. Before transferring anything, the Hub checks the connected device’s identity, protocol and flash layout. The catalog also keeps older USB images for setup and restoration.
+
+A generic Z module and PicoStill transfer only their application over Wi-Fi. Each machine’s protected recovery and existing filesystem stay in place. PicoFerm transfers the application built for its inactive bank. After reboot the Hub reads the running image hash before confirming the new bank. A failed or unconfirmed PicoFerm trial returns to the previous bank on the next reset. Earlier single-application installations need USB setup to gain these capabilities.
 
 To publish a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
@@ -81,11 +83,11 @@ match compares declared package and machine model information.
 
 ## Installation
 
-An idle, connected Pico S or Pico Pro with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
+An idle, connected Pico S, Pico Pro, or Pico C with provisioned Hub recovery and standalone firmware advertising `hub_ota_v1` can install a matching protocol-1 package. Open the machine's **Firmware** view and choose a version and click **Install**. For Pico C, USB setup installs recovery for the specific SSD1325 or SSD1309 display. Record the independently verified display controller on the paired brewer’s Firmware page. The application, recovery, and package must all match that variant. Installation is available on a normally started Hub. The Hub verifies the brewer's identity before transfer and confirms the installed image and version after restart. The firmware view reports interrupted or unconfirmed updates and offers an explicit retry for the same package.
 
 ### Restore the original Pico S/Pro firmware over Wi-Fi
 
-Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. On that brewer, update standalone 1.3.5 to **1.3.6** over Wi-Fi first. Keep it powered on throughout the restore.
+Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. If an earlier development build lacks this feature, first install the current standalone release over Wi-Fi on the eligible brewer. Keep it powered on throughout the restore.
 
 The Hub asks you to acknowledge the loss of standalone controls and wireless updates, then confirm the restore. It prefers this brewer’s saved original. If needed, it obtains and verifies the two pinned OEM images from GitHub. A temporary installer runs in a third flash slot, so it can independently write and read back both the original **0.1.34 application** and **0.0.3 recovery**. It preserves the loader, network settings and brewer identity.
 
@@ -97,18 +99,16 @@ Connect the idle machine or its USB service adapter to the computer running the 
 
 On a successful installation, choose **Add machine** and enter the brewer’s network address. The Hub pairs its saved key with the identity verified over USB. Machine-specific Wi-Fi setup may still be needed. Keep power and the cable connected until readback completes. The Hub stores the original and the private pairing files under its persistent data directory. Keep a private backup of that directory. USB setup is available on a normal Hub with access to the port. In a Linux container, map the selected serial device into the container and allow the Hub user to access it.
 
-
-
-USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.2** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
+The downloadable Hub includes the USB installer for its platform. The final confirmation shows the firmware selected for the connected machine. On a Zymatic, initial conversion uses the application that fits the stock boot layout. A previously converted Zymatic can use the extended application when the installer verifies the smaller boot region on that particular board. [Zymatic USB procedure](../../firmware/zymatic/modified/README.md)
 
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
 | Pico S and Pico Pro | The CH340 installer provisions a key, the application and website, and the separate OTA recovery. Select the physical model marked on the brewer. | Restore its original app and recovery and verify boot selection. The private backup must match the live UID and allocations. Pinned public app/recovery images are available for the individually documented S/Pro unit. |
-| Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application and website. | Restore the original application and verify the retained recovery against this brewer’s backup. A separate authenticated OEM recovery image for Pico C is unavailable. |
+| Pico C | Select SSD1325 or SSD1309. The original application must independently match that display. Install the key, application, website, and the matching display’s wireless recovery. | Restore the original application and recovery from this brewer’s verified backup. |
 | PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
 | PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
 | Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
-| Zymatic | Install a private 1.2.0 application over rear USB from verified 1.1.14. Configure the Hub address and optional offline recipe. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
+| Zymatic | Install the private 1.0.0 compact application over rear USB from verified stock 1.1.14. Configure the Hub address and optional offline recipe. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
 
 #### Command-line workflows from a firmware checkout
 
@@ -136,7 +136,7 @@ Use a verified USB-to-serial service connection and put the *idle* appliance int
 ./picobrew-hub usb-restore --model picoferm --port SERIAL_PORT --data ./data --checkout ..
 ```
 
-Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. On a normal boot after conversion, provision the device key and Wi-Fi over its serial console. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
+Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. When using the command-line tool directly, complete key and Wi-Fi setup over the device’s serial console. The Hub’s USB installer provisions and saves the device key for pairing. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
 
 ##### Zymatic
 
@@ -150,7 +150,7 @@ Connect the idle, powered Zymatic through its rear USB port. Install the AVRDUDE
 
 The backup compares two reads of the ATmega1284P program flash. A stable read can include protected or unreadable regions, and the AVR signature identifies the processor model rather than an individual machine. Stock restoration uses a verified factory application. If the installed program matches the factory 1.1.14 application byte for byte, backup also saves its verified application bytes for future offline restoration. The tool can use that copy, a saved original HEX, a vendor HEX/ZIP supplied with `--oem-file`, or the verified ZIP from the pinned support archive. Omit `--port` to prepare a local HEX for Windows PicoFlash. After restarting, confirm **1.1.14** under **About Zymatic** and disconnect the USB cable before running any program.
 
-The [stock Zymatic adapter](stock-zymatic.md) can serve recipes to the unmodified machine. Custom firmware 1.2.0 also supports authenticated monitoring over Ethernet. Add `--offline-program /absolute/path/zymatic-program.json` during USB setup to install a personal offline recipe. [Firmware capabilities](../../firmware/zymatic/modified/application.md)
+The [stock Zymatic adapter](stock-zymatic.md) can serve recipes to the unmodified machine. Both custom 1.0.0 profiles support authenticated monitoring over Ethernet. The extended profile adds dial control and retained history. Add `--offline-program /absolute/path/zymatic-program.json` during USB setup to install a personal offline recipe. [Firmware capabilities](../../firmware/zymatic/modified/application.md)
 
 Full end-to-end hardware qualification is pending for the expanded USB profiles. Host checks exercise the original artifacts, transfer plans, refusal paths and readback with simulated devices.
 

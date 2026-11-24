@@ -1279,6 +1279,10 @@ bool pico_recipe_run_control_program(PicoRecipeRuntime *r, uint32_t device_state
     r->state->device_state = (uint8_t)device_state;
     log_message(r, "I", "RCTL", "runControlProgram() BEGIN");
     bool succeeded = pico_recipe_run(r, &r->state->recipe, true);
+#if PICO_STANDALONE
+    if (succeeded && !pico_local_cancelled() && device_state == 7)
+        pico_care_completed(PICO_CARE_DEEP_CLEAN);
+#endif
     log_message(r, "I", "RCTL", "runControlProgram() END");
     show(r, PICO_RECIPE_CLEAR, 0, NULL);
     r->state->device_state = 2;

@@ -13,6 +13,7 @@ ifeq ($(COMPONENT),picoferm)
 TOOLCHAIN_DIR ?= $(DEPENDENCY_DIR)/xtensa-lx106-elf
 ARDUINO_DIR ?= $(ESP8266_SDK_DIR)
 BUILD_SCRIPT := tools/build_esp8266.py
+BUILD_EXTRA := --ab-layout
 ELF_PATH := $(OUTPUT_DIR)/picoferm-standalone.elf
 REPORT_PATH := $(OUTPUT_DIR)/build-report.json
 PACKAGE_SDK_ARGS := --esp8266-sdk "$(ARDUINO_DIR)"
@@ -43,7 +44,12 @@ bootstrap:
 	"$(PYTHON)" "$(COMMON_DIR)/tools/acquire_reference.py" --model "$(COMPONENT)" --destination "$(DEPENDENCY_DIR)"
 
 firmware-package: standalone
+ifeq ($(COMPONENT),picoferm)
+	"$(PYTHON)" "$(COMMON_DIR)/tools/build_spiffs_image.py" --profile esp8266-2m --esp8266-sdk "$(ARDUINO_DIR)" --output "$(OUTPUT_DIR)/spiffs.bin"
+	"$(PYTHON)" tools/package_ab.py "$(OUTPUT_DIR)" "$(OUTPUT_DIR)/spiffs.bin" "$(PACKAGE_DIR)/picoferm.zip"
+else
 	"$(PYTHON)" "$(COMMON_DIR)/tools/package_reference.py" --model "$(COMPONENT)" --elf "$(ELF_PATH)" --build-report "$(REPORT_PATH)" $(PACKAGE_SDK_ARGS) --output "$(PACKAGE_DIR)"
+endif
 
 web-test:
 	"$(PYTHON)" "$(COMMON_DIR)/tests/web_browser.py"

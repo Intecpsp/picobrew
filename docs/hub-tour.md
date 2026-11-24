@@ -12,7 +12,7 @@ Open **Brewery** to see all your machines together. Each brewer has its own row,
 
 Choose **Open controls** on a brewer that supports remote control. **Front panel** mirrors its display. Use **Up**, **Down** and **Press dial** to navigate the menu and respond to prompts. The readings beside the screen come from that machine. A monitoring-only connection offers **View machine**.
 
-Under **Saved recipes**, select an installed recipe and choose **Start recipe** when the brewer is loaded and ready. **Stop and lock outputs** stops heating and pumping on a supported brewer and keeps them off until you unlock them. When the brewer is already idle, the button reads **Lock outputs**. To open the brewer’s own site on a paired machine that supports it, choose **Manage machine → Open machine website**. For cleanup after a session, **Cleaning and maintenance** links to the manufacturer’s instructions for that model.
+Under **Saved recipes**, select an installed recipe and choose **Start recipe** when the brewer is loaded and ready. **Stop and lock outputs** stops heating and pumping on a supported brewer and keeps them off until you unlock them. When the brewer is already idle, the button reads **Lock outputs**. To open the brewer’s own site on a paired machine that supports it, choose **Manage machine → Open machine website**. When the machine reports a rinse, cleaning cycle, or other care task is due, the Hub shows the reminder on both its Brewery row and its machine page. **Cleaning and maintenance** gives the instructions for that model.
 
 ![Simulated Pico S showing its menu, dial controls and saved recipe selector](images/front-panel.png)
 
@@ -42,7 +42,7 @@ For a first-time conversion, connect the idle machine by USB to the computer run
 
 ![Hub USB setup dialog with a simulated USB adapter, Pico S selected, and Install standalone firmware available](images/usb-setup.png)
 
-For later updates, open **Firmware** on the machine’s front panel in the Hub. An eligible Pico S or Pro offers compatible wireless upgrades and downgrades. [Firmware installation and recovery](../server/docs/firmware-packages.md)
+For later updates, open **Firmware** on the machine’s front panel in the Hub. The version picker offers compatible wireless upgrades and downgrades on machines provisioned with network recovery. On a Pico C the package must also match the verified display controller. [Firmware installation and recovery](../server/docs/firmware-packages.md)
 
 A Pico S or Pro running standalone firmware also serves **Pico Local** at its own network address. Before pairing, you can see the brewer’s state and temperatures. On a paired brewer, **Manage machine → Open machine website** opens the local controls and history using the Hub’s saved pairing. [Pairing and the brewer website](../server/docs/device-connections.md)
 

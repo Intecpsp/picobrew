@@ -434,8 +434,7 @@ class InstallWireTests(unittest.TestCase):
 
     def test_pinned_s_target_upgrades_version_one_then_provisions_recovery(self):
         root = Path(installer.__file__).resolve().parents[1]
-        with zipfile.ZipFile(root / "releases/pico-s-pro/1.0.0.zip") as archive:
-            installed = archive.read("pico-s-pro-standalone.bin")
+        installed = self.released_1_0_0
         packaged = root / "firmware/standalone/pico-s/pico-s-standalone.bin"
         with self.assertRaises(installer.InstallError):
             installer.load_candidate(packaged, "pico-pro")
@@ -454,27 +453,22 @@ class InstallWireTests(unittest.TestCase):
         self.assertEqual(recovery.files[APP_NAME], packaged.read_bytes())
         self.assertEqual(recovery.files[KEY_NAME], KEY)
 
-    def test_previous_pico_c_release_retains_its_display_mapping(self):
-        for display, other in (("ssd1309", "ssd1325"), ("ssd1325", "ssd1309")):
-            for version in ("1.2.3", "1.2.4", "1.2.5", "1.2.6", "1.2.7"):
-                archive = installer.C_FIRMWARE.parent / "releases" / "pico-c" / display / f"{version}.zip"
-                with zipfile.ZipFile(archive) as bundle:
-                    old = bundle.read("pico-c-standalone.bin")
-                previous = installer._image_metadata(old)
-                self.assertIn(previous, installer._approved_current_applications("install", "pico-c-" + display))
-                self.assertNotIn(previous, installer._approved_current_applications("install", "pico-c-" + other))
-                self.assertNotEqual(installer.candidate_identity("pico-c-" + display)[1], previous["sha256"])
+    def test_legacy_application_sources_are_isolated_by_hardware(self):
+        for model, releases in installer.LEGACY_APPLICATIONS.items():
+            with self.subTest(model=model):
+                allowed = installer._approved_current_applications("install", model)
+                for size, digest in releases:
+                    previous = {"size_bytes": size, "sha256": digest}
+                    self.assertIn(previous, allowed)
+                    self.assertNotIn(previous, installer._approved_current_applications("install-recovery", model))
+                    for other in installer.LEGACY_APPLICATIONS.keys() - {model}:
+                        self.assertNotIn(previous, installer._approved_current_applications("install", other))
 
-    def test_previous_ota_release_is_approved_only_for_its_model(self):
-        for model, other in (("pico-s", "pico-pro"), ("pico-pro", "pico-s")):
-            for version in ("1.3.0", "1.3.1", "1.3.2", "1.3.3", "1.3.4", "1.3.5", "1.3.6", "1.3.7", "1.3.8"):
-                archive = installer.RECOVERY_FILE.parents[2] / "releases" / model / f"{version}.zip"
-                with zipfile.ZipFile(archive) as bundle:
-                    old = bundle.read(model + "-standalone.bin")
-                identity = installer._image_metadata(old)
-                for operation in ("install", "install-recovery"):
-                    self.assertIn(identity, installer._approved_current_applications(operation, model))
-                    self.assertNotIn(identity, installer._approved_current_applications(operation, other))
+    def test_pre_release_recovery_sources_are_isolated_by_hardware(self):
+        for model in installer.LEGACY_APPLICATIONS:
+            for target, record in installer.LEGACY_RECOVERY.items():
+                self.assertEqual(installer._protected_matches(installer.RECOVERY_NAME, record, model),
+                                 target == (model if model in installer.C_STOCK else "pico-s-pro"))
 
     def test_independent_recovery_bootstrap_keeps_application_selected(self):
         files = dict(self.files)
@@ -566,14 +560,17 @@ class InstallWireTests(unittest.TestCase):
                                                                 stock_profile=True, display=alternate)
                 self.assertEqual(result, 1, (report, output))
                 factory.assert_not_called()
-                for mode in ("provision-key", "install", "restore-stock"):
+                for mode in ("provision-key", "install", "install-recovery", "restore-stock"):
                     device = FakeInstallUSB(device.files)
+                    if mode in ("install-recovery", "restore-stock"):
+                        device.writable_names = (APP_NAME, installer.RECOVERY_NAME)
                     result, report, output, _ = self.run_main(device, mode, model="pico-c",
                                                                stock_profile=True, display=display)
                     self.assertEqual(result, 0, (report, output))
-                    self.assertTrue(report["postcheck"]["layout"]["profile_uid_matches"])
-                    self.assertNotIn(installer.RECOVERY_NAME, device.mutated_names)
-                    self.assertEqual(device.files[installer.RECOVERY_NAME], original[installer.RECOVERY_NAME])
+                    self.assertTrue(report["live_preflight"]["layout"]["profile_uid_matches"])
+                    self.assertEqual(installer.RECOVERY_NAME in device.mutated_names, mode in ("install-recovery", "restore-stock"))
+                    expected_recovery = (installer._load_hub_recovery(model) if mode == "install-recovery" else original[installer.RECOVERY_NAME])
+                    self.assertEqual(device.files[installer.RECOVERY_NAME], expected_recovery)
                     self.assertEqual(device.files["ssid.txt"], original["ssid.txt"])
                     if mode == "install":
                         self.assertEqual(report["web_bundle"]["manifest_sha256"], installer.C_WEB_MANIFEST_SHA256)

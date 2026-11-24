@@ -1,3 +1,8 @@
+#include "picoferm/version.hpp"
+#ifdef PICOFERM_AB
+#include "transfer.hpp"
+extern "C" const char picoferm_ota_identity[32];
+#endif
 // Complete modified PicoFerm owner. No OEM cloud controller, HTTP listener,
 // sleep scheduler or unbounded ADC wait is instantiated in this profile.
 #include "picoferm/standalone.hpp"
@@ -80,7 +85,7 @@ public:
         provision_(storage_.binding(),this,[](void* p){auto& self=*static_cast<Application*>(p);return !self.setup_complete_||self.controller_.idle();}),
         controls_(diagnostics_,hardware_,*this,*this),http_(){controller_.bind(engine_);}
     void begin(){
-        Serial.begin(115200);Serial.println("PicoFerm standalone 1.2.5");
+        Serial.begin(115200);Serial.println("PicoFerm standalone " PICOFERM_VERSION);
         // Read the packed OEM record without sanitize(), put(), commit() or
         // boot-time migration. Modified records live only in /pb/ SPIFFS.
         oem::PersistentData original;original.bytes.fill(0xff);EEPROM.begin(oem::PersistentData::size);
@@ -93,9 +98,20 @@ public:
             if(imported.ssid[0]){const auto result=provision_.import_network(imported);if(result.status!=409)report(result);}
         }
         std::uint8_t mac[6];WiFi.macAddress(mac);char uid[33];::snprintf(uid,sizeof(uid),"%02x%02x%02x%02x%02x%02x",mac[0],mac[1],mac[2],mac[3],mac[4],mac[5]);
-        controller_.identity(uid);report(controller_.begin(original.bytes.data(),original.bytes.size()));
-        engine_.set_telemetry_io(telemetry_.binding());report(engine_.begin());
+        controller_.identity(uid);const auto controller_ready=controller_.begin(original.bytes.data(),original.bytes.size()); report(controller_ready);
+        engine_.set_telemetry_io(telemetry_.binding());const auto engine_ready=engine_.begin(); report(engine_ready);
+#ifdef PICOFERM_AB
+        const uintptr_t marker=reinterpret_cast<uintptr_t>(picoferm_ota_identity);
+        const unsigned bank = marker==0x40203010u ? 0 : marker==0x40283010u ? 1 : 2;
+        if (ESP.getFlashChipRealSize()==0x200000u &&
+            update_.attach(bank,uid,PICOFERM_VERSION,mounted && engine_ready.ok() && controller_ready.ok())) {
+            engine_.set_ota_protocol("esp8266-ab-v1");
+        }
+        boot_time_=millis();
+        pico_http_server_initialize(&http_,&sdk::HttpListener::io,&listener_,handle,this,pico_common_web_assets,pico_common_web_assets_count);
+#else
         pico_http_server_initialize(&http_,&sdk::HttpListener::io,&listener_,api::Engine::http_handler,&engine_,pico_common_web_assets,pico_common_web_assets_count);
+#endif
         pico_http_server_enable_pairing(&http_, false);
         pico_http_server_set_asset_io(&http_,&pico_common_web_asset_io,nullptr);
         apply_key();WiFi.persistent(false);WiFi.mode(WIFI_STA);WiFi.setAutoConnect(false);WiFi.setAutoReconnect(true);
@@ -104,9 +120,20 @@ public:
         setup_complete_=true;Serial.println("UART: status | key <64 lowercase hex> | wifi <SSID><TAB><password>");
     }
     void poll(){
-        controller_.poll();controls_.poll_button();controls_.poll_leds(controller_.animation());
+        controller_.poll();
+#ifdef PICOFERM_AB
+        if (!update_.locked())
+#endif
+            controls_.poll_button();
+        controls_.poll_leds(controller_.animation());
+#ifdef PICOFERM_AB
+        if (!update_.locked()) {
+#endif
         for(unsigned n=0;n<32&&Serial.available()>0;++n){const int value=Serial.read();if(value<0)break;
             api::Result result;if(provision_.feed(static_cast<char>(value),result))report(result);}
+#ifdef PICOFERM_AB
+        }
+#endif
         if(provision_.take_key_changed()){pico_http_server_disconnect(&http_);apply_key();}
         if(provision_.take_network_changed()){pico_http_server_disconnect(&http_);apply_network();}
         const bool connected=WiFi.status()==WL_CONNECTED;
@@ -115,10 +142,40 @@ public:
         connected_=connected;
         if(!listener_.listening()&&connected)listener_.begin(80);
         pico_http_server_poll(&http_,::millis());engine_.poll();::yield();
+#ifdef PICOFERM_AB
+        if (update_.locked() && millis()-last_update_>=120000) update_.cancel();
+        if (update_.reboot() && !restart_at_) restart_at_=millis();
+        if ((restart_at_ && millis()-restart_at_>=1200) || (update_.trial() && millis()-boot_time_>=120000)) ESP.restart();
+#endif
     }
     void animation_changed(oem::Animation) override{}
     void long_press() override{controller_.long_press();}
 private:
+#ifdef PICOFERM_AB
+    static int read_flash(void*,uint32_t addr,void* dest,uint32_t size) {
+        ::yield(); return ESP.flashRead(addr,static_cast<uint32_t*>(dest),size)?0:1;
+    }
+    static int write_flash(void*,uint32_t addr,const void* value,uint32_t size) {
+        return ESP.flashWrite(addr,static_cast<uint32_t*>(const_cast<void*>(value)),size)?0:1;
+    }
+    static bool erase_flash(void*,unsigned sector) { return ESP.flashEraseSector(sector); }
+    static uint32_t random_flash(void*) { return RANDOM_REG32; }
+    ::picoferm::Update update_{{{nullptr,read_flash,write_flash},erase_flash,random_flash}};
+    uint32_t boot_time_=0,restart_at_=0,last_update_=0;
+    static bool handle(const PicoHttpRequest* req,PicoHttpResponse* res,char* arena,size_t cap,void* ctx) {
+        auto& app=*static_cast<Application*>(ctx);
+        if (app.update_.handle(*req,*res,arena,cap,app.controller_.idle())) {
+            if (res->status<300) app.last_update_=millis();
+            return true;
+        }
+        if (app.update_.locked() && req->method!=PICO_HTTP_GET && req->method!=PICO_HTTP_HEAD) {
+            static const uint8_t body[]="{\"error\":\"firmware_update_in_progress\"}";
+            res->status=409;res->content_type="application/json";res->content_encoding=nullptr;
+            res->body=body;res->body_length=sizeof(body)-1;return true;
+        }
+        return app.engine_.handle(*req,*res,arena,cap);
+    }
+#endif
     Hardware hardware_;Diagnostics diagnostics_;CheckedSensors sensors_;
     sdk::SpiffsStorage storage_;sdk::AsyncTelemetry telemetry_;sdk::HttpListener listener_;
     Controller controller_;api::Engine engine_;api::Provisioning provision_;

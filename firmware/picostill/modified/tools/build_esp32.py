@@ -35,7 +35,7 @@ def main():
     flags=['-Os','-Wall','-Wextra','-Werror','-Wno-unused-parameter','-mlongcalls','-ffunction-sections','-fdata-sections',
            '-fno-fast-math','-ffp-contract=off','-DESP_PLATFORM','-DESP32','-DARDUINO_ARCH_ESP32','-DARDUINO=10805',
            '-DF_CPU=240000000L','-DCORE_DEBUG_LEVEL=0','-DHAVE_CONFIG_H']
-    includes=[ROOT/'include',ROOT/'platform/esp32',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'platform/esp32',
+    includes=[ROOT/'include',ROOT/'platform/esp32',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'platform/esp32',COMMON/'platform/esp32/ota',
               arduino/'cores/esp32',arduino/'variants/esp32']
     sdk_sources=[p for p in sorted((arduino/'cores/esp32').iterdir()) if p.suffix in ('.c','.cpp','.S') and p.name!='main.cpp']
     for library in ('Wire','WiFi'):
@@ -43,6 +43,7 @@ def main():
         sdk_sources.extend(p for p in sorted(folder.rglob('*')) if p.suffix in ('.c','.cpp','.S'))
     includes += sorted(p for p in (sdk/'include').iterdir() if p.is_dir())
     own=list(sorted((ROOT/'src').glob('*.cpp')))+list(sorted((ROOT/'platform/esp32').glob('*.cpp')))
+    own += [COMMON/'platform/esp32/ota'/name for name in ('service.cpp','factory_flash.cpp')]
     own += [OEM/'src'/name for name in ('core.cpp','enums.cpp','animations.cpp','sensors.cpp')]
     own += [OEM/'platform/esp32/arduino_ports.cpp']
     own += [COMMON/'src'/name for name in ('engine.cpp','api.cpp','values.cpp','records.cpp','history.cpp','history_records.cpp','telemetry.cpp',
@@ -75,7 +76,7 @@ def main():
     scripts=('esp32_out.ld','esp32.common.ld','esp32.rom.ld','esp32.peripherals.ld','esp32.rom.spiram_incompatible_fns.ld')
     link=['-nostdlib','-L'+str(sdk/'lib'),'-L'+str(sdk/'ld')]
     for script in scripts:link+=['-T',script]
-    link+=['-u','ld_include_panic_highint_hdl','-u','call_user_start_cpu0','-u','app_main','-Wl,--gc-sections','-Wl,-static',
+    link+=['-u','ld_include_panic_highint_hdl','-u','call_user_start_cpu0','-u','app_main','-u','esp_app_desc','-u','picostill_update_identity','-Wl,--gc-sections','-Wl,-static',
            '-Wl,--undefined=uxTopUsedPriority','-u','__cxa_guard_dummy','-u','__cxx_fatal_exception','-Wl,-Map='+str(map_file),'-Wl,--cref',
            '-Wl,--start-group',*map(str,archives),*libraries,'-Wl,--end-group','-Wl,-EL','-o',str(elf)]
     subprocess.run([str(cc),*link],check=True)
@@ -86,7 +87,9 @@ def main():
               'picostill::oem::ArduinoPorts::initialize_hardware(', 'picobrew::standalone::Engine::poll()',
               'picobrew::standalone::Provisioning::feed(', 'picobrew::standalone::esp32::initialize_arduino()',
               'picobrew::standalone::esp32::connect_station(', 'picobrew::standalone::esp32::SpiffsFiles::mount()',
-              'picobrew::standalone::esp32::TelemetrySocket::send(', 'pico_http_server_poll']
+              'picobrew::standalone::esp32::TelemetrySocket::send(', 'pico_http_server_poll',
+              'picobrew::esp32_ota::Service::handle(', 'picobrew::esp32_ota::FactoryFlash::finish(',
+              'esp_ota_begin', 'esp_ota_set_boot_partition']
     forbidden=[' initArduino',' loopTask(', 'picostill::oem::Machine::', 'picostill::oem::Application::',
                'picostill::oem::Backend::','picostill::oem::FirmwareUpdate::','picostill::oem::CredentialStorage::','picostill::oem::HttpServer::']
     for name in required:
@@ -102,10 +105,13 @@ def main():
     sys.path.insert(0,str(REPOSITORY/'tools'))
     from firmware_analysis.esp_image import parse_esp32
     parsed=parse_esp32(image.read_bytes())
-    if len(image.read_bytes())>0x1f0000:raise ValueError('Application exceeds the selected standalone factory slot')
+    version = "1.0.0"
+    marker = ("PicoBrew OTA1|picostill|" + version).encode().ljust(64, b"\0")
+    if image.read_bytes()[0x120:0x160] != marker or image.stat().st_size > 0xf0000:
+        raise ValueError("PicoStill OTA descriptor or slot length differs from the installer contract")
     size=subprocess.check_output([str(binary/'xtensa-esp32-elf-size'),str(elf)],text=True).strip()
     headers={p.relative_to(FIRMWARE).as_posix():digest(p) for base in (ROOT/'include',ROOT/'platform',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'src',COMMON/'platform/esp32') for p in sorted(base.rglob('*')) if p.suffix in ('.hpp','.h')}
-    report=dict(schema_version=1,model='picostill',firmware_version='1.2.5',complete_application_linked=True,flash_image_produced=True,
+    report=dict(schema_version=1,model='picostill',firmware_version=version,ota_protocol='esp32-factory-v1',complete_application_linked=True,flash_image_produced=True,
                 hardware_tested=False,installation_qualified=False,compiler=subprocess.check_output([str(cxx),'--version'],text=True).splitlines()[0],
                 compiler_sha256=digest(cxx),flags=flags,owned_sources=evidence[0],sdk_sources=evidence[1],headers=headers,
                 required_symbols=retained,forbidden_symbols_absent=forbidden,elf_sha256=digest(elf),map_sha256=digest(map_file),

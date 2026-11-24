@@ -21,6 +21,23 @@ const careGuides = {
   picoferm: ['Before attaching PicoFerm to a Pico C keg, sanitize the underside of the gray fermentation seal and let it air-dry. Depressurize the keg before removing or replacing PicoFerm.', 'picoferm/PicoFerm_Manual.pdf#page=5']
 };
 
+const careTasks = {
+  rinse: ['Rinse the brewer after use.', 'rinse', 'Open Rinse'],
+  clean: ['The brewer is due for a cleaning cycle.', 'clean', 'Open Clean'],
+  clean_condenser: ['Clean the condenser column and removable parts after this use.', 'ack-clean-condenser', 'Mark condenser cleaned'],
+  sanitize_seal: ['Before the next attachment, sanitize the gray seal and let it air-dry.', 'ack-sanitize-seal', 'Mark seal sanitized']
+};
+function renderCare(status) {
+  const due=(status.maintenance?.due || []).filter(task=>Object.hasOwn(careTasks,task));
+  const notice=$('careDue'), action=$('careAction');
+  notice.hidden=due.length===0 && status.maintenance?.available!==false;
+  notice.textContent=status.maintenance?.available===false ? 'The device could not read its maintenance record.' : due.map(task=>careTasks[task][0]).join(' ');
+  // Clean includes a rinse cycle. Offer the full routine when both are due.
+  const task=careTasks[due.includes('clean')?'clean':due[0]];
+  action.hidden=!task || !allowedCommand(task[1]);
+  action.textContent=task?.[2] || '';
+  action.dataset.careCommand=task?.[1] || '';
+}
 function notify(message, error=false) {
   $('notice').textContent = message;
   $('notice').classList.toggle('error', error);
@@ -84,6 +101,8 @@ function updateControls() {
   const recovery=state.status?.recovery;
   const interrupted=!!recovery && (recovery.available===true || recovery.valid===false);
   document.querySelectorAll('[data-encoder]').forEach(button => button.disabled = !ready);
+  const careAction=$('careAction');
+  careAction.disabled=!ready || busy || (stopped && !careAction.dataset.careCommand?.startsWith('ack-'));
   $('encoderClick').disabled = !ready;
   $('brewRecipe').disabled = !ready || busy || stopped || interrupted;
   $('startRecipe').disabled = !ready || busy || stopped || interrupted || !$('brewRecipe').value;
@@ -238,6 +257,7 @@ function renderStatus(status) {
   state.status = status;
   if (status.model) renderIdentity(status);
   renderReadings(status);
+  renderCare(status);
   $('parameterControls').querySelectorAll('form').forEach(syncActuatorForm);
   const recovery=status.recovery;
   $('recoveryHeading').textContent=recovery?.valid===false?'The checkpoint could not be verified.':'Review the saved checkpoint.';
@@ -579,6 +599,7 @@ $('encoderClick').addEventListener('click',()=>sendCommand({command:'encoder',de
 $('brewRecipe').addEventListener('change',updateControls);
 $('startRecipe').addEventListener('click',()=>sendCommand({command:'brew',recipe_id:$('brewRecipe').value}));
 $('runProgram').addEventListener('click',()=>sendCommand({command:$('program').value}));
+$('careAction').addEventListener('click',()=>{const command=$('careAction').dataset.careCommand;if(command)sendCommand({command});});
 $('stopButton').addEventListener('click',()=>sendCommand({command:'stop'}));
 $('accessoryStop').addEventListener('click',()=>sendCommand({command:'stop'}));
 $('clearStop').addEventListener('click',()=>sendCommand({command:'clear-stop'}));

@@ -11,9 +11,8 @@ import struct
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "tools"))
-# Reuse the frozen C ELF harness; its ELF loader never loads an OEM image.
-sys.path.insert(0, str(ROOT.parent / "reverse-engineered/tools"))
+# The shared CC3200 harness also resolves unique GCC LTO private symbols.
+sys.path.insert(0, str(ROOT.parents[1] / "pico-s-pro/modified/tools"))
 from rebuilt_arm import RebuiltArm
 
 

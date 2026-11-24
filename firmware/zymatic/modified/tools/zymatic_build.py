@@ -18,8 +18,11 @@ TEMPLATE = ROOT / "extension"
 START = tables.HIGH_START
 LIMIT = 0x1fc00
 BSS = 0x2c8a
-VERSION = "1.3.2"
+VERSION = "1.0.0"
+PROFILE = "extended"
 ARCHIVED_MANIFESTS = {
+    "1.3.3": "c279cbc302297af4238f28de1dd61174383c79b4a4f59910885ce7c79a2dc55e",
+    "1.3.2": "6eda0d88047c6171f2e138386180add9cf0be201f2bdac7750cff0a26d573173",
     "1.3.0": "cc70f6d3ea0d137def6b669533b8b12fba25110b33220be4f0dbb3798f55f9e1",
     "1.3.1": "e8187c77d7bbca5934130d3028c20de1448c1f9671460426d982473fb5da3fb3",
 }
@@ -66,6 +69,10 @@ def template_directory(version):
     raise ValueError("Unknown Zymatic extension version")
 
 
+def seek_layout(version):
+    return version in (VERSION, "1.3.3")
+
+
 def template(version=VERSION):
     directory = template_directory(version)
     metadata = (directory / "extension.json").read_bytes()
@@ -81,7 +88,7 @@ def template(version=VERSION):
         raise ValueError("The AVR extension differs from its recorded sources or binary; rebuild the template")
     low = (directory / "low.bin").read_bytes()
     if len(low) != record["low_bytes"] or sha(low) != record["low_sha256"] or not (
-            0 < len(low) <= tables.POOL_END - tables.PACKED_END):
+            0 < len(low) <= tables.POOL_END - (tables.SEEK_END if seek_layout(version) else tables.PACKED_END)):
         raise ValueError("Invalid low-flash extension")
     crc_code = (directory / "crc-hole.bin").read_bytes()
     if len(crc_code) != record["crc_hole_bytes"] or sha(crc_code) != record["crc_hole_sha256"] or not 0 < len(crc_code) <= 254:
@@ -104,7 +111,7 @@ def load_pointer(register, address):
 
 
 def call(address):
-    if not (START <= address < LIMIT or tables.PACKED_END <= address < tables.POOL_END or tables.CRC_TABLE < address < tables.CRC_TABLE+256) or address % 2:
+    if not (START <= address < LIMIT or tables.SEEK_END <= address < tables.POOL_END or tables.CRC_TABLE < address < tables.CRC_TABLE+256) or address % 2:
         raise ValueError("AVR extension entry falls outside application flash")
     return b"\x0e\x94" + struct.pack("<H", address // 2)
 
@@ -140,6 +147,8 @@ def patch_list(symbols, port=80, version=VERSION):
         ("zero-bss-low", 0x233c, bytes.fromhex("aa38"), immediate(0x3000, 26, end & 255)),
         ("malloc-start", 0x1bb10, struct.pack("<H", BSS), struct.pack("<H", end)),
     ]
+    if seek_layout(version):
+        patches.append(("home-care", 0x105da, bytes.fromhex("0e94f840"), call(symbols["zymatic_home_menu"])))
     for pc in SERIAL_READS:
         patches.append(("stock-serial", pc, bytes.fromhex("0e94a121"),
                         call(symbols["zymatic_read_stock_serial"])))
@@ -209,7 +218,8 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
         raise ValueError("Unexpected 1.1.14 sensor CRC table")
     crc_code = (directory / "crc-hole.bin").read_bytes()
     image[tables.CRC_TABLE:tables.CRC_TABLE+256] = (b"\xff" + crc_code).ljust(256, b"\xff")
-    packed = tables.pack_pool(bytes(image[tables.POOL:tables.POOL_END]))
+    packer = tables.pack_seek_pool if seek_layout(version) else tables.pack_pool
+    packed = packer(bytes(image[tables.POOL:tables.POOL_END]))
     image[tables.POOL:tables.POOL_END] = (packed + low).ljust(tables.POOL_END - tables.POOL, b"\xff")
     initializer = tables.pack_crt(bytes(image[tables.CRT:tables.CRT + tables.CRT_SIZE]))
     image[tables.CRT:] = initializer.ljust(START - tables.CRT, b"\xff") + code
@@ -224,14 +234,14 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
     image[where:where+2] = struct.pack("<H", legacy_sum(image))
     image[-4:] = struct.pack("<I", zlib.crc32(image[:-4]))
     metadata = {
-        "schema_version": 1, "model": "zymatic", "firmware_version": version,
+        "schema_version": 1, "model": "zymatic", "firmware_version": version, "build_profile": PROFILE,
         "oem_application_sha256": stock.APP_SHA256, "binary_sha256": sha(image),
         "application_bytes": len(image), "uid": uid, "hub_host": hub_host, "hub_port": port,
         "offline_program": recipes.unpack_program(fields["provision_recipe"]),
         "extension_start": START, "extension_sha256": record["extension_sha256"],
         "compiler": record["compiler"], "first_possible_bootloader": 0x1e000,
         "minimum_boot_start": next(bound for bound in (0x1e000, 0x1f000, 0x1f800, LIMIT) if len(image) <= bound),
-        "low_extension_start": tables.PACKED_END, "low_extension_sha256": record["low_sha256"],
+        "low_extension_start": tables.SEEK_END if seek_layout(version) else tables.PACKED_END, "low_extension_sha256": record["low_sha256"],
         "sram_reserved_bytes": symbols["__extension_bss_end"] - 0x800000 - BSS,
         "config": {name: {"address": symbols[name], "bytes": size} for name, size in FIELDS.items()},
         "patches": [{"name": name, "address": pc, "bytes": len(before)}
@@ -257,7 +267,10 @@ def recognize_private_application(flash, *, version=VERSION):
     except ValueError:
         return None
     try:
-        raw_pool = tables.unpack_pool(bytes(application[tables.POOL:tables.PACKED_END]))
+        if seek_layout(version):
+            raw_pool = tables.unpack_seek_pool(bytes(application[tables.POOL:tables.SEEK_END]))
+        else:
+            raw_pool = tables.unpack_pool(bytes(application[tables.POOL:tables.PACKED_END]))
         initializer = tables.unpack_crt(application[tables.CRT:START])
     except ValueError:
         return None
@@ -299,7 +312,10 @@ def main():
     parser.add_argument("--hub-host", default="picobrew.com")
     parser.add_argument("--offline-program", type=Path, help="Optional native Zymatic program JSON")
     parser.add_argument("--out-dir", required=True, type=Path)
+    parser.add_argument("--profile", choices=("compact", "extended"), default="compact")
     args = parser.parse_args()
+    from usb_layout import release_for
+    release = release_for(args.profile)
     try:
         original = stock.decode_application(stock.unpack_source(stock.private_files.read_regular(
             args.oem_file, stock.MAX_ZIP)))
@@ -307,7 +323,7 @@ def main():
         if not re.fullmatch(rb"[a-fA-F0-9]{64}", text):
             raise ValueError("The private key file must contain exactly 64 hexadecimal digits")
         recipe = recipes.read_program(args.offline_program)
-        image, report = build_application(original, bytes.fromhex(text.decode("ascii")), args.uid, args.hub_host, recipe)
+        image, report = release.build_application(original, bytes.fromhex(text.decode("ascii")), args.uid, args.hub_host, recipe)
         target = args.out_dir.absolute()
         stock.private_files.ensure_private_directory(target, parents=True, exist_ok=True)
         stock.private_files.assert_private(target, directory=True)
@@ -324,7 +340,7 @@ def main():
                 raise ValueError(f"Choose an empty output directory; the existing {name} differs")
         for name, contents in outputs.items():
             stock.save_private(target / name, contents)
-        print(f"Built private Zymatic {VERSION} application in {target} ({len(image)} bytes)")
+        print(f"Built private Zymatic {VERSION} {release.PROFILE} application in {target} ({len(image)} bytes)")
     except (OSError, ValueError, zipfile.BadZipFile) as exc:
         parser.exit(1, f"{exc}\n")
 

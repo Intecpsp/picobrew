@@ -27,6 +27,9 @@ std::uint32_t Engine::Impl::active_elapsed() const {
     return active >= 0 && elapsed < sessions[active].duration ? UINT32_MAX : elapsed;
 }
 bool Engine::Impl::idle() const { return owner.device_.idle && owner.device_.idle(owner.device_.context); }
+void Engine::set_ota_protocol(const char* protocol) noexcept {
+    if (impl_) impl_->capabilities.ota_protocol = protocol;
+}
 Result Engine::begin() {
     if (!impl_) impl_ = new (std::nothrow) Impl(*this);
     if (!impl_) return Result(503, "capacity", "The standalone engine could not allocate its bounded state");
@@ -154,10 +157,46 @@ Result Engine::Impl::initialize() {
         s.state = SessionState::Interrupted; s.recovered = true; interrupted = true;
     }
     if (interrupted && !save_history(sessions, next_point)) return storage_error();
+    std::uint8_t care[2] = {};
+    const auto loaded_care = records.load("care", care, sizeof care, length, care_generation);
+    if (loaded_care == RecordResult::Missing) {
+        care_available = true;
+        if (!std::strcmp(identity.model, "picoferm")) care_flags = SealDue;
+    } else if (loaded_care == RecordResult::Ok && length == sizeof care && care[0] < 16 && care[1] <= 3) {
+        care_flags = care[0]; brews_since_clean = care[1]; care_available = true;
+    } else owner.event("maintenance", "Care record could not be read");
     persistent = true; tx_state = telemetry.enabled ? TxState::Ready : TxState::Disabled;
     tx_scheduled = now() - SamplePeriod;
     owner.event("startup", interrupted ? "interrupted session recovered" : "standalone ready");
     refresh(); return Result();
+}
+unsigned Engine::care_due() const noexcept {
+    return impl_ && impl_->care_available ? impl_->care_flags : 0;
+}
+Result Engine::record_care(CareEvent change) {
+    if (!impl_ || !impl_->care_available) return storage_error();
+    std::uint8_t flags = impl_->care_flags, brews = impl_->brews_since_clean;
+    switch (change) {
+        case CareEvent::BrewUsed:
+            if (brews < 3) ++brews;
+            if (brews == 3) flags |= CleanDue;
+            flags |= RinseDue; break;
+        case CareEvent::RinseNeeded: flags |= RinseDue; break;
+        case CareEvent::RinseFinished: flags &= ~RinseDue; break;
+        case CareEvent::CleanFinished: flags &= ~(RinseDue | CleanDue); brews = 0; break;
+        case CareEvent::StillUsed: flags |= CondenserDue; break;
+        case CareEvent::CondenserCleaned: flags &= ~CondenserDue; break;
+        case CareEvent::FermUsed: flags |= SealDue; break;
+        case CareEvent::SealSanitized: flags &= ~SealDue; break;
+    }
+    if (flags == impl_->care_flags && brews == impl_->brews_since_clean) return Result();
+    const std::uint8_t data[] = {flags, brews};
+    std::uint32_t generation = 0;
+    if (impl_->records.save("care", data, sizeof data, impl_->care_generation, generation) != RecordResult::Ok) {
+        event("maintenance", "Care record could not be saved"); return storage_error();
+    }
+    impl_->care_flags = flags; impl_->brews_since_clean = brews; impl_->care_generation = generation;
+    return Result();
 }
 void Engine::poll() {
     if (!impl_ || !impl_->initialized) return;

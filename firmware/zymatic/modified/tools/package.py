@@ -20,8 +20,9 @@ def main():
     parser.add_argument("--uid")
     parser.add_argument("--hub-host", default="picobrew.com")
     parser.add_argument("--offline-program", type=Path)
-    parser.add_argument("--firmware-version", choices=(usb_layout.release_1_2.VERSION, *build.ARCHIVED_MANIFESTS, build.VERSION),
-                        default=usb_layout.release_1_2.VERSION, help="1.3 requires a verified boot window on the target unit")
+    parser.add_argument("--firmware-version", choices=(build.VERSION,), help="Require the current public version")
+    parser.add_argument("--profile", choices=("compact", "extended"), default="compact",
+                        help="Extended requires independent verification of the target's boot boundary for installation")
     args = parser.parse_args()
     recipe = offline_program.read_program(args.offline_program)
     if bool(args.key_file) != bool(args.uid):
@@ -40,7 +41,7 @@ def main():
         except FileNotFoundError:
             uid = secrets.token_hex(16)
             stock.save_private(uid_file, uid.encode())
-    release = usb_layout.for_version(args.firmware_version)
+    release = usb_layout.release_for(args.profile)
     image, report = release.build_application(application, key, uid, args.hub_host, recipe)
     target = directory / report["binary_sha256"]
     stock.private_files.ensure_private_directory(target, exist_ok=True)
@@ -48,7 +49,7 @@ def main():
                            (f"zymatic-{release.VERSION}.hex", build.intel_hex(image)),
                            ("manifest.json", (json.dumps(report, indent=2) + "\n").encode())]:
         stock.save_private(target / name, contents)
-    print(f"Built private Zymatic {release.VERSION} application ({len(image)} bytes) in {target}")
+    print(f"Built private Zymatic {release.VERSION} {release.PROFILE} application ({len(image)} bytes) in {target}")
 
 
 if __name__ == "__main__":

@@ -24,12 +24,27 @@ function firmwareModelName(model: string) {
 }
 
 function matchesWirelessPackage(item: FirmwareCandidate, machine: MachineFirmware | null) {
+  if (item.ota_protocol) {
+    return (
+      ((item.ota_protocol === 'esp32-factory-v1' &&
+        (item.model === 'picostill' || item.model === 'z-series')) ||
+        (item.ota_protocol === 'esp8266-ab-v1' && item.model === 'picoferm')) &&
+      item.model === machine?.model &&
+      item.model_family === item.model &&
+      !item.display_variant &&
+      !item.hub_ota_protocol
+    )
+  }
   return (
-    (item.model === 'pico-s' || item.model === 'pico-pro') &&
     item.model === machine?.model &&
-    item.model_family === 'pico-s-pro' &&
     item.hub_ota_protocol === 1 &&
-    !item.display_variant
+    (item.model === 'pico-c'
+      ? item.model_family === 'pico-c' &&
+        (item.display_variant === 'ssd1325' || item.display_variant === 'ssd1309') &&
+        item.display_variant === machine.display_variant
+      : (item.model === 'pico-s' || item.model === 'pico-pro') &&
+        item.model_family === 'pico-s-pro' &&
+        !item.display_variant)
   )
 }
 
@@ -115,12 +130,19 @@ export function MachineFirmwareDialog({
   }
   const items = new Map<string, FirmwareCandidate & { remote: boolean }>()
   for (const item of updates.data?.releases || []) {
-    if (item.kind === 'standalone' && matchesWirelessPackage(item, machine)) {
+    if (
+      ((item.kind === 'standalone' && !item.ota_protocol) ||
+        (item.kind === 'reference' && item.ota_protocol === 'esp32-factory-v1') ||
+        (item.kind === 'picoferm-ab' && item.ota_protocol === 'esp8266-ab-v1')) &&
+      matchesWirelessPackage(item, machine)
+    ) {
       items.set(item.archive_sha256, { ...item, remote: true })
     }
   }
   for (const item of machine?.packages || []) {
-    if (matchesWirelessPackage(item, machine)) items.set(item.id, { ...item, remote: false })
+    if (!items.has(item.id) && matchesWirelessPackage(item, machine)) {
+      items.set(item.id, { ...item, remote: false })
+    }
   }
   const versions = [...items].sort(
     ([, a], [, b]) =>
@@ -136,7 +158,10 @@ export function MachineFirmwareDialog({
   const selected = id ? items.get(id) : undefined
   const resuming = !!id && machine?.retry_package_id === id
   const supportsInstall =
-    machine?.install_supported && !!selected && (!machine.retry_package_id || resuming)
+    machine?.install_supported &&
+    !!selected &&
+    (machine.model !== 'pico-c' || machine.verified_display_variant === selected.display_variant) &&
+    (!machine.retry_package_id || resuming)
   const alreadyInstalled =
     !!selected && selected.firmware_version === machine?.current_version && !resuming
   async function checkUpdates() {

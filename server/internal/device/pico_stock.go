@@ -129,7 +129,7 @@ func (p *pico) startStockWorker(ctx context.Context, uid, model string, worker [
 			}
 		}
 		var ok bool
-		info, ok = p.readRecovery(c, uid, 3, len(worker))
+		info, ok = p.readRecovery(c, uid, "", 3, len(worker))
 		return ok
 	}); err != nil {
 		return err

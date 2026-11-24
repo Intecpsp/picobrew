@@ -39,7 +39,7 @@ The brewer serves HTTP on the local network. Use a trusted LAN.
 
 ## Device identity
 
-Firmware 1.2.0 reports `model`, `model_name`, and `model_family` on
+Stable firmware reports `model`, `model_name`, and `model_family` on
 `GET /api/v1`, `GET /api/v1/health`, and `GET /api/v1/status`. The model is
 `pico-pro` / `Pico Pro` or `pico-s` / `Pico S`; the shared family is always
 `pico-s-pro`. It comes from the compiled image, not a guess from the UID.
@@ -106,7 +106,7 @@ Standalone outputs are under `build/standalone/<model>/firmware/`:
 | `<model>-standalone.map` | Link map for memory and provider inspection |
 | `firmware-report.json` | Source/artifact hashes, image-layout checks, RAM allocations, and validation scope |
 | `native/compile_report.json` | Actual compile commands, hashes, and diagnostics |
-| `<model>-standalone.update.txt` | Recovered-format packaging artifact; the standalone firmware does not provide an OTA update route |
+| `<model>-standalone.update.txt` | Legacy-format image envelope. The Hub uses a ZIP containing the raw application and its matching website. |
 
 Use the report from a successful current build for binary size, BSS, reserved
 stack/heap, and remaining RAM. These measurements must not be inferred from a
@@ -564,7 +564,7 @@ console's bounded request queue and current device key. Selecting an endpoint
 never sends it automatically. The explorer is served from the Pico without a
 CDN or Swagger UI runtime.
 
-Firmware version is **1.2.0**, defined once in `include/picobrew/version.h`. The
+Stable firmware version is **1.0.0**, defined once in `include/picobrew/version.h`. The
 OLED startup label, console footer, health/discovery responses and build report
 use it. REST `api_version` remains 1. The major version marks the standalone
 release; it does not mean physical acceptance testing is complete.
@@ -609,6 +609,10 @@ The firmware build checks that the former domain and selected cloud-update/
 registration route strings are absent from the standalone binary. That static
 check complements the source-level adapters; it is not a captured network trace.
 
+## Maintenance and wireless updates
+
+Completed brews are counted on the brewer. An idle main menu and the local website suggest a rinse after each brew and Deep Clean every three. At 20 brews, the descaling reminder applies to reservoir water containing minerals. A completed descale makes Deep Clean due. The status response includes `maintenance.due` when the brewer can read its care history. See the [Hub firmware update guide](../../../../server/docs/firmware-packages.md) for recovery setup and verification.
+
 ## Remaining scope
 
 The native SDK copy for standalone omits Energia's unused global eight-client
@@ -626,7 +630,7 @@ background network manager.
 Inherited fatal hardware-error halts that mask interrupts still require a
 physical reset; HTTP intentionally does not run in those halted contexts.
 
-This branch does not implement PicoStill support, an OTA installation endpoint,
+This branch does not implement PicoStill support,
 unlimited history, dedicated pause/resume routes, automatic
 cloud-account recipe migration, or remote credential/calibration management.
 Some capabilities remain reachable through existing front-panel screens via

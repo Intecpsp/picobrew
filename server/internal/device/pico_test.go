@@ -559,3 +559,28 @@ func TestDedicatedBrewerServiceOperations(t *testing.T) {
 		})
 	}
 }
+
+func TestMaintenanceStatusFromFirmware(t *testing.T) {
+	for _, tc := range []struct {
+		name, fields string
+		want         *domain.Maintenance
+	}{
+		{"old firmware", "{}", nil},
+		{"due", `{"maintenance":{"due":["rinse","clean_filter"]}}`, &domain.Maintenance{Due: []string{"rinse", "clean_filter"}}},
+		{"clear", `{"maintenance":{"due":[]}}`, &domain.Maintenance{Due: []string{}}},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			brewer := testPico(t, func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path != "/api/v1/status" {
+					t.Errorf("unexpected path %q", r.URL.Path)
+				}
+				w.Header().Set("Content-Type", "application/json")
+				_, _ = io.WriteString(w, tc.fields)
+			})
+			status, err := brewer.Status(context.Background())
+			if err != nil || !reflect.DeepEqual(status.Maintenance, tc.want) {
+				t.Fatalf("maintenance = %#v, error = %v", status.Maintenance, err)
+			}
+		})
+	}
+}

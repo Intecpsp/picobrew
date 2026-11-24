@@ -24,6 +24,8 @@ static void unexpected() {fputs("Unexpected unrelated driver operation\n",stderr
  * ELF/Mach-O discard them. Supply checked failure boundaries so this fixture
  * has complete linkage without ever simulating a brew as a successful no-op. */
 extern "C" void pico_history_finish(bool) {unexpected();}
+extern "C" void pico_display_center_text(short, const char *) {unexpected();}
+extern "C" void pico_display_flush() {unexpected();}
 extern "C" void pico_actuators_all_off(PicoActuators*) {unexpected();}
 extern "C" bool pico_control_stop(PicoControl*) {unexpected();}
 extern "C" void pico_recipe_run_brew_program(PicoRecipeRuntime*,PicoRecipe*) {unexpected();}

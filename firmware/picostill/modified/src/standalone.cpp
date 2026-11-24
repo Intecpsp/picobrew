@@ -1,3 +1,4 @@
+#include "picostill/wireless_update.hpp"
 #include "picostill/standalone.hpp"
 #include <cmath>
 #include <cstdio>
@@ -8,7 +9,7 @@ namespace api = picobrew::standalone;
 namespace {
 api::Result invalid() { return api::Result(400, "invalid_command", "Invalid PicoStill command arguments"); }
 const api::CommandDescriptor commands[] = {
-    {"start", 0, 0}, {"essential-oils", 0, 0}, {"clean", 0, 0}, {"stop", 0, 0},
+    {"ack-clean-condenser", 0, 0}, {"start", 0, 0}, {"essential-oils", 0, 0}, {"clean", 0, 0}, {"stop", 0, 0},
     {"set-pump", api::Enabled, api::Enabled},
     {"set-fan", api::Channel | api::Level | api::Enabled, api::Channel | api::Level}
 };
@@ -76,6 +77,7 @@ api::Result Device::start(oem::ProgramId program, const char* command) {
     if (hardware.pump.enabled && !hardware.fans.second_enabled()) {
         hardware.fans.power.set(true); hardware.fans.second.set(true, 255);
     }
+    if (program != oem::ProgramId::RequestedCleaning) engine_->record_care(api::CareEvent::StillUsed);
     was_running_ = true; leds.start(oem::Animation::ProgramRunning); return api::Result(202);
 }
 api::Result Device::execute(const api::Command& command) {
@@ -83,6 +85,12 @@ api::Result Device::execute(const api::Command& command) {
     for (const auto& candidate : commands) if (!std::strcmp(candidate.name, command.name)) descriptor = &candidate;
     if (!descriptor || (command.fields & ~descriptor->allowed_fields) ||
         (command.fields & descriptor->required_fields) != descriptor->required_fields) return invalid();
+    if (!std::strcmp(command.name, "ack-clean-condenser")) {
+        if (!idle()) return {409, "busy", "Wait for PicoStill to stop before cleaning"};
+        if (!engine_) return {503, "not_ready", "Care record unavailable"};
+        const auto saved = engine_->record_care(api::CareEvent::CondenserCleaned);
+        return saved.ok() ? api::Result(202) : saved;
+    }
     if (!std::strcmp(command.name, "stop")) { stop(); return api::Result(202); }
     if (!std::strcmp(command.name, "start")) return start(oem::ProgramId::PicoManual, command.name);
     if (!std::strcmp(command.name, "essential-oils")) return start(oem::ProgramId::PicoEssentialOils, command.name);
@@ -194,8 +202,10 @@ api::Result Device::snapshot(api::Snapshot& result) {
 api::DeviceServices Device::services() noexcept {
     api::DeviceServices ports; ports.context = this;
     ports.identity = [](void* p) { api::Identity id; Device& device = *static_cast<Device*>(p);
-        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = "1.2.5"; id.device_uid = device.uid_; return id; };
-    ports.capabilities = [](void*) { api::Capabilities c; c.flags = api::Pump | api::Fans | api::Temperature | api::Pressure;
+        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = update::Version; id.device_uid = device.uid_; return id; };
+    ports.capabilities = [](void* p) { api::Capabilities c;
+        if (static_cast<Device*>(p)->wireless_) c.ota_protocol = update::Protocol;
+        c.flags = api::Pump | api::Fans | api::Temperature | api::Pressure;
         c.settings = api::TemperatureUnit; c.commands = commands; c.command_count = sizeof(commands) / sizeof(commands[0]); return c; };
     ports.snapshot = [](void* p, api::Snapshot& result) { return static_cast<Device*>(p)->snapshot(result); };
     ports.execute = [](void* p, const api::Command& command) { return static_cast<Device*>(p)->execute(command); };

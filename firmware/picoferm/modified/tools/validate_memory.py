@@ -21,7 +21,7 @@ FIRMWARE=COMMON.parent
 def digest(path):return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 def run(command):subprocess.run(list(map(str,command)),check=True)
 
-def target_sizes(toolchain,sdk,build,output):
+def target_sizes(toolchain,sdk,build,output,elf):
     units={
         'engine':('owned_common_src_engine.cpp.json',COMMON/'src/engine_internal.hpp',{
             'engine_impl':'picobrew::standalone::Engine::Impl','engine':'picobrew::standalone::Engine',
@@ -56,7 +56,6 @@ def target_sizes(toolchain,sdk,build,output):
     for line in subprocess.check_output([str(binary/'xtensa-lx106-elf-nm'),'-S',str(obj)],text=True).splitlines():
         match=re.search(r'^\S+\s+([0-9a-f]+)\s+\S\s+memory_(\w+)$',line)
         if match:sizes[match[2]]=int(match[1],16)
-    elf=build/'picoferm-standalone.elf'
     symbols=subprocess.check_output([str(binary/'xtensa-lx106-elf-nm'),'-n',str(elf)],text=True)
     heap=int(re.search(r'^([0-9a-f]+)\s+\S\s+_heap_start$',symbols,re.M)[1],16)
     return sizes,heap
@@ -111,15 +110,32 @@ def main():
     parser.add_argument('--i386',type=Path,help='Optional repository-pinned extracted multilib/qemu runtime; otherwise use system g++ -m32')
     parser.add_argument('--build-dir',type=Path,default=ROOT/'build/esp8266')
     parser.add_argument('--output',type=Path,default=ROOT/'build/memory-validation')
+    parser.add_argument('--ab', action='store_true', help='Validate the separately linked A/B bank firmware')
     parser.add_argument('--write-report',action='store_true');args=parser.parse_args()
     for name in ('toolchain','arduino','build_dir','output','i386'):
         if getattr(args,name) is not None:setattr(args,name,getattr(args,name).resolve())
     sys.path.insert(0,str(COMMON/'tools'));import package_reference
-    report,count=package_reference.verify_report('picoferm',args.build_dir/'picoferm-standalone.elf',args.build_dir/'build-report.json',
-        FIRMWARE.parent,args.arduino,None)
+    elf=args.build_dir/'picoferm-standalone.elf'
+    if args.ab:
+        import build_ab
+        from build_esp8266_image import read_elf, component
+        elf=args.build_dir/'bank-0.elf'
+        for bank,base in enumerate(build_ab.BANKS):
+            image=args.build_dir/f'bank-{bank}.bin'
+            entry,sections=read_elf(args.build_dir/f'bank-{bank}.elf')
+            if sections['.irom0.text']['address']!=0x40200010+base or image.read_bytes()!=component(entry,[sections[k] for k in build_ab.SECTIONS]):
+                raise ValueError('A/B heap verification needs both matching ELF/image pairs')
+        report,count={'elf_sha256':digest(elf)},None
+    else:
+        report,count=package_reference.verify_report('picoferm',elf,args.build_dir/'build-report.json',
+            FIRMWARE.parent,args.arduino,None)
     args.output.mkdir(parents=True,exist_ok=True)
-    sizes,heap_start=target_sizes(args.toolchain,args.arduino,args.build_dir,args.output)
+    sizes,heap_start=target_sizes(args.toolchain,args.arduino,args.build_dir,args.output,elf)
     if sizes['telemetry_impl']!=280 or sizes['http_impl']!=24:raise ValueError('Update exact platform reservation for changed target owners')
+    if args.ab:
+        other_symbols=subprocess.check_output([str(args.toolchain/'bin/xtensa-lx106-elf-nm'),'-n',str(args.build_dir/'bank-1.elf')],text=True)
+        if int(re.search(r'^([0-9a-f]+)\s+\S\s+_heap_start$',other_symbols,re.M)[1],16)!=heap_start:
+            raise ValueError('Dual PicoFerm banks disagree on available heap')
     heap_bytes=0x3fffc000-heap_start
     executable,sources,sdk_sources,native_sizes=native_build(args.arduino,args.i386,args.output)
     if any(sizes[key]!=native_sizes[key] for key in ('field','layout')):raise ValueError('History schema allocation ABI differs')
@@ -147,7 +163,9 @@ def main():
         boundary='Actual 32-bit Controller, Engine, Provisioning, VerifiedStorage and pinned SPIFFS/UMM sources. NOR, ADC, time and transport are test ports. A fragmented 16-KiB SDK/network reservation is held throughout; it is a budget test, not executed private Wi-Fi firmware. Target static owner includes HTTP arena and SDK continuation stack.',
         hardware_high_water_measured=False)
     if args.i386:output['i386_runtime_pin_sha256']=digest(FIRMWARE/'z-series/reverse-engineered/tests/toolchains/recipe-i386.json')
-    if args.write_report:(ROOT/'analysis/memory-validation.json').write_text(json.dumps(output,indent=2)+'\n')
+    if args.write_report:
+        name = 'memory-ab-validation.json' if args.ab else 'memory-validation.json'
+        (ROOT/'analysis'/name).write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps(output,indent=2))
 
 if __name__=='__main__':main()

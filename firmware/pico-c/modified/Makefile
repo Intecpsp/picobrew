@@ -37,6 +37,7 @@ standalone-arm-test:
 
 standalone-storage-test: standalone
 	"$(PYTHON)" tests/test_native_storage.py --elf "$(STANDALONE_DIR)/pico-c-standalone.elf"
+	"$(PYTHON)" ../../pico-s-pro/modified/tests/test_recovery_identity_arm.py --elf "$(STANDALONE_DIR)/pico-c-standalone.elf" --target "$(DISPLAY_VARIANT)"
 
 standalone-verify: standalone-test standalone-arm-test standalone-storage-test
 	"$(PYTHON)" tools/verify_firmware_package.py --model "$(MODEL)" --display "$(DISPLAY_VARIANT)"
