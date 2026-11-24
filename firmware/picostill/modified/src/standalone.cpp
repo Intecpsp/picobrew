@@ -1,3 +1,4 @@
+#include "picostill/wireless_update.hpp"
 #include "picostill/standalone.hpp"
 #include <cmath>
 #include <cstdio>
@@ -201,8 +202,10 @@ api::Result Device::snapshot(api::Snapshot& result) {
 api::DeviceServices Device::services() noexcept {
     api::DeviceServices ports; ports.context = this;
     ports.identity = [](void* p) { api::Identity id; Device& device = *static_cast<Device*>(p);
-        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = "1.2.6"; id.device_uid = device.uid_; return id; };
-    ports.capabilities = [](void*) { api::Capabilities c; c.flags = api::Pump | api::Fans | api::Temperature | api::Pressure;
+        id.model = id.model_family = "picostill"; id.model_name = "PicoStill"; id.firmware_version = update::Version; id.device_uid = device.uid_; return id; };
+    ports.capabilities = [](void* p) { api::Capabilities c;
+        if (static_cast<Device*>(p)->wireless_) c.ota_protocol = update::Protocol;
+        c.flags = api::Pump | api::Fans | api::Temperature | api::Pressure;
         c.settings = api::TemperatureUnit; c.commands = commands; c.command_count = sizeof(commands) / sizeof(commands[0]); return c; };
     ports.snapshot = [](void* p, api::Snapshot& result) { return static_cast<Device*>(p)->snapshot(result); };
     ports.execute = [](void* p, const api::Command& command) { return static_cast<Device*>(p)->execute(command); };
