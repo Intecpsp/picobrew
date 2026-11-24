@@ -696,6 +696,11 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	if out.Model != "" {
+		catalog, err := s.savedCatalog()
+		if err != nil {
+			s.firmwareError(w, err)
+			return
+		}
 		s.firmwareMu.Lock()
 		packages, err := s.listFirmwarePackages()
 		s.firmwareMu.Unlock()
@@ -704,6 +709,9 @@ func (s *Server) machineFirmware(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 		for _, p := range packages {
+			if p.ID != out.RetryPackageID && catalog.Withdrawn(p) {
+				continue
+			}
 			if p.MatchesWirelessTarget(out.Model, out.DisplayVariant) {
 				out.Packages = append(out.Packages, p)
 			}

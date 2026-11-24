@@ -97,6 +97,7 @@ type FieldMetadata struct {
 	Kind  string `json:"kind"`
 }
 type Capabilities struct {
+	ReleaseChannel          string                   `json:"release_channel,omitempty"`
 	EventsPersistent        *bool                    `json:"events_persistent,omitempty"`
 	SystemRestart           bool                     `json:"system_restart,omitempty"`
 	HistorySampleIntervalMS uint32                   `json:"history_sample_interval_ms,omitempty"`

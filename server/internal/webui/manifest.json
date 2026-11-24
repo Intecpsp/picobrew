@@ -444,8 +444,8 @@
     },
     {
       "path": "src/types.ts",
-      "bytes": 13381,
-      "sha256": "0c5c0693fd0fbbe417fa5ec28e380ec31d501c632ecb375c2acce88c2c3ced81"
+      "bytes": 13408,
+      "sha256": "0fee25089a1d7cc978a45e6ded1faa203bf68a51264a25d6da29cc3206cc85b6"
     },
     {
       "path": "tsconfig.json",

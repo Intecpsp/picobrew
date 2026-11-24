@@ -50,6 +50,7 @@ class ProductionReleaseTest(unittest.TestCase):
                 (assets / name.replace("usb-", "hub-")).write_bytes(b"Hub" + key.encode())
             with patch.object(release, "PINS", pins), patch.object(release, "worker_inputs", return_value=fingerprint), patch.object(release, "SOURCES", {}):
                 release.pin(tag, "usb-candidate-123-2", assets)
+                self.assertTrue(release.current_pins())
                 release.assemble(tag, assets, "b" * 40)
                 manifest = json.loads((assets / "releases.json").read_text())
                 self.assertEqual(manifest["source_commit"], "b" * 40)
@@ -61,6 +62,7 @@ class ProductionReleaseTest(unittest.TestCase):
                     digest, name = entry.split("  ")
                     self.assertEqual(digest, hashlib.sha256((assets / name).read_bytes()).hexdigest())
                 with patch.object(release, "worker_inputs", return_value="c" * 64):
+                    self.assertFalse(release.current_pins())
                     with self.assertRaisesRegex(ValueError, "checkout"):
                         release.assemble(tag, assets, "b" * 40)
                 (assets / "picobrew-usb-linux-arm").write_bytes(b"unverified")

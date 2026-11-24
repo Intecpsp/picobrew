@@ -196,6 +196,17 @@ func (s *Server) installFirmware(w http.ResponseWriter, r *http.Request) {
 		s.firmwareError(w, err)
 		return
 	}
+	if !resume {
+		catalog, err := s.savedCatalog()
+		if err != nil {
+			s.firmwareError(w, err)
+			return
+		}
+		if catalog.Withdrawn(saved) {
+			s.fail(w, 409, "firmware_withdrawn", "Choose a firmware version currently offered by the configured release source")
+			return
+		}
+	}
 	var payload firmware.UpdatePayload
 	if saved.SupportsFermOTA() {
 		payload, err = firmware.ReadPicoFermUpdate(archive, saved.Candidate)

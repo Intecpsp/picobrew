@@ -87,7 +87,7 @@ An idle, connected Pico S, Pico Pro, or Pico C with provisioned Hub recovery and
 
 ### Restore the original Pico S/Pro firmware over Wi-Fi
 
-Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. On that brewer, update standalone 1.3.5 to **1.3.6** over Wi-Fi first. Keep it powered on throughout the restore.
+Open the machine’s **Firmware → Restore original firmware over Wi-Fi**. The Hub offers this action on an idle, paired brewer that reports `stock_restore_ota_v1` and matches the recorded original S/Pro flash profile. If an earlier development build lacks this feature, first install the current standalone release over Wi-Fi on the eligible brewer. Keep it powered on throughout the restore.
 
 The Hub asks you to acknowledge the loss of standalone controls and wireless updates, then confirm the restore. It prefers this brewer’s saved original. If needed, it obtains and verifies the two pinned OEM images from GitHub. A temporary installer runs in a third flash slot, so it can independently write and read back both the original **0.1.34 application** and **0.0.3 recovery**. It preserves the loader, network settings and brewer identity.
 
@@ -108,7 +108,7 @@ The downloadable Hub includes the USB installer for its platform. The final conf
 | PicoFerm | Recognized OEM application, compatible 2 MiB ESP8266 flash and boot settings. | Restore the same device’s complete original SPI flash, including calibration and settings. |
 | PicoStill | Recognized active OEM application and compatible ESP32 boot and partition layout. | Restore and verify the same ESP32’s complete original SPI flash. |
 | Z-series (Z1–Z4 stacks) | Service one module at a time. The generic standalone package requires independently identified stock 0.0.119 and a compatible ESP32 layout. | Back up and restore the same ESP32 on a qualifying 0.0.116 or 0.0.119 module. The separate MSP controller lies outside this capture. |
-| Zymatic | Install a private 1.2.0 application over rear USB from verified 1.1.14. Configure the Hub address and optional offline recipe. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
+| Zymatic | Install the private 1.0.0 compact application over rear USB from verified stock 1.1.14. Configure the Hub address and optional offline recipe. | Back up readable AVR program flash and restore the verified 1.1.14 application over the rear USB port. Windows PicoFlash can also use the locally verified HEX. EEPROM, bootloader repair and CC3000 radio firmware are outside the application restore. |
 
 #### Command-line workflows from a firmware checkout
 
@@ -150,7 +150,7 @@ Connect the idle, powered Zymatic through its rear USB port. Install the AVRDUDE
 
 The backup compares two reads of the ATmega1284P program flash. A stable read can include protected or unreadable regions, and the AVR signature identifies the processor model rather than an individual machine. Stock restoration uses a verified factory application. If the installed program matches the factory 1.1.14 application byte for byte, backup also saves its verified application bytes for future offline restoration. The tool can use that copy, a saved original HEX, a vendor HEX/ZIP supplied with `--oem-file`, or the verified ZIP from the pinned support archive. Omit `--port` to prepare a local HEX for Windows PicoFlash. After restarting, confirm **1.1.14** under **About Zymatic** and disconnect the USB cable before running any program.
 
-The [stock Zymatic adapter](stock-zymatic.md) can serve recipes to the unmodified machine. Custom firmware 1.2.0 also supports authenticated monitoring over Ethernet. Add `--offline-program /absolute/path/zymatic-program.json` during USB setup to install a personal offline recipe. [Firmware capabilities](../../firmware/zymatic/modified/application.md)
+The [stock Zymatic adapter](stock-zymatic.md) can serve recipes to the unmodified machine. Both custom 1.0.0 profiles support authenticated monitoring over Ethernet. The extended profile adds dial control and retained history. Add `--offline-program /absolute/path/zymatic-program.json` during USB setup to install a personal offline recipe. [Firmware capabilities](../../firmware/zymatic/modified/application.md)
 
 Full end-to-end hardware qualification is pending for the expanded USB profiles. Host checks exercise the original artifacts, transfer plans, refusal paths and readback with simulated devices.
 

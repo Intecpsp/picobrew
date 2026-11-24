@@ -40,7 +40,7 @@ func TestReleaseChoicesExcludeNonOTAFirmwareFromOldAndRefreshedCatalogs(t *testi
 	pro.ArchiveSHA256 = strings.Repeat("5", 64)
 	releases := []firmware.Release{downgrade, history, usb, ref, pro, update}
 	catalog := firmware.ReleaseCatalog{Settings: firmware.Settings{Repository: firmware.DefaultRepository}, Commit: commit, Checked: time.Now().UTC(), Releases: releases}
-	if _, err := s.db.Put("config", "firmware-releases", catalog, 0); err != nil {
+	if _, err := s.db.Put("config", firmwareCatalogKey, catalog, 0); err != nil {
 		t.Fatal(err)
 	}
 	for _, model := range []string{"pico-s", "z-series"} {
@@ -72,7 +72,7 @@ func TestReleaseChoicesExcludeNonOTAFirmwareFromOldAndRefreshedCatalogs(t *testi
 		}
 	}
 	var saved firmware.ReleaseCatalog
-	if _, err := s.db.Get("config", "firmware-releases", &saved); err != nil || len(saved.Releases) != 3 {
+	if _, err := s.db.Get("config", firmwareCatalogKey, &saved); err != nil || len(saved.Releases) != 3 {
 		t.Fatal("refresh retained non-OTA releases", saved, err)
 	}
 	for range 2 {
@@ -98,7 +98,7 @@ func TestStagingRechecksLegacyCachedArchiveAgainstOTAMetadata(t *testing.T) {
 	candidate.HubOTAProtocol = 1
 	id := firmware.Digest(archive)
 	r := firmware.Release{Candidate: candidate, Kind: "standalone", ArchiveSHA256: id, SourceCommit: strings.Repeat("a", 40)}
-	if _, err = s.db.Put("config", "firmware-releases", firmware.ReleaseCatalog{Settings: firmware.Settings{Repository: firmware.DefaultRepository}, Commit: r.SourceCommit, Releases: []firmware.Release{r}}, 0); err != nil {
+	if _, err = s.db.Put("config", firmwareCatalogKey, firmware.ReleaseCatalog{Settings: firmware.Settings{Repository: firmware.DefaultRepository}, Commit: r.SourceCommit, Releases: []firmware.Release{r}}, 0); err != nil {
 		t.Fatal(err)
 	}
 	if err = s.ensureFirmwareCache(); err != nil {
@@ -157,5 +157,29 @@ func TestESPReleasesRequireAMatchingDeviceRecoveryProtocol(t *testing.T) {
 				t.Fatal("USB-only device was eligible")
 			}
 		})
+	}
+}
+
+func TestFirmwareUpdatesAcrossPublicVersionReset(t *testing.T) {
+	target := firmware.Release{Candidate: firmware.Candidate{FirmwareVersion: "1.0.0"}}
+	for _, tc := range []struct {
+		source, channel, version string
+		want                     bool
+	}{
+		{"stable", "", "1.3.9", true},
+		{"stable", "", "1.0.0", true},
+		{"stable", "", "2.0.0", false},
+		{"stable", "", "1.4.0", false},
+		{"stable", "", "preview-090fe78", true},
+		{"stable", "stable", "1.0.0", false},
+		{"stable", "stable", "1.3.9", false},
+		{"", "", "1.3.9", false},
+		{"stable", "", "", false},
+	} {
+		c := firmware.ReleaseCatalog{ReleaseChannel: tc.source}
+		d := &domain.Capabilities{ReleaseChannel: tc.channel, FirmwareVersion: tc.version}
+		if got := updateAvailable(c, target, d); got != tc.want {
+			t.Errorf("catalog %q, device %q %s: got %t", tc.source, tc.channel, tc.version, got)
+		}
 	}
 }

@@ -83,6 +83,7 @@ export interface Capabilities {
   model_family?: string
   display_variant?: string
   api_version: number
+  release_channel?: string
   firmware_version: string
   commands: string[]
   recipe_capacity: number

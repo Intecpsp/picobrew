@@ -138,6 +138,16 @@ def pin(tag, candidate, directory):
     PINS.write_text(json.dumps(pins, indent=2) + "\n", encoding="utf-8")
 
 
+def current_pins():
+    """A reviewed pin may be reused while every worker input still matches."""
+    pins = json.loads(PINS.read_text())
+    if not TAG.fullmatch(pins["tag"]) or not CANDIDATE.fullmatch(pins.get("candidate_tag", "")):
+        return False
+    assets = pins["assets"]
+    digest = worker_inputs()
+    return set(assets) == set(AVR) and all(asset.get("inputs_sha256") == digest for asset in assets.values())
+
+
 def stage(key, directory, release_tag):
     pins = json.loads(PINS.read_text())
     tag, candidate = pins["tag"], pins.get("candidate_tag", "")
@@ -201,6 +211,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_subparsers(dest="action", required=True)
     actions.add_parser("next-tag")
+    actions.add_parser("current-pins")
     checks = actions.add_parser("check-ci")
     checks.add_argument("commit")
     candidate = actions.add_parser("pin")
@@ -220,6 +231,8 @@ if __name__ == "__main__":
         def tags(*opts):
             return subprocess.check_output(["git", "tag", *opts], text=True).splitlines()
         print(next_tag(tags("--list", "v*"), tags("--points-at", "HEAD")))
+    elif args.action == "current-pins":
+        print("true" if current_pins() else "false")
     elif args.action == "check-ci":
         print(wait_for_ci(args.commit))
     elif args.action == "pin":

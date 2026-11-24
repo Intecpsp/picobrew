@@ -4,6 +4,8 @@ Brew with your own recipes and keep your brew history on your own network. This 
 
 Pico S, Pico Pro, Pico C, Z-series modules, and Zymatic each serve a local website and API when running this project’s standalone firmware. You can open the brewer’s network address in a browser even when the Hub is off. Zymatic serves its site over Ethernet. The brewer handles heat, pumping, and timing and can run a locally stored recipe from its dial.
 
+The first public release is **1.0.0** for the Hub, its USB tools, and every custom firmware build.
+
 The optional Hub lets you plan grain and hop loads, send recipes to different machines, follow simultaneous brews, and keep a searchable journal on your own computer.
 
 ![The Brewery page showing three machines and brew progress](docs/images/brewery.png)
@@ -76,7 +78,7 @@ If you want to keep the original Zymatic firmware, the Hub can also serve recipe
 
 #### Install later updates from the Hub
 
-Open the paired machine’s page and click the **Firmware** version beneath its front panel. Choose **Check for Updates**, select a compatible version, and click **Install** while the brewer is idle. The Hub downloads the package, transfers it, and checks the version after the brewer restarts. **Install** appears when the machine supports wireless updates and has compatible recovery firmware. The Pico S below shows that flow. For a USB-only machine, use **USB setup and recovery**. [Firmware updates by model](docs/firmware-parity.md)
+Open the paired machine’s page and click the **Firmware** version beneath its front panel. Choose **Check for Updates**, select a compatible version, and click **Install** while the brewer is idle. The Hub downloads the package, transfers it, and checks the version after the brewer restarts. **Install** appears when the machine supports wireless updates and has compatible recovery firmware. If you installed a development build such as 1.3.8, update the Hub first. Its Firmware page can offer the public 1.0.0 release even though the number is lower. Brewers without compatible recovery need USB setup. The Pico S below shows the wireless flow. For a USB-only machine, use **USB setup and recovery**. [Firmware updates by model](docs/firmware-parity.md)
 
 ![Machine firmware dialog on a Pico S showing the installed version, a different version selected, and the Install button](docs/images/hub-firmware-update.png)
 
@@ -91,7 +93,7 @@ Open **Recipes → Browse all**, choose a recipe, and copy it to your library. O
 | **Pico S and Pico Pro** | Model-specific standalone firmware, local website, mirrored OLED and dial, saved recipes, history, and Hub control. An idle brewer with compatible recovery supports wireless updates. Wireless return to stock has narrower hardware requirements. |
 | **Pico C** | Standalone brewing and Hub integration for the SSD1325 and SSD1309 display variants. USB setup provisions recovery for the verified display controller. The Hub can then send matching updates over Wi-Fi. Both display variants still need physical installation and brewing trials. |
 | **Z-series** | With standalone firmware, send, edit, or remove recipes directly from the Hub or the brewer’s local website. If you keep the stock 0.0.119 firmware, export a compatible recipe from the Hub and import it in Z Program Maker. The shared standalone build runs on individual Z modules. Z1 through Z4 indicate the number of modules in the stack. USB setup checks each module’s active stock firmware and flash layout. A module provisioned with protected recovery can then update over Wi-Fi. Physical qualification remains pending. [Z module requirements](firmware/z-series/modified/README.md#usb-identification-and-stock-restoration) |
-| **Zymatic** | Stock 1.1.14 can fetch Hub recipes. Custom 1.2.0 adds an offline recipe and a read-only website and API over Ethernet. On a verified boot layout, 1.3.x also adds paired dial control and retained history. Updates use USB. Physical qualification remains pending. |
+| **Zymatic** | Stock 1.1.14 can fetch Hub recipes. Both custom 1.0.0 builds add an offline recipe and Ethernet monitoring. The extended build also supports paired dial control and retained history. The USB installer checks which build fits the board. Updates use USB. Physical qualification remains pending. |
 | **PicoFerm and PicoStill** | Both accessories serve their own website and API. PicoFerm offers fermentation recording and sensors. PicoStill offers still modes, pump, fans, and sensors. After USB setup provisions the update layout, either accessory can receive application updates from the Hub over Wi-Fi. These paths have software tests and still need physical trials. |
 
 ## Project guides

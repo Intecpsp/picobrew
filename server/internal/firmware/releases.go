@@ -6,6 +6,7 @@ import (
 	"context"
 	"io"
 	"io/fs"
+	"slices"
 	"strings"
 	"time"
 )
@@ -20,9 +21,19 @@ type Release struct {
 }
 type ReleaseCatalog struct {
 	Settings
-	Commit   string    `json:"commit"`
-	Checked  time.Time `json:"checked"`
-	Releases []Release `json:"releases"`
+	ReleaseChannel string    `json:"release_channel,omitempty"`
+	Commit         string    `json:"commit"`
+	Checked        time.Time `json:"checked"`
+	Releases       []Release `json:"releases"`
+}
+
+// Withdrawn reports a previously staged public package that its source no longer lists.
+// User-supplied archives and packages from other sources retain their original provenance.
+func (c ReleaseCatalog) Withdrawn(p Package) bool {
+	if c.ReleaseChannel != "stable" || p.Provenance.Source != "library" || p.Provenance.Repository != c.Repository {
+		return false
+	}
+	return !slices.ContainsFunc(c.Releases, func(r Release) bool { return r.ArchiveSHA256 == p.ID })
 }
 
 func (r Release) valid() bool {
@@ -57,10 +68,11 @@ func (g *GitHub) Releases(ctx context.Context, cfg Settings) (ReleaseCatalog, er
 		return out, err
 	}
 	var index struct {
-		Schema   int       `json:"schema_version"`
-		Releases []Release `json:"releases"`
+		ReleaseChannel string    `json:"release_channel,omitempty"`
+		Schema         int       `json:"schema_version"`
+		Releases       []Release `json:"releases"`
 	}
-	if decodeJSON(data, &index, true) != nil || index.Schema != 1 || index.Releases == nil {
+	if decodeJSON(data, &index, true) != nil || index.Schema != 1 || (index.ReleaseChannel != "" && index.ReleaseChannel != "stable") || index.Releases == nil {
 		return out, invalid("This source has no valid firmware version catalog")
 	}
 	ids := map[string]bool{}
@@ -70,7 +82,7 @@ func (g *GitHub) Releases(ctx context.Context, cfg Settings) (ReleaseCatalog, er
 		}
 		ids[r.ArchiveSHA256] = true
 	}
-	return ReleaseCatalog{Settings: cfg, Commit: sha, Checked: time.Now().UTC(), Releases: index.Releases}, nil
+	return ReleaseCatalog{Settings: cfg, ReleaseChannel: index.ReleaseChannel, Commit: sha, Checked: time.Now().UTC(), Releases: index.Releases}, nil
 }
 func (g *GitHub) DownloadRelease(ctx context.Context, c ReleaseCatalog, r Release) ([]byte, error) {
 	cfg, err := NormalizeSettings(c.Settings)
