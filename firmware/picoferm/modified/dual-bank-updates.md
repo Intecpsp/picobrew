@@ -1,6 +1,6 @@
-# PicoFerm wireless update reference
+# PicoFerm wireless updates
 
-This branch builds a PicoFerm application that can receive updates over Wi-Fi after a one-time USB conversion. It is a bench candidate. The production release index still distributes the single-image firmware. Physical installation, Wi-Fi operation and battery removal during a real update need qualification.
+PicoFerm 1.0.0 uses a permanent USB-provisioned loader and two application banks. The Hub uses the same package for initial USB setup and subsequent Wi-Fi updates. Physical installation, Wi-Fi operation and battery removal during a real update still need qualification. [Release package](releases/picoferm/1.0.0.zip)
 
 ## Flash ownership
 
