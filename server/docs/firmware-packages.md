@@ -10,7 +10,7 @@ While physical devices are registered, the Hub checks daily. The Brewery page di
 
 The version picker shows packages the Hub can install on the selected machine. A Pico S or Pro uses its model-specific application and website. A Pico C also needs a verified display controller, and the recovery image checks the application’s display marker. For ESP devices, each wireless package declares its recovery protocol. Before transferring anything, the Hub checks the connected device’s identity, protocol and flash layout. The catalog also keeps older USB images for setup and restoration.
 
-PicoStill transfers only its application over Wi-Fi. Its protected recovery and the existing filesystem stay in place. PicoFerm transfers the application built for its inactive bank. After reboot the Hub reads the running image hash before confirming the new bank. A failed or unconfirmed PicoFerm trial returns to the previous bank on the next reset. Earlier single-application installations need USB setup to gain these capabilities.
+A generic Z module and PicoStill transfer only their application over Wi-Fi. Each machine’s protected recovery and existing filesystem stay in place. PicoFerm transfers the application built for its inactive bank. After reboot the Hub reads the running image hash before confirming the new bank. A failed or unconfirmed PicoFerm trial returns to the previous bank on the next reset. Earlier single-application installations need USB setup to gain these capabilities.
 
 To publish a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
