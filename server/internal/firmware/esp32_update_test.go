@@ -11,15 +11,31 @@ import (
 
 func TestESP32UpdateTransfersOnlyTheTaggedApplication(t *testing.T) {
 	for _, target := range []string{"picostill", "z-series"} {
-		for _, variant := range []string{"valid", "wrong model", "USB only", "altered report", "missing marker", "wrong binary", "missing component", "duplicate image"} {
+		for _, variant := range []string{"valid", "wrong model", "USB only", "altered report", "missing marker", "wrong binary", "missing component", "duplicate image", "bad segment length", "wrong flash checksum", "unmapped entry point"} {
 			t.Run(target+"/"+variant, func(t *testing.T) {
-				image := make([]byte, 0x200)
-				image[0], image[23] = 0xe9, 1
+				image := make([]byte, 384)
+				image[0], image[1], image[23] = 0xe9, 2, 1
+				binary.LittleEndian.PutUint32(image[4:], 0x40080000)
 				binary.LittleEndian.PutUint32(image[24:], 0x3f400020)
 				binary.LittleEndian.PutUint32(image[28:], 320)
 				binary.LittleEndian.PutUint32(image[32:], 0xabcd5432)
 				if variant != "missing marker" {
 					copy(image[0x120:0x160], "PicoBrew OTA1|"+target+"|1.2.7")
+				}
+				binary.LittleEndian.PutUint32(image[352:], 0x40080000)
+				binary.LittleEndian.PutUint32(image[356:], 16)
+				check := byte(0xef)
+				for _, b := range image[32:352] {
+					check ^= b
+				}
+				image[383] = check
+				switch variant {
+				case "bad segment length":
+					binary.LittleEndian.PutUint32(image[356:], 8192)
+				case "wrong flash checksum":
+					image[383] ^= 1
+				case "unmapped entry point":
+					binary.LittleEndian.PutUint32(image[4:], 0x40081000)
 				}
 				digest := sha256.Sum256(image)
 				image = append(image, digest[:]...)

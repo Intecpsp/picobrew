@@ -87,11 +87,53 @@ func ReadFactoryUpdate(archive []byte, candidate Candidate) (UpdatePayload, erro
 		binary.LittleEndian.Uint32(app[32:]) != 0xabcd5432 || !bytes.Equal(app[0x120:0x160], marker[:]) {
 		return out, invalid("The ESP32 application failed its size, digest or target check")
 	}
-	digest := sha256.Sum256(app[:len(app)-sha256.Size])
-	if !bytes.Equal(digest[:], app[len(app)-sha256.Size:]) {
-		return out, invalid("ESP32 image checksum did not match")
+	if !validESP32Segments(app) {
+		return out, invalid("Invalid ESP32 application segments, checksum or appended digest")
 	}
 	out.Candidate = candidate
 	out.Files[0] = app
 	return out, nil
+}
+
+// Verify the ESP image as written to flash. An intact ZIP and matching hashes
+// alone do not establish that the segment table describes a bootable image.
+func validESP32Segments(image []byte) bool {
+	const header = 24
+	if len(image) < header+sha256.Size || image[0] != 0xe9 || image[1] == 0 || image[1] > 16 || image[23] != 1 {
+		return false
+	}
+	payload := image[:len(image)-sha256.Size]
+	pc := binary.LittleEndian.Uint32(payload[4:])
+	sum := byte(0xef)
+	pos := header
+	entryFound := false
+	for range image[1] {
+		if len(payload)-pos < 8 {
+			return false
+		}
+		start := binary.LittleEndian.Uint32(payload[pos:])
+		size := binary.LittleEndian.Uint32(payload[pos+4:])
+		pos += 8
+		if size%4 != 0 || start+size < start || uint64(size) > uint64(len(payload)-pos) {
+			return false
+		}
+		if pc >= 0x40080000 && pc < 0x40400000 && start <= pc && pc-start < size {
+			entryFound = true
+		}
+		for _, b := range payload[pos : pos+int(size)] {
+			sum ^= b
+		}
+		pos += int(size)
+	}
+	checkAt := pos | 15
+	if !entryFound || checkAt+1 != len(payload) || payload[checkAt] != sum {
+		return false
+	}
+	for _, b := range payload[pos:checkAt] {
+		if b != 0 {
+			return false
+		}
+	}
+	digest := sha256.Sum256(payload)
+	return bytes.Equal(digest[:], image[len(payload):])
 }
