@@ -30,7 +30,7 @@ type releaseView struct {
 // catalog boundaries so a Hub upgrade takes effect before the next refresh.
 func otaCatalog(c firmware.ReleaseCatalog) firmware.ReleaseCatalog {
 	c.Releases = slices.DeleteFunc(c.Releases, func(r firmware.Release) bool {
-		return r.Kind != "standalone" || !r.Candidate.SupportsHubOTA()
+		return !r.WirelessPackage()
 	})
 	return c
 }

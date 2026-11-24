@@ -25,6 +25,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--toolchain',type=Path,required=True)
     parser.add_argument('--arduino',type=Path,required=True)
+    parser.add_argument('--ab-layout', action='store_true', help='Build the separate PicoFerm A/B USB bootstrap and two OTA images')
     parser.add_argument('--output',type=Path,default=ROOT/'build/esp8266')
     args=parser.parse_args();toolchain=args.toolchain.resolve();arduino=args.arduino.resolve();output=args.output.resolve()
     check_pin(toolchain,OEM/'dependencies/toolchain.json');check_pin(arduino,OEM/'dependencies/arduino-esp8266.json')
@@ -42,6 +43,14 @@ def main():
     own += [OEM/'src'/name for name in ('core.cpp','hardware.cpp')]
     own += [COMMON/'src'/name for name in ('engine.cpp','api.cpp','values.cpp','records.cpp','history.cpp','history_records.cpp','telemetry.cpp','provisioning.cpp','verified_storage.cpp','common_web_assets.cpp','http_server.c')]
     own += [COMMON/'platform/esp8266'/name for name in ('storage.cpp','telemetry.cpp','http.cpp')]
+    recovery=FIRMWARE/'pico-s-pro/modified/recovery/recovery'
+    if args.ab_layout:
+        import build_ab
+        build_ab.prepare_loader(output, arduino, cc)
+        includes.append(output)
+        flags.append('-DPICOFERM_AB')
+        includes += [ROOT/'platform/ab', COMMON/'src', recovery]
+        own += [ROOT/'platform/ab/boot.c', ROOT/'platform/ab/transfer.cpp', recovery/'sha256.c']
     includes=['-I'+str(p) for p in includes];object_sets=[[],[]];evidence=[[],[]]
     for external,sources in enumerate((own,sdk_sources)):
         for source in sources:
@@ -68,6 +77,10 @@ def main():
     elf=output/'picoferm-standalone.elf';map_file=elf.with_suffix('.map');linker='eagle.flash.2m.ld'
     link=['-nostdlib','-L'+str(sdk/'lib'),'-L'+str(sdk/'ld'),'-L'+str(sdk/'libc/xtensa-lx106-elf/lib'),'-T',linker,'-u','call_user_start','-Wl,--gc-sections',
           '-Wl,-static','-Wl,-wrap,system_restart_local','-Wl,-wrap,spi_flash_read','-Wl,-Map='+str(map_file),'-Wl,--cref','-Wl,--start-group',*map(str,archives),*libraries,'-Wl,--end-group','-Wl,-EL','-o',str(elf)]
+    if args.ab_layout:
+        import build_ab
+        build_ab.build(output, arduino, cc, link)
+        return
     subprocess.run([str(cc),*link],check=True,cwd=sdk/'lib')
     symbols=subprocess.check_output([str(binary/'xtensa-lx106-elf-nm'),'-C','-n',str(elf)],text=True)
     functions='\n'.join(line for line in symbols.splitlines()if len(line.split())>=3 and line.split()[1]in('T','t','W','w'))

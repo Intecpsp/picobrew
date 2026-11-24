@@ -691,7 +691,13 @@ func TestInstallUsesTheConnectedBrewersVersion(t *testing.T) {
 	}
 }
 
-func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *testing.T) {
+func TestInterruptedFirmwareKeepsReceiptAndCanResume(t *testing.T) {
+	for _, stage := range []string{"entering", "transferring", "selecting", "confirming"} {
+		t.Run(stage, func(t *testing.T) { testInterruptedFirmwareRetry(t, stage) })
+	}
+}
+
+func testInterruptedFirmwareRetry(t *testing.T, stage string) {
 	s, h, c, stop := startFirmwareServer(t, newTestDataDir(t))
 	defer stop()
 	csrf := signIn(t, c, h.URL)
@@ -705,14 +711,14 @@ func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *test
 	const uid = "brewer-uid"
 	saved := domain.Device{ID: "brewer", Model: "pico-s", ModelSource: "firmware", Enabled: true, Adapter: "pico-standalone"}
 	status := domain.Status{Model: saved.Model, ModelFamily: "pico-s-pro", DeviceUID: uid, Ready: true}
-	caps := domain.Capabilities{Model: saved.Model, ModelFamily: "pico-s-pro", HubOTAV1: true}
+	caps := domain.Capabilities{Model: saved.Model, ModelFamily: "pico-s-pro", FirmwareVersion: "2.0.0", HubOTAV1: true}
 	a := &resumeFirmwareAdapter{pairingAdapter: &pairingAdapter{status: status, caps: caps}, stages: make(chan string, 1)}
 	d := s.attach(saved)
 	d.adapter = a // No saved key in this fixture, so attach starts no poller.
 	if _, err := s.verifiedStatus(context.Background(), d); err != nil {
 		t.Fatal(err)
 	}
-	receipt := firmware.InstallReceipt{PackageID: original, Model: saved.Model, UID: uid, State: "unconfirmed", Stage: "confirming"}
+	receipt := firmware.InstallReceipt{PackageID: original, Model: saved.Model, UID: uid, State: "unconfirmed", Stage: stage}
 	version, err := s.db.Put("firmware-install", saved.ID, receipt, 0)
 	if err != nil {
 		t.Fatal(err)
@@ -723,7 +729,7 @@ func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *test
 		code, body := request(t, c, "GET", path, "", nil, nil)
 		var machine firmware.MachineFirmware
 		if code != 200 || json.Unmarshal(body, &machine) != nil || machine.InstallSupported != expected ||
-			(expected && (machine.RetryPackageID != original || machine.DeviceUID != uid)) {
+			(expected && (machine.RetryPackageID != original || machine.DeviceUID != uid)) || (!expected && machine.RetryPackageID != "") {
 			t.Fatalf("retry available %t: %d %s", expected, code, body)
 		}
 	}
@@ -734,11 +740,44 @@ func TestInterruptedFirmwareTrialKeepsReceiptAndCanResumeAfterHubRestart(t *test
 	}
 	checkRetry(true)
 	if code := install(strings.Repeat("b", 64)); code != 409 {
-		t.Fatalf("different package accepted during trial: %d", code)
+		t.Fatalf("different package accepted during %s: %d", stage, code)
 	}
 	var after firmware.InstallReceipt
 	if v, err := s.db.Get("firmware-install", saved.ID, &after); err != nil || v != version || after != receipt {
-		t.Fatalf("rejected package replaced trial checkpoint: %+v, %d, %v", after, v, err)
+		t.Fatalf("rejected package replaced %s checkpoint: %+v, %d, %v", stage, after, v, err)
+	}
+
+	if stage == "entering" || stage == "transferring" {
+		// In-place recovery can keep reporting normal application status.
+		// Respect a live busy brewer and resume the original stage once idle.
+		a.status.Busy = true
+		if _, err := s.verifiedStatus(context.Background(), d); err != nil {
+			t.Fatal(err)
+		}
+		checkRetry(false)
+		if code := install(original); code != 409 {
+			t.Fatalf("busy brewer accepted a retry: %d", code)
+		}
+		if v, err := s.db.Get("firmware-install", saved.ID, &after); err != nil || v != version || after != receipt {
+			t.Fatalf("busy retry changed the checkpoint: %+v, %d, %v", after, v, err)
+		}
+		a.status.Busy = false
+		if _, err := s.verifiedStatus(context.Background(), d); err != nil {
+			t.Fatal(err)
+		}
+		checkRetry(true)
+		if code := install(original); code != 202 {
+			t.Fatalf("online same-package retry: %d", code)
+		}
+		select {
+		case got := <-a.stages:
+			if got != stage {
+				t.Fatalf("online retry lost its stage: %q", got)
+			}
+		case <-time.After(time.Second):
+			t.Fatal("adapter did not receive online retry")
+		}
+		return
 	}
 
 	// A positive UID mismatch must block even an exact-package retry.

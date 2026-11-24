@@ -33,7 +33,9 @@ PicoStill USB setup installs a protected factory recovery image at `0x10000` and
 
 ## Pair the installed appliance
 
-After a normal boot, use the appliance's physical provisioning UART at 115200 baud while idle. A valid saved OEM network may already have been imported. Use a private terminal with local echo and logging disabled and send each command as a complete line. Supply a fresh random 32-byte key as 64 lowercase hexadecimal characters. The Wi-Fi separator is **one literal tab**.
+When you install through the Hub, it provisions the device key and saves it with that appliance’s identity. After setup, choose **Add machine** in the Hub and enter the appliance’s network address. If it needs Wi-Fi credentials, use the supported network setup for that appliance.
+
+For installation with the command-line tool, use the appliance’s physical provisioning UART at 115200 baud while idle. A valid saved OEM network may already have been imported. Use a private terminal with local echo and logging disabled and send each command as a complete line. Supply a fresh random 32-byte key as 64 lowercase hexadecimal characters. The Wi-Fi separator is **one literal tab**.
 
 ```
 key <64 lowercase hexadecimal characters>

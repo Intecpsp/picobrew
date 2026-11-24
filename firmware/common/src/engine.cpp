@@ -27,6 +27,9 @@ std::uint32_t Engine::Impl::active_elapsed() const {
     return active >= 0 && elapsed < sessions[active].duration ? UINT32_MAX : elapsed;
 }
 bool Engine::Impl::idle() const { return owner.device_.idle && owner.device_.idle(owner.device_.context); }
+void Engine::set_ota_protocol(const char* protocol) noexcept {
+    if (impl_) impl_->capabilities.ota_protocol = protocol;
+}
 Result Engine::begin() {
     if (!impl_) impl_ = new (std::nothrow) Impl(*this);
     if (!impl_) return Result(503, "capacity", "The standalone engine could not allocate its bounded state");

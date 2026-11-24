@@ -125,8 +125,8 @@ func (s *Server) restoreStock(w http.ResponseWriter, r *http.Request) {
 		s.storeError(w, err)
 		return
 	}
-	if pendingTrial(normal) {
-		s.fail(w, 409, "trial_pending", "Verify the previous firmware update before restoring stock")
+	if conflict := pendingFirmwareConflict(normal); conflict != "" {
+		s.fail(w, 409, conflict, "Finish the previous firmware update before restoring stock")
 		return
 	}
 	stage := ""

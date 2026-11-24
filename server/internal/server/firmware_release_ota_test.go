@@ -119,3 +119,43 @@ func TestStagingRechecksLegacyCachedArchiveAgainstOTAMetadata(t *testing.T) {
 		t.Fatalf("non-OTA archive with conflicting staged metadata: %d %s", code, b)
 	}
 }
+
+func TestESPReleasesRequireAMatchingDeviceRecoveryProtocol(t *testing.T) {
+	for _, tc := range []struct{ model, protocol, kind string }{
+		{"picostill", firmware.ESP32FactoryProtocol, "reference"},
+		{"z-series", firmware.ESP32FactoryProtocol, "reference"},
+		{"picoferm", firmware.FermABProtocol, "picoferm-ab"},
+	} {
+		t.Run(tc.model, func(t *testing.T) {
+			wireless := firmware.Release{Kind: tc.kind, Candidate: firmware.Candidate{
+				Model: tc.model, ModelFamily: tc.model, OTAProtocol: tc.protocol, BinaryBytes: 400000,
+			}}
+			if !wireless.MatchesWirelessTarget(tc.model, "") || wireless.MatchesWirelessTarget(tc.model, "ssd1309") ||
+				wireless.MatchesWirelessTarget(tc.model, "ssd1325") != (tc.model == "z-series") {
+				t.Fatal("package accepted the wrong hardware identity")
+			}
+			usb := wireless
+			usb.OTAProtocol = ""
+			wrongKind := wireless
+			wrongKind.Kind = "standalone"
+			filtered := otaCatalog(firmware.ReleaseCatalog{Releases: []firmware.Release{usb, wireless, wrongKind}})
+			if len(filtered.Releases) != 1 || filtered.Releases[0] != wireless {
+				t.Fatal("incorrect remote release choices", filtered.Releases)
+			}
+			v := domain.DeviceView{Device: domain.Device{Adapter: "pico-standalone", Model: tc.model, Enabled: true, ModelSource: "firmware"}, Online: true,
+				Status: &domain.Status{Ready: true, DeviceUID: "abcd"}, Capabilities: &domain.Capabilities{Model: tc.model, OTAProtocol: tc.protocol}}
+			if !otaEligible(v) {
+				t.Fatal("provisioned idle device was excluded")
+			}
+			v.Status.Busy = true
+			if otaEligible(v) {
+				t.Fatal("busy device was eligible")
+			}
+			v.Status.Busy = false
+			v.Capabilities.OTAProtocol = ""
+			if otaEligible(v) {
+				t.Fatal("USB-only device was eligible")
+			}
+		})
+	}
+}

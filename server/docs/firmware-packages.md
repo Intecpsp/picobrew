@@ -8,7 +8,9 @@ Open a machine's **Firmware** view to see wireless update versions for its exact
 
 While physical devices are registered, the Hub checks daily. The Brewery page displays a notice when a machine reports an older numbered version. Failed checks preserve the previous catalog and retry after an hour. A successful check downloads only metadata. Device keys and registered machine identifiers stay on the Hub.
 
-The repository release index also preserves historical family builds, Pico C display variants and reference packages for the generic Z, PicoFerm and PicoStill. Each entry records the model, version and SHA-256 of the ZIP and application. The Hub's update catalog and machine version picker include C/S/Pro standalone releases that declare Hub OTA protocol 1. A C package also carries a display-specific marker in the application image. The same rule applies to packages previously uploaded or cached on the Hub. The administrative package API can still list and download saved archives. On Pico C, owners can record their actual display controller independently of wireless update availability.
+The version picker shows packages the Hub can install on the selected machine. A Pico S or Pro uses its model-specific application and website. A Pico C also needs a verified display controller, and the recovery image checks the application’s display marker. For ESP devices, each wireless package declares its recovery protocol. Before transferring anything, the Hub checks the connected device’s identity, protocol and flash layout. The catalog also keeps older USB images for setup and restoration.
+
+PicoStill transfers only its application over Wi-Fi. Its protected recovery and the existing filesystem stay in place. PicoFerm transfers the application built for its inactive bank. After reboot the Hub reads the running image hash before confirming the new bank. A failed or unconfirmed PicoFerm trial returns to the previous bank on the next reset. Earlier single-application installations need USB setup to gain these capabilities.
 
 To publish a new release, add its verified ZIP under `firmware/<family>/modified/releases/<model>/[display/]<version>.zip` and append an entry to `firmware/releases.json`. CI reads every archive and checks that current model-specific applications are represented.
 
@@ -97,9 +99,7 @@ Connect the idle machine or its USB service adapter to the computer running the 
 
 On a successful installation, choose **Add machine** and enter the brewer’s network address. The Hub pairs its saved key with the identity verified over USB. Machine-specific Wi-Fi setup may still be needed. Keep power and the cable connected until readback completes. The Hub stores the original and the private pairing files under its persistent data directory. Keep a private backup of that directory. USB setup is available on a normal Hub with access to the port. In a Linux container, map the selected serial device into the container and allow the Hub user to access it.
 
-
-
-USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.2** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
+The downloadable Hub includes the USB installer for its platform. The final confirmation shows the firmware selected for the connected machine. On a Zymatic, initial conversion uses the application that fits the stock boot layout. A previously converted Zymatic can use the extended application when the installer verifies the smaller boot region on that particular board. [Zymatic USB procedure](../../firmware/zymatic/modified/README.md)
 
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
@@ -136,7 +136,7 @@ Use a verified USB-to-serial service connection and put the *idle* appliance int
 ./picobrew-hub usb-restore --model picoferm --port SERIAL_PORT --data ./data --checkout ..
 ```
 
-Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. On a normal boot after conversion, provision the device key and Wi-Fi over its serial console. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
+Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. When using the command-line tool directly, complete key and Wi-Fi setup over the device’s serial console. The Hub’s USB installer provisions and saves the device key for pairing. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
 
 ##### Zymatic
 

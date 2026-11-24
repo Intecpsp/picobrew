@@ -29,6 +29,9 @@ func (r Release) valid() bool {
 	if !ValidCommit(r.SourceCommit) || !ValidID(r.ArchiveSHA256) || !ValidID(r.BinarySHA256) || r.BinaryBytes <= 0 || r.BinaryBytes > MaxReleaseBytes || !versionPattern.MatchString(r.FirmwareVersion) {
 		return false
 	}
+	if r.OTAProtocol != "" {
+		return r.WirelessPackage()
+	}
 	switch r.Kind {
 	case "standalone":
 		return ValidVariant(r.Model, r.DisplayVariant) && r.ModelFamily == modelFamily(r.Model) && (r.HubOTAProtocol == 0 || r.SupportsCC3200OTA())
@@ -94,6 +97,10 @@ func ValidateRelease(data []byte, r Release) error {
 	if !r.valid() || len(data) > MaxReleaseBytes || Digest(data) != r.ArchiveSHA256 {
 		return invalid("The downloaded archive does not match the selected release")
 	}
+	if r.SupportsFermOTA() {
+		_, err := ReadPicoFermUpdate(data, r.Candidate)
+		return err
+	}
 	if r.Kind == "standalone" {
 		candidate, err := ValidateArchive(data)
 		if err != nil {
@@ -104,7 +111,8 @@ func ValidateRelease(data []byte, r Release) error {
 		}
 		return nil
 	}
-	// Historical and reference archives are download-only. Validate the member
+	// Validate download-only archives and USB reference packages with an optional
+	// application-only update. Validate the member
 	// names, CRCs, bounds and published application digest without extraction.
 	reader, err := zip.NewReader(bytes.NewReader(data), int64(len(data)))
 	if err != nil || len(reader.File) > 64 {
@@ -147,6 +155,10 @@ func ValidateRelease(data []byte, r Release) error {
 	}
 	if !seen[image] {
 		return invalid("Missing reference application")
+	}
+	if r.SupportsFactoryOTA() {
+		_, err = ReadFactoryUpdate(data, r.Candidate)
+		return err
 	}
 	return nil
 }
