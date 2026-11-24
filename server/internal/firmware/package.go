@@ -516,7 +516,8 @@ func buildArchive(files map[string][]byte) ([]byte, error) {
 // UpdatePayload contains only fixed, validated destinations in the order used by recovery.
 type UpdatePayload struct {
 	Candidate
-	Files [6][]byte
+	Files    [6][]byte
+	PicoFerm *PicoFermUpdate
 }
 
 func ReadUpdatePayload(archive []byte) (UpdatePayload, error) {
