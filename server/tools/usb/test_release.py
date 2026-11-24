@@ -1,8 +1,10 @@
 import hashlib
+import io
 import json
 from pathlib import Path
 import tempfile
 import unittest
+import urllib.error
 from unittest.mock import patch
 import zipfile
 
@@ -10,10 +12,51 @@ import release
 
 
 class ProductionReleaseTest(unittest.TestCase):
-    def test_versions_keep_first_baseline_and_retry_exact_commit(self):
-        self.assertEqual(release.next_tag(["usb-tools-v1.0.1", "usb-candidate-1-2"], []), "v1.0.0")
-        self.assertEqual(release.next_tag(["v1.0.9", "v1.0.10"], []), "v1.0.11")
-        self.assertEqual(release.next_tag(["v1.0.0", "v1.0.1"], ["v1.0.0"]), "v1.0.0")
+    def test_tag_tracks_source_even_when_earlier_tags_exist(self):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(release, "ROOT", Path(tmp)):
+            source = Path(tmp, "server/internal/server/server.go")
+            source.parent.mkdir(parents=True)
+            for version in ("1.0.0", "1.0.10", "2.4.0"):
+                source.write_text(f'package server\nconst Version = "{version}"\n')
+                self.assertEqual(release.source_tag(), "v" + version)
+            for version in ("1.02.1", "dev", '1.0.0"\nconst Version = "2.0.0'):
+                source.write_text(f'const Version = "{version}"\n')
+                with self.assertRaises(ValueError):
+                    release.source_tag()
+
+    def test_same_version_stages_only_reviewed_worker_from_candidate_or_published_tag(self):
+        key = "linux-arm64"
+        worker, notices = b"new worker", b"new notices"
+        def digest(data):
+            return hashlib.sha256(data).hexdigest()
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output, pins = root / "output", root / "pins.json"
+            name = "picobrew-usb-linux-arm64"
+            tag, candidate = release.source_tag(), "usb-candidate-111-1"
+            assets = {key: {"platform": key, "name": name, "inputs_sha256": "verified",
+                            "sha256": digest(worker), "notices_sha256": digest(notices)}}
+            pins.write_text(json.dumps({"tag": tag}))
+            with patch.object(release, "PINS", pins), patch.object(release, "workers", return_value=assets), \
+                    patch.object(release, "worker_inputs", return_value="verified"):
+                release.pin(tag, candidate, root)
+                self.assertTrue(json.loads(pins.read_text())["prefer_candidate"])
+                for retired in (False, True):
+                    requests = []
+                    def download(url, timeout):
+                        asset_tag, _, asset_name = url.removeprefix(release.RELEASE_BASE).partition("/")
+                        requests.append(asset_tag)
+                        if retired and asset_tag == candidate:
+                            raise urllib.error.HTTPError(url, 404, "absent", {}, None)
+                        return io.BytesIO(worker if asset_name == name else notices)
+                    with patch("urllib.request.urlopen", side_effect=download):
+                        release.stage(key, output, tag)
+                    self.assertEqual(requests, [candidate, tag, candidate, tag] if retired else [candidate, candidate])
+                    self.assertEqual((output / name).read_bytes(), worker)
+                with patch("urllib.request.urlopen", return_value=io.BytesIO(b"unexpected")) as fetch:
+                    with self.assertRaisesRegex(ValueError, "differs"):
+                        release.stage(key, output, tag)
+                    self.assertEqual(fetch.call_count, 1)
 
     def test_release_waits_for_missing_and_running_checks_on_the_pushed_revision(self):
         def run(name, status, conclusion, attempt=1):
@@ -34,7 +77,7 @@ class ProductionReleaseTest(unittest.TestCase):
             assets.mkdir()
             pins = root / "pins.json"
             fingerprint = "a" * 64
-            tag = "v1.0.0"
+            tag = release.source_tag()
             for key in release.AVR:
                 suffix = ".exe" if key.startswith("windows") else ""
                 name = "picobrew-usb-" + key + suffix
