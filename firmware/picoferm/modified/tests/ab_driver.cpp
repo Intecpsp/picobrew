@@ -11,11 +11,12 @@
 struct Flash {
     std::vector<uint8_t> bytes=std::vector<uint8_t>(0x200000,0xff);
     int writes=0, cut=-1, prefix=0;
-    bool powered=true;
+    bool powered=true, fail_record=false, cut_after_select=false;
     std::unique_ptr<picoferm::Update> app;
     unsigned running=2;
     static int read(void* p,uint32_t a,void* dest,uint32_t n) {
         auto& f=*static_cast<Flash*>(p);
+        if (f.fail_record && (a==0x1000 || a==0x2000)) {f.fail_record=false;return 1;}
         if (!f.powered || a%4 || n%4 || a>f.bytes.size() || n>f.bytes.size()-a) return 1;
         std::memcpy(dest,f.bytes.data()+a,n);return 0;
     }
@@ -57,12 +58,16 @@ int boot(Flash* f){
     f->powered=true;
     FermBootIO io=f->io(); int bank=ferm_select(&io);
     f->app.reset();
+    f->fail_record=f->cut_after_select;
+    f->cut_after_select=false;
     if (bank<0) return -1;
     f->running=static_cast<unsigned>(bank);
     f->app.reset(new picoferm::Update({io,Flash::erase,Flash::random}));
     const char* version=reinterpret_cast<char*>(f->bytes.data()+FERM_BANK_ADDRESS(bank)+16+13);
     return f->app->attach(bank,"aabbccddeeff",version,true)?bank:-2;
 }
+void fail_first_app_record(Flash* f){f->cut_after_select=true;}
+int trial(Flash* f){return f->app && f->app->trial();}
 int request(Flash* f,int post,const char* path,const char* data,int auth,int idle,char* result){
     PicoHttpRequest req{};req.method=post?PICO_HTTP_POST:PICO_HTTP_GET;req.authenticated=auth;req.auth_configured=true;
     std::snprintf(req.path,sizeof(req.path),"/api/v1/firmware/ota%s",path);

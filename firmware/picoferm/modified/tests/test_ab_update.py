@@ -50,6 +50,7 @@ class FirmwareUpdate(unittest.TestCase):
         P=C.c_void_p;U=C.c_uint;I=C.c_int;B=C.c_char_p
         def bind(name,args,result):
             fn=getattr(cls.lib,name);fn.argtypes=args;fn.restype=result
+        bind('trial',[P],I);bind('fail_first_app_record',[P],None)
         bind('start',[],P);bind('destroy',[P],None);bind('boot',[P],I)
         bind('seed',[P,U,B,U],None);bind('copyout',[P,U,P,U],None)
         bind('fault',[P,I,I],None);bind('writes',[P],I);bind('request',[P,I,B,B,I,I,P],I)
@@ -92,6 +93,14 @@ class FirmwareUpdate(unittest.TestCase):
                          (1,len(self.image),hashlib.sha256(self.image).hexdigest()))
         self.assertEqual(status['bootstrap_sha256'],hashlib.sha256(self.loader).hexdigest())
         self.assertEqual(self.lib.boot(self.flash),0)
+    def test_failed_first_app_read_cannot_disable_trial_timeout(self):
+        self.assertTrue(self.transfer())
+        self.lib.fail_first_app_record(self.flash)
+        self.assertEqual(self.lib.boot(self.flash),-2)
+        self.assertEqual(self.lib.trial(self.flash),1)
+        self.assertEqual(self.call('')[0],503)
+        self.assertEqual(self.lib.boot(self.flash),0)
+
     def test_success_and_confirmation(self):
         original=self.snapshot(TRAILER,0x100000)
         self.assertTrue(self.transfer())

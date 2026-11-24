@@ -30,6 +30,8 @@ private:
     char uid_[13]{}, version_[19]{}, target_[19]{}, hash_[65]{}, session_[17]{};
     uint8_t image_digest_[32]{};
     uint32_t written_ = 0, size_ = 0;
-    bool available_ = false, active_ = false, reboot_ = false, trial_ = false;
+    // Until verified, a bank-linked application has to time out and restart.
+    // The bootstrap has already consumed its trial if this is a new image.
+    bool available_ = false, active_ = false, reboot_ = false, trial_ = true;
 };
 }
