@@ -6,6 +6,7 @@ export interface Session {
   demo: boolean
 }
 export interface DeviceStatus {
+  maintenance?: { available?: boolean; due: string[] }
   state?: string
   temperature_f?: number | null
   pressure_kpa?: number | null

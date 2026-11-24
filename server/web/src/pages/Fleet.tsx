@@ -1,4 +1,5 @@
 import './fleet.scss'
+import { careTasksDue } from '../components/MachineCare'
 import { useEffect, useRef, useState } from 'react'
 import {
   ArrowUpRight,
@@ -232,6 +233,7 @@ function MachineCard({
 }) {
   const { unit } = useHub()
   const status = device.online ? device.status : undefined
+  const due = careTasksDue(status?.maintenance)
   const busy = !!status && sessionInProgress(device)
   const accessory = isAccessory(device)
   const readOnly =
@@ -295,6 +297,7 @@ function MachineCard({
                           : 'Waiting for machine status'}
         </strong>
         {attention && <span>{attention.instruction}</span>}
+        {due.length > 0 && <span>Maintenance due · {due.join(' · ')}</span>}
         {busy && !attention && (
           <>
             <span>

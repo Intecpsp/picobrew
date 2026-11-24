@@ -90,6 +90,8 @@ export const commandLabels: Record<string, string> = {
   clean: 'Clean',
   calibrate: 'Calibrate pressure',
   sample: 'Read sensors now',
+  'ack-clean-condenser': 'Mark condenser as cleaned',
+  'ack-sanitize-seal': 'Mark seal as sanitized',
   'set-pump': 'Set pump',
   'set-fan': 'Set fan',
   'set-sampling-interval': 'Set sampling interval',

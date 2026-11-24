@@ -1,4 +1,4 @@
-import { MachineCare } from '../components/MachineCare'
+import { CareNotice, MachineCare } from '../components/MachineCare'
 import { MachineManagement } from '../components/MachineManagement'
 import { useEffect, useState } from 'react'
 import {
@@ -364,6 +364,7 @@ function BrewerMachine({ id, initialRecipe }: MachineProps) {
         }
       />
       {device.error && <ErrorBanner message={device.error} />}
+      <CareNotice maintenance={device.online ? device.status?.maintenance : undefined} />
       {device.model_error && (
         <div className="connection-advisory" role="status">
           <p>{device.model_error}</p>

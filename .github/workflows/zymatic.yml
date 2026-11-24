@@ -39,13 +39,15 @@ jobs:
           python tools/usb_stock.py --data "$RUNNER_TEMP/factory"
           original="$RUNNER_TEMP/factory/usb-stock/zymatic/Zymatic_1_1_14.hex"
           echo "ZYMATIC_TEST_HEX=$original" >> "$GITHUB_ENV"
-          python tools/package.py --firmware-version 1.3.2 --data "$RUNNER_TEMP/composed" --oem-file "$original" --hub-host brewery.lan:8080
+          current=$(PYTHONPATH=tools python -c 'from zymatic_build import VERSION; print(VERSION)')
+          echo "ZYMATIC_TEST_VERSION=$current" >> "$GITHUB_ENV"
+          python tools/package.py --firmware-version "$current" --data "$RUNNER_TEMP/composed" --oem-file "$original" --hub-host brewery.lan:8080
       - name: Compare reconstructed controls and exercise the offline brew path
         working-directory: firmware/zymatic/reverse-engineered
         run: |
           python network/verify.py "$ZYMATIC_TEST_HEX"
           npm ci --prefix tests --ignore-scripts
-          node tests/stock-controls.cjs "$ZYMATIC_TEST_HEX" "$RUNNER_TEMP"/composed/*/zymatic-1.3.2.bin
+          node tests/stock-controls.cjs "$ZYMATIC_TEST_HEX" "$RUNNER_TEMP"/composed/*/zymatic-"$ZYMATIC_TEST_VERSION".bin
       - name: Test USB conversion, restoration, network service and simulated MCU
         working-directory: firmware/zymatic/modified
         run: |

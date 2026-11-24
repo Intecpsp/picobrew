@@ -17,6 +17,10 @@ type Device struct {
 	KeyConfigured bool      `json:"key_configured"`
 	CreatedAt     time.Time `json:"created_at"`
 }
+type Maintenance struct {
+	Available *bool    `json:"available,omitempty"`
+	Due       []string `json:"due"`
+}
 type Status struct {
 	Model            string     `json:"model,omitempty"`
 	ModelName        string     `json:"model_name,omitempty"`
@@ -56,6 +60,8 @@ type Status struct {
 		Min      int `json:"min"`
 		Max      int `json:"max"`
 	} `json:"encoder"`
+
+	Maintenance *Maintenance `json:"maintenance,omitempty"`
 }
 type Recovery struct {
 	Available      bool   `json:"available"`
