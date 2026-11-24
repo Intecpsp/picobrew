@@ -199,6 +199,12 @@ class ReceiverTests(unittest.TestCase):
                 self.assertEqual(self.exchange(body)[0], 400)
         self.assertEqual(self.rows(), [])
 
+    def test_body_read_timeout_stays_within_budget_on_same_clock_tick(self):
+        # Adding 5 seconds to this tick and subtracting the original value
+        # yields 5.000000000000001 in binary64.
+        with patch.object(receiver.time, "monotonic", return_value=3.000001):
+            self.assertEqual(self.exchange()[0], 204)
+
     def test_truncated_body_and_absolute_body_deadline_never_commit(self):
         raw = json.dumps(snapshot()).encode()
         headers = [("Content-Type", "application/json"), ("Content-Length", str(len(raw)))]
