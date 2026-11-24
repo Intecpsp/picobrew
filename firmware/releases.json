@@ -734,6 +734,36 @@
       "archive_sha256": "90da7a15a8c4729891c579cb7ba03c9f3c65af8b07ef1045d7f59d4162ea25b0",
       "display_variant": "ssd1309",
       "source_commit": "0c2d1d49e41553dbbce019a98c32cb46feff8f41"
+    },
+    {
+      "model": "z-series",
+      "model_family": "z-series",
+      "firmware_version": "1.2.8",
+      "kind": "reference",
+      "source_commit": "a07a153b3186929192b32aa107d27146e6293809",
+      "archive_sha256": "9463d074a5e361e20de3abb04d5ae7f6e68f9fa67ffc69bb1229c37eee06a0fc",
+      "binary_sha256": "c9bb8ea1d76c17b9477bcd64adf9d6e56a3648400b8ae61e905e5e44811dbc64",
+      "binary_bytes": 1651632
+    },
+    {
+      "model": "picostill",
+      "model_family": "picostill",
+      "firmware_version": "1.2.6",
+      "kind": "reference",
+      "source_commit": "a07a153b3186929192b32aa107d27146e6293809",
+      "archive_sha256": "093ba6f22a3ee9c1445033f41eecd5b6547b528ff396fb9b01e17f9c0ab00eeb",
+      "binary_sha256": "53430170f9647957d628f44040fcb2977711e27ec6d6cdb7b6af1d6b462a8459",
+      "binary_bytes": 810080
+    },
+    {
+      "model": "picoferm",
+      "model_family": "picoferm",
+      "firmware_version": "1.2.6",
+      "kind": "reference",
+      "source_commit": "a07a153b3186929192b32aa107d27146e6293809",
+      "archive_sha256": "ac5510bfd4e4f1968bcb644a235b5d3d57f59903b90bf4cd3ee98fc8c4a7a4e1",
+      "binary_sha256": "ce711a1ea7ac2af441d603ca35a602dbc9182884aa3d1740e2c4a4ef0be99545",
+      "binary_bytes": 396432
     }
   ]
 }
