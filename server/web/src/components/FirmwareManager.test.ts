@@ -126,6 +126,7 @@ describe('Hub firmware packages', () => {
           current_version: current,
           install_supported: true,
           packages: [
+            { ...uploaded, ...release },
             downgrade,
             { ...downgrade, id: '5'.repeat(64), model: 'pico-pro' },
             { ...uploaded, id: '6'.repeat(64) },
@@ -273,6 +274,7 @@ describe('Hub firmware packages', () => {
           ],
           notices: [],
         })
+      if (String(url).endsWith('/stage')) return json(uploaded)
       if (String(url).endsWith('/install')) return json({ state: 'running' }, 202)
       return response(url, opts)
     })
@@ -285,8 +287,8 @@ describe('Hub firmware packages', () => {
     expect(screen.queryByRole('button', { name: 'Resume update' })).toBeNull()
     await user.selectOptions(versions, uploaded.id)
     await user.click(await screen.findByRole('button', { name: 'Resume update' }))
-    expect(calls(path + '/install', 'POST')).toHaveLength(1)
-    expect(calls('/stage', 'POST')).toHaveLength(0)
+    await waitFor(() => expect(calls(path + '/install', 'POST')).toHaveLength(1))
+    expect(calls('/stage', 'POST')).toHaveLength(1)
   })
   it.each([false, true])(
     'gates Pico C installation on controller verification and recovery support (OTA %s)',

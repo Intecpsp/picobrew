@@ -140,7 +140,9 @@ export function MachineFirmwareDialog({
     }
   }
   for (const item of machine?.packages || []) {
-    if (matchesWirelessPackage(item, machine)) items.set(item.id, { ...item, remote: false })
+    if (!items.has(item.id) && matchesWirelessPackage(item, machine)) {
+      items.set(item.id, { ...item, remote: false })
+    }
   }
   const versions = [...items].sort(
     ([, a], [, b]) =>
