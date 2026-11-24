@@ -13,6 +13,8 @@ has been flashed or operated as part of this verification. See
 
 The local website and authenticated status remind you to sanitize the gray seal before fitting it. With PicoFerm idle, acknowledge the reminder after sanitizing. The next monitoring session renews it.
 
+A separate [dual-bank wireless update reference](dual-bank-updates.md) adds a USB-provisioned loader, inactive-bank updates and a confirmed-boot fallback. Its bench builds are outside the production release index.
+
 ## Operating model
 
 | Feature | Implemented behavior |

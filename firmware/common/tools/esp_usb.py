@@ -18,6 +18,8 @@ import zipfile
 ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / "tools"))
 sys.path.insert(0, str(ROOT / "firmware/z-series/modified/tools"))
+sys.path.insert(0, str(ROOT / 'firmware/picoferm/modified/tools'))
+import usb_ab
 import private_files
 import esp_provisioning
 import esp_stock_partitions
@@ -114,9 +116,41 @@ def reference(model):
     return version, components
 
 
+def picoferm_ab_reference():
+    """Select only a reviewed A/B archive pinned in the installed release index."""
+    entries = json.loads((ROOT / "firmware/releases.json").read_bytes())["releases"]
+    candidates = [r for r in entries if r.get("model") == "picoferm" and r.get("kind") == "picoferm-ab"]
+    if not candidates:
+        return None
+
+    def version_key(entry):
+        version = entry["firmware_version"]
+        if not re.fullmatch(r"[0-9]{1,5}(\.[0-9]{1,5}){2}", version):
+            raise ValueError("Invalid PicoFerm A/B release version")
+        return tuple(map(int, version.split(".")))
+
+    release = max(candidates, key=version_key)
+    version = release["firmware_version"]
+    path = ROOT / f"firmware/picoferm/modified/releases/picoferm/{version}.zip"
+    archive = private_files.read_regular(path, 2*MIB)
+    if sha(archive) != release["archive_sha256"]:
+        raise ValueError("PicoFerm A/B archive differs from the release index")
+    parts = usb_ab.parse(archive, version)
+    if (release.get("binary_sha256") != sha(parts["bank-0.bin"])
+            or release.get("binary_bytes") != len(parts["bank-0.bin"])
+            or release.get("ota_protocol") != "esp8266-ab-v1"):
+        raise ValueError("PicoFerm A/B index disagrees with bank zero or its protocol")
+    return version, parts
+
+
 def install_target(flash, model, *, api_key=None):
     if model in Z_STACKS:
         raise ValueError("This physical Z model has no independently mapped installation package")
+    ab = picoferm_ab_reference() if model == "picoferm" else None
+    if ab:
+        version, parts = ab
+        _, size = recognized_original(flash, model)
+        return version, usb_ab.target(flash, size, parts, api_key)
     version, parts = reference(model)
     layout = FERM_LAYOUT if model == "picoferm" else ESP32_LAYOUT
     if model == "picoferm":
@@ -255,12 +289,19 @@ def operation(action, model, device, root, ask=input, *, api_key=None):
             # A used/changed filesystem must never be reset on a retry.
             if action != "install" or api_key is None or original is None:
                 raise
-            _, wanted = install_target(original, model, api_key=api_key)
-            if current != wanted or device.read() != wanted:
-                raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None
-            device.verify_identity()
-            print("The installed image and private key were verified. No further write is needed.")
-            return
+            version, wanted = install_target(original, model, api_key=api_key)
+            if device.read() != current:
+                raise ValueError("The full-device reads disagree; no USB write was made") from None
+            if current == wanted:
+                device.verify_identity()
+                print("The installed image and private key were verified. No further write is needed.")
+                return
+            if model == "picoferm" and picoferm_ab_reference() is not None:
+                releases = json.loads((ROOT / "firmware/releases.json").read_bytes())["releases"]
+                target = usb_ab.migrate(current, original, wanted, api_key, releases)
+                print(f"USB setup will retain the paired PicoFerm's settings and history for {version}.")
+                return write_target(action, device, ident, current, target, ask)
+            raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None
         print(f"Identified active OEM firmware {version}. Verifying with a second full read…", flush=True)
         if device.read() != current:
             raise ValueError("The full-device reads disagree; capture failed")
@@ -290,6 +331,10 @@ def operation(action, model, device, root, ask=input, *, api_key=None):
         target = original
         if ask("Restore all original slots, settings and calibration, and remove the custom Hub interface? Type RESTORE: ") != "RESTORE":
             raise ValueError("Restore cancelled before writing")
+    return write_target(action, device, ident, current, target, ask)
+
+
+def write_target(action, device, ident, current, target, ask):
     if current == target:
         print("The complete flash already matches the requested contents.")
         return
