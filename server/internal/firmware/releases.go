@@ -30,7 +30,11 @@ type ReleaseCatalog struct {
 // Withdrawn reports a previously staged public package that its source no longer lists.
 // User-supplied archives and packages from other sources retain their original provenance.
 func (c ReleaseCatalog) Withdrawn(p Package) bool {
-	if c.ReleaseChannel != "stable" || p.Provenance.Source != "library" || p.Provenance.Repository != c.Repository {
+	if c.ReleaseChannel != "stable" || p.Provenance.Source != "library" || p.Provenance.Repository == "" {
+		return false
+	}
+	source, err := NormalizeRepository(p.Provenance.Repository)
+	if err != nil || source != c.Repository {
 		return false
 	}
 	return !slices.ContainsFunc(c.Releases, func(r Release) bool { return r.ArchiveSHA256 == p.ID })

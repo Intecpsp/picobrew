@@ -93,6 +93,13 @@ func TestWithdrawnLibraryPackage(t *testing.T) {
 			t.Fatal("suppressed package from a different source", provenance)
 		}
 	}
+	renamed := c
+	renamed.Repository = DefaultRepository
+	legacy := p
+	legacy.Provenance.Repository = "jeffreydwalter/picobrew-pico-pro-firmware"
+	if !renamed.Withdrawn(legacy) {
+		t.Fatal("obsolete package from before the repository rename is still offered")
+	}
 	p.ID = "current"
 	if c.Withdrawn(p) {
 		t.Fatal("suppressed current release")
