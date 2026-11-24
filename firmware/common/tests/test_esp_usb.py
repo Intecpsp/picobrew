@@ -177,6 +177,7 @@ class USBTest(unittest.TestCase):
         chip.contents[0x9110:0x9116] = b"config"
         chip.contents[-1024:-1015] = b"brew data"
         used = bytes(chip.contents)
+        self.assertTrue(usb.esp_provisioning.matches_stored_esp32_key(chip.contents[0x200000:0x400000], key))
         writes = len(chip.writes)
         with self.assertRaisesRegex(ValueError, "pairing"):
             usb.operation("install", "picostill", chip, self.data, api_key=secrets.token_hex(32))

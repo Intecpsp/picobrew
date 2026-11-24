@@ -68,7 +68,7 @@ def matches_stored_esp32_key(image, key):
             owner, span, flags = struct.unpack_from("<HHB", image, offset)
             if owner != object_id or span or flags != 0xf8:
                 continue
-            name = image[offset+13:offset+45].split(b"\0", 1)[0]
+            name = bytes(image[offset+13:offset+45]).split(b"\0", 1)[0]
             if name not in (b"/pb/api.key", b"/pb/api.key.bak"):
                 continue
             if name in found:
