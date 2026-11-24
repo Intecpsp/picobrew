@@ -775,6 +775,17 @@
       "archive_sha256": "54b068b8c89e75eaa926e3015050bf40aa19cfed51d0de7cc29ab55fd7b1ba98",
       "binary_sha256": "7f8a7cd81afca542a207bbe88b420b90014b9f511aeda4bc323b182d8c751536",
       "binary_bytes": 821104
+    },
+    {
+      "model": "picoferm",
+      "model_family": "picoferm",
+      "firmware_version": "1.2.7",
+      "kind": "picoferm-ab",
+      "source_commit": "79198bec785f752389b34a9f728c1c601db8215b",
+      "archive_sha256": "ed29a1e4992d04ac7dcfdaedd73ed34a0e923f0fe20d32c070a7d290d5820457",
+      "binary_sha256": "55be464c324efe991b60e27773bccefe13e785de5d869031bccc3507f65d6366",
+      "binary_bytes": 399888,
+      "ota_protocol": "esp8266-ab-v1"
     }
   ]
 }

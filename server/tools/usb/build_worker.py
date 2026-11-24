@@ -178,6 +178,7 @@ def project_files():
         "firmware/upstream-manifest.json",
         "firmware/releases.json",
         "firmware/common/tools/esp_usb.py",
+        "firmware/picoferm/modified/tools/usb_ab.py",
         "firmware/common/tools/esp_stock_partitions.py",
         "firmware/common/tools/esp_provisioning.py",
         "firmware/common/tools/spiffs_format.py",
@@ -224,6 +225,11 @@ def project_files():
             key=lambda r: tuple(map(int, r["firmware_version"].split("."))),
         )
         patterns.append(f"firmware/{model}/modified/releases/{model}/{latest['firmware_version']}.zip")
+        if model == "picoferm":
+            ab = [r for r in release_index if r.get("model") == model and r.get("kind") == "picoferm-ab"]
+            if ab:
+                newest = max(ab, key=lambda r: tuple(map(int, r["firmware_version"].split("."))))
+                patterns.append(f"firmware/picoferm/modified/releases/picoferm/{newest['firmware_version']}.zip")
     # Include further inputs covered by the Zymatic extension's source fingerprint.
     extra = [
         *ROOT.glob("firmware/zymatic/modified/src/*.h"),

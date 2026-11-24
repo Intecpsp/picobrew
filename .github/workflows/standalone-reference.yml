@@ -60,6 +60,15 @@ jobs:
           --arduino firmware/common/build/dependencies/esp8266-2.4.1
           --build-dir firmware/picoferm/modified/build/reference
           --write-report
+      - name: Verify PicoFerm dual-bank images and interrupted updates
+        if: matrix.model == 'picoferm'
+        run: |
+          make -C firmware/picoferm/modified ab-test PYTHON=python
+          python firmware/picoferm/modified/tools/validate_memory.py --ab \
+            --toolchain firmware/common/build/dependencies/xtensa-lx106-elf \
+            --arduino firmware/common/build/dependencies/esp8266-2.4.1 \
+            --build-dir firmware/picoferm/modified/build/ab \
+            --output firmware/picoferm/modified/build/memory-ab
       - name: Verify unchanged OEM imports
         run: make verify-imports PYTHON=python
       - name: Retain reviewable image, ELF, map and manifests

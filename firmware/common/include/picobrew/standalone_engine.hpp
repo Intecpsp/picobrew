@@ -29,6 +29,8 @@ public:
     Result begin();
     void poll();
     Result record_care(CareEvent event);
+    // The platform owns the stable string and sets it after qualifying its live boot layout.
+    void set_ota_protocol(const char* protocol) noexcept;
     unsigned care_due() const noexcept;
     void set_telemetry_io(TelemetryIo io) noexcept;
     void event(const char* kind,const char* detail);

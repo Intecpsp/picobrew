@@ -330,6 +330,7 @@ def self_test():
         usb_layout.for_version("1.2.0").template()
         for version in getattr(zymatic_build, "ARCHIVED_MANIFESTS", ("1.3.0",)):
             usb_layout.for_version(version).template()
+    esp_usb.picoferm_ab_reference()
     for model in ("z-series", "picostill", "picoferm"):
         _, parts = esp_usb.reference(model)
         profile = "esp8266-2m" if model == "picoferm" else "esp32-4m"

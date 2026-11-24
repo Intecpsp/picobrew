@@ -98,6 +98,12 @@ class USBTest(unittest.TestCase):
                 version, components = usb.reference(model)
                 target = components["application.bin"]
                 start = 0 if model == "picoferm" else usb.esp_stock_partitions.selected_app_slice(chip.contents).start
+                if model == "picoferm" and usb.picoferm_ab_reference():
+                    _, ab_parts = usb.picoferm_ab_reference()
+                    boot = ab_parts["bootstrap.bin"]
+                    self.assertEqual(chip.contents[:len(boot)], boot)
+                    target = ab_parts["bank-0.bin"]
+                    start = 0x3000
                 self.assertEqual(chip.contents[start:start+len(target)], target)
                 preserved = slice(-0x5000, None) if model == "picoferm" else slice(0x9000, 0xe000 if "otadata.bin" in components else 0x10000)
                 self.assertEqual(chip.contents[preserved], before[preserved])
@@ -211,7 +217,7 @@ class USBTest(unittest.TestCase):
             if index is not None:
                 chip.contents[index] = 0x5a
             self.data = self.data / str(index)
-            with self.assertRaisesRegex(ValueError, "boot parameters|Unidentified"):
+            with self.assertRaisesRegex(ValueError, "boot parameters|Unidentified|Unknown data or geometry|Existing flash data"):
                 self.run_action("install", "picoferm", chip)
             self.assertEqual(chip.writes, [])
             self.assertEqual(usb.load_original(usb.backup_path(self.data, chip.identity), chip.identity, "picoferm"),
