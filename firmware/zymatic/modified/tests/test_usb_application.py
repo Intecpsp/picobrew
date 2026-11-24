@@ -74,7 +74,7 @@ class ApplicationTest(unittest.TestCase):
         return avr.service(self.data, "virtual", action, confirm=lambda _: next(confirmations), **options)
 
     def install(self, **options):
-        self.perform("install", ["INSTALL ZYMATIC", "WRITE " + usb_layout.release_1_2.VERSION], key_file=self.key, **options)
+        self.perform("install", ["INSTALL ZYMATIC", "WRITE " + build.VERSION], key_file=self.key, **options)
 
     def test_measured_boot_window_upgrade_and_restore(self):
         boot_start = avr.FLASH - 1024
@@ -84,7 +84,7 @@ class ApplicationTest(unittest.TestCase):
         self.install(hub_host="brew.lan:8080")
         older = self.device.flash
         original_id = usb_layout.identify(older)
-        self.assertEqual(original_id["firmware_version"], "1.2.0")
+        self.assertEqual((original_id["firmware_version"], original_id["build_profile"]), ("1.0.0", "compact"))
         original_key = self.key.read_bytes()
         directory = self.data / "usb-stock" / "zymatic"
         digest = sha256(older).hexdigest()
@@ -101,29 +101,51 @@ class ApplicationTest(unittest.TestCase):
         upgraded = usb_layout.identify(self.device.flash)
         self.assertEqual((upgraded["uid"], upgraded["hub_host"], upgraded["firmware_version"]),
                          (original_id["uid"], "brew.lan:8080", build.VERSION))
+        self.assertEqual(upgraded["build_profile"], "extended")
+        self.assertGreater(upgraded["application_bytes"], avr.BOOT_MIN)
+        self.assertEqual(self.perform("install", [], key_file=self.key), original_id["uid"])
+        self.assertEqual(self.device.writes, 2)
         self.assertEqual(self.key.read_bytes(), original_key)
         self.assertEqual(self.device.flash[boot_start:], boot)
         self.restore()
         self.assertEqual(self.device.flash, original_flash)
 
-    def test_upgrade_from_each_released_1_3_preserves_identity_and_boot(self):
+    def test_upgrade_from_each_preview_preserves_identity_and_boot(self):
         self.key.parent.mkdir(mode=0o700)
         key = usb_application.read_key(self.key, create=True)
         uid = "ba" * 16
-        for version in ("1.3.0", "1.3.1"):
-            with self.subTest(version=version):
-                prior, metadata = usb_layout.for_version(version).build_application(self.original, key, uid, "brew.lan")
+        for release in usb_layout.known_releases():
+            if release.VERSION == build.VERSION:
+                continue
+            with self.subTest(version=release.VERSION):
+                prior, metadata = release.build_application(self.original, key, uid, "brew.lan")
                 limit = usb_layout.MAX_APPLICATION
                 boot = bytes(range(256)) * 4
                 flash = prior.ljust(limit, b"\xff") + boot
                 self.assertEqual(usb_layout.identify(flash), metadata)
-                self.assertEqual(metadata["firmware_version"], version)
+                self.assertEqual(metadata["firmware_version"], release.VERSION)
                 target, current = usb_application.install_pages(flash, self.original, metadata, self.key, None, limit=limit)
                 self.assertEqual(current["firmware_version"], build.VERSION)
                 self.assertEqual((current["uid"], current["hub_host"]), (uid, "brew.lan"))
                 new_flash = target + flash[len(target):]
                 self.assertEqual(usb_layout.identify(new_flash), current)
                 self.assertEqual(new_flash[limit:], boot)
+
+    def test_profiles_report_same_version_and_different_capabilities(self):
+        for limit, profile in ((0x1e000, "compact"), (0x1f000, "compact"),
+                               (0x1f800, "compact"), (0x1fc00, "extended")):
+            with self.subTest(limit=hex(limit)):
+                release = usb_layout.best_fit(limit)
+                image, metadata = release.build_application(self.original, bytes(range(32)), "ab" * 16)
+                self.assertEqual((metadata["firmware_version"], metadata["build_profile"]), ("1.0.0", profile))
+                self.assertLessEqual(len(image), limit)
+                self.assertIn(b'"firmware_version":"1.0.0"', image)
+                self.assertEqual(b'"commands":["encoder"]' in image, profile == "extended")
+                self.assertEqual(usb_layout.identify(image), metadata)
+                for address in (0x8428, 0x844c, 0xa444, 0xa468):
+                    self.assertEqual(image[address:address + 2], build.immediate(0xe000, 24, 0))
+        with self.assertRaisesRegex(ValueError, "application window"):
+            usb_layout.best_fit(0x20000)
 
     def restore(self):
         self.perform("restore", ["RESTORE ZYMATIC", "WRITE 1.1.14"])
@@ -148,7 +170,7 @@ class ApplicationTest(unittest.TestCase):
         def key_file(uid):
             return self.data / ("usb-key-" + uid)
 
-        uid = self.perform("install", ["INSTALL ZYMATIC", "WRITE 1.2.0"], key_file=key_file)
+        uid = self.perform("install", ["INSTALL ZYMATIC", "WRITE " + build.VERSION], key_file=key_file)
         self.assertRegex(uid, "^[0-9a-f]{32}$")
         self.assertEqual(usb_layout.identify(self.device.flash)["uid"], uid)
         self.assertTrue(key_file(uid).is_file())

@@ -9,46 +9,54 @@ import re
 
 import boot_evidence
 import zymatic_build as build
-import release_1_2
+import compact_build
 import usb_stock as stock
 
 CONSERVATIVE = 0x1e000
 MAX_APPLICATION = 0x1fc00
 
 
+def release_for(profile, version=build.VERSION):
+    if profile == build.PROFILE and version in (build.VERSION, *build.ARCHIVED_MANIFESTS):
+        module = build
+    elif profile == compact_build.PROFILE and version in (build.VERSION, compact_build.PREVIEW_VERSION):
+        module = compact_build
+    else:
+        raise ValueError("Unknown Zymatic build profile or firmware version")
+    if version == build.VERSION:
+        return module
+    return SimpleNamespace(
+        VERSION=version, PROFILE=profile, template=partial(module.template, version=version),
+        build_application=partial(module.build_application, version=version),
+        recognize_private_application=partial(module.recognize_private_application, version=version),
+    )
+
+
+def known_releases():
+    yield compact_build
+    yield build
+    yield release_for(compact_build.PROFILE, compact_build.PREVIEW_VERSION)
+    for version in build.ARCHIVED_MANIFESTS:
+        yield release_for(build.PROFILE, version)
+
+
 def identify(flash):
     if stock.is_original_app(flash[:stock.APP_SIZE]):
         return None
-    legacy = release_1_2.recognize_private_application(flash)
-    if legacy or build.VERSION == release_1_2.VERSION:
-        return legacy
-    for version in (build.VERSION, *reversed(build.ARCHIVED_MANIFESTS)):
-        installed = build.recognize_private_application(flash, version=version)
+    for release in known_releases():
+        installed = release.recognize_private_application(flash)
         if installed:
             return installed
     return None
 
 
-def for_version(version):
-    if version == release_1_2.VERSION:
-        return release_1_2
-    if version in build.ARCHIVED_MANIFESTS:
-        return SimpleNamespace(
-            VERSION=version, template=partial(build.template, version=version),
-            build_application=partial(build.build_application, version=version),
-            recognize_private_application=partial(build.recognize_private_application, version=version),
-        )
-    if version == build.VERSION:
-        return build
-    raise ValueError("Unknown Zymatic application version")
-
-
 def best_fit(limit):
-    if build.VERSION != release_1_2.VERSION:
-        high, _ = build.template()
-        if build.START + len(high) <= limit:
-            return build
-    return release_1_2
+    if limit not in (CONSERVATIVE, 0x1f000, 0x1f800, MAX_APPLICATION):
+        raise ValueError("Unknown Zymatic application window")
+    high, _ = build.template()
+    if build.START + len(high) <= limit:
+        return build
+    return compact_build
 
 
 def qualified_limit(directory, flash, installed):

@@ -667,7 +667,7 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
         literal(n, CONSTANT(",\"pairing_v1\":true"));
         goto report_care;
     }
-    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.3\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
+    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.0.0\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
     else if (n->route == DISPLAY) {
         literal(n, CONSTANT("{\"width\":128,\"height\":64,\"format\":\"page-lsb-hex\",\"total_bytes\":1024,\"offset\":"));
         number(n, n->display_offset);

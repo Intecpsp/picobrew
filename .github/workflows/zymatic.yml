@@ -28,6 +28,11 @@ jobs:
           tar xf "$RUNNER_TEMP/avr.tbz" -C "$RUNNER_TEMP/avr" --strip-components=1
           npm ci --ignore-scripts --prefix tools
           node tools/build_site.cjs --check
+          compact_source=$(PYTHONPATH=tools python -c 'from compact_build import SOURCE_REVISION; print(SOURCE_REVISION)')
+          git fetch --depth=1 origin "$compact_source"
+          python tools/compile_extension.py --profile compact --toolchain "$RUNNER_TEMP/avr/bin" --out-dir "$RUNNER_TEMP/compact"
+          cmp extension/compact/extension.bin "$RUNNER_TEMP/compact/extension.bin"
+          cmp extension/compact/extension.json "$RUNNER_TEMP/compact/extension.json"
           python tools/compile_extension.py --toolchain "$RUNNER_TEMP/avr/bin" --out-dir "$RUNNER_TEMP/extension"
           cmp extension/extension.bin "$RUNNER_TEMP/extension/extension.bin"
           cmp extension/crc-hole.bin "$RUNNER_TEMP/extension/crc-hole.bin"
@@ -41,13 +46,17 @@ jobs:
           echo "ZYMATIC_TEST_HEX=$original" >> "$GITHUB_ENV"
           current=$(PYTHONPATH=tools python -c 'from zymatic_build import VERSION; print(VERSION)')
           echo "ZYMATIC_TEST_VERSION=$current" >> "$GITHUB_ENV"
-          python tools/package.py --firmware-version "$current" --data "$RUNNER_TEMP/composed" --oem-file "$original" --hub-host brewery.lan:8080
+          for profile in compact extended; do
+            python tools/package.py --profile "$profile" --data "$RUNNER_TEMP/composed-$profile" --oem-file "$original" --hub-host brewery.lan:8080
+          done
       - name: Compare reconstructed controls and exercise the offline brew path
         working-directory: firmware/zymatic/reverse-engineered
         run: |
           python network/verify.py "$ZYMATIC_TEST_HEX"
           npm ci --prefix tests --ignore-scripts
-          node tests/stock-controls.cjs "$ZYMATIC_TEST_HEX" "$RUNNER_TEMP"/composed/*/zymatic-"$ZYMATIC_TEST_VERSION".bin
+          for profile in compact extended; do
+            node tests/stock-controls.cjs "$ZYMATIC_TEST_HEX" "$RUNNER_TEMP"/composed-"$profile"/*/zymatic-"$ZYMATIC_TEST_VERSION".bin
+          done
       - name: Test USB conversion, restoration, network service and simulated MCU
         working-directory: firmware/zymatic/modified
         run: |
