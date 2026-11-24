@@ -99,9 +99,7 @@ Connect the idle machine or its USB service adapter to the computer running the 
 
 On a successful installation, choose **Add machine** and enter the brewer’s network address. The Hub pairs its saved key with the identity verified over USB. Machine-specific Wi-Fi setup may still be needed. Keep power and the cable connected until readback completes. The Hub stores the original and the private pairing files under its persistent data directory. Keep a private backup of that directory. USB setup is available on a normal Hub with access to the port. In a Linux container, map the selected serial device into the container and allow the Hub user to access it.
 
-
-
-USB tools **1.0.1** include Pico S/Pro **1.3.5**, Pico C **1.2.4** (both displays), Zymatic **1.2.0**, generic Z-series **1.2.3**, and PicoStill/PicoFerm **1.2.1**. Make and Docker builds use that pinned worker. On a Zymatic, the final write confirmation shows the version the USB installer selected. The newer source installer can upgrade a previously converted Zymatic to **1.3.2** when that specific unit has verified 1 KiB boot-region evidence; first conversion uses **1.2.0**. See the [Zymatic USB procedure](../../firmware/zymatic/modified/README.md).
+The downloadable Hub includes the USB installer for its platform. The final confirmation shows the firmware selected for the connected machine. On a Zymatic, initial conversion uses the application that fits the stock boot layout. A previously converted Zymatic can use the extended application when the installer verifies the smaller boot region on that particular board. [Zymatic USB procedure](../../firmware/zymatic/modified/README.md)
 
 | Hardware | Initial conversion | Return to stock |
 | --- | --- | --- |
@@ -138,7 +136,7 @@ Use a verified USB-to-serial service connection and put the *idle* appliance int
 ./picobrew-hub usb-restore --model picoferm --port SERIAL_PORT --data ./data --checkout ..
 ```
 
-Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. On a normal boot after conversion, provision the device key and Wi-Fi over its serial console. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
+Replace `SERIAL_PORT` with the actual local device path or Windows COM port. Setup saves and verifies the original before proposing a write. A restore uses the MAC- and flash-matched private original. Public OEM application updates omit boot, storage or calibration regions needed for that operation. When using the command-line tool directly, complete key and Wi-Fi setup over the device’s serial console. The Hub’s USB installer provisions and saves the device key for pairing. See the [ESP USB service procedure](../../firmware/common/docs/esp-usb.md).
 
 ##### Zymatic
 
