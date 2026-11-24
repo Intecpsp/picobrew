@@ -16,6 +16,8 @@ struct TelemetryIo {
     int (*receive)(void*,std::uint8_t*,std::size_t)=nullptr;
     void (*close)(void*)=nullptr;
 };
+enum class CareEvent { BrewUsed, RinseNeeded, RinseFinished, CleanFinished, StillUsed, CondenserCleaned, FermUsed, SealSanitized };
+enum CareTask { RinseDue = 1, CleanDue = 2, CondenserDue = 4, SealDue = 8 };
 class Engine {
 public:
     Engine(DeviceServices device,Storage storage,Clock clock) noexcept;
@@ -26,6 +28,8 @@ public:
     // mutation/session creation fails explicitly and preserves existing files.
     Result begin();
     void poll();
+    Result record_care(CareEvent event);
+    unsigned care_due() const noexcept;
     void set_telemetry_io(TelemetryIo io) noexcept;
     void event(const char* kind,const char* detail);
     bool handle(const PicoHttpRequest& request,PicoHttpResponse& response,char* arena,std::size_t capacity);

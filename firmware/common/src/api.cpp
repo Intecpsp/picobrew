@@ -108,6 +108,15 @@ unsigned Engine::Impl::status_json(Writer& writer, bool update) {
             static_cast<long>(s.recovery.current_step), static_cast<long>(s.recovery.step_seconds),
             static_cast<unsigned long>(s.recovery.elapsed_seconds));
     }
+    writer.text(",\"maintenance\":{\"available\":"); writer.boolean(care_available);
+    writer.text(",\"due\":[");
+    const char* const tasks[] = {"rinse", "clean", "clean_condenser", "sanitize_seal"};
+    bool comma = false;
+    for (unsigned i = 0; i < 4; ++i) if (care_available && !s.recording && (care_flags & (1u << i))) {
+        if (comma) writer.text(",");
+        writer.quote(tasks[i]); comma = true;
+    }
+    writer.text("]}");
     writer.text(",\"storage_ready\":"); writer.boolean(persistent); writer.text("}"); return 200;
 }
 unsigned Engine::Impl::settings_api(const PicoHttpRequest& request, Writer& writer) {

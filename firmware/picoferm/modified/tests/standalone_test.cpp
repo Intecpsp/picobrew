@@ -174,6 +174,10 @@ struct World {
 };
 void controller_cases(){
     World world;auto current=world.snapshot();require(current.ready&&!current.busy&&!current.recording,"standalone ready without cloud or session resume");
+    const auto care = world.api_call(PICO_HTTP_POST, "/api/v1/commands", "{\"command\":\"ack-sanitize-seal\"}");
+    require(care.first == 202 && care.second.find("\"accepted\":true") != std::string::npos
+            && care.second.find("\"command\":\"ack-sanitize-seal\"") != std::string::npos,
+            "Hub receives a verified seal acknowledgment");
     require(current.sensor_count==3&&!current.actuator_count&&!current.pressure_kpa.valid&&!current.wort_f.valid,"only actual accessory measurements");
     const auto discovery=world.api_call(PICO_HTTP_GET,"/api/v1");require(discovery.first==200&&discovery.second.find("\"model\":\"picoferm\"")!=std::string::npos,"real Engine advertises PicoFerm identity");
     require(discovery.second.find("\"recipes\":false")!=std::string::npos&&discovery.second.find("\"front_panel\":false")!=std::string::npos,"no fictitious capabilities");

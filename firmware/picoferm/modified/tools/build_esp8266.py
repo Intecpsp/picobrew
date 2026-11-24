@@ -92,7 +92,7 @@ def main():
     import build_esp8266_image
     image=output/'application.bin'
     image_report=build_esp8266_image.build(elf,arduino,image)
-    report=dict(schema_version=1,model='picoferm',firmware_version='1.2.5',complete_application_linked=True,flash_image_produced=True,hardware_tested=False,installation_qualified=False,
+    report=dict(schema_version=1,model='picoferm',firmware_version='1.2.6',complete_application_linked=True,flash_image_produced=True,hardware_tested=False,installation_qualified=False,
                 compiler=subprocess.check_output([str(cxx),'--version'],text=True).splitlines()[0],compiler_sha256=digest(cxx),flags=flags,
                 owned_sources=evidence[0],sdk_sources=evidence[1],required_symbols=retained,forbidden_symbols_absent=forbidden,
                 elf_sha256=digest(elf),map_sha256=digest(map_file),build_script_sha256=digest(__file__),sdk_main_sha256=digest(core/'core_esp8266_main.cpp'),

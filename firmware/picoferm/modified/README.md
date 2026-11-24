@@ -1,4 +1,4 @@
-# PicoFerm standalone firmware 1.2.5
+# PicoFerm standalone firmware 1.2.6
 
 This profile contains the complete PicoFerm application owner, sensor acquisition,
 local controls, authenticated API, embedded website, persistent recording and
@@ -11,11 +11,13 @@ link is **not a physical installation or battery-life qualification**. No PicoFe
 has been flashed or operated as part of this verification. See
 [validation](analysis/validation.json) and the [target link report](analysis/esp8266-build.json).
 
+The local website and authenticated status remind you to sanitize the gray seal before fitting it. With PicoFerm idle, acknowledge the reminder after sanitizing. The next monitoring session renews it.
+
 ## Operating model
 
 | Feature | Implemented behavior |
 | --- | --- |
-| Identity | `picoferm` / `PicoFerm`, firmware `1.2.5`, API `/api/v1` |
+| Identity | `picoferm` / `PicoFerm`, firmware `1.2.6`, API `/api/v1` |
 | Sensors | Original temperature conversion, calibrated native pressure scale, battery voltage |
 | Local recording | Explicit start/stop; no automatic session resume after restart |
 | Sampling | Default 300 seconds; configurable integer 60–86400 seconds while idle |

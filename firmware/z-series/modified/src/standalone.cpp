@@ -82,7 +82,7 @@ const char* Adapter::text(const char* en,const char* es,const char* fr) const no
 }
 api::DeviceServices Adapter::services() noexcept {
     api::DeviceServices out;out.context=this;
-    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.7";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
+    out.identity=[](void* p){api::Identity id;id.model="z-series";id.model_name="Pico Z";id.model_family="z-series";id.firmware_version="1.2.8";id.device_uid=static_cast<Adapter*>(p)->core_.identifier.data();return id;};
     out.capabilities=[](void*){api::Capabilities caps;caps.flags=api::Recipes|api::Brewing|api::Heating|api::Pump|api::Temperature|api::Pressure|api::FrontPanel;
         caps.settings=api::TemperatureUnit|api::Language|api::DetailedStatus;caps.commands=commands;caps.command_count=sizeof(commands)/sizeof(*commands);caps.zero_minute_steps=true;caps.z_program_maker=true;caps.dedicated_pause_resume=true;return caps;};
     out.snapshot=[](void* p,api::Snapshot& value){return static_cast<Adapter*>(p)->snapshot(value);};
@@ -395,8 +395,32 @@ bool Adapter::service_stage(CoreTickStage stage,std::uint32_t now){
     default:break;
     }
     const bool ok=original_core_.tick(original_core_.context,stage,now);
+    if(ok&&stage==CoreTickStage::Runtime)observe_care();
     if(stage==CoreTickStage::Safeties&&core_.runtime.filter_required&&core_.safeties.filter_missing&&!stopped())stop("filter-removed");
     return ok;
+}
+void Adapter::observe_care(){
+    if(!engine_||stopped()||care_recorded_||core_.runtime.state.id!=RuntimeStateId::Running)return;
+    const auto type=core_.core.state.session_type;
+    const auto screen=core_.runtime.state.screen;
+    api::CareEvent event;
+    // These are the final native screens, after all programmed rinse cycles.
+    // A stop or reboot before reaching them leaves the reminder outstanding.
+    if(type==SessionType::Rinse&&screen==30)event=api::CareEvent::RinseFinished;
+    else if(type==SessionType::Clean&&screen==40)event=api::CareEvent::CleanFinished;
+    else{
+        if(!(core_.msp_state.pumps&0x30))return;
+        switch(type){
+        case SessionType::LocalBrew:case SessionType::BrewZymatic:case SessionType::BrewPicoPak:
+        case SessionType::BrewZRecipe:case SessionType::BrewDemo:case SessionType::ManualBrew:
+            event=api::CareEvent::BrewUsed;break;
+        case SessionType::Coffee:case SessionType::Chill:event=api::CareEvent::RinseNeeded;break;
+        default:return;
+        }
+    }
+    // A persistent storage failure must not issue repeated writes in the control loop.
+    care_recorded_=true;
+    engine_->record_care(event);
 }
 bool Adapter::service_effect(const CoreAction& action,std::uint32_t& result){
     result=0;
@@ -466,6 +490,7 @@ bool Adapter::start_effect(const CoreAction& action,std::uint32_t& result,std::u
     // unspecified so the native loading screen gives its generic water prompt.
     if(local_brew)core_.program.parameters.water={0,Unit::Liter};
     const bool ok=original_core_.perform(original_core_.context,action,result);
+    if(ok&&core_.core.state.id==CoreStateId::Starting&&core_.core.state.program_id==id)care_recorded_=requested_resume;
     if(recordable(id)&&(!ok||core_.core.state.id!=CoreStateId::Starting||core_.core.state.program_id!=id)){engine_->cancel_prepared_session();native_prepared_=false;}
     if(local_brew&&ok&&core_.core.state.id==CoreStateId::Starting){recovery_active_=true;recovery_date_=ports_.millis(ports_.context);recovery_instruction_=0;}
     return ok;
@@ -499,7 +524,13 @@ bool Adapter::show_home(){
         screen.menu_data.append(discard,text("Discard interrupted","Descartar pendiente","Abandonner reprise"));}
     for(auto command:{UiCommand::StartManualBrew,UiCommand::StartSousVideWithKeg,UiCommand::CoffeeMenu,UiCommand::Utilities,UiCommand::Settings})screen.menu_data.append(command);
     if(stopped()){HeadUiEvent clear;clear.command=static_cast<UiCommand>(LocalClearStop);screen.menu_data.append(clear,text("Clear stop","Quitar parada","Effacer arret"));}
-    page_=Page::Home;return screen.menu_screen(text("Pico Z - local","Pico Z - local","Pico Z - local"))==HeadScreenResult::Ok;
+    const unsigned due=engine_?engine_->care_due():0;
+    if(!stopped()&&(due&api::CleanDue))screen.menu_data.append(UiCommand::StartClean);
+    else if(!stopped()&&(due&api::RinseDue))screen.menu_data.append(UiCommand::StartRinse);
+    const char* title=text("Pico Z - local","Pico Z - local","Pico Z - local");
+    if(due&api::CleanDue)title=text("Cleaning due","Toca limpieza","Nettoyage requis");
+    else if(due&api::RinseDue)title=text("Rinse due","Toca enjuague","Rincage requis");
+    page_=Page::Home;return screen.menu_screen(title)==HeadScreenResult::Ok;
 }
 bool Adapter::show_settings(){
     auto& screen=head_.screens;screen.clear_data();

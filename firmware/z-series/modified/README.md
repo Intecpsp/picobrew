@@ -1,4 +1,4 @@
-# Pico Z standalone firmware 1.2.7
+# Pico Z standalone firmware 1.2.8
 
 This application composes the recovered Z119 Core, Head, program runtime,
 heater, safety monitors, sensors, physical inputs, display and MSP controller
@@ -10,6 +10,8 @@ The identity is **`z-series` / Pico Z**. The available originals do not establis
 which physical Z1/Z2 revisions use this image. The build and package are a
 software reference, not a qualified initial installation. No build or test
 command flashes or operates a brewer.
+
+The idle home screen suggests Rinse after a brew and Clean after three brews. A completed cleaning program clears its reminder. The local website and authenticated status report the same machine records.
 
 ## Implemented local operation
 

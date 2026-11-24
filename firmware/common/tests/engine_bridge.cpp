@@ -219,6 +219,7 @@ unsigned world_metric(void* p, unsigned kind) {
 const char* world_sent(void* p) { return World::self(p).sent.c_str(); }
 void world_response(void* p, const char* response) { World::self(p).received = response; }
 unsigned world_prepare(void* p, unsigned token) { return World::self(p).engine->prepare_session("start", "", token).status; }
+unsigned world_care(void* p, unsigned event) { return World::self(p).engine->record_care(static_cast<CareEvent>(event)).status; }
 void world_cancel(void* p) { World::self(p).engine->cancel_prepared_session(); }
 void world_recovery(void* p, unsigned kind) {
     Recovery& r = World::self(p).snapshot.recovery; r = Recovery();

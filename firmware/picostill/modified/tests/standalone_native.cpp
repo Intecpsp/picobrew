@@ -86,6 +86,9 @@ struct World {
 };
 void discovery_and_start_guard(){
     World w;w.command("{\"command\":\"start\"}");CHECK(w.status==409);CHECK(w.off());
+    const auto acknowledgment = w.command("{\"command\":\"ack-clean-condenser\"}");
+    CHECK(w.status == 202 && acknowledgment.find("\"accepted\":true") != std::string::npos);
+    CHECK(acknowledgment.find("\"command\":\"ack-clean-condenser\"") != std::string::npos);
     const auto info=w.request("/api/v1");CHECK(info.find("\"model\":\"picostill\"")!=std::string::npos);
     CHECK(info.find("\"heating\":false")!=std::string::npos);CHECK(info.find("\"recipes\":false")!=std::string::npos);
     w.request("/api/v1/recipes");CHECK(w.status==404);w.request("/api/v1/display");CHECK(w.status==404);

@@ -1,4 +1,4 @@
-# PicoStill standalone firmware 1.2.5
+# PicoStill standalone firmware 1.2.6
 
 This is a complete, linked standalone application for the recovered PicoStill
 ESP32 board. It operates the original four thermistor channels, pressure
@@ -16,6 +16,8 @@ foreground sensor, tachometer, LED and overtemperature deadlines safe across
 the 32-bit millisecond rollover. Other native controller behavior remains
 intact. Unsupported diagnostic programs and original cloud/update listeners
 are not exposed by the standalone API.
+
+After a distillation program is used, the local website and authenticated status show a condenser-cleaning reminder. After cleaning the removable parts, acknowledge the reminder while PicoStill is idle.
 
 ## Applicable S/Pro parity
 

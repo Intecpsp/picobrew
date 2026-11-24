@@ -59,6 +59,8 @@ private:
     const char* stop_reason_ = "initializing";
     Page page_ = Page::Original;
     bool bound_ = false, begun_ = false, queued_ = false, encoder_click_ = false;
+    bool care_recorded_ = false;
+    void observe_care();
     bool native_prepared_ = false, owned_recipe_ = false;
     BrewRecovery recovery_;
     bool recovery_active_ = false, resuming_ = false;
