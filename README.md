@@ -6,16 +6,14 @@ Pico S, Pico Pro, Pico C, Z-series modules, and Zymatic each serve a local websi
 
 The optional Hub lets you plan grain and hop loads, send recipes to different machines, follow simultaneous brews, and keep a searchable journal on your own computer.
 
-![The Brewery page showing three virtual machines and the progress of simultaneous brews](docs/images/brewery.png)
-
-*The Hub simulator uses virtual machines and example readings. You can try it before connecting a brewer.*
+![The Brewery page showing three machines and brew progress](docs/images/brewery.png)
 
 ## What you can do
 
 | Feature | How it works |
 | --- | --- |
 | **Build a recipe** | Start from the offline catalog, import BeerXML, or use the wizard. Make a shopping list from your saved ingredient recipes. Assign hops to timed additions, then preview the grain bill, hop-slot loads, estimated yield, and steps for your brewer. The Hub keeps ingredient proportions when scaling and explains what prevents a transfer. |
-| **Brew from your browser** | Send a program to an idle, compatible brewer, review it, and start it as a separate action. Follow multiple brews on the Brewery page. Open a machine to read its screen, answer prompts using the virtual dial, and use the controls its firmware reports. |
+| **Brew from your browser** | Send a program to an idle, compatible brewer, review it, and start it as a separate action. Follow multiple brews on the Brewery page. Open a machine to read its screen, answer prompts using the on-screen dial, and use the controls its firmware reports. |
 | **Keep a brew journal** | Inspect temperature and machine state together, pin a note to a sample, rate the result, and export CSV or JSON. Record fermentation stages and carbonation as part of the brew. |
 | **Look after your machine** | Read the model's cleaning guidance, back up supported stock firmware over USB, and manage compatible firmware versions. A provisioned Pico S or Pro can install an update from the Hub over Wi-Fi. |
 | **Connect other tools** | Explore the Hub and device APIs. Optionally connect a brew assistant to draft a recipe or discuss a brew's recorded measurements. |
@@ -56,7 +54,7 @@ chmod +x ./picobrew-hub
 
 Open **[http://127.0.0.1:8080](http://127.0.0.1:8080)** on that computer. For a headless Pi, open `http://<Pi's LAN IP>:8080` on another computer on the same network. Enter the setup token printed in the terminal and choose an owner password. Leave the Hub running while you use it.
 
-To try a virtual brewery first, add `--demo` and use `--data ./demo-data` in place of `--data ./data`. Open the browser on the Hub computer for this loopback-only mode. Press **Ctrl+C** to stop the Hub before switching modes. To keep your real brewery, restart from the same folder and back up the entire `data` directory, including its encryption key, while the Hub is stopped. [Backup and operations](server/docs/operations.md)
+Press **Ctrl+C** to stop the Hub. Restart it from the same folder to reopen your brewery. For a backup, stop the Hub and copy the entire `data` directory, including its encryption key. [Backup and operations](server/docs/operations.md)
 
 ### 3. Connect your machine
 
