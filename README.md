@@ -6,16 +6,14 @@ Pico S, Pico Pro, Pico C, Z-series modules, and Zymatic each serve a local websi
 
 The optional Hub lets you plan grain and hop loads, send recipes to different machines, follow simultaneous brews, and keep a searchable journal on your own computer.
 
-![The Brewery page showing three virtual machines and the progress of simultaneous brews](docs/images/brewery.png)
-
-*The Hub simulator uses virtual machines and example readings. You can try it before connecting a brewer.*
+![The Brewery page showing three machines and brew progress](docs/images/brewery.png)
 
 ## What you can do
 
 | Feature | How it works |
 | --- | --- |
 | **Build a recipe** | Start from the offline catalog, import BeerXML, or use the wizard. Make a shopping list from your saved ingredient recipes. Assign hops to timed additions, then preview the grain bill, hop-slot loads, estimated yield, and steps for your brewer. The Hub keeps ingredient proportions when scaling and explains what prevents a transfer. |
-| **Brew from your browser** | Send a program to an idle, compatible brewer, review it, and start it as a separate action. Follow multiple brews on the Brewery page. Open a machine to read its screen, answer prompts using the virtual dial, and use the controls its firmware reports. |
+| **Brew from your browser** | Send a program to an idle, compatible brewer, review it, and start it as a separate action. Follow multiple brews on the Brewery page. Open a machine to read its screen, answer prompts using the on-screen dial, and use the controls its firmware reports. |
 | **Keep a brew journal** | Inspect temperature and machine state together, pin a note to a sample, rate the result, and export CSV or JSON. Record fermentation stages and carbonation as part of the brew. |
 | **Look after your machine** | Read the model's cleaning guidance, back up supported stock firmware over USB, and manage compatible firmware versions. A provisioned Pico S or Pro can install an update from the Hub over Wi-Fi. |
 | **Connect other tools** | Explore the Hub and device APIs. Optionally connect a brew assistant to draft a recipe or discuss a brew's recorded measurements. |
@@ -56,15 +54,31 @@ chmod +x ./picobrew-hub
 
 Open **[http://127.0.0.1:8080](http://127.0.0.1:8080)** on that computer. For a headless Pi, open `http://<Pi's LAN IP>:8080` on another computer on the same network. Enter the setup token printed in the terminal and choose an owner password. Leave the Hub running while you use it.
 
-To try a virtual brewery first, add `--demo` and use `--data ./demo-data` in place of `--data ./data`. Open the browser on the Hub computer for this loopback-only mode. Press **Ctrl+C** to stop the Hub before switching modes. To keep your real brewery, restart from the same folder and back up the entire `data` directory, including its encryption key, while the Hub is stopped. [Backup and operations](server/docs/operations.md)
+Press **Ctrl+C** to stop the Hub. Restart it from the same folder to reopen your brewery. For a backup, stop the Hub and copy the entire `data` directory, including its encryption key. [Backup and operations](server/docs/operations.md)
 
 ### 3. Connect your machine
 
-- **Already running standalone firmware?** Open **Brewery → Add machine**, enter the brewer's network address, and follow the pairing prompt. On a Pico S, Pro, C or Z with dial pairing, open **Settings → About → Pair with Hub**. On a pairing-capable standalone Zymatic, connect Ethernet, open **About Zymatic**, and wait for the prompt. Compare the code with the Hub, turn the dial to approve, and press it. The Hub saves the key. Older firmware can use the key file from USB setup. [Connection and pairing guide](server/docs/device-connections.md)
-- **Still running the original firmware?** Check your model below. For a supported conversion, connect the idle machine or its service adapter by USB to the **computer running the Hub**. Open **Brewery → Add machine → USB setup and recovery**, select the physical model and port, and follow the backup, power, and verification prompts. Keep the original backup. After setup, join the network and finish adding the machine. [USB setup, requirements, and stock restoration](server/docs/firmware-packages.md#usb-setup-backup-and-stock-restoration)
-- **Keeping a stock Zymatic?** The Hub can publish recipes to the original 1.1.14 brewer menu through its LAN protocol. This requires configuring the brewer's DNS and HTTP route. Select the recipe and start it at the machine. [Stock Zymatic setup](server/docs/stock-zymatic.md)
+**If your brewer already runs standalone firmware**, skip to **Pair the brewer** below.
 
-**Using a release binary for firmware updates?** In **Settings → Firmware**, set the GitHub repository to `jeffreydwalter/picobrew` and leave the branch blank to use the default. Earlier Hub builds store the project's former name.
+#### Convert a stock machine over USB
+
+1. Connect the machine’s USB cable or service adapter to the **computer running the Hub**. If your Hub runs on a Raspberry Pi, plug it into the Pi. For a **Pico S, Pro, or C** with the six-pin service header, unplug the brewer from power before fitting the SparkFun USB-to-serial adapter. Match the board and adapter markings, including **GND**. Chiefwigms’s Pico C photos show where to look. [Board and circled service header](https://github.com/chiefwigms/picobrew_pico/issues/354#issuecomment-1165734746) · [SparkFun adapter and connector photos](https://github.com/chiefwigms/picobrew_pico/issues/354#issuecomment-1165779398)
+2. In the Hub, open **Brewery → Add machine → USB setup and recovery**. Select the USB connection and the model printed on your machine. Choose **Install standalone firmware**. The Hub handles the backup, installation, and verification for supported hardware.
+3. Follow the power-on or reset prompts in the browser. Keep USB connected until the Hub reports that verification is complete. Keep a private backup of the Hub’s `data` directory so you have the original firmware and pairing information. [USB setup and restoration by model](server/docs/firmware-packages.md#usb-setup-backup-and-stock-restoration)
+
+![Hub USB setup showing the selected USB connection, Pico S model, and Install standalone firmware button](docs/images/usb-setup.png)
+
+#### Pair the brewer
+
+Join your brewery network, then open **Brewery → Add machine** and enter the brewer’s network address. After Hub USB setup, continue with **Add machine** from the completed job so the Hub can use the pairing information it saved. For dial pairing on a Pico S, Pro, C, or Z, open **Settings → About → Pair with Hub**. On a pairing-capable Zymatic, connect Ethernet and open **About Zymatic**. Compare the code and approve it at the dial. [Pairing instructions](server/docs/device-connections.md)
+
+If you want to keep the original Zymatic firmware, the Hub can also serve recipes to its **1.1.14** sync menu. [Connect a stock Zymatic](server/docs/stock-zymatic.md)
+
+#### Install later updates from the Hub
+
+Open the paired machine’s page and click the **Firmware** version beneath its front panel. Choose **Check for Updates**, select a compatible version, and click **Install** while the brewer is idle. The Hub downloads the package, transfers it, and checks the version after the brewer restarts. **Install** appears when the machine supports wireless updates and has compatible recovery firmware. The Pico S below shows that flow. For a USB-only machine, use **USB setup and recovery**. [Firmware updates by model](docs/firmware-parity.md)
+
+![Machine firmware dialog on a Pico S showing the installed version, a different version selected, and the Install button](docs/images/hub-firmware-update.png)
 
 ### 4. Send your first recipe
 
@@ -76,7 +90,7 @@ Open **Recipes → Browse all**, choose a recipe, and copy it to your library. O
 | --- | --- |
 | **Pico S and Pico Pro** | Model-specific standalone firmware, local website, mirrored OLED and dial, saved recipes, history, and Hub control. An idle brewer with compatible recovery supports wireless updates. Wireless return to stock has narrower hardware requirements. |
 | **Pico C** | Standalone brewing and Hub integration for the SSD1325 and SSD1309 display variants. USB setup checks the display variant. Physical installation and brewing qualification remain pending. |
-| **Z-series** | On stock 0.0.119, export a compatible recipe from the Hub and import it through the brewer’s Z Program Maker website. The shared standalone build runs on individual Z modules. Z1 through Z4 indicate the number of modules in the stack. USB setup checks each module’s active stock firmware and flash layout. Physical qualification remains pending. [Z module requirements](firmware/z-series/modified/README.md#usb-identification-and-stock-restoration) |
+| **Z-series** | With standalone firmware, send, edit, or remove recipes directly from the Hub or the brewer’s local website. If you keep the stock 0.0.119 firmware, export a compatible recipe from the Hub and import it in Z Program Maker. The shared standalone build runs on individual Z modules. Z1 through Z4 indicate the number of modules in the stack. USB setup checks each module’s active stock firmware and flash layout. Physical qualification remains pending. [Z module requirements](firmware/z-series/modified/README.md#usb-identification-and-stock-restoration) |
 | **Zymatic** | Stock 1.1.14 can fetch Hub recipes. Custom 1.2.0 adds an offline recipe and a read-only website and API over Ethernet. On a verified boot layout, 1.3.x also adds paired dial control and retained history. Updates use USB. Physical qualification remains pending. |
 | **PicoFerm and PicoStill** | Both accessories serve their own website and API. PicoFerm offers fermentation recording and sensors. PicoStill offers still modes, pump, fans, and sensors. These are software-tested reference builds awaiting hardware qualification. |
 
