@@ -196,7 +196,7 @@ static int discovery(PicoLocalApi *api, Writer *w)
 {
     text(w, "{"); identity(w);
     text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
-            "\",\"mode\":\"standalone\",\"pairing_v1\":true,\"recipe_capacity\":16,\"step_capacity\":15,"
+            "\",\"mode\":\"standalone\",\"release_channel\":\"stable\",\"pairing_v1\":true,\"recipe_capacity\":16,\"step_capacity\":15,"
             "\"recipe_create_only\":true,\"zero_minute_steps\":true,\"restore_default_recipes\":true,"
             "\"commands\":[\"brew\",\"sous-vide\",\"cold-brew\",\"manual\",\"rinse\",\"first-rinse\","
             "\"deep-clean\",\"descale\",\"circulate\",\"drain-reservoir\",\"drain-filter\",\"rack-beer\",\"utilities\","

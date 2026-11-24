@@ -1,5 +1,6 @@
 /* Compile the pinned web recovery dispatcher under a private name. The Hub
  * build adds a single authenticated, read-only appliance identity endpoint. */
+#include "version.h"
 #define pico_recovery_http_handler pico_recovery_web_handler
 #include "../../recovery/recovery/http.c"
 #undef pico_recovery_http_handler

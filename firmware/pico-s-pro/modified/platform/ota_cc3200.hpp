@@ -4,7 +4,8 @@
 #ifndef PICO_DISPLAY_VARIANT
 #include "stock_restore/stock.h"
 #define PICO_OTA_RECOVERY_BYTES 43352
-#define PICO_OTA_RECOVERY_SHA256 "c76c390034d1564d4d80ddeeae0347b2e7171c820878b44d0fce7731c359c9ce"
+#define PICO_OTA_RECOVERY_SHA256 "ae8e361a323c5c999b72d8c8764d0e5c4227d77d49ca47347c7f9f38c8fe6ed9"
+#define PICO_OTA_LEGACY_RECOVERY_SHA256 "c76c390034d1564d4d80ddeeae0347b2e7171c820878b44d0fce7731c359c9ce"
 #endif
 extern "C" {
 #include <utility/simplelink.h>
@@ -82,7 +83,7 @@ static bool ota_inspect(bool *trial, char digest[65], uint32_t *size)
         strcmp(digest, "67e22913fd7805a84d965928198f7d8cb795af125b81f1e0c29479a84980b975")) return false;
     // Only the reviewed local recovery application can receive Hub packages.
     if (!ota_digest("/sys/mcuimg1.bin", PICO_OTA_RECOVERY_BYTES, digest, size) || *size != PICO_OTA_RECOVERY_BYTES ||
-        strcmp(digest, PICO_OTA_RECOVERY_SHA256)) return false;
+        (strcmp(digest, PICO_OTA_RECOVERY_SHA256) && strcmp(digest, PICO_OTA_LEGACY_RECOVERY_SHA256))) return false;
     return ota_digest("/sys/mcuimg2.bin", 188416, digest, size);
 }
 static bool ota_commit(bool confirm)
