@@ -90,6 +90,12 @@ def stock_version(flash, model):
     return recognized_original(flash, model)[0]
 
 
+def legacy_applications(model):
+    # Only the identity of a retired application may authorize USB migration.
+    path = ROOT / "firmware/common/dependencies/legacy-usb-applications.json"
+    return json.loads(path.read_bytes())[model]
+
+
 def reference(model):
     release_index = json.loads((ROOT / "firmware/releases.json").read_bytes())["releases"]
     entries = [r for r in release_index if r["model"] == model and r["kind"] == "reference"
@@ -249,9 +255,7 @@ def migrate_factory_layout(current, original, key, model):
         raise ValueError("The installed ESP32 layout was not recognized")
     if not esp_provisioning.matches_stored_esp32_key(current[0x200000:0x400000], key):
         raise ValueError("The connected device key does not match the Hub's saved pairing")
-    releases = json.loads((ROOT/"firmware/releases.json").read_bytes())["releases"]
-    old = next((r for r in releases if r["model"] == model and r["kind"] == "reference"
-                and 0 < r["binary_bytes"] <= 0x1f0000
+    old = next((r for r in legacy_applications(model) if 0 < r["binary_bytes"] <= 0x1f0000
                 and sha(current[0x10000:0x10000+r["binary_bytes"]])==r["binary_sha256"]), None)
     if not old:
         raise ValueError("The installed application did not match a published binary")
@@ -409,8 +413,7 @@ def operation(action, model, device, root, ask=input, *, api_key=None):
                 print(f"USB setup will install {model} {version} with wireless recovery and retain its settings and history.")
                 return write_target(action, device, ident, current, target, ask)
             if model == "picoferm" and picoferm_ab_reference() is not None:
-                releases = json.loads((ROOT / "firmware/releases.json").read_bytes())["releases"]
-                target = usb_ab.migrate(current, original, wanted, api_key, releases)
+                target = usb_ab.migrate(current, original, wanted, api_key, legacy_applications(model))
                 print(f"USB setup will retain the paired PicoFerm's settings and history for {version}.")
                 return write_target(action, device, ident, current, target, ask)
             raise ValueError("The machine no longer matches the intended USB installation. Its contents were preserved.") from None

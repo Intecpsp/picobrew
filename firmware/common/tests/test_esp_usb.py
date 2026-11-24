@@ -41,6 +41,22 @@ class MemoryDevice:
         self.contents[offset:offset+len(data)] = data
 
 
+def single_factory_table():
+    rows = [(1, 2, 0x9000, 0x5000, b"nvs"), (1, 0, 0xe000, 0x2000, b"otadata"),
+            (0, 0, 0x10000, 0x1f0000, b"factory"), (1, 0x82, 0x200000, 0x200000, b"spiffs")]
+    entries = b"".join(struct.pack("<HBBII16sI", 0x50aa, *row, 0) for row in rows)
+    checksum = b"\xeb\xeb" + b"\xff" * 14 + hashlib.md5(entries).digest()
+    table = (entries + checksum).ljust(0xc00, b"\xff")
+    assert usb.sha(table) == usb.LEGACY_STILL_TABLE_SHA256
+    return table
+
+
+def single_factory_parts(model):
+    _, parts = usb.reference(model)
+    return {"bootloader.bin": parts["bootloader.bin"], "partitions.bin": single_factory_table(),
+            "application.bin": parts["application.bin"], "spiffs.bin": usb.reference("picostill")[1]["spiffs.bin"]}
+
+
 def device(model, version=None):
     if model == "picoferm":
         version = version or "0_2_7"
@@ -55,9 +71,7 @@ def device(model, version=None):
             # The specimen starts with the historically supported single-factory
             # layout. Never import a new release partition table as a stock fact.
             parts = dict(parts)
-            previous = "1.2.6" if model == "picostill" else "1.2.8"
-            with zipfile.ZipFile(usb.ROOT/f"firmware/{model}/modified/releases/{model}/{previous}.zip") as old:
-                parts["partitions.bin"] = old.read("partitions.bin")
+            parts["partitions.bin"] = single_factory_table()
         for key in ("bootloader.bin", "partitions.bin"):
             offset, _ = usb.ESP32_LAYOUT[key]
             chip.contents[offset:offset+len(parts[key])] = parts[key]
@@ -96,15 +110,16 @@ class USBTest(unittest.TestCase):
                 self.run_action("install", model, chip, [chip.identity.mac])
                 self.assertGreaterEqual(chip.reads, 3)
                 self.assertTrue(chip.writes)
-                version, components = usb.reference(model)
-                target = components["application.bin"]
-                start = 0 if model == "picoferm" else usb.esp_stock_partitions.selected_app_slice(chip.contents).start
-                if model == "picoferm" and usb.picoferm_ab_reference():
-                    _, ab_parts = usb.picoferm_ab_reference()
-                    boot = ab_parts["bootstrap.bin"]
+                if model == "picoferm":
+                    _, components = usb.picoferm_ab_reference()
+                    boot = components["bootstrap.bin"]
                     self.assertEqual(chip.contents[:len(boot)], boot)
-                    target = ab_parts["bank-0.bin"]
+                    target = components["bank-0.bin"]
                     start = 0x3000
+                else:
+                    _, components = usb.reference(model)
+                    target = components["application.bin"]
+                    start = usb.esp_stock_partitions.selected_app_slice(chip.contents).start
                 self.assertEqual(chip.contents[start:start+len(target)], target)
                 preserved = slice(-0x5000, None) if model == "picoferm" else slice(0x9000, 0xe000 if "otadata.bin" in components else 0x10000)
                 self.assertEqual(chip.contents[preserved], before[preserved])
@@ -145,7 +160,8 @@ class USBTest(unittest.TestCase):
                     with self.assertRaises(ValueError):
                         usb.operation("install", model, chip, data, api_key=bad_key)
                 self.assertEqual(len(chip.writes), writes)
-                damaged = bytearray(usb.reference(model)[1]["spiffs.bin"])
+                package = usb.picoferm_ab_reference() if model == "picoferm" else usb.reference(model)
+                damaged = bytearray(package[1]["spiffs.bin"])
                 damaged[-1] ^= 1
                 with self.assertRaisesRegex(ValueError,"verified empty"):
                     usb.esp_provisioning.stage(damaged,profile,key)
@@ -177,9 +193,12 @@ class USBTest(unittest.TestCase):
         _, current_parts = usb.reference("picostill")
         if "recovery.bin" not in current_parts:
             self.skipTest("No PicoStill factory-recovery package in this index")
-        oldpath = usb.ROOT/"firmware/picostill/modified/releases/picostill/1.2.6.zip"
-        with zipfile.ZipFile(oldpath) as package:
-            legacy = {name: package.read(name) for name in usb.ESP32_LAYOUT}
+        legacy = single_factory_parts("picostill")
+        app = legacy["application.bin"]
+        approved = patch.object(usb, "legacy_applications", return_value=[
+            {"binary_bytes": len(app), "binary_sha256": usb.sha(app)}])
+        approved.start()
+        self.addCleanup(approved.stop)
         with patch.object(usb, "reference", side_effect=lambda model: ("1.2.6", dict(legacy))):
             usb.operation("install", "picostill", chip, self.data, ask=lambda _: chip.identity.mac, api_key=key)
         # Simulate changed calibration and used filesystem space between boots.
@@ -206,9 +225,12 @@ class USBTest(unittest.TestCase):
         chip=device("z-series")
         original=bytes(chip.contents)
         key=secrets.token_hex(32)
-        # Restore the actually published legacy USB setup for this simulated unit.
-        with zipfile.ZipFile(usb.ROOT/"firmware/z-series/modified/releases/z-series/1.2.8.zip") as old:
-            parts={n:old.read(n) for n in usb.ESP32_LAYOUT}
+        parts = single_factory_parts("z-series")
+        app = parts["application.bin"]
+        approved = patch.object(usb, "legacy_applications", return_value=[
+            {"binary_bytes": len(app), "binary_sha256": usb.sha(app)}])
+        approved.start()
+        self.addCleanup(approved.stop)
         with patch.object(usb,"reference",return_value=("1.2.8",parts)):
             usb.operation("install","z-series",chip,self.data,ask=lambda _:chip.identity.mac,api_key=key)
         chip.contents[0x9100:0x9109]=b"unit data"
@@ -348,9 +370,14 @@ class USBTest(unittest.TestCase):
                         self.assertEqual(link.identity, chip.identity)
                         link.verify_identity()
                         self.assertEqual(stub.WRITE_FLASH_ATTEMPTS, 1)
-                        _, components = usb.reference(model)
-                        payload = components["application.bin"].ljust(usb.MIB, b"\xff")
-                        link.write(0 if model == "picoferm" else 0x10000, payload)
+                        if model == "picoferm":
+                            _, components = usb.picoferm_ab_reference()
+                            start, image = 0x3000, components["bank-0.bin"]
+                        else:
+                            _, components = usb.reference(model)
+                            start, image = usb.ESP32_LAYOUT["application.bin"][0], components["application.bin"]
+                        payload = image.ljust(usb.MIB, b"\xff")
+                        link.write(start, payload)
                         self.assertEqual(zlib.decompress(pending), payload)
                     serial_open.assert_called_once_with(port=None, baudrate=115200, exclusive=True)
                     self.assertFalse(serial_open.return_value.dtr)

@@ -1,4 +1,4 @@
-# PicoStill standalone firmware 1.2.7
+# PicoStill standalone firmware 1.0.0
 
 This is a complete, linked standalone application for the recovered PicoStill
 ESP32 board. It operates the original four thermistor channels, pressure

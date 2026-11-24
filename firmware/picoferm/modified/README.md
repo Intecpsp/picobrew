@@ -1,4 +1,4 @@
-# PicoFerm standalone firmware 1.2.6
+# PicoFerm standalone firmware 1.0.0
 
 This profile contains the complete PicoFerm application owner, sensor acquisition,
 local controls, authenticated API, embedded website, persistent recording and
@@ -13,13 +13,13 @@ has been flashed or operated as part of this verification. See
 
 The local website and authenticated status remind you to sanitize the gray seal before fitting it. With PicoFerm idle, acknowledge the reminder after sanitizing. The next monitoring session renews it.
 
-A separate [dual-bank wireless update reference](dual-bank-updates.md) adds a USB-provisioned loader, inactive-bank updates and a confirmed-boot fallback. Its bench builds are outside the production release index.
+The 1.0.0 release uses a USB-provisioned loader and two application banks. The Hub writes wireless updates to the inactive bank and confirms the new boot. An unconfirmed trial returns to the previous bank. [Wireless updates and recovery](dual-bank-updates.md)
 
 ## Operating model
 
 | Feature | Implemented behavior |
 | --- | --- |
-| Identity | `picoferm` / `PicoFerm`, firmware `1.2.6`, API `/api/v1` |
+| Identity | `picoferm` / `PicoFerm`, firmware `1.0.0`, API `/api/v1` |
 | Sensors | Original temperature conversion, calibrated native pressure scale, battery voltage |
 | Local recording | Explicit start/stop; no automatic session resume after restart |
 | Sampling | Default 300 seconds; configurable integer 60–86400 seconds while idle |
@@ -143,9 +143,8 @@ python3 firmware/picoferm/modified/tests/test_standalone.py
 ESP8266_ARDUINO=/path/to/esp8266-2.4.1 \
   python3 firmware/common/tests/test_esp8266_http.py
 
-python3 firmware/picoferm/modified/tools/build_esp8266.py \
-  --toolchain /path/to/xtensa-lx106-elf \
-  --arduino /path/to/esp8266-2.4.1
+make firmware-bootstrap MODEL=picoferm
+make firmware-package MODEL=picoferm
 ```
 
 The native suite uses the actual controller and shared Engine, not substitute
@@ -156,29 +155,22 @@ ASan/UBSan builds. The listener suite compiles against the pinned SDK declaratio
 and exercises raw lwIP callback ownership, partial receives/writes, backpressure,
 peer half-close, errors, generation reuse and real authenticated HTTP parsing.
 
-The target tool compiles the complete owner, all required portable/common
-modules, checked SPIFFS, raw HTTP/telemetry, the original SDK startup and its
-required libraries. It emits `build/esp8266/picoferm-standalone.elf`, a map,
-`application.bin` and a source/SDK/symbol-hash report. The image follows the pinned
-Arduino eboot/section recipe; every decoded segment byte and both entry points
-are checked against the real input ELFs. Link gates require the actual main loop, controller,
-acquisition, controls, storage, API and network functions. They reject retained
-unbounded OEM acquisition and cloud application paths.
+The build links both bank images against the pinned SDK, verifies their segment addresses and entry points against their ELFs, and packages the bootstrap, both images and a readback-verified empty filesystem in `build/package/picoferm.zip`. Link maps and manifests are in `build/ab/`.
 
 ### Finite RAM verification
 
-`analysis/memory-validation.json` binds the actual target ELF and pinned compiler
+`analysis/memory-ab-validation.json` binds the actual target ELF and pinned compiler
 size probes to a 32-bit execution of the real controller, Engine, provisioning,
 verified transaction layer, all five pinned SPIFFS C sources and the original
-SDK UMM allocator. The current shared-engine build has **28,704 bytes** between
-`_heap_start` and the SDK heap end. The 5,788-byte application owner is already in
+SDK UMM allocator. The current shared-engine build has **27,480 bytes** between
+`_heap_start` and the SDK heap end. The 6,032-byte application owner is already in
 static RAM; it includes the 4,936-byte HTTP server and its 4,096-byte arena. The
 SDK's 4 KiB continuation stack is also static, so neither is counted twice as a
 heap allocation.
 
 | Dynamic allocation | Pinned target bytes |
 | --- | ---: |
-| Engine state, with no unsupported recipe catalogue | 2,648 |
+| Engine state, with no unsupported recipe catalogue | 2,656 |
 | Active 17-field descriptor array plus layout owner | 1,258 + 8 |
 | Largest Ferm chunk read/write workspace | 1,644 |
 | Full compact chunk record including checked header | 1,236 |
@@ -188,11 +180,11 @@ heap allocation.
 The replay holds **16 KiB of separate SDK/network reservation in sixteen
 allocations** throughout initialization and nine recording sessions. It also
 charges the omitted EEPROM/UART/platform allocations with the original
-allocator's rounding and reserves the measured 140-byte difference between the
+allocator's rounding and reserves the measured 136-byte difference between the
 native and target Engine ABI. It uses a maximum-length forwarding hostname,
 extreme valid 24-bit ADC readings, clock rollover, a stalled transmission, active
 sample pages and retained pages while another session records. All **14,238
-allocations** succeed; the peak is **27,160 bytes**, leaving **1,544 bytes**. The published 1.2.1 ELF retained 2,104 bytes in its release replay.
+allocations** succeed; the peak is **27,216 bytes**, leaving **264 bytes** within the modeled budget.
 The largest serialized forwarding frame in that replay is 1,200 bytes. Every
 allocation returns to the allocator on teardown, apart from its fixed 8-byte
 sentinel. Real filesystem calls also verify the actual `ferm-cal` key; a
@@ -205,7 +197,7 @@ and storage errors still take their checked failure paths. The memory test can
 run directly in Linux CI with `gcc-multilib` and `g++-multilib` installed:
 
 ```sh
-python tools/validate_memory.py --toolchain /path/to/xtensa-lx106-elf \
+python tools/validate_memory.py --ab --build-dir build/ab --toolchain /path/to/xtensa-lx106-elf \
   --arduino /path/to/esp8266-2.4.1 --write-report
 ```
 

@@ -52,22 +52,16 @@ jobs:
       - name: Install 32-bit allocator replay toolchain
         if: matrix.model == 'picoferm'
         run: sudo apt-get update && sudo apt-get install -y gcc-multilib g++-multilib
-      - name: Replay the complete Ferm controller within its target heap budget
+      - name: Verify the dual-bank PicoFerm package, interrupted updates and 32-bit heap budget
         if: matrix.model == 'picoferm'
-        run: >-
-          python firmware/picoferm/modified/tools/validate_memory.py
-          --toolchain firmware/common/build/dependencies/xtensa-lx106-elf
-          --arduino firmware/common/build/dependencies/esp8266-2.4.1
-          --build-dir firmware/picoferm/modified/build/reference
-          --write-report
-      - name: Verify PicoFerm dual-bank images and interrupted updates
-        if: matrix.model == 'picoferm'
+        env:
+          PICOFERM_AB_BUILD: ${{ github.workspace }}/firmware/picoferm/modified/build/ab
         run: |
-          make -C firmware/picoferm/modified ab-test PYTHON=python
+          python -m unittest discover -s firmware/picoferm/modified/tests -p 'test_ab_*.py' -v
           python firmware/picoferm/modified/tools/validate_memory.py --ab \
             --toolchain firmware/common/build/dependencies/xtensa-lx106-elf \
             --arduino firmware/common/build/dependencies/esp8266-2.4.1 \
-            --build-dir firmware/picoferm/modified/build/ab \
+            --build-dir "$PICOFERM_AB_BUILD" --write-report \
             --output firmware/picoferm/modified/build/memory-ab
       - name: Verify unchanged OEM imports
         run: make verify-imports PYTHON=python
@@ -78,13 +72,15 @@ jobs:
           name: ${{ matrix.model }}-reference-package
           path: |
             firmware/${{ matrix.model }}/modified/build/package/
+            firmware/${{ matrix.model }}/modified/build/ab/*.elf
+            firmware/${{ matrix.model }}/modified/build/ab/ota-manifest.json
             firmware/${{ matrix.model }}/modified/build/reference/*.elf
             firmware/${{ matrix.model }}/modified/build/reference/*.map
             firmware/${{ matrix.model }}/modified/build/reference/*.json
             firmware/${{ matrix.model }}/modified/build/reference/link/*.elf
             firmware/${{ matrix.model }}/modified/build/reference/link/*.map
             firmware/${{ matrix.model }}/modified/build/reference/link/*.json
-            firmware/${{ matrix.model }}/modified/analysis/memory-validation.json
+            firmware/${{ matrix.model }}/modified/analysis/memory-ab-validation.json
             firmware/${{ matrix.model }}/reverse-engineered/build/application/*.elf
             firmware/${{ matrix.model }}/reverse-engineered/build/application/*.map
             firmware/${{ matrix.model }}/reverse-engineered/build/application/*.json

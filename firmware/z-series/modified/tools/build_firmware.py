@@ -106,7 +106,7 @@ def main():
     report['scope']+=' The standalone profile replaces remote service stages with authenticated local API/history/telemetry and a local recipe catalogue. Persistent storage is checked without automatic formatting. A latched output inhibit and bounded MSP bus transactions are modified policies. Stack frame sizes are compiler estimates, not measured runtime stack or heap high-water marks.'
     sys.path.insert(0,str(COMMON/'tools'))
     from package_reference import verify_esp32_descriptor
-    version='1.2.9'
+    version='1.0.0'
     verify_esp32_descriptor(application.read_bytes(),version,'z-series')
     report.update(model='z-series',firmware_version=version,ota_protocol='esp32-factory-v1')
     report['application_image'].update(reference_partition_offset=0xf0000,reference_partition_bytes=0x1a1000)

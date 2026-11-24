@@ -94,7 +94,7 @@ void discovery_and_start_guard(){
     World provisioned(true,nullptr,true);
     auto qualified=provisioned.request("/api/v1");
     CHECK(qualified.find("\"ota_protocol\":\"esp32-factory-v1\"")!=std::string::npos);
-    CHECK(qualified.find("\"firmware_version\":\"1.2.7\"")!=std::string::npos);
+    CHECK(qualified.find("\"firmware_version\":\"1.0.0\"")!=std::string::npos);
     CHECK(info.find("\"heating\":false")!=std::string::npos);CHECK(info.find("\"recipes\":false")!=std::string::npos);
     w.request("/api/v1/recipes");CHECK(w.status==404);w.request("/api/v1/display");CHECK(w.status==404);
     w.command("{\"command\":\"brew\",\"recipe_id\":\"bad\"}");CHECK(w.status==400);

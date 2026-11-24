@@ -91,6 +91,7 @@ class EngineTests(unittest.TestCase):
 
     def test_discovery_capabilities_and_no_fictional_routes(self):
         ferm = self.request("/api/v1")
+        self.assertEqual(ferm["release_channel"], "stable")
         self.assertFalse(ferm["capabilities"]["recipes"])
         self.assertFalse(ferm["recipe_create_only"])
         self.assertTrue(self.request("/api/v1", world=self.new(0))["recipe_create_only"])

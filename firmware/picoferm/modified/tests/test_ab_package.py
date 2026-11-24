@@ -22,7 +22,7 @@ class USBPackage(unittest.TestCase):
         directory=os.getenv('PICOFERM_AB_BUILD')
         if not directory:raise unittest.SkipTest('Set PICOFERM_AB_BUILD to the cross-linked bundle')
         cls.build=Path(directory)
-        with zipfile.ZipFile(ROOT/'releases/picoferm/1.2.6.zip') as z: cls.fs=z.read('spiffs.bin')
+        cls.fs=(cls.build/'spiffs.bin').read_bytes()
         cls.package=package_ab.pack(cls.build,cls.fs)
         cls.version=json.loads((cls.build/'ota-manifest.json').read_text())['version']
         cls.parts=usb_ab.parse(cls.package,cls.version)
@@ -55,11 +55,11 @@ class USBPackage(unittest.TestCase):
                 with self.assertRaises(ValueError):esp_usb.install_target(target,'picoferm',api_key=key)
                 # Simulate a previously paired, published single-bank machine with
                 # an additional allocated filesystem page and changed SDK data.
-                with zipfile.ZipFile(ROOT/'releases/picoferm/1.2.6.zip') as z:
-                    old=z.read('application.bin')
-                legacy=dict(model='picoferm',kind='reference',binary_bytes=len(old),
-                            binary_sha256=hashlib.sha256(old).hexdigest(),firmware_version='1.2.6')
-                (firmware/'releases.json').write_text(json.dumps({'releases':[legacy,release]}))
+                old=self.parts['bank-0.bin']
+                legacy=dict(binary_bytes=len(old),binary_sha256=hashlib.sha256(old).hexdigest())
+                fingerprints=firmware/'common/dependencies/legacy-usb-applications.json'
+                fingerprints.parent.mkdir(parents=True)
+                fingerprints.write_text(json.dumps({'picoferm':[legacy]}))
                 running=bytearray(self.source)
                 running[:len(old)]=old
                 running[usb_ab.FS]=target[usb_ab.FS]

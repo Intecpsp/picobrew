@@ -117,8 +117,6 @@ def main():
     sys.path.insert(0,str(COMMON/'tools'));import package_reference
     elf=args.build_dir/'picoferm-standalone.elf'
     if args.ab:
-        if args.write_report:
-            raise ValueError('The A/B report must not replace the historical single-bank record')
         import build_ab
         from build_esp8266_image import read_elf, component
         elf=args.build_dir/'bank-0.elf'
@@ -165,7 +163,9 @@ def main():
         boundary='Actual 32-bit Controller, Engine, Provisioning, VerifiedStorage and pinned SPIFFS/UMM sources. NOR, ADC, time and transport are test ports. A fragmented 16-KiB SDK/network reservation is held throughout; it is a budget test, not executed private Wi-Fi firmware. Target static owner includes HTTP arena and SDK continuation stack.',
         hardware_high_water_measured=False)
     if args.i386:output['i386_runtime_pin_sha256']=digest(FIRMWARE/'z-series/reverse-engineered/tests/toolchains/recipe-i386.json')
-    if args.write_report:(ROOT/'analysis/memory-validation.json').write_text(json.dumps(output,indent=2)+'\n')
+    if args.write_report:
+        name = 'memory-ab-validation.json' if args.ab else 'memory-validation.json'
+        (ROOT/'analysis'/name).write_text(json.dumps(output,indent=2)+'\n')
     print(json.dumps(output,indent=2))
 
 if __name__=='__main__':main()
