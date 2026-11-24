@@ -75,7 +75,7 @@ def main():
     scripts=('esp32_out.ld','esp32.common.ld','esp32.rom.ld','esp32.peripherals.ld','esp32.rom.spiram_incompatible_fns.ld')
     link=['-nostdlib','-L'+str(sdk/'lib'),'-L'+str(sdk/'ld')]
     for script in scripts:link+=['-T',script]
-    link+=['-u','ld_include_panic_highint_hdl','-u','call_user_start_cpu0','-u','app_main','-Wl,--gc-sections','-Wl,-static',
+    link+=['-u','ld_include_panic_highint_hdl','-u','call_user_start_cpu0','-u','app_main','-u','esp_app_desc','-u','picostill_update_identity','-Wl,--gc-sections','-Wl,-static',
            '-Wl,--undefined=uxTopUsedPriority','-u','__cxa_guard_dummy','-u','__cxx_fatal_exception','-Wl,-Map='+str(map_file),'-Wl,--cref',
            '-Wl,--start-group',*map(str,archives),*libraries,'-Wl,--end-group','-Wl,-EL','-o',str(elf)]
     subprocess.run([str(cc),*link],check=True)
@@ -86,7 +86,9 @@ def main():
               'picostill::oem::ArduinoPorts::initialize_hardware(', 'picobrew::standalone::Engine::poll()',
               'picobrew::standalone::Provisioning::feed(', 'picobrew::standalone::esp32::initialize_arduino()',
               'picobrew::standalone::esp32::connect_station(', 'picobrew::standalone::esp32::SpiffsFiles::mount()',
-              'picobrew::standalone::esp32::TelemetrySocket::send(', 'pico_http_server_poll']
+              'picobrew::standalone::esp32::TelemetrySocket::send(', 'pico_http_server_poll',
+              'picostill::update::Service::handle(', 'picostill::update::FactoryFlash::finish(',
+              'esp_ota_begin', 'esp_ota_set_boot_partition']
     forbidden=[' initArduino',' loopTask(', 'picostill::oem::Machine::', 'picostill::oem::Application::',
                'picostill::oem::Backend::','picostill::oem::FirmwareUpdate::','picostill::oem::CredentialStorage::','picostill::oem::HttpServer::']
     for name in required:
@@ -102,10 +104,13 @@ def main():
     sys.path.insert(0,str(REPOSITORY/'tools'))
     from firmware_analysis.esp_image import parse_esp32
     parsed=parse_esp32(image.read_bytes())
-    if len(image.read_bytes())>0x1f0000:raise ValueError('Application exceeds the selected standalone factory slot')
+    version = "1.2.7"
+    marker = ("PicoBrew OTA1|picostill|" + version).encode().ljust(64, b"\0")
+    if image.read_bytes()[0x120:0x160] != marker or image.stat().st_size > 0xf0000:
+        raise ValueError("PicoStill OTA descriptor or slot length differs from the installer contract")
     size=subprocess.check_output([str(binary/'xtensa-esp32-elf-size'),str(elf)],text=True).strip()
     headers={p.relative_to(FIRMWARE).as_posix():digest(p) for base in (ROOT/'include',ROOT/'platform',OEM/'include',OEM/'platform/esp32',COMMON/'include',COMMON/'src',COMMON/'platform/esp32') for p in sorted(base.rglob('*')) if p.suffix in ('.hpp','.h')}
-    report=dict(schema_version=1,model='picostill',firmware_version='1.2.6',complete_application_linked=True,flash_image_produced=True,
+    report=dict(schema_version=1,model='picostill',firmware_version=version,ota_protocol='esp32-factory-v1',complete_application_linked=True,flash_image_produced=True,
                 hardware_tested=False,installation_qualified=False,compiler=subprocess.check_output([str(cxx),'--version'],text=True).splitlines()[0],
                 compiler_sha256=digest(cxx),flags=flags,owned_sources=evidence[0],sdk_sources=evidence[1],headers=headers,
                 required_symbols=retained,forbidden_symbols_absent=forbidden,elf_sha256=digest(elf),map_sha256=digest(map_file),
