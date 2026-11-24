@@ -18,8 +18,9 @@ TEMPLATE = ROOT / "extension"
 START = tables.HIGH_START
 LIMIT = 0x1fc00
 BSS = 0x2c8a
-VERSION = "1.3.2"
+VERSION = "1.3.3"
 ARCHIVED_MANIFESTS = {
+    "1.3.2": "6eda0d88047c6171f2e138386180add9cf0be201f2bdac7750cff0a26d573173",
     "1.3.0": "cc70f6d3ea0d137def6b669533b8b12fba25110b33220be4f0dbb3798f55f9e1",
     "1.3.1": "e8187c77d7bbca5934130d3028c20de1448c1f9671460426d982473fb5da3fb3",
 }
@@ -81,7 +82,7 @@ def template(version=VERSION):
         raise ValueError("The AVR extension differs from its recorded sources or binary; rebuild the template")
     low = (directory / "low.bin").read_bytes()
     if len(low) != record["low_bytes"] or sha(low) != record["low_sha256"] or not (
-            0 < len(low) <= tables.POOL_END - tables.PACKED_END):
+            0 < len(low) <= tables.POOL_END - (tables.SEEK_END if version == VERSION else tables.PACKED_END)):
         raise ValueError("Invalid low-flash extension")
     crc_code = (directory / "crc-hole.bin").read_bytes()
     if len(crc_code) != record["crc_hole_bytes"] or sha(crc_code) != record["crc_hole_sha256"] or not 0 < len(crc_code) <= 254:
@@ -104,7 +105,7 @@ def load_pointer(register, address):
 
 
 def call(address):
-    if not (START <= address < LIMIT or tables.PACKED_END <= address < tables.POOL_END or tables.CRC_TABLE < address < tables.CRC_TABLE+256) or address % 2:
+    if not (START <= address < LIMIT or tables.SEEK_END <= address < tables.POOL_END or tables.CRC_TABLE < address < tables.CRC_TABLE+256) or address % 2:
         raise ValueError("AVR extension entry falls outside application flash")
     return b"\x0e\x94" + struct.pack("<H", address // 2)
 
@@ -140,6 +141,8 @@ def patch_list(symbols, port=80, version=VERSION):
         ("zero-bss-low", 0x233c, bytes.fromhex("aa38"), immediate(0x3000, 26, end & 255)),
         ("malloc-start", 0x1bb10, struct.pack("<H", BSS), struct.pack("<H", end)),
     ]
+    if version == VERSION:
+        patches.append(("home-care", 0x105da, bytes.fromhex("0e94f840"), call(symbols["zymatic_home_menu"])))
     for pc in SERIAL_READS:
         patches.append(("stock-serial", pc, bytes.fromhex("0e94a121"),
                         call(symbols["zymatic_read_stock_serial"])))
@@ -209,7 +212,8 @@ def build_application(original, key, uid, hub_host="picobrew.com", offline_progr
         raise ValueError("Unexpected 1.1.14 sensor CRC table")
     crc_code = (directory / "crc-hole.bin").read_bytes()
     image[tables.CRC_TABLE:tables.CRC_TABLE+256] = (b"\xff" + crc_code).ljust(256, b"\xff")
-    packed = tables.pack_pool(bytes(image[tables.POOL:tables.POOL_END]))
+    packer = tables.pack_seek_pool if version == VERSION else tables.pack_pool
+    packed = packer(bytes(image[tables.POOL:tables.POOL_END]))
     image[tables.POOL:tables.POOL_END] = (packed + low).ljust(tables.POOL_END - tables.POOL, b"\xff")
     initializer = tables.pack_crt(bytes(image[tables.CRT:tables.CRT + tables.CRT_SIZE]))
     image[tables.CRT:] = initializer.ljust(START - tables.CRT, b"\xff") + code
@@ -257,7 +261,10 @@ def recognize_private_application(flash, *, version=VERSION):
     except ValueError:
         return None
     try:
-        raw_pool = tables.unpack_pool(bytes(application[tables.POOL:tables.PACKED_END]))
+        if version == VERSION:
+            raw_pool = tables.unpack_seek_pool(bytes(application[tables.POOL:tables.SEEK_END]))
+        else:
+            raw_pool = tables.unpack_pool(bytes(application[tables.POOL:tables.PACKED_END]))
         initializer = tables.unpack_crt(application[tables.CRT:START])
     except ValueError:
         return None

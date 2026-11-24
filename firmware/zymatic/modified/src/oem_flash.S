@@ -1,8 +1,6 @@
-/* The vendor code addresses the original text and bitmap table by byte.
- * For a 128-byte block, the on-flash index points at a variable-length token
- * stream. Each dictionary entry has left, right and expanded length. Skip
- * complete tokens by length and descend only to the requested byte. No
- * decoder buffer, heap, recursion or cached mutable state is required. */
+/* Decode a byte from the stock text/bitmap pool by following backward
+ * LZ references. Every 128 original bytes has an independent seek pointer.
+ * A reference always decreases the source offset, including overlap. */
 .section .crc_hole,"ax",@progbits
 .global zymatic_original_byte
 zymatic_original_byte:              /* Z = original address, r0 = result */
@@ -30,77 +28,55 @@ zymatic_original_byte:              /* Z = original address, r0 = result */
     lpm r0, Z
     rjmp .Lret
 .Lpacked:
-    clr r22
+.Lseek:
+    movw r26, r24                   /* original offset for backward references */
     mov r23, r24
-    andi r23, 127                   /* position in decoded block */
+    andi r23, 127
     lsl r24
-    rol r25                         /* block = virtual offset >> 7 */
+    rol r25
     mov r30, r25
     clr r31
     lsl r30
     rol r31
-    subi r30, lo8(-0x3d4)           /* after 128 three-byte entries */
-    sbci r31, hi8(-0x3d4)
+    subi r30, lo8(-0x254)
+    sbci r31, hi8(-0x254)
     lpm r24, Z+
     lpm r25, Z
     movw r30, r24
-    subi r30, lo8(-0x43e)           /* after 53 two-byte block indices */
-    sbci r31, hi8(-0x43e)
+    subi r30, lo8(-0x2be)           /* 53 little-endian stream offsets */
+    sbci r31, hi8(-0x2be)
+    clr r22
 .Lnext:
     lpm r20, Z+
-    cpi r20, 127
-    brlo .Lliteral
-    brne .Ltoken
-    lpm r20, Z+                    /* escaped literal 127..255 */
-.Lliteral:
-    tst r23
-    breq .Lvalue
-    dec r23
-    rjmp .Lnext
-.Ltoken:
-    movw r26, r30
-    rcall .Lentry
-    cp r23, r21
-    brlo .Ldescend
-    sub r23, r21
-    movw r30, r26
-    rjmp .Lnext
-.Ldescend:
-    mov r20, r18
-    mov r24, r19
     sbrc r20, 7
-    rjmp .Lleft_pair
-    tst r23
-    breq .Lvalue
-    dec r23
-    rjmp .Lright
-.Lleft_pair:
-    rcall .Lentry
-    cp r23, r21
-    brlo .Ldescend
-    sub r23, r21
-.Lright:
-    mov r20, r24
-    sbrs r20, 7
-    rjmp .Lvalue
-    rcall .Lentry
-    rjmp .Ldescend
-.Lentry:
-    subi r20, 128
-    mov r30, r20
-    clr r31
-    lsl r30
-    rol r31
+    rjmp .Lreference
+    inc r20
+    cp r23, r20
+    brlo .Lliteral
     add r30, r20
     adc r31, r22
-    subi r30, lo8(-0x254)
-    sbci r31, hi8(-0x254)
+.Lskip:
+    sub r23, r20
+    rjmp .Lnext
+.Lliteral:
+    add r30, r23
+    adc r31, r22
+    lpm r0, Z
+    rjmp .Lret
+.Lreference:
     lpm r18, Z+
-    lpm r19, Z+
-    lpm r21, Z
-    ret
-.Lvalue:
-    mov r0, r20
+    mov r19, r20
+    andi r19, 15
+    swap r20
+    andi r20, 7
+    subi r20, -3
+    cp r23, r20
+    brsh .Lskip
+    movw r24, r26
+    sub r24, r18
+    sbc r25, r19
+    sbiw r24, 1
+    rjmp .Lseek
 .Lret:
     pop r18
     out 0x3f, r18
@@ -124,7 +100,7 @@ zymatic_original_byte:              /* Z = original address, r0 = result */
 zymatic_pgm_copy:                   /* lpm r0,Z+; st X+,r0 */
     push r18
     in r18, 0x3f
-    rcall zymatic_original_byte
+    call zymatic_original_byte
     adiw r30, 1
     out 0x3f, r18
     pop r18
@@ -134,7 +110,7 @@ zymatic_pgm_copy:                   /* lpm r0,Z+; st X+,r0 */
 .global zymatic_pgm_wifi_print
 zymatic_pgm_wifi_print:             /* lpm r24,Z; tst r24 */
     push r0
-    rcall zymatic_original_byte
+    call zymatic_original_byte
     mov r24, r0
     pop r0
     tst r24
@@ -143,7 +119,7 @@ zymatic_pgm_wifi_print:             /* lpm r24,Z; tst r24 */
 .global zymatic_pgm_serial_print
 zymatic_pgm_serial_print:           /* lpm r22,Z; tst r22 */
     push r0
-    rcall zymatic_original_byte
+    call zymatic_original_byte
     mov r22, r0
     pop r0
     tst r22
@@ -152,7 +128,7 @@ zymatic_pgm_serial_print:           /* lpm r22,Z; tst r22 */
 .global zymatic_pgm_bitmap
 zymatic_pgm_bitmap:                 /* lpm r30,Z; mov r18,r30 */
     push r0
-    rcall zymatic_original_byte
+    call zymatic_original_byte
     mov r30, r0
     mov r18, r0
     pop r0

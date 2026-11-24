@@ -31,7 +31,7 @@ def compile_extension(toolchain, destination):
         entry_points = [*build.OFFLINE, "zymatic_factory_compare", "zymatic_factory_stamp", "zymatic_after_loop",
                         "zymatic_sensor_crc", "zymatic_pgm_copy", "zymatic_pgm_bitmap", "zymatic_original_byte",
                         "zymatic_pgm_wifi_print", "zymatic_pgm_serial_print", "zymatic_crt_data",
-                        "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
+                        "zymatic_home_menu", "zymatic_menu_selection", "zymatic_dialog_button", "zymatic_run_program", "zymatic_about_wait",
                         "zymatic_menu_button", "zymatic_brew_button", "zymatic_read_stock_serial"]
         invoke("avr-gcc", "-mmcu=atmega1284p", "-Os", "-mcall-prologues", "-flto",
                "-fmerge-all-constants", "-finline-limit=10", "-fno-tree-dominator-opts", "-nostartfiles", "-nostdlib", "-Wl,--gc-sections", "-Wl,--relax",

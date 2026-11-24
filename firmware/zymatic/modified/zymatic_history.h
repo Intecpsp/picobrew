@@ -25,6 +25,7 @@ void zymatic_program_cleanup(void);
 void zymatic_run_program(uint8_t index);
 void zymatic_factory_clear_byte(void *object, uint16_t address, uint8_t value);
 uint32_t zymatic_history_latest(void);
+uint8_t zymatic_maintenance(void); /* 0..3 brews, bit 2 rinse/filter due, 0xff unavailable */
 uint8_t zymatic_history_ready(void);
 uint8_t zymatic_history_session(uint32_t id, ZymaticHistorySession *out);
 uint8_t zymatic_history_row(uint32_t id, uint16_t offset, ZymaticHistoryRow *out);

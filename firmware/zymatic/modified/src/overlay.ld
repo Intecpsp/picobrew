@@ -3,13 +3,13 @@ OUTPUT_ARCH(avr:51)
 ENTRY(zymatic_setup)
 MEMORY {
   crc_hole (rx) : ORIGIN = 0x2178, LENGTH = 0xfe
-  low (rx) : ORIGIN = 0x12f2, LENGTH = 0x985
+  low (rx) : ORIGIN = 0x10b6, LENGTH = 0xbc1
   app (rx) : ORIGIN = 0x1b920, LENGTH = 0x42e0
   globals (rw) : ORIGIN = 0x802c8a, LENGTH = 0x300
 }
 SECTIONS {
   .crc_hole : { KEEP(*(.crc_hole)) } > crc_hole
-  .low : { KEEP(*(.low_helpers)) KEEP(*(.low_web)) . = ALIGN(2); *(.low_functions) } > low
+  .low : { KEEP(*(.low_helpers)) KEEP(*(.low_web)) KEEP(*(.low_care)) . = ALIGN(2); *(.low_functions) } > low
   .text : {
     *(.text .text.*)
     *(.progmem .progmem.* .progmem1.data*)

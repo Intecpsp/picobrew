@@ -24,8 +24,10 @@ typedef uintptr_t FlashAddress;
 #endif
 
 #ifdef __AVR__
+#define ZYMATIC_CODE_SECTION(name) __attribute__((section(name),noinline))
 #define ZYMATIC_SITE_SECTION __attribute__((section(".low_web"),used))
 #else
+#define ZYMATIC_CODE_SECTION(name)
 #define ZYMATIC_SITE_SECTION
 #endif
 #include "site/zymatic_site.h"
@@ -122,7 +124,7 @@ static uint8_t authorized(const char *val, const uint8_t key[32])
     return nonzero && nonerased && !mismatch;
 }
 
-static uint8_t prefix(const char **text, FlashAddress literal)
+static ZYMATIC_CODE_SECTION(".crc_hole") uint8_t prefix(const char **text, FlashAddress literal)
 {
     uint8_t expected;
     const char *s = *text;
@@ -131,7 +133,7 @@ static uint8_t prefix(const char **text, FlashAddress literal)
     return 1;
 }
 
-static uint8_t decimal(const char **s, uint32_t *result)
+static ZYMATIC_CODE_SECTION(".low_functions") uint8_t decimal(const char **s, uint32_t *result)
 {
     uint32_t value = 0;
     const char *p = *s;
@@ -663,11 +665,9 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
     else if (n->route == OVERVIEW) {
         literal(n, program_active == ZYMATIC_PROGRAM ? CONSTANT("{\"busy\":true") : CONSTANT("{\"busy\":false"));
         literal(n, CONSTANT(",\"pairing_v1\":true"));
-        append_temperature(n, 0);
-        append_temperature(n, 1);
-        append(n, '}');
+        goto report_care;
     }
-    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.2\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
+    else if (n->route == DISCOVER) literal(n, CONSTANT(",\"pairing_v1\":true,\"api_version\":1,\"mode\":\"standalone\",\"firmware_version\":\"1.3.3\",\"commands\":[\"encoder\"],\"capabilities\":{\"display\":true,\"front_panel\":true,\"panel_revision\":true,\"history_persistent\":true,\"temperature\":true}}"));
     else if (n->route == DISPLAY) {
         literal(n, CONSTANT("{\"width\":128,\"height\":64,\"format\":\"page-lsb-hex\",\"total_bytes\":1024,\"offset\":"));
         number(n, n->display_offset);
@@ -698,6 +698,17 @@ void zymatic_api_reply(ZymaticNetwork *n, const uint8_t key[32], const char *uid
             literal(n, CONSTANT(",\"stock_serial\":\""));
             for (uint8_t i=0; i<12; ++i) append(n,stock_serial[i]);
             append(n,'"');
+        }
+    report_care: ;
+        uint8_t care = zymatic_maintenance();
+        if (care != 0xff) {
+            literal(n, CONSTANT(",\"maintenance\":{\"due\":["));
+            if (care & 4) literal(n, CONSTANT("\"rinse\",\"clean_filter\""));
+            if ((care & 3) == 3) {
+                if (care & 4) append(n, ',');
+                literal(n, CONSTANT("\"deep_clean\""));
+            }
+            literal(n, CONSTANT("]}"));
         }
         append_temperature(n, 0);
         append_temperature(n, 1);

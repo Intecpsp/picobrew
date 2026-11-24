@@ -25,11 +25,14 @@ async function api(path, body, publicRead = false) {
 async function overview() {
   try {
     const status = await api("overview", null, true);
+    const due = status.maintenance?.due || [];
     info.value =
       (status.busy ? "Program running" : "Monitoring") +
-      (status.wort_f ? " / " + status.wort_f + " °F" : "");
+      (status.wort_f ? " / " + status.wort_f + " °F" : "") +
+      (due.includes("rinse") ? " · Rinse + check filter" : "") +
+      (due.includes("deep_clean") ? " · Deep clean due" : "");
   } catch {
-    info.value = "Brewer unavailable.";
+    info.value = "Offline";
   }
 }
 async function show(action) {
@@ -152,7 +155,7 @@ async function pairDevice(nonce) {
     }
     throw Error();
   } catch {
-    message.value = "Pairing unavailable. Start again.";
+    message.value = "Pairing unavailable.";
   } finally {
     pair.disabled = false;
   }
@@ -180,7 +183,7 @@ journal.onclick = async () => {
     list.hidden = false;
     samples.textContent = "";
   } catch {
-    message.value = "Brew history unavailable.";
+    message.value = "History unavailable.";
   }
 };
 list.onchange = async () => {

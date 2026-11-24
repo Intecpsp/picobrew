@@ -26,7 +26,7 @@ First-time USB setup uses 1.2.0, which fits below every supported boot boundary.
 
 To qualify an expanded application window, capture the configured fuse and lock bits through the external programmer on the same provisioned brewer. The installer checks the prior paired UID and compares the live boot bytes against the independent capture before choosing an image. Both the private API key and identity carry forward. Stock restoration clears the recognized custom application extent and verifies the full flash after writing. [Boot evidence and recovery](recovery.md) · [USB setup](README.md)
 
-The private reference package builder defaults to 1.2.0. To compose a 1.3.2 image for simulator testing, use `tools/package.py --firmware-version 1.3.2`. Its manifest reports the required boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
+The private reference package builder defaults to 1.2.0. To compose a 1.3.3 image for simulator testing, use `tools/package.py --firmware-version 1.3.3`. Its manifest reports the required boot boundary. Keep personalized images in private storage. A generic HEX updater does not perform the Hub’s fit, identity or recovery checks.
 
 CI compares the reconstructed OEM control paths and executes the overlay, screen handling, EEPROM recorder and packed OEM assets in an AVR simulator. Physical brewing, power-loss recovery on a real unit and installation of an expanded application still need hardware trials. Network firmware installation remains unavailable. [1.2.0 build and memory details](application-1.2.md) · [Offline recipe format](offline-recipe.md)
 
@@ -37,6 +37,8 @@ session. It shows the outcome and samples from all available pages, with elapsed
 seconds, temperatures, flow path and step number. Each new front-panel image
 appears after its complete, consistent OLED frame arrives. The site shows the
 manufacturer's rinse, inline-filter and deep-clean intervals. [Zymatic manual, care and maintenance](https://picodevblob.blob.core.windows.net/content/zymatic/Zymatic_Manual.pdf#page=23)
+
+In 1.3.3 the main menu and Ethernet site prompt for a rinse and an inline-filter check after a completed brew. After three brews they also recommend Deep Clean. A completed stock rinse acknowledges the rinse and filter reminder together. The operator inspects the filter. A completed stock deep clean resets the brew count and calls for a rinse. Interrupted runs leave prior reminders in place. The status and public overview report these reminders under `maintenance.due` when retained history is available.
 
 The private installer uses the checked-in compressed site. To regenerate it
 after a website edit, run `npm ci --ignore-scripts --prefix tools` followed by

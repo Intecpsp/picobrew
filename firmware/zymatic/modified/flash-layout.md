@@ -1,13 +1,13 @@
-# Zymatic 1.3.2 flash layout
+# Zymatic 1.3.3 flash layout
 
-This build composes a 130,004-byte ATmega1284P application from the recognized PicoBrew 1.1.14 image. Its final USB page ends at byte address `0x1fc00`. A unit must have a verified boot section starting there. A unit reserving 2, 4 or 8 KiB, or one whose boot section is unknown, uses the smaller 1.2.0 application. [Installation and boot evidence](recovery.md)
+This build composes a 130,048-byte ATmega1284P application from the recognized PicoBrew 1.1.14 image. Its final USB page ends at byte address `0x1fc00`. A unit must have a verified boot section starting there. A unit reserving 2, 4 or 8 KiB, or one whose boot section is unknown, uses the smaller 1.2.0 application. [Installation and boot evidence](recovery.md)
 
-| Byte range, end exclusive | Original use | 1.3.2 contents |
+| Byte range, end exclusive | Original use | 1.3.3 contents |
 | --- | --- | --- |
-| `0x0254–0x1c77` | 6,691 bytes of text and bitmap data | 4,254-byte lossless block dictionary, then 2,436 bytes of extension code and website starting at `0x12f2` |
-| `0x2177–0x2277` | 256-byte Dallas/Maxim sensor CRC-8 table | 230 bytes of code starting at `0x2178`, including the bitwise equivalent CRC |
+| `0x0254–0x1c77` | 6,691 bytes of text and bitmap data | 3,682-byte lossless block dictionary, then 2,994 bytes of extension code and website starting at `0x10b6` |
+| `0x2177–0x2277` | 256-byte Dallas/Maxim sensor CRC-8 table | 252 bytes of code starting at `0x2178`, including the bitwise equivalent CRC |
 | `0x1b24a–0x1b920` | Beginning of the SRAM startup data | 1,730-byte encoding of all 2,432 initialized SRAM bytes followed by padding |
-| `0x1b920–0x1fbd4` | End of the startup data and unused application space | 17,076 bytes of AVR code, website asset, private provisioning fields and image CRC |
+| `0x1b920–0x1fc00` | End of the startup data and unused application space | 17,120 bytes of AVR code, website asset, private provisioning fields and image CRC |
 | `0x1fc00–0x20000` | Terminal 1 KiB | Reserved for the verified bootloader |
 
 Addresses are flash **byte** addresses. The bootloader reads and writes 256-byte pages. The linker reserves 768 bytes for custom static state at SRAM address `0x2c8a`. The builder checks the actual linked lengths, bounds, hashes and provisioning fields before producing the private image. Exact opcodes and both before/after instruction encodings for each patch are in [the composition code](tools/zymatic_build.py). The layout, dictionary and five reused AVR library function hashes are defined in [the packer](tools/oem_tables.py) and [linker script](src/overlay.ld).
@@ -28,10 +28,10 @@ The original image contains 69 `LPM` or `ELPM` instructions in its executable ra
 | `0x2326` | The stock reset initializer is replaced at `0x2316`. The replacement verifies the composed image CRC, decodes the initializer, then returns to stock startup at `0x2330`. The heap start moves above the extension globals. |
 | `0x4a5c–0x4a62`, `0x7ac0–0x7ac6` | Stock factory checksum loops read the actual application bytes. The builder derives the new checksum for this private image. The recognition hooks handle the stock and custom factory stamps. |
 
-The original SRAM positions of strings, objects and controller variables are retained. The decoder reconstructs each 128-byte block independently for flash reads and uses no persistent decompression buffer. The extension calls the original `strcpy`, unsigned 16- and 32-bit division functions, and GCC prologue/epilogue helpers. Their stock instruction sequences match the pinned compiler library byte for byte.
+The original SRAM positions of strings, objects and controller variables are retained. The decoder locates each 128-byte block from its offset table, then follows backward references to recover individual bytes without a persistent decompression buffer. The extension calls the original `strcpy`, unsigned 16- and 32-bit division functions, and GCC prologue/epilogue helpers. Their stock instruction sequences match the pinned compiler library byte for byte.
 
 ## Verification
 
-The AVR simulator runs each replaced table-read sequence against both the stock and composed images for every original address in the pool, neighboring addresses and every input to the sensor CRC table. The 54,104 cases compare registers, flags, program continuation and destination memory. The stock and composed startup paths also compare initialized SRAM before constructors. In these runs the slowest single table lookup consumed 2,068 cycles at 16 MHz (about 0.13 ms). The independent stock-control regression runs 494 AVR executions. [Paired table tests](tests/simavr_tables.c) · [Cold-boot and Ethernet tests](tests/run_simavr.py)
+The AVR simulator runs each replaced table-read sequence against both the stock and composed images for every original address in the pool, neighboring addresses and every input to the sensor CRC table. The 54,104 cases compare registers, flags, program continuation and destination memory. The stock and composed startup paths also compare initialized SRAM before constructors. In these runs the slowest single table lookup consumed 2,456 cycles at 16 MHz (about 0.16 ms). The independent stock-control regression runs 494 AVR executions. [Paired table tests](tests/simavr_tables.c) · [Cold-boot and Ethernet tests](tests/run_simavr.py)
 
 The recognizer reverses the patches, reconstructs the stock data and verifies the recovered 1.1.14 application hash. It then recomposes the image with the recovered private fields and requires an exact byte match. Physical installation, power-loss recovery and brewing remain hardware qualification steps. [Version and hardware requirements](application.md)
