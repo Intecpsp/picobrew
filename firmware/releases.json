@@ -770,9 +770,9 @@
       "model_family": "picostill",
       "firmware_version": "1.2.7",
       "kind": "reference",
-      "source_commit": "6af77091ebe9d41ebe8fcd17fdf0f169d98793aa",
-      "archive_sha256": "e536c61e0f9ffb17995015640c93905a2ab15ba87db1d16082c51e490a491d8d",
-      "binary_sha256": "b1bcfd8334fd79ee0a1114cc85973393ea8934040b5cae9975bd8d03d3e01edd",
+      "source_commit": "e0d48a1dbd0195fa49f014b07eff28187e6ea56f",
+      "archive_sha256": "f388e9423d7f33f5926f4b92e72cedc741c4a09741e94901864d1c75336aca43",
+      "binary_sha256": "e00e6eec82555a800b8aaa31469895d296a9ce17a5d36b7c3fb730ba6213cc9f",
       "binary_bytes": 821200,
       "ota_protocol": "esp32-factory-v1"
     },
@@ -792,9 +792,9 @@
       "model_family": "z-series",
       "firmware_version": "1.2.9",
       "kind": "reference",
-      "source_commit": "6af77091ebe9d41ebe8fcd17fdf0f169d98793aa",
-      "archive_sha256": "a2203fcf071aef53e65d01ac14f148b72fd1948a095be14f4f059dec398f5694",
-      "binary_sha256": "f8a1bdf4bccdfacd8bd4ae9a69973ef85133bcd2c95f23b168050a1e9aef6990",
+      "source_commit": "e0d48a1dbd0195fa49f014b07eff28187e6ea56f",
+      "archive_sha256": "eeb8a3835bf93ebdbc337e674c52057de068999f6c2cd90ca410e40e042586c6",
+      "binary_sha256": "02a9ba1eda5ace7a0ddf41a96c7de17002f0a1c423bb7480e0cf552e5e358514",
       "binary_bytes": 1659056,
       "ota_protocol": "esp32-factory-v1"
     }
