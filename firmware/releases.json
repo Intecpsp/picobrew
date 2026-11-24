@@ -764,6 +764,17 @@
       "archive_sha256": "ac5510bfd4e4f1968bcb644a235b5d3d57f59903b90bf4cd3ee98fc8c4a7a4e1",
       "binary_sha256": "ce711a1ea7ac2af441d603ca35a602dbc9182884aa3d1740e2c4a4ef0be99545",
       "binary_bytes": 396432
+    },
+    {
+      "model": "picostill",
+      "model_family": "picostill",
+      "firmware_version": "1.2.7",
+      "kind": "reference",
+      "ota_protocol": "esp32-factory-v1",
+      "source_commit": "d099c30afc8a510617c67b06a225bdf220a2a239",
+      "archive_sha256": "54b068b8c89e75eaa926e3015050bf40aa19cfed51d0de7cc29ab55fd7b1ba98",
+      "binary_sha256": "7f8a7cd81afca542a207bbe88b420b90014b9f511aeda4bc323b182d8c751536",
+      "binary_bytes": 821104
     }
   ]
 }
