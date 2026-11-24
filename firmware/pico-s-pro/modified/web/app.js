@@ -81,6 +81,17 @@ function renderIdentity(info) {
 
 function renderStatus(status) {
   state.status = status;
+  const due = status.maintenance?.due || [];
+  const care = {rinse:'Rinse after this brew',deep_clean:'Run Deep Clean',descale:'Descale if using mineral-containing reservoir water'};
+  const reminders = due.filter(key=>care[key]).map(key=>{
+    const button=document.createElement('button');
+    button.className='button small';
+    button.textContent=care[key];
+    button.disabled=!status.ready || status.busy || status.stopped;
+    button.onclick=()=>{ $('program').value=key.replace('_','-'); $('runProgram').click(); };
+    return button;
+  });
+  $('careDue').replaceChildren(...reminders);
   if (status.model) renderIdentity(status);
   $('wortTemperature').textContent = temperature(status.wort_f);
   $('blockTemperature').textContent = temperature(status.thermoblock_f);

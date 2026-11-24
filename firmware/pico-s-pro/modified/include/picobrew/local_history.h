@@ -86,6 +86,11 @@ void pico_history_bind(PicoApplication *application, const PicoHistoryStorage *s
 bool pico_history_start(const char *command);
 void pico_history_finish(bool interrupted);
 void pico_history_poll(void);
+/* Care events share the verified alternating history catalogs. Counters begin
+ * at installation and advance only on confirmed program completion. */
+enum { PICO_CARE_RINSE = 1, PICO_CARE_DEEP_CLEAN = 2, PICO_CARE_DESCALE = 4, PICO_CARE_UNKNOWN = 8 };
+unsigned pico_care_due(void);
+void pico_care_completed(unsigned routine);
 /* Latest/current metadata; inventory order is newest first. */
 void pico_history_metadata(PicoHistoryMetadata *metadata);
 size_t pico_history_count(void);

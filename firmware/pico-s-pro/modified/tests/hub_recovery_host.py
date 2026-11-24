@@ -14,14 +14,21 @@ RECOVERY = ROOT / "recovery"
 UID = "0123456789abcdef" * 2
 
 
-def serve(directory):
+def serve(directory, display):
     identity = directory / "identity.c"
     identity.write_text('#include <stdbool.h>\n#include <string.h>\n'
                         f'bool pico_recovery_read_uid(char uid[33]) {{ memcpy(uid, "{UID}", 33); return true; }}\n')
     library = directory / library_name("hub-recovery")
-    sources = [ROOT / "platform/hub_recovery/http.c", RECOVERY / "recovery/recovery.c",
+    http = ROOT / "platform/hub_recovery/http.c"
+    flags = []
+    if display:
+        if display not in ("ssd1309", "ssd1325"):
+            raise ValueError("Unknown Pico C display")
+        http = ROOT.parents[1] / "pico-c/modified/platform/hub_recovery/variant_recovery.c"
+        flags = [f'-DPICO_DISPLAY_VARIANT="{display}"']
+    sources = [http, RECOVERY / "recovery/recovery.c",
                RECOVERY / "recovery/sha256.c", RECOVERY / "tests/recovery_http_host.c", identity]
-    subprocess.run([compiler(), "-std=c11", *pic_flags(), *shared_flags(),
+    subprocess.run([compiler(), "-std=c11", *pic_flags(), *shared_flags(), *flags,
                     "-I" + str(RECOVERY / "include"), "-I" + str(RECOVERY / "recovery"),
                     *sources, "-o", library], check=True)
     with native_library(library) as core:
@@ -54,4 +61,4 @@ def serve(directory):
 
 if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as directory:
-        serve(Path(directory))
+        serve(Path(directory), sys.argv[1] if len(sys.argv) > 1 else "")

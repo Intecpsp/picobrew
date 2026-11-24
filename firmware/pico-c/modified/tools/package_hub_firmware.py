@@ -211,6 +211,10 @@ def package_firmware(model, display, firmware_directory=None, web_directory=None
             "Report files.binary must name the requested model's standalone binary")
     binary = read_file(firmware_directory / binary_name, MAX_IMAGE)
     validate_image(report, binary)
+    if "hub_ota_protocol" in report:
+        require(type(report["hub_ota_protocol"]) is int and report["hub_ota_protocol"] == 1 and
+                binary[1024:1048] == ("PicoBrew:pico-c:" + display + "\0").encode(),
+                "OTA image target does not match the Pico C display")
     manifest_bytes = read_file(web_directory / "manifest.json", MAX_MANIFEST)
     entries = {"firmware-report.json": report_bytes, binary_name: binary}
     entries.update(validate_web(report, manifest_bytes, web_directory))

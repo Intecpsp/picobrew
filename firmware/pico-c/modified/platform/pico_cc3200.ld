@@ -11,6 +11,7 @@ SECTIONS
     .text : {
         _text = .;
         KEEP(*(.intvecs))
+        KEEP(*(.pico_target))
         *(.text*) *(.rodata*)
         *(.ARM.extab* .gnu.linkonce.armextab.*)
         . = ALIGN(4); KEEP(*(.init))

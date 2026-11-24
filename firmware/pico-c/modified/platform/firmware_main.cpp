@@ -12,6 +12,11 @@
 #include "pico_c/local_control.h"
 #include "pico_c/web_assets.h"
 #endif
+#include "pico_c/model.h"
+#include "hub_recovery/target.h"
+#include "hub_recovery/image.h"
+#include "../../../pico-s-pro/modified/platform/ota_cc3200.hpp"
+static const char ota_target[] __attribute__((used,section(".pico_target"))) = PICO_C_TARGET_TAG;
 #include <SPI.h>
 extern "C" {
 #include <driverlib/interrupt.h>
@@ -185,6 +190,14 @@ void setup()
     pico_telemetry_set_snapshot(telemetry_snapshot, &local_api);
 #endif
     pico_application_setup(&application);
+    bool trial;
+    char digest[65];
+    uint32_t size;
+    if (ota_inspect(&trial, digest, &size)) {
+        local_api.ota_trial = trial;
+        local_api.ota_inspect = ota_inspect;
+        local_api.ota_commit = ota_commit;
+    }
 }
 void loop()
 {

@@ -87,6 +87,12 @@ void pico_local_control_enter_menu(void)
     local.running = false;
     local.active_command = "idle";
 }
+void pico_local_control_show_update_notice(const char *message)
+{
+    if (!local.at_menu) return;
+    pico_display_center_text(1, message);
+    pico_display_flush();
+}
 void pico_local_control_leave_menu(void)
 {
     local.at_menu = false;

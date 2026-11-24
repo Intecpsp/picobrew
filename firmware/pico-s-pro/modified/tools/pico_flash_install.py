@@ -60,8 +60,12 @@ UID_BLOCK = 106
 PROFILE_UID_SHA256 = "7290674610eca1cf26581779a71c7f41a9c2fc367eb7189d0e93918319964bc7"
 ORIGINAL_SIZE = 162792
 ORIGINAL_SHA256 = "e18c240fa1cf35222674bf3b4fa992a306c6e63b0b99be8793604f199085d702"
-CANDIDATE_SIZE = 169536
-CANDIDATE_SHA256 = "56de7a4798a225149b8f334db816ac7ccb575b2d4bc8c2fbaeea70847efdea59"
+CANDIDATE_SIZE = 170296
+CANDIDATE_SHA256 = "955a408d74fb2fac188b30c922e61807c2ef878fe9314ed16ee43af4b91c0f49"
+RELEASED_1_3_9 = {
+    "pico-pro": (169536, "56de7a4798a225149b8f334db816ac7ccb575b2d4bc8c2fbaeea70847efdea59"),
+    "pico-s": (169528, "db924ea93c57a27e7a78539ebf4b76487f100eb0b588bc608ee84bdc8d759e9a"),
+}
 RELEASED_1_3_8 = {
     "pico-pro": (169536, "611e39b7e666a3e3df4dc4062bd179b05b778930296a65c312a30a3824dfdfbd"),
     "pico-s": (169528, "c0a96fb35b1927fdafd68557e637cd444fe37b67ef4aac95c532ded0ed73e185"),
@@ -129,10 +133,14 @@ APPLICATION_ALLOCATION_BLOCKS = 48
 APPLICATION_PAYLOAD_LIMIT = (APPLICATION_ALLOCATION_BLOCKS - 2) * 4096
 KEY_NAME = "/local/api.key"
 KEY_SIZE = 65
-# Shared by the Pico S and Pico Pro 1.3.9 packages.
-WEB_MANIFEST_SHA256 = "76ef55bdd05b4cfbdbc5a1691b430aacb02af2492058acbb2d957c32fb37927c"
+# Shared by the Pico S and Pico Pro 1.3.10 packages.
+WEB_MANIFEST_SHA256 = "76be243e622a8a0552d2d18f082dced8887ca3b5b58d5f931abc5052a72ed68e"
 WEB_DIRECTORY = Path(__file__).resolve().parents[1] / "firmware/web"
 C_FIRMWARE = Path(__file__).resolve().parents[3] / "pico-c/modified/firmware"
+C_RECOVERY = {
+    "pico-c-ssd1325": {"size_bytes": 43912, "sha256": "c17c462edf7f9b61ee84dc1c6fb8a33d3a48d8b0007a18bfbc38cb646c387141"},
+    "pico-c-ssd1309": {"size_bytes": 43912, "sha256": "46971bb53210fb8a3086b8ff3d2e8a0d0acd2b6680b568ee2b64f504c8bbddd4"},
+}
 C_STOCK = {
     "pico-c-ssd1325": (156536, "ee732d03a1869985f9353e4208073ebfd1182df11d6d9f0dbf834ee76fcdd45b"),
     "pico-c-ssd1309": (155864, "6f2dedfcd7ab10b5a421b05dc4ee792cd44753d7e302fd8ee645ca4f6556c226"),
@@ -157,11 +165,15 @@ C_RELEASED_1_2_7 = {
     "pico-c-ssd1325": (164136, "d7c8ad7efe11eda6a009a605f1914132eb59436e56fdf9f97e138e74c439bb9f"),
     "pico-c-ssd1309": (164056, "0bbd93aa290347c436cc50b801df06a3d58111dcfc850f2b0d817eb82999424e"),
 }
-C_STANDALONE = {
+C_RELEASED_1_2_8 = {
     "pico-c-ssd1325": (164136, "782fa7c5f5cfc9cb3b03df0b1efc564a4c7879ce4fbc1c7a049d3e2a74f51d8a"),
     "pico-c-ssd1309": (164056, "293506900d6fe720afe081cc5b8aff42b5b6101e81876d5c9e82dde098559ffb"),
 }
-C_WEB_MANIFEST_SHA256 = "9755df86491b7d889ea2b51574885f428a033d405a2095b66be6ba9cd903e51d"
+C_STANDALONE = {
+    "pico-c-ssd1325": (168384, "f1f34b1f64ba5b060a60c30ed0f9b6c9d99a80c068533d6ed0f2e6ba8c8ca0f3"),
+    "pico-c-ssd1309": (168288, "ff2030d4c019b4d7ae3fe6a88036cbacbb5ff04ff35f93ffcac6f7226a0c3930"),
+}
+C_WEB_MANIFEST_SHA256 = "bb25ffd822ca8d351a2d4b9dbcd34afebb78c041d5b9a6494881c315aa187feb"
 UID_NAME = "/sys/uid.txt"
 LOADER_NAME = "/sys/mcuimg.bin"
 # These counts, flags and mirroring define the supported TI allocation shape.
@@ -369,7 +381,7 @@ def candidate_identity(model):
     if model == "pico-pro":
         return CANDIDATE_SIZE, CANDIDATE_SHA256
     if model == "pico-s":
-        return 169528, "db924ea93c57a27e7a78539ebf4b76487f100eb0b588bc608ee84bdc8d759e9a"
+        return 170288, "30e10819a9095e0c41494d24a7a290754f78dd198dbc83371264cfaf9c99ec86"
     if model in C_STANDALONE:
         return C_STANDALONE[model]
     raise InstallError("Unknown target model")
@@ -449,9 +461,11 @@ def _approved_current_applications(mode, model="pico-pro"):
     """Exact live images allowed before mutation; install payload stays pinned."""
     if model in C_STOCK:
         identities = [C_STOCK[model]]
+        if mode == "install-recovery":
+            identities = [candidate_identity(model)]
         if mode == "install":
             identities.extend((C_RELEASED_1_2_3[model], C_RELEASED_1_2_4[model], C_RELEASED_1_2_5[model], C_RELEASED_1_2_6[model],
-                               C_RELEASED_1_2_7[model], candidate_identity(model)))
+                               C_RELEASED_1_2_7[model], C_RELEASED_1_2_8[model], candidate_identity(model)))
         return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
     identities = [(ORIGINAL_SIZE, ORIGINAL_SHA256)]
     if mode == "install":
@@ -462,11 +476,11 @@ def _approved_current_applications(mode, model="pico-pro"):
                            (RELEASED_1_2_0_SIZE, RELEASED_1_2_0_SHA256),
                            RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
                            RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model], RELEASED_1_3_6[model],
-                           RELEASED_1_3_7[model], RELEASED_1_3_8[model], candidate_identity(model)))
+                           RELEASED_1_3_7[model], RELEASED_1_3_8[model], RELEASED_1_3_9[model], candidate_identity(model)))
     if mode == "install-recovery":
         identities = [RELEASED_1_3_0[model], RELEASED_1_3_1[model], RELEASED_1_3_2[model],
                       RELEASED_1_3_3[model], RELEASED_1_3_4[model], RELEASED_1_3_5[model], RELEASED_1_3_6[model],
-                      RELEASED_1_3_7[model], RELEASED_1_3_8[model], candidate_identity(model)]
+                      RELEASED_1_3_7[model], RELEASED_1_3_8[model], RELEASED_1_3_9[model], candidate_identity(model)]
     return tuple({"size_bytes": size, "sha256": digest} for size, digest in identities)
 
 
@@ -483,7 +497,7 @@ def _expected_public(name, model="pico-pro", profile=None):
 
 def _protected_matches(name, observed, model="pico-pro", profile=None):
     return (observed == _expected_public(name, model, profile)
-            or (name == RECOVERY_NAME and model not in C_STOCK and observed == RECOVERY_IMAGE))
+            or (name == RECOVERY_NAME and observed == C_RECOVERY.get(model, RECOVERY_IMAGE)))
 
 
 def build_connection(cc, probe_module, port, helper, mode, payloads, journal, web_manifest=None,
@@ -498,8 +512,8 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
         raise InstallError("Unknown operation")
     if stock_profile is not None and (stock_profile.model != model or uid_digest != stock_profile.uid_digest):
         raise InstallError("The qualified stock backup and selected brewer disagree")
-    if model in C_STOCK and (stock_profile is None or mode not in ("provision-key", "install", "restore-stock")):
-        raise InstallError("Pico C requires its qualified stock backup and preserves its recovery slot")
+    if model in C_STOCK and (stock_profile is None or mode not in ("provision-key", "install", "install-recovery", "restore-stock")):
+        raise InstallError("Pico C requires its qualified stock backup and a matching display")
     immutable = MappingProxyType(dict(payloads))
     web_assets = parse_web_manifest(web_manifest, model) if mode == "install" else MappingProxyType({})
     expected_names = {APP_NAME} if mode in ("restore", "restore-stock") else {KEY_NAME}
@@ -514,7 +528,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
         expected_names.update(web_assets)
     if mode == "install-recovery":
         expected_names.add(RECOVERY_NAME)
-        if not isinstance(immutable.get(RECOVERY_NAME), bytes) or _image_metadata(immutable[RECOVERY_NAME]) != RECOVERY_IMAGE:
+        if not isinstance(immutable.get(RECOVERY_NAME), bytes) or _image_metadata(immutable[RECOVERY_NAME]) != C_RECOVERY.get(model, RECOVERY_IMAGE):
             raise InstallError("Recovery bytes do not match the pinned local recovery image")
     if set(immutable) != expected_names or any(not isinstance(v, bytes) for v in immutable.values()):
         raise InstallError("Write payload registration does not match the selected operation")
@@ -673,7 +687,7 @@ def build_connection(cc, probe_module, port, helper, mode, payloads, journal, we
                 else:
                     raise InstallError("Unapproved key open mode")
             elif name == RECOVERY_NAME and self.operation == "restore-stock":
-                if (model in C_STOCK or flags != OPEN_EXISTING_WRITE or info is None
+                if (flags != OPEN_EXISTING_WRITE or info is None
                         or self.observed.get(APP_NAME) != _expected_public(APP_NAME, model, stock_profile)
                         or self.observed.get(name) == _expected_public(name, model, stock_profile)
                         or not self.layout.get("recovery_allocation_verified")
@@ -1141,7 +1155,7 @@ def inspect_stock(path, model, cc):
     if model in C_STOCK:
         # This slot stays byte-for-byte as captured throughout conversion and
         # restore. Reject corrupt headers, non-applications and our OTA image.
-        if len(recovery) < 8 or recovery_identity == RECOVERY_IMAGE:
+        if len(recovery) < 8 or recovery_identity in [RECOVERY_IMAGE, *C_RECOVERY.values()]:
             raise InstallError("Pico C requires its original independent recovery slot")
         stack, reset = struct.unpack_from("<II", recovery)
         if (stack & 3 or not 0x20000000 <= stack <= 0x20040000 or not reset & 1
@@ -1243,7 +1257,7 @@ def read_live_layout(connection, cc):
         starts = (connection.stock_profile.starts if connection.stock_profile is not None
                   else {LOADER_NAME: 71, preflight.BOOT_INFO_NAME: 79})
         _verify_boot_mirrors(lambda offset, length: _read_flash(connection, offset, length),
-                             starts, allow_previous_trial=connection.target_model not in C_STOCK)
+                             starts, allow_previous_trial=True)
         result["profile_uid_matches"] = True
     connection.layout = result
     return result
@@ -1435,11 +1449,12 @@ def run_operation(connection, mode, key_bytes, candidate_bytes, original_bytes, 
 
     if mode == "install-recovery":
         _verify_key(connection, key_bytes)
-        if before["protected"][RECOVERY_NAME] != RECOVERY_IMAGE:
+        expected_recovery = C_RECOVERY.get(connection.target_model, RECOVERY_IMAGE)
+        if before["protected"][RECOVERY_NAME] != expected_recovery:
             progress("RECOVERY: installing the pinned local recovery in its existing allocation")
             _write_registered(connection, RECOVERY_NAME, OPEN_EXISTING_WRITE)
         after = _check_protected(connection, progress)
-        if (after[RECOVERY_NAME] != RECOVERY_IMAGE or
+        if (after[RECOVERY_NAME] != expected_recovery or
                 _image_metadata(read_file_bytes(connection, APP_NAME)) != before["application"]):
             raise InstallError("Recovery or active application failed post-install readback")
         read_live_layout(connection, cc)
@@ -1587,9 +1602,12 @@ def _usb_summary(details):
     return result
 
 
-def _load_hub_recovery():
-    payload = _read_regular(RECOVERY_FILE, RECOVERY_IMAGE["size_bytes"])
-    if _image_metadata(payload) != RECOVERY_IMAGE:
+def _load_hub_recovery(model="pico-pro"):
+    identity = C_RECOVERY.get(model, RECOVERY_IMAGE)
+    image = (C_FIRMWARE / "standalone/pico-c" / model.removeprefix("pico-c-") / "pico-c-recovery.bin"
+             if model in C_STOCK else RECOVERY_FILE)
+    payload = _read_regular(image, identity["size_bytes"])
+    if _image_metadata(payload) != identity:
         raise InstallError("Packaged recovery differs from the pinned recovery image")
     return payload
 
@@ -1638,8 +1656,8 @@ def main(argv=None, *, transport_factory=None, progress=None):
         parser.error("A per-brewer profile requires --model and an original --backup")
     if (args.model == "pico-c") != (args.display is not None):
         parser.error("Specify --display exactly when selecting Pico C")
-    if args.model == "pico-c" and (not profiled or args.mode in ("restore", "install-recovery")):
-        parser.error("Pico C uses a per-brewer stock backup and preserves the original recovery")
+    if args.model == "pico-c" and (not profiled or args.mode == "restore"):
+        parser.error("Pico C requires its per-brewer stock backup and restore-stock for restoration")
     model = ("pico-c-" + args.display) if args.display else (args.model or "pico-pro")
     web_directory = C_FIRMWARE / "web" if args.display else WEB_DIRECTORY
     stock_profile = None
@@ -1664,8 +1682,7 @@ def main(argv=None, *, transport_factory=None, progress=None):
                             else (RECOVERY_FILE.parent / args.model))
             load_candidate(firmware_dir / (args.model + "-standalone.bin"), model)
             load_web_bundle(web_directory, model)
-            if not args.display:
-                _load_hub_recovery()
+            _load_hub_recovery(model)
             if stock_profile is None:
                 backup.load_dependencies()
         except Exception as exc:
@@ -1720,7 +1737,7 @@ def main(argv=None, *, transport_factory=None, progress=None):
         if args.mode == "restore-stock":
             payloads[RECOVERY_NAME] = recovery
         if args.mode == "install-recovery":
-            payloads[RECOVERY_NAME] = _load_hub_recovery()
+            payloads[RECOVERY_NAME] = _load_hub_recovery(model)
         if args.mode == "install":
             payloads[APP_NAME] = candidate
             payloads.update(web_payloads)

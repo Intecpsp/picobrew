@@ -25,6 +25,7 @@ typedef struct Catalog {
     uint32_t generation, next_id, active_id, tail_generation, tail_crc;
     uint16_t tail_count;
     uint8_t tail_bank;
+    uint8_t rinse_due, brews_since_clean, brews_since_descale;
     Entry entries[PICO_HISTORY_CAPACITY];
     Slot slots[PICO_HISTORY_CHUNKS];
 } Catalog;
@@ -113,6 +114,10 @@ static void encode_meta(uint8_t *raw, const Catalog *c)
     put32(raw + 8, c->generation); put32(raw + 12, c->next_id);
     put32(raw + 16, c->active_id); put32(raw + 20, c->tail_generation);
     put32(raw + 24, c->tail_crc);
+    /* Previously zero-filled reserved bytes remain compatible with PHM2. */
+    raw[28] = c->rinse_due;
+    raw[29] = c->brews_since_clean;
+    raw[30] = c->brews_since_descale;
     for (unsigned i = 0; i < PICO_HISTORY_CAPACITY; ++i) {
         const Entry *e = &c->entries[i]; uint8_t *p = raw + 32 + i * ENTRY_BYTES;
         put32(p, e->id); put32(p + 4, e->duration_ms); put32(p + 8, e->start_ms);
@@ -134,6 +139,7 @@ static bool decode_meta(const uint8_t *raw, Catalog *c)
         get32(raw + META_BYTES - 4) != ~crc_update(UINT32_MAX, raw, META_BYTES - 4)) return false;
     memset(c, 0, sizeof *c); c->tail_bank = raw[5]; c->tail_count = (uint16_t)get16(raw + 6);
     c->generation = get32(raw + 8); c->next_id = get32(raw + 12);
+    c->rinse_due = raw[28]; c->brews_since_clean = raw[29]; c->brews_since_descale = raw[30];
     c->active_id = get32(raw + 16); c->tail_generation = get32(raw + 20); c->tail_crc = get32(raw + 24);
     for (unsigned i = 0; i < PICO_HISTORY_CAPACITY; ++i) {
         Entry *e = &c->entries[i]; const uint8_t *p = raw + 32 + i * ENTRY_BYTES;
@@ -290,6 +296,12 @@ static bool seal_tail(uint32_t now, PicoHistoryState state)
         next.slots[slot] = (Slot){e->id, next.tail_count, e->chunks}; ++e->chunks;
         next.tail_count = 0; next.tail_generation = 0; next.tail_crc = 0;
     }
+    if (state == PICO_HISTORY_COMPLETED &&
+        (!strcmp(e->command, "brew") || !strcmp(e->command, "manual"))) {
+        next.rinse_due = 1;
+        if (next.brews_since_clean < 3) ++next.brews_since_clean;
+        if (next.brews_since_descale < 20) ++next.brews_since_descale;
+    }
     e->state = (uint8_t)state;
     if (state != PICO_HISTORY_RECORDING) next.active_id = 0;
     if (!commit(&next)) return false;
@@ -439,6 +451,34 @@ bool pico_history_start(const char *command)
     history.have_last = false; history.last_checkpoint_ms = now;
     collect(now, true); checkpoint(now); return !history.storage_error;
 }
+unsigned pico_care_due(void)
+{
+    if (!load() || history.storage_error) return PICO_CARE_UNKNOWN;
+    const Catalog *c = &history.catalog;
+    return (c->rinse_due ? PICO_CARE_RINSE : 0) |
+           (c->brews_since_clean >= 3 ? PICO_CARE_DEEP_CLEAN : 0) |
+           (c->brews_since_descale >= 20 ? PICO_CARE_DESCALE : 0);
+}
+
+void pico_care_completed(unsigned routine)
+{
+    if (!load() || !can_io() || history.storage_error || history.catalog.active_id) return;
+    Catalog next = history.catalog;
+    switch (routine) {
+    case PICO_CARE_RINSE:
+        if (!next.rinse_due) return;
+        next.rinse_due = 0; break;
+    case PICO_CARE_DEEP_CLEAN:
+        if (!next.brews_since_clean) return;
+        next.brews_since_clean = 0; break;
+    case PICO_CARE_DESCALE:
+        next.brews_since_clean = 3;
+        next.brews_since_descale = 0; break;
+    default: return;
+    }
+    commit(&next);
+}
+
 void pico_history_finish(bool interrupted)
 {
     if (!load() || !can_io()) return;

@@ -4,6 +4,7 @@
 #include "picobrew/config.h"
 #if PICO_STANDALONE
 #include "picobrew/local_control.h"
+#include "picobrew/local_history.h"
 #endif
 
 static PicoApplication *app(void *context)
@@ -1093,7 +1094,17 @@ final_startup:
 /* Original main menu0x20012e10 and loop tail entry0x20012e9c. */
 void pico_application_loop(PicoApplication *a)
 {
+#if PICO_STANDALONE
+    uint32_t actions[] = {0, 12, 13, 14, 15, 16, 17};
+    unsigned due = pico_care_due();
+    if (!pico_local_control_stopped()) {
+        if (due & PICO_CARE_DEEP_CLEAN) actions[0] = 42;
+        else if (due & PICO_CARE_RINSE) actions[0] = 41;
+        else if (due & PICO_CARE_DESCALE) actions[0] = 46;
+    }
+#else
     static const uint32_t actions[] = {12, 13, 14, 15, 16, 17};
+#endif
     pico_display_clear();
 #if PICO_STANDALONE
     pico_graphics_text_scale(&a->ui.display, 2);
@@ -1103,7 +1114,14 @@ void pico_application_loop(PicoApplication *a)
 #else
     pico_display_logo();
 #endif
+#if PICO_STANDALONE
+    pico_menu_populate_action_labels(actions + !actions[0], actions[0] ? 7 : 6,
+                                     a->settings.language, a->settings.detailed_status);
+    if (actions[0]) strcpy(a->ui.menu_labels[0], actions[0] == 42 ? "Deep clean due" :
+        actions[0] == 41 ? "Rinse due" : "Check descaling");
+#else
     pico_menu_populate_action_labels(actions, 6, a->settings.language, a->settings.detailed_status);
+#endif
 #if PICO_STANDALONE
     if (pico_local_control_stopped()) {
         pico_control_stop(a->control);
@@ -1126,6 +1144,15 @@ void pico_application_loop(PicoApplication *a)
     pico_local_control_leave_menu();
 #endif
     switch (selection) {
+#if PICO_STANDALONE
+    case 41:
+        pico_recipe_rinse(&a->recipe); break;
+    case 42:
+        pico_recipe_run_deep_clean(&a->recipe); break;
+    case 46:
+        /* Only mineral-containing water needs the 20-brew descale. */
+        pico_ui_start_descale(); break;
+#endif
     case 12:
         pico_recipe_run_brew_program(&a->recipe, &a->state.recipe);
         break;

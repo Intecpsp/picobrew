@@ -1,0 +1,8 @@
+/* Verified variant-specific USB recovery images. */
+#if PICO_C_DISPLAY_SSD1309
+#define PICO_OTA_RECOVERY_BYTES 43912
+#define PICO_OTA_RECOVERY_SHA256 "46971bb53210fb8a3086b8ff3d2e8a0d0acd2b6680b568ee2b64f504c8bbddd4"
+#else
+#define PICO_OTA_RECOVERY_BYTES 43912
+#define PICO_OTA_RECOVERY_SHA256 "c17c462edf7f9b61ee84dc1c6fb8a33d3a48d8b0007a18bfbc38cb646c387141"
+#endif

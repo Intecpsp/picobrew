@@ -180,14 +180,6 @@ brew recording.
 
 ## Update boundary and validation
 
-Discovery reports `firmware_update:false`. The Hub can upload or fetch complete
-C packages from a pinned GitHub commit, and checks model, explicit controller,
-browser hashes, image vectors and RAM bounds. Marking a C package as matching
-also requires a saved independent controller observation tied to that appliance
-UID. Downloading a package performs no device operation.
+A provisioned brewer reports `hub_ota_v1:true` after verifying its bootloader, boot selector, display-specific recovery and active image. The Hub checks the enrolled appliance UID and display controller before selecting a package. Authenticated `GET /api/v1/ota` reports the model, display variant, UID, image digest and trial state. `POST /api/v1/ota/enter` and `POST /api/v1/ota/confirm` require that identity, including the same display variant. An update requires the brewer to be at its idle main menu with the outputs off.
 
-The build emits a legacy OEM-format update envelope for analysis/compatibility
-work, but this does not implement a safe standalone OTA installer. An initial
-recovery/bootstrap, transaction ordering, rollback and physical qualification
-remain separate. The [validation record](../analysis/standalone-validation.json)
-records software evidence; no physical C flashing, boot or brewing is claimed.
+Independent recovery checks the display in the package plan, verifies the image and all five website files, then reads the target marker from the application before selecting a trial boot. USB installs or repairs recovery and returns the machine to stock. The [USB setup guide](standalone-provisioning.md) describes the required per-brewer stock backup. Hardware qualification is pending for both displays.

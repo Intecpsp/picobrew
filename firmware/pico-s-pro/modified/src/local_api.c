@@ -256,6 +256,14 @@ static int status(PicoLocalApi *api, Writer *w, bool public_view)
     if (ready && a->hardware && a->hardware->digital_read)
         text(w, a->hardware->digital_read(a->hardware_context, PICO_PIN_STEP_FILTER) ? "false" : "true");
     else text(w, "null");
+    unsigned due = pico_care_due();
+    if (due != PICO_CARE_UNKNOWN) {
+        text(w, ",\"maintenance\":{\"due\":[");
+        if (due & PICO_CARE_RINSE) text(w, "\"rinse\"");
+        if (due & PICO_CARE_DEEP_CLEAN) text(w, due & PICO_CARE_RINSE ? ",\"deep_clean\"" : "\"deep_clean\"");
+        if (due & PICO_CARE_DESCALE) text(w, due & ~PICO_CARE_DESCALE ? ",\"descale\"" : "\"descale\"");
+        text(w, "]}");
+    }
     format(w, ",\"encoder\":{\"position\":%d,\"min\":%d,\"max\":%d}}",
            a->ui.encoder.position, a->ui.encoder.minimum, a->ui.encoder.maximum);
     return 200;

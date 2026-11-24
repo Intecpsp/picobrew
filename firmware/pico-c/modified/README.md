@@ -53,8 +53,7 @@ telemetry setup and package downloads do not require that hardware confirmation.
   strings.
 
 PicoStill is not advertised. The legacy factory recovery action is disabled.
-`firmware_update` is **false**: package upload/download and the legacy-format
-update envelope are not an in-place installer. The [USB setup and stock restoration tool](docs/standalone-provisioning.md) uses a per-device stock backup and keeps the existing recovery slot. C OTA installation and physical USB qualification remain open. No build or test command
+The Hub can update either Pico C display build over Wi-Fi once the device has been provisioned with its matching independent recovery and key. The [USB setup and stock restoration tool](docs/standalone-provisioning.md) verifies each brewer against its own original backup. Physical USB and OTA qualification is pending for both displays. No build or test command
 connects to, programs or operates a brewer.
 
 ## Build and package

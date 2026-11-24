@@ -192,7 +192,7 @@ static int health(PicoLocalApi *api, Writer *w)
            (unsigned long)n->platform->millis(n->platform_context));
     return 200;
 }
-static int discovery(Writer *w)
+static int discovery(PicoLocalApi *api, Writer *w)
 {
     text(w, "{"); identity(w);
     text(w, ",\"api_version\":1,\"firmware_version\":\"" PICO_STANDALONE_VERSION
@@ -206,6 +206,7 @@ static int discovery(Writer *w)
             "\"telemetry_forwarding\":true,\"system_restart\":true,"
             "\"firmware_update\":false,"
             "\"recipe_labels\":\"printable ASCII\",");
+    format(w, "\"hub_ota_v1\":%s,", api->ota_inspect ? "true" : "false");
     format(w, "\"starter_recipe_count\":%u}", pico_local_starter_recipe_count());
     return 200;
 }
@@ -256,6 +257,14 @@ static int status(PicoLocalApi *api, Writer *w, bool public_view)
     if (ready && a->hardware && a->hardware->digital_read)
         text(w, a->hardware->digital_read(a->hardware_context, PICO_PIN_STEP_FILTER) ? "false" : "true");
     else text(w, "null");
+    unsigned due = pico_care_due();
+    if (due != PICO_CARE_UNKNOWN) {
+        text(w, ",\"maintenance\":{\"due\":[");
+        if (due & PICO_CARE_RINSE) text(w, "\"rinse\"");
+        if (due & PICO_CARE_DEEP_CLEAN) text(w, due & PICO_CARE_RINSE ? ",\"deep_clean\"" : "\"deep_clean\"");
+        if (due & PICO_CARE_DESCALE) text(w, due & ~PICO_CARE_DESCALE ? ",\"descale\"" : "\"descale\"");
+        text(w, "]}");
+    }
     format(w, ",\"encoder\":{\"position\":%d,\"min\":%d,\"max\":%d}}",
            a->ui.encoder.position, a->ui.encoder.minimum, a->ui.encoder.maximum);
     return 200;
@@ -642,6 +651,69 @@ static int telemetry(Writer *w, const char *method, const char *body, size_t len
 bad:
     return error(w, 400, "invalid_telemetry", "Use enabled, an IPv4 address or hostname, and port 1-65535");
 }
+static bool outputs_idle(const PicoApplication *a)
+{
+    if (!pico_local_control_is_ready() || a->state.control_signals.enabled ||
+        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
+        return false;
+    static const uint8_t pins[] = {
+        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
+    };
+    for (unsigned i = 0; i < sizeof pins; ++i)
+        if (a->hardware->digital_read(a->hardware_context, pins[i]))
+            return false;
+    return true;
+}
+static int ota(PicoLocalApi *api, Writer *w, const char *method, const char *path,
+               const char *body, size_t length)
+{
+    bool inspect = !strcmp(path, "/api/v1/ota");
+    bool confirm = !strcmp(path, "/api/v1/ota/confirm");
+    if (!inspect && !confirm && strcmp(path, "/api/v1/ota/enter"))
+        return error(w, 404, "not_found", "Unknown firmware operation");
+    if (strcmp(method, inspect ? "GET" : "POST"))
+        return error(w, 405, "method_not_allowed", "Invalid firmware operation method");
+    if (!api->ota_inspect || !api->ota_commit || api->restart_pending ||
+        pico_local_control_busy() || pico_local_control_stopped() || !outputs_idle(api->application))
+        return error(w, 409, "ota_unavailable", "Firmware updates require an idle brewer");
+    char expected[65] = {0};
+    if (!inspect) {
+        Json j = {body, body + length, true};
+        char field[32], uid[sizeof api->application->state.device_uid], model[16], variant[9];
+        unsigned seen = 0;
+        if (!token(&j, '{')) return error(w, 400, "invalid_request", "Missing update identity");
+        do {
+            if (!key(&j, field)) break;
+            if (!strcmp(field, "device_uid") && !(seen & 1) && string(&j, uid, sizeof uid)) seen |= 1;
+            else if (!strcmp(field, "model") && !(seen & 2) && string(&j, model, sizeof model)) seen |= 2;
+            else if (!strcmp(field, "display_variant") && !(seen & 8) && string(&j, variant, sizeof variant)) seen |= 8;
+            else if (!strcmp(field, "sha256") && !(seen & 4) && string(&j, expected, sizeof expected)) seen |= 4;
+            else return error(w, 400, "invalid_request", "Invalid update identity");
+        } while (comma_or_end(&j, '}'));
+        if (seen != 15 || strcmp(variant, PICO_DISPLAY_VARIANT) || !token(&j, '}') || !done(&j) || !*uid ||
+            strcmp(uid, api->application->state.device_uid) || strcmp(model, PICO_MODEL_ID))
+            return error(w, 409, "identity_mismatch", "Update identity does not match this brewer");
+    }
+    bool trial = false;
+    char digest[65];
+    uint32_t size = 0;
+    if (!api->ota_inspect(&trial, digest, &size))
+        return error(w, 409, "recovery_unavailable", "Install the matching recovery image and verify the boot layout over USB");
+    if (!inspect) {
+        if (trial != confirm || strcmp(expected, digest))
+            return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
+        if (!api->ota_commit(confirm))
+            return error(w, 409, "boot_state", "Firmware digest or boot record could not be verified");
+        if (confirm) api->ota_trial = false;
+        else api->restart_pending = true;
+    }
+    text(w, "{\"device_uid\":"); quote(w, api->application->state.device_uid);
+    text(w, ",\"display_variant\":\"" PICO_DISPLAY_VARIANT "\"");
+    format(w, ",\"model\":\"%s\",\"sha256\":\"%s\",\"size\":%lu,\"trial\":%s,\"ok\":true}",
+           PICO_MODEL_ID, digest, (unsigned long)size, trial && !confirm ? "true" : "false");
+    return 200;
+}
+
 static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
                           const char *body, size_t length)
 {
@@ -650,17 +722,9 @@ static int restart_system(PicoLocalApi *api, Writer *w, const char *method,
     Json j = {body, body + length, true};
     if (!token(&j, '{') || !token(&j, '}') || !done(&j))
         return error(w, 400, "invalid_request", "Send an empty JSON object");
-    PicoApplication *a = api->application;
-    if (api->restart_pending || !pico_local_control_is_ready() || pico_local_control_busy() ||
-        pico_local_control_stopped() || a->state.control_signals.enabled ||
-        a->state.controller.phase != PICO_BREW_PHASE_IDLE || !a->hardware || !a->hardware->digital_read)
-        return error(w, 409, "busy", "Wait until the brewer is idle");
-    static const uint8_t outputs[] = {
-        PICO_PIN_HEATER, PICO_PIN_STEAM_PUMP, PICO_PIN_DRAIN_PUMP, PICO_PIN_SHUTTLE_PUMP
-    };
-    for (unsigned i = 0; i < sizeof outputs; ++i)
-        if (a->hardware->digital_read(a->hardware_context, outputs[i]))
-            return error(w, 409, "busy", "An output is active");
+    if (api->restart_pending || api->ota_trial || pico_local_control_busy() ||
+        pico_local_control_stopped() || !outputs_idle(api->application))
+        return error(w, 409, "busy", "Wait until the brewer is idle and its outputs are off");
     text(w, "{\"accepted\":true}");
     if (w->ok) api->restart_pending = true;
     return 202;
@@ -684,7 +748,7 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
     bool get = !strcmp(method, "GET");
     if (!strcmp(path, "/api/v1/health")) result = get ? health(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET");
-    else if (!strcmp(path, "/api/v1")) result = get ? discovery(&w) :
+    else if (!strcmp(path, "/api/v1")) result = get ? discovery(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/system/restart"))
         result = restart_system(api, &w, method, body, length);
@@ -692,6 +756,7 @@ int pico_local_api_handle(PicoLocalApi *api, const char *method, const char *pat
         error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/status")) result = get ? status(api, &w, false) :
         error(&w, 405, "method_not_allowed", "Use GET");
+    else if (!strncmp(path, "/api/v1/ota", 11)) result = ota(api, &w, method, path, body, length);
     else if (!strcmp(path, "/api/v1/display")) result = get ? display(api, &w) :
         error(&w, 405, "method_not_allowed", "Use GET");
     else if (!strcmp(path, "/api/v1/events")) result = get ? events(api, &w) :
