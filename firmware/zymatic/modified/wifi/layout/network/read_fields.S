@@ -1,3 +1,5 @@
+/* Preserve r8, then pass the original eight output pointers unchanged and
+ * the selected transport in r8 (ninth AVR-GCC argument). */
 .section .wifi,"ax",@progbits
 .global wifi
 wifi:

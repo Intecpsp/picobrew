@@ -19,7 +19,7 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
         u[0x24b4] = 20; u[0x24b5] = 2; u[0x24b7] = 2;
         u[0x2523] = 0x54; u[0x2524] = 1; u[0x252d] = 2;
         u[0x263a] = u[0x25b7] = 0xde; u[0x263c] = 1;
-        set16(0x264d, 0x128f2/2); set16(0x264f,0x129ae/2); set16(0x2651,0x12930/2);
+        set16(0x264d, 0x128f2/2); set16(0x264f,0x129ae/2); set16(0x2651,0x12922/2);
         set16(0x2659,2); set16(0x2533,0x2535);
         u[0x3d] = 3; u[0x45] = 3; // other external IRQs enabled, Timer0 F_CPU/64
         u[0x5f] = 0x80; u[0x4c] = 0x50; u[0x4d] = 0;
@@ -170,6 +170,8 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
     loan.callAt(0x14984);
     assert.equal(loan.get16(24),3); assert.equal(csEdges,2);
     assert.equal(loan.get16(0x263d),0);
+    loan.callAt(0x12922); // normal high-level stock exit: callback is now NULL
+    assert.equal(loan.get16(0x2b1f),0); assert.equal(loan.u[0x3d],7);
     assert.equal(stockControl('resume_from_stock'),1);
     assert.equal(loan.u[0x263c],0);
     assert.equal(loan.get16(brokerAddr),0);
@@ -179,6 +181,63 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
     assert.equal(stockControl('resume_from_stock'),0);
     assert.equal(loan.get16(brokerAddr),3);
     assert.equal(loan.get16(0x2b1f),0x12b08/2);
+    // Run the physical recipe-sync dispatcher. An unavailable TCP operation
+    // must use its original error path; a busy broker must not enter that
+    // path or drop the action. Its caller must schedule arbitration first.
+    const menu = setup();
+    menu.callAt(0x12922);
+    menu.bind();
+    menu.set16(24,brokerAddr); assert.equal(menu.call('yield_to_stock')&255,1);
+    menu.u[0x089d] = 1; menu.set16(0x16bc,0x1800);
+    const state = [];
+    const menuIO = {
+        0x5ebc: () => {menu.u[24]=5;},
+        0x4342: () => {menu.u[24]=1;},
+        0x2cd2: () => {menu.u[24]=1;},
+        0x3228: () => {}, 0x1604e: () => {}, 0x5040: () => {}, 0x19db0: () => {},
+        0x11562: () => {state.push(menu.u[0x089d]); menu.u[24]=0;},
+        0x6da8: () => {state.push(menu.u[0x089d]);},
+    };
+    run(menu.cpu,0xdade,stop,menuIO);
+    assert.deepEqual(state,[0,0]); assert.equal(menu.u[0x089d],1);
+    assert.equal(menu.u[0x263c],0); assert.equal(menu.get16(0x2b1f),0);
+    menu.set16(24,brokerAddr); assert.equal(menu.call('resume_from_stock')&255,1);
+    // The TCP façade supplies a normal Hub-format menu response. The
+    // completed request, stream framing, tokenizer and brew-bank writes
+    // all execute in the original foreground. The physical brewer is idle.
+    menu.set16(24,brokerAddr); assert.equal(menu.call('yield_to_stock')&255,1);
+    const id = '0123456789abcdef0123456789abcdef';
+    const wire = Buffer.from('#Bench Pale/'+id+'/Mash,153,60,1,0/Boil,203,60,0,0/|#');
+    const requestParts = [];
+    const ramString = addr => Buffer.from(menu.u.slice(addr,menu.u.indexOf(0,addr))).toString('ascii');
+    const crt = new Uint8Array(menu.cpu.progMem.buffer,0x1b24a,0x980);
+    menu.u.set(crt,0x100);
+    menu.u.set(Buffer.from('TEST-USER\0'),0x1672);
+    menu.u[menu.cpu.SP]=menu.u[menu.cpu.SP-1]=255; menu.cpu.SP-=2;
+    menu.u[24]=0;
+    let position = 0, closed = false;
+    const flash = new Uint8Array(menu.cpu.progMem.buffer);
+    const flashString = addr => Buffer.from(flash.slice(addr,flash.indexOf(0,addr))).toString('ascii');
+    run(menu.cpu,0xdade,stop,{
+        ...menuIO,
+        0x4342: () => {menu.u.set(Buffer.from('123456789ABC\0'),menu.get16(24)); menu.u[24]=1;},
+        0x11562: () => {assert.equal(menu.u[0x089d],0); menu.u[24]=1;},
+        0x113e4: () => {requestParts.push(flashString(menu.get16(22))); menu.u[24]=1;},
+        0x11406: () => {requestParts.push(ramString(menu.get16(22))); menu.u[24]=1;},
+        0x1abd4: () => {}, 0x1abce: () => {}, 0x1a914: () => {}, 0x1aaae: () => {},
+        0x2ea2: () => {}, 0x113b4: () => {menu.u[24]=!closed;},
+        0x11428: () => {menu.u[24]=position < wire.length;},
+        0x114b4: () => {assert(position < wire.length); menu.u[24]=wire[position++];},
+        0x11444: () => {closed=true;}, 0x19d94: () => menu.cpu.dataView.setUint32(22,0,true),
+        0x6da8: () => {throw Error('normal recipe entered the network error path');},
+    },350000);
+    assert.equal(position,wire.length); assert.equal(closed,true);
+    assert.match(requestParts.join(''),/SyncUser\?user=TEST-USER&machine=123456789ABC/i);
+    assert.equal(menu.u[0x1ec5],1); assert.equal(ramString(0x16be),'Bench Pale');
+    assert.equal(ramString(0x1d76),id); assert.equal(menu.u[0x16be+21],2);
+    assert.equal(menu.u[0x089d],1);
+    menu.set16(24,brokerAddr); assert.equal(menu.call('resume_from_stock')&255,1);
+    assert.equal(menu.tx(command),1);
     // Enter the actual timer display path during CS assertion. The CPU
     // preserves registers at the asynchronous boundary as the AVR ISR does.
     const concurrent = setup();
@@ -199,4 +258,5 @@ module.exports = function verifyBoardSPI({ fixture, supervisor, run, symbols }) 
     assert.equal(concurrent.f.bytes.length,4102);
     assert.equal(concurrent.tx(command),1);
     console.log('Bounded AVR SPI transfers matched OEM writes, handled deferred INT2 and OLED traffic, accounted for credits and quarantined failed transactions.');
+    require('./cc3000_board.cjs')({setup,symbols});
 };

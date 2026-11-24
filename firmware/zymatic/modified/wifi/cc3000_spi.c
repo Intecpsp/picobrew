@@ -32,8 +32,9 @@ static bool bind_from(uint8_t initial)
         if (link == initial && OEM8(0x230b) == 0 && OEM_SPI_STATE == 2 &&
             OEM16(0x2533) == 0x2535 && OEM8(0x263a) == 0xde && OEM8(0x25b7) == 0xde &&
             OEM16(0x263d) == 0 && OEM16(0x263f) == 0 && OEM16(0x265f) == 0 &&
-            OEM8(0x24b7) == 2 && OEM_INT2_HANDLER == 0x12b08uL/2 &&
-            OEM_POLL_ENABLED && (EIMSK & _BV(INT2)) &&
+            OEM8(0x24b7) == 2 && (EIMSK & _BV(INT2)) &&
+            ((OEM_POLL_ENABLED && OEM_INT2_HANDLER == 0x12b08uL/2) ||
+             (!OEM_POLL_ENABLED && !OEM_INT2_HANDLER)) &&
             (EICRA & (_BV(ISC20)|_BV(ISC21))) == _BV(ISC21) &&
             (DDRC & PORTC & _BV(PC4)) && !(DDRB & _BV(PB2)) &&
             OEM8(0x2523) == (_BV(SPE)|_BV(MSTR)|_BV(CPHA)) && OEM8(0x2524) == 1 &&

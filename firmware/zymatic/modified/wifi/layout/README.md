@@ -1,30 +1,37 @@
 # Zymatic Wi-Fi memory checks
 
-These developer checks link AVR code and run synthetic applications under simavr. The released USB installer, firmware packages and both application profiles use their existing builds. The candidate has no device-writing command.
+The bench builds a compact and an extended Zymatic application from the verified OEM 1.1.14 image. It links the experimental Wi-Fi listener, checks the flash and SRAM limits and runs the existing firmware against a simulated AVR and Ethernet controller. The release installer uses the existing application profiles.
 
-## Compact application
-
-The compact candidate links the CC3000 state machine, shared-radio arbiter and HTTP session bridge alongside the compact Ethernet API and website. Its linker reserves the real radio and arbiter structures. Both transports share the existing HTTP workspace. Radio ownership, interrupts and the SPI bus still require board integration before a Wi-Fi client can reach this image.
-
-The additional code fits by applying the extended profile's lossless packers to the original text, bitmap and SRAM initializer tables. The original 1.1.14 library routine hashes are checked before reuse. The candidate keeps the compact profile's 8 KiB boot boundary and stores its response constants in AVR flash bank 1.
-
-From the Zymatic `modified` directory, run the command with the pinned Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 toolchain and simavr 1.8. The compact build reads the project's pinned compact source commit. The command prints both flash windows and static SRAM usage after the simulator checks.
+From the Zymatic `modified` directory, run the same check as CI. It uses the project's pinned Arduino AVR GCC 7.3.0-atmel3.6.1-arduino7 toolchain, simavr 1.8, a host C compiler, Python 3.10 or newer, Git history containing the pinned compact revision and the locked Node dependencies in `../reverse-engineered/tests`. The original firmware input may be the vendor ZIP or its HEX. Each build uses a temporary directory and synthetic credentials.
 
 ```sh
-python3 wifi/layout/compact.py --toolchain "$ARDUINO_AVR_BIN" --oem-file "$ZYMATIC_TEST_HEX" --simulate
+npm ci --ignore-scripts --prefix ../reverse-engineered/tests
+make wifi-bench ARDUINO_AVR_BIN="$ARDUINO_AVR_BIN" ZYMATIC_TEST_HEX="$ZYMATIC_TEST_HEX"
 ```
 
-The simulator compares 54,104 original and packed table reads, including resulting registers and status flags. It also boots the linked compact application, serves the existing Ethernet API and checks image corruption and original commissioning behavior.
+## What fits
 
-## Extended application
+| Synthetic application | Free in the final code region | Static extension SRAM | Existing features exercised |
+| --- | ---: | ---: | --- |
+| Compact | 34 bytes before `0x1e000` | 685 / 768 bytes | Ethernet API, image integrity and original commissioning behavior |
+| Extended | 386 bytes before `0x1fc00` | 762 / 768 bytes | Ethernet API, OLED, About pairing, remote dial, brew status, history, image integrity and original commissioning behavior |
 
-The extended candidate reads the immutable 32-byte device key and 33-byte UID directly from bank 1. The experiment applies its patch to the committed application in a temporary directory. This saves 65 bytes of static SRAM while preserving the existing HTTP credentials and API. The command compiles that change and runs the existing application regressions.
+Both builds link the CC3000 socket state machine, radio arbiter, HTTP bridge, SPI and display arbitration. The radio and Ethernet use a single HTTP request workspace. The linked radio transport exposes stock ownership handoff and an explicit lease on the OEM receive buffer. Those entry points require integration with the original firmware's connection lifecycle and qualification on a board. The existing AVR application regressions exercise incoming Ethernet requests.
+
+The compact profile uses the extended profile's lossless OEM table packers and reuses verified original AVR library routines. It retains its 8 KiB boot boundary. The extended profile reads the UID and device key directly from flash, saving 65 bytes of SRAM. Firmware selection still depends on the installed boot layout.
+
+## Flash layout evidence
+
+The network parser and URL encoder, OLED transactions and keyboard drawing routines occupy less space after their repeated code is shared. The ROM composers preserve their original entry points. Their differential tests check the rewritten routines separately. Together these changes free 4,142 bytes in eight address ranges.
+
+The extended build stores the existing compressed JavaScript, HTML and favicon in space after identical function returns are merged. The linked AVR reader reproduces all 2,725 asset bytes. The tool checks direct branch destinations, skip instructions, original data words that could be code pointers and known patch sites before choosing a return sequence. Each selected return saves and restores the same registers and status flags in the simulator, with two or three extra cycles. Indirect entries and in-brew timing on the physical board still need qualification.
+
+The integrated test checks 54,104 original and packed table accesses on each profile. The simulated active-brew history check remains below the existing 64,000-cycle limit. Use the following commands to inspect one part of the bench.
 
 ```sh
-python3 wifi/layout/extended.py --toolchain "$ARDUINO_AVR_BIN" --oem-file "$ZYMATIC_TEST_HEX"
+python3 wifi/layout/tail_budget.py --toolchain "$ARDUINO_AVR_BIN" --oem-file "$ZYMATIC_TEST_HEX" --simulate
+python3 wifi/layout/scatter.py --toolchain "$ARDUINO_AVR_BIN" --oem-file "$ZYMATIC_TEST_HEX" --with-listener
 ```
-
-The credential-only candidate uses 703 of the 768 reserved SRAM bytes. Adding the radio and arbiter structures would use 758 bytes. The extended application already fills its code windows, and the complete listener and radio arbiter still exceed the flash budget.
 
 ## Rear USB and network recovery
 

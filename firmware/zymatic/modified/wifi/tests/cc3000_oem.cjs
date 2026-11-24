@@ -128,6 +128,28 @@ assert.equal(inactive.dataView.getUint16(0x263f, true), 0);
 assert.equal(inactive.dataView.getUint32(0x2655, true), 1);
 assert.equal(inactive.dataView.getUint32(0x09be, true), 8);
 
+// An original synchronous caller with no event does not treat busy as a
+// retry. It polls indefinitely unless all three diagnostic state bits allow
+// the 3001 ms timeout. The timeout itself leaves the expected opcode set.
+for (const diagnostic of [false, true]) {
+    const cpu = boot();
+    cpu.dataView.setUint16(24, 0x1001, true);
+    cpu.dataView.setUint16(22, result, true);
+    cpu.dataView.setUint32(result, 0x12345678, true);
+    cpu.data[0x247b] = diagnostic ? 1 : 0;
+    cpu.data[0x247d] = 1;
+    const endObservation = Symbol('four complete polls observed');
+    let polls = 0;
+    const observe = () => run(cpu, 0x13e20, 2 * terminal, {
+        0x19d94: () => cpu.dataView.setUint32(22, polls ? 3001 : 0, true),
+        0x12c32: () => { if (++polls === 5) throw endObservation; },
+    });
+    if (diagnostic) observe();
+    else assert.throws(observe, err => err === endObservation);
+    assert.equal(cpu.dataView.getUint32(result, true), diagnostic ? 7 : 0x12345678);
+    assert.equal(cpu.dataView.getUint16(0x263d, true), 0x1001);
+}
+
 // Execute the board-specific constructor and installation of the vendor host
 // callbacks. Only the allocation return is stubbed; pin numbers and attached
 // callbacks come from the original application image.
@@ -147,6 +169,22 @@ assert.equal(pins.data[0x25] & 4, 4);       // IRQ pull-up enabled
 run(pins, 0x1263a, 0x1266a);
 assert.equal(pins.dataView.getUint16(0x2653, true) * 2, 0x1290a);
 assert.equal(pins.dataView.getUint16(0x264d, true) * 2, 0x128f2);
+assert.equal(pins.dataView.getUint16(0x264f, true) * 2, 0x129ae);
+assert.equal(pins.dataView.getUint16(0x2651, true) * 2, 0x12922);
+// Top-level invocations and the indirect low-level host callbacks above
+// use the same code. A replacement at the function entry would acquire or
+// release the foreground lease from inside an existing SPI transaction.
+function directCalls(target) {
+    const sites = [];
+    for (let i=0; i+1<words.length; ++i) {
+        if (words[i] === 0x940e && words[i+1] === target/2) sites.push(i*2);
+    }
+    return sites;
+}
+assert.deepEqual(directCalls(0x129ae), [0xbac4,0xbfaa,0xc376,0xcbcc,0xd098,0xd2d4,
+                                       0xd536,0xd898,0xdafe,0xde02,0xe246]);
+assert.deepEqual(directCalls(0x12922), [0xbad2,0xbfb6,0xc37e,0xcbde,0xd1a6,0xd2e0,
+                                       0xd5e4,0xd912,0xd94e,0xdb08,0xde0c,0xe2c0]);
 const levels = [0, 0, 1], writes = [];
 pins.data[pins.SP] = pins.data[pins.SP - 1] = 0xff;
 pins.SP -= 2;

@@ -1,5 +1,6 @@
 """Exercise the Zymatic HTTP service and both transport models."""
 from pathlib import Path
+import ast
 import os
 import sys
 import shutil
@@ -39,6 +40,41 @@ class NetworkTests(unittest.TestCase):
             subprocess.run([cc, "-std=c11", "-Wall", "-Wextra", "-Werror", "-I", str(ROOT),
                             *(str(ROOT / path) for path in sources), "-o", str(exe)], check=True)
             subprocess.run([str(exe)], check=True, timeout=10)
+
+    def test_packed_responses_at_every_buffer_boundary(self):
+        cc = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")
+        if not cc:
+            self.skipTest("Native C compiler is required")
+        sys.path.insert(0, str(ROOT / "wifi/layout/http"))
+        import literals
+        with tempfile.TemporaryDirectory() as directory:
+            work = Path(directory)
+            source = (ROOT / "zymatic_api.c").read_text()
+            texts = dict.fromkeys(ast.literal_eval(match[1]).encode("ascii")
+                                  for begin, end in literals.calls(source)
+                                  for match in literals.CONSTANT.finditer(source[begin:end]))
+            encoded, _ = literals.encode(texts)
+            candidate = work / "zymatic_api.c"
+            candidate.write_text(source)
+            literals.stage(work)
+            def quoted(data):
+                return '"' + ''.join("\\%03o" % byte for byte in data) + '"'
+            cases = ",\n".join("{" + quoted(text) + "," + quoted(tokens) + "}"
+                                for text, tokens in encoded.items())
+            with candidate.open("a") as out:
+                out.write('\n#include <assert.h>\nstatic const char *const cases[][2] = {\n' + cases + '\n};\n')
+                out.write((ROOT / "wifi/tests/literal_bounds.c").read_text())
+            runner = work / "runner.c"
+            runner.write_text('#define main run_routes\n#include "tests/zymatic_api_native.c"\n'
+                              '#undef main\nvoid test_literal_bounds(void);\n'
+                              'int main(void) { test_literal_bounds(); return run_routes(); }\n')
+            exe = work / "responses.exe"
+            subprocess.run([cc, "-std=c11", "-Wall", "-Wextra", "-Werror", "-D__flash1=",
+                            "-I", str(ROOT), candidate, runner,
+                            *(ROOT / file for file in ("zymatic_api_w5100.c", "src/history.c",
+                                                       "src/pairing.c", "tests/history_native.c")),
+                            "-o", exe], check=True)
+            subprocess.run([exe], check=True, timeout=10)
 
     def test_radio_commands_and_completions(self):
         cc = shutil.which("cc") or shutil.which("gcc") or shutil.which("clang")

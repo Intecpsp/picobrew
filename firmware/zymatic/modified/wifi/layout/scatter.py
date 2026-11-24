@@ -15,6 +15,7 @@ import zlib
 import extended
 import tail_budget
 from network.compact import compose
+from oled import compact as oled
 from tail_budget import usb_stock, build
 
 HERE = Path(__file__).resolve().parent
@@ -25,12 +26,16 @@ def arrange(original, toolchain, root, runtime):
     stock = root / "original.bin"
     stock.write_bytes(original)
     network, windows = compose(original, toolchain, root)
+    network, display_windows = oled.compose(network)
+    windows.extend(display_windows)
+    network, keyboard_windows = oled.compose_keyboard(network, toolchain, root)
+    windows.extend(keyboard_windows)
     dis = subprocess.check_output([toolchain / "avr-objdump", "-D", "-z", "-b", "binary",
                                    "-m", "avr:51", stock], text=True)
     # The new network parser uses existing parts of the Wi-Fi routine as well as both holes.
     # Keep all three routines, branch receivers and the timer display hooks out of the allocation.
     excluded = [(0x2ed0, 0x3228), (0x33a0, 0x3622), (0xccba, 0xcf38),
-                (0x5044, 0x504a), (0x8738, 0x873e)]
+                (0x5044, 0x504a), (0x8738, 0x873e), (oled.TRANSFER, oled.END), (0xa74c, 0xaa50)]
     # The simulator models the external device at a few fixed instruction addresses,
     # including the original brew runner's bare RET at 0xfd4c.
     harness = (runtime / "tests/simavr_overlay.c").read_text()
@@ -82,12 +87,25 @@ def install_reader(runtime, index):
             raise ValueError("Extended site integration changed")
         src = src.replace(old, new)
     path.write_text(src)
-    rows = ",\n".join(f"    {{{logical_end}, {word}}}" for logical_end, word in index)
+    rows = []
+    previous = 0
+    for i, (end, _) in enumerate(index):
+        width = end - previous
+        if rows and rows[-1][2] == width:
+            rows[-1] = (end, rows[-1][1], width)
+        else:
+            rows.append((end, i, width))
+        previous = end
+    if len(index) > 255 or any(width > 255 for _, _, width in rows):
+        raise ValueError("Fragment index requires more than one byte")
+    runs = ",\n".join(f"    {{{end}, {first}, {width}}}" for end, first, width in rows)
+    words = ", ".join(str(word) for _, word in index)
     template = HERE / "scatter_reader.h.in"
-    (runtime / "site/scatter.h").write_text(template.read_text().replace("@INDEX@", rows))
+    (runtime / "site/scatter.h").write_text(template.read_text().replace("@RUNS@", runs).replace("@WORDS@", words))
+    return len(rows) * 4 + len(index) * 2
 
 
-def simulator(root, runtime, original, packed, asset, index):
+def simulator(root, runtime, original, packed, asset):
     # The unmodified composition code checks its source family, checksummed original and all release fields.
     # Apply the candidate's additional ROM substitutions to its temporary synthetic image.
     command = [sys.executable, "-c",
@@ -133,6 +151,7 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--toolchain", type=Path, required=True)
     parser.add_argument("--oem-file", type=Path, required=True)
+    parser.add_argument("--with-listener", action="store_true", help="Link and simulate all radio transport components")
     args = parser.parse_args()
     original = usb_stock.decode_application(usb_stock.unpack_source(args.oem_file.read_bytes()))
     if not usb_stock.is_original_app(original):
@@ -142,19 +161,26 @@ def main():
         root = Path(tmp)
         runtime = extended.stage(root)
         packed, asset, index, tails, windows = arrange(original, toolchain, root, runtime)
-        install_reader(runtime, index)
+        index_size = install_reader(runtime, index)
+        sys.path.insert(0, str(HERE / "http"))
+        from literals import stage as pack_literals
+        pack_literals(runtime)
         compiler = runtime / "tools/compile_extension.py"
         source = compiler.read_text()
         compiler.write_text(source.replace("entry_points = [*build.OFFLINE,",
                                            'entry_points = ["candidate_site_byte", *build.OFFLINE,'))
-        subprocess.run([sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"], check=True)
+        if args.with_listener:
+            from extended_listener import link
+            packed = link(root, runtime, toolchain, windows, packed)
+        else:
+            subprocess.run([sys.executable, compiler, "--toolchain", toolchain, "--out-dir", runtime / "extension"], check=True)
         tail_budget.check(root, root / "original.bin", original, tails)
-        manifest = simulator(root, runtime, original, packed, asset, index)
+        manifest = simulator(root, runtime, original, packed, asset)
         low_free = build.tables.POOL_END - build.tables.SEEK_END - manifest["low_bytes"]
         high_free = build.LIMIT - build.START - manifest["extension_bytes"]
-        print(f"{len(asset)} site bytes in {len(index)} fragments with a {4 * len(index)}-byte index. "
+        print(f"{len(asset)} site bytes in {len(index)} fragments with a {index_size}-byte index. "
               f"The extended application has {low_free} bytes free in low flash and {high_free} in high flash. "
-              f"The two network windows have {sum(end-start for start,end in windows)} bytes available.")
+              f"Reclaimed {sum(end-start for start,end in windows)} bytes in the network, display and keyboard.")
 
 
 if __name__ == "__main__":

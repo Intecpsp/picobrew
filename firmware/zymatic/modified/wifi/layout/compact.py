@@ -20,6 +20,7 @@ import oem_tables as tables
 import usb_stock
 import zymatic_build as extended
 from network.compact import compose as compact_network
+from oled import compact as compact_oled
 
 
 READ_HOOKS = {
@@ -90,7 +91,7 @@ def link_application(directory, toolchain):
         name = source.stem + ".o"
         tool("avr-gcc", *flags, "-flto", "-c", source, "-o", name)
         objects.append(name)
-    components = ["cc3000", "http_session", "server", "cc3000_broker", "cc3000_spi_bus", "cc3000_spi"]
+    components = ["cc3000", "http_session", "server", "cc3000_broker", "cc3000_spi_bus", "cc3000_spi", "cc3000_board"]
     for name in components:
         output = "wifi_" + name + ".o"
         tool("avr-gcc", *flags, "-DZYMATIC_WIFI_COMPACT", "-c", ROOT / "wifi" / (name + ".c"), "-o", output)
@@ -111,7 +112,7 @@ def link_application(directory, toolchain):
         if len(parts) == 3:
             symbols[parts[2]] = int(parts[0], 16)
     pieces = {}
-    for section in ("text", "low", "crc_hole", "net_encoder", "net_wifi_fields", "net_reader"):
+    for section in ("text", "low", "crc_hole", "net_encoder", "net_wifi_fields", "net_reader", "oled_init"):
         filename = section + ".bin"
         tool("avr-objcopy", "-O", "binary", "-j", "." + section, elf, filename)
         pieces[section] = (directory / filename).read_bytes()
@@ -123,9 +124,11 @@ def compact_layout(original, toolchain, directory):
         raise ValueError("Use the original Zymatic 1.1.14 image")
     tables.verify_library(original)
     network, windows = compact_network(original, toolchain, directory)
+    network, oled_windows = compact_oled.compose(network)
+    windows.append(oled_windows[-1])
     composed = bytearray(network)
     symbols, pieces = link_application(directory, toolchain)
-    for name, (start, end) in zip(("net_encoder", "net_wifi_fields", "net_reader"), windows, strict=True):
+    for name, (start, end) in zip(("net_encoder", "net_wifi_fields", "net_reader", "oled_init"), windows, strict=True):
         part = pieces[name]
         if (symbols["__" + name + "_start"] != start or not 0 < len(part) <= end - start
                 or composed[start:end] != b"\xff" * (end - start)):

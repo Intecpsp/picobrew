@@ -2,7 +2,7 @@
 
 const assert = require('node:assert/strict');
 const { execFileSync } = require('node:child_process');
-const { mkdtempSync, readFileSync, rmSync } = require('node:fs');
+const { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
@@ -46,15 +46,28 @@ module.exports = function verifyDisplayHandoff({ words, boot, run, avrBin }) {
         const elf = path.join(temp, 'guard.elf'), bin = path.join(temp, 'guard.bin');
         const base = 0x1c000;
         const tool = (name, args) => execFileSync(path.join(avrBin, name), args, {encoding:'utf8'});
+        // Use the same pinned compact HTTP engine as the compact board
+        // builder, exercising its real parser, key check and flash website.
+        const build = readFileSync(path.resolve(__dirname,'../../tools/compact_build.py'),'utf8');
+        const revision = build.match(/^SOURCE_REVISION = "([0-9a-f]{40})"$/m)[1];
+        mkdirSync(path.join(temp,'site'));
+        for (const file of ['zymatic_api.c','zymatic_api.h','site/zymatic_site.h']) {
+            const blob = revision+':firmware/zymatic/modified/'+file;
+            writeFileSync(path.join(temp,file),execFileSync('git',['show',blob],{cwd:__dirname}));
+        }
         tool('avr-gcc', ['-mmcu=atmega1284p', '-Os', '-Wall', '-Wextra', '-Werror', '-nostartfiles',
+            '-fno-jump-tables','-DZYMATIC_WIFI_COMPACT','-I'+temp,
             '-nostdlib', '-Wl,-Ttext=0x1c000,-Tbss=0x803300', path.resolve(__dirname, '../cc3000_spi_bus.c'),
             path.resolve(__dirname, '../cc3000_spi.c'), path.resolve(__dirname, '../cc3000_broker.c'),
-            path.resolve(__dirname, '../cc3000.c'), '-o', elf, '-lc', '-lgcc']);
+            path.resolve(__dirname, '../cc3000.c'), path.resolve(__dirname,'../cc3000_board.c'),
+            path.resolve(__dirname,'../server.c'),path.resolve(__dirname,'../http_session.c'),
+            path.join(temp,'zymatic_api.c'), '-o', elf, '-lc', '-lgcc']);
         tool('avr-objcopy', ['-O','binary','-j','.text',elf,bin]);
         const binary = readFileSync(bin), symbols = new Map();
-        for (const match of tool('avr-nm', [elf]).matchAll(/^([\da-f]+) T (zym_spi_\w+)$/gm))
+        for (const match of tool('avr-nm', [elf]).matchAll(/^([\da-f]+) T (zym_(?:spi|cc3000_board)_\w+)$/gm))
             symbols.set(match[2], parseInt(match[1], 16));
-        assert.equal(symbols.size, 12);
+        assert.equal(symbols.size, 14);
+        assert(base+binary.length <= 2*words.length);
         for (let i = 0; i < binary.length; i+=2) words[(base+i)/2] = binary.readUInt16LE(i);
         for (const at of [0x5044, 0x8738]) {
             assert.equal(words[at/2], 0xb58c); // original IN r24, SPCR

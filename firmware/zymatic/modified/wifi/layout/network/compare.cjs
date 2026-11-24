@@ -87,4 +87,13 @@ for (const entry of [0x33a0, 0xccba]) {
         assert.deepEqual(parseFields(candidate, entry, body, ok), parseFields(stock, entry, body, ok));
     }
 }
+// Truncated responses have no complete set of settings to commit.
+for (const entry of [0x33a0, 0xccba]) {
+    for (const incomplete of ['1/2', '1/2/3/4/5', '1/2/3/4/5/6']) {
+        const [success, globals, outputs] = parseFields(candidate, entry, incomplete, true);
+        assert.equal(success, 0);
+        assert.ok(globals.every(value => value === 0xbe));
+        assert.ok(outputs.every(value => value === 0xd6));
+    }
+}
 console.log(inputs.length + ' encoding and ' + (responses.length * 2) + ' transport parser comparisons passed');

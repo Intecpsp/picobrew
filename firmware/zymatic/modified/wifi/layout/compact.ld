@@ -7,10 +7,15 @@ MEMORY {
   encoder (rx) : ORIGIN = 0x2f72, LENGTH = 0x2b6
   wifi_fields (rx) : ORIGIN = 0x352c, LENGTH = 0xf6
   wired_fields (rx) : ORIGIN = 0xccc2, LENGTH = 0x276
+  display (rx) : ORIGIN = 0x16240, LENGTH = 0x672
   app (rx) : ORIGIN = 0x1b920, LENGTH = 0x26e0
   globals (rw) : ORIGIN = 0x802c8a, LENGTH = 0x300
 }
 SECTIONS {
+  .oled_init : {
+    __oled_init_start = .;
+    KEEP(wifi_cc3000_board.o(.text .text.*))
+  } > display
   .net_encoder : {
     __net_encoder_start = .;
     KEEP(wifi_cc3000_spi.o(.text.bind_from .text.zym_spi_receive))
