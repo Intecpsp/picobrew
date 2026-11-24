@@ -457,7 +457,8 @@ def _approved_current_applications(mode, model="pico-pro"):
     identities = [C_STOCK.get(model, (ORIGINAL_SIZE, ORIGINAL_SHA256))]
     if mode == "install":
         if model not in C_STOCK:
-            identities.extend(((PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
+            identities.extend(((162736, "f018cb90820c3cbf9cad201d4e3a95635761695e5cc2fcdee819ed6fa19145a7"),
+                               (PREVIOUS_CANDIDATE_SIZE, PREVIOUS_CANDIDATE_SHA256),
                                (RELEASED_1_0_0_SIZE, RELEASED_1_0_0_SHA256),
                                (RELEASED_1_0_1_SIZE, RELEASED_1_0_1_SHA256),
                                (RELEASED_1_1_0_SIZE, RELEASED_1_1_0_SHA256)))
